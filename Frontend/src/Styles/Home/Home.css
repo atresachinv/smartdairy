@@ -1,0 +1,10 @@
+.home-container {
+  height: 90vh;
+}
+
+.img-container {
+  background-image: url("../../assets/cow-man-milk.jpg");
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+}
