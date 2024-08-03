@@ -1,7 +1,5 @@
 import React, { useState } from "react";
 import axios from "axios";
-import dotenv from "dotenv";
-dotenv.config({ path: ".env" });
 
 import { useNavigate } from "react-router-dom";
 // css
@@ -12,14 +10,13 @@ const Login = () => {
     user_id: "",
     user_password: "",
   });
-  console.log(values);
 
   const handleInputs = (e) => {
     const { name, value } = e.target;
     setValues({ ...values, [name]: value });
   };
 
-  axios.defaults.baseURL = process.env.BASE_URI;
+  axios.defaults.baseURL = import.meta.env.VITE_BASE_URI;
   axios.defaults.withCredentials = true;
 
   const handleLogin = (e) => {
