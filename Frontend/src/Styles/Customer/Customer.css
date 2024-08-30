@@ -1,0 +1,83 @@
+/* Navigation Bar css */
+/* .............................................. */
+
+.cust-navbar {
+  background-color: var(--main-bg-color);
+}
+.logo-text {
+  letter-spacing: 1px;
+  color: #fff;
+}
+.navlinks {
+  display: contents;
+}
+.close {
+  width: 80%;
+}
+.open {
+  position: relative;
+  width: 80%;
+}
+.navlinks a {
+  margin-left: 20px;
+  text-decoration: none;
+  color: #dadada;
+  transition: all 0.3s ease;
+}
+.sidebar-list-item {
+  display: flex;
+}
+.sidebar-list-item span {
+  margin: 0 10px;
+}
+.navlinks a:hover {
+  color: #fff;
+}
+.menu-btn {
+  display: none;
+  font-size: 20px;
+  color: #fff;
+}
+
+/* .............................................. */
+/* Responsive css */
+/* .............................................. */
+
+@media screen and (max-width: 426px) {
+  .customer-container .cust-navbar {
+    width: 100%;
+    margin: 0;
+  }
+  .cust-navbar .logo {
+    width: 40%;
+  }
+  .open-btn {
+    display: block;
+  }
+  .close-btn {
+    display: block;
+    margin: 30px 20px;
+  }
+  .navlinks {
+    flex-direction: column;
+  }
+  .navlinks a {
+    margin-bottom: 15px;
+  }
+  .sidebar-list-item span {
+    margin: 0 10px;
+  }
+  .open {
+    position: absolute;
+    width: 100%;
+    height: 100vh;
+    top: 0;
+    left: 0;
+    z-index: 100;
+    background: var(--main-bg-color);
+    transition: all 0.2s ease;
+  }
+  .close {
+    display: none;
+  }
+}

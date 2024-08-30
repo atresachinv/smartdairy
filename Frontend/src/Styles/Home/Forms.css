@@ -1,6 +1,55 @@
-/* Login Form CSS */
+.applogo {
+  width: 80px;
+  height: 80px;
+}
+.error-border {
+  border: 1px solid red;
+}
 
-/* .login-form-container {
+.terms-conditions .checkboxx {
+  color: #5d06ad;
+  margin-right: 10px;
+}
+.swith-form-button {
+  border: none;
+  font-weight: 600;
+  color: #5d06ad;
+  background: transparent;
+}
 
-} */
-/* Login Form CSS end */
+/* ............................... */
+/*Responsive css*/
+/* ............................... */
+
+@media only screen and (max-width: 992px) {
+  .applogo {
+    margin-top: 50px;
+  }
+
+  .auth-container .form-container {
+    margin-top: 50px;
+    width: 80%;
+  }
+}
+
+@media screen and (max-width: 769px) {
+  .applogo {
+    margin-top: 50px;
+  }
+
+  .auth-container .form-container {
+    margin-top: 50px;
+    width: 100%;
+  }
+}
+
+@media screen and (max-width: 426px) {
+  .applogo {
+    margin-top: 50px;
+  }
+
+  .auth-container .form-container {
+    margin-top: 50px;
+    width: 100%;
+  }
+}

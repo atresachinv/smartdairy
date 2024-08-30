@@ -1,0 +1,25 @@
+.content-titles-div {
+  background: var(--bg-gray-color);
+}
+
+.custmize-report-div {
+  margin-bottom: 10px;
+}
+
+.save-btn-btn {
+  padding: 5px 10px;
+  background-color: var(--main-bg-color);
+  color: #fff;
+  font-weight: 700;
+  border: none;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+}
+.save-btn-btn:hover {
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+.report-data-container {
+  max-height: 90%;
+  overflow-y: scroll;
+}

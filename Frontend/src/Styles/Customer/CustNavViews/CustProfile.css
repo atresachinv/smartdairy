@@ -1,0 +1,19 @@
+.user-details h2 {
+  margin-bottom: 10px;
+}
+.buttons-div {
+  margin-bottom: 10px;
+}
+
+/* .............................................. */
+/* Responsive css */
+/* .............................................. */
+
+@media screen and (max-width: 426px) {
+  .cust-profile-container .menu-title-div,
+  .cust-profile-container .user-info-container {
+    width: 100%;
+    margin: 0;
+  }
+}
+

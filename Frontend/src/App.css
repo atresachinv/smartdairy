@@ -42,6 +42,9 @@
 .w10 {
   width: 10%;
 }
+.w5 {
+  width: 7%;
+}
 
 /* height */
 .h100 {
@@ -78,7 +81,7 @@
   height: 10%;
 }
 .h5 {
-  height: 5%;
+  height: 7%;
 }
 
 /* max height */
@@ -117,7 +120,7 @@
   display: flex;
   flex-direction: column;
 }
-.flex-wrap {
+.f-wrap {
   flex-wrap: wrap;
 }
 .center {
@@ -177,7 +180,7 @@
   text-align: end;
 }
 
-.deco-none {
+.d-none {
   list-style: none;
   text-decoration: none;
 }
@@ -197,6 +200,9 @@
 }
 .mx15 {
   margin: 0 15px;
+}
+.mx-15 {
+  margin: 0 15%;
 }
 .my5 {
   margin: 5px 0;
@@ -241,6 +247,13 @@
   justify-content: flex-start;
   margin: 10px 0;
 }
+.data-div-2 {
+  width: 45%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  margin: 10px 0;
+}
 
 .data {
   padding: 10px;
@@ -275,7 +288,7 @@
   box-shadow: 1px 3px 2px rgb(83, 81, 81);
 }
 
-.h-scrollbar::-webkit-scrollbar {
+.hidescrollbar::-webkit-scrollbar {
   display: none;
 }
 /* input filed and data css */
@@ -290,7 +303,7 @@
 .title {
   font-size: clamp(14px, 3vw, 24px);
   font-weight: 600;
-  color: #8b52fc;
+  color: #f16868;
   cursor: pointer;
 }
 .subtitle {
@@ -300,7 +313,7 @@
   cursor: pointer;
 }
 .heading {
-  font-size: clamp(10px, 3vw, 16px);
+  font-size: clamp(14px, 3vw, 16px);
   font-weight: 400;
   color: #bb9ef4;
   cursor: pointer;
@@ -317,8 +330,52 @@
   margin-top: 5px;
 }
 .info-text {
-  font-size: clamp(8px, 3vw, 12px);
+  font-size: clamp(7px, 3vw, 12px);
   font-weight: 300;
   margin-top: 5px;
 }
+
+.req {
+  color: red;
+}
 /* Titles and text */
+
+/* Background colors */
+
+.bg1 {
+  background-color: #8b52fc;
+}
+.bg2 {
+  background-color: #a386dc;
+}
+.bg3 {
+  background-color: #c1aee8;
+}
+.bg4 {
+  background-color: #d1c5e9;
+}
+.bg5 {
+  background-color: #fcfcfc;
+}
+.bg6 {
+  background-color: var(--bg-gray-color);
+}
+.bg {
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 0 3px #e0e0e0;
+}
+html {
+  overflow-x: hidden;
+}
+body {
+  overflow-x: hidden;
+}
+
+/*Responsive css*/
+
+@media screen and (max-width: 769px) {
+  .data {
+    padding: 8px;
+  }
+}

@@ -1,0 +1,51 @@
+.form-div {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+.form-div > label {
+  margin: 5px 0 5px 15px;
+}
+.form-div > .form-inputs {
+  width: 90%;
+  margin: 0 5% 10px 5%;
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+  background-color: #dfdede;
+}
+.milk-col-form > .form-btns > .form-btn {
+  width: 100px;
+  margin-right: 10px;
+  padding: 10px;
+  border: none;
+  border-radius: 6px;
+}
+
+/* milk collection list css */
+.collection-list-container {
+  max-height: 90%;
+  overflow-y: scroll;
+}
+.collection-details {
+  height: 120px;
+  margin-bottom: 10px;
+}
+.collection-list-container > .collection-details > .line {
+  width: 100%;
+  height: 2px;
+  background-color: #fff;
+}
+/* milk collection list css end */
+
+@media screen and (max-width: 426px) {
+  .milk-form-list-container {
+    flex-direction: column;
+  }
+  .milk-form-list-container .milk-collection-form {
+    width: 100%;
+  }
+  .milk-form-list-container .milk-coll-list-div {
+    width: 100%;
+  }
+}

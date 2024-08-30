@@ -1,19 +1,38 @@
-import React from "react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
+import { BsList, BsXLg } from "react-icons/bs";
 import "../../Styles/Home/Navigation.css";
 
 const Navigation = () => {
+  const [openNavbar, setOpenNavbar] = useState(false);
+
+  const showNavbar = () => {
+    setOpenNavbar(!openNavbar);
+  };
+
   return (
-    <nav className="navigation-container w100 p10 d-flex a-center sb">
-      <div className="logo-container w20 d-flex">
-        <h2 className="title">SMARTDAIRY2.0</h2>
+    <nav className="navbar w100 d-flex sb p10">
+      <div className="logo w20">
+        <span className="logo-text">SMARTDAIRY</span>
       </div>
-      <div className="navlink-container w80 d-flex">
-        <Link to="#">Home</Link>
-        <Link to="#">About</Link>
-        <Link to="#">Pricing</Link>
-        <Link to="#">Contactus</Link>
+      <div className={`${openNavbar ? "open" : "close"}`}>
+        <div className={`navlinks w80 d-flex`}>
+          <BsXLg className="menu-btn close-btn" onClick={showNavbar} />
+          <Link onClick={showNavbar} to={"#"}>
+            Home
+          </Link>
+          <Link onClick={showNavbar} to={"#"}>
+            About
+          </Link>
+          <Link onClick={showNavbar} to={"#"}>
+            Pricing
+          </Link>
+          <Link onClick={showNavbar} to={"#"}>
+            Contact
+          </Link>
+        </div>
       </div>
+      <BsList className="menu-btn open-btn" onClick={showNavbar} />
     </nav>
   );
 };

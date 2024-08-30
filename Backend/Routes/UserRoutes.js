@@ -1,8 +1,20 @@
 const express = require("express");
-const { userLogin } = require("../Controllers/UserController");
+const {
+  userLogin,
+  userRegister,
+  userLogout,
+} = require("../Controllers/UserController");
 
 const router = express.Router();
 
-router.route("/login").post(userLogin);
+// User Routes
 
+router.route("/register").post(userRegister);
+router.route("/login").post(userLogin);
+router.route("/logout").post(userLogout);
+
+// Milk Routes
+
+
+// Customer Routes
 module.exports = router;

@@ -5,4 +5,9 @@
   padding: 0;
   box-sizing: border-box;
   font-family: "poppins", "sans-serif";
+  --main-bg-color: #8b52fc;
+  --bg-nav-color: #c18383;
+  --bg-gray-color: #f4f4f4;
 }
+
+
