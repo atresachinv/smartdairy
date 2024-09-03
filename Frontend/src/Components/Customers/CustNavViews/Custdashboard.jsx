@@ -1,13 +1,14 @@
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { BarChart, Bar, ResponsiveContainer } from "recharts";
-import { fetchMilkReports } from "../../../App/Features/Customers/Milk/milkSlice";
 import "../../../Styles/Customer/CustNavViews/Custdashboard.css";
 
 const Custdashboard = () => {
   const dispatch = useDispatch();
 
-  const { summary } = useSelector((state) => state.milk.milkReport);
+  const summary = useSelector((state) => state.milkr.summary);
+  const dairyname = useSelector((state) => state.dairy.dairyData.SocietyName);
+
   const data = [
     {
       name: "Page A",
@@ -52,33 +53,45 @@ const Custdashboard = () => {
       amt: 2100,
     },
   ];
+
+  const safeToFixed = (value, decimals = 2) => {
+    return value !== null && value !== undefined
+      ? value.toFixed(decimals)
+      : "0.00";
+  };
+
   return (
     <div className="cust-dashboard-information w100 h1 d-flex-col">
-      <div className="menu-title-div w70 mx-15 h10 d-flex p10">
+      <div className="menu-title-div w70 mx-15 h10 d-flex-col p10">
         <h2 className="heading">
           Dashboard <span className="text">(Current Payment slot info)</span>
         </h2>
+        <h2 className="heading">{dairyname}</h2>
       </div>
-      <div className="cust-dashboard-data w70 mx-15 h20 d-flex sa p10">
-        <div className="data-conatiner w20 bg">
+      <div className="cust-dashboard-data w70 mx-15 h15 d-flex sa p10">
+        <div className="data-conatiner w20 h1 t-center bg">
           <span className="sub-heading">Total Liters</span>
-          <span className="info-text">{summary.totalLiters}</span>
+          <span className="info-text">
+            {safeToFixed(summary.totalLiters, 1)}
+          </span>
         </div>
-        <div className="data-conatiner w15 bg">
+        <div className="data-conatiner w15 h1 t-center bg">
           <span className="sub-heading">Avg FAT</span>
-          <span className="info-text">{summary.avgFat}</span>
+          <span className="info-text">{safeToFixed(summary.avgFat, 1)}</span>
         </div>
-        <div className="data-conatiner w15 bg">
+        <div className="data-conatiner w15 h1 t-center bg">
           <span className="sub-heading">Avg SNF</span>
-          <span className="info-text">{summary.avgSNF}</span>
+          <span className="info-text">{safeToFixed(summary.avgSNF, 1)}</span>
         </div>
-        <div className="data-conatiner w15 bg">
+        <div className="data-conatiner w15 h1 t-center bg">
           <span className="sub-heading">Avg Rate</span>
-          <span className="info-text">{summary.avgRate}</span>
+          <span className="info-text">{safeToFixed(summary.avgRate, 1)}</span>
         </div>
-        <div className="data-conatiner w25 bg">
+        <div className="data-conatiner w20 h1 t-center bg">
           <span className="sub-heading">Total Amount</span>
-          <span className="info-text">{summary.totalAmount}</span>
+          <span className="info-text">
+            {safeToFixed(summary.totalAmount, 2)}
+          </span>
         </div>
       </div>
       <div className="cust-dashboard-charts w70 h70 mx-15 d-flex">

@@ -3,7 +3,9 @@ const dotenv = require("dotenv");
 const pool = require("../Configs/Database");
 dotenv.config({ path: "Backend/.env" });
 
-// Register ***********************************
+// .........................................
+// Register.................................
+// .........................................
 exports.userRegister = async (req, res) => {
   const {
     dairy_name,
@@ -48,54 +50,10 @@ exports.userRegister = async (req, res) => {
   });
 };
 
-// Login ******************************
-// exports.userLogin = async (req, res) => {
-//   const { user_id, user_password } = req.body;
-//
-//   const checkUser =
-//     "SELECT username, password, isActive, designation FROM users WHERE username = ?";
-//   connectDB.query(checkUser, [user_id], (err, result) => {
-//     if (err) {
-//       console.log("Database error", err);
-//       return res.status(500).json({ message: "Database error!" });
-//     }
-//
-//     if (result.length === 0) {
-//       return res
-//         .status(401)
-//         .json({ message: "Invalid User ID and password, try again!" });
-//     }
-//
-//     const user = result[0];
-//
-//     // checking user password with saved password
-//     if (user_password !== user.password) {
-//       return res
-//         .status(401)
-//         .json({ message: "Invalid User ID and password, try again!" });
-//     }
-//
-//     // Generating JWT token for authentication
-//     const token = jwt.sign(
-//       {
-//         user_id: user.username,
-//         is_active: user.isActive,
-//         user_role: user.designation,
-//       },
-//       process.env.SECRET_KEY,
-//       { expiresIn: "4hr" }
-//     );
-//
-//     res.cookie("token", token, {
-//       httpOnly: true,
-//       maxAge: 4 * 60 * 60 * 1000, // 4 hours
-//     });
-//
-//     res.status(200).json({ message: "Login successful", token });
-//   });
-// };
+// .........................................
+// Login....................................
+// .........................................
 
-//working login
 exports.userLogin = async (req, res) => {
   const { user_id, user_password } = req.body;
 
@@ -155,129 +113,18 @@ exports.userLogin = async (req, res) => {
       });
 
       // Send success response
-      res
-        .status(200)
-        .json({
-          message: "Login successful",
-          token,
-          user_role: user.designation,
-        });
+      res.status(200).json({
+        message: "Login successful",
+        token,
+        user_role: user.designation,
+      });
     });
   });
 };
 
-// exports.userLogin = async (req, res) => {
-//   const { user_id, user_password } = req.body;
-//
-//   // Get a connection from the pool
-//   pool.getConnection((err, connection) => {
-//     if (err) {
-//       console.error("Error getting MySQL connection: ", err);
-//       return res.status(500).json({ message: "Database connection error" });
-//     }
-//
-//     // Step 1: Validate user credentials from the users table
-//     const checkUser =
-//       "SELECT username, password, isActive, designation, SocietyCode FROM users WHERE username = ?";
-//
-//     connection.query(checkUser, [user_id], (err, result) => {
-//       if (err) {
-//         console.error("Error in database query: ", err);
-//         connection.release();
-//         return res.status(500).json({ message: "Database query error" });
-//       }
-//
-//       if (result.length === 0) {
-//         connection.release();
-//         return res
-//           .status(401)
-//           .json({ message: "Invalid User ID and password, try again!" });
-//       }
-//
-//       const user = result[0];
-//       const societycode = user.SocietyCode;
-//
-//       // Verify user password
-//       if (user_password !== user.password) {
-//         connection.release();
-//         return res
-//           .status(401)
-//           .json({ message: "Invalid User ID or password, try again!" });
-//       }
-//
-//       // Step 2: Fetch company details using the companycode
-//       const fetchDetails =
-//         "SELECT SocietyCode, city FROM Societymaster WHERE SocietyCode = ?";
-//
-//       connection.query(fetchDetails, [societycode], (err, qResult) => {
-//         if (err) {
-//           console.error("Error fetching company details: ", err);
-//           connection.release();
-//           return res
-//             .status(500)
-//             .json({ message: "Error fetching company details" });
-//         }
-//
-//         if (qResult.length === 0) {
-//           connection.release();
-//           return res.status(404).json({ message: "Company not found" });
-//         }
-//
-//         const SocietyInfo = qResult[0];
-//
-//         // Step 3: Fetch other necessary data from different tables if needed
-//
-// //         // Example: Fetch additional data (e.g., product data) related to the company
-// //         const DashboardInfo = "SELECT * FROM products WHERE companycode = ?";
-// //
-// //         connection.query(
-// //           fetchAdditionalData,
-// //           [societycode],
-// //           (err, additionalDataResult) => {
-// //             connection.release();
-// //
-// //             if (err) {
-// //               console.error("Error fetching additional data: ", err);
-// //               return res
-// //                 .status(500)
-// //                 .json({ message: "Error fetching additional data" });
-// //             }
-// //
-//             // Generate JWT token for authentication
-//             const token = jwt.sign(
-//               {
-//                 user_id: user.username,
-//                 is_active: user.isActive,
-//                 user_role: user.designation,
-//               },
-//               process.env.SECRET_KEY,
-//               { expiresIn: "4hr" }
-//             );
-//
-//             // Set token in cookie
-//             res.cookie("token", token, {
-//               httpOnly: true,
-//               sameSite: "strict",
-//               maxAge: 4 * 60 * 60 * 1000, // 4 hours
-//             });
-//
-//             // Send success response with all relevant information
-//             res.status(200).json({
-//               message: "Login successful",
-//               token,
-//               company_name: companyInfo.company_name,
-//               city: companyInfo.city,
-//               dashboard_info: companyInfo.dashboard_info,
-//              // DashboardInfo: additionalDataResult,
-//             });
-//           }
-//         );
-//       });
-//     });
-//   // });
-// };
-
-// Logout ******************************************** */
+//.................................................
+//Logout user......................................
+//.................................................
 
 exports.userLogout = (req, res) => {
   res.clearCookie("token", {
@@ -288,4 +135,56 @@ exports.userLogout = (req, res) => {
 
   // Send a response indicating successful logout
   res.status(200).json({ message: "Logout successful" });
+};
+
+//.................................................
+//Dairy info ......................................
+//.................................................
+
+exports.dairyInfo = async (req, res) => {
+  // Get a connection from the pool
+  pool.getConnection((err, connection) => {
+    if (err) {
+      console.error("Error getting MySQL connection: ", err);
+      return res.status(500).json({ message: "Database connection error" });
+    }
+    try {
+      // Get dairy_id from the verified token (already decoded in middleware)
+      const dairy_id = req.user.dairy_id;
+
+      if (!dairy_id) {
+        return res.status(400).json({ message: "Dairy ID not found!" });
+      }
+
+      // SQL query to get the dairy information
+      const getDairyInfo = `
+        SELECT SocietyName, Address, PhoneNo, city, PinCode 
+        FROM societymaster 
+        WHERE SocietyCode = ?
+      `;
+
+      // Execute the query
+      connection.query(getDairyInfo, [dairy_id], (err, result) => {
+        connection.release(); // Release the connection back to the pool
+
+        if (err) {
+          console.error("Error executing query: ", err);
+          return res.status(500).json({ message: "Database query error" });
+        }
+
+        if (result.length === 0) {
+          return res.status(404).json({ message: "Dairy not found!" });
+        }
+
+        // Send the result as a response
+        res.status(200).json({
+          dairyInfo: result[0],
+        });
+      });
+    } catch (error) {
+      connection.release(); // Ensure the connection is released in case of an error
+      console.error("Error processing request: ", error);
+      return res.status(500).json({ message: "Internal server error" });
+    }
+  });
 };

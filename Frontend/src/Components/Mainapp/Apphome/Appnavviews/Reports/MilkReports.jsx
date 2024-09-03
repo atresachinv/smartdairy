@@ -44,15 +44,15 @@ const MilkReports = () => {
       </div>
       <div className="milk-main-details w100 h10 d-flex sa my10">
         <div className="details-container w20 h1 d-flex-col a-center bg">
-          <span className="heading">Total Collection</span>
+          <span className="sub-heading">Total Collection</span>
           <span className="text">{totalMilk} ltr</span>
         </div>
         <div className="details-container w20 h1 d-flex-col a-center bg">
-          <span className="heading">Total Customers</span>
+          <span className="sub-heading">Total Customers</span>
           <span className="text">{totalCustomers}</span>
         </div>
         <div className="details-container w20 h1 d-flex-col a-center bg">
-          <span className="heading">Total Amount</span>
+          <span className="sub-heading">Total Amount</span>
           <span className="text">{totalAmount} Rs.</span>
         </div>
       </div>
@@ -62,39 +62,29 @@ const MilkReports = () => {
           <span className="heading h10">Milk Collection Details </span>
         </div>
         <div className="time-wise-milk-collection w100 h90 d-flex sa p10">
-          <div className="morning-milk-collection w45 h1 d-flex-col p10 bg">
-            <span className="heading">Morning Collection</span>
+          <div className="morning-milk-collection w45 h1 d-flex-col bg">
+            <span className="heading p10">Morning Collection</span>
             <div className="details-info-div w100 h10 d-flex a-center sa bg6 p10">
               <span className="w15 heading d-flex center">FAT</span>
               <span className="w15 heading d-flex center">SNF</span>
               <span className="w15 heading d-flex center">Litre</span>
               <span className="w15 heading d-flex center">Rate</span>
               <span className="w15 heading d-flex center">Amount</span>
+              {/* <span className="w15 heading d-flex center">Edit</span>
+              <span className="w15 heading d-flex center">Delete</span> */}
             </div>
             <div className="amt-info-details-div w100 mh100 hidescrollbar d-flex-col">
-              {morningData.length === 0 ? (
-                <div className="data-not-found box d-flex center p10 sub-heading">
-                  Data not found
-                </div>
-              ) : (
-                morningData.map((item, index) => (
-                  <div
-                    key={index}
-                    className="amt-info-div w100 h10 d-flex a-center sa">
-                    <span className="w15 text d-flex center">{item.fat}</span>
-                    <span className="w15 text d-flex center">{item.snf}</span>
-                    <span className="w15 text d-flex center">{item.rate}</span>
-                    <span className="w15 text d-flex center">
-                      {item.Litres}
-                    </span>
-                    <span className="w15 text d-flex center">{item.Amt}</span>
-                  </div>
-                ))
-              )}
+              {/* <div className="amt-info-div w100 h10 d-flex a-center sa">
+                <span className="w15 text d-flex center">00</span>
+                <span className="w15 text d-flex center">00</span>
+                <span className="w15 text d-flex center">00</span>
+                <span className="w15 text d-flex center">00</span>
+                <span className="w15 text d-flex center">00</span>
+              </div> */}
             </div>
           </div>
-          <div className="evening-milk-collection w45 h1 d-flex-col p10 bg">
-            <span className="heading">Evening Collection</span>
+          <div className="evening-milk-collection w45 h1 d-flex-col bg">
+            <span className="heading p10">Evening Collection</span>
             <div className="details-info-div w100 h10 d-flex a-center sa bg6 p10">
               <span className="w15 heading d-flex center">FAT</span>
               <span className="w15 heading d-flex center">SNF</span>
@@ -105,25 +95,13 @@ const MilkReports = () => {
               <span className="w15 heading d-flex center">Delete</span> */}
             </div>
             <div className="amt-info-details-div w100  mh100 hidescrollbar d-flex-col">
-              {eveningData.length === 0 ? (
-                <div className="data-not-found box d-flex center p10 sub-heading">
-                  Data not found
-                </div>
-              ) : (
-                eveningData.map((item, index) => (
-                  <div
-                    key={index}
-                    className="amt-info-div w100 h10 d-flex a-center sa">
-                    <span className="w15 text d-flex center">{item.fat}</span>
-                    <span className="w15 text d-flex center">{item.snf}</span>
-                    <span className="w15 text d-flex center">{item.rate}</span>
-                    <span className="w15 text d-flex center">
-                      {item.Litres}
-                    </span>
-                    <span className="w15 text d-flex center">{item.Amt}</span>
-                  </div>
-                ))
-              )}
+              {/* <div className="amt-info-div w100 h10 d-flex a-center sa">
+                <span className="w15 text d-flex center">00</span>
+                <span className="w15 text d-flex center">00</span>
+                <span className="w15 text d-flex center">00</span>
+                <span className="w15 text d-flex center">00</span>
+                <span className="w15 text d-flex center">00</span>
+              </div> */}
             </div>
           </div>
         </div>

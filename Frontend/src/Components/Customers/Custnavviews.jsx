@@ -6,14 +6,15 @@ import CustPayment from "./CustNavViews/CustPayment";
 import CustAnimalInfo from "./CustNavViews/CustAnimalInfo";
 import CustPurchase from "./CustNavViews/CustPurchase";
 import CustDeductions from "./CustNavViews/CustDeductions";
+import Custnavlinks from "./Custnavlinks";
 
-const Custnavviews = ({ index }) => {
+const Custnavviews = ({ index, setselected }) => {
   switch (index) {
     case 0:
-      return <Custdashboard />;
+      return <Custnavlinks setselected={setselected} />;
       break;
     case 1:
-      return <CustProfile />;
+      return <Custdashboard />;
       break;
     case 2:
       return <CustMilkCollection />;
@@ -22,13 +23,16 @@ const Custnavviews = ({ index }) => {
       return <CustPayment />;
       break;
     case 4:
-      return <CustAnimalInfo />;
-      break;
-    case 5:
       return <CustPurchase />;
       break;
-    case 6:
+    case 5:
       return <CustDeductions />;
+      break;
+    case 6:
+      return <CustAnimalInfo />;
+      break;
+    case 7:
+      return <CustProfile />;
       break;
 
     default:

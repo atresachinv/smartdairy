@@ -1,5 +1,5 @@
 import React from "react";
-import { BsGridFill } from "react-icons/bs";
+import { BsXLg } from "react-icons/bs";
 import "../../Styles/Mainapp/Sidebar.css";
 import Mainappnavlinks from "./Mainappnavlinks";
 
@@ -10,11 +10,14 @@ const Sidebar = ({ setselected, handleSidebar }) => {
         <div className="sidebar-logo d-flex center sb ">
           <div className="smartdairy-logo"></div>
           <span className="close-icon" onClick={handleSidebar}>
-            X
+            <BsXLg />
           </span>
         </div>
         <ul className="sidebar-list w100 h1">
-          <Mainappnavlinks setselected={setselected} />
+          <Mainappnavlinks
+            setselected={setselected}
+            handleSidebar={handleSidebar}
+          />
         </ul>
       </aside>
     </>

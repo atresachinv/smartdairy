@@ -1,53 +1,39 @@
 import React, { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import {
-  fetchMilkReports,
-  savePDF,
-  clearMilkReportState,
-} from "../../../../App/Features/Customers/Milk/milkSlice";
 import "../../../../Styles/Customer/CustNavViews/Milk/Milk.css";
 import Spinner from "../../../Home/Spinner/Spinner";
+import { getMilkReports } from "../../../../App/Features/Customers/Milk/milkrSlice";
 
 const MilkReport = () => {
   const dispatch = useDispatch();
 
-  const {
-    records,
-    summary,
-    toDate: storedToDate,
-  } = useSelector((state) => state.milk.milkReport);
-  const loading = useSelector((state) => state.milk.loading);
-  const error = useSelector((state) => state.milk.error);
+  const records = useSelector((state) => state.milkr.records);
+  const summary = useSelector((state) => state.milkr.summary);
+  const status = useSelector((state) => state.milkr.status);
+  const error = useSelector((state) => state.milkr.error);
   const fDate = useSelector((state) => state.date.formDate);
   const tDate = useSelector((state) => state.date.toDate);
 
-  const fromDate = fDate + "T18:30:00.000Z";
-  const toDate = tDate + "T18:30:00.000Z";
+  const fromDate = `${fDate}`;
+  const toDate = `${tDate}`;
 
   useEffect(() => {
-    // Clear milk report state when the component mounts
-    dispatch(clearMilkReportState());
+    dispatch(getMilkReports({ fromDate, toDate }));
+  }, [dispatch]);
 
-    if (toDate !== storedToDate || records.length === 0) {
-      dispatch(fetchMilkReports({ fromDate, toDate }));
-    }
-
-    // Fetch the milk report for the current date range
-    // dispatch(fetchMilkReports({ fromDate, toDate }));
-  }, [dispatch, fromDate, toDate]);
-
-  const handleSavePDF = () => {
-    dispatch(
-      savePDF({ fromDate: fDate, toDate: tDate, milkReport: records, summary })
-    );
-  };
-
-  if (loading) {
+  if (status === "loading") {
     return <Spinner />;
   }
-  if (error) {
+
+  if (status === "failed") {
     return <div>Error: {error.message || error}</div>;
   }
+
+  const safeToFixed = (value, decimals = 2) => {
+    return value !== null && value !== undefined
+      ? value.toFixed(decimals)
+      : "0.00";
+  };
 
   return (
     <div className="cust-milk-col-report w100 h1 d-flex-col bg">
@@ -55,22 +41,15 @@ const MilkReport = () => {
         <h2 className="heading">Current Payment Milk Collection</h2>
       </div>
       <div className="current-pay-milk-report w100 h90 d-flex-col">
-        <div className="pay-title-div w100 d-flex a-center sa px10">
-          <div className="date-div w80 text d-flex">
-            Date: from: {fDate} - to: {tDate}
-          </div>
-          <button
-            className="save-btn-btn w10 text d-flex j-center"
-            onClick={handleSavePDF}>
-            SAVE PDF
-          </button>
+        <div className="date-div w80 info-text d-flex px10">
+          Date: from: {fDate} - to: {tDate}
         </div>
         <div className="invoice-of-collection-div w100 h90 d-flex-col">
           <div className="invoice-title-div w100 h10 d-flex a-center">
-            <span className="heading">Collection Details :</span>
+            <span className="heading px10">Collection Details :</span>
           </div>
           <div className="content-titles-div w100 h10 d-flex center t-center sa px10">
-            <span className="text w10">Date</span>
+            <span className="text w15">Date</span>
             <span className="text w5">M/E</span>
             <span className="text w5">C/B</span>
             <span className="text w10">Liters</span>
@@ -85,20 +64,24 @@ const MilkReport = () => {
                 <div
                   key={index}
                   className="content-values-div w100 h10 d-flex center t-center sa px10">
-                  <span className="text w10">
+                  <span className="text w15">
                     {new Date(report.ReceiptDate).toLocaleDateString("en-GB", {
                       day: "2-digit",
                       month: "2-digit",
                       year: "2-digit",
                     })}
                   </span>
-                  <span className="text w5">{report.ME}</span>
-                  <span className="text w5">{report.CB}</span>
-                  <span className="text w10">{report.Litres}</span>
-                  <span className="text w5">{report.fat}</span>
-                  <span className="text w5">{report.snf}</span>
-                  <span className="text w10">{report.Rate}</span>
-                  <span className="text w15">{report.Amt}</span>
+                  <span className="text w5">{report.ME === 0 ? "M" : "E"}</span>
+                  <span className="text w5">{report.CB === 0 ? "C" : "B"}</span>
+                  <span className="text w10">
+                    {safeToFixed(report.Litres, 1)}
+                  </span>
+                  <span className="text w5">{safeToFixed(report.fat, 1)}</span>
+                  <span className="text w5">{safeToFixed(report.snf, 1)}</span>
+                  <span className="text w10">
+                    {safeToFixed(report.Rate, 1)}
+                  </span>
+                  <span className="text w15">{safeToFixed(report.Amt, 2)}</span>
                 </div>
               ))
             ) : (
@@ -108,14 +91,18 @@ const MilkReport = () => {
             )}
           </div>
           <div className="content-titles-div w100 h10 d-flex center t-center sa px10">
-            <span className="text w10">Total : </span>
+            <span className="text w15">Total : </span>
             <span className="text w5"></span>
             <span className="text w5"></span>
-            <span className="text w10">{summary.totalLiters}</span>
-            <span className="text w5">{summary.avgFat}</span>
-            <span className="text w5">{summary.avgSNF}</span>
-            <span className="text w10">{summary.avgRate}</span>
-            <span className="text w15">{summary.totalAmount}</span>
+            <span className="text w10">
+              {safeToFixed(summary.totalLiters, 1)}
+            </span>
+            <span className="text w5">{safeToFixed(summary.avgFat, 1)}</span>
+            <span className="text w5">{safeToFixed(summary.avgSNF, 1)}</span>
+            <span className="text w10">{safeToFixed(summary.avgRate, 1)}</span>
+            <span className="text w15">
+              {safeToFixed(summary.totalAmount, 2)}
+            </span>
           </div>
         </div>
       </div>

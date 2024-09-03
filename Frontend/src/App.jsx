@@ -2,17 +2,18 @@ import Home from "./Components/Home/Home";
 import Mainapp from "./Components/Mainapp/Mainapp";
 import Customers from "./Components/Customers/Customers";
 import AdminPannel from "./Components/Adminpanel/AdminPannel";
+import Homepage from "./Components/MobileApp/Customer/Homepage";
+import { useEffect } from "react";
 import { ToastContainer } from "react-toastify";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import {
   setToDate,
   setFormDate,
 } from "./App/Features/Customers/Date/dateSlice";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
 import "react-toastify/dist/ReactToastify.css";
 import "./App.css";
-import { useEffect } from "react";
-import Homepage from "./Components/MobileApp/Customer/Homepage";
+
 
 function App() {
   const dispatch = useDispatch();
@@ -27,6 +28,9 @@ function App() {
       dispatch(setFormDate());
     }
   }, [dispatch, toDate]);
+
+ 
+
   return (
     <>
       <BrowserRouter>

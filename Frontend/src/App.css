@@ -315,22 +315,28 @@
 .heading {
   font-size: clamp(14px, 3vw, 16px);
   font-weight: 400;
-  color: #bb9ef4;
+  color: #773cee;
   cursor: pointer;
 }
 .sub-heading {
-  font-size: clamp(9px, 3vw, 16px);
-  font-weight: 400;
+  font-size: clamp(10px, 2vw, 16px);
+  font-weight: 300;
   color: #c3a9f7;
   cursor: pointer;
 }
 .text {
-  font-size: clamp(8px, 3vw, 14px);
+  font-size: clamp(10px, 2vw, 14px);
   font-weight: 300;
   margin-top: 5px;
 }
 .info-text {
   font-size: clamp(7px, 3vw, 12px);
+  font-weight: 300;
+  margin-top: 5px;
+}
+.info-txt {
+  font-size: clamp(12px, 2vw, 16px);
+  color: #3c1e20;
   font-weight: 300;
   margin-top: 5px;
 }

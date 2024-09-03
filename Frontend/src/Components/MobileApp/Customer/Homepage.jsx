@@ -23,10 +23,10 @@ const Homepage = () => {
     // Function to extract query parameters from the URL
     const extractParams = () => {
       const queryParams = new URLSearchParams(window.location.search);
-      const SocietyCode = queryParams.get("SocietyCode");
-      const AccCode = queryParams.get("AccCode");
-      // const SocietyCode = "34";
-      // const AccCode = "1113410";
+      // const SocietyCode = queryParams.get("SocietyCode");
+      // const AccCode = queryParams.get("AccCode");
+      const SocietyCode = "34";
+      const AccCode = "1113410";
 
       if (SocietyCode && AccCode) {
         // Store the parameters in localStorage

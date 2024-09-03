@@ -1,10 +1,21 @@
 /* header nav css */
+.header-navs {
+  position: sticky;
+  top: 0;
+  z-index: 9;
+  background-color: #fff;
+}
+
 .menu-icon {
   display: none;
 }
 .sidebar-container {
   width: 20%;
   background: var(--main-bg-color);
+}
+
+.sidebar-list-item {
+  cursor: pointer;
 }
 /* header nav css end */
 

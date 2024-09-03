@@ -50,6 +50,10 @@ const Dashboard = () => {
     },
   ];
 
+
+  
+
+
   return (
     <div className="main-dashboard-container w100 h1 d-flex-col">
       <div className="dashboard-title w100 d-flex p10">
@@ -60,17 +64,24 @@ const Dashboard = () => {
           <div className="select-data-text w20 h50 d-flex-col p10">
             <span className="text">Select Data Period</span>
           </div>
-          <div className="priod-container w30 h50 d-flex a-center sa p10">
-            <div className="h1 d-flex a-center">
-              <span className="text">From</span>
-              <input className="date-input" type="date" name="" id="" />
-            </div>
-            <span className="text">-</span>
-            <div className="h1 d-flex a-center">
-              <span className="text">To</span>
-              <input className="date-input" type="date" name="" id="" />
-            </div>
-          </div>
+          <form className="priod-container w40 h50 d-flex a-center sb p10">
+            <select className="months-selector w50" name="" id="">
+              <option>-- Select Month --</option>
+              <option value="1">January</option>
+              <option value="2">Feburary</option>
+              <option value="3">March</option>
+              <option value="4">April</option>
+              <option value="5">May</option>
+              <option value="6">June</option>
+              <option value="7">July</option>
+              <option value="8">Augast</option>
+              <option value="9">Sepetaber</option>
+              <option value="10">October</option>
+              <option value="11">November</option>
+              <option value="12">December</option>
+            </select>
+            <button className="show-btn w20">SHOW</button>
+          </form>
         </form>
         <div className="dashboard-cards w100 h20 d-flex sa">
           <div className="card">

@@ -1,3 +1,7 @@
+.details-container {
+  width: 20%;
+}
+
 .amt-info-div {
   border-bottom: 1px solid black;
   background-color: #f7eddf;
@@ -20,6 +24,7 @@
   .time-wise-milk-collection .morning-milk-collection,
   .time-wise-milk-collection .evening-milk-collection {
     width: 100%;
+    min-height: 400px;
     margin-bottom: 10px;
   }
 }

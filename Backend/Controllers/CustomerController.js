@@ -3,75 +3,175 @@ const dotenv = require("dotenv");
 const pool = require("../Configs/Database");
 dotenv.config({ path: "Backend/.env" });
 
-// Create New Customer (Admin Route) *********************************** */
-// Update Customer Info (Admin Route) Active *********************************** */
-// Delete Customer Info (Admin Route) *********************************** */
+//..................................................
+// Create New Customer (Admin Route)................
+//..................................................
 
-// Customer Dashboard Info (Customer Route) *********************************** */
+exports.createCustomer = async (req, res) => {
+  const {
+    cust_id, // cid in the database
+    cust_name, // cname in the database
+    cust_phone, // mobile in the database
+    cust_city, // City in the database
+    cust_pincode,
+    cust_addhar,
+    cust_farmerid,
+    cust_bank,
+    cust_accno,
+    cust_ifsc,
+    dairy_id,
+  } = req.body;
 
-/*................................................*/
-// exports.dashboardInfo = async (req, res) => {
-//   const { toDate , slotdays } = req.body;
-//
-//   // if slotdays = 10  slot 1 = 1 - 10 , slot 2 = 11-20 , slot 3 = 21 - 30 if month has 28 or 29 or 31 date if 28 last  date is 28 then solt 3 is 8 days only , if  29 then 9 days if 31 then 11 days in slot 3 ,
-//
-//   // slot 1 is dates from 1-10
-//   // if current date is 9 check  its slot first then get slot start date its our formDate  we need to use below
-//
-//   pool.getConnection((err, connection) => {
-//     if (err) {
-//       console.error("Error getting MySQL connection: ", err);
-//       return res.status(500).json({ message: "Database connection error" });
-//     }
-//
-//
-//     try {
-//       // Get dairy_id from the verified token (already decoded in middleware)
-//       const dairy_id = req.user.dairy_id;
-//       const user_code = req.user.user_code;
-//
-//       if (!dairy_id) {
-//         return res.status(400).json({ message: "Dairy ID not found!" });
-//       }
-//
-//       const dairy_table = `dailymilkentry_${dairy_id}`;
-//
-//       const custDashboardData = ` SELECT
-//             SUM(Litres) AS totalLiters,
-//             AVG(fat) AS avgFat,
-//             AVG(snf) AS avgSNF,
-//             SUM(Amt) AS totalAmount
-//           FROM ${dairy_table}
-//           WHERE ReceiptDate BETWEEN ? AND ? AND AccCode = ?;`;
-//
-//       connection.query(
-//         custDashboardData,
-//         [formDate, toDate, user_code],
-//         (err, dashboardDataresult) => {
-//           connection.release();
-//           if (err) {
-//             console.error("Error executing summary query: ", err);
-//             return res
-//               .status(500)
-//               .json({ message: "Summary query execution error" });
-//           }
-//           const dashboardInfo = dashboardDataresult[0];
-//           res
-//             .status(200)
-//             .json({ records: records, dashboardInfo: dashboardInfo });
-//         }
-//       );
-//     } catch (error) {
-//       console.error("Error processing request: ", error);
-//       return res.status(500).json({ message: "Internal server error" });
-//     }
-//   });
-// };
+  pool.getConnection((err, connection) => {
+    if (err) {
+      console.error("Error getting MySQL connection: ", err);
+      return res.status(500).json({ message: "Database connection error" });
+    }
 
-/*................................................*/
+    try {
+      const createCustomerQuery = `INSERT INTO customer (
+        cid,
+        cname,
+        mobile,
+        City,
+        cust_pincode,
+        cust_addhar,
+        cust_farmerid,
+        cust_bankname,
+        cust_accno,
+        cust_ifsc,
+        dairy_id
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+
+      connection.query(
+        createCustomerQuery,
+        [
+          cust_id,
+          cust_name,
+          cust_phone,
+          cust_city,
+          cust_pincode,
+          cust_addhar,
+          cust_farmerid,
+          cust_bank,
+          cust_accno,
+          cust_ifsc,
+          dairy_id,
+        ],
+        (error, results) => {
+          connection.release(); // Release the connection back to the pool
+
+          if (error) {
+            console.error("Error executing query: ", error);
+            return res.status(500).json({ message: "Error creating customer" });
+          }
+
+          return res
+            .status(201)
+            .json({ message: "Customer created successfully" });
+        }
+      );
+    } catch (error) {
+      connection.release(); // Ensure connection is released even in case of error
+      console.error("Error processing request: ", error);
+      return res.status(500).json({ message: "Internal server error" });
+    }
+  });
+};
+
+//..................................................
+// Update Customer Info (Admin Route) Active........
+//..................................................
+
+//....................admin.........................
+exports.updateCustomer = async (req, res) => {
+  const {
+    cust_id, // cid in the database
+    cust_name, // cname in the database
+    cust_phone, // mobile in the database
+    cust_city, // City in the database
+    cust_pincode,
+    cust_addhar,
+    cust_farmerid,
+    cust_bank, // cust_bankname in the database
+    cust_accno,
+    cust_ifsc,
+  } = req.body;
+
+  pool.getConnection((err, connection) => {
+    if (err) {
+      console.error("Error getting MySQL connection: ", err);
+      return res.status(500).json({ message: "Database connection error" });
+    }
+
+    try {
+      const updateCustomerQuery = `
+        UPDATE customer
+        SET
+          cname = ?,
+          mobile = ?,
+          City = ?,
+          cust_pincode = ?,
+          cust_addhar = ?,
+          cust_farmerid = ?,
+          cust_bankname = ?,
+          cust_accno = ?,
+          cust_ifsc = ?,
+         
+        WHERE cid = ?
+      `;
+
+      connection.query(
+        updateCustomerQuery,
+        [
+          cust_name,
+          cust_phone,
+          cust_city,
+          cust_pincode,
+          cust_addhar,
+          cust_farmerid,
+          cust_bank,
+          cust_accno,
+          cust_ifsc,
+
+          cust_id,
+        ],
+        (error, results) => {
+          connection.release(); // Release the connection back to the pool
+
+          if (error) {
+            console.error("Error executing query: ", error);
+            return res.status(500).json({ message: "Error updating customer" });
+          }
+
+          if (results.affectedRows === 0) {
+            return res.status(404).json({ message: "Customer not found" });
+          }
+
+          return res
+            .status(200)
+            .json({ message: "Customer updated successfully" });
+        }
+      );
+    } catch (error) {
+      connection.release(); // Ensure connection is released even in case of error
+      console.error("Error processing request: ", error);
+      return res.status(500).json({ message: "Internal server error" });
+    }
+  });
+};
+//..................customer........................
+
+//..................................................
+// Delete Customer Info (Admin Route)...............
+//..................................................
+
+//.................................................
+// Customer Dashboard Info (Customer Route)........
+//.................................................
 
 exports.dashboardInfo = async (req, res) => {
-  const { toDate, fromDate, u_type } = req.body;
+  const { toDate, fromDate } = req.body;
 
   pool.getConnection((err, connection) => {
     if (err) {
@@ -90,13 +190,17 @@ exports.dashboardInfo = async (req, res) => {
 
       const dairy_table = `dailymilkentry_${dairy_id}`;
 
-      const custDashboardData = ` SELECT 
-            SUM(Litres) AS totalLiters,
-            AVG(fat) AS avgFat,
-            AVG(snf) AS avgSNF,
-            SUM(Amt) AS totalAmount
+      const custDashboardData = `     
+          SELECT 
+              SUM(Litres) AS totalLiters,
+              SUM(Amt) AS totalAmount,
+              ReceiptDate,
+              SUM(Litres) AS dailyLiters,
+              SUM(Amt) AS dailyAmount
           FROM ${dairy_table}
-          WHERE ReceiptDate BETWEEN ? AND ? AND AccCode = ?;`;
+          WHERE ReceiptDate BETWEEN ? AND ?
+          GROUP BY ReceiptDate WITH ROLLUP;
+      `;
 
       connection.query(
         custDashboardData,
@@ -108,7 +212,7 @@ exports.dashboardInfo = async (req, res) => {
             return res.status(500).json({ message: "query execution error" });
           }
           const dashboardInfo = dashboardDataresult[0];
-          res.status(200).json({ formDate, toDate, dashboardInfo });
+          res.status(200).json({ fromDate, toDate, dashboardInfo });
         }
       );
     } catch (error) {
@@ -117,11 +221,6 @@ exports.dashboardInfo = async (req, res) => {
     }
   });
 };
-
-/*................................................*/
-
-/* name , phone ,Addhar, BankDetails , cow Tags ,  */
-// *********************************** */
 
 // ......................................
 // Profile Info..........................
@@ -134,16 +233,23 @@ exports.profileInfo = async (req, res) => {
       return res.status(500).json({ message: "Database connection error" });
     }
     try {
-      const dairy_id = req.user.dairy_id;
       const user_code = req.user.user_code;
 
-      if (!dairy_id) {
-        return res.status(400).json({ message: "Dairy ID not found!" });
+      if (!user_code) {
+        return res.status(400).json({ message: "User ID not found!" });
       }
 
-      const dairy_table = `dailymilkentry_${dairy_id}`;
+      const profileInfo = `SELECT cname, City, cust_pincode, cust_addhar, cust_farmerid, cust_bankname, cust_accno, cust_ifsc, dairy_id FROM customer WHERE cid =?`;
 
-      const profileInfo = `SELECT * FROM `;
+      connection.query(profileInfo, [user_code], (err, result) => {
+        connection.release();
+        if (err) {
+          console.error("Error executing summary query: ", err);
+          return res.status(500).json({ message: "query execution error" });
+        }
+        const getprofileInfo = result[0];
+        res.status(200).json({ getprofileInfo });
+      });
     } catch (error) {
       console.error("Error processing request: ", error);
       return res.status(500).json({ message: "Internal server error" });
@@ -151,91 +257,12 @@ exports.profileInfo = async (req, res) => {
   });
 };
 
-// exports.milkReport = async (req, res) => {
-//   const { fromDate, toDate } = req.body;
-//
-//   // Modify toDate to include the entire day
-//   const mFormDate = `${fromDate} 18:30:00.000Z`;
-//   const mToDate = `${toDate} 18:30:00.000Z`;
-//
-//   pool.getConnection((err, connection) => {
-//     if (err) {
-//       console.error("Error getting MySQL connection: ", err);
-//       return res.status(500).json({ message: "Database connection error" });
-//     }
-//
-//     try {
-//       const dairy_id = req.user.dairy_id;
-//       const user_code = req.user.user_code;
-//
-//       if (!dairy_id) {
-//         return res.status(400).json({ message: "Dairy ID not found!" });
-//       }
-//
-//       const dairy_table = `dailymilkentry_${dairy_id}`;
-//
-//       // Proceed with the milk report query
-//       const milkreportQuery = `
-//         SELECT
-//           ReceiptDate, ME, CB, Litres, fat, snf, Rate, Amt
-//         FROM ${dairy_table}
-//         WHERE ReceiptDate BETWEEN ? AND ? AND AccCode = ?
-//         ORDER BY ReceiptDate ASC;
-//       `;
-//
-//       const summaryQuery = `
-//         SELECT
-//           SUM(Litres) AS totalLiters,
-//           AVG(fat) AS avgFat,
-//           AVG(snf) AS avgSNF,
-//           SUM(Amt) AS totalAmount
-//         FROM ${dairy_table}
-//         WHERE ReceiptDate BETWEEN ? AND ? AND AccCode = ?;
-//       `;
-//
-//       connection.query(
-//         milkreportQuery,
-//         [mFormDate, mToDate, user_code],
-//         (err, records) => {
-//           if (err) {
-//             connection.release();
-//             console.error("Error executing records query: ", err);
-//             return res.status(500).json({ message: "Query execution error" });
-//           }
-//
-//           connection.query(
-//             summaryQuery,
-//             [mFormDate, mToDate, user_code],
-//             (err, summaryResults) => {
-//               connection.release();
-//
-//               if (err) {
-//                 console.error("Error executing summary query: ", err);
-//                 return res
-//                   .status(500)
-//                   .json({ message: "Summary query execution error" });
-//               }
-//
-//               const summaryData = summaryResults[0];
-//
-//               res.status(200).json({ records: records, summary: summaryData });
-//             }
-//           );
-//         }
-//       );
-//     } catch (error) {
-//       console.error("Error processing request: ", error);
-//       return res.status(500).json({ message: "Internal server error" });
-//     }
-//   });
-// };
+// ..................................................
+// App Customer Milk Report..........................
+// ..................................................
 
 exports.milkReport = async (req, res) => {
   const { fromDate, toDate } = req.body;
-
-  // Modify toDate to include the entire day
-  const mFormDate = `${fromDate} 18:30:00.000Z`;
-  const mToDate = `${toDate} 18:30:00.000Z`;
 
   pool.getConnection((err, connection) => {
     if (err) {
@@ -275,7 +302,7 @@ exports.milkReport = async (req, res) => {
 
       connection.query(
         milkreportQuery,
-        [mFormDate, mToDate, user_code],
+        [fromDate, toDate, user_code],
         (err, records) => {
           if (err) {
             connection.release();
@@ -285,7 +312,7 @@ exports.milkReport = async (req, res) => {
 
           connection.query(
             summaryQuery,
-            [mFormDate, mToDate, user_code],
+            [fromDate, toDate, user_code],
             (err, summaryResults) => {
               connection.release();
 
@@ -310,9 +337,10 @@ exports.milkReport = async (req, res) => {
   });
 };
 
-// ......................................
+// ..................................................
 // App Customer Milk Report..........................
-// ......................................
+// ..................................................
+
 exports.custMilkReport = async (req, res) => {
   const { SocietyCode, AccCode } = req.body;
 

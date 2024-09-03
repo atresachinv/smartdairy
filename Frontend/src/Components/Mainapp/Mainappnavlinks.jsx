@@ -3,11 +3,11 @@ import {
   BsHouseFill,
   BsCoin,
   BsGearFill,
-  BsEscape,
   BsGridFill,
 } from "react-icons/bs";
+import "../../Styles/Mainapp/Mainapphome.css";
 
-const Mainappnavlinks = ({ setselected }) => {
+const Mainappnavlinks = ({ setselected, handleSidebar }) => {
   const mainnavbuttons = [
     { name: "Dashboard", icon: <BsGridFill className="icon" /> },
     { name: "Milk", icon: <BsHouseFill className="icon" /> },
@@ -26,7 +26,7 @@ const Mainappnavlinks = ({ setselected }) => {
           onClick={() => {
             setselected(index);
           }}>
-          <a>
+          <a onClick={handleSidebar}>
             {button.icon}
             <span>{button.name}</span>
           </a>

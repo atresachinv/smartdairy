@@ -21,21 +21,14 @@ const initialState = {
 
 export const fetchMilkReports = createAsyncThunk(
   "milkReport/fetchMilkReports",
-  async ({ fromDate, toDate }, { getState, rejectWithValue }) => {
+  async ({ fromDate, toDate }, { rejectWithValue }) => {
     try {
-      const { milkReport } = getState().milk;
-
-      // Check if we already have the data for the current date range
-      if (milkReport.fromDate === fromDate && milkReport.toDate === toDate) {
-        return milkReport; // Return cached data
-      }
-
       // Fetch new data using axiosInstance
       const response = await axiosInstance.post("/customer/milkreport", {
         fromDate,
         toDate,
       });
-
+      console.log(response.data);
       return {
         data: response.data,
         fromDate,
@@ -54,11 +47,6 @@ const milkSlice = createSlice({
   name: "milkReport",
   initialState,
   reducers: {
-    clearMilkReportState: (state) => {
-      state.milkReport = { ...initialState.milkReport };
-      state.loading = false;
-      state.error = null;
-    },
     savePDF: (state, action) => {
       const { fromDate, toDate, milkReport, summary } = action.payload;
       generatePDF(fromDate, toDate, milkReport, summary);
@@ -84,5 +72,5 @@ const milkSlice = createSlice({
   },
 });
 
-export const { clearMilkReportState, savePDF } = milkSlice.actions;
+export const { savePDF } = milkSlice.actions;
 export default milkSlice.reducer;

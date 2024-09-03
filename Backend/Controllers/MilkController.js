@@ -24,7 +24,9 @@ dotenv.config({ path: "Backend/.env" });
 //     const {} = req.body;
 //   };
 
-// Milk Reports ************************************* */
+// ..................................................
+// todays milk report for Admin .....................
+// ..................................................
 
 exports.todaysReport = async (req, res) => {
   const { date } = req.body;
@@ -92,12 +94,12 @@ exports.todaysReport = async (req, res) => {
   });
 };
 
-// .........................................
-// milk report for customer.............................
-// .........................................
+// ..........................................
+// milk report for customer .................
+// ..........................................
 
 exports.milkReport = async (req, res) => {
-  const { fromDate, toDate, u_type } = req.body;
+  const { fromDate, toDate } = req.body;
 
   pool.getConnection((err, connection) => {
     if (err) {
@@ -204,3 +206,98 @@ exports.milkReport = async (req, res) => {
     }
   });
 };
+
+// ............................................
+// Dashboard Info Admin .......................
+// ............................................
+
+exports.dashboardInfo = async (req, res) => {
+  const { fromDate, toDate } = req.body;
+
+  pool.getConnection((err, connection) => {
+    if (err) {
+      console.error("Error getting MySQL connection: ", err);
+      return res.status(500).json({ message: "Database connection error" });
+    }
+    try {
+      // Get dairy_id from the verified token (already decoded in middleware)
+      const dairy_id = req.user.dairy_id;
+
+      if (!dairy_id) {
+        return res.status(400).json({ message: "Dairy ID not found!" });
+      }
+
+      const dairy_table = `dailymilkentry_${dairy_id}`;
+
+      const getMonthsDairyInfo = `
+      SELECT 
+                SUM(Litres) AS totalLiters,
+                SUM(Amt) AS totalAmount,
+                ReceiptDate,
+                SUM(Litres) AS dailyLiters,
+                SUM(Amt) AS dailyAmount
+              FROM ${dairy_table}
+              WHERE ReceiptDate BETWEEN ? AND ? 
+              GROUP BY ReceiptDate WITH ROLLUP;
+      `;
+
+      // Execute the query
+      connection.query(
+        getMonthsDairyInfo,
+        [fromDate, toDate],
+        (err, results) => {
+          connection.release(); // Release the connection back to the pool
+
+          if (err) {
+            console.error("Error executing query: ", err);
+            return res.status(500).json({ message: "Database query error" });
+          }
+
+          // Separate total and daily data
+          let totalLiters = 0;
+          let totalAmount = 0;
+          const dailyData = [];
+
+          results.forEach((row) => {
+            if (row.ReceiptDate === null) {
+              totalLiters = row.totalLiters;
+              totalAmount = row.totalAmount;
+            } else {
+              dailyData.push({
+                date: row.ReceiptDate,
+                liters: row.dailyLiters,
+                amount: row.dailyAmount,
+              });
+            }
+          });
+
+          // Send the response
+          res.status(200).json({
+            totalLiters,
+            totalAmount,
+            dailyData,
+          });
+        }
+      );
+    } catch (error) {
+      connection.release(); // Ensure the connection is released in case of an error
+      console.error("Error processing request: ", error);
+      return res.status(500).json({ message: "Internal server error" });
+    }
+  });
+};
+
+// ............................................
+// Dashboard Info Admin .......................
+// ............................................
+
+
+// ............................................
+// Dashboard Info Admin .......................
+// ............................................
+// ............................................
+// Dashboard Info Admin .......................
+// ............................................
+// ............................................
+// Dashboard Info Admin .......................
+// ............................................

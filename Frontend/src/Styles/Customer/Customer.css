@@ -1,5 +1,8 @@
 /* Navigation Bar css */
 /* .............................................. */
+.customer-container {
+  background-color: var(--bg-sky-color);
+}
 
 .cust-navbar {
   background-color: var(--main-bg-color);
@@ -38,7 +41,26 @@
   font-size: 20px;
   color: #fff;
 }
+.logout-btn .icon {
+  color: #fff;
+  font-weight: 800;
+}
 
+.back-icon {
+  font-size: 20px;
+  color: #fff;
+  margin-right: 15px;
+}
+
+.icon-div .icon {
+  color: var(--main-bg-color);
+  font-size: 22px;
+}
+
+.menu-icon-btn {
+  border-radius: 6px;
+  background-color: #fff;
+}
 /* .............................................. */
 /* Responsive css */
 /* .............................................. */
@@ -47,6 +69,11 @@
   .customer-container .cust-navbar {
     width: 100%;
     margin: 0;
+  }
+  .menu-btn {
+    font-size: 22px;
+    margin-right: 10px;
+    color: #fff;
   }
   .cust-navbar .logo {
     width: 40%;

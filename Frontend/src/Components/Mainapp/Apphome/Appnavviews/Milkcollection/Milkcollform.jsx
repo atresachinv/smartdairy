@@ -5,9 +5,10 @@ const MilkColleform = () => {
   return (
     <>
       <form action="" className="milk-col-form w100 h1 d-flex-col bg p10">
+        <span className="heading"> User Details : </span>
         <div className="user-details w100 h20 d-flex ">
           <div className="form-div">
-            <label htmlFor="" className="text">
+            <label htmlFor="" className=" text">
               Enter User Code
             </label>
             <input

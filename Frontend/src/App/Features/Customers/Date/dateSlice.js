@@ -17,13 +17,13 @@ const dateSlice = createSlice({
     setFormDate(state) {
       const day = state.toDate.slice(8, 10);
       const date = state.toDate.slice(0, 8);
-      let startDay = 0;
+      let startDay = "0";
       if (day <= 10) {
-        startDay = 1;
+        startDay = "01" ;
       } else if (day <= 20) {
-        startDay = 11;
+        startDay = "11";
       } else {
-        startDay = 21;
+        startDay = '21';
       }
       state.formDate = date + startDay;
     },

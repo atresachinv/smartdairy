@@ -5,34 +5,44 @@ import {
   BsGearFill,
   BsEscape,
   BsGridFill,
+  BsPersonCircle,
 } from "react-icons/bs";
+import "../../Styles/Customer/Customer.css";
 
-const Custnavlinks = ({ setselected, showNavbar }) => {
+const Custnavlinks = ({ setselected }) => {
   const mainnavbuttons = [
+    { name: "navbar", icon: <BsGridFill className="icon" /> },
     { name: "Dashboard", icon: <BsGridFill className="icon" /> },
-    { name: "Profile", icon: <BsHouseFill className="icon" /> },
-    { name: "Milk", icon: <BsHouseFill className="icon" /> },
-    { name: "Payment", icon: <BsCoin className="icon" /> },
-    { name: "Animals", icon: <BsCoin className="icon" /> },
-    { name: "Purches", icon: <BsCoin className="icon" /> },
+    { name: "Milk Collection", icon: <BsHouseFill className="icon" /> },
+    { name: "Payment Bills", icon: <BsCoin className="icon" /> },
+    { name: "Cattel Feeds", icon: <BsCoin className="icon" /> },
     { name: "Deductions", icon: <BsGearFill className="icon" /> },
+    { name: "Animals", icon: <BsCoin className="icon" /> },
+    { name: "My Profile", icon: <BsPersonCircle className="icon" /> },
   ];
 
   return (
     <>
-      {mainnavbuttons.map((button, index) => (
-        <span
-          key={index}
-          className="sidebar-list-item"
-          onClick={() => {
-            setselected(index);
-          }}>
-          <a onClick={showNavbar}>
-            {button.icon}
-            <span>{button.name}</span>
-          </a>
-        </span>
-      ))}
+      <div className="main-menu-container w100 h1 d-flex center f-wrap">
+        {mainnavbuttons.map(
+          (button, index) =>
+            index !== 0 && ( // This condition hides the first element
+              <div
+                key={index}
+                className="menu-icon-btn w30 h20 d-flex-col center"
+                onClick={() => {
+                  setselected(index);
+                }}>
+                <div className="icon-div w100 h70 d-flex center">
+                  {button.icon}
+                </div>
+                <div className="menu-text-div w100 h30 d-flex center">
+                  <span>{button.name}</span>
+                </div>
+              </div>
+            )
+        )}
+      </div>
     </>
   );
 };

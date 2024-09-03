@@ -1,4 +1,7 @@
 .app-home-container > .header-nav {
+  position: sticky;
+  top: 60px;
+  z-index: 9;
   background-color: #c18383;
 }
 .home-nav-item {
@@ -10,7 +13,7 @@
 .home-nav-item > a > span {
   margin: 0 10px;
 }
-.home-nav-item a{
+.home-nav-item a {
   cursor: pointer;
 }
 

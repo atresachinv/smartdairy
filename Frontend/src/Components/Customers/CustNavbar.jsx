@@ -1,11 +1,9 @@
 import { useState } from "react";
-// import { Link } from "react-router-dom";
-import { BsList, BsXLg } from "react-icons/bs";
-// import "../../Styles/Home/Navigation.css";
+import { BsList, BsArrowLeft, BsEscape } from "react-icons/bs";
 import "../../Styles/Customer/Customer.css";
 import Custnavlinks from "./Custnavlinks";
 
-const CustNavbar = ({ setselected }) => {
+const CustNavbar = ({ setselected, handleBackButton }) => {
   const [openNavbar, setOpenNavbar] = useState(false);
 
   const showNavbar = () => {
@@ -15,14 +13,11 @@ const CustNavbar = ({ setselected }) => {
   return (
     <nav className="cust-navbar w100 d-flex sb p10">
       <div className="logo w20 d-flex a-center">
-        <BsList className="menu-btn open-btn" onClick={showNavbar} />
+        <BsArrowLeft className="back-icon" onClick={handleBackButton} />
         <span className="logo-text">SMARTDAIRY</span>
       </div>
-      <div className={` ${openNavbar ? "open" : "close"}`}>
-        <div className={`navlinks w80 d-flex`}>
-          <BsXLg className="menu-btn close-btn" onClick={showNavbar} />
-          <Custnavlinks setselected={setselected} showNavbar={showNavbar} />
-        </div>
+      <div className="logout-btn">
+        <BsEscape className="icon " />
       </div>
     </nav>
   );
