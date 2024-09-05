@@ -1,13 +1,23 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { BarChart, Bar, ResponsiveContainer } from "recharts";
 import "../../../Styles/Customer/CustNavViews/Custdashboard.css";
+import { getMilkReports } from "../../../App/Features/Customers/Milk/milkrSlice";
 
 const Custdashboard = () => {
   const dispatch = useDispatch();
 
   const summary = useSelector((state) => state.milkr.summary);
   const dairyname = useSelector((state) => state.dairy.dairyData.SocietyName);
+  const fDate = useSelector((state) => state.date.formDate);
+  const tDate = useSelector((state) => state.date.toDate);
+
+  const fromDate = `${fDate}`;
+  const toDate = `${tDate}`;
+
+  useEffect(() => {
+    dispatch(getMilkReports({ fromDate, toDate }));
+  }, [dispatch]);
 
   const data = [
     {

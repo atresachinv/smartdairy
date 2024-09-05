@@ -1,0 +1,18 @@
+.selection-conatiner .custom-select {
+  height: auto;
+  max-height: 200px;
+  overflow-y: auto;
+  border: none;
+  border-radius: 6px;
+}
+.custom-select:focus {
+  outline: none;
+}
+.custom-select option {
+  padding: 10px;
+  border: none;
+  border-radius: 6px;
+}
+.purchase-table-total{
+border-radius: 0 0 6px 6px;
+}

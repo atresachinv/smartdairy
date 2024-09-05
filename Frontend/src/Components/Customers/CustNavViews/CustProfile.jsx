@@ -34,7 +34,7 @@ const CustProfile = () => {
   } = profileInfo;
 
   const {
-    code,
+    rno,
     cname,
     cust_bankname,
     cust_accno,
@@ -56,7 +56,7 @@ const CustProfile = () => {
         </div>
         <div className="user-details bg p10">
           <h2 className="info-txt">
-            Code: <span className="heading px10">{code || "N/A"}</span>
+            Code: <span className="heading px10">{rno || "N/A"}</span>
           </h2>
           <h2 className="info-txt">
             Name: <span className="heading px10">{cname || "N/A"}</span>

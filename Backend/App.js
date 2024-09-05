@@ -17,10 +17,12 @@ app.use(
 // Route Imports
 const user = require("./Routes/UserRoutes");
 const milk = require("./Routes/MilkRoutes");
-const cust= require("./Routes/CustomerRoutes");
+const cust = require("./Routes/CustomerRoutes");
+const purchase = require("./Routes/PurchaseRoutes");
 
 app.use("/smartdairy/api", user);
 app.use("/smartdairy/api", milk);
 app.use("/smartdairy/api", cust);
+app.use("/smartdairy/api", purchase);
 
 module.exports = app;

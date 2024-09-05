@@ -43,11 +43,13 @@ const milkSlice = createSlice({
         state.error = null;
       })
       .addCase(getMilkReports.fulfilled, (state, action) => {
+        state.loading = false;
         state.status = "succeeded";
         state.records = action.payload.records;
         state.summary = action.payload.summary;
       })
       .addCase(getMilkReports.rejected, (state, action) => {
+        state.loading = false;
         state.status = "failed";
         state.error = action.payload;
       });

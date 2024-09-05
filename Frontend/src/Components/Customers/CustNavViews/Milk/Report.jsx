@@ -1,11 +1,10 @@
-import React, { useEffect } from "react";
-import { useSelector, useDispatch } from "react-redux";
+import React from "react";
+import { useSelector } from "react-redux";
 import "../../../../Styles/Customer/CustNavViews/Milk/Milk.css";
 import Spinner from "../../../Home/Spinner/Spinner";
-import { getMilkReports } from "../../../../App/Features/Customers/Milk/milkrSlice";
 
 const MilkReport = () => {
-  const dispatch = useDispatch();
+ 
 
   const records = useSelector((state) => state.milkr.records);
   const summary = useSelector((state) => state.milkr.summary);
@@ -13,13 +12,6 @@ const MilkReport = () => {
   const error = useSelector((state) => state.milkr.error);
   const fDate = useSelector((state) => state.date.formDate);
   const tDate = useSelector((state) => state.date.toDate);
-
-  const fromDate = `${fDate}`;
-  const toDate = `${tDate}`;
-
-  useEffect(() => {
-    dispatch(getMilkReports({ fromDate, toDate }));
-  }, [dispatch]);
 
   if (status === "loading") {
     return <Spinner />;

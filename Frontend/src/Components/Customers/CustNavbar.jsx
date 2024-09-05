@@ -1,13 +1,34 @@
 import { useState } from "react";
-import { BsList, BsArrowLeft, BsEscape } from "react-icons/bs";
+import { BsArrowLeft, BsEscape } from "react-icons/bs";
 import "../../Styles/Customer/Customer.css";
-import Custnavlinks from "./Custnavlinks";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
-const CustNavbar = ({ setselected, handleBackButton }) => {
-  const [openNavbar, setOpenNavbar] = useState(false);
+const CustNavbar = ({ handleBackButton }) => {
+  const navigate = useNavigate();
+  const [showConfirmLogout, setShowConfirmLogout] = useState(false);
 
-  const showNavbar = () => {
-    setOpenNavbar(!openNavbar);
+  const handleLogout = () => {
+    setShowConfirmLogout(true);
+  };
+
+  axios.defaults.baseURL = import.meta.env.VITE_BASE_URI;
+  axios.defaults.withCredentials = true;
+
+  const confirmLogout = async () => {
+    try {
+      await axios.post("/logout");
+      localStorage.removeItem("token");
+      navigate("/", { replace: true });
+    } catch (error) {
+      console.error("Error during logout:", error);
+    } finally {
+      setShowConfirmLogout(false);
+    }
+  };
+
+  const cancelLogout = () => {
+    setShowConfirmLogout(false);
   };
 
   return (
@@ -17,8 +38,24 @@ const CustNavbar = ({ setselected, handleBackButton }) => {
         <span className="logo-text">SMARTDAIRY</span>
       </div>
       <div className="logout-btn">
-        <BsEscape className="icon " />
+        {/* Logout icon with confirmation */}
+        <BsEscape className="icon" onClick={handleLogout} />
       </div>
+
+      {/* Conditional rendering of the logout confirmation */}
+      {showConfirmLogout && (
+        <div className="logout-confirmation">
+          <p>Are you sure you want to logout?</p>
+          <div className="lc-btn-div w100 d-flex sa">
+            <button className="lc-btns btn-y" onClick={confirmLogout}>
+              Yes
+            </button>
+            <button className="lc-btns btn-n" onClick={cancelLogout}>
+              No
+            </button>
+          </div>
+        </div>
+      )}
     </nav>
   );
 };

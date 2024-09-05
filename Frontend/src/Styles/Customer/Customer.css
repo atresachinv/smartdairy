@@ -61,6 +61,37 @@
   border-radius: 6px;
   background-color: #fff;
 }
+
+.logout-confirmation {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: white;
+  padding: 20px;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  text-align: center;
+  border-radius: 8px;
+}
+
+.logout-confirmation p {
+  margin-bottom: 20px;
+}
+
+.logout-confirmation .lc-btns {
+  margin: 0 10px;
+  border: none;
+  border-radius: 6px;
+  padding: 10px 20px;
+  cursor: pointer;
+}
+.lc-btn-div .btn-y {
+  color: #ff2d2d;
+}
+.lc-btn-div .btn-n {
+  color: #20a32b;
+}
 /* .............................................. */
 /* Responsive css */
 /* .............................................. */
