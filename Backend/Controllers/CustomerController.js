@@ -338,6 +338,103 @@ exports.milkReport = async (req, res) => {
 };
 
 // ..................................................
+// App Custmize Milk Report..........................
+// ..................................................
+
+exports.customMilkReport = async (req, res) => {
+  const { fromDate, toDate } = req.body;
+  
+  pool.getConnection((err, connection) => {
+    if (err) {
+      console.error("Error getting MySQL connection: ", err);
+      return res.status(500).json({ message: "Database connection error" });
+    }
+
+    try {
+      const dairy_id = req.user.dairy_id;
+      const user_code = req.user.user_code;
+
+      if (!dairy_id) {
+        return res.status(400).json({ message: "Dairy ID not found!" });
+      }
+
+      const dairy_table = `dailymilkentry_${dairy_id}`;
+
+      const milkreportQuery = `
+        SELECT 
+          ReceiptDate, ME, CB, Litres, fat, snf, Rate, Amt,
+          (SELECT 
+            SUM(Litres) 
+            FROM ${dairy_table} 
+            WHERE ReceiptDate BETWEEN ? AND ? AND AccCode = ?) AS totalLiters,
+          (SELECT 
+            AVG(fat) 
+            FROM ${dairy_table} 
+            WHERE ReceiptDate BETWEEN ? AND ? AND AccCode = ?) AS avgFat,
+          (SELECT 
+            AVG(snf) 
+            FROM ${dairy_table} 
+            WHERE ReceiptDate BETWEEN ? AND ? AND AccCode = ?) AS avgSNF,
+          (SELECT 
+            AVG(Rate) 
+            FROM ${dairy_table} 
+            WHERE ReceiptDate BETWEEN ? AND ? AND AccCode = ?) AS avgRate,
+          (SELECT 
+            SUM(Amt) 
+            FROM ${dairy_table} 
+            WHERE ReceiptDate BETWEEN ? AND ? AND AccCode = ?) AS totalAmount
+        FROM ${dairy_table} 
+        WHERE ReceiptDate BETWEEN ? AND ? AND AccCode = ?
+        ORDER BY ReceiptDate ASC;
+      `;
+
+      const params = [
+        fromDate,
+        toDate,
+        user_code, // Params for totalLiters
+        fromDate,
+        toDate,
+        user_code, // Params for avgFat
+        fromDate,
+        toDate,
+        user_code, // Params for avgSNF
+        fromDate,
+        toDate,
+        user_code, // Params for avgRate
+        fromDate,
+        toDate,
+        user_code, // Params for totalAmount
+        fromDate,
+        toDate,
+        user_code, // Params for main query
+      ];
+
+      connection.query(milkreportQuery, params, (err, results) => {
+        connection.release();
+
+        if (err) {
+          console.error("Error executing milk report query: ", err);
+          return res.status(500).json({ message: "Query execution error" });
+        }
+
+        const summaryData = {
+          totalLiters: results[0]?.totalLiters || 0,
+          avgFat: results[0]?.avgFat || 0,
+          avgSNF: results[0]?.avgSNF || 0,
+          avgRate: results[0]?.avgRate || 0,
+          totalAmount: results[0]?.totalAmount || 0,
+        };
+
+        res.status(200).json({ records: results, summary: summaryData });
+      });
+    } catch (error) {
+      console.error("Error processing request: ", error);
+      return res.status(500).json({ message: "Internal server error" });
+    }
+  });
+};
+
+// ..................................................
 // App Customer Milk Report..........................
 // ..................................................
 

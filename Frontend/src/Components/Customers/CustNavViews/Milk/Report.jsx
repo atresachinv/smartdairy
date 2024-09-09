@@ -4,12 +4,10 @@ import "../../../../Styles/Customer/CustNavViews/Milk/Milk.css";
 import Spinner from "../../../Home/Spinner/Spinner";
 
 const MilkReport = () => {
- 
-
-  const records = useSelector((state) => state.milkr.records);
-  const summary = useSelector((state) => state.milkr.summary);
-  const status = useSelector((state) => state.milkr.status);
-  const error = useSelector((state) => state.milkr.error);
+  const records = useSelector((state) => state.milk.records);
+  const summary = useSelector((state) => state.milk.summary);
+  const status = useSelector((state) => state.milk.status);
+  const error = useSelector((state) => state.milk.error);
   const fDate = useSelector((state) => state.date.formDate);
   const tDate = useSelector((state) => state.date.toDate);
 
@@ -36,7 +34,7 @@ const MilkReport = () => {
         <div className="date-div w80 info-text d-flex px10">
           Date: from: {fDate} - to: {tDate}
         </div>
-        <div className="invoice-of-collection-div w100 h90 d-flex-col">
+        <div className="invoice-of-collection-div w100 h1 d-flex-col">
           <div className="invoice-title-div w100 h10 d-flex a-center">
             <span className="heading px10">Collection Details :</span>
           </div>

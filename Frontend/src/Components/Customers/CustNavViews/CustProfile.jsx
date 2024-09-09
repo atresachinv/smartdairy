@@ -54,7 +54,7 @@ const CustProfile = () => {
           <span className="heading">User Details</span>
           <BsPencilSquare />
         </div>
-        <div className="user-details bg p10">
+        <div className="user-details p10">
           <h2 className="info-txt">
             Code: <span className="heading px10">{rno || "N/A"}</span>
           </h2>

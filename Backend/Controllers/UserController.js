@@ -79,7 +79,7 @@ exports.userLogin = async (req, res) => {
       if (result.length === 0) {
         return res
           .status(401)
-          .json({ message: "Invalid User ID and password, try again!" });
+          .json({ message: "Invalid User ID or password, try again!" });
       }
 
       const user = result[0];

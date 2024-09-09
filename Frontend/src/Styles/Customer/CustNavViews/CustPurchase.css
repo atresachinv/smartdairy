@@ -1,3 +1,7 @@
+.selection-container {
+  flex-direction: row;
+}
+
 .selection-conatiner .custom-select {
   height: auto;
   max-height: 200px;
@@ -13,6 +17,6 @@
   border: none;
   border-radius: 6px;
 }
-.purchase-table-total{
-border-radius: 0 0 6px 6px;
+.purchase-table-total {
+  border-radius: 0 0 6px 6px;
 }

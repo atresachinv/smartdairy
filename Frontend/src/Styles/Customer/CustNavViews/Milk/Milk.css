@@ -1,4 +1,5 @@
-.content-titles-div {
+.content-titles-div,
+.content-total-value-div {
   background: var(--bg-gray-color);
 }
 
@@ -22,4 +23,21 @@
 .report-data-container {
   max-height: 90%;
   overflow-y: scroll;
+}
+
+.sidebar-list-item {
+  font-size: 14px;
+}
+
+/* ................................................. */
+/* Collection Reports css........................... */
+/* ................................................. */
+.custmize-report-div .custom-select {
+  border: none;
+  border-radius: 6px;
+  background-color: var(--bg-gray-color);
+}
+
+.content-total-value-div {
+  border-radius: 0 0 6px 6px;
 }

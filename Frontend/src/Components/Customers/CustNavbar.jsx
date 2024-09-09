@@ -3,9 +3,12 @@ import { BsArrowLeft, BsEscape } from "react-icons/bs";
 import "../../Styles/Customer/Customer.css";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { useDispatch } from "react-redux";
+import { resetPurchase } from "../../App/Features/Purchase/purchaseSlice"; // Import resetPurchase action
 
 const CustNavbar = ({ handleBackButton }) => {
   const navigate = useNavigate();
+  const dispatch = useDispatch(); // Get dispatch function
   const [showConfirmLogout, setShowConfirmLogout] = useState(false);
 
   const handleLogout = () => {
@@ -19,6 +22,11 @@ const CustNavbar = ({ handleBackButton }) => {
     try {
       await axios.post("/logout");
       localStorage.removeItem("token");
+
+      // Dispatch the resetPurchase action to clear the purchase data
+      dispatch(resetPurchase());
+
+      // Navigate to login or home page
       navigate("/", { replace: true });
     } catch (error) {
       console.error("Error during logout:", error);

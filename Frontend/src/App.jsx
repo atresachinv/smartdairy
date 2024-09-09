@@ -14,7 +14,6 @@ import {
 import "react-toastify/dist/ReactToastify.css";
 import "./App.css";
 
-
 function App() {
   const dispatch = useDispatch();
   const toDate = useSelector((state) => state.date.toDate);
@@ -29,8 +28,6 @@ function App() {
     }
   }, [dispatch, toDate]);
 
- 
-
   return (
     <>
       <BrowserRouter>
@@ -42,7 +39,12 @@ function App() {
           <Route index path="/app/home" element={<Homepage />} />
         </Routes>
       </BrowserRouter>
-      <ToastContainer position="top-center" className={"react-tosts"} />
+      <ToastContainer
+        position="top-center"
+        autoClose="1500"
+        hideProgressBar="true"
+        className={"react-tosts"}
+      />
     </>
   );
 }

@@ -381,10 +381,18 @@ body {
   overflow-x: hidden;
 }
 
+.br6 {
+  border-radius: 6px;
+}
+
 /*Responsive css*/
 
 @media screen and (max-width: 769px) {
   .data {
     padding: 8px;
+  }
+
+  .react-tosts {
+    font-size: 12px;
   }
 }

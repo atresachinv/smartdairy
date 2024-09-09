@@ -1,13 +1,13 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { BarChart, Bar, ResponsiveContainer } from "recharts";
+import { getMilkReports } from "../../../App/Features/Customers/Milk/milkSlice";
 import "../../../Styles/Customer/CustNavViews/Custdashboard.css";
-import { getMilkReports } from "../../../App/Features/Customers/Milk/milkrSlice";
 
 const Custdashboard = () => {
   const dispatch = useDispatch();
 
-  const summary = useSelector((state) => state.milkr.summary);
+  const summary = useSelector((state) => state.milk.summary);
   const dairyname = useSelector((state) => state.dairy.dairyData.SocietyName);
   const fDate = useSelector((state) => state.date.formDate);
   const tDate = useSelector((state) => state.date.toDate);

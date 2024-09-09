@@ -52,4 +52,9 @@
     margin-top: 50px;
     width: 100%;
   }
+
+  .auth-container .login-form {
+    width: 70%;
+    margin: 0 15%;
+  }
 }

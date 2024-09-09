@@ -29,7 +29,9 @@ export const getPurchaseBill = createAsyncThunk(
 const purchaseSlice = createSlice({
   name: "purchase",
   initialState,
-  reducers: {},
+  reducers: {
+    reset: () => initialState, // Add reset action to return the initial state
+  },
   extraReducers: (builder) => {
     builder
       .addCase(getPurchaseBill.pending, (state) => {
@@ -37,15 +39,18 @@ const purchaseSlice = createSlice({
         state.error = null;
       })
       .addCase(getPurchaseBill.fulfilled, (state, action) => {
+        state.loading = false;
         state.status = "succeeded";
         state.purchaseBill = action.payload.purchaseBill;
         state.psummary = action.payload.psummary;
       })
       .addCase(getPurchaseBill.rejected, (state, action) => {
+        state.loading = false;
         state.status = "failed";
         state.error = action.payload;
       });
   },
 });
 
+export const { reset: resetPurchase } = purchaseSlice.actions; // Export the reset action
 export default purchaseSlice.reducer;

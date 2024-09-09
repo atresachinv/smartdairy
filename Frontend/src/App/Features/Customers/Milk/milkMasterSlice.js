@@ -2,8 +2,8 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axiosInstance from "../../../axiosInstance";
 
 const initialState = {
-  records: [],
-  summary: {
+  mrecords: [],
+  msummary: {
     totalLiters: 0,
     avgFat: 0,
     avgSnf: 0,
@@ -14,11 +14,11 @@ const initialState = {
   error: null,
 };
 
-export const getMilkReports = createAsyncThunk(
-  "milkreport/get",
+export const getMasterReports = createAsyncThunk(
+  "masterreport/get",
   async ({ fromDate, toDate }, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.post("/customer/milkreport", {
+      const response = await axiosInstance.post("/customer/master/report", {
         fromDate,
         toDate,
       });
@@ -26,29 +26,29 @@ export const getMilkReports = createAsyncThunk(
     } catch (error) {
       const errorMessage = error.response
         ? error.response.data
-        : "Failed to fetch milk reports.";
+        : "Failed to fetch master milk reports.";
       return rejectWithValue(errorMessage);
     }
   }
 );
 
-const milkSlice = createSlice({
+const milkMasterSlice = createSlice({
   name: "milk",
   initialState,
   reducers: {},
   extraReducers: (builder) => {
     builder
-      .addCase(getMilkReports.pending, (state) => {
+      .addCase(getMasterReports.pending, (state) => {
         state.status = "loading";
         state.error = null;
       })
-      .addCase(getMilkReports.fulfilled, (state, action) => {
+      .addCase(getMasterReports.fulfilled, (state, action) => {
         state.loading = false;
         state.status = "succeeded";
-        state.records = action.payload.records;
-        state.summary = action.payload.summary;
+        state.mrecords = action.payload.records;
+        state.msummary = action.payload.summary;
       })
-      .addCase(getMilkReports.rejected, (state, action) => {
+      .addCase(getMasterReports.rejected, (state, action) => {
         state.loading = false;
         state.status = "failed";
         state.error = action.payload;
@@ -56,4 +56,4 @@ const milkSlice = createSlice({
   },
 });
 
-export default milkSlice.reducer;
+export default milkMasterSlice.reducer;

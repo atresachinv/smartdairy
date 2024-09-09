@@ -130,7 +130,7 @@ const Register = ({ switchToLogin }) => {
       <form
         onSubmit={handleRegister}
         className="signup-form w100 d-flex-col align-center p10">
-        <span className="title">Register Now</span>
+        <span className="title t-center">Register Now</span>
 
         <div className="data-div w100">
           <label className="text">
