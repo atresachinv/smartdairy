@@ -16,7 +16,6 @@ const CustPayment = () => {
   const status = useSelector((state) => state.mMilk.status);
   const [selectedPeriod, setSelectedPeriod] = useState(null);
 
-
   const handleSelectChange = (e) => {
     const selectedIndex = e.target.value;
     if (selectedIndex !== "") {
@@ -81,7 +80,7 @@ const CustPayment = () => {
         </select>
       </div>
 
-      <div className="payment-details-container w100 h80 mh80 d-flex-col p10">
+      <div className="payment-details-container w100 h80 mh80 d-flex-col">
         {selectedPeriod == null ? (
           <div>No data available</div>
         ) : status === "loading" ? (
@@ -185,7 +184,15 @@ const CustPayment = () => {
             </div>
             <div className="cattel-feeds-summary-div w100 h50 d-flex-col py10 bg my10">
               <span className="heading px10">Cattel Feeds :</span>
-              <div className="purchase-detailsitable w100 h80 mh80 d-flex-col hidescrollbar p10">
+              <div className="purchase-table-titles w100 h10 t-center a-center d-flex sa p10 ">
+                <span className="text w15">Bill No.</span>
+                <span className="text w15">Date</span>
+                <span className="text w20">Product</span>
+                <span className="text w15">Qty</span>
+                <span className="text w15">Rate</span>
+                <span className="text w15">Amount</span>
+              </div>
+              <div className="purchase-detailsitable w100 h80 mh80 d-flex-col hidescrollbar px10">
                 {purchaseBill.length > 0 ? (
                   purchaseBill.map((bill, index) => (
                     <div
@@ -216,7 +223,7 @@ const CustPayment = () => {
               <div className="deduction-info-details w100 h1 d-flex-col p10">
                 <div className="date-billno-div w100 h20 d-flex sb">
                   <div className="dates w50 h1 d-flex sb">
-                    <span className="text">Payment Date : </span>
+                    <span className="label-text">Payment Date : </span>
                     <span className="info-text">
                       {deduction[0]?.ToDate
                         ? new Date(deduction[0].ToDate).toLocaleDateString()
@@ -224,7 +231,7 @@ const CustPayment = () => {
                     </span>
                   </div>
                   <div className="bill-div w30 h1 d-flex sb">
-                    <span className="text">Bill No. : </span>
+                    <span className="label-text">Bill No. : </span>
                     <span className="info-text">
                       {deduction[0]?.BillNo || "N/A"}
                     </span>
@@ -232,31 +239,31 @@ const CustPayment = () => {
                 </div>
                 <div className="rate-amount w100 h80 d-flex-col">
                   <div className="rate w100 h1 d-flex sb">
-                    <span className="text">Total Litters :</span>
+                    <span className="label-text">Total Litters :</span>
                     <span className="info-text">
                       {deduction[0]?.tliters || "N/A"}
                     </span>
                   </div>
                   <div className="Amount w100 h1 d-flex sb">
-                    <span className="text">Average Rate :</span>
+                    <span className="label-text">Average Rate :</span>
                     <span className="info-text">
                       {deduction[0]?.arate || "N/A"}
                     </span>
                   </div>
                   <div className="rate w100 h1 d-flex sb">
-                    <span className="text">Payment Amount :</span>
+                    <span className="label-text">Payment Amount :</span>
                     <span className="info-text">
                       {deduction[0]?.pamt || "N/A"}
                     </span>
                   </div>
                   <div className="Amount w100 h1 d-flex sb">
-                    <span className="text">Deduction Amount :</span>
+                    <span className="label-text">Deduction Amount :</span>
                     <span className="info-text">
                       {deduction[0]?.damt || "N/A"}
                     </span>
                   </div>
                   <div className="rate w100 h1 d-flex sb">
-                    <span className="text">Net Payment :</span>
+                    <span className="label-text">Net Payment :</span>
                     <span className="info-text">
                       {deduction[0]?.namt || "N/A"}
                     </span>

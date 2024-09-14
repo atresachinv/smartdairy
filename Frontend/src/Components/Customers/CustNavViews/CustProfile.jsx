@@ -1,5 +1,4 @@
 import React, { useEffect } from "react";
-import { BsPencilSquare } from "react-icons/bs";
 import "../../../Styles/Customer/CustNavViews/CustProfile.css";
 import { useDispatch, useSelector } from "react-redux";
 import { getProfileInfo } from "../../../App/Features/Customers/Profile/profileSlice";
@@ -9,8 +8,15 @@ import {
   selectProfileStatus,
 } from "../../../App/Features/Customers/Profile/ProfileSelector";
 import Spinner from "../../Home/Spinner/Spinner";
+import { useTranslation } from "react-i18next";
 
 const CustProfile = () => {
+  const { t, i18n } = useTranslation();
+
+  //  const handleLanguageChange = (lng) => {
+  //    i18n.changeLanguage(lng); // Change language
+  //  };
+
   const dispatch = useDispatch();
   const profileInfo = useSelector(selectProfileInfo);
   const status = useSelector(selectProfileStatus);
@@ -47,43 +53,41 @@ const CustProfile = () => {
   return (
     <div className="cust-profile-container w100 h1 d-flex-col">
       <div className="menu-title-div w70 mx-15 h10 d-flex p10">
-        <h2 className="heading">Customer Profile</h2>
+        <h2 className="heading">{t("pp-title")}</h2>
       </div>
       <div className="user-info-container w70 mx-15 h90 d-flex-col p10">
-        <div className="buttons-div w100 h10 d-flex a-center sb bg p10">
-          <span className="heading">User Details</span>
-          <BsPencilSquare />
-        </div>
         <div className="user-details p10">
-          <h2 className="info-txt">
-            Code: <span className="heading px10">{srno || "N/A"}</span>
+          <h2 className="label-text">
+            {t("p-code")} :
+            <span className="info-text px10">{srno || "N/A"}</span>
           </h2>
-          <h2 className="info-txt">
-            Name: <span className="heading px10">{cname || "N/A"}</span>
+          <h2 className="label-text">
+            {t("p-name")} :
+            <span className="info-text px10">{cname || "N/A"}</span>
           </h2>
-          <h2 className="info-txt">
-            Bank Name:
-            <span className="heading px10">{cust_bankname || "N/A"}</span>
+          <h2 className="label-text">
+            {t("p-backname")} :
+            <span className="info-text px10">{cust_bankname || "N/A"}</span>
           </h2>
-          <h2 className="info-txt">
-            Bank Account Number:
-            <span className="heading px10">{cust_accno || "N/A"}</span>
+          <h2 className="label-text">
+            {t("p-bank-acno")} :
+            <span className="info-text px10">{cust_accno || "N/A"}</span>
           </h2>
-          <h2 className="info-txt">
-            Bank IFSC Code:
-            <span className="heading px10">{cust_ifsc || "N/A"}</span>
+          <h2 className="label-text">
+            {t("p-bank-ifsc")} :
+            <span className="info-text px10">{cust_ifsc || "N/A"}</span>
           </h2>
-          <h2 className="info-txt">
-            Farmer Id:
-            <span className="heading px10">{farmerId || "N/A"}</span>
+          <h2 className="label-text">
+            {t("p-farmer-id")} :
+            <span className="info-text px10">{farmerId || "N/A"}</span>
           </h2>
-          <h2 className="info-txt">
-            Mobile Number:
-            <span className="heading px10">{mobileNumber || "N/A"}</span>
+          <h2 className="label-text">
+            {t("p-mobile")} :
+            <span className="info-text px10">{mobileNumber || "N/A"}</span>
           </h2>
-          <h2 className="info-txt">
-            Adhaar Number:
-            <span className="heading px10">{adhaarNumber || "N/A"}</span>
+          <h2 className="label-text">
+            {t("p-adhhar-no")} :
+            <span className="info-text px10">{adhaarNumber || "N/A"}</span>
           </h2>
         </div>
       </div>

@@ -81,7 +81,7 @@ const MilkReport = () => {
             )}
           </div>
           <div className="content-titles-div w100 h10 d-flex center t-center sa px10">
-            <span className="text w15">Total : </span>
+            <span className="label-text w15">Total : </span>
             <span className="text w5"></span>
             <span className="text w5"></span>
             <span className="text w10">

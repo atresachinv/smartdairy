@@ -1,7 +1,9 @@
-.customer-container{
+.customer-container {
   background-color: #fcffff;
 }
-
+/* .customer-nav-view-container{
+  background-image: linear-gradient(120deg, #fdfbfb 0%, #ebedee 100%);
+} */
 .center-selection-div {
   border-radius: 0 0 25px 25px;
   background-color: var(--main-bg-color);
@@ -26,6 +28,66 @@
 .menu-icon-btn .menu-text-div span {
   font-size: 10px;
 }
+
+.lang-selector-btn {
+  border: none;
+  color: #fff;
+  background-color: transparent;
+}
+.lang-selector-btn:focus {
+  outline: none;
+}
+.lang-selector-btn .opts {
+  color: #fff;
+  background-color: #9ba7ed;
+  outline: none;
+}
+
+/* .............................................. */
+/* Dropdown button css*/
+/* .............................................. */
+.select-container:focus {
+  outline: none;
+}
+
+.dropdown-btn {
+  width: 80px;
+  padding: 5px;
+  /* border: 1px solid #ccc;
+  border-radius: 5px;
+  background-color: #f0f0f0; */
+  color: #fff;
+  background-color: rgb(183, 146, 230);
+  cursor: pointer;
+}
+
+/* Dropdown menu */
+.dropdown-menu {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  position: absolute;
+  width: 80px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background-color: rgb(183, 146, 230);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+  z-index: 100;
+}
+
+/* Dropdown items */
+.dropdown-menu li {
+  padding: 5px;
+  font-size: 14px;
+  cursor: pointer;
+  background-color: #fff;
+}
+
+/* Dropdown hover effect */
+.dropdown-menu li:hover {
+  background-color: #ddd;
+}
+
 /* .............................................. */
 /* navlink views css end */
 /* .............................................. */

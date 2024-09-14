@@ -4,6 +4,8 @@ import Custnavviews from "./Custnavviews";
 import "../../Styles/Customer/Customer.css";
 
 const Customers = () => {
+ 
+
   const [isselected, setIsselected] = useState(0);
 
   // Update localStorage whenever isselected changes

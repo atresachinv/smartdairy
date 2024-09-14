@@ -1,12 +1,20 @@
 import { useState } from "react";
 import { BsArrowLeft, BsEscape } from "react-icons/bs";
-import "../../Styles/Customer/Customer.css";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useDispatch } from "react-redux";
 import { resetPurchase } from "../../App/Features/Purchase/purchaseSlice"; // Import resetPurchase action
+import { useTranslation } from "react-i18next";
+import "../../Styles/Customer/Customer.css";
 
 const CustNavbar = ({ handleBackButton }) => {
+  const { i18n } = useTranslation();
+
+  const handleLanguageChange = (lng) => {
+    i18n.changeLanguage(lng);
+    localStorage.setItem("language", lng); // Save selected language in localStorage
+  };
+
   const navigate = useNavigate();
   const dispatch = useDispatch(); // Get dispatch function
   const [showConfirmLogout, setShowConfirmLogout] = useState(false);
@@ -45,8 +53,19 @@ const CustNavbar = ({ handleBackButton }) => {
         <BsArrowLeft className="back-icon" onClick={handleBackButton} />
         <span className="logo-text">SMARTDAIRY</span>
       </div>
-      <div className="logout-btn">
-        {/* Logout icon with confirmation */}
+
+      <div className="logout-btn w40 d-flex sb">
+        <select
+          className="lang-selector-btn"
+          onChange={(e) => handleLanguageChange(e.target.value)}>
+          <option className="opts" value="mr">
+            मराठी
+          </option>
+          <option className="opts" value="en">
+            English
+          </option>
+        </select>
+
         <BsEscape className="icon" onClick={handleLogout} />
       </div>
 

@@ -7,19 +7,22 @@ import {
   BsPersonCircle,
   BsBriefcaseFill,
 } from "react-icons/bs";
+import { GiFertilizerBag, GiCow } from "react-icons/gi";
+
 import { useDispatch, useSelector } from "react-redux";
 import "../../Styles/Customer/Customer.css";
 import { fetchDairyInfo } from "../../App/Features/Admin/Dairyinfo/dairySlice";
 import { generateMaster } from "../../App/Features/Customers/Date/masterdateSlice";
 import { getMasterDates } from "../../App/Features/Customers/Date/masterSlice";
+import { useTranslation } from "react-i18next";
 
 const Custnavlinks = ({ setselected }) => {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const dairyname = useSelector((state) => state.dairy.dairyData.SocietyName);
   const date = useSelector((state) => state.date.toDate);
   const yearStart = useSelector((state) => state.date.yearStart);
   const yearEnd = useSelector((state) => state.date.yearEnd);
-  const masterlist = useSelector((state) => state.masterdates.masterlist);
 
   useEffect(() => {
     dispatch(fetchDairyInfo());
@@ -31,13 +34,16 @@ const Custnavlinks = ({ setselected }) => {
 
   const mainnavbuttons = [
     { name: "navbar", icon: <BsGridFill className="icon" /> },
-    { name: "Dashboard", icon: <BsGridFill className="icon" /> },
-    { name: "Milk Collection", icon: <BsHouseFill className="icon" /> },
-    { name: "Payment Bills", icon: <BsCoin className="icon" /> },
-    { name: "Cattle Feeds", icon: <BsCoin className="icon" /> },
-    { name: "Deductions", icon: <BsGearFill className="icon" /> },
-    { name: "Animals", icon: <BsCoin className="icon" /> },
-    { name: "My Profile", icon: <BsPersonCircle className="icon" /> },
+    { name: `${t("nv-dash")}`, icon: <BsGridFill className="icon" /> },
+    { name: `${t("nv-milk-coll")}`, icon: <BsHouseFill className="icon" /> },
+    { name: `${t("nv-pay")}`, icon: <BsCoin className="icon" /> },
+    {
+      name: `${t("nv-cattel-feed")}`,
+      icon: <GiFertilizerBag className="icon" />,
+    },
+    { name: `${t("nv-deduction")}`, icon: <BsGearFill className="icon" /> },
+    { name: `${t("nv-animal")}`, icon: <GiCow className="icon" /> },
+    { name: `${t("nv-profile")}`, icon: <BsPersonCircle className="icon" /> },
   ];
 
   return (

@@ -327,6 +327,12 @@
   color: #c3a9f7;
   cursor: pointer;
 }
+.label-text{
+  font-size: clamp(10px, 2vw, 14px);
+  font-weight: 500;
+  margin-top: 5px;
+  color: #350594;
+}
 .text {
   font-size: clamp(10px, 2vw, 14px);
   font-weight: 300;

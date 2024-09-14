@@ -1,3 +1,7 @@
+/* .cust-profile-container {
+ background-image: linear-gradient(120deg, #a1c4fd 0%, #c2e9fb 100%);
+} */
+
 .user-details h2 {
   margin-bottom: 10px;
 }
@@ -16,4 +20,3 @@
     margin: 0;
   }
 }
-
