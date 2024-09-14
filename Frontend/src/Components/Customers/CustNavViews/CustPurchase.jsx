@@ -2,13 +2,14 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getPurchaseBill } from "../../../App/Features/Purchase/purchaseSlice";
 import { generateMaster } from "../../../App/Features/Customers/Date/masterdateSlice";
-import "../../../Styles/Customer/CustNavViews/CustPurchase.css";
+import { BsCalendar3 } from "react-icons/bs";
 import Spinner from "../../Home/Spinner/Spinner";
+import "../../../Styles/Customer/CustNavViews/CustPurchase.css";
 
 const CustPurchase = () => {
   const dispatch = useDispatch();
   const date = useSelector((state) => state.date.toDate);
-  const master = useSelector((state) => state.master.masterlist);
+  const master = useSelector((state) => state.masterdates.masterlist);
   const purchaseBill = useSelector((state) => state.purchase.purchaseBill);
   const status = useSelector((state) => state.purchase.status);
   const psummary = useSelector((state) => state.purchase.psummary);
@@ -29,8 +30,8 @@ const CustPurchase = () => {
       // Dispatch the action with the selected fromDate and toDate
       dispatch(
         getPurchaseBill({
-          formDate: selectedDates.start,
-          toDate: selectedDates.end,
+          formDate: selectedDates.fromDate,
+          toDate: selectedDates.toDate,
         })
       );
     }
@@ -42,7 +43,33 @@ const CustPurchase = () => {
         <h2 className="heading">Cattle Feeds</h2>
       </div>
 
-      <div className="selection-container w100 p10 d-flex center">
+      <div className="custmize-report-div w100 h10 px10 d-flex a-center sb">
+        <span className="cl-icon w10 h1 d-flex center">
+          <BsCalendar3 />
+        </span>
+        <select
+          className="custom-select text w80 h1 p10"
+          onChange={handleSelectChange}>
+          <option value="">1 April 2024 - 31 March 2025</option>
+          {master.map((dates, index) => (
+            <option className="info-text" key={index} value={index}>
+              {new Date(dates.fromDate).toLocaleDateString("en-GB", {
+                day: "2-digit",
+                month: "short", // Abbreviated month format
+                year: "numeric",
+              })}{" "}
+              To:{" "}
+              {new Date(dates.toDate).toLocaleDateString("en-GB", {
+                day: "2-digit",
+                month: "short", // Abbreviated month format
+                year: "numeric",
+              })}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      {/* <div className="selection-container w100 p10 d-flex center">
         <span className="w40 heading px10">Select Period</span>
         <select
           className="custom-select text w50 p10 mh80 d-flex-col hidescrollbar"
@@ -54,7 +81,7 @@ const CustPurchase = () => {
             </option>
           ))}
         </select>
-      </div>
+      </div> */}
 
       <div className="purchase-details-container w100 h80 d-flex-col bg">
         <div className="menu-title-div w100 h10 d-flex p10">
@@ -69,11 +96,10 @@ const CustPurchase = () => {
           <span className="text w15">Rate</span>
           <span className="text w15">Amount</span>
         </div>
-
-        {/* Show Spinner while loading, otherwise show the purchase bill data */}
+        
         {status === "loading" ? (
           <div className="w100 h80 d-flex center">
-            <Spinner /> {/* Only display spinner where the data should be */}
+            <Spinner /> 
           </div>
         ) : (
           <div className="purchase-detailsitable w100 h80 mh80 d-flex-col hidescrollbar p10">

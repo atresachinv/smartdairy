@@ -2,11 +2,12 @@ import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getMasterReports } from "../../../../App/Features/Customers/Milk/milkMasterSlice";
 import Spinner from "../../../Home/Spinner/Spinner";
+import { BsCalendar3 } from "react-icons/bs";
 import "../../../../Styles/Customer/CustNavViews/Milk/Milk.css";
 
 const CollectionReport = () => {
   const dispatch = useDispatch();
-  const master = useSelector((state) => state.master.masterlist);
+  const master = useSelector((state) => state.masterdates.masterlist);
   const records = useSelector((state) => state.mMilk.mrecords);
   const summary = useSelector((state) => state.mMilk.msummary);
   const status = useSelector((state) => state.mMilk.status);
@@ -21,8 +22,8 @@ const CollectionReport = () => {
       // Dispatch the action with the selected fromDate and toDate
       dispatch(
         getMasterReports({
-          fromDate: selectedDates.start,
-          toDate: selectedDates.end,
+          fromDate: selectedDates.fromDate,
+          toDate: selectedDates.toDate,
         })
       );
     }
@@ -39,15 +40,27 @@ const CollectionReport = () => {
       <div className="menu-title-div w100 h10 d-flex p10">
         <h2 className="heading">Collection Report</h2>
       </div>
-      <div className="custmize-report-div w100 h10 px10 d-flex center sb">
-        <span className="heading">Payment Period :</span>
+      <div className="custmize-report-div w100 h10 px10 d-flex a-center sb">
+        <span className="cl-icon w10 h1 d-flex center">
+          <BsCalendar3 />
+        </span>
         <select
-          className="custom-select text w50 p10 h80 d-flex-col hidescrollbar"
+          className="custom-select text w80 h1 p10"
           onChange={handleSelectChange}>
-          <option value="">-- Select Master --</option>
+          <option className="info-text">1 April 2024 - 31 March 2025</option>
           {master.map((dates, index) => (
-            <option className="text" key={index} value={index}>
-              {dates.start} To: {dates.end}
+            <option className="info-text" key={index} value={index}>
+              {new Date(dates.fromDate).toLocaleDateString("en-GB", {
+                day: "2-digit",
+                month: "short", // Abbreviated month format
+                year: "numeric",
+              })}{" "}
+              To:{" "}
+              {new Date(dates.toDate).toLocaleDateString("en-GB", {
+                day: "2-digit",
+                month: "short", // Abbreviated month format
+                year: "numeric",
+              })}
             </option>
           ))}
         </select>

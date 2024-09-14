@@ -10,8 +10,8 @@ import "../../../../Styles/Customer/CustNavViews/Milk/Milk.css";
 
 const Reportlinks = ({ setselected }) => {
   const mainnavbuttons = [
-    { name: "Milk Report", icon: <BsGridFill className="icon" /> },
     { name: "Collection Report", icon: <BsGridFill className="icon" /> },
+    { name: "Milk Report", icon: <BsGridFill className="icon" /> },
   ];
 
   return (

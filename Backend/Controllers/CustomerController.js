@@ -239,7 +239,7 @@ exports.profileInfo = async (req, res) => {
         return res.status(400).json({ message: "User ID not found!" });
       }
 
-      const profileInfo = `SELECT cname, City, cust_pincode, cust_addhar, cust_farmerid, cust_bankname, cust_accno, cust_ifsc, dairy_id ,rno FROM customer WHERE cid =?`;
+      const profileInfo = `SELECT cname, City, cust_pincode, cust_addhar, cust_farmerid, cust_bankname, cust_accno, cust_ifsc, dairy_id ,srno FROM customer WHERE cid =?`;
 
       connection.query(profileInfo, [user_code], (err, result) => {
         connection.release();

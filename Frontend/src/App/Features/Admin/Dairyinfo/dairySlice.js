@@ -4,7 +4,7 @@ import axiosInstance from "../../../axiosInstance";
 // Define the initial state
 const initialState = {
   dairyData: {},
-  status: "idle", // or 'loading', 'succeeded', 'failed'
+  status: "idle",
   error: null,
 };
 

@@ -32,10 +32,19 @@
 /* ................................................. */
 /* Collection Reports css........................... */
 /* ................................................. */
-.custmize-report-div .custom-select {
+.custmize-report-div  {
   border: none;
   border-radius: 6px;
   background-color: var(--bg-gray-color);
+}
+.cl-icon{
+  color: #531096;
+}
+.custmize-report-div .custom-select {
+  margin-left: 10px;
+  border: none;
+  border-radius: 6px;
+  background-color: transparent;
 }
 
 .content-total-value-div {

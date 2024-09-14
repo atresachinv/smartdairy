@@ -1,12 +1,14 @@
 import React from "react";
 import Navigation from "./Navigation";
-import "../../Styles/Home/Home.css";
 import Forms from "./Forms/Forms";
+import "../../Styles/Home/Home.css";
 
 const Home = () => {
   return (
     <>
-      <Navigation />
+      <div className="nav-bar w100">
+        <Navigation />
+      </div>
       <div className="home-container w100 d-flex">
         <div className="img-info-container w50 h1 d-flex-col">
           <div className="img-container box"></div>

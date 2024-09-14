@@ -5,10 +5,10 @@ import MilkReport from "./Report";
 const Reportviews = ({ index }) => {
   switch (index) {
     case 0:
-      return <MilkReport />;
+      return <CollectionReport />;
       break;
     case 1:
-      return <CollectionReport />;
+      return <MilkReport />;
       break;
 
     default:

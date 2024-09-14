@@ -83,7 +83,6 @@ exports.userLogin = async (req, res) => {
       }
 
       const user = result[0];
-
       // Verify user password
       if (user_password !== user.password) {
         return res
