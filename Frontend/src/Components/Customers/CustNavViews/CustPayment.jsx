@@ -16,22 +16,26 @@ const CustPayment = () => {
   const status = useSelector((state) => state.mMilk.status);
   const [selectedPeriod, setSelectedPeriod] = useState(null);
 
+
   const handleSelectChange = (e) => {
     const selectedIndex = e.target.value;
     if (selectedIndex !== "") {
       const selectedDates = master[selectedIndex];
       setSelectedPeriod(selectedDates);
-
       // Dispatch the action with the selected fromDate and toDate
       dispatch(
         getMasterReports({
           fromDate: selectedDates.fromDate,
           toDate: selectedDates.toDate,
-        }),
+        })
+      );
+      dispatch(
         getPurchaseBill({
           formDate: selectedDates.fromDate,
           toDate: selectedDates.toDate,
-        }),
+        })
+      );
+      dispatch(
         getDeductionInfo({
           fromDate: selectedDates.fromDate,
           toDate: selectedDates.toDate,
@@ -85,66 +89,66 @@ const CustPayment = () => {
             <Spinner />
           </div>
         ) : (
-        <div className="payment-details-div w100 d-flex-col p10">
-          <div className="milk-summary-container w100 h1 d-flex-col bg py10 ">
-            <span className="heading px10">Milk Collection :</span>
-            <div className="invoice-of-collection-div w100 h90 d-flex-col">
-              <div className="content-titles-div w100 d-flex center t-center sa p10">
-                <span className="text w15">Date</span>
-                <span className="text w5">M/E</span>
-                <span className="text w5">C/B</span>
-                <span className="text w10">Liters</span>
-                <span className="text w5">FAT</span>
-                <span className="text w5">SNF</span>
-                <span className="text w10">Rate</span>
-                <span className="text w15">Amount</span>
-              </div>
-              <div className="report-data-container w100 h90 mh90 d-flex-col hidescrollbar">
-                {Array.isArray(records) && records.length > 0 ? (
-                  records.map((report, index) => (
-                    <div
-                      key={index}
-                      className="content-values-div w100 h10 d-flex center t-center sb">
-                      <span className="text w15">
-                        {new Date(report.ReceiptDate).toLocaleDateString(
-                          "en-GB",
-                          {
-                            day: "2-digit",
-                            month: "2-digit",
-                            year: "2-digit",
-                          }
-                        )}
-                      </span>
-                      <span className="text w5">
-                        {report.ME === 0 ? "M" : "E"}
-                      </span>
-                      <span className="text w5">
-                        {report.CB === 0 ? "C" : "B"}
-                      </span>
-                      <span className="text w10">
-                        {safeToFixed(report.Litres, 1)}
-                      </span>
-                      <span className="text w5">
-                        {safeToFixed(report.fat, 1)}
-                      </span>
-                      <span className="text w5">
-                        {safeToFixed(report.snf, 1)}
-                      </span>
-                      <span className="text w10">
-                        {safeToFixed(report.Rate, 1)}
-                      </span>
-                      <span className="text w15">
-                        {safeToFixed(report.Amt, 2)}
-                      </span>
+          <div className="payment-details-div w100 d-flex-col p10">
+            <div className="milk-summary-container w100 h1 d-flex-col bg py10 ">
+              <span className="heading px10">Milk Collection :</span>
+              <div className="invoice-of-collection-div w100 h90 d-flex-col">
+                <div className="content-titles-div w100 d-flex center t-center sa p10">
+                  <span className="text w15">Date</span>
+                  <span className="text w5">M/E</span>
+                  <span className="text w5">C/B</span>
+                  <span className="text w10">Liters</span>
+                  <span className="text w5">FAT</span>
+                  <span className="text w5">SNF</span>
+                  <span className="text w10">Rate</span>
+                  <span className="text w15">Amount</span>
+                </div>
+                <div className="report-data-container w100 h90 mh90 d-flex-col hidescrollbar">
+                  {Array.isArray(records) && records.length > 0 ? (
+                    records.map((report, index) => (
+                      <div
+                        key={index}
+                        className="content-values-div w100 h10 d-flex center t-center sb">
+                        <span className="text w15">
+                          {new Date(report.ReceiptDate).toLocaleDateString(
+                            "en-GB",
+                            {
+                              day: "2-digit",
+                              month: "2-digit",
+                              year: "2-digit",
+                            }
+                          )}
+                        </span>
+                        <span className="text w5">
+                          {report.ME === 0 ? "M" : "E"}
+                        </span>
+                        <span className="text w5">
+                          {report.CB === 0 ? "C" : "B"}
+                        </span>
+                        <span className="text w10">
+                          {safeToFixed(report.Litres, 1)}
+                        </span>
+                        <span className="text w5">
+                          {safeToFixed(report.fat, 1)}
+                        </span>
+                        <span className="text w5">
+                          {safeToFixed(report.snf, 1)}
+                        </span>
+                        <span className="text w10">
+                          {safeToFixed(report.Rate, 1)}
+                        </span>
+                        <span className="text w15">
+                          {safeToFixed(report.Amt, 2)}
+                        </span>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="box d-flex center subheading">
+                      No data available
                     </div>
-                  ))
-                ) : (
-                  <div className="box d-flex center subheading">
-                    No data available
-                  </div>
-                )}
-              </div>
-              {/* <hr />
+                  )}
+                </div>
+                {/* <hr />
               <div className="content-total-value-div w100 h50 d-flex-col sb p10 ">
                 <div className="total-value-div w100 h10 d-flex sb">
                   <span className="info-text w30">Total Liters :</span>
@@ -177,90 +181,90 @@ const CustPayment = () => {
                   </span>
                 </div>
               </div> */}
+              </div>
             </div>
-          </div>
-          <div className="cattel-feeds-summary-div w100 h50 d-flex-col py10 bg my10">
-            <span className="heading px10">Cattel Feeds :</span>
-            <div className="purchase-detailsitable w100 h80 mh80 d-flex-col hidescrollbar p10">
-              {purchaseBill.length > 0 ? (
-                purchaseBill.map((bill, index) => (
-                  <div
-                    key={index}
-                    className="purchase-table-values w100 h10 t-center a-center d-flex sa ">
-                    <span className="text w15">{bill.BillNo}</span>
-                    <span className="text w15">
-                      {new Date(bill.BillDate).toLocaleDateString("en-GB", {
-                        day: "2-digit",
-                        month: "2-digit",
-                        year: "2-digit",
-                      })}
-                    </span>
-                    <span className="text w20">{bill.ItemName}</span>
-                    <span className="text w15">{bill.Qty}</span>
-                    <span className="text w15">{bill.Rate}</span>
-                    <span className="text w15">{bill.Amount}</span>
+            <div className="cattel-feeds-summary-div w100 h50 d-flex-col py10 bg my10">
+              <span className="heading px10">Cattel Feeds :</span>
+              <div className="purchase-detailsitable w100 h80 mh80 d-flex-col hidescrollbar p10">
+                {purchaseBill.length > 0 ? (
+                  purchaseBill.map((bill, index) => (
+                    <div
+                      key={index}
+                      className="purchase-table-values w100 h10 t-center a-center d-flex sa my5">
+                      <span className="text w15">{bill.BillNo}</span>
+                      <span className="text w15">
+                        {new Date(bill.BillDate).toLocaleDateString("en-GB", {
+                          day: "2-digit",
+                          month: "2-digit",
+                          year: "2-digit",
+                        })}
+                      </span>
+                      <span className="text w20">{bill.ItemName}</span>
+                      <span className="text w15">{bill.Qty}</span>
+                      <span className="text w15">{bill.Rate}</span>
+                      <span className="text w15">{bill.Amount}</span>
+                    </div>
+                  ))
+                ) : (
+                  <div className="box d-flex center subheading">
+                    No data available
                   </div>
-                ))
-              ) : (
-                <div className="box d-flex center subheading">
-                  No data available
-                </div>
-              )}
-            </div>
-          </div>
-          <div className="deduction-summary-div w100 h50 d-flex-col py10 bg">
-            <div className="deduction-info-details w100 h1 d-flex-col p10">
-              <div className="date-billno-div w100 h20 d-flex sb">
-                <div className="dates w50 h1 d-flex sb">
-                  <span className="text">Payment Date : </span>
-                  <span className="info-text">
-                    {deduction[0]?.ToDate
-                      ? new Date(deduction[0].ToDate).toLocaleDateString()
-                      : "N/A"}
-                  </span>
-                </div>
-                <div className="bill-div w30 h1 d-flex sb">
-                  <span className="text">Bill No. : </span>
-                  <span className="info-text">
-                    {deduction[0]?.BillNo || "N/A"}
-                  </span>
-                </div>
+                )}
               </div>
-              <div className="rate-amount w100 h80 d-flex-col">
-                <div className="rate w100 h1 d-flex sb">
-                  <span className="text">Total Litters :</span>
-                  <span className="info-text">
-                    {deduction[0]?.tliters || "N/A"}
-                  </span>
+            </div>
+            <div className="deduction-summary-div w100 h50 d-flex-col py10 bg">
+              <div className="deduction-info-details w100 h1 d-flex-col p10">
+                <div className="date-billno-div w100 h20 d-flex sb">
+                  <div className="dates w50 h1 d-flex sb">
+                    <span className="text">Payment Date : </span>
+                    <span className="info-text">
+                      {deduction[0]?.ToDate
+                        ? new Date(deduction[0].ToDate).toLocaleDateString()
+                        : "N/A"}
+                    </span>
+                  </div>
+                  <div className="bill-div w30 h1 d-flex sb">
+                    <span className="text">Bill No. : </span>
+                    <span className="info-text">
+                      {deduction[0]?.BillNo || "N/A"}
+                    </span>
+                  </div>
                 </div>
-                <div className="Amount w100 h1 d-flex sb">
-                  <span className="text">Average Rate :</span>
-                  <span className="info-text">
-                    {deduction[0]?.arate || "N/A"}
-                  </span>
-                </div>
-                <div className="rate w100 h1 d-flex sb">
-                  <span className="text">Payment Amount :</span>
-                  <span className="info-text">
-                    {deduction[0]?.pamt || "N/A"}
-                  </span>
-                </div>
-                <div className="Amount w100 h1 d-flex sb">
-                  <span className="text">Deduction Amount :</span>
-                  <span className="info-text">
-                    {deduction[0]?.damt || "N/A"}
-                  </span>
-                </div>
-                <div className="rate w100 h1 d-flex sb">
-                  <span className="text">Net Payment :</span>
-                  <span className="info-text">
-                    {deduction[0]?.namt || "N/A"}
-                  </span>
+                <div className="rate-amount w100 h80 d-flex-col">
+                  <div className="rate w100 h1 d-flex sb">
+                    <span className="text">Total Litters :</span>
+                    <span className="info-text">
+                      {deduction[0]?.tliters || "N/A"}
+                    </span>
+                  </div>
+                  <div className="Amount w100 h1 d-flex sb">
+                    <span className="text">Average Rate :</span>
+                    <span className="info-text">
+                      {deduction[0]?.arate || "N/A"}
+                    </span>
+                  </div>
+                  <div className="rate w100 h1 d-flex sb">
+                    <span className="text">Payment Amount :</span>
+                    <span className="info-text">
+                      {deduction[0]?.pamt || "N/A"}
+                    </span>
+                  </div>
+                  <div className="Amount w100 h1 d-flex sb">
+                    <span className="text">Deduction Amount :</span>
+                    <span className="info-text">
+                      {deduction[0]?.damt || "N/A"}
+                    </span>
+                  </div>
+                  <div className="rate w100 h1 d-flex sb">
+                    <span className="text">Net Payment :</span>
+                    <span className="info-text">
+                      {deduction[0]?.namt || "N/A"}
+                    </span>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
         )}
       </div>
     </div>
