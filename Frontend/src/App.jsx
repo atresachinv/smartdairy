@@ -2,7 +2,7 @@ import Home from "./Components/Home/Home";
 import Mainapp from "./Components/Mainapp/Mainapp";
 import Customers from "./Components/Customers/Customers";
 import AdminPannel from "./Components/Adminpanel/AdminPannel";
-import Homepage from "./Components/MobileApp/Customer/Homepage";
+// import Homepage from "./Components/MobileApp/Customer/Homepage";
 import { useEffect } from "react";
 import { ToastContainer } from "react-toastify";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
@@ -36,7 +36,7 @@ function App() {
           <Route index path="/adminpanel" element={<AdminPannel />} />
           <Route index path="/mainapp/home" element={<Mainapp />} />
           <Route index path="/customer/dashboard" element={<Customers />} />
-          <Route index path="/app/home" element={<Homepage />} />
+          {/* <Route index path="/app/home" element={<Homepage />} /> */}
         </Routes>
       </BrowserRouter>
       <ToastContainer

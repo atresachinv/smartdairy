@@ -3,6 +3,7 @@ import axiosInstance from "../../axiosInstance";
 
 const initialState = {
   deductionInfo: {},
+  subdeductions: [],
   status: "idle",
   error: null,
 };
@@ -11,7 +12,7 @@ export const getDeductionInfo = createAsyncThunk(
   "deduction/get",
   async ({ fromDate, toDate }, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.post("/deductions", {
+      const response = await axiosInstance.post("/deduction-info", {
         fromDate,
         toDate,
       });
@@ -40,7 +41,8 @@ const deductionSlice = createSlice({
       .addCase(getDeductionInfo.fulfilled, (state, action) => {
         state.loading = false;
         state.status = "succeeded";
-        state.deductionInfo = action.payload.deductions;
+        state.deductionInfo = action.payload.mainDeduction;
+        state.subdeductions = action.payload.otherDeductions;
       })
       .addCase(getDeductionInfo.rejected, (state, action) => {
         state.loading = false;

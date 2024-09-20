@@ -8,7 +8,7 @@ import {
 } from "react-icons/bs";
 import "../../../../Styles/Customer/CustNavViews/Milk/Milk.css";
 
-const Reportlinks = ({ setselected }) => {
+const Reportlinks = ({isselected, setselected }) => {
   const mainnavbuttons = [
     { name: "Collection Report", icon: <BsGridFill className="icon" /> },
     { name: "Milk Report", icon: <BsGridFill className="icon" /> },
@@ -19,7 +19,9 @@ const Reportlinks = ({ setselected }) => {
       {mainnavbuttons.map((button, index) => (
         <li
           key={index}
-          className="sidebar-list-item"
+          className={`sidebar-list-item ${
+            isselected === index ? "selected" : ""
+          }`}
           onClick={() => {
             setselected(index);
           }}>

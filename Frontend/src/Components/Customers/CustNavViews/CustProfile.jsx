@@ -11,7 +11,7 @@ import Spinner from "../../Home/Spinner/Spinner";
 import { useTranslation } from "react-i18next";
 
 const CustProfile = () => {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
 
   //  const handleLanguageChange = (lng) => {
   //    i18n.changeLanguage(lng); // Change language
@@ -52,8 +52,8 @@ const CustProfile = () => {
 
   return (
     <div className="cust-profile-container w100 h1 d-flex-col">
-      <div className="menu-title-div w70 mx-15 h10 d-flex p10">
-        <h2 className="heading">{t("pp-title")}</h2>
+      <div className="profile-title-div w100 h10 d-flex p10">
+        <h2 className="f-heading mx10">{t("pp-title")}</h2>
       </div>
       <div className="user-info-container w70 mx-15 h90 d-flex-col p10">
         <div className="user-details p10">

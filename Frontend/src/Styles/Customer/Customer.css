@@ -24,6 +24,7 @@
 .nav-menu-container .menu-icon-btn {
   border: 1px solid var(--main-bg-color);
   background-color: var(--bg-sky-color);
+  border-radius: 8px;
 }
 .menu-icon-btn .menu-text-div span {
   font-size: 10px;

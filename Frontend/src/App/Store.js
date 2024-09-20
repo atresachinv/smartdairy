@@ -8,6 +8,8 @@ import masterdateReducer from "./Features/Customers/Date/masterdateSlice";
 import mastersReducer from "./Features/Customers/Date/masterSlice";
 import purchaseReducer from "./Features/Purchase/purchaseSlice";
 import deductionReducer from "./Features/Deduction/deductionSlice";
+import paymentReducer from "./Features/Payments/paymentSlice";
+import dashboardReducer from "./Features/Customers/Dashboard/dashboardSlice";
 
 export const store = configureStore({
   reducer: {
@@ -20,5 +22,7 @@ export const store = configureStore({
     masterdates: mastersReducer, // for master date list
     purchase: purchaseReducer,
     deduction: deductionReducer,
+    payment: paymentReducer,
+    dashboard: dashboardReducer,
   },
 });

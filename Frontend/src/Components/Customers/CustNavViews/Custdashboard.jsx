@@ -1,12 +1,26 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { BarChart, Bar, ResponsiveContainer } from "recharts";
+import {
+  BarChart,
+  Bar,
+  ResponsiveContainer,
+  CartesianGrid,
+  XAxis,
+  YAxis,
+  Tooltip,
+} from "recharts";
 import { getMilkReports } from "../../../App/Features/Customers/Milk/milkSlice";
 import "../../../Styles/Customer/CustNavViews/Custdashboard.css";
+import { useTranslation } from "react-i18next";
+import { getDashboardInfo } from "../../../App/Features/Customers/Dashboard/dashboardSlice";
+import Spinner from "../../Home/Spinner/Spinner";
 
 const Custdashboard = () => {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
 
+  const dashboard = useSelector((state) => state.dashboard.dashboardInfo);
+  const status = useSelector((state) => state.dashboard.status);
   const summary = useSelector((state) => state.milk.summary);
   const dairyname = useSelector((state) => state.dairy.dairyData.SocietyName);
   const fDate = useSelector((state) => state.date.formDate);
@@ -16,53 +30,15 @@ const Custdashboard = () => {
   const toDate = `${tDate}`;
 
   useEffect(() => {
+    dispatch(getDashboardInfo({ fromDate, toDate }));
     dispatch(getMilkReports({ fromDate, toDate }));
   }, [dispatch]);
 
-  const data = [
-    {
-      name: "Page A",
-      uv: 4000,
-      pv: 2400,
-      amt: 2400,
-    },
-    {
-      name: "Page B",
-      uv: 3000,
-      pv: 1398,
-      amt: 2210,
-    },
-    {
-      name: "Page C",
-      uv: 2000,
-      pv: 9800,
-      amt: 2290,
-    },
-    {
-      name: "Page D",
-      uv: 2780,
-      pv: 3908,
-      amt: 2000,
-    },
-    {
-      name: "Page E",
-      uv: 1890,
-      pv: 4800,
-      amt: 2181,
-    },
-    {
-      name: "Page F",
-      uv: 2390,
-      pv: 3800,
-      amt: 2500,
-    },
-    {
-      name: "Page G",
-      uv: 3490,
-      pv: 4300,
-      amt: 2100,
-    },
-  ];
+  const transformedData = dashboard.map((item) => ({
+    name: new Date(item.ReceiptDate).toLocaleDateString(),
+    liters: item.dailyLiters,
+    amount: item.dailyAmount,
+  }));
 
   const safeToFixed = (value, decimals = 2) => {
     return value !== null && value !== undefined
@@ -74,7 +50,7 @@ const Custdashboard = () => {
     <div className="cust-dashboard-information w100 h1 d-flex-col">
       <div className="menu-title-div w70 mx-15 h10 d-flex-col p10">
         <h2 className="heading">
-          Dashboard <span className="text">(Current Payment slot info)</span>
+          {t("nv-dash")} <span className="text">( {t("d-sun-info")} )</span>
         </h2>
         <h2 className="heading">{dairyname}</h2>
       </div>
@@ -104,17 +80,61 @@ const Custdashboard = () => {
           </span>
         </div>
       </div>
-      <div className="cust-dashboard-charts w70 h70 mx-15 d-flex">
+      <div className="cust-dashboard-charts w70 h70 mh70 mx-15 d-flex-col hidescrollbar">
         <div className="milk-collection-chart w50 h1 d-flex-col p10 bg">
           <div className="chart-title w100 h10">
-            <span className="text">Milk Collection</span>
+            <span className="text">Liters : </span>
           </div>
           <div className="chart-div w100 h90">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart width={150} height={40} data={data}>
-                <Bar dataKey="uv" fill="#8884d8" />
-              </BarChart>
-            </ResponsiveContainer>
+            {status === "loading" ? (
+              <div className="w100 h80 d-flex center">
+                <Spinner />
+              </div>
+            ) : (
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart width={100} height={40} data={transformedData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis
+                    dataKey="name"
+                    tick={{ fontSize: 8 }} // Set font size for X-axis
+                  />
+                  <YAxis
+                    tick={{ fontSize: 8 }} // Set font size for Y-axis
+                    domain={[0, "dataMax + 10"]} // Adjust the Y-axis domain as needed
+                  />
+                  <Tooltip />
+                  <Bar dataKey="liters" fill="#8884d8" />
+                </BarChart>
+              </ResponsiveContainer>
+            )}
+          </div>
+        </div>
+        <div className="milk-collection-chart w50 h1 d-flex-col p10 bg">
+          <div className="chart-title w100 h10">
+            <span className="text">Amount : </span>
+          </div>
+          <div className="chart-div w100 h90">
+            {status === "loading" ? (
+              <div className="w100 h80 d-flex center">
+                <Spinner />
+              </div>
+            ) : (
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart width={100} height={40} data={transformedData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis
+                    dataKey="name"
+                    tick={{ fontSize: 8 }} // Set font size for X-axis
+                  />
+                  <YAxis
+                    tick={{ fontSize: 8 }} // Set font size for Y-axis
+                    domain={[0, "dataMax + 100"]} // Adjust the Y-axis domain as needed
+                  />
+                  <Tooltip />
+                  <Bar dataKey="amount" fill="#8884d8" />
+                </BarChart>
+              </ResponsiveContainer>
+            )}
           </div>
         </div>
       </div>

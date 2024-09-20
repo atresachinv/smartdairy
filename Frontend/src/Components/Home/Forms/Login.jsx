@@ -83,7 +83,7 @@ import "../../../Styles/Home/Forms.css";
 //   );
 // };
 
-const Login = ({ switchToRegister }) => {
+const Login = ({ switchToRegister, switchToOptSend }) => {
   const navigate = useNavigate();
   const [values, setValues] = useState({
     user_id: "",
@@ -109,7 +109,7 @@ const Login = ({ switchToRegister }) => {
         // Redirect based on user_role
         if (user_role === "super_admin") {
           navigate("/adminpanel");
-        } else if (user_role === "ADMIN" || user_role === "Employee") {
+        } else if (user_role === "Admin" || user_role === "Employee") {
           navigate("/mainapp/home");
         } else if (user_role === "Customer") {
           navigate("/customer/dashboard");
@@ -153,6 +153,13 @@ const Login = ({ switchToRegister }) => {
             required
             onChange={handleInputs}
           />
+        </div>
+        <div className="account-check-div">
+          <h2 className="text">
+            <button onClick={switchToOptSend} className="swith-form-button">
+              Forget Password ?
+            </button>
+          </h2>
         </div>
         <button className="form-btn" type="submit">
           Login

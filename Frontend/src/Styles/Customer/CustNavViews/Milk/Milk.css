@@ -28,16 +28,19 @@
 .sidebar-list-item {
   font-size: 14px;
 }
-
+.selected {
+  padding: 10px;
+  background: #ddbbb5;
+}
 /* ................................................. */
 /* Collection Reports css........................... */
 /* ................................................. */
-.custmize-report-div  {
+.custmize-report-div {
   border: none;
   border-radius: 6px;
   background-color: var(--bg-gray-color);
 }
-.cl-icon{
+.cl-icon {
   color: #531096;
 }
 .custmize-report-div .custom-select {
@@ -49,4 +52,7 @@
 
 .content-total-value-div {
   border-radius: 0 0 6px 6px;
+}
+.content-titles-div{
+  border-radius: 0 0 8px 8px;
 }

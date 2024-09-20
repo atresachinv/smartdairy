@@ -8,7 +8,11 @@
 .buttons-div {
   margin-bottom: 10px;
 }
-
+.profile-title-div {
+  padding-bottom: 10px;
+  border-radius: 0 0 20px 20px;
+  background-color: var(--main-bg-color);
+}
 /* .............................................. */
 /* Responsive css */
 /* .............................................. */

@@ -3,16 +3,18 @@ import { useDispatch, useSelector } from "react-redux";
 import { BsCalendar3 } from "react-icons/bs";
 import Spinner from "../../Home/Spinner/Spinner";
 import { getMasterReports } from "../../../App/Features/Customers/Milk/milkMasterSlice";
-import { getDeductionInfo } from "../../../App/Features/Deduction/deductionSlice";
 import { getPurchaseBill } from "../../../App/Features/Purchase/purchaseSlice";
+import { getPaymentInfo } from "../../../App/Features/Payments/paymentSlice";
+import "../../../Styles/Customer/CustNavViews/CustPurchase.css";
+import { useTranslation } from "react-i18next";
 
 const CustPayment = () => {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const master = useSelector((state) => state.masterdates.masterlist);
   const records = useSelector((state) => state.mMilk.mrecords);
-  const summary = useSelector((state) => state.mMilk.msummary);
   const purchaseBill = useSelector((state) => state.purchase.purchaseBill);
-  const deduction = useSelector((state) => state.deduction.deductionInfo);
+  const payment = useSelector((state) => state.payment.payment);
   const status = useSelector((state) => state.mMilk.status);
   const [selectedPeriod, setSelectedPeriod] = useState(null);
 
@@ -34,14 +36,16 @@ const CustPayment = () => {
           toDate: selectedDates.toDate,
         })
       );
+      // dispatch(resetPayment());
       dispatch(
-        getDeductionInfo({
+        getPaymentInfo({
           fromDate: selectedDates.fromDate,
           toDate: selectedDates.toDate,
         })
       );
     }
   };
+  console.log(payment);
 
   const safeToFixed = (value, decimals = 2) => {
     return value !== null && value !== undefined
@@ -50,39 +54,42 @@ const CustPayment = () => {
   };
 
   return (
-    <div className="payment-container w100 h1 d-flex-col">
-      <div className="menu-title-div w70 h10 d-flex p10">
-        <h2 className="heading">Payment Summary</h2>
+    <div className="payment-container w100 h1 d-flex-col ">
+      <div className="title-select-date w100 h20 d-flex-col p10">
+        <div className="menu-title-div w70 h50 d-flex">
+          <h2 className="f-heading">{t("pay-title")}</h2>
+        </div>
+        <div className="custmize-report-div w100 h50 d-flex a-center sb">
+          <span className="cl-icon w10 h1 d-flex center">
+            <BsCalendar3 />
+          </span>
+          <select
+            className="custom-select text w80 px10  h1 p10"
+            onChange={handleSelectChange}>
+            <option className="info-text">1 April 2024 - 31 March 2025</option>
+            {master.map((dates, index) => (
+              <option className="info-text" key={index} value={index}>
+                {new Date(dates.fromDate).toLocaleDateString("en-GB", {
+                  day: "2-digit",
+                  month: "short", // Abbreviated month format
+                  year: "numeric",
+                })}{" "}
+                To:{" "}
+                {new Date(dates.toDate).toLocaleDateString("en-GB", {
+                  day: "2-digit",
+                  month: "short", // Abbreviated month format
+                  year: "numeric",
+                })}
+              </option>
+            ))}
+          </select>
+        </div>
       </div>
-      <div className="custmize-report-div w100 h10 px10 d-flex a-center sb">
-        <span className="cl-icon w10 h1 d-flex center">
-          <BsCalendar3 />
-        </span>
-        <select
-          className="custom-select text w80 h1 p10"
-          onChange={handleSelectChange}>
-          <option className="info-text">1 April 2024 - 31 March 2025</option>
-          {master.map((dates, index) => (
-            <option className="info-text" key={index} value={index}>
-              {new Date(dates.fromDate).toLocaleDateString("en-GB", {
-                day: "2-digit",
-                month: "short", // Abbreviated month format
-                year: "numeric",
-              })}{" "}
-              To:{" "}
-              {new Date(dates.toDate).toLocaleDateString("en-GB", {
-                day: "2-digit",
-                month: "short", // Abbreviated month format
-                year: "numeric",
-              })}
-            </option>
-          ))}
-        </select>
-      </div>
-
       <div className="payment-details-container w100 h80 mh80 d-flex-col">
         {selectedPeriod == null ? (
-          <div>No data available</div>
+          <div className="w100 h1 d-flex center">
+            <span className="heading">No data available</span>
+          </div>
         ) : status === "loading" ? (
           <div className="w100 h80 d-flex center">
             <Spinner />
@@ -214,7 +221,7 @@ const CustPayment = () => {
                   ))
                 ) : (
                   <div className="box d-flex center subheading">
-                    No data available
+                    <span className="heading">No data available</span>
                   </div>
                 )}
               </div>
@@ -225,15 +232,15 @@ const CustPayment = () => {
                   <div className="dates w50 h1 d-flex sb">
                     <span className="label-text">Payment Date : </span>
                     <span className="info-text">
-                      {deduction[0]?.ToDate
-                        ? new Date(deduction[0].ToDate).toLocaleDateString()
+                      {payment[0]?.ToDate
+                        ? new Date(payment[0].ToDate).toLocaleDateString()
                         : "N/A"}
                     </span>
                   </div>
                   <div className="bill-div w30 h1 d-flex sb">
                     <span className="label-text">Bill No. : </span>
                     <span className="info-text">
-                      {deduction[0]?.BillNo || "N/A"}
+                      {payment[0]?.BillNo || "N/A"}
                     </span>
                   </div>
                 </div>
@@ -241,31 +248,31 @@ const CustPayment = () => {
                   <div className="rate w100 h1 d-flex sb">
                     <span className="label-text">Total Litters :</span>
                     <span className="info-text">
-                      {deduction[0]?.tliters || "N/A"}
+                      {payment[0]?.tliters || "N/A"}
                     </span>
                   </div>
                   <div className="Amount w100 h1 d-flex sb">
                     <span className="label-text">Average Rate :</span>
                     <span className="info-text">
-                      {deduction[0]?.arate || "N/A"}
+                      {payment[0]?.arate || "N/A"}
                     </span>
                   </div>
                   <div className="rate w100 h1 d-flex sb">
                     <span className="label-text">Payment Amount :</span>
                     <span className="info-text">
-                      {deduction[0]?.pamt || "N/A"}
+                      {payment[0]?.pamt || "N/A"}
                     </span>
                   </div>
                   <div className="Amount w100 h1 d-flex sb">
                     <span className="label-text">Deduction Amount :</span>
                     <span className="info-text">
-                      {deduction[0]?.damt || "N/A"}
+                      {payment[0]?.damt || "N/A"}
                     </span>
                   </div>
                   <div className="rate w100 h1 d-flex sb">
                     <span className="label-text">Net Payment :</span>
                     <span className="info-text">
-                      {deduction[0]?.namt || "N/A"}
+                      {payment[0]?.namt || "N/A"}
                     </span>
                   </div>
                 </div>

@@ -16,5 +16,11 @@
   "nv-deduction": "Deduction",
   "nv-animal": "Animal",
   "nv-profile": "Profile",
-  "description": "This is a multi-language React app."
+  "description": "This is a multi-language React app.",
+
+  "d-sun-info": "Current Payment slot info",
+
+  "mc-title": "Milk Collection",
+
+  "pay-title": "Payment Information"
 }

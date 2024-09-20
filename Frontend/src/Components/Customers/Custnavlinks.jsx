@@ -10,11 +10,11 @@ import {
 import { GiFertilizerBag, GiCow } from "react-icons/gi";
 
 import { useDispatch, useSelector } from "react-redux";
-import "../../Styles/Customer/Customer.css";
 import { fetchDairyInfo } from "../../App/Features/Admin/Dairyinfo/dairySlice";
 import { generateMaster } from "../../App/Features/Customers/Date/masterdateSlice";
 import { getMasterDates } from "../../App/Features/Customers/Date/masterSlice";
 import { useTranslation } from "react-i18next";
+import "../../Styles/Customer/Customer.css";
 
 const Custnavlinks = ({ setselected }) => {
   const { t } = useTranslation();
@@ -67,7 +67,7 @@ const Custnavlinks = ({ setselected }) => {
             index !== 0 && (
               <div
                 key={index}
-                className="menu-icon-btn w25 h30 d-flex-col center"
+                className="menu-icon-btn w25 h30 d-flex-col center mx10"
                 onClick={() => {
                   setselected(index);
                 }}>

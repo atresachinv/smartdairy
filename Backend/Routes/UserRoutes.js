@@ -5,6 +5,7 @@ const {
   userRegister,
   userLogout,
   dairyInfo,
+  sendOtp,
 } = require("../Controllers/UserController");
 
 const router = express.Router();
@@ -14,6 +15,7 @@ const router = express.Router();
 router.route("/register").post(userRegister);
 router.route("/login").post(userLogin);
 router.route("/logout").post(userLogout);
+router.route("/send/otp").post(sendOtp);
 
 // Dairy info Route
 router.route("/dairyinfo").post(verifyToken, dairyInfo);

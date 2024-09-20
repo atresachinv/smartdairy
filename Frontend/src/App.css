@@ -100,6 +100,10 @@
   max-height: 80%;
   overflow-y: scroll;
 }
+.mh70 {
+  max-height: 70%;
+  overflow-y: scroll;
+}
 .mh50 {
   max-height: 50%;
   overflow-y: scroll;
@@ -276,13 +280,6 @@
 .hover:hover {
   box-shadow: 1px 2px 2px rgb(83, 81, 81);
 }
-.form-btn {
-  padding: 10px;
-  background: #7235ed;
-  color: #fff;
-  border: none;
-  border-radius: 7px;
-}
 
 .btn-hover:hover {
   transition: all 0.3s ease-in-out;
@@ -321,13 +318,19 @@
   color: #773cee;
   cursor: pointer;
 }
+.f-heading {
+  font-size: clamp(14px, 3vw, 16px);
+  font-weight: 400;
+  color: #fff;
+  cursor: pointer;
+}
 .sub-heading {
   font-size: clamp(10px, 2vw, 16px);
   font-weight: 300;
   color: #c3a9f7;
   cursor: pointer;
 }
-.label-text{
+.label-text {
   font-size: clamp(10px, 2vw, 14px);
   font-weight: 500;
   margin-top: 5px;

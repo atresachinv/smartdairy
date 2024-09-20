@@ -38,105 +38,93 @@ const CustPurchase = () => {
   };
 
   return (
-    <div className="purchase-info-div w100 h1 d-flex-col p10">
-      <div className="menu-title-div w100 h10 d-flex p10">
-        <h2 className="heading">Cattle Feeds</h2>
-      </div>
-
-      <div className="custmize-report-div w100 h10 px10 d-flex a-center sb">
-        <span className="cl-icon w10 h1 d-flex center">
-          <BsCalendar3 />
-        </span>
-        <select
-          className="custom-select text w80 h1 p10"
-          onChange={handleSelectChange}>
-          <option value="">1 April 2024 - 31 March 2025</option>
-          {master.map((dates, index) => (
-            <option className="info-text" key={index} value={index}>
-              {new Date(dates.fromDate).toLocaleDateString("en-GB", {
-                day: "2-digit",
-                month: "short", // Abbreviated month format
-                year: "numeric",
-              })}{" "}
-              To:{" "}
-              {new Date(dates.toDate).toLocaleDateString("en-GB", {
-                day: "2-digit",
-                month: "short", // Abbreviated month format
-                year: "numeric",
-              })}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      {/* <div className="selection-container w100 p10 d-flex center">
-        <span className="w40 heading px10">Select Period</span>
-        <select
-          className="custom-select text w50 p10 mh80 d-flex-col hidescrollbar"
-          onChange={handleSelectChange}>
-          <option value="">-- Select Master --</option>
-          {master.map((dates, index) => (
-            <option className="text" key={index} value={index}>
-              {dates.start} To: {dates.end}
-            </option>
-          ))}
-        </select>
-      </div> */}
-
-      <div className="purchase-details-container w100 h80 d-flex-col bg">
-        <div className="menu-title-div w100 h10 d-flex p10">
-          <h2 className="heading">Sales Details</h2>
+    <div className="purchase-info-div w100 h1 d-flex-col">
+      <div className="title-select-date w100 h20 d-flex-col p10">
+        <div className="menu-title-div w100 h50 d-flex p10">
+          <h2 className="f-heading">Cattle Feeds</h2>
         </div>
-
-        <div className="purchase-table-titles w100 h10 t-center a-center d-flex sa bg4">
-          <span className="text w15">Bill No.</span>
-          <span className="text w15">Date</span>
-          <span className="text w20">Product</span>
-          <span className="text w15">Qty</span>
-          <span className="text w15">Rate</span>
-          <span className="text w15">Amount</span>
+        <div className="custmize-report-div w100 h50 d-flex a-center sb">
+          <span className="cl-icon w10 h1 d-flex center">
+            <BsCalendar3 />
+          </span>
+          <select
+            className="custom-select text w80 h1 p10"
+            onChange={handleSelectChange}>
+            <option value="">1 April 2024 - 31 March 2025</option>
+            {master.map((dates, index) => (
+              <option className="info-text" key={index} value={index}>
+                {new Date(dates.fromDate).toLocaleDateString("en-GB", {
+                  day: "2-digit",
+                  month: "short", // Abbreviated month format
+                  year: "numeric",
+                })}{" "}
+                To:{" "}
+                {new Date(dates.toDate).toLocaleDateString("en-GB", {
+                  day: "2-digit",
+                  month: "short", // Abbreviated month format
+                  year: "numeric",
+                })}
+              </option>
+            ))}
+          </select>
         </div>
-        
-        {status === "loading" ? (
-          <div className="w100 h80 d-flex center">
-            <Spinner /> 
+      </div>
+      <div className="purchase-details-container w100 h80 d-flex-col p10">
+        <div className="purchase-details-div w100 h80 d-flex-col bg">
+          <div className="menu-title-div w100 h10 d-flex p10">
+            <h2 className="heading">Sales Details</h2>
           </div>
-        ) : (
-          <div className="purchase-detailsitable w100 h80 mh80 d-flex-col hidescrollbar p10">
-            {purchaseBill.length > 0 ? (
-              purchaseBill.map((bill, index) => (
-                <div
-                  key={index}
-                  className="purchase-table-values w100 h10 t-center a-center d-flex sa my5">
-                  <span className="text w15">{bill.BillNo}</span>
-                  <span className="text w15">
-                    {new Date(bill.BillDate).toLocaleDateString("en-GB", {
-                      day: "2-digit",
-                      month: "2-digit",
-                      year: "2-digit",
-                    })}
-                  </span>
-                  <span className="text w20">{bill.ItemName}</span>
-                  <span className="text w15">{bill.Qty}</span>
-                  <span className="text w15">{bill.Rate}</span>
-                  <span className="text w15">{bill.Amount}</span>
+
+          <div className="purchase-table-titles w100 h10 t-center a-center d-flex sa bg4">
+            <span className="text w15">Bill No.</span>
+            <span className="text w15">Date</span>
+            <span className="text w20">Product</span>
+            <span className="text w15">Qty</span>
+            <span className="text w15">Rate</span>
+            <span className="text w15">Amount</span>
+          </div>
+
+          {status === "loading" ? (
+            <div className="w100 h80 d-flex center">
+              <Spinner />
+            </div>
+          ) : (
+            <div className="purchase-detailsitable w100 h80 mh80 d-flex-col hidescrollbar p10">
+              {purchaseBill.length > 0 ? (
+                purchaseBill.map((bill, index) => (
+                  <div
+                    key={index}
+                    className="purchase-table-values w100 h10 t-center a-center d-flex sa my5">
+                    <span className="text w15">{bill.BillNo}</span>
+                    <span className="text w15">
+                      {new Date(bill.BillDate).toLocaleDateString("en-GB", {
+                        day: "2-digit",
+                        month: "2-digit",
+                        year: "2-digit",
+                      })}
+                    </span>
+                    <span className="text w20">{bill.ItemName}</span>
+                    <span className="text w15">{bill.Qty}</span>
+                    <span className="text w15">{bill.Rate}</span>
+                    <span className="text w15">{bill.Amount}</span>
+                  </div>
+                ))
+              ) : (
+                <div className="box d-flex center subheading">
+                  No data available
                 </div>
-              ))
-            ) : (
-              <div className="box d-flex center subheading">
-                No data available
-              </div>
-            )}
-          </div>
-        )}
+              )}
+            </div>
+          )}
 
-        <div className="purchase-table-total w100 h10 t-center a-center d-flex sa bg4">
-          <span className="text w15">Total</span>
-          <span className="text w15"></span>
-          <span className="text w20"></span>
-          <span className="text w15">{psummary.totalQty}</span>
-          <span className="text w15"></span>
-          <span className="text w15">{psummary.totalAmount}</span>
+          <div className="purchase-table-total w100 h10 t-center a-center d-flex sa bg4">
+            <span className="text w15">Total</span>
+            <span className="text w15"></span>
+            <span className="text w20"></span>
+            <span className="text w15">{psummary.totalQty}</span>
+            <span className="text w15"></span>
+            <span className="text w15">{psummary.totalAmount}</span>
+          </div>
         </div>
       </div>
     </div>

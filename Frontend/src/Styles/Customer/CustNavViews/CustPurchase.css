@@ -1,7 +1,11 @@
 .selection-container {
   flex-direction: row;
 }
-
+.title-select-date {
+  padding-bottom: 10px;
+  border-radius: 0 0 20px 20px;
+  background-color: var(--main-bg-color);
+}
 .selection-conatiner .custom-select {
   height: auto;
   max-height: 200px;

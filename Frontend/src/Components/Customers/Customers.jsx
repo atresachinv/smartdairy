@@ -29,7 +29,6 @@ const Customers = () => {
         handleBackButton={handleBackButton}
         setselected={setIsselected}
       />
-
       <div className="customer-nav-view-container w100 h90 d-flex">
         <Custnavviews setselected={setIsselected} index={isselected} />
       </div>

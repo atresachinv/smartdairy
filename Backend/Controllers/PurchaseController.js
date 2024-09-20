@@ -204,6 +204,62 @@ exports.purchaseInfo = async (req, res) => {
 //.................Deduction Routes......................//
 //.......................................................//
 
+exports.paymentDetails = async (req, res) => {
+  const { fromDate, toDate } = req.body;
+
+  // Validate request body
+  if (!fromDate || !toDate) {
+    return res
+      .status(400)
+      .json({ message: "fromDate and toDate are required!" });
+  }
+
+  pool.getConnection((err, connection) => {
+    if (err) {
+      console.error("Error getting MySQL connection: ", err);
+      return res.status(500).json({ message: "Database connection error" });
+    }
+
+    try {
+      const dairy_id = req.user.dairy_id;
+      const user_code = req.user.user_code;
+
+      if (!dairy_id) {
+        connection.release(); // Release connection in case of early exit
+        return res.status(400).json({ message: "Dairy ID not found!" });
+      }
+
+      const paymentInfoQuery = `
+        SELECT ToDate, BillNo, arate, tliters, pamt, damt, namt 
+        FROM custbilldetails 
+        WHERE companyid = ? AND AccCode = ? AND ToDate BETWEEN ? AND ? AND DeductionId = "0"
+      `;
+
+      connection.query(
+        paymentInfoQuery,
+        [dairy_id, user_code, fromDate, toDate],
+        (err, result) => {
+          connection.release(); // Always release the connection
+          if (err) {
+            console.error("Error executing query: ", err);
+            return res.status(500).json({ message: "Query execution error" });
+          }
+
+          if (result.length === 0) {
+            return res.status(404).json({ message: "No records found!" });
+          }
+
+          // Return the results
+          res.status(200).json({ payment: result });
+        }
+      );
+    } catch (error) {
+      console.error("Error processing request: ", error);
+      return res.status(500).json({ message: "Internal server error" });
+    }
+  });
+};
+
 //............................................
 //Deduction Customer Route....................
 //............................................
@@ -226,9 +282,9 @@ exports.deductionInfo = async (req, res) => {
       }
 
       const deductionInfo = `
-        SELECT ToDate, BillNo, arate, tliters, pamt, damt, namt 
+        SELECT ToDate, BillNo, dname, Amt, arate, tliters, pamt, damt, namt
         FROM custbilldetails 
-        WHERE companyid = ? AND AccCode = ? AND ToDate BETWEEN ? AND ? AND Deductionid = "0"
+        WHERE companyid = ? AND AccCode = ? AND ToDate BETWEEN ? AND ? 
       `;
 
       connection.query(
@@ -245,9 +301,16 @@ exports.deductionInfo = async (req, res) => {
             return res.status(404).json({ message: "No records found!" });
           }
 
-          // Sending all results in case multiple records match the query
+          // Filter the main deduction (Deductionid "0") and additional deductions (based on dname)
+          const mainDeduction = result.find((item) => item.dname === "");
+          const additionalDeductions = result.filter(
+            (item) => item.dname !== ""
+          );
+
+          // Send the response with separated data
           res.status(200).json({
-            deductions: result,
+            mainDeduction: mainDeduction || null,
+            otherDeductions: additionalDeductions || [],
           });
         }
       );

@@ -35,9 +35,6 @@ const MilkReport = () => {
           Date: from: {fDate} - to: {tDate}
         </div>
         <div className="invoice-of-collection-div w100 h1 d-flex-col">
-          <div className="invoice-title-div w100 h10 d-flex a-center">
-            <span className="heading px10">Collection Details :</span>
-          </div>
           <div className="content-titles-div w100 h10 d-flex center t-center sa px10">
             <span className="text w15">Date</span>
             <span className="text w5">M/E</span>
@@ -49,7 +46,7 @@ const MilkReport = () => {
             <span className="text w15">Amount</span>
           </div>
           <div className="report-data-container w100 h90 d-flex-col hidescrollbar">
-            {Array.isArray(records) && records.length > 0 ? (
+            { records.length > 0 ? (
               records.map((report, index) => (
                 <div
                   key={index}

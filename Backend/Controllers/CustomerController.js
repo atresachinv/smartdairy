@@ -170,7 +170,7 @@ exports.updateCustomer = async (req, res) => {
 // Customer Dashboard Info (Customer Route)........
 //.................................................
 
-exports.dashboardInfo = async (req, res) => {
+exports.custDashboardInfo = async (req, res) => {
   const { toDate, fromDate } = req.body;
 
   pool.getConnection((err, connection) => {
@@ -191,14 +191,12 @@ exports.dashboardInfo = async (req, res) => {
       const dairy_table = `dailymilkentry_${dairy_id}`;
 
       const custDashboardData = `     
-          SELECT 
-              SUM(Litres) AS totalLiters,
-              SUM(Amt) AS totalAmount,
+        SELECT 
               ReceiptDate,
               SUM(Litres) AS dailyLiters,
               SUM(Amt) AS dailyAmount
           FROM ${dairy_table}
-          WHERE ReceiptDate BETWEEN ? AND ?
+          WHERE ReceiptDate BETWEEN ? AND ? AND AccCode = ?
           GROUP BY ReceiptDate WITH ROLLUP;
       `;
 
@@ -211,7 +209,7 @@ exports.dashboardInfo = async (req, res) => {
             console.error("Error executing summary query: ", err);
             return res.status(500).json({ message: "query execution error" });
           }
-          const dashboardInfo = dashboardDataresult[0];
+          const dashboardInfo = dashboardDataresult;
           res.status(200).json({ fromDate, toDate, dashboardInfo });
         }
       );
@@ -343,7 +341,7 @@ exports.milkReport = async (req, res) => {
 
 exports.customMilkReport = async (req, res) => {
   const { fromDate, toDate } = req.body;
-  
+
   pool.getConnection((err, connection) => {
     if (err) {
       console.error("Error getting MySQL connection: ", err);
