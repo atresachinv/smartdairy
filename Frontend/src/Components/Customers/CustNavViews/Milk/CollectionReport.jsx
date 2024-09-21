@@ -3,9 +3,11 @@ import { useDispatch, useSelector } from "react-redux";
 import { getMasterReports } from "../../../../App/Features/Customers/Milk/milkMasterSlice";
 import Spinner from "../../../Home/Spinner/Spinner";
 import { BsCalendar3 } from "react-icons/bs";
+import { useTranslation } from "react-i18next";
 import "../../../../Styles/Customer/CustNavViews/Milk/Milk.css";
 
 const CollectionReport = () => {
+  const { t } = useTranslation("common");
   const dispatch = useDispatch();
   const master = useSelector((state) => state.masterdates.masterlist);
   const records = useSelector((state) => state.mMilk.mrecords);
@@ -38,24 +40,24 @@ const CollectionReport = () => {
   return (
     <div className="coll-report-container w100 h1 d-flex-col bg">
       <div className="menu-title-div w100 h10 d-flex p10">
-        <h2 className="heading">Collection Report</h2>
+        <h2 className="heading"> {t("c-coll-report")}</h2>
       </div>
       <div className="custmize-report-div w100 h10 px10 d-flex a-center sb">
         <span className="cl-icon w10 h1 d-flex center">
           <BsCalendar3 />
         </span>
         <select
-          className="custom-select text w80 h1 p10"
+          className="custom-select sub-heading w80 h1 p10"
           onChange={handleSelectChange}>
-          <option className="info-text">1 April 2024 - 31 March 2025</option>
+          <option className="sub-heading">--{t("c-select-master")}--</option>
           {master.map((dates, index) => (
-            <option className="info-text" key={index} value={index}>
+            <option className="sub-heading" key={index} value={index}>
               {new Date(dates.fromDate).toLocaleDateString("en-GB", {
                 day: "2-digit",
                 month: "short", // Abbreviated month format
                 year: "numeric",
-              })}{" "}
-              To:{" "}
+              })}
+              To:
               {new Date(dates.toDate).toLocaleDateString("en-GB", {
                 day: "2-digit",
                 month: "short", // Abbreviated month format
@@ -67,14 +69,14 @@ const CollectionReport = () => {
       </div>
       <div className="invoice-of-collection-div w100 h80 d-flex-col">
         <div className="content-titles-div w100 h10 d-flex center t-center sa px10">
-          <span className="text w15">Date</span>
-          <span className="text w5">M/E</span>
-          <span className="text w5">C/B</span>
-          <span className="text w10">Liters</span>
+          <span className="text w15">{t("c-date")}</span>
+          <span className="text w5">{t("c-m/e")}</span>
+          <span className="text w10">{t("c-c/b")}</span>
+          <span className="text w10">{t("c-liters")}</span>
           <span className="text w5">FAT</span>
           <span className="text w5">SNF</span>
-          <span className="text w10">Rate</span>
-          <span className="text w15">Amount</span>
+          <span className="text w10">{t("c-rate")}</span>
+          <span className="text w15">{t("c-amt")}</span>
         </div>
 
         {status === "loading" ? (
@@ -95,8 +97,12 @@ const CollectionReport = () => {
                       year: "2-digit",
                     })}
                   </span>
-                  <span className="text w5">{report.ME === 0 ? "M" : "E"}</span>
-                  <span className="text w5">{report.CB === 0 ? "C" : "B"}</span>
+                  <span className="text w5">
+                    {report.ME === 0 ? `${t("c-m")}` : `${t("c-e")}`}
+                  </span>
+                  <span className="text w5">
+                    {report.CB === 0 ? `${t("c-c")}` : `${t("c-b")}`}
+                  </span>
                   <span className="text w10">
                     {safeToFixed(report.Litres, 1)}
                   </span>
@@ -110,15 +116,15 @@ const CollectionReport = () => {
               ))
             ) : (
               <div className="box d-flex center subheading">
-                No data available
+                {t("c-no-data-avai")}
               </div>
             )}
           </div>
         )}
         <div className="content-total-value-div w100 h10 d-flex center t-center sa px10">
-          <span className="label-text w15">Total : </span>
+          <span className="label-text w15">{t("c-total")} : </span>
           <span className="text w5"></span>
-          <span className="text w5"></span>
+          <span className="text w10"></span>
           <span className="text w10">
             {safeToFixed(summary.totalLiters, 1)}
           </span>

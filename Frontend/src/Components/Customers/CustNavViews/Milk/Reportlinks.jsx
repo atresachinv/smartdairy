@@ -7,11 +7,14 @@ import {
   BsGridFill,
 } from "react-icons/bs";
 import "../../../../Styles/Customer/CustNavViews/Milk/Milk.css";
+import { useTranslation } from "react-i18next";
 
-const Reportlinks = ({isselected, setselected }) => {
+const Reportlinks = ({ isselected, setselected }) => {
+  const { t } = useTranslation("common");
+
   const mainnavbuttons = [
-    { name: "Collection Report", icon: <BsGridFill className="icon" /> },
-    { name: "Milk Report", icon: <BsGridFill className="icon" /> },
+    { name: `${t("c-coll-report")}`, icon: <BsGridFill className="icon" /> },
+    { name: `${t("c-mlik-summary")}`, icon: <BsGridFill className="icon" /> },
   ];
 
   return (

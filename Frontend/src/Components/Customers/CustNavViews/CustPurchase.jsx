@@ -5,8 +5,10 @@ import { generateMaster } from "../../../App/Features/Customers/Date/masterdateS
 import { BsCalendar3 } from "react-icons/bs";
 import Spinner from "../../Home/Spinner/Spinner";
 import "../../../Styles/Customer/CustNavViews/CustPurchase.css";
+import { useTranslation } from "react-i18next";
 
 const CustPurchase = () => {
+  const { t } = useTranslation("common");
   const dispatch = useDispatch();
   const date = useSelector((state) => state.date.toDate);
   const master = useSelector((state) => state.masterdates.masterlist);
@@ -41,18 +43,20 @@ const CustPurchase = () => {
     <div className="purchase-info-div w100 h1 d-flex-col">
       <div className="title-select-date w100 h20 d-flex-col p10">
         <div className="menu-title-div w100 h50 d-flex p10">
-          <h2 className="f-heading">Cattle Feeds</h2>
+          <h2 className="f-heading">{t("c-page-title-feeds")}</h2>
         </div>
         <div className="custmize-report-div w100 h50 d-flex a-center sb">
           <span className="cl-icon w10 h1 d-flex center">
             <BsCalendar3 />
           </span>
           <select
-            className="custom-select text w80 h1 p10"
+            className="custom-select sub-heading w80 h1 p10"
             onChange={handleSelectChange}>
-            <option value="">1 April 2024 - 31 March 2025</option>
+            <option value="" className="sub-heading">
+              --{t("c-select-master")}--
+            </option>
             {master.map((dates, index) => (
-              <option className="info-text" key={index} value={index}>
+              <option className="sub-heading" key={index} value={index}>
                 {new Date(dates.fromDate).toLocaleDateString("en-GB", {
                   day: "2-digit",
                   month: "short", // Abbreviated month format
@@ -69,19 +73,19 @@ const CustPurchase = () => {
           </select>
         </div>
       </div>
-      <div className="purchase-details-container w100 h80 d-flex-col p10">
+      <div className="purchase-details-container w100 h1 d-flex-col p10">
         <div className="purchase-details-div w100 h80 d-flex-col bg">
           <div className="menu-title-div w100 h10 d-flex p10">
-            <h2 className="heading">Sales Details</h2>
+            <h2 className="heading">{t("c-sales-details")} : </h2>
           </div>
 
           <div className="purchase-table-titles w100 h10 t-center a-center d-flex sa bg4">
-            <span className="text w15">Bill No.</span>
-            <span className="text w15">Date</span>
-            <span className="text w20">Product</span>
-            <span className="text w15">Qty</span>
-            <span className="text w15">Rate</span>
-            <span className="text w15">Amount</span>
+            <span className="text w15">{t("c-billno")}</span>
+            <span className="text w15">{t("c-date")}</span>
+            <span className="text w20">{t("c-prod")}</span>
+            <span className="text w15">{t("c-qty")}</span>
+            <span className="text w15">{t("c-rate")}</span>
+            <span className="text w15">{t("c-amt")}</span>
           </div>
 
           {status === "loading" ? (
@@ -111,14 +115,14 @@ const CustPurchase = () => {
                 ))
               ) : (
                 <div className="box d-flex center subheading">
-                  No data available
+                  <span className="heading">{t("c-no-data-avai")}</span>
                 </div>
               )}
             </div>
           )}
 
           <div className="purchase-table-total w100 h10 t-center a-center d-flex sa bg4">
-            <span className="text w15">Total</span>
+            <span className="text w15">{t("c-total")} :</span>
             <span className="text w15"></span>
             <span className="text w20"></span>
             <span className="text w15">{psummary.totalQty}</span>

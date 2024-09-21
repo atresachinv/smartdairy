@@ -325,9 +325,9 @@
   cursor: pointer;
 }
 .sub-heading {
-  font-size: clamp(10px, 2vw, 16px);
+  font-size: clamp(12px, 2vw, 16px);
   font-weight: 300;
-  color: #c3a9f7;
+  color: #0e0e0e;
   cursor: pointer;
 }
 .label-text {

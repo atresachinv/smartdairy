@@ -14,25 +14,25 @@ const Custnavviews = ({ index, setselected }) => {
       return <Custnavlinks setselected={setselected} />;
       break;
     case 1:
-      return <Custdashboard />;
-      break;
-    case 2:
       return <CustMilkCollection />;
       break;
-    case 3:
+    case 2:
       return <CustPayment />;
       break;
-    case 4:
+    case 3:
       return <CustPurchase />;
       break;
-    case 5:
+    case 4:
       return <CustDeductions />;
       break;
-    case 6:
+    case 5:
       return <CustAnimalInfo />;
       break;
-    case 7:
+    case 6:
       return <CustProfile />;
+      break;
+    case 7:
+      return <Custdashboard />;
       break;
 
     default:

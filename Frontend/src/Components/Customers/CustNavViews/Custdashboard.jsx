@@ -16,7 +16,7 @@ import { getDashboardInfo } from "../../../App/Features/Customers/Dashboard/dash
 import Spinner from "../../Home/Spinner/Spinner";
 
 const Custdashboard = () => {
-  const { t } = useTranslation();
+  const { t } = useTranslation("common");
   const dispatch = useDispatch();
 
   const dashboard = useSelector((state) => state.dashboard.dashboardInfo);
@@ -34,11 +34,13 @@ const Custdashboard = () => {
     dispatch(getMilkReports({ fromDate, toDate }));
   }, [dispatch]);
 
-  const transformedData = dashboard.map((item) => ({
-    name: new Date(item.ReceiptDate).toLocaleDateString(),
-    liters: item.dailyLiters,
-    amount: item.dailyAmount,
-  }));
+  const transformedData = dashboard
+    .slice(0, -1) // Exclude the last record
+    .map((item) => ({
+      name: new Date(item.ReceiptDate).toLocaleDateString(),
+      liters: item.dailyLiters,
+      amount: item.dailyAmount,
+    }));
 
   const safeToFixed = (value, decimals = 2) => {
     return value !== null && value !== undefined
@@ -56,25 +58,25 @@ const Custdashboard = () => {
       </div>
       <div className="cust-dashboard-data w70 mx-15 h15 d-flex sa p10">
         <div className="data-conatiner w20 h1 t-center bg">
-          <span className="sub-heading">Total Liters</span>
+          <span className="sub-heading"> {t("c-t-liters")}</span>
           <span className="info-text">
             {safeToFixed(summary.totalLiters, 1)}
           </span>
         </div>
         <div className="data-conatiner w15 h1 t-center bg">
-          <span className="sub-heading">Avg FAT</span>
+          <span className="sub-heading">{t("c-avg-fat")}</span>
           <span className="info-text">{safeToFixed(summary.avgFat, 1)}</span>
         </div>
         <div className="data-conatiner w15 h1 t-center bg">
-          <span className="sub-heading">Avg SNF</span>
+          <span className="sub-heading">{t("c-avg-snf")}</span>
           <span className="info-text">{safeToFixed(summary.avgSNF, 1)}</span>
         </div>
         <div className="data-conatiner w15 h1 t-center bg">
-          <span className="sub-heading">Avg Rate</span>
+          <span className="sub-heading">{t("c-avg-rate")}</span>
           <span className="info-text">{safeToFixed(summary.avgRate, 1)}</span>
         </div>
         <div className="data-conatiner w20 h1 t-center bg">
-          <span className="sub-heading">Total Amount</span>
+          <span className="sub-heading">{t("c-t-amt")}</span>
           <span className="info-text">
             {safeToFixed(summary.totalAmount, 2)}
           </span>
@@ -83,7 +85,7 @@ const Custdashboard = () => {
       <div className="cust-dashboard-charts w70 h70 mh70 mx-15 d-flex-col hidescrollbar">
         <div className="milk-collection-chart w50 h1 d-flex-col p10 bg">
           <div className="chart-title w100 h10">
-            <span className="text">Liters : </span>
+            <span className="text">{t("c-liters")} : </span>
           </div>
           <div className="chart-div w100 h90">
             {status === "loading" ? (
@@ -111,7 +113,7 @@ const Custdashboard = () => {
         </div>
         <div className="milk-collection-chart w50 h1 d-flex-col p10 bg">
           <div className="chart-title w100 h10">
-            <span className="text">Amount : </span>
+            <span className="text">{t("c-amt")} : </span>
           </div>
           <div className="chart-div w100 h90">
             {status === "loading" ? (

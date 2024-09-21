@@ -7,8 +7,10 @@ import {
 } from "../../../App/Features/Deduction/deductionSlice";
 import { BsCalendar3 } from "react-icons/bs";
 import Spinner from "../../Home/Spinner/Spinner";
+import { useTranslation } from "react-i18next";
 
 const CustDeductions = () => {
+  const { t } = useTranslation("common");
   const dispatch = useDispatch();
   const date = useSelector((state) => state.date.toDate);
   const master = useSelector((state) => state.masterdates.masterlist);
@@ -43,18 +45,18 @@ const CustDeductions = () => {
     <div className="deduction-info-container w100 h1 d-flex-col">
       <div className="title-select-date w100 h20 d-flex-col p10">
         <div className="menu-title-div w100 h50 d-flex p10">
-          <h2 className="f-heading">Deduction Reports</h2>
+          <h2 className="f-heading">{t("c-page-title-deduct")}</h2>
         </div>
         <div className="custmize-report-div w100 h50 px10 d-flex a-center sb">
           <span className="cl-icon w10 h1 d-flex center">
             <BsCalendar3 />
           </span>
           <select
-            className="custom-select text w80 h1 p10"
+            className="custom-select sub-heading w80 h1 p10"
             onChange={handleSelectChange}>
-            <option className="info-text">1 April 2024 - 31 March 2025</option>
+            <option className="sub-heading">--{t("c-select-master")}--</option>
             {master.map((dates, index) => (
-              <option className="info-text" key={index} value={index}>
+              <option className="sub-heading" key={index} value={index}>
                 {new Date(dates.fromDate).toLocaleDateString("en-GB", {
                   day: "2-digit",
                   month: "short", // Abbreviated month format
@@ -77,11 +79,11 @@ const CustDeductions = () => {
             <Spinner />
           </div>
         ) : subdeduction.length > 0 ? (
-          <div className="deduction-info-container w100 h60 d-flex ">
+          <div className="deduction-info-container w100 mh80 d-flex ">
             <div className="deduction-info-details w100 h1 d-flex-col p10">
               <div className="date-billno-div w100 h20 d-flex sb">
                 <div className="dates w50 h10 d-flex sb">
-                  <span className="text">Payment Date : </span>
+                  <span className="text">{t("c-date")} : </span>
                   <span className="info-text">
                     {deduction?.ToDate
                       ? new Date(deduction.ToDate).toLocaleDateString()
@@ -89,27 +91,30 @@ const CustDeductions = () => {
                   </span>
                 </div>
                 <div className="bill-div w30 h10 d-flex sb">
-                  <span className="text">Bill No. : </span>
+                  <span className="text">{t("c-billno")} : </span>
                   <span className="info-text">{deduction.BillNo || "N/A"}</span>
                 </div>
               </div>
               <div className="rate-amount w100 h80 d-flex-col">
                 <div className="rate w100 h10 d-flex sb">
-                  <span className="text">Total Litters :</span>
+                  <span className="text">{t("c-t-liters")} :</span>
                   <span className="info-text">
                     {deduction.tliters || "N/A"}
                   </span>
                 </div>
                 <div className="Amount w100 h10 d-flex sb">
-                  <span className="text">Average Rate :</span>
+                  <span className="text">{t("c-avg-rate")} :</span>
                   <span className="info-text">{deduction.arate || "N/A"}</span>
                 </div>
                 <div className="rate w100 h10 d-flex sb">
-                  <span className="text">Payment Amount :</span>
+                  <span className="text">{t("c-pay-amt")} :</span>
                   <span className="info-text">{deduction.pamt || "N/A"}</span>
                 </div>
                 <div className="sub-deductions w100 h50 mh40 d-flex-col sb my10">
-                  <span className="info-text">Deductions : </span>
+                  <span className="info-text">
+                    {t("c-page-title-deduct")} :
+                  </span>
+                  <hr />
                   {subdeduction.map((deduction, index) => (
                     <div key={index} className="Amount w100 h30 d-flex sb">
                       <span className="text">{deduction.dname} :</span>
@@ -118,20 +123,23 @@ const CustDeductions = () => {
                       </span>
                     </div>
                   ))}
+                  <hr />
                 </div>
                 <div className="Amount w100 h10 d-flex sb">
-                  <span className="text">Total Deduction :</span>
+                  <span className="text">{t("c-t-deduct")} :</span>
                   <span className="info-text">{deduction.damt || "N/A"}</span>
                 </div>
                 <div className="rate w100 h10 d-flex sb">
-                  <span className="text">Net Payment :</span>
-                  <span className="info-text">{deduction.namt || "N/A"}</span>
+                  <span className="text">{t("c-net-pay")} :</span>
+                  <span className="info-text">{deduction.namt || "0"}</span>
                 </div>
               </div>
             </div>
           </div>
         ) : (
-          <div>No data available</div>
+          <div className="w100 h1 d-flex center">
+            <span className="heading">{t("c-no-data-avai")}</span>
+          </div>
         )}
       </div>
     </div>

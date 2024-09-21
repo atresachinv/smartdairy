@@ -45,6 +45,13 @@
 }
 
 /* .............................................. */
+/* navliks css*/
+/* .............................................. */
+
+.menu-icon-btn .icon-div .icon{
+  font-size: 30px;
+}
+/* .............................................. */
 /* Dropdown button css*/
 /* .............................................. */
 .select-container:focus {
@@ -146,12 +153,6 @@
   font-size: 22px;
 }
 
-/* .menu-icon-btn {
-  border-radius: 6px;
-  background-color: #fff;
-  box-shadow: rgba(50, 50, 93, 0.25) 0px 6px 12px -2px,
-    rgba(0, 0, 0, 0.3) 0px 3px 7px -3px;
-} */
 .menu-icon-btn:hover {
   box-shadow: rgba(50, 50, 93, 0.25) 0px 30px 60px -12px inset,
     rgba(0, 0, 0, 0.3) 0px 18px 36px -18px inset;

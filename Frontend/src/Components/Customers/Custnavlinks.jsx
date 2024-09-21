@@ -1,12 +1,12 @@
 import React, { useEffect } from "react";
 import {
-  BsHouseFill,
-  BsCoin,
-  BsGearFill,
+  BsCurrencyRupee,
   BsGridFill,
   BsPersonCircle,
   BsBriefcaseFill,
 } from "react-icons/bs";
+import { FaFillDrip } from "react-icons/fa";
+import { BiCut } from "react-icons/bi";
 import { GiFertilizerBag, GiCow } from "react-icons/gi";
 
 import { useDispatch, useSelector } from "react-redux";
@@ -34,16 +34,17 @@ const Custnavlinks = ({ setselected }) => {
 
   const mainnavbuttons = [
     { name: "navbar", icon: <BsGridFill className="icon" /> },
-    { name: `${t("nv-dash")}`, icon: <BsGridFill className="icon" /> },
-    { name: `${t("nv-milk-coll")}`, icon: <BsHouseFill className="icon" /> },
-    { name: `${t("nv-pay")}`, icon: <BsCoin className="icon" /> },
+
+    { name: `${t("nv-milk-coll")}`, icon: <FaFillDrip className="icon" /> },
+    { name: `${t("nv-pay")}`, icon: <BsCurrencyRupee className="icon" /> },
     {
       name: `${t("nv-cattel-feed")}`,
       icon: <GiFertilizerBag className="icon" />,
     },
-    { name: `${t("nv-deduction")}`, icon: <BsGearFill className="icon" /> },
+    { name: `${t("nv-deduction")}`, icon: <BiCut className="icon" /> },
     { name: `${t("nv-animal")}`, icon: <GiCow className="icon" /> },
     { name: `${t("nv-profile")}`, icon: <BsPersonCircle className="icon" /> },
+    { name: `${t("nv-dash")}`, icon: <BsGridFill className="icon" /> },
   ];
 
   return (
@@ -75,7 +76,7 @@ const Custnavlinks = ({ setselected }) => {
                   {button.icon}
                 </div>
                 <div className="menu-text-div w100 h30 d-flex center">
-                  <span>{button.name}</span>
+                  <span className="sub-heading">{button.name}</span>
                 </div>
               </div>
             )
