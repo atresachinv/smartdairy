@@ -8,23 +8,25 @@ import {
 import { FaFillDrip } from "react-icons/fa";
 import { BiCut } from "react-icons/bi";
 import { GiFertilizerBag, GiCow } from "react-icons/gi";
-
 import { useDispatch, useSelector } from "react-redux";
 import { fetchDairyInfo } from "../../App/Features/Admin/Dairyinfo/dairySlice";
 import { generateMaster } from "../../App/Features/Customers/Date/masterdateSlice";
 import { getMasterDates } from "../../App/Features/Customers/Date/masterSlice";
 import { useTranslation } from "react-i18next";
 import "../../Styles/Customer/Customer.css";
+import { getProfileInfo } from "../../App/Features/Customers/Profile/profileSlice";
 
 const Custnavlinks = ({ setselected }) => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
+  const username = useSelector((state) => state.profile.profileInfo.cname);
   const dairyname = useSelector((state) => state.dairy.dairyData.SocietyName);
   const date = useSelector((state) => state.date.toDate);
   const yearStart = useSelector((state) => state.date.yearStart);
   const yearEnd = useSelector((state) => state.date.yearEnd);
 
   useEffect(() => {
+    dispatch(getProfileInfo());
     dispatch(fetchDairyInfo());
     dispatch(generateMaster(date));
     if (yearStart && yearEnd) {
@@ -34,7 +36,6 @@ const Custnavlinks = ({ setselected }) => {
 
   const mainnavbuttons = [
     { name: "navbar", icon: <BsGridFill className="icon" /> },
-
     { name: `${t("nv-milk-coll")}`, icon: <FaFillDrip className="icon" /> },
     { name: `${t("nv-pay")}`, icon: <BsCurrencyRupee className="icon" /> },
     {
@@ -50,15 +51,13 @@ const Custnavlinks = ({ setselected }) => {
   return (
     <div className="main-menu-container w100 h1 d-flex-col">
       <div className="center-selection-div w100 h20 d-flex-col p10">
-        <span className="dairyname w100 h40">{dairyname}</span>
+        <span className="dairyname w100 h40">{username}</span>
         <div className="select-div w100 h40 d-flex a-center sb">
           <span className="icons w10 px10">
             <BsBriefcaseFill />
           </span>
-          <select disabled className="centers w80 h1 d-flex-col">
+          <select disabled className="centers w80 h1 d-flex center">
             <option value="">{dairyname}</option>
-            <option value="">1</option>
-            <option value="">1</option>
           </select>
         </div>
       </div>

@@ -17,22 +17,32 @@
   color: #5d06ad;
   background: transparent;
 }
-.update-container{
+.update-container {
   margin-top: 30%;
 }
 
 .form-btn {
   padding: 10px;
-  background: #7235ed;
+  font-weight: 600;
+  border-radius: 7px;
   color: #fff;
   border: none;
-  border-radius: 7px;
-  transition:all 0.3s ease ;
+  background: linear-gradient(
+    321deg,
+    rgba(55, 188, 226, 1) 61%,
+    rgba(44, 72, 226, 1) 100%
+  );
+  transition: all 0.3s ease;
 }
 .form-btn:hover {
-  font-weight: 600;
-  color: #7235ed;
-  background-color: #fff;
+  background: linear-gradient(
+    167deg,
+    rgba(55, 188, 226, 1) 61%,
+    rgba(44, 72, 226, 1) 100%
+  );
+}
+.remember-me-div .checkbx {
+  border: #5d06ad;
 }
 /* ............................... */
 /*Responsive css*/
@@ -71,7 +81,13 @@
   }
 
   .auth-container .login-form {
-    width: 70%;
-    margin: 0 15%;
+    width: 80%;
+    margin: 0 10%;
+  }
+  .remember-me-div {
+    text-align: start;
+  }
+  .account-check-div {
+    text-align: center;
   }
 }

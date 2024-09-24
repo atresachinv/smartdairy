@@ -130,10 +130,10 @@ const Custdashboard = () => {
                   />
                   <YAxis
                     tick={{ fontSize: 8 }} // Set font size for Y-axis
-                    domain={[0, "dataMax + 100"]} // Adjust the Y-axis domain as needed
+                    domain={[0, "dataMax + 10"]} // Adjust the Y-axis domain as needed
                   />
                   <Tooltip />
-                  <Bar dataKey="amount" fill="#8884d8" />
+                  <Bar dataKey="amount" fill="#ffcc99" />
                 </BarChart>
               </ResponsiveContainer>
             )}

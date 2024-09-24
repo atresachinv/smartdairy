@@ -30,11 +30,13 @@ const profileSlice = createSlice({
       })
       .addCase(getProfileInfo.fulfilled, (state, action) => {
         state.status = "succeeded";
-        state.profileInfo = action.payload;
+        state.profileInfo = action.payload.profileInfo;
+        state.loading = false;
       })
       .addCase(getProfileInfo.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.payload;
+        state.loading = false;
       });
   },
 });

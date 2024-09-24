@@ -17,9 +17,9 @@ export const store = configureStore({
     milk: milkReducer,
     mMilk: milkMasterReducer,
     dairy: dairyReducer,
-    profile: profileReducer,
+    profile: profileReducer, //for profile info
     master: masterdateReducer,
-    masterdates: mastersReducer, // for master date list
+    masterdates: mastersReducer, // for master date list from db
     purchase: purchaseReducer,
     deduction: deductionReducer,
     payment: paymentReducer,

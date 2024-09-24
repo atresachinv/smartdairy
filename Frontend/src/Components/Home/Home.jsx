@@ -6,7 +6,7 @@ import "../../Styles/Home/Home.css";
 const Home = () => {
   return (
     <>
-      <div className="nav-bar w100">
+      <div className="nav-bar w100 h10">
         <Navigation />
       </div>
       <div className="home-container w100 d-flex">

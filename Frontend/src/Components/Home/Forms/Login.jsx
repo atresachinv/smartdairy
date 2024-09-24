@@ -1,87 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import axios from "axios";
 // css
 import "../../../Styles/Home/Forms.css";
-
-//*******************************************
-
-// const Login = ({ switchToRegister }) => {
-//   const navigate = useNavigate();
-//   const [values, setValues] = useState({
-//     user_id: "",
-//     user_password: "",
-//   });
-//
-//   const handleInputs = (e) => {
-//     const { name, value } = e.target;
-//     setValues({ ...values, [name]: value });
-//   };
-//
-//   axios.defaults.baseURL = import.meta.env.VITE_BASE_URI;
-//   axios.defaults.withCredentials = true;
-//
-//   const handleLogin = (e) => {
-//     e.preventDefault();
-//     axios
-//       .post("/login", values)
-//       .then((res) => {
-//         localStorage.setItem("token", res.data.token);
-//         toast.success("Login Successful");
-//         navigate("/mainapp/home"); // Redirect to Main App
-//       })
-//       .catch((err) => {
-//         if (err.response) {
-//           console.error(`Error during login: ${err.response.data.message}`);
-//         } else {
-//           console.error(`Error during login1: ${err.message}`);
-//         }
-//       });
-//   };
-//
-//   return (
-//     <div className="form-container w50 h1 d-flex-col p10">
-//       <div className="form-title w100 h10 d-flex-col">
-//         <span className="title">Login Now</span>
-//       </div>
-//       <form onSubmit={handleLogin} className="login-form w100 h50 d-flex-col">
-//         <div className="data-div w100">
-//           <span className="text">Enter Userid</span>
-//           <input
-//             type="text"
-//             name="user_id"
-//             className="data"
-//             required
-//             onChange={handleInputs}
-//           />
-//         </div>
-//         <div className="data-div w100">
-//           <span className="text">Enter Password</span>
-//           <input
-//             type="password"
-//             name="user_password"
-//             className="data"
-//             required
-//             onChange={handleInputs}
-//           />
-//         </div>
-//         <button className="form-btn" type="submit">
-//           Login
-//         </button>
-//         <div className="account-check-div">
-//           <h2 className="text">
-//             I don't have account{" "}
-//             <button onClick={switchToRegister} className="swith-form-button">
-//               Register
-//             </button>{" "}
-//             Now!
-//           </h2>
-//         </div>
-//       </form>
-//     </div>
-//   );
-// };
 
 const Login = ({ switchToRegister, switchToOptSend }) => {
   const navigate = useNavigate();
@@ -89,10 +11,30 @@ const Login = ({ switchToRegister, switchToOptSend }) => {
     user_id: "",
     user_password: "",
   });
+  const [rememberMe, setRememberMe] = useState(false);
+
+  // Check if login details are stored in localStorage when the component mounts
+  useEffect(() => {
+    const storedUserId = localStorage.getItem("user_id");
+    const storedPassword = localStorage.getItem("user_password");
+    const storedRememberMe = localStorage.getItem("rememberMe");
+
+    if (storedUserId && storedPassword && storedRememberMe === "true") {
+      setValues({
+        user_id: storedUserId,
+        user_password: storedPassword,
+      });
+      setRememberMe(true); // Set the checkbox to checked if credentials were stored
+    }
+  }, []);
 
   const handleInputs = (e) => {
     const { name, value } = e.target;
     setValues({ ...values, [name]: value });
+  };
+
+  const handleRememberMeChange = (e) => {
+    setRememberMe(e.target.checked);
   };
 
   axios.defaults.baseURL = import.meta.env.VITE_BASE_URI;
@@ -105,6 +47,18 @@ const Login = ({ switchToRegister, switchToOptSend }) => {
       .then((res) => {
         const { user_role } = res.data;
         toast.success("Login Successful");
+
+        // If "Remember Me" is checked, store credentials in localStorage
+        if (rememberMe) {
+          localStorage.setItem("user_id", values.user_id);
+          localStorage.setItem("user_password", values.user_password); // Ideally, store a hashed password or token
+          localStorage.setItem("rememberMe", "true");
+        } else {
+          // If "Remember Me" is not checked, remove credentials from localStorage
+          localStorage.removeItem("user_id");
+          localStorage.removeItem("user_password");
+          localStorage.removeItem("rememberMe");
+        }
 
         // Redirect based on user_role
         if (user_role === "super_admin") {
@@ -133,14 +87,15 @@ const Login = ({ switchToRegister, switchToOptSend }) => {
       <div className="form-title w100 h10 d-flex-col t-center">
         <span className="title">Login Now</span>
       </div>
-      <form onSubmit={handleLogin} className="login-form w100 h50 d-flex-col">
+      <form onSubmit={handleLogin} className="login-form w100 h1 d-flex-col">
         <div className="data-div w100">
-          <span className="text">Enter Userid</span>
+          <span className="text">Enter User ID</span>
           <input
             type="text"
             name="user_id"
             className="data"
             required
+            value={values.user_id}
             onChange={handleInputs}
           />
         </div>
@@ -151,22 +106,34 @@ const Login = ({ switchToRegister, switchToOptSend }) => {
             name="user_password"
             className="data"
             required
+            value={values.user_password}
             onChange={handleInputs}
           />
         </div>
-        <div className="account-check-div">
-          <h2 className="text">
-            <button onClick={switchToOptSend} className="swith-form-button">
-              Forget Password ?
-            </button>
-          </h2>
+        <div className="remember-me-div w100 d-flex j-start a-center py10">
+          <input
+          className="checkbx"
+            type="checkbox"
+            checked={rememberMe}
+            onChange={handleRememberMeChange}
+          />
+          <span className="px10 heading">Remember me!</span>
         </div>
         <button className="form-btn" type="submit">
           Login
         </button>
         <div className="account-check-div">
           <h2 className="text">
-            I don't have account{" "}
+            <button
+              onClick={switchToOptSend}
+              className="info-text swith-form-button">
+              Forget Password?
+            </button>
+          </h2>
+        </div>
+        <div className="account-check-div">
+          <h2 className="text">
+            I don't have an account{" "}
             <button onClick={switchToRegister} className="swith-form-button">
               Register
             </button>{" "}

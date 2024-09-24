@@ -108,7 +108,7 @@ const CustPayment = () => {
           <div className="payment-details-div w100 h90 mh90 d-flex-col hidescrollbar p10">
             <div className="milk-summary-container w100 h1 d-flex-col bg py10 ">
               <span className="heading px10">{t("c-page-title-milk")} :</span>
-              <div className="invoice-of-collection-div w100 h90 d-flex-col">
+              <div className="invoice-of-collection-div w100 h1 d-flex-col">
                 <div className="content-titles-div w100 d-flex center t-center sa p10">
                   <span className="text w15">{t("c-date")}</span>
                   <span className="text w5">{t("c-m/e")}</span>

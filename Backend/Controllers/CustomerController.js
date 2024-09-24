@@ -245,8 +245,8 @@ exports.profileInfo = async (req, res) => {
           console.error("Error executing summary query: ", err);
           return res.status(500).json({ message: "query execution error" });
         }
-        const getprofileInfo = result[0];
-        res.status(200).json({ getprofileInfo });
+        const profileInfo = result[0];
+        res.status(200).json({ profileInfo });
       });
     } catch (error) {
       console.error("Error processing request: ", error);
