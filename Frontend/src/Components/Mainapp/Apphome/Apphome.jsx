@@ -13,10 +13,15 @@ const Apphome = () => {
   useEffect(() => {
     localStorage.setItem("selectedTabIndex", isselected);
   }, [isselected]);
+
+   useEffect(() => {
+     localStorage.setItem("selectednav", isselected);
+   }, [isselected]);
+
   return (
     <div className="app-home-container w100 h1">
-      <div className="header-nav w100 h10 d-flex a-center">
-        <AppNavlinks setselected={setIsSelected} />
+      <div className="header-nav w100 d-flex a-center">
+        <AppNavlinks isselected={isselected} setselected={setIsSelected} />
       </div>
       <div className="home-nav-views w100 h90 d-flex center">
         <AppNavviews index={isselected} />

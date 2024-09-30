@@ -3,10 +3,10 @@
   display: flex;
   flex-direction: column;
 }
-.form-div > label {
+.form-div label {
   margin: 5px 0 5px 15px;
 }
-.form-div > .form-inputs {
+.form-div .form-inputs {
   width: 90%;
   margin: 0 5% 10px 5%;
   padding: 10px;
@@ -14,6 +14,17 @@
   border-radius: 5px;
   background-color: var(--bg-gray-color);
 }
+
+.form-inputs::-webkit-outer-spin-button,
+.form-inputs::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.form-div .form-inputs:focus {
+  outline: none;
+  box-shadow: 1px 1px 8px 0px rgba(166, 166, 166, 1);
+}
+
 .milk-col-form .form-btns .form-btn {
   width: 100px;
   margin-right: 10px;

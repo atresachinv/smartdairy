@@ -53,7 +53,7 @@ const Mainapp = () => {
         <Sidebar setselected={setIsselected} handleSidebar={handleSidebar} />
       </div>
       <div className="nav-main-view-container w80 h1 d-flex-col">
-        <div className="header-navs w100 h10 d-flex a-center sb px10">
+        <div className="header-navs w100 h10 d-flex a-center sb px10 bg6">
           <Header handleSidebar={handleSidebar} logout={handleLogout} />
         </div>
         <div className="main-view-container w100 h90 d-flex">

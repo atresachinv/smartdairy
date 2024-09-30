@@ -55,17 +55,6 @@ const CustNavbar = ({ handleBackButton }) => {
       </div>
 
       <div className="logout-btn w60 d-flex j-end mx10">
-        {/* <select
-          className="lang-selector-btn"
-          onChange={(e) => handleLanguageChange(e.target.value)}>
-          <option className="opts" value="mr">
-            मराठी
-          </option>
-          <option className="opts" value="en">
-            English
-          </option>
-        </select> */}
-
         <BsEscape className="icon" onClick={handleLogout} />
       </div>
 

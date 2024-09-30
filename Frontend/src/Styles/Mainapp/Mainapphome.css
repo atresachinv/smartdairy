@@ -25,6 +25,10 @@
   .main-home-container .nav-main-view-container {
     width: 100%;
   }
+  .menu-header {
+    display: none;
+    width: 0;
+  }
 }
 @media screen and (max-width: 768px) {
   .main-home-container .nav-main-view-container {
@@ -48,6 +52,7 @@
     display: none;
   }
 }
+
 @media screen and (max-width: 426px) {
   .main-home-container .nav-main-view-container {
     width: 100%;
@@ -69,5 +74,14 @@
 
   .close-sidebar {
     display: none;
+  }
+
+  /* nav header */
+
+  .menu-header {
+    width: 10%;
+  }
+  .dairy-name {
+    width: 90%;
   }
 }

@@ -13,7 +13,7 @@ const Sidebar = ({ setselected, handleSidebar }) => {
             <BsXLg />
           </span>
         </div>
-        <ul className="sidebar-list w100 h1">
+        <ul className="sidebar-list w100 d-flex-col px10">
           <Mainappnavlinks
             setselected={setselected}
             handleSidebar={handleSidebar}

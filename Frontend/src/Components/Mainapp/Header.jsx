@@ -1,9 +1,9 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { BsJustify, BsEscape, BsPersonCircle } from "react-icons/bs";
+import { fetchDairyInfo } from "../../App/Features/Admin/Dairyinfo/dairySlice";
 
 import "../../Styles/Mainapp/Mainapphome.css";
-import { fetchDairyInfo } from "../../App/Features/Admin/Dairyinfo/dairySlice";
 
 const Header = ({ handleSidebar, logout }) => {
   const dispatch = useDispatch();
@@ -17,20 +17,12 @@ const Header = ({ handleSidebar, logout }) => {
 
   return (
     <>
-      <div className="menu-header d-flex a-center ">
-        <BsJustify className="menu-icon c1" onClick={handleSidebar} />
-        <span className="title px10">{dairyname}</span>
+      <div className="menu-header w10 d-flex a-center ">
+        <BsJustify className="menu-icon w100 c1" onClick={handleSidebar} />
       </div>
-      <div className="header-right d-flex">
-        <h2 className="heading d-flex center mx10">
-          <BsPersonCircle className="icon" />
-          <span>smartdairy</span>
-          <span>{toDate}</span>
-        </h2>
-        <h2 className="heading logout-btn d-flex center" onClick={logout}>
-          <BsEscape className="icon " />
-          <span>Logout</span>
-        </h2>
+      <div className="dairy-name w90 d-flex a-center sb">
+        <span className="title w80 px10">{dairyname}</span>
+        <span className="label-text w20 d-flex j-center">{toDate}</span>
       </div>
     </>
   );

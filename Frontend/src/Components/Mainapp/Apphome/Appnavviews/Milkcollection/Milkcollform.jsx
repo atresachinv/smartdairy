@@ -8,7 +8,7 @@ const MilkColleform = () => {
         <span className="heading"> User Details : </span>
         <div className="user-details w100 h20 d-flex ">
           <div className="form-div">
-            <label htmlFor="" className=" text">
+            <label htmlFor="" className="info-text">
               Enter User Code
             </label>
             <input
@@ -19,7 +19,7 @@ const MilkColleform = () => {
             />
           </div>
           <div className="form-div">
-            <label htmlFor="" className="text">
+            <label htmlFor="" className="info-text">
               Enter User Name
             </label>
             <input
@@ -35,7 +35,7 @@ const MilkColleform = () => {
           <div className="milk-details w100 h90 d-flex">
             <div className="milk-info w50 h1 ">
               <div className="form-div">
-                <label htmlFor="" className="text">
+                <label htmlFor="" className="info-text">
                   Litters
                 </label>
                 <input
@@ -46,7 +46,7 @@ const MilkColleform = () => {
                 />
               </div>
               <div className="form-div">
-                <label htmlFor="" className="text">
+                <label htmlFor="" className="info-text">
                   FAT-1
                 </label>
                 <input
@@ -57,7 +57,7 @@ const MilkColleform = () => {
                 />
               </div>
               <div className="form-div">
-                <label htmlFor="" className="text">
+                <label htmlFor="" className="info-text">
                   SNF-1
                 </label>
                 <input
@@ -70,7 +70,7 @@ const MilkColleform = () => {
             </div>
             <div className="milk-info w50 h1 d-flex-col">
               <div className="form-div">
-                <label htmlFor="" className="text">
+                <label htmlFor="" className="info-text">
                   Degree
                 </label>
                 <input
@@ -82,7 +82,7 @@ const MilkColleform = () => {
                 />
               </div>
               <div className="form-div">
-                <label htmlFor="" className="text">
+                <label htmlFor="" className="info-text">
                   Rate
                 </label>
                 <input
@@ -94,7 +94,7 @@ const MilkColleform = () => {
                 />
               </div>
               <div className="form-div">
-                <label htmlFor="" className="text">
+                <label htmlFor="" className="info-text">
                   Ammount
                 </label>
                 <input

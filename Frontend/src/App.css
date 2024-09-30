@@ -301,7 +301,7 @@
   cursor: pointer;
 }
 .title {
-  font-size: clamp(14px, 3vw, 24px);
+  font-size: clamp(12px, 3vw, 20px);
   font-weight: 600;
   color: #f16868;
   cursor: pointer;
@@ -331,15 +331,24 @@
   cursor: pointer;
 }
 .label-text {
-  font-size: clamp(10px, 2vw, 14px);
+  font-size: clamp(8px, 2vw, 14px);
   font-weight: 500;
   margin-top: 5px;
-  color: #350594;
+  color: #34078e;
+  cursor: pointer;
+}
+.f-label-text {
+  font-size: clamp(10px, 2vw, 14px);
+  font-weight: 300;
+  margin-top: 5px;
+  color: #fff;
+  cursor: pointer;
 }
 .text {
   font-size: clamp(10px, 2vw, 14px);
   font-weight: 300;
   margin-top: 5px;
+  cursor: pointer;
 }
 .info-text {
   font-size: clamp(7px, 3vw, 12px);
@@ -352,7 +361,6 @@
   font-weight: 300;
   margin-top: 5px;
 }
-
 .req {
   color: red;
 }
@@ -398,7 +406,7 @@ body {
 
 @media screen and (max-width: 769px) {
   .data {
-    padding: 8px;
+    padding: 5px;
   }
 
   .react-tosts {

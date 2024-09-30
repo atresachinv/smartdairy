@@ -79,12 +79,12 @@ const CustDeductions = () => {
             <Spinner />
           </div>
         ) : subdeduction.length > 0 ? (
-          <div className="deduction-info-container w100 mh80 d-flex ">
+          <div className="deduction-info-container w100 h1 d-flex ">
             <div className="deduction-info-details w100 h1 d-flex-col p10">
-              <div className="date-billno-div w100 h20 d-flex sb">
+              <div className="date-billno-div w100 h10 d-flex sb">
                 <div className="dates w50 h10 d-flex sb">
-                  <span className="text">{t("c-date")} : </span>
-                  <span className="info-text">
+                  <span className="text w30">{t("c-date")} : </span>
+                  <span className="info-text w70 j-start">
                     {deduction?.ToDate
                       ? new Date(deduction.ToDate).toLocaleDateString()
                       : "N/A"}

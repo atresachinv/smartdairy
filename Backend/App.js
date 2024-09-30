@@ -2,7 +2,9 @@ const express = require("express");
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
 const dotenv = require("dotenv");
-dotenv.config({ path: ".env" });
+const path = require("path");
+dotenv.config({ path: path.resolve(__dirname, ".env") });
+
 const app = express();
 app.use(express.json());
 app.use(cookieParser());

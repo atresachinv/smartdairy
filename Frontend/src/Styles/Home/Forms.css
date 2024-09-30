@@ -44,6 +44,23 @@
 .remember-me-div .checkbx {
   border: #5d06ad;
 }
+.password-input-container {
+  border-radius: 4px;
+  background-color: #ebebeb;
+}
+.password-input-container .pss-eye {
+  font-size: 18px;
+  color: #5d06ad;
+}
+.pass {
+  padding: 10px;
+  border: none;
+  border-radius: 4px;
+  background-color: #ebebeb;
+}
+.pass:focus {
+  outline: none;
+}
 /* ............................... */
 /*Responsive css*/
 /* ............................... */
