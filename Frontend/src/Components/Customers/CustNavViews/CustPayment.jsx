@@ -31,26 +31,34 @@ const CustPayment = () => {
     if (selectedIndex !== "") {
       const selectedDates = master[selectedIndex];
       setSelectedPeriod(selectedDates);
+      let formd = selectedDates.fromDate;
+      let tdate = selectedDates.toDate;
+      // const newfd = "2024-07-21";
+      // const newtd = "2024-07-31";
+      const newfd = new Date(formd).toISOString().slice(0, 10);
+      const newtd = new Date(tdate).toISOString().slice(0, 10);
       // Dispatch the action with the selected fromDate and toDate
+      console.log(newfd, newtd);
+
       dispatch(
         getMasterReports({
-          fromDate: selectedDates.fromDate,
-          toDate: selectedDates.toDate,
+          fromDate: newfd,
+          toDate: newtd,
         })
       );
 
       dispatch(resetDeduction());
       dispatch(
         getDeductionInfo({
-          fromDate: selectedDates.fromDate,
-          toDate: selectedDates.toDate,
+          fromDate: newfd,
+          toDate: newtd,
         })
       );
       dispatch(resetPayment());
       dispatch(
         getPaymentInfo({
-          fromDate: selectedDates.fromDate,
-          toDate: selectedDates.toDate,
+          fromDate: newfd,
+          toDate: newtd,
         })
       );
     }
@@ -79,15 +87,15 @@ const CustPayment = () => {
             {master.map((dates, index) => (
               <option className="sub-heading" key={index} value={index}>
                 {new Date(dates.fromDate).toLocaleDateString("en-GB", {
-                  day: "2-digit",
-                  month: "short", // Abbreviated month format
                   year: "numeric",
-                })}{" "}
-                To:{" "}
+                  month: "short", // Abbreviated month format
+                  day: "2-digit",
+                })}
+                To:
                 {new Date(dates.toDate).toLocaleDateString("en-GB", {
-                  day: "2-digit",
-                  month: "short", // Abbreviated month format
                   year: "numeric",
+                  month: "short", // Abbreviated month format
+                  day: "2-digit",
                 })}
               </option>
             ))}
@@ -105,10 +113,10 @@ const CustPayment = () => {
           </div>
         ) : (
           // payment info
-          <div className="payment-details-div w100 h90 mh90 d-flex-col hidescrollbar p10">
-            <div className="milk-summary-container w100 h1 d-flex-col bg py10 ">
+          <div className="payment-details-div w100 h90 d-flex-col hidescrollbar p10">
+            <div className="milk-summary-container w100 d-flex-col bg py10 ">
               <span className="heading px10">{t("c-page-title-milk")} :</span>
-              <div className="invoice-of-collection-div w100 h1 d-flex-col">
+              <div className="invoice-of-collection-div w100 d-flex-col">
                 <div className="content-titles-div w100 d-flex center t-center sa p10">
                   <span className="text w15">{t("c-date")}</span>
                   <span className="text w5">{t("c-m/e")}</span>
@@ -119,7 +127,7 @@ const CustPayment = () => {
                   <span className="text w10">{t("c-rate")}</span>
                   <span className="text w15">{t("c-amt")}</span>
                 </div>
-                <div className="report-data-container w100 h90 mh90 d-flex-col hidescrollbar">
+                <div className="report-data-container w100 h90 d-flex-col hidescrollbar">
                   {Array.isArray(records) && records.length > 0 ? (
                     records.map((report, index) => (
                       <div
@@ -201,9 +209,7 @@ const CustPayment = () => {
             </div>
             {/* deduction info */}
             <div className="cattel-feeds-summary-div w100 h50 d-flex-col py10 bg my10">
-              <span className="heading px10">
-                {t("c-page-title-deduct")} :{" "}
-              </span>
+              <span className="heading px10">{t("c-page-title-deduct")} :</span>
               <div className="purchase-detailsitable w100 h80 mh80 d-flex-col hidescrollbar px10">
                 {subdeduction.length > 0 ? (
                   <div className="sub-deductions w100 h50 mh40 d-flex-col sb my10">

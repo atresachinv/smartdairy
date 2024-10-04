@@ -4,8 +4,47 @@ const pool = require("../Configs/Database");
 dotenv.config({ path: "Backend/.env" });
 
 // ..................................................
+// Create New Dairy User..........................
+// ..................................................
+
+
+
+// ..................................................
 // master Dates ..........................
 // ..................................................
+
+// exports.masterDates = async (req, res) => {
+//   const { yearStart, yearEnd } = req.body;
+// 
+//   pool.getConnection((err, connection) => {
+//     if (err) {
+//       console.error("Error getting MySQL connection: ", err);
+//       return res.status(500).json({ message: "Database connection error" });
+//     }
+// 
+//     try {
+//       const getMasters = `SELECT DISTINCT fromDate, toDate FROM custbilldetails WHERE fromDate BETWEEN ? AND ? ORDER BY fromDate DESC`;
+// 
+//       connection.query(getMasters, [yearStart, yearEnd], (err, result) => {
+//         connection.release();
+// 
+//         if (err) {
+//           console.error("master query execution error: ", err);
+//           return res
+//             .status(500)
+//             .json({ message: "master query execution error" });
+//         }
+// 
+//         const getMasters = result;
+// 
+//         res.status(200).json({ getMasters: getMasters });
+//       });
+//     } catch (error) {
+//       console.error("Error processing request: ", error);
+//       return res.status(500).json({ message: "Internal server error" });
+//     }
+//   });
+// };
 
 exports.masterDates = async (req, res) => {
   const { yearStart, yearEnd } = req.body;
@@ -17,7 +56,14 @@ exports.masterDates = async (req, res) => {
     }
 
     try {
-      const getMasters = `SELECT DISTINCT fromDate, toDate FROM custbilldetails WHERE fromDate BETWEEN ? AND ? ORDER BY fromDate DESC`;
+      // Use DATE() function to ensure only date parts are retrieved
+      const getMasters = `
+        SELECT DISTINCT 
+          DATE(fromDate) AS fromDate, 
+          DATE(toDate) AS toDate 
+        FROM custbilldetails 
+        WHERE fromDate BETWEEN ? AND ? 
+        ORDER BY fromDate ASC`; // Ascending to get earliest dates first
 
       connection.query(getMasters, [yearStart, yearEnd], (err, result) => {
         connection.release();
@@ -29,9 +75,13 @@ exports.masterDates = async (req, res) => {
             .json({ message: "master query execution error" });
         }
 
-        const getMasters = result;
+        // Map result to desired format
+        const formattedResult = result.map((record) => ({
+          fromDate: record.fromDate, // This should already be in YYYY-MM-DD format
+          toDate: record.toDate, // This should already be in YYYY-MM-DD format
+        }));
 
-        res.status(200).json({ getMasters: getMasters });
+        res.status(200).json({ getMasters: formattedResult });
       });
     } catch (error) {
       console.error("Error processing request: ", error);
@@ -39,6 +89,9 @@ exports.masterDates = async (req, res) => {
     }
   });
 };
+ 
+
+
 
 
 //.................................................

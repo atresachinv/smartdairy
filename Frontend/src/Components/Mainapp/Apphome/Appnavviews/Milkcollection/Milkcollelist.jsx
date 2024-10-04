@@ -15,16 +15,18 @@ const Milkcollelist = () => {
           </div>
           <div className="line"></div>
           <div className="col-milk-info w100 h60 d-flex-col">
-            <div className="info-title w100 h50 d-flex">
-              <span className="text w20 d-flex center">FAT-1</span>
-              <span className="text w20 d-flex center">SNF-1</span>
-              <span className="text w20 d-flex center">Deg</span>
+            <div className="info-title w100 h50 d-flex sa">
+              <span className="text w15 d-flex center">FAT</span>
+              <span className="text w15 d-flex center">SNF</span>
+              <span className="text w10 d-flex center">Deg</span>
+              <span className="text w20 d-flex center">Liters</span>
               <span className="text w20 d-flex center">Rate</span>
-              <span className="text w20 d-flex center">AMT</span>
+              <span className="text w20 d-flex center">Amount</span>
             </div>
-            <div className="info-value w100 h50 d-flex">
-              <span className="text w20 d-flex center">00.0</span>
-              <span className="text w20 d-flex center">00.0</span>
+            <div className="info-value w100 h50 d-flex sa">
+              <span className="text w15 d-flex center">00.0</span>
+              <span className="text w15 d-flex center">00.0</span>
+              <span className="text w10 d-flex center">00.0</span>
               <span className="text w20 d-flex center">00.0</span>
               <span className="text w20 d-flex center">00.0</span>
               <span className="text w20 d-flex center">00.0</span>

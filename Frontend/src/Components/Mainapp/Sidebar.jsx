@@ -1,7 +1,7 @@
 import React from "react";
 import { BsXLg } from "react-icons/bs";
-import "../../Styles/Mainapp/Sidebar.css";
 import Mainappnavlinks from "./Mainappnavlinks";
+import "../../Styles/Mainapp/Sidebar.css";
 
 const Sidebar = ({ setselected, handleSidebar }) => {
   return (

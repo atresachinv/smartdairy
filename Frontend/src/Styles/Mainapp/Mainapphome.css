@@ -11,12 +11,16 @@
 }
 .sidebar-container {
   width: 20%;
-  background: var(--main-bg-color);
+  /* background: var(--main-bg-color); */
+ background: linear-gradient(15deg, rgba(86,11,173,1) 1%, rgba(63,55,201,1) 39%, rgba(76,201,240,1) 96%);
 }
 
 .sidebar-list-item {
   cursor: pointer;
 }
+.submenu .submenu-item{ 
+padding-left: 40px;
+} 
 /* header nav css end */
 
 /*Responsive css*/

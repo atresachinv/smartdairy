@@ -281,13 +281,6 @@
   box-shadow: 1px 2px 2px rgb(83, 81, 81);
 }
 
-.btn-hover:hover {
-  transition: all 0.3s ease-in-out;
-  color: #fff;
-  background-color: #8b52fc;
-  box-shadow: 1px 3px 2px rgb(83, 81, 81);
-}
-
 .hidescrollbar::-webkit-scrollbar {
   display: none;
 }
@@ -402,14 +395,74 @@ body {
   border-radius: 6px;
 }
 
+/* Icons */
+.color-icon {
+  color: #34078e;
+}
+
+/* Buttons  */
+
+
+.w-btn {
+  width: 120px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
+  border: none;
+  border-radius: 6px;
+  font-weight: 500;
+  color: #fff;
+  transition: all 0.3s ease-in-out;
+  background: linear-gradient(
+    207deg,
+    rgba(13, 65, 225, 1) 10%,
+    rgba(9, 166, 243, 1) 53%
+  );
+}
+.btn {
+  width: auto;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
+  border: none;
+  border-radius: 6px;
+  font-weight: 500;
+  color: #fff;
+  transition: all 0.3s ease-in-out;
+  background: linear-gradient(
+    207deg,
+    rgba(13, 65, 225, 1) 10%,
+    rgba(9, 166, 243, 1) 53%
+  );
+}
+
+.w-btn:hover,
+.btn:hover {
+  background: linear-gradient(
+    40deg,
+    rgba(13, 65, 225, 1) 10%,
+    rgba(9, 166, 243, 1) 53%
+  );
+}
+
 /*Responsive css*/
 
 @media screen and (max-width: 769px) {
   .data {
     padding: 5px;
   }
-
   .react-tosts {
     font-size: 12px;
+  }
+  .w-btn {
+    width: 70px;
+    height: 30px;
+  }
+  .btn {
+    height: 30px;
   }
 }

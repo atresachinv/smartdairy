@@ -49,15 +49,20 @@ const CollectionReport = () => {
         <select
           className="custom-select sub-heading w80 h1 p10"
           onChange={handleSelectChange}>
-          <option className="sub-heading">--{t("c-select-master")}--</option>
+          <option className="sub-heading w100 d-flex">
+            --{t("c-select-master")}--
+          </option>
           {master.map((dates, index) => (
-            <option className="sub-heading" key={index} value={index}>
+            <option
+              className="sub-heading w100 d-flex sa"
+              key={index}
+              value={index}>
               {new Date(dates.fromDate).toLocaleDateString("en-GB", {
                 day: "2-digit",
                 month: "short", // Abbreviated month format
                 year: "numeric",
               })}
-              To:
+              <span className="px10"> To : </span>
               {new Date(dates.toDate).toLocaleDateString("en-GB", {
                 day: "2-digit",
                 month: "short", // Abbreviated month format

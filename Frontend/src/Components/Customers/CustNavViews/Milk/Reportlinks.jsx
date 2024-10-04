@@ -14,7 +14,7 @@ const Reportlinks = ({ isselected, setselected }) => {
 
   const mainnavbuttons = [
     { name: `${t("c-coll-report")}`, icon: <BsGridFill className="icon" /> },
-    { name: `${t("c-mlik-summary")}`, icon: <BsGridFill className="icon" /> },
+    // { name: `${t("c-mlik-summary")}`, icon: <BsGridFill className="icon" /> },
   ];
 
   return (

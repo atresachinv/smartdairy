@@ -48,6 +48,9 @@
   border-radius: 4px;
   background-color: #ebebeb;
 }
+.password-input-container:hover {
+  box-shadow: 1px 2px 2px rgb(83, 81, 81);
+}
 .password-input-container .pss-eye {
   font-size: 18px;
   color: #5d06ad;

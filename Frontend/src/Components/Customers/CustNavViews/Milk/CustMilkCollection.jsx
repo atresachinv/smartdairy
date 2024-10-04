@@ -25,7 +25,7 @@ const CustMilkCollection = () => {
         <div className="menu-title-div w70 mx-15 h10 d-flex a-center p10">
           <h2 className="f-heading">{t("mc-title")}</h2>
         </div>
-        <div className="report-type-container w70 d-flex a-center sa ">
+        <div className="report-type-container w70 d-flex a-center px10">
           <Reportlinks isselected={isselected} setselected={setIsselected} />
         </div>
       </div>

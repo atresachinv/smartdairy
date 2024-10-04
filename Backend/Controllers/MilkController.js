@@ -3,12 +3,176 @@ const dotenv = require("dotenv");
 const pool = require("../Configs/Database");
 dotenv.config({ path: "Backend/.env" });
 
-// Milk Collection  ********************************************** */
-// (exports.milkCollection = async),
-//   (req, res) => {
-//     const {} = req.body;
-//
-//   };
+// ..................................................
+// Milk Collection .....................
+// ..................................................
+
+// Check Username ................
+exports.custName = async (req, res) => {
+  const { user_code, dairy_id } = req.body;
+  pool.getConnection((err, connection) => {
+    if (err) {
+      console.error("Error getting MySQL connection: ", err);
+      return res.status(500).json({ message: "Database connection error" });
+    }
+    try {
+      const getCustname = `SELECT cid, cname FROM customer WHERE srno = ? AND orgid = ?`;
+
+      connection.query(getCustname, [user_code, dairy_id], (err, result) => {
+        connection.release();
+        if (err) {
+          console.error("Error executing summary query: ", err);
+          return res.status(500).json({ message: "query execution error" });
+        }
+        const custdetails = result;
+        res.status(200).json({ custdetails });
+      });
+    } catch (error) {
+      console.error("Error processing request: ", error);
+      return res.status(500).json({ message: "Internal server error" });
+    }
+  });
+};
+
+//get rate from rate chart and calculate amount
+exports.getRateAmount = (req, res) => {
+  const { dairy_id, rccode, rcdate, fat, snf, liters } = req.body;
+
+  // Input validation (basic example)
+  if (!dairy_id || !rccode || !rcdate || !fat || !snf || !liters) {
+    return res.status(400).json({ message: "All fields are required." });
+  }
+
+  const getRateAmt = `
+    SELECT rate 
+    FROM ratemaster 
+    WHERE companyid = ? 
+      AND rccode = ? 
+      AND rcdate = ? 
+      AND fat = ? 
+      AND snf = ?
+    LIMIT 1
+  `;
+
+  pool.getConnection((err, connection) => {
+    if (err) {
+      console.error("Error getting MySQL connection: ", err);
+      return res.status(500).json({ message: "Database connection error" });
+    }
+
+    connection.query(
+      getRateAmt,
+      [dairy_id, rccode, rcdate, fat, snf],
+      (err, results) => {
+        connection.release(); // Always release the connection back to the pool
+
+        if (err) {
+          console.error("Error executing query: ", err);
+          return res.status(500).json({ message: "Query execution error" });
+        }
+
+        if (results.length === 0) {
+          return res
+            .status(404)
+            .json({ message: "Rate not found for the provided parameters." });
+        }
+
+        const rate = results[0].rate;
+
+        // Ensure 'liters' is a number
+        const litersNumber = parseFloat(liters);
+        if (isNaN(litersNumber)) {
+          return res.status(400).json({ message: "Invalid value for liters." });
+        }
+
+        const amt = litersNumber * parseFloat(rate);
+
+        res.status(200).json({ rate: parseFloat(rate), amt });
+      }
+    );
+  });
+};
+
+// saving milk collection to database
+exports.milkCollection = async (req, res) => {
+  const {
+    companyid,
+    DMEId,
+    ReceiptDate,
+    time,
+    animal,
+    liter,
+    fat,
+    snf,
+    amt,
+    GLCode,
+    code,
+    degree,
+    rate,
+    cname,
+    rno,
+  } = req.body;
+
+  pool.getConnection((err, connection) => {
+    if (err) {
+      console.error("Error getting MySQL connection: ", err);
+      return res.status(500).json({ message: "Database connection error" });
+    }
+
+    try {
+      // Get dairy_id and user_code from the verified token (already decoded in middleware)
+
+      const dairy_id = req.user.dairy_id;
+      const user_code = req.user.user_code;
+
+      if (!dairy_id) {
+        return res.status(400).json({ message: "Dairy ID not found!" });
+      }
+
+      const dairy_table = `dailymilkentry_${dairy_id}`;
+
+      // Prepare the SQL query
+      const milkcollection = `INSERT INTO ${dairy_table} (companyid, DMEId, ReceiptDate, ME, CB, Litres, fat, snf, Amt, GLCode, AccCode, Digree, rate, cname, rno) 
+                              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?)`;
+
+      // Execute the query
+      connection.query(
+        milkcollection,
+        [
+          companyid,
+          DMEId,
+          ReceiptDate,
+          time,
+          animal,
+          liter,
+          fat,
+          snf,
+          amt,
+          GLCode,
+          code,
+          degree,
+          rate,
+          cname,
+          rno,
+        ],
+        (err, results) => {
+          // Release the connection back to the pool
+          connection.release();
+
+          if (err) {
+            console.error("Error executing query: ", err);
+            return res.status(500).json({ message: "Query execution error" });
+          }
+
+          res.status(200).json({ message: "Milk entry saved successfully!" });
+        }
+      );
+    } catch (error) {
+      console.error("Error processing request: ", error);
+      return res.status(500).json({ message: "Internal server error" });
+    }
+  });
+};
 
 // Show Milk Collection *************************************** */
 
@@ -36,7 +200,6 @@ exports.todaysReport = async (req, res) => {
       console.error("Error getting MySQL connection: ", err);
       return res.status(500).json({ message: "Database connection error" });
     }
-
     const morningQuery = `
       SELECT fat, snf, rate, Litres, Amt 
       FROM dailymilkentry_102 

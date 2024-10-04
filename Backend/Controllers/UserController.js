@@ -180,7 +180,6 @@ exports.getEmail = async (req, res) => {
 
 // .....................................SEND OTP
 
-
 //..........................email transporter
 const transporter = nodemailer.createTransport({
   service: "gmail",
@@ -189,7 +188,6 @@ const transporter = nodemailer.createTransport({
     pass: process.env.GPASS, // Your email password or app-specific password (for Gmail)
   },
 });
-
 
 // .....................................SEND OTP
 
