@@ -2,9 +2,9 @@ import React, { useEffect, useState } from "react";
 import CustNavbar from "./CustNavbar";
 import Custnavviews from "./Custnavviews";
 import "../../Styles/Customer/Customer.css";
+import { useDispatch } from "react-redux";
 
 const Customers = () => {
- 
 
   const [isselected, setIsselected] = useState(0);
 
@@ -22,6 +22,8 @@ const Customers = () => {
   const handleBackButton = () => {
     setIsselected(0); // Set isselected to 0
   };
+
+  
 
   return (
     <div className="customer-container w100 h100 d-flex-col">

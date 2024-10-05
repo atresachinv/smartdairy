@@ -37,7 +37,6 @@
 /* ................................................. */
 .custmize-report-div {
   border: none;
-  border-radius: 6px;
   background-color: var(--bg-gray-color);
 }
 .cl-icon {
@@ -46,13 +45,13 @@
 .custmize-report-div .custom-select {
   margin-left: 10px;
   border: none;
-  border-radius: 6px;
+  /* border-radius: 6px; */
   background-color: transparent;
 }
 
 .content-total-value-div {
   border-radius: 0 0 6px 6px;
 }
-.content-titles-div{
+/* .content-titles-div{
   border-radius: 0 0 8px 8px;
-}
+} */

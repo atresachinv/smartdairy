@@ -26,9 +26,9 @@
   background-color: var(--bg-sky-color);
   border-radius: 8px;
 }
-.menu-icon-btn .menu-text-div span {
+/* .menu-icon-btn .menu-text-div span {
   font-size: 10px;
-}
+} */
 
 .lang-selector-btn {
   border: none;

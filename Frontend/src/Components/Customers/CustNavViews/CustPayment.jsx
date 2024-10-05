@@ -3,7 +3,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { BsCalendar3 } from "react-icons/bs";
 import Spinner from "../../Home/Spinner/Spinner";
 import { getMasterReports } from "../../../App/Features/Customers/Milk/milkMasterSlice";
-// import { getPurchaseBill } from "../../../App/Features/Purchase/purchaseSlice";
 import {
   getPaymentInfo,
   resetPayment,
@@ -18,9 +17,8 @@ import {
 const CustPayment = () => {
   const { t } = useTranslation("common");
   const dispatch = useDispatch();
-  const master = useSelector((state) => state.masterdates.masterlist);
+  const manualMaster = useSelector((state) => state.manualMasters.masterlist);
   const records = useSelector((state) => state.mMilk.mrecords);
-  // const purchaseBill = useSelector((state) => state.purchase.purchaseBill);
   const subdeduction = useSelector((state) => state.deduction.subdeductions);
   const payment = useSelector((state) => state.payment.payment);
   const status = useSelector((state) => state.mMilk.status);
@@ -29,36 +27,27 @@ const CustPayment = () => {
   const handleSelectChange = (e) => {
     const selectedIndex = e.target.value;
     if (selectedIndex !== "") {
-      const selectedDates = master[selectedIndex];
+      const selectedDates = manualMaster[selectedIndex];
       setSelectedPeriod(selectedDates);
-      let formd = selectedDates.fromDate;
-      let tdate = selectedDates.toDate;
-      // const newfd = "2024-07-21";
-      // const newtd = "2024-07-31";
-      const newfd = new Date(formd).toISOString().slice(0, 10);
-      const newtd = new Date(tdate).toISOString().slice(0, 10);
-      // Dispatch the action with the selected fromDate and toDate
-      console.log(newfd, newtd);
-
       dispatch(
         getMasterReports({
-          fromDate: newfd,
-          toDate: newtd,
+          fromDate: selectedDates.start,
+          toDate: selectedDates.end,
         })
       );
 
       dispatch(resetDeduction());
       dispatch(
         getDeductionInfo({
-          fromDate: newfd,
-          toDate: newtd,
+          fromDate: selectedDates.start,
+          toDate: selectedDates.end,
         })
       );
       dispatch(resetPayment());
       dispatch(
         getPaymentInfo({
-          fromDate: newfd,
-          toDate: newtd,
+          fromDate: selectedDates.start,
+          toDate: selectedDates.end,
         })
       );
     }
@@ -81,21 +70,26 @@ const CustPayment = () => {
             <BsCalendar3 />
           </span>
           <select
-            className="custom-select sub-heading w80 px10  h1 p10"
+            className="custom-select sub-heading w80 h1 p10"
             onChange={handleSelectChange}>
-            <option className="sub-heading">--{t("c-select-master")}--</option>
-            {master.map((dates, index) => (
-              <option className="sub-heading" key={index} value={index}>
-                {new Date(dates.fromDate).toLocaleDateString("en-GB", {
-                  year: "numeric",
-                  month: "short", // Abbreviated month format
+            <option className="sub-heading w100 d-flex">
+              --{t("c-select-master")}--
+            </option>
+            {manualMaster.map((dates, index) => (
+              <option
+                className="sub-heading w100 d-flex sa"
+                key={index}
+                value={index}>
+                {new Date(dates.start).toLocaleDateString("en-GB", {
                   day: "2-digit",
+                  month: "short", // Abbreviated month format
+                  year: "numeric",
                 })}
-                To:
-                {new Date(dates.toDate).toLocaleDateString("en-GB", {
-                  year: "numeric",
-                  month: "short", // Abbreviated month format
+                To :
+                {new Date(dates.end).toLocaleDateString("en-GB", {
                   day: "2-digit",
+                  month: "short", // Abbreviated month format
+                  year: "numeric",
                 })}
               </option>
             ))}

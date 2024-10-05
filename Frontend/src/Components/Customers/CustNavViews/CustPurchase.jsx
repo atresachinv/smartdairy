@@ -12,10 +12,10 @@ const CustPurchase = () => {
   const dispatch = useDispatch();
   const date = useSelector((state) => state.date.toDate);
   const master = useSelector((state) => state.masterdates.masterlist);
+  const manualMaster = useSelector((state) => state.manualMasters.masterlist);
   const purchaseBill = useSelector((state) => state.purchase.purchaseBill);
   const status = useSelector((state) => state.purchase.status);
   const psummary = useSelector((state) => state.purchase.psummary);
-  const [selectedPeriod, setSelectedPeriod] = useState(null);
 
   // Generate master dates based on the initial date
   useEffect(() => {
@@ -26,14 +26,13 @@ const CustPurchase = () => {
   const handleSelectChange = (e) => {
     const selectedIndex = e.target.value;
     if (selectedIndex !== "") {
-      const selectedDates = master[selectedIndex];
-      setSelectedPeriod(selectedDates);
-
+      const selectedDates = manualMaster[selectedIndex];
+     
       // Dispatch the action with the selected fromDate and toDate
       dispatch(
         getPurchaseBill({
-          formDate: selectedDates.fromDate,
-          toDate: selectedDates.toDate,
+          formDate: selectedDates.start,
+          toDate: selectedDates.end,
         })
       );
     }
@@ -52,18 +51,21 @@ const CustPurchase = () => {
           <select
             className="custom-select sub-heading w80 h1 p10"
             onChange={handleSelectChange}>
-            <option value="" className="sub-heading">
+            <option className="sub-heading w100 d-flex">
               --{t("c-select-master")}--
             </option>
-            {master.map((dates, index) => (
-              <option className="sub-heading" key={index} value={index}>
-                {new Date(dates.fromDate).toLocaleDateString("en-GB", {
+            {manualMaster.map((dates, index) => (
+              <option
+                className="sub-heading w100 d-flex sa"
+                key={index}
+                value={index}>
+                {new Date(dates.start).toLocaleDateString("en-GB", {
                   day: "2-digit",
                   month: "short", // Abbreviated month format
                   year: "numeric",
-                })}{" "}
-                To:{" "}
-                {new Date(dates.toDate).toLocaleDateString("en-GB", {
+                })}
+                To :
+                {new Date(dates.end).toLocaleDateString("en-GB", {
                   day: "2-digit",
                   month: "short", // Abbreviated month format
                   year: "numeric",

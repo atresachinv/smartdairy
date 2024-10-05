@@ -77,8 +77,8 @@ exports.masterDates = async (req, res) => {
 
         // Map result to desired format
         const formattedResult = result.map((record) => ({
-          fromDate: record.fromDate, // This should already be in YYYY-MM-DD format
-          toDate: record.toDate, // This should already be in YYYY-MM-DD format
+          fromDate: record.fromDate, 
+          toDate: record.toDate, 
         }));
 
         res.status(200).json({ getMasters: formattedResult });
@@ -90,6 +90,8 @@ exports.masterDates = async (req, res) => {
   });
 };
  
+
+
 
 
 

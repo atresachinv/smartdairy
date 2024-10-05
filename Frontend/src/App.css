@@ -318,13 +318,13 @@
   cursor: pointer;
 }
 .sub-heading {
-  font-size: clamp(12px, 2vw, 16px);
+  font-size: clamp(12px, 3vw, 16px);
   font-weight: 300;
   color: #0e0e0e;
   cursor: pointer;
 }
 .label-text {
-  font-size: clamp(8px, 2vw, 14px);
+  font-size: clamp(10px, 3vw, 14px);
   font-weight: 500;
   margin-top: 5px;
   color: #34078e;
