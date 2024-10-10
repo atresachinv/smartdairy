@@ -5,6 +5,7 @@ import axios from "axios";
 import { useDispatch } from "react-redux";
 import { resetPurchase } from "../../App/Features/Purchase/purchaseSlice"; // Import resetPurchase action
 import { useTranslation } from "react-i18next";
+import app_text_logo from "../../assets/sm_logo.png";
 import "../../Styles/Customer/Customer.css";
 
 const CustNavbar = ({ handleBackButton }) => {
@@ -48,13 +49,22 @@ const CustNavbar = ({ handleBackButton }) => {
   };
 
   return (
-    <nav className="cust-navbar w100 d-flex sb p10">
-      <div className="logo w20 d-flex a-center">
+    <nav className="cust-navbar w100 d-flex a-center sb p10">
+      <div className="logo w20 d-flex a-center sb">
         <BsArrowLeft className="back-icon" onClick={handleBackButton} />
-        <span className="logo-text">SMARTDAIRY</span>
+        {/* <span className="label-text w20 ">Back</span> */}
+      </div>
+      <div className="logo-img-div w60 d-flex center">
+        <img
+          className="w60"
+          src={app_text_logo}
+          alt="smartdairy"
+          width={"120px"}
+          height={"30px"}
+        />
       </div>
 
-      <div className="logout-btn w60 d-flex j-end mx10">
+      <div className="logout-btn w20 d-flex j-end mx10">
         <BsEscape className="icon" onClick={handleLogout} />
       </div>
 

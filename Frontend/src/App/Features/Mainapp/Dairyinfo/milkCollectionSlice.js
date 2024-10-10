@@ -1,23 +1,28 @@
-import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import axiosInstance from "../../axiosInstance";
+// src/App/Features/Customers/Milk/milkCollectionSlice.js
 
-// Initial state
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import axiosInstance from "../../../axiosInstance";
+
+// Initial state with separate status and error for each thunk
 const initialState = {
   customerInfo: {},
   milkRate: {},
   milkCollection: {},
-  status: "idle",
-  error: null,
+  getCustInfoStatus: "idle",
+  getCustInfoError: null,
+  getMilkRateStatus: "idle",
+  getMilkRateError: null,
+  saveMilkCollectionStatus: "idle",
+  saveMilkCollectionError: null,
 };
 
 // Async Thunk to get Customer Information
 export const getCustInfo = createAsyncThunk(
   "milkCollection/getCustInfo",
-  async ({ user_code, dairy_id }, { rejectWithValue }) => {
+  async ({ user_code }, { rejectWithValue }) => {
     try {
       const response = await axiosInstance.post("/collection/custname", {
         user_code,
-        dairy_id,
       });
       return response.data;
     } catch (error) {
@@ -32,14 +37,9 @@ export const getCustInfo = createAsyncThunk(
 // Async Thunk to get Milk Rate
 export const getMilkRate = createAsyncThunk(
   "milkCollection/getMilkRate",
-  async (
-    { dairy_id, rccode, rcdate, fat, snf, liters },
-    { rejectWithValue }
-  ) => {
+  async ({rcdate, fat, snf, liters }, { rejectWithValue }) => {
     try {
       const response = await axiosInstance.post("/collection/milkrate", {
-        dairy_id,
-        rccode,
         rcdate,
         fat,
         snf,
@@ -65,12 +65,12 @@ export const saveMilkCollection = createAsyncThunk(
       ReceiptDate,
       time,
       animal,
-      liter, 
+      liter,
       fat,
       snf,
-      amt, 
+      amt,
       GLCode,
-      code, 
+      code,
       degree,
       rate,
       cname,
@@ -110,50 +110,49 @@ export const saveMilkCollection = createAsyncThunk(
 const milkCollectionSlice = createSlice({
   name: "milkCollection",
   initialState,
-  reducers: {
-  },
+  reducers: {},
   extraReducers: (builder) => {
     // Handling getCustInfo
     builder
       .addCase(getCustInfo.pending, (state) => {
-        state.status = "loading";
-        state.error = null;
+        state.getCustInfoStatus = "loading";
+        state.getCustInfoError = null;
       })
       .addCase(getCustInfo.fulfilled, (state, action) => {
-        state.status = "succeeded";
-        state.customerInfo = action.payload;
+        state.getCustInfoStatus = "succeeded";
+        state.customerInfo = action.payload.custdetails;
       })
       .addCase(getCustInfo.rejected, (state, action) => {
-        state.status = "failed";
-        state.error = action.payload;
+        state.getCustInfoStatus = "failed";
+        state.getCustInfoError = action.payload;
       })
 
       // Handling getMilkRate
       .addCase(getMilkRate.pending, (state) => {
-        state.status = "loading";
-        state.error = null;
+        state.getMilkRateStatus = "loading";
+        state.getMilkRateError = null;
       })
       .addCase(getMilkRate.fulfilled, (state, action) => {
-        state.status = "succeeded";
+        state.getMilkRateStatus = "succeeded";
         state.milkRate = action.payload;
       })
       .addCase(getMilkRate.rejected, (state, action) => {
-        state.status = "failed";
-        state.error = action.payload;
+        state.getMilkRateStatus = "failed";
+        state.getMilkRateError = action.payload;
       })
 
       // Handling saveMilkCollection
       .addCase(saveMilkCollection.pending, (state) => {
-        state.status = "loading";
-        state.error = null;
+        state.saveMilkCollectionStatus = "loading";
+        state.saveMilkCollectionError = null;
       })
       .addCase(saveMilkCollection.fulfilled, (state, action) => {
-        state.status = "succeeded";
+        state.saveMilkCollectionStatus = "succeeded";
         state.milkCollection = action.payload;
       })
       .addCase(saveMilkCollection.rejected, (state, action) => {
-        state.status = "failed";
-        state.error = action.payload;
+        state.saveMilkCollectionStatus = "failed";
+        state.saveMilkCollectionError = action.payload;
       });
   },
 });

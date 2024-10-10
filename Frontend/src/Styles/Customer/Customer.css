@@ -139,13 +139,17 @@
 }
 .logout-btn .icon {
   color: #fff;
-  font-weight: 800;
+  font-size: 20px;
 }
 
 .back-icon {
-  font-size: 20px;
-  color: #fff;
+  width: 50px;
+  font-size: 28px;
+  color: #000;
   margin-right: 15px;
+  border: 1px solid #fff;
+  border-radius: 6px;
+  background-color: #fff;
 }
 
 .icon-div .icon {
@@ -203,7 +207,7 @@
     color: #fff;
   }
   .cust-navbar .logo {
-    width: 40%;
+    width: 30%;
   }
   .open-btn {
     display: block;

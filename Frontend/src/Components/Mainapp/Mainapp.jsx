@@ -14,7 +14,6 @@ const Mainapp = () => {
 
   const handleSidebar = () => {
     setOpenSidebar(!openSidebar);
-    console.log(openSidebar);
   };
 
   // Retrieve isselected from localStorage, defaulting to 0 if not set

@@ -11,6 +11,12 @@ import deductionReducer from "./Features/Deduction/deductionSlice";
 import paymentReducer from "./Features/Payments/paymentSlice";
 import dashboardReducer from "./Features/Customers/Dashboard/dashboardSlice";
 import manualMasterReducer from "./Features/Customers/Date/masterdateSlice";
+//Milk Collection
+import custInfoReducer from './Features/Mainapp/Dairyinfo/milkCollectionSlice'
+//ratechart
+import ratchartReducer from "./Features/Mainapp/Masters/rateChartSlice"
+import milkInfoReducer from './Features/Mainapp/Dairyinfo/milkCollectionSlice'
+// import custInfoReducer from './Features/Mainapp/Dairyinfo/milkCollectionSlice'
 
 export const store = configureStore({
   reducer: {
@@ -26,5 +32,8 @@ export const store = configureStore({
     payment: paymentReducer,
     dashboard: dashboardReducer,
     manualMasters: manualMasterReducer,
+    //Milk Collection
+    custinfo: custInfoReducer,
+    ratechart: ratchartReducer,
   },
 });

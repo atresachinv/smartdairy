@@ -9,13 +9,15 @@ dotenv.config({ path: "Backend/.env" });
 
 // Check Username ................
 exports.custName = async (req, res) => {
-  const { user_code, dairy_id } = req.body;
+  const { user_code } = req.body;
   pool.getConnection((err, connection) => {
     if (err) {
       console.error("Error getting MySQL connection: ", err);
       return res.status(500).json({ message: "Database connection error" });
     }
     try {
+      const dairy_id = req.user.dairy_id;
+
       const getCustname = `SELECT cid, cname FROM customer WHERE srno = ? AND orgid = ?`;
 
       connection.query(getCustname, [user_code, dairy_id], (err, result) => {
@@ -24,7 +26,7 @@ exports.custName = async (req, res) => {
           console.error("Error executing summary query: ", err);
           return res.status(500).json({ message: "query execution error" });
         }
-        const custdetails = result;
+        const custdetails = result[0];
         res.status(200).json({ custdetails });
       });
     } catch (error) {
@@ -36,29 +38,35 @@ exports.custName = async (req, res) => {
 
 //get rate from rate chart and calculate amount
 exports.getRateAmount = (req, res) => {
-  const { dairy_id, rccode, rcdate, fat, snf, liters } = req.body;
+  const { liters, fat, snf } = req.body;
 
-  // Input validation (basic example)
-  if (!dairy_id || !rccode || !rcdate || !fat || !snf || !liters) {
-    return res.status(400).json({ message: "All fields are required." });
-  }
-
-  const getRateAmt = `
-    SELECT rate 
-    FROM ratemaster 
-    WHERE companyid = ? 
-      AND rccode = ? 
-      AND rcdate = ? 
-      AND fat = ? 
-      AND snf = ?
-    LIMIT 1
-  `;
+  // // Input validation (basic example)
+  // if (!dairy_id || !rccode || !rcdate || !fat || !snf || !liters) {
+  //   return res.status(400).json({ message: "All fields are required." });
+  // }
 
   pool.getConnection((err, connection) => {
     if (err) {
       console.error("Error getting MySQL connection: ", err);
       return res.status(500).json({ message: "Database connection error" });
     }
+
+    const dairy_id = req.user.dairy_id;
+
+    if (!dairy_id) {
+      return res.status(400).json({ message: "Dairy ID not found!" });
+    }
+
+    const getRateAmt = `
+    SELECT rate 
+    FROM ratemaster 
+    WHERE companyid = ? 
+      AND rccode = "1"
+      AND rcdate = ?  
+      AND fat = ? 
+      AND snf = ?
+    LIMIT 1
+  `;
 
     connection.query(
       getRateAmt,
@@ -187,6 +195,110 @@ exports.milkCollection = async (req, res) => {
 //   (req, res) => {
 //     const {} = req.body;
 //   };
+
+//.................................................
+// Rate MAster........
+//.................................................
+
+exports.saveRateChart = async (req, res) => {
+  const { rccode, rctype, rcdate, time, animal, rate } = req.body;
+
+  // Validate required fields
+  if (!rccode || !rctype || !rcdate || !time || !animal) {
+    return res.status(400).json({ message: "Missing required fields." });
+  }
+
+  // Validate that 'rate' is a non-empty array
+  if (!Array.isArray(rate) || rate.length === 0) {
+    return res.status(400).json({ message: "No rate data provided." });
+  }
+
+  // Acquire a connection from the pool
+  pool.getConnection(async (err, connection) => {
+    if (err) {
+      console.error("Error getting MySQL connection: ", err);
+      return res.status(500).json({ message: "Database connection error" });
+    }
+
+    try {
+      // Extract user details from the request (assuming middleware handles authentication)
+      const dairy_id = req.user.dairy_id;
+
+      if (!dairy_id) {
+        connection.release();
+        return res.status(400).json({ message: "Dairy ID not found!" });
+      }
+
+      // Start transaction
+      await connection.beginTransaction();
+
+      // Prepare the SQL query for bulk insert
+      const saveRatesQuery = `
+        INSERT INTO ratemaster (companyid, rccode, rcdate, rctypecode, cb, fat, snf, rate, time)
+        VALUES ?
+      `;
+
+      // Prepare the values array for bulk insertion
+      const values = rate.map((record, index) => {
+        let { FAT, SNF, Rate } = record;
+
+        // Validate each record's fields
+        if (
+          typeof FAT !== "number" ||
+          typeof SNF !== "number" ||
+          typeof Rate !== "number"
+        ) {
+          throw new Error(
+            `Invalid record format at index ${index}. Each rate record must have numeric FAT, SNF, and Rate.`
+          );
+        }
+
+        // Round the FAT, SNF, and Rate to 2 decimal places
+        FAT = parseFloat(FAT.toFixed(1));
+        SNF = parseFloat(SNF.toFixed(1));
+        Rate = parseFloat(Rate.toFixed(2));
+
+        return [dairy_id, rccode, rcdate, rctype, animal, FAT, SNF, Rate, time];
+      });
+
+      console.log(values);
+
+      // await connection.query(saveRatesQuery, [values]);
+
+      await connection.query(saveRatesQuery, [values], (err, results) => {
+        connection.commit();
+        connection.release(); // Always release the connection back to the pool
+
+        if (err) {
+          console.error("Error executing query: ", err);
+          return res.status(500).json({ message: "Query execution error" });
+        }
+
+        if (results.length === 0) {
+          return res
+            .status(404)
+            .json({ message: "Rate not found for the provided parameters." });
+        }
+
+        res.status(201).json({
+          message: "Ratechart saved successfully!",
+          insertedRecords: results.affectedRows,
+        });
+      });
+    } catch (error) {
+      // Rollback transaction on error
+      if (connection) {
+        try {
+          await connection.rollback();
+        } catch (rollbackError) {
+          console.error("Error rolling back transaction:", rollbackError);
+        }
+        connection.release();
+      }
+      return res.status(400).json({ message: error.message });
+    }
+  });
+};
 
 // ..................................................
 // todays milk report for Admin .....................

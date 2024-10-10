@@ -74,6 +74,9 @@
 .h30 {
   height: 30%;
 }
+.h25 {
+  height: 25%;
+}
 .h20 {
   height: 20%;
 }
@@ -272,9 +275,17 @@
 .data:focus {
   outline: none;
 }
+.data::-webkit-outer-spin-button,
+.data::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
 
 .data:hover {
-  box-shadow: 1px 2px 2px rgb(83, 81, 81);
+  border: 1px solid #7235ed;
+  -webkit-box-shadow: 1px 2px 16px -4px rgba(117, 111, 117, 1);
+  -moz-box-shadow: 1px 2px 16px -4px rgba(117, 111, 117, 1);
+  box-shadow: 1px 2px 16px -4px rgba(117, 111, 117, 1);
 }
 
 .hover:hover {
@@ -324,10 +335,10 @@
   cursor: pointer;
 }
 .label-text {
-  font-size: clamp(10px, 3vw, 14px);
-  font-weight: 500;
-  margin-top: 5px;
-  color: #34078e;
+  font-size: clamp(10px, 2vw, 14px);
+  font-weight: 300;
+  /* margin-top: 5px; */
+  color: #121212;
   cursor: pointer;
 }
 .f-label-text {
@@ -401,7 +412,6 @@ body {
 }
 
 /* Buttons  */
-
 
 .w-btn {
   width: 120px;

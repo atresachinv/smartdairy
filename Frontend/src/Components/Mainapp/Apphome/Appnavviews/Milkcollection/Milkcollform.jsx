@@ -1,25 +1,69 @@
-import React from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { BsGearFill } from "react-icons/bs";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  getCustInfo,
+  getMilkRate,
+} from "../../../../../App/Features/Mainapp/Dairyinfo/milkCollectionSlice";
 import "../../../../../Styles/Mainapp/Apphome/Appnavview/Milkcollection.css";
 
 const MilkColleform = ({ switchToSettings }) => {
+  const dispatch = useDispatch();
+
+  const custdata = useSelector((state) => state.custinfo.customerInfo);
+  const milkRateAmt = useSelector((state) => state.custinfo.milkRate);
+  const tDate = useSelector((state) => state.date.toDate);
+
+  const date= tDate
   const [values, setValues] = useState({
-    dairyname: "",
-    user_name: "",
-    user_phone: "",
-    user_city: "",
-    user_pincode: "",
-    user_password: "",
-    confirm_password: "",
-    terms: false,
+    companyid: "",
+    DMEId: "",
+    date: date ,
+    code: "",
+    time: "",
+    animal: "",
+    liters: "",
+    fat: "",
+    snf: "",
+    amt: "",
+    degree: "",
+    rate: "",
+    cname: "",
+    rno: "",
   });
+
+  console.log("abc",milkRateAmt);
+  
 
   const handleInputs = (e) => {
     const { name, value } = e.target;
     setValues({ ...values, [name]: value });
   };
 
+  useEffect(() => {
+    if (values.code) {
+      dispatch(getCustInfo({ user_code: values.code }));
+    }
+  }, [values.code]);
 
+  useEffect(() => {
+    console.log("clicked getCustInfo");
+
+    if (values.snf) {
+      dispatch(
+        getCustInfo({
+          rcdate: values.date,
+          liters: values.liters,
+          fat: values.fat,
+          snf: values.snf,
+        })
+      );
+    }
+  }, [values.snf]);
+
+  // const getRateAmount = (e) => {
+  //   dispatch(getMilkRate({ rccode, rcdate, fat, snf, liters }));
+  // };
 
   return (
     <>
@@ -31,12 +75,12 @@ const MilkColleform = ({ switchToSettings }) => {
           </buttton>
         </div>
         <div className="user-details w100 h20 d-flex ">
-          <div className="form-div">
+          <div className="form-div px10">
             <label htmlFor="" className="info-text">
               Enter User Code
             </label>
             <input
-              className="form-inputs"
+              className="data"
               type="number"
               required
               placeholder="0000"
@@ -44,17 +88,18 @@ const MilkColleform = ({ switchToSettings }) => {
               onChange={handleInputs}
             />
           </div>
-          <div className="form-div h10">
+          <div className="form-div px10">
             <label htmlFor="" className="info-text">
               Enter User Name
             </label>
             <input
-              className="form-inputs"
+              className="data"
               type="text"
               required
-              placeholder="smartdairy user"
+              placeholder="smartdairy user "
               name="username"
               onChange={handleInputs}
+              value={custdata.cname}
             />
           </div>
         </div>
@@ -62,25 +107,25 @@ const MilkColleform = ({ switchToSettings }) => {
           <span className="heading">Milk Details : </span>
           <div className="milk-details w100 h90 d-flex">
             <div className="milk-info w50 h1 ">
-              <div className="form-div">
+              <div className="form-div px10">
                 <label htmlFor="" className="info-text">
                   Litters
                 </label>
                 <input
-                  className="form-inputs"
+                  className="data"
                   type="decimal"
                   required
                   placeholder="00.0"
-                  name="liter"
+                  name="liters"
                   onChange={handleInputs}
                 />
               </div>
-              <div className="form-div">
+              <div className="form-div  px10">
                 <label htmlFor="" className="info-text">
                   FAT-1
                 </label>
                 <input
-                  className="form-inputs"
+                  className="data"
                   type="decimalr"
                   required
                   placeholder="0.0"
@@ -88,12 +133,12 @@ const MilkColleform = ({ switchToSettings }) => {
                   onChange={handleInputs}
                 />
               </div>
-              <div className="form-div">
+              <div className="form-div px10">
                 <label htmlFor="" className="info-text">
                   SNF-1
                 </label>
                 <input
-                  className="form-inputs"
+                  className="data"
                   type="decimal"
                   required
                   placeholder="00.0"
@@ -103,12 +148,12 @@ const MilkColleform = ({ switchToSettings }) => {
               </div>
             </div>
             <div className="milk-info w50 h1 d-flex-col">
-              <div className="form-div">
+              <div className="form-div px10">
                 <label htmlFor="" className="info-text">
                   Degree
                 </label>
                 <input
-                  className="form-inputs"
+                  className="data"
                   type="decimal"
                   required
                   disabled
@@ -117,12 +162,12 @@ const MilkColleform = ({ switchToSettings }) => {
                   onChange={handleInputs}
                 />
               </div>
-              <div className="form-div">
+              <div className="form-div px10">
                 <label htmlFor="" className="info-text">
                   Rate
                 </label>
                 <input
-                  className="form-inputs"
+                  className="data"
                   type="decimal"
                   required
                   disabled
@@ -131,12 +176,12 @@ const MilkColleform = ({ switchToSettings }) => {
                   onChange={handleInputs}
                 />
               </div>
-              <div className="form-div">
+              <div className="form-div px10">
                 <label htmlFor="" className="info-text">
                   Ammount
                 </label>
                 <input
-                  className="form-inputs"
+                  className="data"
                   type="decimal"
                   required
                   disabled

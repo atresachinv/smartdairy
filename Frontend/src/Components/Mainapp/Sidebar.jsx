@@ -1,5 +1,6 @@
 import React from "react";
 import { BsXLg } from "react-icons/bs";
+import applogo from "../../assets/samrtdairylogo.png";
 import Mainappnavlinks from "./Mainappnavlinks";
 import "../../Styles/Mainapp/Sidebar.css";
 
@@ -8,7 +9,7 @@ const Sidebar = ({ setselected, handleSidebar }) => {
     <>
       <aside id="sidebar">
         <div className="sidebar-logo d-flex center sb ">
-          <div className="smartdairy-logo"></div>
+          <img src={applogo} alt="sm" width={"100px"} />
           <span className="close-icon" onClick={handleSidebar}>
             <BsXLg />
           </span>

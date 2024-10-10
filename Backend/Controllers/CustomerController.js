@@ -231,13 +231,13 @@ exports.profileInfo = async (req, res) => {
       return res.status(500).json({ message: "Database connection error" });
     }
     try {
-      const user_id = req.user.user_id;       
+      const user_id = req.user.user_id;
 
       if (!user_id) {
         return res.status(400).json({ message: "User ID not found!" });
       }
 
-      const profileInfo = `SELECT cname, City, cust_pincode, cust_addhar, cust_farmerid, cust_bankname, cust_accno, cust_ifsc, dairy_id ,srno FROM customer WHERE fax =?`;
+      const profileInfo = `SELECT cname, City, cust_pincode, cust_addhar, cust_farmerid, cust_bankname, cust_accno, cust_ifsc, srno FROM customer WHERE fax =?`;
 
       connection.query(profileInfo, [user_id], (err, result) => {
         connection.release();

@@ -94,7 +94,11 @@ const Custdashboard = () => {
               </div>
             ) : (
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart width={100} height={40} data={transformedData}>
+                <BarChart
+                  width={100}
+                  height={40}
+                  data={transformedData}
+                  barSize={20}>
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis
                     dataKey="name"
@@ -122,7 +126,11 @@ const Custdashboard = () => {
               </div>
             ) : (
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart width={100} height={40} data={transformedData}>
+                <BarChart
+                  width={100}
+                  height={40}
+                  data={transformedData}
+                  barSize={20}>
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis
                     dataKey="name"
