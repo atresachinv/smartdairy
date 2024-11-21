@@ -9,11 +9,24 @@
 }
 
 .toggle-button.on {
-  background-color: #4CAF50;
+  background-color: #4caf50;
   color: white;
 }
 
 .toggle-button.off {
   background-color: #f44336;
   color: white;
+}
+
+@media screen and (max-width: 769px) {
+  .toggle-button {
+    padding: 5px 10px;
+    font-size: 8px;
+  }
+}
+@media screen and (max-width: 426px) {
+  .toggle-button {
+    padding: 5px 8px;
+    font-size: 8px;
+  }
 }

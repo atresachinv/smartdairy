@@ -30,21 +30,6 @@ const CustProfile = () => {
     return <div>Error: {error}</div>;
   }
 
-  //   // Access the nested data correctly
-  //   const {
-  //     getprofileInfo = {}, // default to an empty object if undefined
-  //   } = profileInfo;
-  //
-  //   const {
-  //     srno,
-  //     cname,
-  //     cust_bankname,
-  //     cust_accno,
-  //     cust_ifsc,
-  //     farmerId,
-  //     mobileNumber,
-  //     adhaarNumber,
-  //   } = getprofileInfo;
 
   return (
     <div className="cust-profile-container w100 h1 d-flex-col">
@@ -79,18 +64,18 @@ const CustProfile = () => {
           </h2>
           <h2 className="label-text">
             {t("p-farmer-id")} :
-            <span className="info-text px10">{profile.farmerId || "N/A"}</span>
+            <span className="info-text px10">
+              {profile.cust_farmerid || "N/A"}
+            </span>
           </h2>
           <h2 className="label-text">
             {t("p-mobile")} :
-            <span className="info-text px10">
-              {profile.mobileNumber || "N/A"}
-            </span>
+            <span className="info-text px10">{profile.mobile || "N/A"}</span>
           </h2>
           <h2 className="label-text">
             {t("p-adhhar-no")} :
             <span className="info-text px10">
-              {profile.adhaarNumber || "N/A"}
+              {profile.cust_addhar || "N/A"}
             </span>
           </h2>
         </div>

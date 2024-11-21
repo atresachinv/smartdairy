@@ -1,0 +1,63 @@
+/* ------------------------------------------- */
+/* center list css --------------------------- */
+/* ------------------------------------------- */
+.center-list-div {
+  overflow-x: auto;
+}
+.table-titles {
+  min-width: 1800px;
+  position: sticky;
+  top: 0;
+  background-color: antiquewhite;
+}
+.table-data{
+  min-width: 1800px;
+}
+
+.label-text .icons{
+font-size: 22px;
+}
+.label-text .delete-icons{
+font-size: 22px;
+color: red;
+}
+
+
+
+/* ------------------------------------------- */
+/* center list css end ----------------------- */
+/* ------------------------------------------- */
+
+@media screen and (max-width: 769px) {
+  .center-main-container {
+    padding: 10px;
+  }
+  .center-information-div {
+    width: 80%;
+  }
+  .center-add-data-div {
+    height: auto;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .center-details-div {
+    flex: 4 1 100px;
+  }
+}
+
+@media screen and (max-width: 426px) {
+  .center-main-container {
+    padding: 10px;
+  }
+  .center-information-div {
+    width: 100%;
+  }
+  .center-add-data-div {
+    height: auto;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .center-details-div {
+    flex: 2 0 150px;
+  }
+}

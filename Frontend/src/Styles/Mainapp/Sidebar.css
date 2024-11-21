@@ -26,6 +26,15 @@ aside .sidebar-logo {
 .close-icon {
   display: none;
 }
+
+.logout-btn-div{
+  position: relative;
+  bottom: 0;
+}
+.logout-icon{
+  font-size: 22px;
+  color: #fff;
+}
 /* sidebar css end */
 
 /* Responsive css */

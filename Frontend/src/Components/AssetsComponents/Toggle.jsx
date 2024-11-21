@@ -12,7 +12,7 @@ const Toggle = () => {
     <button
       onClick={handleChange}
       className={`toggle-button ${isToggled ? "on" : "off"}`}>
-      {isToggled ? "Active" : "InActive"}
+      {isToggled ? "Yes" : "No"}
     </button>
   );
 }

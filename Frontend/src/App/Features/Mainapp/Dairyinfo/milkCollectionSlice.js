@@ -21,7 +21,7 @@ export const getCustInfo = createAsyncThunk(
   "milkCollection/getCustInfo",
   async ({ user_code }, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.post("/collection/custname", {
+      const response = await axiosInstance.post("/collection/custdata", {
         user_code,
       });
       return response.data;
@@ -37,9 +37,10 @@ export const getCustInfo = createAsyncThunk(
 // Async Thunk to get Milk Rate
 export const getMilkRate = createAsyncThunk(
   "milkCollection/getMilkRate",
-  async ({rcdate, fat, snf, liters }, { rejectWithValue }) => {
+  async ({ rccode, rcdate, fat, snf, liters }, { rejectWithValue }) => {
     try {
       const response = await axiosInstance.post("/collection/milkrate", {
+        rccode,
         rcdate,
         fat,
         snf,
@@ -58,44 +59,12 @@ export const getMilkRate = createAsyncThunk(
 // Async Thunk to Save Milk Collection
 export const saveMilkCollection = createAsyncThunk(
   "milkCollection/saveMilkCollection",
-  async (
-    {
-      companyid,
-      DMEId,
-      ReceiptDate,
-      time,
-      animal,
-      liter,
-      fat,
-      snf,
-      amt,
-      GLCode,
-      code,
-      degree,
-      rate,
-      cname,
-      rno,
-    },
-    { rejectWithValue }
-  ) => {
+  async ({milkColl}, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.post("/milk/collection", {
-        companyid,
-        DMEId,
-        ReceiptDate,
-        time,
-        animal,
-        liter,
-        fat,
-        snf,
-        amt,
-        GLCode,
-        code,
-        degree,
-        rate,
-        cname,
-        rno,
-      });
+      const response = await axiosInstance.post(
+        "/save/milk/collection",
+        milkColl
+      );
       return response.data;
     } catch (error) {
       const errorMessage = error.response

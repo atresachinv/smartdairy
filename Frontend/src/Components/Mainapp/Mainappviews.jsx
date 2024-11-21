@@ -1,36 +1,3 @@
-// import React from "react";
-// import Dashboard from "./Dashboard/Dashboard";
-// import Apphome from "./Apphome/Apphome";
-// import Accounts from "./Accounts/Accounts";
-// import Settings from "./Settings/Settings";
-// import Inventory from "./Inventory/Inventory";
-//
-//
-// const Mainappviews = ({ index, logout }) => {
-//   switch (index) {
-//     case 0:
-//       return <Dashboard />;
-//       break;
-//     case 1:
-//       return <Apphome />;
-//       break;
-//     case 2:
-//       return <Inventory />;
-//       break;
-//     case 3:
-//       return <Accounts />;
-//       break;
-//     case 4:
-//       return <Settings />;
-//       break;
-//
-//     default:
-//       break;
-//   }
-// };
-//
-// export default Mainappviews;
-
 // Mainappviews.js
 import React from "react";
 import Dashboard from "./Dashboard/Dashboard";
@@ -47,14 +14,14 @@ import StartingStockInfo from "./Inventory/InventroyPages/StartingStockInfo";
 import DairySettings from "./Settings/DairySettings/DairySettings";
 import InventorySettings from "./Settings/InventorySettings/InventorySettings";
 import MachineSettings from "./Settings/MachineSettings/MachineSettings";
-import Masters from "./Masters/Masters";
 import MainLedger from "./Masters/MasterPages/MainLedger";
 import SubLedger from "./Masters/MasterPages/SubLedger";
-import CustomerMaster from "./Masters/MasterPages/CustomerMaster";
 import MilkRateMaster from "./Masters/MasterPages/MilkRateMaster";
-import EmployeeMaster from "./Masters/MasterPages/EmployeeMaster";
+import EmployeeMaster from "./Masters/MasterPages/EmployeeMaster/EmployeeMaster";
 import DairyInfo from "./DairyInfo/DairyInfo";
 import DairyInitialInfo from "./DairyInfo/DairyInitialInfo";
+import CustomersMaster from "./Masters/MasterPages/CustomerMaster/CustomersMaster";
+import Centers from "./DairyInfo/Centers/Centers";
 
 const Mainappviews = ({ index }) => {
   switch (index) {
@@ -75,29 +42,24 @@ const Mainappviews = ({ index }) => {
       return <StartingStockInfo />;
     case 3:
       return <Accounts />;
-    // case 4:
-    //   return <Masters />;
     // Master Submenus
     case 4.1:
       return <MainLedger />;
     case 4.2:
       return <SubLedger />;
     case 4.3:
-      return <CustomerMaster />;
+      return <CustomersMaster />;
     case 4.4:
       return <EmployeeMaster />;
     case 4.5:
       return <MilkRateMaster />;
-
-    // case 5:
-    //   return <DairyInfo />;
-      //Dairy Submenus
+    //Dairy Submenus
     case 5.1:
       return <DairyInfo />;
     case 5.2:
       return <DairyInitialInfo />;
-    // case 6:
-    //   return <Settings />;
+    case 5.3:
+      return <Centers />;
     // Settings Submenus
     case 6.1:
       return <DairySettings />;
@@ -106,7 +68,7 @@ const Mainappviews = ({ index }) => {
     case 6.3:
       return <MachineSettings />;
     default:
-      return <Dashboard />; // Fallback to Dashboard or any default component
+      break;
   }
 };
 

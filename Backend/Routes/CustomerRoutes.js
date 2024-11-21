@@ -6,17 +6,26 @@ const {
   milkReport,
   customMilkReport,
   custDashboardInfo,
+  getMaxCustNo,
+  customerList,
+  updateCustomer,
+  uniqueRchartList,
 } = require("../Controllers/CustomerController");
 
 const router = express.Router();
 
 // Customer Routes
 
-router.route("/create/customer").post(createCustomer);
+router.route("/customer/maxcustno").post(verifyToken, getMaxCustNo);
+router.route("/create/customer").post(verifyToken, createCustomer);
+router.route("/update/customer").post(verifyToken, updateCustomer);
+router.route("/customer/list").post(verifyToken, customerList);
+router.route("/unique/rclist").post(verifyToken, uniqueRchartList);
 router.route("/customer/profile").post(verifyToken, profileInfo);
 router.route("/customer/dashboard").post(verifyToken, custDashboardInfo);
 router.route("/customer/milkreport").post(verifyToken, milkReport);
 // router.route("/app/milk-report").post(custMilkReport);
 router.route("/customer/master/report").post(verifyToken, customMilkReport);
+router.route("/customer/used/ratechartno").post(verifyToken, uniqueRchartList);
 
 module.exports = router;

@@ -5,8 +5,11 @@ import { toast } from "react-toastify";
 import axios from "axios";
 // css
 import "../../../Styles/Home/Forms.css";
+import { useDispatch } from "react-redux";
+import { setLogin } from "../../../App/Features/Users/authSlice";
 
 const Login = ({ switchToRegister, switchToOptSend }) => {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const [values, setValues] = useState({
     user_id: "",
@@ -48,7 +51,6 @@ const Login = ({ switchToRegister, switchToOptSend }) => {
       .post("/login", values)
       .then((res) => {
         const { user_role } = res.data;
-        toast.success("Login Successful");
 
         // If "Remember Me" is checked, store credentials in localStorage
         if (rememberMe) {
@@ -63,16 +65,25 @@ const Login = ({ switchToRegister, switchToOptSend }) => {
         }
 
         const userRole = user_role.toLowerCase();
+        dispatch(setLogin({ userRole: userRole }));
+        localStorage.setItem("userRole", userRole);
         // Redirect based on user_role
         if (userRole === "customer") {
           navigate("/customer/dashboard");
-        } else if (userRole === "admin" || userRole === "employee") {
+        } else if (
+          userRole === "admin" ||
+          userRole === "manager" ||
+          userRole === "milkcollector" ||
+          userRole === "mobilecollector"||
+          userRole === "salesman"
+        ) {
           navigate("/mainapp/home");
         } else if (userRole === "super_admin") {
           navigate("/adminpanel");
         } else {
           toast.error("Unexpected user type!");
         }
+        toast.success(`Login Successful`);
       })
       .catch((err) => {
         if (err.response) {

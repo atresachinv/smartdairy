@@ -3,10 +3,16 @@ const {
   todaysReport,
   milkReport,
   dashboardInfo,
-  custName,
+  custDetails,
   getRateAmount,
   milkCollection,
   saveRateChart,
+  milkCollectionOneEntry,
+  mobileMilkCollection,
+  allMilkCollReport,
+  fetchMobileMilkColl,
+  fetchMobileMilkCollection,
+  updateMobileCollection,
 } = require("../Controllers/MilkController");
 const verifyToken = require("../Middlewares/VerifyToken");
 
@@ -19,12 +25,20 @@ router.route("/milkreport").post(verifyToken, milkReport);
 router.route("/dashboard").post(verifyToken, dashboardInfo);
 
 //Milk Collection Customer Name
-router.route("/collection/custname").post(verifyToken, custName);
-router.route("/collection/rateamt").post(verifyToken, getRateAmount);
-router.route("/milk/collection").post(verifyToken, milkCollection);
-
-//rate chart upload
-router.route("/upload/ratechart").post(verifyToken, saveRateChart);
+router.route("/collection/custdata").post(verifyToken, custDetails);
+router.route("/collection/milkrate").post(verifyToken, getRateAmount);
+router.route("/save/milk/collection").post(verifyToken, milkCollection);
+router.route("/save/milk/one").post(verifyToken, milkCollectionOneEntry);
+router.route("/save/milk/one").post(verifyToken, milkCollectionOneEntry);
+router
+  .route("/save/mobile/milkcollection")
+  .post(verifyToken, mobileMilkCollection); // mobile Milkcollector
+router.route("/mobile/milkreport").get(verifyToken, fetchMobileMilkColl); // mobile Milkcollector
+router
+  .route("/fetch/mobile/collection")
+  .get(verifyToken, fetchMobileMilkCollection);
+router.route("/update/mobile/coll").post(verifyToken, updateMobileCollection);
+router.route("/milk/coll/report").get(verifyToken, allMilkCollReport);
 
 // Customer Routes
 module.exports = router;

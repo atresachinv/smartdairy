@@ -226,6 +226,9 @@
 .p10 {
   padding: 10px;
 }
+.p05 {
+  padding: 0 5px;
+}
 .p12 {
   padding: 10px 20px;
 }
@@ -267,9 +270,9 @@
 
 .data {
   padding: 10px;
-  border: none;
+  border: 1px solid #cccccc;
   border-radius: 4px;
-  background-color: #ebebeb;
+  background-color: #fcfbfb;
 }
 
 .data:focus {
@@ -291,7 +294,10 @@
 .hover:hover {
   box-shadow: 1px 2px 2px rgb(83, 81, 81);
 }
-
+.hidescrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
 .hidescrollbar::-webkit-scrollbar {
   display: none;
 }
@@ -299,76 +305,100 @@
 
 /* Titles and text */
 .title1 {
-  font-size: clamp(18px, 3vw, 38px);
+  font-size: 38px;
   font-weight: 800;
   color: #7235ed;
   cursor: pointer;
 }
 .title {
-  font-size: clamp(12px, 3vw, 20px);
+  font-size: 20px;
   font-weight: 600;
   color: #f16868;
   cursor: pointer;
 }
 .subtitle {
-  font-size: clamp(12px, 3vw, 18px);
+  font-size: 18px;
   font-weight: 500;
   color: #ad8cf0;
   cursor: pointer;
 }
 .heading {
-  font-size: clamp(14px, 3vw, 16px);
+  font-size: 16px;
   font-weight: 400;
   color: #773cee;
   cursor: pointer;
 }
 .f-heading {
-  font-size: clamp(14px, 3vw, 16px);
+  font-size: 16px;
   font-weight: 400;
   color: #fff;
   cursor: pointer;
 }
 .sub-heading {
-  font-size: clamp(12px, 3vw, 16px);
+  font-size: 16px;
   font-weight: 300;
   color: #0e0e0e;
   cursor: pointer;
 }
+.labeltext{
+  font-size: 16px;
+  font-weight: 400;
+  color: #10062c;
+  cursor: pointer;
+}
 .label-text {
-  font-size: clamp(10px, 2vw, 14px);
+  font-size: 14px;
   font-weight: 300;
   /* margin-top: 5px; */
   color: #121212;
   cursor: pointer;
 }
 .f-label-text {
-  font-size: clamp(10px, 2vw, 14px);
+  font-size: 14px;
   font-weight: 300;
   margin-top: 5px;
   color: #fff;
   cursor: pointer;
 }
 .text {
-  font-size: clamp(10px, 2vw, 14px);
+  font-size: 14px;
   font-weight: 300;
   margin-top: 5px;
   cursor: pointer;
 }
 .info-text {
-  font-size: clamp(7px, 3vw, 12px);
+  font-size: 14px;
   font-weight: 300;
   margin-top: 5px;
 }
 .info-txt {
-  font-size: clamp(12px, 2vw, 16px);
+  font-size: 16px;
   color: #3c1e20;
   font-weight: 300;
   margin-top: 5px;
 }
+.noti-title{
+  color: #34078e;
+}
+/* Titles and text */
+
+/* error classes */
 .req {
   color: red;
 }
-/* Titles and text */
+
+.error-message {
+  font-size: clamp(8px, 2vw, 12px);
+  font-weight: 300;
+  color: red;
+  margin-top: 5px;
+}
+
+.input-error {
+  border-color: red;
+}
+
+/* error classes  end*/
 
 /* Background colors */
 
@@ -391,7 +421,12 @@
   background-color: var(--bg-gray-color);
 }
 .bg {
-  background-color: #ffffff;
+  background-color: #ecfafd;
+  border-radius: 8px;
+  box-shadow: 0 0 3px #e0e0e0;
+}
+.edit-bg {
+  background-color: #e3ffe9;
   border-radius: 8px;
   box-shadow: 0 0 3px #e0e0e0;
 }
@@ -474,5 +509,87 @@ body {
   }
   .btn {
     height: 30px;
+  }
+
+  /* font sizes */
+
+  .title1 {
+    font-size: 28px;
+    font-weight: 800;
+  }
+  .title {
+    font-size: 16px;
+    font-weight: 600;
+  }
+  .subtitle {
+    font-size: 16px;
+    font-weight: 500;
+  }
+  .heading {
+    font-size: 14px;
+    font-weight: 500;
+  }
+  .f-heading {
+    font-size: 14px;
+    font-weight: 400;
+  }
+  .sub-heading {
+    font-size: 14px;
+    font-weight: 400;
+  }
+  .label-text {
+    font-size: 12px;
+    font-weight: 400;
+  }
+  .text {
+    font-size: 12px;
+    font-weight: 400;
+  }
+  .info-text {
+    font-size: 10px;
+    font-weight: 400;
+  }
+  .info-txt {
+    font-size: 12px;
+    font-weight: 400;
+  }
+}
+@media screen and (max-width: 426px) {
+  /* font sizes */
+  .title1 {
+    font-size: 24px;
+    font-weight: 600;
+  }
+  .title {
+    font-size: 14px;
+    font-weight: 500;
+  }
+  .subtitle {
+    font-size: 14px;
+    font-weight: 500;
+  }
+  .heading {
+    font-size: 12px;
+    font-weight: 500;
+  }
+  .f-heading {
+    font-size: 12px;
+    font-weight: 400;
+  }
+  .sub-heading {
+    font-size: 14px;
+    font-weight: 400;
+  }
+  .label-text {
+    font-size: 10px;
+    font-weight: 400;
+  }
+  .text {
+    font-size: 10px;
+    font-weight: 400;
+  }
+  .info-text {
+    font-size: 12px;
+    font-weight: 400;
   }
 }

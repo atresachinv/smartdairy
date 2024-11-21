@@ -1,8 +1,9 @@
-import React, { PureComponent } from "react";
+import React, { PureComponent, useEffect } from "react";
 import { BarChart, Bar, ResponsiveContainer } from "recharts";
 import { BsDatabaseAdd, BsPersonFill, BsCurrencyRupee } from "react-icons/bs";
 import { TfiStatsUp } from "react-icons/tfi";
 import "../../../Styles/Mainapp/Dashbaord/Dashboard.css";
+import { useSelector } from "react-redux";
 
 const Dashboard = () => {
   const data = [
@@ -49,10 +50,16 @@ const Dashboard = () => {
       amt: 2100,
     },
   ];
+  const customerlist = useSelector((state) => state.customer); //save customer list
 
+  const saveCustomerList = () => {
+    localStorage.setItem("customerlist", JSON.stringify(customerlist));
+  };
 
-  
-
+  // Store customerlist in localStorage whenever it updates
+  useEffect(() => {
+    saveCustomerList();
+  }, [customerlist]);
 
   return (
     <div className="main-dashboard-container w100 h1 d-flex-col">

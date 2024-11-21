@@ -1,51 +1,68 @@
-// MilkRateMaster.jsx
-
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import * as xlsx from "xlsx";
 import {
   saveRateChart,
   resetProgress,
+  fetchMaxRcCode,
+  applyRateChart,
+  listRateCharts,
+  fetchselectedRateChart,
 } from "../../../../App/Features/Mainapp/Masters/rateChartSlice";
+import { toast } from "react-toastify";
 
 const MilkRateMaster = () => {
   const dispatch = useDispatch();
   const { status, error, progress } = useSelector((state) => state.ratechart);
+  const maxRcCode = useSelector((state) => state.ratechart.maxRcCode);
+  const ratechartlist = useSelector((state) => state.ratechart.ratechartList);
 
+  useEffect(() => {
+    dispatch(fetchMaxRcCode());
+    dispatch(listRateCharts());
+  }, []);
+
+  const fileInputRef = React.useRef(null);
+  const [selectedRateChart, setSelectedRateChart] = useState(null);
   const [rate, setRate] = useState([]);
+
   const [formData, setFormData] = useState({
-    rccode: "",
+    rccode: maxRcCode,
     rctype: "",
     time: "",
     animalType: "",
     rcdate: "",
   });
 
-  console.log(formData);
-
   const [localError, setLocalError] = useState("");
+  const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    if (status === "succeeded") {
-      alert("Rate chart saved successfully!");
-      setLoading(false);
-      dispatch(resetProgress());
-      // Optionally, reset formData and rate
-      setFormData({
-        rccode: "",
-        rctype: "",
-        time: "",
-        animalType: "",
-        rcdate: "",
-      });
-      setRate([]);
-    } else if (status === "failed") {
-      alert(`Error: ${error}`);
-      setLoading(false);
-      dispatch(resetProgress());
-    }
-  }, [status, error, dispatch]);
+  // useEffect(() => {
+  //   if (status === "succeeded") {
+  //     toast.success("Rate chart saved successfully!");
+  //     setLoading(false);
+  //     dispatch(resetProgress());
+  //     // Optionally, reset formData and rate
+  //     setFormData({
+  //       rccode: "",
+  //       rctype: "",
+  //       time: "",
+  //       animalType: "",
+  //       rcdate: "",
+  //     });
+  //     setRate([]);
+  //   } else if (status === "failed") {
+  //     toast.error(`Error: ${error}`);
+  //     setLoading(false);
+  //     dispatch(resetProgress());
+  //   }
+  // }, [status, error, dispatch]);
+
+  // handling choose file button
+  const handleButtonClick = () => {
+    fileInputRef.current.click();
+  };
 
   const handleExcel = async (e) => {
     const file = e.target.files[0];
@@ -131,6 +148,50 @@ const MilkRateMaster = () => {
     }));
   };
 
+  const validateField = (name, value) => {
+    const error = {};
+    switch (name) {
+      case "rccode":
+        if (!/^\d+$/.test(value)) {
+          error[name] = "Invalid RCCODE.";
+        } else {
+          delete errors[name];
+        }
+        break;
+      case "rctype":
+        if (!/^[a-zA-Z0-9\s]+$/.test(value)) {
+          error[name] = "Invalid RCTYPE.";
+        } else {
+          delete errors[name];
+        }
+        break;
+      case "time":
+        if (!/^\d+$/.test(value)) {
+          error[name] = "Invalid Time.";
+        } else {
+          delete errors[name];
+        }
+        break;
+      case "animal":
+        if (!/^\d+$/.test(value)) {
+          error[name] = "Invalid Animal Type.";
+        } else {
+          delete errors[name];
+        }
+        break;
+      case "rcdate":
+        if (!value || formData.rcdate > today) {
+          error[name] = "Implementation Date is Invalid.";
+        } else {
+          delete errors[name];
+        }
+        break;
+      default:
+        break;
+    }
+    return error;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -151,10 +212,10 @@ const MilkRateMaster = () => {
 
     // Ensure numerical fields are numbers
     const numericRccode = parseInt(formData.rccode, 10);
-    const numericRctype = parseInt(formData.rctype, 10);
+    // const numericRctype = parseInt(formData.rctype, 10);
     const numericTime = parseInt(formData.time, 10);
 
-    if (isNaN(numericRccode) || isNaN(numericRctype) || isNaN(numericTime)) {
+    if (isNaN(numericRccode) || isNaN(numericTime)) {
       setLocalError("RCCODE, RCTYPE, and Time must be valid numbers.");
       return;
     }
@@ -173,10 +234,10 @@ const MilkRateMaster = () => {
     }
 
     // Dispatch with validated and parsed data
-    dispatch(
+    await dispatch(
       saveRateChart({
         rccode: numericRccode,
-        rctype: numericRctype,
+        rctype: formData.rctype,
         rcdate: formData.rcdate,
         time: numericTime,
         animal: formData.animalType,
@@ -184,7 +245,64 @@ const MilkRateMaster = () => {
       })
     );
 
+    if (status === "succeeded") {
+      toast.success("Rate chart saved successfully!");
+      setFormData({
+        rccode: "",
+        rctype: "",
+        time: "",
+        animalType: "",
+        rcdate: "",
+      });
+
+      setRate([]);
+
+      dispatch(fetchMaxRcCode());
+      dispatch(listRateCharts());
+    } else {
+      setLocalError("Failed to save rate chart. Please try again.");
+    }
+
     setLocalError("");
+  };
+
+  // Function to handle row click
+  const handleRowClick = (ratechart) => {
+    // If the clicked rate chart is already selected, deselect it
+    if (selectedRateChart === ratechart) {
+      setSelectedRateChart(null);
+    } else {
+      setSelectedRateChart(ratechart);
+    }
+  };
+
+  console.log(selectedRateChart);
+
+  //download Ratechart
+  const downloadRateChart = async () => {
+    if (!selectedRateChart) {
+      toast.error("Please select a rate chart to download.");
+      return;
+    }
+
+    await dispatch(fetchselectedRateChart(selectedRateChart));
+    
+    // Create a new workbook and add a worksheet
+    const wb = xlsx.utils.book_new();
+    const ws = xlsx.utils.json_to_sheet([selectedRateChart]);
+
+    // Append the worksheet to the workbook
+    xlsx.utils.book_append_sheet(wb, ws, "RateChart");
+
+    // Generate and download the Excel file
+    xlsx.writeFile(wb, `${selectedRateChart.rccode}_rate_chart.xlsx`);
+  };
+
+  const handleApplyRatechart = async (e) => {
+    e.preventDefault();
+    await dispatch(applyRateChart(selectedRateChart.rccode));
+    dispatch(listRateCharts());
+    toast.success("Rate chart Applied successfully!");
   };
 
   return (
@@ -194,12 +312,15 @@ const MilkRateMaster = () => {
           <div className="select-excel-container w100 h10 d-flex a-center my10 sb">
             <span className="label-text w40">Select Excel File</span>
             <input
-              className=" data w60"
+              ref={fileInputRef}
               type="file"
               accept=".xlsx, .xls"
+              style={{ display: "none" }}
               onChange={handleExcel}
             />
-            {/* <button className="btn">Choose File</button> */}
+            <button className="btn" onClick={handleButtonClick}>
+              Choose File
+            </button>
           </div>
           {localError && (
             <div className="error-message" style={{ color: "red" }}>
@@ -240,7 +361,12 @@ const MilkRateMaster = () => {
                 rate.map((item, index) => (
                   <div
                     key={`${item.FAT}-${item.SNF}-${index}`}
-                    className="rate-chart-row-value w100 h10 d-flex a-center t-center sa ">
+                    className={`rate-chart-row-value w100 h10 d-flex a-center t-center sa ${
+                      index % 2 === 0 ? "bg-light" : "bg-dark"
+                    }`}
+                    style={{
+                      backgroundColor: index % 2 === 0 ? "#faefe3" : "#fff",
+                    }}>
                     <span className="info-text w5">{index + 1}</span>
                     <span className="info-text w15">
                       {item.FAT !== undefined ? item.FAT.toFixed(1) : "N/A"}
@@ -270,40 +396,95 @@ const MilkRateMaster = () => {
               <span className="info-text w15">Option</span>
             </div>
             <div className="rate-chart-div w100 h90 mh90 d-flex-col hidescrollbar">
-              {/* Replace with dynamic data as needed */}
-              <div className="rate-chart-row-value w100 h10 d-flex a-center t-center sa py10">
-                <span className="info-text w10">1</span>
-                <span className="info-text w20">2024/01/01</span>
-                <span className="info-text w15">AM</span>
-                <span className="info-text w15">Cow</span>
-                <span className="info-text w15">Edit</span>
-              </div>
+              {ratechartlist.map((ratechart, index) => (
+                <div
+                  onClick={() => handleRowClick(ratechart)}
+                  key={index}
+                  className="rate-chart-row-value w100  d-flex a-center t-center sa"
+                  style={{
+                    backgroundColor:
+                      selectedRateChart === ratechart
+                        ? "#d1e7dd"
+                        : index % 2 === 0
+                        ? "#faefe3"
+                        : "#fff",
+                    cursor: "pointer",
+                  }}>
+                  <span className="info-text w10">{ratechart.rccode}</span>
+                  <span className="info-text w20">
+                    {new Date(ratechart.rcdate).toLocaleDateString("en-GB", {
+                      day: "2-digit",
+                      month: "2-digit",
+                      year: "2-digit",
+                    })}
+                  </span>
+                  <span className="info-text w15">
+                    {ratechart.time === 0
+                      ? "Mrg"
+                      : ratechart.time === 1
+                      ? "Eve"
+                      : "Both"}
+                  </span>
+                  <span className="info-text w15">
+                    {ratechart.cb === 0 ? "Cow" : "Buffalo"}
+                  </span>
+                  <span className="info-text w15">{ratechart.isActive}</span>
+                </div>
+              ))}
             </div>
+          </div>
+          <div className="button-div w100 h10 d-flex j-end">
+            <button
+              type="submit"
+              className="btn mx10"
+              disabled={status === "loading"}>
+              Delete
+            </button>
+            <button
+              type="submit"
+              className="btn mx10"
+              disabled={status === "loading"}
+              onClick={downloadRateChart}>
+              Download
+            </button>
+            <button
+              type="submit"
+              className="btn mx10"
+              disabled={status === "loading"}>
+              Update
+            </button>
+            <button
+              type="submit"
+              className="btn mx10"
+              disabled={status === "loading"}>
+              Show
+            </button>
           </div>
           <form
             className="rate-chart-setting div w100 h40 d-flex-col sa my10 px10"
             onSubmit={handleSubmit}>
             <div className="select-time-animal-type w100 h25 d-flex sb">
-              <div className="select-time w45 h1 a-center d-flex ">
-                <label htmlFor="time" className="label-text w60">
+              <div className="select-time w25 h1 a-center d-flex-col ">
+                <label htmlFor="time" className="label-text w100">
                   Ratechart No :
                 </label>
                 <input
-                  className="data w40"
+                  className="data w100"
                   type="number"
                   name="rccode"
                   id=""
                   value={formData.rccode}
                   onChange={handleInput}
+                  readOnly
                 />
               </div>
-              <div className="select-animal-type w45 h1 a-center d-flex">
-                <label htmlFor="animalType" className="label-text w60">
-                  Ratechart Type:
+              <div className="select-animal-type w70 h1 a-center d-flex-col">
+                <label htmlFor="animalType" className="label-text w100">
+                  Ratechart Type:{" "}
                 </label>
                 <input
-                  className="data w40"
-                  type="number"
+                  className={`data w100 ${errors.rctype ? "input-error" : ""}`}
+                  type="text"
                   name="rctype"
                   id=""
                   value={formData.rctype}
@@ -312,53 +493,25 @@ const MilkRateMaster = () => {
               </div>
             </div>
             <div className="select-time-animal-type w100 h25 d-flex sb">
-              {/* <div className="select-time w45 h1 a-center d-flex">
-                <label htmlFor="time" className="label-text w40">
-                  Time:
-                </label>
-                <select
-                  className="data w60 "
-                  name="time"
-                  id="time"
-                  required
-                  value={formData.time}
-                  onChange={handleInput}>
-                  <option className="info-text" value="">
-                    --Select--
-                  </option>
-                  <option className="info-text" value="0">
-                    Morning
-                  </option>
-                  <option className="info-text" value="1">
-                    Evening
-                  </option>
-                  <option className="info-text" value="2">
-                    Both
-                  </option>
-                </select>
-              </div> */}
               <div className="select-animal-type w50 h1 a-center d-flex">
                 <label htmlFor="time" className="label-text w50">
                   Time:
                 </label>
                 <select
-                  className="data w45 "
+                  className={`data w45 ${errors.time ? "input-error" : ""}`}
                   name="time"
                   id="time"
                   required
                   value={formData.time}
                   onChange={handleInput}>
-                  <option className="info-text" value="">
-                    --Select--
+                  <option className="info-text" value="2">
+                    Both
                   </option>
                   <option className="info-text" value="0">
                     Mornning
                   </option>
                   <option className="info-text" value="1">
                     Evenning
-                  </option>
-                  <option className="info-text" value="2">
-                    Both
                   </option>
                 </select>
               </div>
@@ -403,6 +556,13 @@ const MilkRateMaster = () => {
               />
             </div>
             <div className="button-div w100 h25 d-flex j-end">
+              <button
+                type="submit"
+                className="btn mx10"
+                disabled={status === "loading"}
+                onClick={handleApplyRatechart}>
+                Apply Rate Chart
+              </button>
               <button
                 type="submit"
                 className="btn mx10"

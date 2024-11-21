@@ -2,9 +2,21 @@ import React, { useEffect, useState } from "react";
 import AppNavviews from "./AppNavviews";
 import "../../../Styles/Mainapp/Apphome/Apphome.css";
 import AppNavlinks from "./AppNavlinks";
+import { useDispatch, useSelector } from "react-redux";
+import { listCustomer } from "../../../App/Features/Customers/customerSlice";
+import {
+  getRateCharts,
+} from "../../../App/Features/Mainapp/Masters/rateChartSlice";
+import { getMasterDates } from "../../../App/Features/Customers/Date/masterSlice";
+import { generateMaster } from "../../../App/Features/Customers/Date/masterdateSlice";
 
 const Apphome = () => {
-  // Retrieve isselected from localStorage, defaulting to 0 if not set
+  const dispatch = useDispatch();
+  const milkcollRatechart = useSelector((state) => state.ratechart.rateChart);
+  const date = useSelector((state) => state.date.toDate);
+  const yearStart = useSelector((state) => state.date.yearStart);
+  const yearEnd = useSelector((state) => state.date.yearEnd);
+
   const [isselected, setIsSelected] = useState(
     parseInt(localStorage.getItem("selectedTabIndex")) || 0
   );
@@ -14,14 +26,41 @@ const Apphome = () => {
     localStorage.setItem("selectedTabIndex", isselected);
   }, [isselected]);
 
-   useEffect(() => {
-     localStorage.setItem("selectednav", isselected);
-   }, [isselected]);
+
+  //Store Milk Collection Ratechart to localstorage
+  useEffect(() => {
+    saveRatechart();
+  }, [milkcollRatechart]);
+
+  const saveRatechart = () => {
+    // Convert data to JSON and calculate size
+    const jsonData = JSON.stringify(milkcollRatechart);
+    const dataSize = new Blob([jsonData]).size;
+
+    // Check if size is within localStorage limit (usually 5 MB)
+    const maxSize = 5 * 1024 * 1024; // 5 MB in bytes
+    if (dataSize <= maxSize) {
+      localStorage.setItem("milkcollrcharts", jsonData);
+      console.log("Data successfully stored in localStorage.");
+    } else {
+      console.warn("Data size exceeds localStorage limit, cannot store.");
+    }
+  };
+
+  //save customer list in local storage
+  useEffect(() => {
+    dispatch(listCustomer());
+    dispatch(getRateCharts());
+    dispatch(generateMaster(date));
+    if (yearStart && yearEnd) {
+      dispatch(getMasterDates({ yearStart, yearEnd }));
+    }
+  }, []);
 
   return (
     <div className="app-home-container w100 h1">
       <div className="header-nav w100 d-flex a-center">
-        <AppNavlinks isselected={isselected} setselected={setIsSelected} />
+        <AppNavlinks isselected={isselected} setIsSelected={setIsSelected} />
       </div>
       <div className="home-nav-views w100 h90 d-flex center">
         <AppNavviews index={isselected} />
