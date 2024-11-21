@@ -13,7 +13,6 @@ const MilkSankalan = () => {
 
   const [customerList, setCustomerList] = useState([]);
   const [errors, setErrors] = useState({});
-  const [time, setTime] = useState(true);
 
   const initialValues = {
     date: tDate,
