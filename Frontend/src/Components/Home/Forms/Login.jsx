@@ -70,20 +70,22 @@ const Login = ({ switchToRegister, switchToOptSend }) => {
         // Redirect based on user_role
         if (userRole === "customer") {
           navigate("/customer/dashboard");
+          toast.success(`Login Successful`);
         } else if (
           userRole === "admin" ||
           userRole === "manager" ||
           userRole === "milkcollector" ||
-          userRole === "mobilecollector"||
+          userRole === "mobilecollector" ||
           userRole === "salesman"
         ) {
           navigate("/mainapp/home");
+          toast.success(`Login Successful`);
         } else if (userRole === "super_admin") {
           navigate("/adminpanel");
+          toast.success(`Login Successful`);
         } else {
           toast.error("Unexpected user type!");
         }
-        toast.success(`Login Successful`);
       })
       .catch((err) => {
         if (err.response) {

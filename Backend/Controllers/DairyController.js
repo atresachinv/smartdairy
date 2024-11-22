@@ -1,6 +1,5 @@
 const jwt = require("jsonwebtoken");
 const dotenv = require("dotenv");
-const bcrypt = require("bcrypt");
 const pool = require("../Configs/Database");
 dotenv.config({ path: "Backend/.env" });
 
