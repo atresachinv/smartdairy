@@ -742,17 +742,7 @@ exports.listRatecharts = async (req, res) => {
 //.........................................................
 
 exports.saveRateChart = async (req, res) => {
-  const { rccode, rctype, rcdate, time, animal, rate } = req.body;
-
-  // Validate required fields
-  if (!rccode || !rctype || !rcdate || !time || !animal) {
-    return res.status(400).json({ message: "Missing required fields." });
-  }
-
-  // Validate that 'rate' is a non-empty array
-  if (!Array.isArray(rate) || rate.length === 0) {
-    return res.status(400).json({ message: "No rate data provided." });
-  }
+  const { rccode, rctype, rcdate, time, animal, ratechart } = req.body;
 
   // Acquire a connection from the pool
   pool.getConnection(async (err, connection) => {
@@ -782,14 +772,14 @@ exports.saveRateChart = async (req, res) => {
       `;
 
       // Prepare the values array for bulk insertion
-      const values = rate.map((record, index) => {
-        let { FAT, SNF, Rate } = record;
+      const values = ratechart.map((record, index) => {
+        let { fat, snf, rate } = record;
 
         // Validate each record's fields
         if (
-          typeof FAT !== "number" ||
-          typeof SNF !== "number" ||
-          typeof Rate !== "number"
+          typeof fat !== "number" ||
+          typeof snf !== "number" ||
+          typeof rate !== "number"
         ) {
           throw new Error(
             `Invalid record format at index ${index}. Each rate record must have numeric FAT, SNF, and Rate.`
@@ -797,9 +787,9 @@ exports.saveRateChart = async (req, res) => {
         }
 
         // Round the FAT, SNF, and Rate to 2 decimal places
-        FAT = parseFloat(FAT.toFixed(1));
-        SNF = parseFloat(SNF.toFixed(1));
-        Rate = parseFloat(Rate.toFixed(2));
+        fat = parseFloat(fat.toFixed(1));
+        snf = parseFloat(snf.toFixed(1));
+        rate = parseFloat(rate.toFixed(2));
 
         return [
           dairy_id,
@@ -808,9 +798,9 @@ exports.saveRateChart = async (req, res) => {
           rctypecode,
           rctype,
           animal,
-          FAT,
-          SNF,
-          Rate,
+          fat,
+          snf,
+          rate,
           time,
           center_id,
         ];
@@ -827,13 +817,7 @@ exports.saveRateChart = async (req, res) => {
           return res.status(500).json({ message: "Query execution error" });
         }
 
-        if (results.length === 0) {
-          return res
-            .status(404)
-            .json({ message: "Rate not found for the provided parameters." });
-        }
-
-        res.status(201).json({
+        res.status(200).json({
           message: "Ratechart saved successfully!",
           insertedRecords: results.affectedRows,
         });
@@ -957,10 +941,55 @@ exports.applyRateChart = async (req, res) => {
   });
 };
 
+
+exports.updateSelectedRateChart = async (req, res) => {
+  pool.getConnection(async (err, connection) => {
+    if (err) {
+      console.error("Error getting MySQL connection: ", err);
+      return res.status(500).json({ message: "Database connection error" });
+    }
+
+    try {
+      const dairy_id = req.user.dairy_id;
+      const center_id = req.user.center_id;
+
+      if (!dairy_id) {
+        connection.release();
+        return res.status(400).json({ message: "Dairy ID not found!" });
+      }
+
+      const applyRatechartQuery = `
+        UPDATE ratemaster
+        SET isActive = ?
+        WHERE companyid = ? AND center_id = ? 
+      `;
+
+      await connection.query(
+        applyRatechartQuery,
+        [1, dairy_id, center_id], // Pass 1 as an integer for isActive
+        (err, results) => {
+          connection.release(); // Always release the connection back to the pool
+
+          if (err) {
+            console.error("Error executing query: ", err);
+            return res.status(500).json({ message: "Query execution error" });
+          }
+
+          res.status(201).json({
+            message: "Ratechart applied successfully!",
+          });
+        }
+      );
+    } catch (error) {
+      connection.release(); // Ensure the connection is released on error
+      return res.status(400).json({ message: error.message });
+    }
+  });
+};
+
 // .............................................................................
 // Finding Distict Ratechart used by dairy to Show to Apply Customer............
 // .............................................................................
-
 
 exports.findUsedRc = async (req, res) => {
   pool.getConnection((err, connection) => {
@@ -1010,18 +1039,19 @@ exports.findUsedRc = async (req, res) => {
 // (Download , Apply , Update , Delete )............................
 // .................................................................
 
+//v2 function
 exports.getSelectedRateChart = async (req, res) => {
-  const { cb, rccode, rcdate, time } = req.body;
+  const { cb, rccode, rcdate, time } = req.query;
+
   pool.getConnection((err, connection) => {
     if (err) {
-      if (err) {
-        console.error("Error getting MySQL connection: ", err);
-        return res.status(500).json({ message: "Database connection error" });
-      }
+      console.error("Error getting MySQL connection: ", err);
+      return res.status(500).json({ message: "Database connection error" });
     }
     try {
       const dairy_id = req.user.dairy_id;
       const center_id = req.user.center_id;
+
       if (!dairy_id) {
         connection.release();
         return res.status(400).json({ message: "Dairy ID not found!" });
@@ -1038,16 +1068,15 @@ exports.getSelectedRateChart = async (req, res) => {
             console.error("Error executing query: ", err);
             return res.status(500).json({ message: "Query execution error" });
           }
-          console.log(result);
 
-          res.status(201).json({
+          res.status(200).json({
             selectedRChart: result,
-            message: "Ratechart Found!",
+            message: result.length ? "Ratechart Found!" : "No ratechart found!",
           });
         }
       );
     } catch (error) {
-      connection.release(); // Ensure the connection is released on error
+      connection.release();
       return res.status(400).json({ message: error.message });
     }
   });
@@ -1057,9 +1086,7 @@ exports.getSelectedRateChart = async (req, res) => {
 // Retriving applied Ratechart for milk Collection .................
 // .................................................................
 
-
 exports.rateChartMilkColl = async (req, res) => {
-
   pool.getConnection((err, connection) => {
     if (err) {
       console.error("Error getting MySQL connection: ", err);
@@ -1111,4 +1138,3 @@ exports.rateChartMilkColl = async (req, res) => {
     }
   });
 };
-

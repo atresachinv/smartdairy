@@ -2,6 +2,8 @@ const jwt = require("jsonwebtoken");
 const dotenv = require("dotenv");
 const pool = require("../Configs/Database");
 dotenv.config({ path: "Backend/.env" });
+const NodeCache = require("node-cache");
+const cache = new NodeCache({});
 
 //..................................................
 // Create New Customer (Admin Route)................
@@ -813,6 +815,38 @@ exports.custDashboardInfo = async (req, res) => {
 // Profile Info..........................
 // ......................................
 
+// exports.profileInfo = async (req, res) => {
+//   pool.getConnection((err, connection) => {
+//     if (err) {
+//       console.error("Error getting MySQL connection: ", err);
+//       return res.status(500).json({ message: "Database connection error" });
+//     }
+//     try {
+//       const user_id = req.user.user_id;
+// 
+//       if (!user_id) {
+//         return res.status(400).json({ message: "User ID not found!" });
+//       }
+// 
+//       const profileInfo = `SELECT cname, City, cust_pincode, mobile, cust_addhar, cust_farmerid, cust_bankname, cust_accno, cust_ifsc,  srno FROM customer WHERE fax =?`;
+// 
+//       connection.query(profileInfo, [user_id], (err, result) => {
+//         connection.release();
+//         if (err) {
+//           console.error("Error executing summary query: ", err);
+//           return res.status(500).json({ message: "query execution error" });
+//         }
+//         const profileInfo = result[0];
+//         res.status(200).json({ profileInfo });
+//       });
+//     } catch (error) {
+//       console.error("Error processing request: ", error);
+//       return res.status(500).json({ message: "Internal server error" });
+//     }
+//   });
+// };
+
+//v2 function
 exports.profileInfo = async (req, res) => {
   pool.getConnection((err, connection) => {
     if (err) {
@@ -826,15 +860,23 @@ exports.profileInfo = async (req, res) => {
         return res.status(400).json({ message: "User ID not found!" });
       }
 
-      const profileInfo = `SELECT cname, City, cust_pincode, mobile, cust_addhar, cust_farmerid, cust_bankname, cust_accno, cust_ifsc,  srno FROM customer WHERE fax =?`;
+      // Check if the profileInfo is already in the cache
+      const cachedProfile = cache.get(`profile_${user_id}`);
+      if (cachedProfile) {
+        return res.status(200).json({ profileInfo: cachedProfile });
+      }
 
-      connection.query(profileInfo, [user_id], (err, result) => {
+      const profileInfoQuery = `SELECT cname, City, cust_pincode, mobile, cust_addhar, cust_farmerid, cust_bankname, cust_accno, cust_ifsc, srno FROM customer WHERE fax =?`;
+
+      connection.query(profileInfoQuery, [user_id], (err, result) => {
         connection.release();
         if (err) {
           console.error("Error executing summary query: ", err);
-          return res.status(500).json({ message: "query execution error" });
+          return res.status(500).json({ message: "Query execution error" });
         }
         const profileInfo = result[0];
+        // Store the profileInfo in the cache with a unique key
+        cache.set(`profile_${user_id}`, profileInfo);
         res.status(200).json({ profileInfo });
       });
     } catch (error) {
@@ -843,6 +885,7 @@ exports.profileInfo = async (req, res) => {
     }
   });
 };
+
 
 // ..................................................
 // App Customer Milk Report..........................

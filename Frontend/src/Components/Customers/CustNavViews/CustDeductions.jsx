@@ -38,6 +38,7 @@ const CustDeductions = () => {
       );
     }
   };
+  console.log(deduction);
 
   return (
     <div className="deduction-info-container w100 h1 d-flex-col">

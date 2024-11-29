@@ -469,13 +469,14 @@ const MilkColleform = ({ switchToSettings }) => {
       <form
         onSubmit={handleCollection}
         className="milk-col-form w100 h1 d-flex-col bg p10">
+        <span className="heading w100 t-center py10"> Milk Collection </span>
         <div className="form-setting w100 h10 d-flex a-center sb">
-          <div className="w40 d-flex px10">
-            <label htmlFor="" className="info-text w40">
+          <div className="w40 d-flex a-center px10">
+            <label htmlFor="" className="info-text w30">
               Date <span className="req">*</span>{" "}
             </label>
             <input
-              className={`data w60 ${errors.date ? "input-error" : ""}`}
+              className={`data w70 ${errors.date ? "input-error" : ""}`}
               type="date"
               required
               placeholder="0000"
@@ -485,8 +486,8 @@ const MilkColleform = ({ switchToSettings }) => {
               max={values.date}
             />
           </div>
-          <div className="setting-btn-switch w40 h10 d-flex a-center sb">
-            <span className="text">Morning</span>
+          <div className="setting-btn-switch w20 d-flex">
+            {/* <span className="text">Morning</span> */}
             <button
               type="button"
               onClick={handleTime}
@@ -494,12 +495,12 @@ const MilkColleform = ({ switchToSettings }) => {
               aria-pressed={time}>
               {time ? "Morning" : "Evening"}
             </button>
-            <span className="text">Evening</span>
+            {/* <span className="text">Evening</span> */}
           </div>
           <BsGearFill className="color-icon mx10" onClick={switchToSettings} />
         </div>
         <div className="setting-btn-switch w100 h10 d-flex a-center sb">
-          <span className="heading "> User Details : </span>
+          {/* <span className="label-text"> User Details : </span> */}
         </div>
         <div className="user-details w100 h20 d-flex ">
           <div className="form-div w50 px10">
@@ -532,7 +533,7 @@ const MilkColleform = ({ switchToSettings }) => {
           </div>
         </div>
         <div className="milk-details-div w100 h70 d-flex-col">
-          <span className="heading">Milk Details : </span>
+          {/* <span className="label-text">Milk Details : </span> */}
           <div className="milk-details w100 h90 d-flex">
             <div className="milk-info w50 h1 ">
               <div className="form-div px10">

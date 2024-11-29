@@ -4,9 +4,11 @@ import axiosInstance from "../../../axiosInstance";
 const initialState = {
   ratechartList: [],
   rateChart: [], //used for milk collection
-  selectedRateChart: {}, // selected for operations
+  selectedRateChart: [], // selected for operations
   maxRcCode: 1,
+  excelRatechart: [],
   status: "idle",
+  rcsavestatus:"idle",
   error: null,
   progress: 0,
 };
@@ -32,7 +34,7 @@ export const fetchMaxRcCode = createAsyncThunk(
 export const saveRateChart = createAsyncThunk(
   "ratechart/saveRateChart",
   async (
-    { rccode, rctype, rcdate, time, animal, rate },
+    { rccode, rctype, rcdate, time, animal, ratechart },
     { rejectWithValue, signal, dispatch }
   ) => {
     try {
@@ -44,9 +46,10 @@ export const saveRateChart = createAsyncThunk(
           rcdate,
           time,
           animal,
-          rate,
+          ratechart,
         },
         {
+          headers: { "Content-Type": "application/json" },
           onUploadProgress: (progressEvent) => {
             const percentCompleted = Math.round(
               (progressEvent.loaded * 100) / progressEvent.total
@@ -73,7 +76,7 @@ export const getRateCharts = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const response = await axiosInstance.post("/milkcollection/ratechart");
-      return response.data.usedRateChart;
+      return response.data;
     } catch (error) {
       const errorMessage =
         error.response?.data?.message ||
@@ -87,13 +90,33 @@ export const getRateCharts = createAsyncThunk(
 
 export const fetchRateChart = createAsyncThunk(
   "ratechart/fetchRateChart",
-  async (_, { rejectWithValue }) => {
+  async ({ cb, rccode, rcdate, time }, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.post("/ratechart/selected");
-      return response.data;
+      const response = await axiosInstance.get("/selected/ratechart", {
+        params: { cb, rccode, rcdate, time },
+      });
+      return response.data.selectedRChart;
     } catch (error) {
       const errorMessage =
-        error.response?.data?.message || "Failed to fetch ratechart!.";
+        error.response?.data?.message || "Failed to fetch ratechart.";
+      return rejectWithValue(errorMessage);
+    }
+  }
+);
+
+// Delete selected ratechart
+
+export const deleteRatechart = createAsyncThunk(
+  "ratechart/fetchRateChart",
+  async ({ cb, rccode, rcdate, time }, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.get("/selected/ratechart", {
+        params: { cb, rccode, rcdate, time },
+      });
+      return response.data.selectedRChart;
+    } catch (error) {
+      const errorMessage =
+        error.response?.data?.message || "Failed to fetch ratechart.";
       return rejectWithValue(errorMessage);
     }
   }
@@ -115,11 +138,11 @@ export const listRateCharts = createAsyncThunk(
   }
 );
 
-//Fetch Selected rate chart 
+//Fetch Selected rate chart
 
 export const fetchselectedRateChart = createAsyncThunk(
   "ratechart/fetchselectedRateChart",
-  async ({selectedRateChart}, { rejectWithValue }) => {
+  async ({ selectedRateChart }, { rejectWithValue }) => {
     try {
       const response = await axiosInstance.post("/selected/ratechart", {
         selectedRateChart,
@@ -149,7 +172,7 @@ export const applyRateChart = createAsyncThunk(
   }
 );
 
-// 
+//
 export const fetchMilkCollRatechart = createAsyncThunk(
   "ratechart/fetchMilkCollRatechart",
   async (_, { rejectWithValue }) => {
@@ -165,7 +188,6 @@ export const fetchMilkCollRatechart = createAsyncThunk(
   }
 );
 
-
 // Slice
 const rateChartSlice = createSlice({
   name: "ratechart",
@@ -176,6 +198,9 @@ const rateChartSlice = createSlice({
     },
     resetProgress(state) {
       state.progress = 0;
+    },
+    setData: (state, action) => {
+      state.excelRatechart = action.payload;
     },
   },
   extraReducers: (builder) => {
@@ -192,16 +217,16 @@ const rateChartSlice = createSlice({
         state.status = "failed";
       })
       .addCase(saveRateChart.pending, (state) => {
-        state.status = "loading";
+        state.rcsavestatus = "loading";
         state.error = null;
         state.progress = 0;
       })
       .addCase(saveRateChart.fulfilled, (state) => {
-        state.status = "succeeded";
+        state.rcsavestatus = "succeeded";
         state.progress = 100;
       })
       .addCase(saveRateChart.rejected, (state, action) => {
-        state.status = "failed";
+        state.rcsavestatus = "failed";
         state.error = action.payload;
         state.progress = 0;
       }) // Rate chart used for milk Collection
@@ -273,6 +298,6 @@ const rateChartSlice = createSlice({
   },
 });
 
-export const { updateProgress, resetProgress } = rateChartSlice.actions;
+export const { updateProgress, resetProgress, setData } = rateChartSlice.actions;
 
 export default rateChartSlice.reducer;

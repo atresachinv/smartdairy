@@ -109,7 +109,7 @@ const Login = ({ switchToRegister, switchToOptSend }) => {
           <input
             type="text"
             name="user_id"
-            className="password-input-container pass"
+            className="data password-input-container pass"
             required
             value={values.user_id}
             onChange={handleInputs}

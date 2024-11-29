@@ -202,9 +202,9 @@ const MilkSankalan = () => {
       <form
         onSubmit={handleMobileCollection}
         className="mobile-milk-coll-form w60 h70 d-flex-col sa bg p10">
-        <span className="subtitle w100 h10 t-center">Milk Collection </span>
+        <span className="heading w100 h10 t-center">Complete Milk Collection </span>
         <div className="form-setting w100 h10 d-flex a-center sb">
-          <div className="form-date w40 d-flex px10 a-center">
+          <div className="form-date w40 d-flex a-center">
             <label htmlFor="date" className="info-text w40">
               Date <span className="req">*</span>{" "}
             </label>

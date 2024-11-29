@@ -8,6 +8,7 @@ import {
   listEmployee,
   updateEmp,
 } from "../../../../../App/Features/Mainapp/Masters/empMasterSlice";
+import "../../../../../Styles/Mainapp/Masters/EmpMaster.css";
 
 const CreateEmployee = () => {
   const dispatch = useDispatch();
@@ -161,7 +162,6 @@ const CreateEmployee = () => {
         ...prevData,
         cust_no: "",
       }));
-       
     } else {
       resetForm();
     }
@@ -267,7 +267,6 @@ const CreateEmployee = () => {
     }
   }, [formData.code, isEditing]);
 
-
   // .................................................................................
 
   const handleCreateEmployee = (e) => {
@@ -306,15 +305,15 @@ const CreateEmployee = () => {
         }`}>
         <div className="emp-details-container w100 h1 d-flex-col sb">
           <div className="tilte-container w100 d-flex a-center sb p10">
-            <span className="heading ">
+            <span className="heading">
               {isEditing ? "Update Employee" : "Create Employee"}
             </span>
           </div>
 
           {isEditing ? (
             <div className="emp-div emp-details-div w100 h15 d-flex sb">
-              <div className="details-div w25 d-flex-col a-center px10">
-                <span className="label-text w100">
+              <div className="details-div w30 d-flex-col px10">
+                <span className="info-text w100">
                   Employee Code<span className="req">*</span>
                 </span>
                 <input
@@ -333,7 +332,7 @@ const CreateEmployee = () => {
           )}
           <div className="emp-div emp-details-div w100 h15 d-flex sb">
             <div className="details-div w50 d-flex-col a-center px10">
-              <span className="label-text w100">
+              <span className="info-text w100">
                 Employee Marathi Name<span className="req">*</span>{" "}
               </span>
               <input
@@ -349,7 +348,7 @@ const CreateEmployee = () => {
               />
             </div>
             <div className="details-div w50 d-flex-col a-center px10">
-              <span className="label-text w100">
+              <span className="info-text w100">
                 Employee English Name<span className="req">*</span>
               </span>
               <input
@@ -369,7 +368,7 @@ const CreateEmployee = () => {
               ""
             ) : (
               <div className="details-div w25 d-flex-col a-center px10">
-                <span className="label-text w100">
+                <span className="info-text w100">
                   Mobile<span className="req">*</span>
                 </span>
                 <input
@@ -385,16 +384,16 @@ const CreateEmployee = () => {
             )}
 
             <div className="details-div w40 d-flex-col a-center px10">
-              <span className="label-text w100">
+              <span className="info-text w100">
                 Designation<span className="req">*</span>{" "}
               </span>
               <select
-                className="data w100"
+                className="data w100 "
                 name="designation"
                 id=""
                 onChange={handleInputChange}
                 value={formData.designation || ""}>
-                <option value="">--Select Designation--</option>
+                {/* <option value="">--Select Designation--</option> */}
                 <option value="manager">Manager</option>
                 <option value="milkcollector">Milk Collector</option>
                 <option value="mobilecollector">Mobile Milk Collector</option>
@@ -402,7 +401,7 @@ const CreateEmployee = () => {
               </select>
             </div>
             <div className="details-div w30 d-flex-col a-center px10">
-              <span className="label-text w100 ">
+              <span className="info-text w100 ">
                 Salary<span className="req">*</span>
               </span>
               <input
@@ -417,10 +416,10 @@ const CreateEmployee = () => {
             </div>
           </div>
           <div className="emp-div address-details-div w100 h15 d-flex-col sb">
-            <span className="label-text px10">Address Details :</span>
+            <span className="info-text px10">Address Details :</span>
             <div className="Address-details w100 h1 d-flex sb">
               <div className="details-div w25 d-flex-col a-center px10">
-                <span className="label-text w100 ">
+                <span className="info-text w100 ">
                   City<span className="req">*</span>
                 </span>
                 <input
@@ -434,7 +433,7 @@ const CreateEmployee = () => {
                 />
               </div>
               <div className="details-div w30 d-flex-col a-center px10">
-                <span className="label-text w100">
+                <span className="info-text w100">
                   Tehsil<span className="req">*</span>{" "}
                 </span>
                 <input
@@ -448,7 +447,7 @@ const CreateEmployee = () => {
                 />
               </div>
               <div className="details-div w30 d-flex-col a-center px10">
-                <span className="label-text w100">
+                <span className="info-text w100">
                   District<span className="req">*</span>{" "}
                 </span>
                 <input
@@ -464,7 +463,7 @@ const CreateEmployee = () => {
                 />
               </div>
               <div className="details-div w20 d-flex-col a-center px10">
-                <span className="label-text w100">
+                <span className="info-text w100">
                   Pincode<span className="req">*</span>{" "}
                 </span>
                 <input
@@ -480,10 +479,10 @@ const CreateEmployee = () => {
           </div>
 
           <div className="emp-div Bank-details-div w100 h15 d-flex-col sb">
-            <span className="label-text px10">Bank Details :</span>
+            <span className="info-text px10">Bank Details :</span>
             <div className="Bank-details w100 h1 d-flex sb">
               <div className="details-div w40 d-flex-col a-center px10">
-                <span className="label-text w100 ">Bank Name</span>{" "}
+                <span className="info-text w100 ">Bank Name</span>{" "}
                 <input
                   className={`data w100 ${
                     errors.bankName ? "input-error" : ""
@@ -496,7 +495,7 @@ const CreateEmployee = () => {
                 />
               </div>
               <div className="details-div w30 d-flex-col a-center px10">
-                <span className="label-text w100">Bank A/C</span>{" "}
+                <span className="info-text w100">Bank A/C</span>{" "}
                 <input
                   className={`data w100 ${errors.bank_ac ? "input-error" : ""}`}
                   type="number"
@@ -507,7 +506,7 @@ const CreateEmployee = () => {
                 />
               </div>
               <div className="details-div w30 d-flex-col a-center px10">
-                <span className="label-text w100">Bank IFSC</span>{" "}
+                <span className="info-text w100">Bank IFSC</span>{" "}
                 <input
                   className={`data w100 ${
                     errors.bankIFSC ? "input-error" : ""
@@ -527,7 +526,7 @@ const CreateEmployee = () => {
           ) : (
             <div className="emp-div emp-details-div w100 h15 d-flex py10 sb">
               <div className="details-div w50 d-flex-col a-center px10">
-                <span className="label-text w100">
+                <span className="info-text w100">
                   Enter Password<span className="req">*</span>
                 </span>
                 <input
@@ -543,7 +542,7 @@ const CreateEmployee = () => {
                 />
               </div>
               <div className="details-div w50 d-flex-col a-center px10">
-                <span className="label-text w100">
+                <span className="info-text w100">
                   Confirm Password<span className="req">*</span>
                 </span>
                 <input
@@ -561,11 +560,11 @@ const CreateEmployee = () => {
             </div>
           )}
 
-          <div className="button-container w50 h15 d-flex  p10  sb">
-            <button type="button" className="w-btn" onClick={handleEditClick}>
+          <div className="button-container w100 h15 d-flex j-end p10">
+            {/* <button type="button" className="w-btn" onClick={handleEditClick}>
               {isEditing ? "Cancel" : "Edit"}
-            </button>
-            <button type="submit" className="btn" disabled={isLoading}>
+            </button> */}
+            <button type="submit" className="btn mx10" disabled={isLoading}>
               {isLoading ? (
                 <Spinner />
               ) : isEditing ? (

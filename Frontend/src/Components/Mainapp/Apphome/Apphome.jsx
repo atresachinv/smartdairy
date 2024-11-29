@@ -18,12 +18,12 @@ const Apphome = () => {
   const yearEnd = useSelector((state) => state.date.yearEnd);
 
   const [isselected, setIsSelected] = useState(
-    parseInt(localStorage.getItem("selectedTabIndex")) || 0
+    parseInt(localStorage.getItem("MilkCollTabIndex")) || 0
   );
 
   // Update localStorage whenever isselected changes
   useEffect(() => {
-    localStorage.setItem("selectedTabIndex", isselected);
+    localStorage.setItem("MilkCollTabIndex", isselected);
   }, [isselected]);
 
 
@@ -62,7 +62,7 @@ const Apphome = () => {
       <div className="header-nav w100 d-flex a-center">
         <AppNavlinks isselected={isselected} setIsSelected={setIsSelected} />
       </div>
-      <div className="home-nav-views w100 h90 d-flex center">
+      <div className="apphome-nav-views w100 h90 d-flex center p10">
         <AppNavviews index={isselected} />
       </div>
     </div>

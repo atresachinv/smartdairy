@@ -37,6 +37,8 @@
   "c-avg-fat": "Avg fat",
   "c-avg-snf": "Avg snf",
   "c-t-deduct": "Total Deduction",
+  "c-last-dedu": "Last Deduction",
+  "c-remaining-dedu": "Remaining Deduction Amount",
   "c-t-amt": "Total Amount",
   "c-net-pay": "Net Payment",
   "c-pay-amt": "Payment Amount",

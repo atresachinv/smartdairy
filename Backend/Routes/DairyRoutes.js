@@ -35,7 +35,7 @@ router.route("/upload/ratechart").post(verifyToken, saveRateChart); //rate chart
 router.route("/ratechart/list").post(verifyToken, listRatecharts);
 router.route("/apply/ratechart").post(verifyToken, applyRateChart);
 router.route("/milkcollection/ratechart").post(verifyToken, rateChartMilkColl);
-router.route("/selected/ratechart").post(verifyToken, getSelectedRateChart);
+router.route("/selected/ratechart").get(verifyToken, getSelectedRateChart);
 
 
 module.exports = router;

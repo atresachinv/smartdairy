@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import "../../../Styles/Mainapp/Dairy/Dairy.css";
 import {
   resetUpdateState,
   updateDairyDetails,
 } from "../../../App/Features/Dairy/registerSlice";
 import { toast } from "react-toastify";
 import { fetchDairyInfo } from "../../../App/Features/Admin/Dairyinfo/dairySlice";
+import "../../../Styles/Mainapp/Dairy/Dairy.css";
 
 const DairyInfo = () => {
   const dispatch = useDispatch();
@@ -61,11 +61,11 @@ const DairyInfo = () => {
   return (
     <div className="dairy-main-container w100 h1 d-flex center">
       <form
-        className="dairy-information-div w50 h90 d-flex-col sa bg p10"
+        className="dairy-information-div w50 h90 d-flex-col bg p10"
         onSubmit={handleSubmit}>
-        <span className="heading h10">Dairy Information</span>
+        <span className="heading ">Dairy Information</span>
         <div className="dairy-name-div w100 h15 d-flex-col sa">
-          <span className="label-text w100 ">Marathi Name : </span>
+          <span className="info-text w100 ">Marathi Name : </span>
           <input
             className="data w100 "
             type="text"
@@ -77,7 +77,7 @@ const DairyInfo = () => {
           />
         </div>
         <div className="dairy-name-div w100 h15 d-flex-col sa">
-          <span className="label-text w100 ">English Name :</span>
+          <span className="info-text w100 ">English Name :</span>
           <input
             className="data w100 "
             type="text"
@@ -88,9 +88,9 @@ const DairyInfo = () => {
             onChange={handleChange}
           />
         </div>
-        <div className="register-date-no-div w100 h15 d-flex sb">
-          <div className="regi-no-div w45 d-flex-col sa">
-            <span className="label-text w100 ">Register Number :</span>
+        <div className="dairy-div w100 h15 d-flex sb">
+          <div className="regi-no-div w45 h1 d-flex-col sa">
+            <span className="info-text w100 ">Register Number :</span>
             <input
               className="data w100"
               type="number"
@@ -99,8 +99,8 @@ const DairyInfo = () => {
               onChange={handleChange}
             />
           </div>
-          <div className="regi-no-div w45 d-flex-col sb">
-            <span className="label-text w100 ">Register Date :</span>
+          <div className="regi-no-div w45 h1 d-flex-col sb">
+            <span className="info-text w100 ">Register Date :</span>
             <input
               className="data w100"
               type="date"
@@ -110,9 +110,9 @@ const DairyInfo = () => {
             />
           </div>
         </div>
-        <div className="address-div w100 h15 d-flex sb">
-          <div className="gst-div w45 d-flex-col sb">
-            <span className="label-text w100 ">GST Number :</span>
+        <div className="dairy-div w100 h15 d-flex sb">
+          <div className="gst-div w45 h1 d-flex-col sb">
+            <span className="info-text w100 ">GST Number :</span>
             <input
               className="data w100 "
               type="text"
@@ -121,8 +121,8 @@ const DairyInfo = () => {
               onChange={handleChange}
             />
           </div>
-          <div className="gst-div w45 d-flex-col sb">
-            <span className="label-text w100 ">Audit Class :</span>
+          <div className="gst-div w45 h1 d-flex-col sb">
+            <span className="info-text w100 ">Audit Class :</span>
             <input
               className="data w100 "
               type="text"
@@ -132,9 +132,9 @@ const DairyInfo = () => {
             />
           </div>
         </div>
-        <div className="gst-mobile-div w100 h15 d-flex a-center sb">
-          <div className="add-div w45 d-flex-col sb">
-            <span className="label-text w100 ">Mobile Number :</span>
+        <div className="dairy-div w100 h15 d-flex sb">
+          <div className="add-div w45 h1 d-flex-col sb">
+            <span className="info-text w100 ">Mobile Number :</span>
             <input
               className="data w100 "
               type="tel"
@@ -143,8 +143,8 @@ const DairyInfo = () => {
               onChange={handleChange}
             />
           </div>
-          <div className="gst-div w45 d-flex-col sb">
-            <span className="label-text w100 ">Email :</span>
+          <div className="gst-div w45 h1 d-flex-col sb">
+            <span className="info-text w100 ">Email :</span>
             <input
               className="data w100 "
               type="email"
@@ -154,9 +154,9 @@ const DairyInfo = () => {
             />
           </div>
         </div>
-        <div className="address-div w100 h15 d-flex a-center sb">
-          <div className="add-div w45 d-flex-col sb ">
-            <span className="label-text w100 ">City :</span>
+        <div className="dairy-div w100 h15 d-flex sb">
+          <div className="add-div w45 h1 d-flex-col sb ">
+            <span className="info-text w100 ">City :</span>
             <input
               className="data w100"
               type="text"
@@ -165,8 +165,8 @@ const DairyInfo = () => {
               onChange={handleChange}
             />
           </div>
-          <div className="add-div w45 d-flex-col sb">
-            <span className="label-text w100 ">Tehsil :</span>
+          <div className="add-div w45 h1 d-flex-col sb">
+            <span className="info-text w100 ">Tehsil :</span>
             <input
               className="data w100 "
               type="text"
@@ -176,9 +176,9 @@ const DairyInfo = () => {
             />
           </div>
         </div>
-        <div className="address-div w100 h15 d-flex a-center sb">
-          <div className="add-div w45 d-flex-col sa">
-            <span className="label-text w100 ">District :</span>
+        <div className="dairy-div w100 h15 d-flex sb">
+          <div className="add-div w45 h1 d-flex-col sa">
+            <span className="info-text w100 ">District :</span>
             <input
               className="data w100"
               type="text"
@@ -187,8 +187,8 @@ const DairyInfo = () => {
               onChange={handleChange}
             />
           </div>
-          <div className="add-div w45 d-flex-col sb">
-            <span className="label-text w100 ">Pincode :</span>
+          <div className="add-div w45 h1 d-flex-col sb">
+            <span className="info-text w100 ">Pincode :</span>
             <input
               className="data w100 "
               type="text"
@@ -198,8 +198,8 @@ const DairyInfo = () => {
             />
           </div>
         </div>
-        <div className="d-flex w100 h15 center">
-          <button className="btn w50" type="submit" disabled={loading}>
+        <div className="button-container d-flex w100 h10 my10 center">
+          <button className="btn w50 h1" type="submit" disabled={loading}>
             {loading ? "Updating..." : "Update Dairy Info"}
           </button>
         </div>

@@ -835,7 +835,7 @@ const CreateCustomer = () => {
             </div>
           </div>
         </div>
-        <div className="button-container w50 h20 d-flex-col a-center sa">
+        {/* <div className="button-container w50 h20 d-flex-col a-center sa">
           <button
             className="btn"
             type="button"
@@ -845,7 +845,7 @@ const CreateCustomer = () => {
           <button className="btn" type="button" disabled={status === "loading"}>
             {status === "loading" ? "Creating..." : "Upload Customer Excel"}
           </button>
-        </div>
+        </div> */}
         <div className="button-container w100 h10 d-flex sa">
           <button className="w-btn" type="submit" onClick={handleEditClick}>
             {isEditing ? "CREATE" : "EDIT"}

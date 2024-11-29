@@ -5,24 +5,26 @@ import MilkReports from "./Appnavviews/Reports/MilkReports";
 import Payments from "./Appnavviews/Payments/Payments";
 import MilkSankalan from "./Appnavviews/MilkSankalan/MilkSankalan";
 import SankalanReport from "./Appnavviews/MilkSankalan/SankalanReport";
-import MilkCollOptions from "./Appnavviews/Milkcollection/MilkCollOptions";
+import UpdateMIlkCollection from "./Appnavviews/Milkcollection/UpdateMIlkCollection";
+import PrivMilkCollection from "./Appnavviews/PrevCollection/PrivMilkCollection";
+import CompleteMilkColl from "./Appnavviews/Milkcollection/CompleteMilkColl";
 
 const AppNavViews = ({ index }) => {
   switch (index) {
     case 0:
-      return <MilkCollOptions />;
+      return <Milkcollection />;
       break;
     case 1:
       return <MilkSankalan />;
       break;
     case 2:
-      return <MilkReports />;
+      return <PrivMilkCollection />;
       break;
     case 3:
-      return <Sales />;
+      return <CompleteMilkColl />;
       break;
     case 4:
-      return <Payments />;
+      return <UpdateMIlkCollection />;
       break;
     case 5:
       return <SankalanReport />;

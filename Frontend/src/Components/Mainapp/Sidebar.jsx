@@ -4,6 +4,7 @@ import { BiLogOutCircle } from "react-icons/bi";
 import { useNavigate } from "react-router-dom";
 import applogo from "../../assets/samrtdairylogo.png";
 import Mainappnavlinks from "./Mainappnavlinks";
+
 import axios from "axios";
 import "../../Styles/Mainapp/Sidebar.css";
 import { useSelector } from "react-redux";
@@ -22,10 +23,10 @@ const Sidebar = ({ setselected, handleSidebar }) => {
       await localStorage.removeItem("milkentries");
 
       if (userRole === "milkcollector" || userRole === "mobilecollector") {
-        await localStorage.setItem("selectedNavIndex", 1);
+        await localStorage.setItem("MilkCollTabIndex", 1);
         await localStorage.setItem("selectedTabIndex", 0);
       } else {
-        await localStorage.setItem("selectedNavIndex", 0);
+        await localStorage.setItem("MilkCollTabIndex", 0);
         await localStorage.setItem("selectedTabIndex", 0);
       }
 

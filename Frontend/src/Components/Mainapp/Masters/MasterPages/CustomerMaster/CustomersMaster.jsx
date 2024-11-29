@@ -8,17 +8,17 @@ import { getMaxCustNo } from "../../../../../App/Features/Customers/customerSlic
 const CustomersMaster = () => {
   const dispatch = useDispatch();
   const [isselected, setIsSelected] = useState(
-    parseInt(localStorage.getItem("selectednavIndex")) || 0
+    parseInt(localStorage.getItem("selectedCustIndex")) || 0
   );
 
   // Update localStorage whenever isselected changes
   useEffect(() => {
-    localStorage.setItem("selectednavIndex", isselected);
+    localStorage.setItem("selectedCustIndex", isselected);
   }, [isselected]);
 
-  useEffect(() => {
-    localStorage.setItem("selectednavIndex", isselected);
-  }, [isselected]);
+  // useEffect(() => {
+  //   localStorage.setItem("selectedCustIndex", isselected);
+  // }, [isselected]);
 
   useEffect(() => {
     dispatch(getMaxCustNo());

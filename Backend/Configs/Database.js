@@ -13,6 +13,7 @@ const pool = mysql.createPool({
   connectTimeout: 10000, // 10 seconds
   acquireTimeout: 10000,
   charset: "utf8mb4",
+  timezone: "Z",
 });
 
 
