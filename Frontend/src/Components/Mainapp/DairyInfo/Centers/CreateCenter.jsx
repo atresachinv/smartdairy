@@ -20,7 +20,7 @@ const CreateCenter = () => {
   const [errors, setErrors] = useState({});
   const [prefixString, setPrefixString] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [showMPassword, setShowMPassword] = useState(false);
+  const [showCPassword, setShowCPassword] = useState(false);
 
   //   // Generate prefix string on component mount
   //   useEffect(() => {
@@ -33,7 +33,7 @@ const CreateCenter = () => {
   //       }
   //       setPrefixString(prefix);
   //     };
-  //
+  // 
   //     generatePrefix();
   //   }, []);
 
@@ -51,7 +51,6 @@ const CreateCenter = () => {
     district: "",
     pincode: "",
     password: "",
-    confirm_pass: "", // Add confirm_pass field
     date: date,
     prefix: prefixString,
   });
@@ -94,11 +93,17 @@ const CreateCenter = () => {
       [name]: value,
     }));
 
-    const fieldError = validateField(name, value);
-    setErrors((prevErrors) => ({
-      ...prevErrors,
-      ...fieldError,
-    }));
+    // const fieldError = validateField(name, value);
+    // setErrors((prevErrors) => ({
+    //   ...prevErrors,
+    //   ...fieldError,
+    // }));
+     const fieldError = validateField(name, value);
+     setErrors((prevErrors) => {
+       const updatedErrors = { ...prevErrors, ...fieldError };
+       if (!value) delete updatedErrors[name]; // Clear error if field is empty
+       return updatedErrors;
+     });
   };
 
   const validateField = (name, value) => {
@@ -405,12 +410,15 @@ const CreateCenter = () => {
         </div>
         <div className="add-data-div w100 h10 d-flex a-center my10 sb">
           <div className="center-pass-details-div w45">
-            <span className="text w100">Password</span>
+            <label htmlFor="pass" className="text w100">
+              Password
+            </label>
             <div className="password-input-container w100 d-flex a-center">
               <input
                 className="pass w90"
-                type={showMPassword ? "text" : "password"}
+                type={showPassword ? "text" : "password"}
                 name="password"
+                id="pass"
                 onChange={handleChange}
               />
               <span
@@ -429,15 +437,14 @@ const CreateCenter = () => {
             <div className="password-input-container d-flex a-center">
               <input
                 className="pass w90"
-                type={showPassword ? "text" : "password"}
+                type={showCPassword ? "text" : "password"}
                 name="confirm_pass"
                 onChange={handleChange}
               />
               <span
                 className="eye-icon w10 d-flex a-center"
-                onClick={() => setShowPassword(!showPassword)} // Toggle password visibility
-              >
-                {showPassword ? (
+                onClick={() => setShowCPassword(!showCPassword)}>
+                {showCPassword ? (
                   <IoMdEyeOff className="pss-eye" />
                 ) : (
                   <IoMdEye className="pss-eye" />

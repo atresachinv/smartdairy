@@ -140,11 +140,18 @@ const CreateCustomer = () => {
       }));
 
       // Field-level validation on input change
-      const fieldError = validateField(name, value);
-      setErrors((prevErrors) => ({
-        ...prevErrors,
-        ...fieldError,
-      }));
+      // const fieldError = validateField(name, value);
+      // setErrors((prevErrors) => ({
+      //   ...prevErrors,
+      //   ...fieldError,
+      // }));
+
+       const fieldError = validateField(name, value);
+       setErrors((prevErrors) => {
+         const updatedErrors = { ...prevErrors, ...fieldError };
+         if (!value) delete updatedErrors[name]; // Clear error if field is empty
+         return updatedErrors;
+       });
     }
   };
 
@@ -161,7 +168,7 @@ const CreateCustomer = () => {
         break;
 
       case "marathi_name":
-        if (!/^[\u0900-\u097F\s]+$/.test(value)) {
+        if (!/^[\u0900-\u097F\sA-Za-z]+$/.test(value)) {
           error[name] = "Invalid Marathi name.";
         } else {
           delete errors[name];

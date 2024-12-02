@@ -29,37 +29,35 @@ const AppNavlinks = ({ isselected, setIsSelected }) => {
       name: "Milk Collection",
       icon: <BsDatabaseAdd className="icon" />,
       index: 1,
-      role: ["super_admin", "milkcollector", "mobilecollector"],
-    },
-    {
-      name: "Previous Collection",
-      icon: <BsPassFill className="icon" />,
-      index: 2,
       role: [
         "super_admin",
         "admin",
         "manager",
+        "milkcollector",
+        "mobilecollector",
       ],
     },
+    // {
+    //   name: "Previous Collection",
+    //   icon: <BsPassFill className="icon" />,
+    //   index: 2,
+    //   role: [
+    //     "super_admin",
+    //     "admin",
+    //     "manager",
+    //   ],
+    // },
     {
       name: "Complete Collection",
       icon: <BsSaveFill className="icon" />,
-      index: 3,
-      role: [
-        "super_admin",
-        "admin",
-        "manager",
-      ],
+      index: 2,
+      role: ["super_admin", "admin", "manager"],
     },
     {
       name: "Update Collection",
       icon: <BsFileEarmarkCodeFill className="icon" />,
-      index: 4,
-      role: [
-        "super_admin",
-        "admin",
-        "manager",
-      ],
+      index: 3,
+      role: ["super_admin", "admin", "manager"],
     },
     // {
     //   name: "Report",
@@ -82,8 +80,14 @@ const AppNavlinks = ({ isselected, setIsSelected }) => {
     {
       name: "Report",
       icon: <BsFileTextFill className="icon" />,
-      index: 5,
-      role: ["super_admin", "milkcollector", "mobilecollector"],
+      index: 4,
+      role: [
+        "super_admin",
+        "admin",
+        "manager",
+        "milkcollector",
+        "mobilecollector",
+      ],
     },
   ];
 

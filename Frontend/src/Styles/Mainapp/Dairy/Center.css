@@ -5,13 +5,13 @@
   overflow-x: auto;
 }
 .table-titles {
-  min-width: 1200px;
+  min-width: 1400px;
   position: sticky;
   top: 0;
   background-color: antiquewhite;
 }
 .table-data {
-  min-width: 1200px;
+  min-width: 1400px;
 }
 
 .label-text .icons {
@@ -21,6 +21,7 @@
   font-size: 22px;
   color: red;
 }
+
 
 /* ------------------------------------------- */
 /* center list css end ----------------------- */

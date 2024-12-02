@@ -4,7 +4,7 @@
     width: 70%;
   }
   .button-container {
-    display: flex; 
+    display: flex;
     justify-content: flex-start;
     width: 100%;
   }
@@ -14,19 +14,19 @@
   .customer-views {
     padding: 5px;
   }
-  .Employee-views{
+  .Employee-views {
     padding: 10px;
   }
   .Employee-views .create-emp-container {
     width: 100%;
-    height: 90%;
+    height: 80%;
   }
   .Employee-views .emp-list-container {
     width: 100%;
     height: 90%;
   }
   .button-container {
-    display: flex; 
+    display: flex;
     justify-content: flex-start;
     width: 100%;
   }

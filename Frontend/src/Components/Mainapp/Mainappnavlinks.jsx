@@ -10,7 +10,14 @@ import {
   BsBuildingFillGear,
   BsHouseGearFill,
 } from "react-icons/bs";
-import { FaGears } from "react-icons/fa6";
+import {
+  FaGears,
+  FaFileLines ,
+  FaFileContract,
+  FaFileInvoice,
+  FaFileInvoiceDollar,
+} from "react-icons/fa6";
+import { IoDocuments } from "react-icons/io5";
 import { GrNotes, GrOrganization } from "react-icons/gr";
 import "../../Styles/Mainapp/Mainapphome.css";
 
@@ -169,35 +176,35 @@ const Mainappnavlinks = ({ setselected, handleSidebar }) => {
       role: ["super_admin", "admin", "manager"],
       submenus: [
         {
-          name: "Main Ledger",
-          icon: <BsGridFill className="icon" />,
+          name: "Master Reports",
+          icon: <FaFileLines className="icon" />,
           index: 6.1,
           role: ["admin", "super_admin", "manager"],
         },
         {
-          name: "Sub Ledger",
-          icon: <BsGridFill className="icon" />,
+          name: "Milk Collection Reports",
+          icon: <FaFileContract className="icon" />,
           index: 6.2,
           role: ["admin", "super_admin", "manager"],
         },
         {
-          name: "Customer Master",
-          icon: <BsGridFill className="icon" />,
+          name: "Inventory Reports",
+          icon: <FaFileInvoice className="icon" />,
           index: 6.3,
           role: ["admin", "super_admin", "manager"],
         },
         {
-          name: "Employee Master",
-          icon: <BsGridFill className="icon" />,
+          name: "Payment Reports",
+          icon: <FaFileInvoiceDollar className="icon" />,
           index: 6.0,
           role: ["admin", "super_admin", "manager"],
         },
-        {
-          name: "Milk Rate Master",
-          icon: <BsGridFill className="icon" />,
-          index: 6.5,
-          role: ["admin", "super_admin", "manager"],
-        },
+        // {
+        //   name: "Milk Rate Master",
+        //   icon: <BsGridFill className="icon" />,
+        //   index: 6.5,
+        //   role: ["admin", "super_admin", "manager"],
+        // },
       ],
     },
     {

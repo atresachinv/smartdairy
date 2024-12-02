@@ -200,9 +200,9 @@ exports.createEmployee = async (req, res) => {
               });
             }
 
-            const maxEmpId = results[0].maxEmpId || `1`;
+            const maxEmpId = results[0].maxEmpId || 0;
             const newEmpId = maxEmpId + 1;
-            
+
             // Step 2: Insert into EmployeeMaster table
             const createEmployeeQuery = `
             INSERT INTO EmployeeMaster (
@@ -219,9 +219,9 @@ exports.createEmployee = async (req, res) => {
                 emp_name,
                 marathi_name,
                 mobile,
-                bankName,
-                bank_ac,
-                bankIFSC,
+                bankName || null,
+                bank_ac || null,
+                bankIFSC || null,
                 city,
                 tehsil,
                 district,
@@ -321,7 +321,6 @@ exports.createEmployee = async (req, res) => {
 
 exports.findEmpByCode = async (req, res) => {
   const { code } = req.body;
-  console.log(code);
 
   const dairy_id = req.user.dairy_id;
   const center_id = req.user.center_id;
@@ -349,8 +348,7 @@ exports.findEmpByCode = async (req, res) => {
             .status(500)
             .json({ message: "Error retrieving employee data" });
         }
-
-        return res.status(200).json({ employee: result });
+        return res.status(200).json({ employee: result[0] });
       }
     );
   });

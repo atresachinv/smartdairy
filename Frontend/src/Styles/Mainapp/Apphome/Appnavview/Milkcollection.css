@@ -77,6 +77,10 @@
   color: black;
 }
 
+.milk-collection-info-div .collection-info-heading {
+  border-radius: 7px 7px 0 0;
+}
+
 /* milk collection list css end */
 
 @media screen and (max-width: 426px) {
@@ -108,7 +112,7 @@
   }
 
   /* Mobile Milk Collection form css*/
-  .apphome-nav-views{
+  .apphome-nav-views {
     padding: 5px;
   }
 
@@ -139,8 +143,12 @@
     width: 100%;
     padding: 0;
   }
-  .milk-collection-info-div .collection-info-heading{
-    border-radius: 8px 8px 0 0;
+  .mobile-milk-collection-report .page-title-button-div {
+    width: 100%;
+    padding: 0 10px;
+  }
+  .mobile-milk-collection-report .f-heading {
+    display: none;
   }
 
   /* complete mobile milk collection form */

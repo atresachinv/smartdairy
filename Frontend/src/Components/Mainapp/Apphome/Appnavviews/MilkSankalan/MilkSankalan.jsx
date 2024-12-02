@@ -10,7 +10,8 @@ const MilkSankalan = () => {
   const dispatch = useDispatch();
   const tDate = useSelector((state) => state.date.toDate);
   const { customerlist, loading } = useSelector((state) => state.customer);
-
+  const [collCount, setCollCount] = useState(0);
+  const [literCount, setLiterCount] = useState(0.0);
   const [customerList, setCustomerList] = useState([]);
   const [errors, setErrors] = useState({});
 
@@ -26,9 +27,9 @@ const MilkSankalan = () => {
 
   const [values, setValues] = useState(initialValues);
 
-  //.....................................................
-  // Customer List ......................................
-  //.....................................................
+  //............................................................................
+  // Customer List .............................................................
+  //............................................................................
 
   useEffect(() => {
     dispatch(listCustomer());
@@ -186,11 +187,12 @@ const MilkSankalan = () => {
       setErrors(validationErrors);
       return;
     }
-    
+
     try {
       await dispatch(mobileMilkCollection(values));
       setValues(initialValues);
       toast.success("Milk Collection Saved Successfully!");
+      setCollCount(collCount + 1);
     } catch (error) {
       setValues(initialValues);
       toast.error("failed to save Milk Collection, try again!");
@@ -198,12 +200,33 @@ const MilkSankalan = () => {
   };
 
   return (
-    <>
+    <div className="mobile-milk-collection-conainer w100 h1 d-flex-col center">
+      <span className="heading w100 h10 t-center">Milk Collection </span>
       <form
         onSubmit={handleMobileCollection}
-        className="mobile-milk-coll-form w60 h70 d-flex-col sa bg p10">
-        <span className="heading w100 h10 t-center">Complete Milk Collection </span>
-        <div className="form-setting w100 h10 d-flex a-center sb">
+        className="mobile-milk-coll-form w60 h60 d-flex-col sa bg p10">
+        {/* <div className="show-milk-data-container w100 h10 d-flex px10">
+          <div className="form-date w40 d-flex a-center">
+            <label htmlFor="date" className="label-text w60">
+              Collection Count :
+            </label>
+            <label htmlFor="date" className="label-text w40">
+              {collCount}
+            </label>
+          </div>
+          <div className="form-date w40 d-flex a-center">
+            <label htmlFor="date" className="label-text w60">
+              Total Liters :
+            </label>
+            <label htmlFor="date" className="label-text w40">
+              {literCount}
+            </label>
+          </div>
+          <button className="w-btn" >
+            clear
+          </button>
+        </div> */}
+        <div className="form-setting w100 h10 d-flex a-center sa">
           <div className="form-date w40 d-flex a-center">
             <label htmlFor="date" className="info-text w40">
               Date <span className="req">*</span>{" "}
@@ -218,9 +241,10 @@ const MilkSankalan = () => {
               onChange={handleInputs}
               value={values.date || ""}
               max={values.date}
+              readOnly
             />
           </div>
-          <div className="milk-details w50 d-flex px10">
+          <div className="milk-details w50 d-flex a-center px10">
             <label htmlFor="animal" className="info-text w50">
               Select Milk Type <span className="req">*</span>{" "}
             </label>
@@ -313,7 +337,7 @@ const MilkSankalan = () => {
           </button>
         </div>
       </form>
-    </>
+    </div>
   );
 };
 

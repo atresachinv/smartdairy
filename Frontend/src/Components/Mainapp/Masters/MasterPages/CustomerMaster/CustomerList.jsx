@@ -66,7 +66,7 @@ const CustomerList = () => {
                 }}>
                 <span className="text w5">edit</span>
                 <span className="text w5">{customer.cid}</span>
-                <span className="text w25">{customer.cname}</span>
+                <span className="text w25 t-start">{customer.cname}</span>
                 <span className="text w10">
                   {customer.mobile || customer.Phone}
                 </span>

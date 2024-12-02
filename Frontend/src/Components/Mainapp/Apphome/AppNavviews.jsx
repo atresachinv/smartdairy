@@ -17,16 +17,16 @@ const AppNavViews = ({ index }) => {
     case 1:
       return <MilkSankalan />;
       break;
+    // case 2:
+    //   return <PrivMilkCollection />;
+    //   break;
     case 2:
-      return <PrivMilkCollection />;
-      break;
-    case 3:
       return <CompleteMilkColl />;
       break;
-    case 4:
+    case 3:
       return <UpdateMIlkCollection />;
       break;
-    case 5:
+    case 4:
       return <SankalanReport />;
       break;
 

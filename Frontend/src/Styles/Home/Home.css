@@ -14,6 +14,23 @@
   background-size: contain;
 }
 
+.nointernet-screen .first-text {
+  font-size: 72px;
+  font-weight: 600;
+  color: #7bf8ee;
+}
+.nointernet-screen .second-text {
+  font-size: 26px;
+  font-weight: 600;
+  color: #7bf8ee;
+}
+.nointernet-screen .p-text {
+  font-size: 12px;
+  width: 60%;
+  text-align: center;
+  color: #fafafa;
+}
+
 /* Responsive css*/
 
 @media screen and (max-width: 426px) {

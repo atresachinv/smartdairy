@@ -45,6 +45,7 @@ const Mainapp = () => {
     dispatch(fetchDairyInfo());
     dispatch(maxCenterId(dairy_id));
   }, []);
+  
 
   return (
     <div className="main-home-container wh100 d-flex">
