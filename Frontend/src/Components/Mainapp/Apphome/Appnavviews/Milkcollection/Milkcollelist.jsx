@@ -56,7 +56,7 @@ const Milkcollelist = () => {
           ))
         ) : (
           <div className="no-records w100 h1 d-flex center">
-            <span className="heading">No record found !</span>
+            <span className="label-text">No record found !</span>
           </div>
         )}
       </div>

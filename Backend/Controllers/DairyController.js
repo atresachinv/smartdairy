@@ -2,6 +2,8 @@ const jwt = require("jsonwebtoken");
 const dotenv = require("dotenv");
 const pool = require("../Configs/Database");
 dotenv.config({ path: "Backend/.env" });
+const NodeCache = require("node-cache");
+const cache = new NodeCache({});
 
 // ................................................
 // Create New Dairy User...........................
@@ -11,8 +13,96 @@ dotenv.config({ path: "Backend/.env" });
 //Dairy info ......................................
 //.................................................
 
+// exports.dairyInfo = async (req, res) => {
+//   // Get a connection from the pool
+//   pool.getConnection((err, connection) => {
+//     if (err) {
+//       console.error("Error getting MySQL connection: ", err);
+//       return res.status(500).json({ message: "Database connection error" });
+//     }
+//
+//     try {
+//       const dairy_id = req.user.dairy_id;
+//       const center_id = req.user.center_id;
+//
+//       if (!dairy_id) {
+//         connection.release();
+//         return res.status(400).json({ message: "Dairy ID not found!" });
+//       }
+//
+//       // Base query for dairy information
+//       let getDairyInfo;
+//       let queryParams = [dairy_id];
+//
+//       // Determine whether to query main dairy or dairy center
+//       if (center_id === 0) {
+//         // Query for main dairy
+//         getDairyInfo = `
+//           SELECT SocietyCode, SocietyName, PhoneNo, city, PinCode, AuditClass, RegNo, RegDate,
+//                  email, prefix, startDate, enddate, tel, dist, gstno, marathiName
+//           FROM societymaster
+//           WHERE SocietyCode = ?
+//         `;
+//       } else {
+//         getDairyInfo = `
+//           SELECT center_name, marathi_name, reg_no, reg_date, mobile, email, city,
+//                  tehsil, district, pincode, auditclass, orgid ,prefix
+//           FROM centermaster
+//           WHERE orgid = ? AND center_id = ?
+//         `;
+//         queryParams.push(center_id);
+//       }
+//
+//       // Execute the query
+//       connection.query(getDairyInfo, queryParams, (err, result) => {
+//         connection.release(); // Release the connection back to the pool
+//
+//         if (err) {
+//           console.error("Error executing query: ", err);
+//           return res.status(500).json({ message: "Database query error" });
+//         }
+//
+//         if (result.length === 0) {
+//           return res
+//             .status(404)
+//             .json({ message: "Dairy or center not found!" });
+//         }
+//
+//         // Send the result as a response
+//         res.status(200).json({
+//           dairyInfo: result[0],
+//         });
+//       });
+//     } catch (error) {
+//       connection.release(); // Ensure the connection is released in case of an error
+//       console.error("Error processing request: ", error);
+//       return res.status(500).json({ message: "Internal server error" });
+//     }
+//   });
+// };
+
+//v2
 exports.dairyInfo = async (req, res) => {
-  // Get a connection from the pool
+  // Extract user details from the request
+  const dairy_id = req.user.dairy_id;
+  const center_id = req.user.center_id;
+
+  if (!dairy_id) {
+    return res.status(400).json({ message: "Dairy ID not found!" });
+  }
+
+  // Construct the cache key
+  const cacheKey = `dairyInfo_${dairy_id}_${center_id}`;
+
+  // Check if the data exists in the cache
+  const cachedData = cache.get(cacheKey);
+  if (cachedData) {
+    return res.status(200).json({
+      dairyInfo: cachedData,
+    });
+  }
+
+  // Proceed to database query if cache miss
   pool.getConnection((err, connection) => {
     if (err) {
       console.error("Error getting MySQL connection: ", err);
@@ -20,14 +110,6 @@ exports.dairyInfo = async (req, res) => {
     }
 
     try {
-      const dairy_id = req.user.dairy_id;
-      const center_id = req.user.center_id;
-
-      if (!dairy_id) {
-        connection.release();
-        return res.status(400).json({ message: "Dairy ID not found!" });
-      }
-
       // Base query for dairy information
       let getDairyInfo;
       let queryParams = [dairy_id];
@@ -42,9 +124,10 @@ exports.dairyInfo = async (req, res) => {
           WHERE SocietyCode = ?
         `;
       } else {
+        // Query for dairy center
         getDairyInfo = `
           SELECT center_name, marathi_name, reg_no, reg_date, mobile, email, city, 
-                 tehsil, district, pincode, auditclass, orgid ,prefix
+                 tehsil, district, pincode, auditclass, orgid, prefix
           FROM centermaster
           WHERE orgid = ? AND center_id = ?
         `;
@@ -65,6 +148,9 @@ exports.dairyInfo = async (req, res) => {
             .status(404)
             .json({ message: "Dairy or center not found!" });
         }
+
+        // Cache the result for future requests
+        cache.set(cacheKey, result[0]);
 
         // Send the result as a response
         res.status(200).json({
@@ -150,6 +236,9 @@ exports.updatedetails = async (req, res) => {
         if (result.affectedRows === 0) {
           return res.status(404).json({ message: "Dairy not found!" });
         }
+        // Invalidate the cache for this dairy_id
+        const cacheKey = `dairyInfo_${dairy_id}_${center_id}`;
+        cache.del(cacheKey);
 
         // Successfully updated
         res
@@ -382,6 +471,86 @@ exports.createCenter = async (req, res) => {
 // update center details ............................
 // ..................................................
 
+// exports.updateCenterInfo = async (req, res) => {
+//   const {
+//     marathi_name,
+//     center_name,
+//     reg_no,
+//     reg_date,
+//     center_id,
+//     auditclass,
+//     mobile,
+//     email,
+//     city,
+//     tehsil,
+//     district,
+//     pincode,
+//   } = req.body;
+//
+//   const dairy_id = req.user.dairy_id;
+//
+//   if (!dairy_id) {
+//     return res.status(404).json({ message: "Unauthorized user!" });
+//   }
+//
+//   pool.getConnection((err, connection) => {
+//     if (err) {
+//       console.error("MySQL connection error: ", err);
+//       return res.status(500).json({ message: "Database connection error!" });
+//     }
+//
+//     try {
+//       const updateCenterDetails = `
+//         UPDATE centermaster
+//         SET center_name = ?, marathi_name = ?, reg_no = ?, reg_date = ?, mobile = ?, email = ?, city = ?, tehsil = ?, district = ?, pincode = ?, auditclass = ?
+//         WHERE center_id = ? AND orgid = ?
+//       `;
+//
+//       connection.query(
+//         updateCenterDetails,
+//         [
+//           center_name,
+//           marathi_name,
+//           reg_no,
+//           reg_date,
+//           mobile,
+//           email,
+//           city,
+//           tehsil,
+//           district,
+//           pincode,
+//           auditclass,
+//           center_id,
+//           dairy_id, // Using orgid from the user's dairy_id for authorization
+//         ],
+//         (err, result) => {
+//           connection.release(); // Ensure connection is released after the query
+//           if (err) {
+//             console.error("Update center details query execution error!", err);
+//             return res.status(500).json({ message: "Database query error!" });
+//           }
+//
+//           if (result.affectedRows === 0) {
+//             return res
+//               .status(404)
+//               .json({ message: "No center data found for updating!" });
+//           }
+//
+//           // Successfully updated the center info
+//           res
+//             .status(200)
+//             .json({ message: "Center details updated successfully!" });
+//         }
+//       );
+//     } catch (error) {
+//       connection.release(); // Make sure to release the connection in case of an error
+//       console.error("Error processing request: ", error);
+//       return res.status(500).json({ message: "Internal server error" });
+//     }
+//   });
+// };
+
+//v2
 exports.updateCenterInfo = async (req, res) => {
   const {
     marathi_name,
@@ -432,7 +601,7 @@ exports.updateCenterInfo = async (req, res) => {
           pincode,
           auditclass,
           center_id,
-          dairy_id, // Using orgid from the user's dairy_id for authorization
+          dairy_id,
         ],
         (err, result) => {
           connection.release(); // Ensure connection is released after the query
@@ -447,7 +616,11 @@ exports.updateCenterInfo = async (req, res) => {
               .json({ message: "No center data found for updating!" });
           }
 
-          // Successfully updated the center info
+          // Invalidate the cache for this dairy_id
+          const cacheKey1 = `centers_${dairy_id}`;
+          const cacheKey = `dairyInfo_${dairy_id}_${center_id}`;
+          cache.del(cacheKey1, cacheKey);
+
           res
             .status(200)
             .json({ message: "Center details updated successfully!" });
@@ -500,11 +673,56 @@ exports.getCenterDetails = async (req, res) => {
 // display All centers (LIST) details ...........................
 // ..............................................................
 
+// exports.getAllcenters = async (req, res) => {
+//   const dairy_id = req.user.dairy_id;
+//
+//   if (!dairy_id) {
+//     return res.status(400).json({ message: "Unauthorized User!" });
+//   }
+//
+//   pool.getConnection((err, connection) => {
+//     if (err) {
+//       console.error("Getting MySQL connection error!", err);
+//       return res.status(500).json({ message: "Database connection error!" });
+//     }
+//
+//     try {
+//       const allCenterDetailsQuery = `SELECT * FROM centermaster WHERE orgid = ?`;
+//
+//       connection.query(allCenterDetailsQuery, [dairy_id], (err, result) => {
+//         connection.release();
+//         if (err) {
+//           console.error("All center details fetch query failed!", err);
+//           return res.status(500).json({ message: "Query execution failed!" });
+//         }
+//
+//         if (result.length === 0) {
+//           return res.status(404).json({ message: "No center data found!" });
+//         }
+//
+//         res.status(200).json({ centersDetails: result });
+//       });
+//     } catch (error) {
+//       console.error("Error processing request: ", error);
+//       return res.status(500).json({ message: "Internal server error" });
+//     }
+//   });
+// };
+
+//v2
 exports.getAllcenters = async (req, res) => {
   const dairy_id = req.user.dairy_id;
 
   if (!dairy_id) {
     return res.status(400).json({ message: "Unauthorized User!" });
+  }
+
+  // Check if the data is cached
+  const cacheKey = `centers_${dairy_id}`;
+  const cachedData = cache.get(cacheKey);
+
+  if (cachedData) {
+    return res.status(200).json({ centersDetails: cachedData });
   }
 
   pool.getConnection((err, connection) => {
@@ -527,6 +745,8 @@ exports.getAllcenters = async (req, res) => {
           return res.status(404).json({ message: "No center data found!" });
         }
 
+        // Store the result in cache
+        cache.set(cacheKey, result);
         res.status(200).json({ centersDetails: result });
       });
     } catch (error) {
@@ -693,54 +913,206 @@ exports.maxRateChartNo = async (req, res) => {
 // To Show List Of Ratechart used by dairy ............
 // ....................................................
 
+// exports.listRatecharts = async (req, res) => {
+//   pool.getConnection((err, connection) => {
+//     if (err) {
+//       console.error("Error getting MySQL connection: ", err);
+//       return res.status(500).json({ message: "Database connection error" });
+//     }
+//     try {
+//       const dairy_id = req.user.dairy_id;
+//       const center_id = req.user.center_id;
+//
+//       if (!dairy_id) {
+//         connection.release();
+//         return res.status(400).json({ message: "Dairy ID not found!" });
+//       }
+//
+//       const rateChartListQuery = `
+//         SELECT DISTINCT rccode, rcdate, rctypename, cb, time, isActive
+//         FROM ratemaster
+//         WHERE companyid = ? AND center_id = ?
+//       `;
+//
+//       connection.query(
+//         rateChartListQuery,
+//         [dairy_id, center_id],
+//         (err, result) => {
+//           connection.release();
+//           if (err) {
+//             console.error("Error executing query: ", err);
+//             return res.status(500).json({ message: "Query execution error" });
+//           }
+//
+//           // Send the distinct rate chart details in the response
+//           res.status(200).json({
+//             ratecharts: result,
+//           });
+//         }
+//       );
+//     } catch (error) {
+//       connection.release(); // Ensure the connection is released on error
+//       return res.status(400).json({ message: error.message });
+//     }
+//   });
+// };
+
+//v2
 exports.listRatecharts = async (req, res) => {
+  const dairy_id = req.user.dairy_id;
+  const center_id = req.user.center_id;
+
+  if (!dairy_id) {
+    return res.status(400).json({ message: "Dairy ID not found!" });
+  }
+
+  // Generate a unique cache key for this combination of dairy_id and center_id
+  const cacheKey = `ratecharts_${dairy_id}_${center_id}`;
+
+  // Check if the data is in the cache
+  const cachedData = cache.get(cacheKey);
+  if (cachedData) {
+    return res.status(200).json({ ratecharts: cachedData });
+  }
+
   pool.getConnection((err, connection) => {
     if (err) {
       console.error("Error getting MySQL connection: ", err);
       return res.status(500).json({ message: "Database connection error" });
     }
+
     try {
-      const dairy_id = req.user.dairy_id;
-      const center_id = req.user.center_id;
-
-      if (!dairy_id) {
-        connection.release();
-        return res.status(400).json({ message: "Dairy ID not found!" });
-      }
-
       const rateChartListQuery = `
         SELECT DISTINCT rccode, rcdate, rctypename, cb, time, isActive
         FROM ratemaster
-        WHERE companyid = ? AND center_id = ? 
+        WHERE companyid = ? AND center_id = ?
       `;
 
       connection.query(
         rateChartListQuery,
         [dairy_id, center_id],
         (err, result) => {
-          connection.release();
+          connection.release(); // Ensure connection is released
           if (err) {
             console.error("Error executing query: ", err);
             return res.status(500).json({ message: "Query execution error" });
           }
 
+          // Cache the result for future requests
+          cache.set(cacheKey, result);
+
           // Send the distinct rate chart details in the response
-          res.status(200).json({
-            ratecharts: result,
-          });
+          res.status(200).json({ ratecharts: result });
         }
       );
     } catch (error) {
       connection.release(); // Ensure the connection is released on error
-      return res.status(400).json({ message: error.message });
+      console.error("Error processing request: ", error);
+      return res.status(500).json({ message: "Internal server error" });
     }
   });
 };
-
 //.........................................................
 // Save Rate Chart ........................................
 //.........................................................
 
+// exports.saveRateChart = async (req, res) => {
+//   const { rccode, rctype, rcdate, time, animal, ratechart } = req.body;
+//
+//   // Acquire a connection from the pool
+//   pool.getConnection(async (err, connection) => {
+//     if (err) {
+//       console.error("Error getting MySQL connection: ", err);
+//       return res.status(500).json({ message: "Database connection error" });
+//     }
+//
+//     try {
+//       // Extract user details from the request (assuming middleware handles authentication)
+//       const dairy_id = req.user.dairy_id;
+//       const center_id = req.user.center_id;
+//
+//       if (!dairy_id) {
+//         connection.release();
+//         return res.status(400).json({ message: "Dairy ID not found!" });
+//       }
+//
+//       // Start transaction
+//       await connection.beginTransaction();
+//
+//       const rctypecode = 0;
+//       // Prepare the SQL query for bulk insert
+//       const saveRatesQuery = `
+//         INSERT INTO ratemaster (companyid, rccode, rcdate, rctypecode, rctypename, cb, fat, snf, rate, time, center_id)
+//         VALUES ?
+//       `;
+//
+//       // Prepare the values array for bulk insertion
+//       const values = ratechart.map((record, index) => {
+//         let { fat, snf, rate } = record;
+//
+//         // Validate each record's fields
+//         if (
+//           typeof fat !== "number" ||
+//           typeof snf !== "number" ||
+//           typeof rate !== "number"
+//         ) {
+//           throw new Error(
+//             `Invalid record format at index ${index}. Each rate record must have numeric FAT, SNF, and Rate.`
+//           );
+//         }
+//
+//         // Round the FAT, SNF, and Rate to 2 decimal places
+//         fat = parseFloat(fat.toFixed(1));
+//         snf = parseFloat(snf.toFixed(1));
+//         rate = parseFloat(rate.toFixed(2));
+//
+//         return [
+//           dairy_id,
+//           rccode,
+//           rcdate,
+//           rctypecode,
+//           rctype,
+//           animal,
+//           fat,
+//           snf,
+//           rate,
+//           time,
+//           center_id,
+//         ];
+//       });
+//
+//       // await connection.query(saveRatesQuery, [values]);
+//
+//       await connection.query(saveRatesQuery, [values], (err, results) => {
+//         connection.commit();
+//         connection.release(); // Always release the connection back to the pool
+//
+//         if (err) {
+//           console.error("Error executing query: ", err);
+//           return res.status(500).json({ message: "Query execution error" });
+//         }
+//
+//         res.status(200).json({
+//           message: "Ratechart saved successfully!",
+//           insertedRecords: results.affectedRows,
+//         });
+//       });
+//     } catch (error) {
+//       // Rollback transaction on error
+//       if (connection) {
+//         try {
+//           await connection.rollback();
+//         } catch (rollbackError) {
+//           console.error("Error rolling back transaction:", rollbackError);
+//         }
+//         connection.release();
+//       }
+//       return res.status(400).json({ message: error.message });
+//     }
+//   });
+// };
+
+//v2
 exports.saveRateChart = async (req, res) => {
   const { rccode, rctype, rcdate, time, animal, ratechart } = req.body;
 
@@ -752,7 +1124,6 @@ exports.saveRateChart = async (req, res) => {
     }
 
     try {
-      // Extract user details from the request (assuming middleware handles authentication)
       const dairy_id = req.user.dairy_id;
       const center_id = req.user.center_id;
 
@@ -765,17 +1136,14 @@ exports.saveRateChart = async (req, res) => {
       await connection.beginTransaction();
 
       const rctypecode = 0;
-      // Prepare the SQL query for bulk insert
       const saveRatesQuery = `
         INSERT INTO ratemaster (companyid, rccode, rcdate, rctypecode, rctypename, cb, fat, snf, rate, time, center_id)
         VALUES ?
       `;
 
-      // Prepare the values array for bulk insertion
       const values = ratechart.map((record, index) => {
         let { fat, snf, rate } = record;
 
-        // Validate each record's fields
         if (
           typeof fat !== "number" ||
           typeof snf !== "number" ||
@@ -786,7 +1154,6 @@ exports.saveRateChart = async (req, res) => {
           );
         }
 
-        // Round the FAT, SNF, and Rate to 2 decimal places
         fat = parseFloat(fat.toFixed(1));
         snf = parseFloat(snf.toFixed(1));
         rate = parseFloat(rate.toFixed(2));
@@ -806,16 +1173,21 @@ exports.saveRateChart = async (req, res) => {
         ];
       });
 
-      // await connection.query(saveRatesQuery, [values]);
-
-      await connection.query(saveRatesQuery, [values], (err, results) => {
-        connection.commit();
-        connection.release(); // Always release the connection back to the pool
-
+      connection.query(saveRatesQuery, [values], async (err, results) => {
         if (err) {
+          await connection.rollback();
+          connection.release();
           console.error("Error executing query: ", err);
           return res.status(500).json({ message: "Query execution error" });
         }
+
+        // Commit the transaction
+        await connection.commit();
+        connection.release();
+
+        // Clear the cache for rate charts of this dairy_id and center_id
+        const cacheKey = `ratecharts_${dairy_id}_${center_id}`;
+        cache.del(cacheKey);
 
         res.status(200).json({
           message: "Ratechart saved successfully!",
@@ -823,7 +1195,6 @@ exports.saveRateChart = async (req, res) => {
         });
       });
     } catch (error) {
-      // Rollback transaction on error
       if (connection) {
         try {
           await connection.rollback();
@@ -842,7 +1213,6 @@ exports.saveRateChart = async (req, res) => {
 //.................................................
 
 // incomplete
-
 // exports.applyRateChart = async (req, res) => {
 //   pool.getConnection(async (err, connection) => {
 //     if (err) {
@@ -941,7 +1311,11 @@ exports.applyRateChart = async (req, res) => {
   });
 };
 
+// .............................................................................
+// Updating selected Ratechart .................................................
+// .............................................................................
 
+//Incomplete
 exports.updateSelectedRateChart = async (req, res) => {
   pool.getConnection(async (err, connection) => {
     if (err) {
@@ -974,6 +1348,9 @@ exports.updateSelectedRateChart = async (req, res) => {
             console.error("Error executing query: ", err);
             return res.status(500).json({ message: "Query execution error" });
           }
+          // Clear the cache for rate charts of this dairy_id and center_id
+          const cacheKey = `ratecharts_${dairy_id}_${center_id}`;
+          cache.del(cacheKey);
 
           res.status(201).json({
             message: "Ratechart applied successfully!",
@@ -990,7 +1367,7 @@ exports.updateSelectedRateChart = async (req, res) => {
 // .............................................................................
 // Finding Distict Ratechart used by dairy to Show to Apply Customer............
 // .............................................................................
-
+//Incomplete
 exports.findUsedRc = async (req, res) => {
   pool.getConnection((err, connection) => {
     if (err) {
@@ -1085,7 +1462,7 @@ exports.getSelectedRateChart = async (req, res) => {
 // .................................................................
 // Retriving applied Ratechart for milk Collection .................
 // .................................................................
-
+//Incomplete
 exports.rateChartMilkColl = async (req, res) => {
   pool.getConnection((err, connection) => {
     if (err) {
@@ -1137,4 +1514,19 @@ exports.rateChartMilkColl = async (req, res) => {
       return res.status(500).json({ message: "Internal server error" });
     }
   });
+};
+
+
+// .................................................................
+// Removing all cache data..........................................
+// .................................................................
+
+exports.clearCache = (req, res) => {
+  try {
+    cache.flushAll(); // Clears the entire cache
+    return res.status(200).json({ message: "All cache cleared successfully!" });
+  } catch (error) {
+    console.error("Error clearing cache: ", error);
+    return res.status(500).json({ message: "Error clearing cache" });
+  }
 };

@@ -10,8 +10,12 @@ const MilkSankalan = () => {
   const dispatch = useDispatch();
   const tDate = useSelector((state) => state.date.toDate);
   const { customerlist, loading } = useSelector((state) => state.customer);
-  const [collCount, setCollCount] = useState(0);
-  const [literCount, setLiterCount] = useState(0.0);
+  const [collCount, setCollCount] = useState(
+    Number(localStorage.getItem("collCount")) || 0
+  );
+  const [literCount, setLiterCount] = useState(
+    Number(localStorage.getItem("literCount")) || 0
+  );
   const [customerList, setCustomerList] = useState([]);
   const [errors, setErrors] = useState({});
 
@@ -26,6 +30,11 @@ const MilkSankalan = () => {
   };
 
   const [values, setValues] = useState(initialValues);
+
+  useEffect(() => {
+    localStorage.setItem("collCount", collCount);
+    localStorage.setItem("literCount", literCount);
+  }, [collCount, literCount]);
 
   //............................................................................
   // Customer List .............................................................
@@ -193,6 +202,7 @@ const MilkSankalan = () => {
       setValues(initialValues);
       toast.success("Milk Collection Saved Successfully!");
       setCollCount(collCount + 1);
+      setLiterCount(literCount + parseFloat(values.liters));
     } catch (error) {
       setValues(initialValues);
       toast.error("failed to save Milk Collection, try again!");
@@ -204,8 +214,8 @@ const MilkSankalan = () => {
       <span className="heading w100 h10 t-center">Milk Collection </span>
       <form
         onSubmit={handleMobileCollection}
-        className="mobile-milk-coll-form w60 h60 d-flex-col sa bg p10">
-        {/* <div className="show-milk-data-container w100 h10 d-flex px10">
+        className="mobile-milk-coll-form w60 h70 d-flex-col sa bg p10">
+        <div className="show-milk-data-container w100 h10 d-flex px10">
           <div className="form-date w40 d-flex a-center">
             <label htmlFor="date" className="label-text w60">
               Collection Count :
@@ -219,13 +229,20 @@ const MilkSankalan = () => {
               Total Liters :
             </label>
             <label htmlFor="date" className="label-text w40">
-              {literCount}
+              {literCount.toFixed(2)}
             </label>
           </div>
-          <button className="w-btn" >
+          {/* <button
+            className="w-btn"
+            onClick={() => {
+              setCollCount(0);
+              setLiterCount(0);
+              localStorage.removeItem("collCount");
+              localStorage.removeItem("literCount");
+            }}>
             clear
-          </button>
-        </div> */}
+          </button> */}
+        </div>
         <div className="form-setting w100 h10 d-flex a-center sa">
           <div className="form-date w40 d-flex a-center">
             <label htmlFor="date" className="info-text w40">
@@ -331,8 +348,8 @@ const MilkSankalan = () => {
             </div>
           </div>
         </div>
-        <div className="mobile-milkcoll-form-btns w100 h15 d-flex a-center j-end">
-          <button className="btn mx10" type="submit">
+        <div className="mobile-milkcoll-form-btns w100 h10 my10 d-flex a-center j-end">
+          <button className="btn " type="submit">
             Save Collection
           </button>
         </div>

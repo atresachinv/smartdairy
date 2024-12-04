@@ -72,20 +72,20 @@ const SankalanReport = () => {
           <FaDownload />
         </button>
       </div>
-      <div className="milk-collection-info-div w80 h80 d-flex-col sa bg">
-        <div className="collection-info-heading w100 h10 d-flex a-center t-start sa bg1">
-          <span className="label-text w10">NO.</span>
-          <span className="label-text w10">Code</span>
-          <span className="label-text w30">Customer Name</span>
-          <span className="label-text w15">Liters</span>
-          <span className="label-text w20">Sample No.</span>
+      <div className="milk-collection-info-div w70 h80 d-flex-col sa bg">
+        <div className="collection-info-heading w100 h10 d-flex a-center t-center sa bg1">
+          <span className="f-label-text w10">NO.</span>
+          <span className="f-label-text w10">Code</span>
+          <span className="f-label-text w30">Customer Name</span>
+          <span className="f-label-text w10">Liters</span>
+          <span className="f-label-text w20">Sample No.</span>
         </div>
         <div className="milk-collection-data-div w100 d-flex-col h90 mh90 hidescrollbar">
           {mobileMilkReport.length > 0 ? (
             mobileMilkReport.map((collection, index) => (
               <div
                 key={index}
-                className={`collection-info-heading w100 h10 d-flex a-center t-start sa ${
+                className={`collection-info-heading w100 h10 d-flex a-center t-center sa ${
                   index % 2 === 0 ? "bg-light" : "bg-dark"
                 }`}
                 style={{
@@ -93,21 +93,21 @@ const SankalanReport = () => {
                 }}>
                 <span className="text w10">{index + 1}</span>
                 <span className="text w10">{collection.rno}</span>
-                <span className="text w30">{collection.cname}</span>
-                <span className="text w15">{collection.Litres}</span>
-                <span className="text  w20">{collection.SampleNo}</span>
+                <span className="text t-start w30">{collection.cname}</span>
+                <span className="text w10">{collection.Litres}</span>
+                <span className="text w20">{collection.SampleNo}</span>
               </div>
             ))
           ) : (
-            <div className="wh100 d-flex center">
-              <span>No Records Found</span>
+            <div className="w100 h1 d-flex center">
+              <span className="label-text">No Records Found !</span>
             </div>
           )}
         </div>
       </div>
-   
-        <span className="heading py10">Total Liters : {totalLiters}</span>
-
+      <span className="heading py10">
+        Total Liters : {totalLiters.toFixed(2)}
+      </span>
     </div>
   );
 };

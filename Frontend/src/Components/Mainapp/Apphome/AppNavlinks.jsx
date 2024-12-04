@@ -29,13 +29,7 @@ const AppNavlinks = ({ isselected, setIsSelected }) => {
       name: "Milk Collection",
       icon: <BsDatabaseAdd className="icon" />,
       index: 1,
-      role: [
-        "super_admin",
-        "admin",
-        "manager",
-        "milkcollector",
-        "mobilecollector",
-      ],
+      role: ["super_admin", "milkcollector", "mobilecollector"],
     },
     // {
     //   name: "Previous Collection",
@@ -53,12 +47,12 @@ const AppNavlinks = ({ isselected, setIsSelected }) => {
       index: 2,
       role: ["super_admin", "admin", "manager"],
     },
-    {
-      name: "Update Collection",
-      icon: <BsFileEarmarkCodeFill className="icon" />,
-      index: 3,
-      role: ["super_admin", "admin", "manager"],
-    },
+    // {
+    //   name: "Update Collection",
+    //   icon: <BsFileEarmarkCodeFill className="icon" />,
+    //   index: 3,
+    //   role: ["super_admin", "admin", "manager"],
+    // },
     // {
     //   name: "Report",
     //   icon: <BsFileTextFill className="icon" />,
@@ -81,14 +75,14 @@ const AppNavlinks = ({ isselected, setIsSelected }) => {
       name: "Report",
       icon: <BsFileTextFill className="icon" />,
       index: 4,
-      role: [
-        "super_admin",
-        "admin",
-        "manager",
-        "milkcollector",
-        "mobilecollector",
-      ],
+      role: ["super_admin", "milkcollector", "mobilecollector"],
     },
+    // {
+    //   name: "Reports",
+    //   icon: <BsCurrencyRupee className="icon" />,
+    //   index: 5,
+    //   role: ["super_admin", "admin", "manager"],
+    // },
   ];
 
   const filterRoutesByRole = (routes, userRole) => {

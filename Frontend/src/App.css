@@ -352,6 +352,12 @@
   cursor: pointer;
 }
 
+.f-label-text {
+  font-size: clamp(12px, 2vw, 16px);
+  font-weight: 400;
+  color: #fff;
+  cursor: pointer;
+}
 .label-text {
   font-size: clamp(12px, 2vw, 16px);
   font-weight: 400;
