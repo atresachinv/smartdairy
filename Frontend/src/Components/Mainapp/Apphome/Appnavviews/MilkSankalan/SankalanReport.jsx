@@ -15,7 +15,7 @@ const SankalanReport = () => {
 
   useEffect(() => {
     dispatch(mobileMilkCollReport());
-  }, []);
+  }, [dispatch]);
 
   const calculateTotalLiters = (data) => {
     return data.reduce((total, item) => total + parseFloat(item.Litres), 0);

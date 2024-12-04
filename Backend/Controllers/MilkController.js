@@ -547,8 +547,6 @@ exports.milkCollectionOneEntry = async (req, res) => {
   });
 };
 
-
-
 //.........................................................
 // Save Previous Milk Collection ..........................
 //.........................................................
@@ -556,7 +554,7 @@ exports.milkCollectionOneEntry = async (req, res) => {
 //get rate from rate chart and calculate amount....................................................................
 
 exports.getRateAmount = (req, res) => {
-  const {rccode, rcdate, fat, snf , time, animal, liters } = req.body;
+  const { rccode, rcdate, fat, snf, time, animal, liters } = req.body;
 
   pool.getConnection((err, connection) => {
     if (err) {
@@ -580,7 +578,7 @@ exports.getRateAmount = (req, res) => {
 
     connection.query(
       getRateAmt,
-      [dairy_id, center_id, rccode, rcdate, fat, snf , time, animal],
+      [dairy_id, center_id, rccode, rcdate, fat, snf, time, animal],
       (err, results) => {
         connection.release(); // Always release the connection back to the pool
 
@@ -942,7 +940,7 @@ exports.fetchMobileMilkColl = async (req, res) => {
       const center_id = req.user.center_id;
 
       // Check if dairy_id, user_role, and center_id are available
-      if (!dairy_id || !user_role || !center_id) {
+      if (!dairy_id) {
         connection.release();
         return res.status(400).json({ message: "Missing required fields" });
       }
@@ -953,6 +951,7 @@ exports.fetchMobileMilkColl = async (req, res) => {
       // Get the current hour to determine AM or PM
       const currentHour = new Date().getHours();
       const ME = currentHour < 12 ? 0 : 1;
+      console.log(ME);
 
       const dairy_table = `dailymilkentry_${dairy_id}`;
 
@@ -985,7 +984,6 @@ exports.fetchMobileMilkColl = async (req, res) => {
           if (result.length === 0) {
             return res.status(200).json({ mobileMilk: [] }); // Return empty array instead of 404
           }
-
           res.status(200).json({ mobileMilk: result });
         }
       );
