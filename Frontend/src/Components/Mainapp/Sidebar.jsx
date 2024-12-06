@@ -11,6 +11,7 @@ import { useSelector } from "react-redux";
 
 const Sidebar = ({ setselected, handleSidebar }) => {
   const navigate = useNavigate();
+
   axios.defaults.baseURL = import.meta.env.VITE_BASE_URI;
   axios.defaults.withCredentials = true;
 
@@ -25,8 +26,8 @@ const Sidebar = ({ setselected, handleSidebar }) => {
       if (userRole === "milkcollector" || userRole === "mobilecollector") {
         await localStorage.setItem("MilkCollTabIndex", 1);
         await localStorage.setItem("selectedTabIndex", 0);
-        await localStorage.removeItem("collCount");
         await localStorage.removeItem("literCount");
+        await localStorage.removeItem("collCount");
       } else {
         await localStorage.setItem("MilkCollTabIndex", 0);
         await localStorage.setItem("selectedTabIndex", 0);

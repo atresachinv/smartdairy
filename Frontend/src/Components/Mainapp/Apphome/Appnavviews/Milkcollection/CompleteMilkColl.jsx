@@ -6,8 +6,10 @@ import {
 } from "../../../../../App/Features/Mainapp/Milk/MilkCollectionSlice";
 import { toast } from "react-toastify";
 import "../../../../../Styles/Mainapp/Apphome/Appnavview/Milkcollection.css";
+import { useTranslation } from "react-i18next";
 
 const CompleteMilkColl = () => {
+  const { t } = useTranslation(["milkcollection", "common"]);
   const dispatch = useDispatch();
   const colldata = useSelector(
     (state) => state.milkCollection.mobileCollection
@@ -382,12 +384,13 @@ const CompleteMilkColl = () => {
         onSubmit={handleCollection}
         className="complete-mobile-milk-coll w60 h90 d-flex-col center bg p10">
         <span className="heading w100 h10 t-center">
-          Complete Milk Collection{" "}
+          {t("m-complete-coll")}
         </span>
         <div className="form-setting w100 h10 d-flex a-center sb">
           <div className="w45 d-flex a-center px10">
             <label htmlFor="" className="info-text w30">
-              Date <span className="req">*</span>{" "}
+              {t("common:c-date")}
+              <span className="req">*</span>{" "}
             </label>
             <input
               className={`data w70 ${errors.date ? "input-error" : ""}`}
@@ -420,7 +423,7 @@ const CompleteMilkColl = () => {
         <div className="user-details w100 h20 d-flex ">
           <div className="form-div w30 px10">
             <label htmlFor="" className="info-text ">
-              SampleNo <span className="req">*</span>{" "}
+              {t("m-sample-no")} <span className="req">*</span>{" "}
             </label>
             <input
               className={`data ${errors.sample ? "input-error" : ""}`}
@@ -434,7 +437,7 @@ const CompleteMilkColl = () => {
           </div>
           <div className="form-div w20 px10">
             <label htmlFor="" className="info-text">
-              Code <span className="req">*</span>{" "}
+              {t("m-cust-code")} <span className="req">*</span>{" "}
             </label>
             <input
               className={`data ${errors.code ? "input-error" : ""}`}
@@ -448,7 +451,7 @@ const CompleteMilkColl = () => {
           </div>
           <div className="form-div w50 px10">
             <label htmlFor="" className="info-text">
-              Enter User Name <span className="req">*</span>{" "}
+              {t("m-cust-name")} <span className="req">*</span>{" "}
             </label>
             <input
               className={`data ${errors.cname ? "input-error" : ""}`}
@@ -467,7 +470,7 @@ const CompleteMilkColl = () => {
             <div className="milk-info w50 h1 ">
               <div className="form-div px10">
                 <label htmlFor="" className="info-text">
-                  Litters <span className="req">*</span>{" "}
+                  {t("common:c-liters")} <span className="req">*</span>{" "}
                 </label>
                 <input
                   className={`data ${errors.liters ? "input-error" : ""}`}
@@ -482,7 +485,7 @@ const CompleteMilkColl = () => {
               </div>
               <div className="form-div  px10">
                 <label htmlFor="" className="info-text">
-                  FAT-1 <span className="req">*</span>{" "}
+                  {t("common:c-fat")} <span className="req">*</span>{" "}
                 </label>
                 <input
                   className={`data ${errors.fat ? "input-error" : ""}`}
@@ -496,7 +499,7 @@ const CompleteMilkColl = () => {
               </div>
               <div className="form-div px10">
                 <label htmlFor="" className="info-text">
-                  SNF-1 <span className="req">*</span>{" "}
+                  {t("common:c-snf")} <span className="req">*</span>{" "}
                 </label>
                 <input
                   className={`data ${errors.snf ? "input-error" : ""}`}
@@ -512,7 +515,7 @@ const CompleteMilkColl = () => {
             <div className="milk-info w50 h1 d-flex-col">
               <div className="form-div px10">
                 <label htmlFor="" className="info-text">
-                  Degree <span className="req">*</span>{" "}
+                  {t("common:c-deg")} <span className="req">*</span>{" "}
                 </label>
                 <input
                   className={`data ${errors.degree ? "input-error" : ""}`}
@@ -527,7 +530,7 @@ const CompleteMilkColl = () => {
               </div>
               <div className="form-div px10">
                 <label htmlFor="" className="info-text">
-                  Rate <span className="req">*</span>{" "}
+                  {t("common:c-rate")} <span className="req">*</span>{" "}
                 </label>
                 <input
                   className={`data ${errors.rate ? "input-error" : ""}`}
@@ -541,7 +544,7 @@ const CompleteMilkColl = () => {
               </div>
               <div className="form-div px10">
                 <label htmlFor="" className="info-text">
-                  Amount <span className="req">*</span>{" "}
+                  {t("common:c-amt")} <span className="req">*</span>{" "}
                 </label>
                 <input
                   className={`data ${errors.amt ? "input-error" : ""}`}
@@ -557,11 +560,11 @@ const CompleteMilkColl = () => {
           </div>
         </div>
         <div className="form-btns w100 h10 d-flex a-center j-end">
-          <button className="w-btn " type="reset">
-            Cancel
+          <button className="w-btn  label-text" type="reset">
+            {t("m-btn-cancel")}
           </button>
-          <button className="w-btn mx10" type="submit">
-            Save
+          <button className="w-btn label-text mx10" type="submit">
+            {t("m-btn-save")}
           </button>
         </div>
       </form>

@@ -5,18 +5,22 @@ import { toast } from "react-toastify";
 import axios from "axios";
 // css
 import "../../../Styles/Home/Forms.css";
-import { useDispatch } from "react-redux";
-import { setLogin } from "../../../App/Features/Users/authSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { loginUser, setLogin } from "../../../App/Features/Users/authSlice";
 
 const Login = ({ switchToRegister, switchToOptSend }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  // const user_role = useSelector((state) => state.users.userRole);
+
   const [values, setValues] = useState({
     user_id: "",
     user_password: "",
   });
+
   const [rememberMe, setRememberMe] = useState(false);
   const [showPassword, setShowPassword] = useState(false); // State for password visibility
+  const [isSaving, setIsSaving] = useState(false);
 
   // Check if login details are stored in localStorage when the component mounts
   useEffect(() => {
@@ -45,58 +49,62 @@ const Login = ({ switchToRegister, switchToOptSend }) => {
   axios.defaults.baseURL = import.meta.env.VITE_BASE_URI;
   axios.defaults.withCredentials = true;
 
-  const handleLogin = (e) => {
-    e.preventDefault();
-    axios
-      .post("/login", values)
-      .then((res) => {
-        const { user_role } = res.data;
+    const handleLogin = (e) => {
+      e.preventDefault();
+      axios
+        .post("/login", values)
+        .then((res) => {
+          const { user_role } = res.data;
+          setIsSaving(true);
+          // If "Remember Me" is checked, store credentials in localStorage
+          if (rememberMe) {
+            localStorage.setItem("user_id", values.user_id);
+            localStorage.setItem("user_password", values.user_password); 
+            localStorage.setItem("rememberMe", "true");
+          } else {
+            // If "Remember Me" is not checked, remove credentials from localStorage
+            localStorage.removeItem("user_id");
+            localStorage.removeItem("user_password");
+            localStorage.removeItem("rememberMe");
+          }
+  
+          const userRole = user_role.toLowerCase();
+          dispatch(setLogin({ userRole: userRole }));
+          localStorage.setItem("userRole", userRole);
+          // Redirect based on user_role
+          if (userRole === "customer") {
+            navigate("/customer/dashboard");
+            toast.success(`Login Successful`);
+          } else if (
+            userRole === "admin" ||
+            userRole === "manager" ||
+            userRole === "milkcollector" ||
+            userRole === "mobilecollector" ||
+            userRole === "salesman"
+          ) {
+            navigate("/mainapp/home");
+            toast.success(`Login Successful`);
+          } else if (userRole === "super_admin") {
+            navigate("/adminpanel");
+            toast.success(`Login Successful`);
+  
+          } else {
+            toast.error("Unexpected user type!");
+          }
+          setIsSaving(false);
+        })
+        .catch((err) => {
+          if (err.response) {
+            console.error(`Error during login: ${err.response.data.message}`);
+            toast.error(err.response.data.message);
+          } else {
+            console.error(`Error during login: ${err.message}`);
+            toast.error("An error occurred during login.");
+          }
+        });
+    };
 
-        // If "Remember Me" is checked, store credentials in localStorage
-        if (rememberMe) {
-          localStorage.setItem("user_id", values.user_id);
-          localStorage.setItem("user_password", values.user_password); // Ideally, store a hashed password or token
-          localStorage.setItem("rememberMe", "true");
-        } else {
-          // If "Remember Me" is not checked, remove credentials from localStorage
-          localStorage.removeItem("user_id");
-          localStorage.removeItem("user_password");
-          localStorage.removeItem("rememberMe");
-        }
-
-        const userRole = user_role.toLowerCase();
-        dispatch(setLogin({ userRole: userRole }));
-        localStorage.setItem("userRole", userRole);
-        // Redirect based on user_role
-        if (userRole === "customer") {
-          navigate("/customer/dashboard");
-          toast.success(`Login Successful`);
-        } else if (
-          userRole === "admin" ||
-          userRole === "manager" ||
-          userRole === "milkcollector" ||
-          userRole === "mobilecollector" ||
-          userRole === "salesman"
-        ) {
-          navigate("/mainapp/home");
-          toast.success(`Login Successful`);
-        } else if (userRole === "super_admin") {
-          navigate("/adminpanel");
-          toast.success(`Login Successful`);
-        } else {
-          toast.error("Unexpected user type!");
-        }
-      })
-      .catch((err) => {
-        if (err.response) {
-          console.error(`Error during login: ${err.response.data.message}`);
-          toast.error(err.response.data.message);
-        } else {
-          console.error(`Error during login: ${err.message}`);
-          toast.error("An error occurred during login.");
-        }
-      });
-  };
+ 
 
   return (
     <div className="form-container w50 h1 d-flex-col p10">
@@ -147,8 +155,8 @@ const Login = ({ switchToRegister, switchToOptSend }) => {
           />
           <span className="px10 heading">Remember me!</span>
         </div>
-        <button className="form-btn" type="submit">
-          Login
+        <button className="form-btn" type="submit" disabled={isSaving}>
+          {isSaving ? "Loging..." : "Login"}
         </button>
         <div className="account-check-div">
           <h2 className="text">

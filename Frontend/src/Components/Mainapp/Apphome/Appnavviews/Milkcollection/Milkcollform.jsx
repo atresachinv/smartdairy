@@ -12,9 +12,12 @@ import {
   fetchFCMTokens,
   sendNewNotification,
 } from "../../../../../App/Features/Notifications/notificationSlice";
+import { useTranslation } from "react-i18next";
 
 const MilkColleform = ({ switchToSettings }) => {
   const dispatch = useDispatch();
+  const { t } = useTranslation(["milkcollection", "common"]);
+
   const tDate = useSelector((state) => state.date.toDate);
   const token = useSelector((state) => state.notify.fcmToken);
   const milkColl = useSelector((state) => state.milkCollection.entries || []);
@@ -469,11 +472,14 @@ const MilkColleform = ({ switchToSettings }) => {
       <form
         onSubmit={handleCollection}
         className="milk-col-form w100 h1 d-flex-col bg p10">
-        <span className="heading w100 t-center py10"> Milk Collection </span>
+        <span className="heading w100 t-center ">
+          {!time ? `${t("common:c-eve")}` : `${t("common:c-mrg")}`}{" "}
+          {t("m-milkcoll")}
+        </span>
         <div className="form-setting w100 h10 d-flex a-center sb">
           <div className="w40 d-flex a-center px10">
             <label htmlFor="" className="info-text w30">
-              Date <span className="req">*</span>{" "}
+              {t("common:c-date")} <span className="req">*</span>{" "}
             </label>
             <input
               className={`data w70 ${errors.date ? "input-error" : ""}`}
@@ -491,9 +497,9 @@ const MilkColleform = ({ switchToSettings }) => {
             <button
               type="button"
               onClick={handleTime}
-              className={`sakalan-time ${time ? "on" : "off"}`}
+              className={`sakalan-time text ${time ? "on" : "off"}`}
               aria-pressed={time}>
-              {time ? "Morning" : "Evening"}
+              {time ? `${t("common:c-mrg")}` : `${t("common:c-eve")}`}
             </button>
             {/* <span className="text">Evening</span> */}
           </div>
@@ -505,7 +511,7 @@ const MilkColleform = ({ switchToSettings }) => {
         <div className="user-details w100 h20 d-flex ">
           <div className="form-div w50 px10">
             <label htmlFor="" className="info-text">
-              Enter User Code <span className="req">*</span>{" "}
+              {t("m-cust-code")} <span className="req">*</span>{" "}
             </label>
             <input
               className={`data ${errors.code ? "input-error" : ""}`}
@@ -519,13 +525,13 @@ const MilkColleform = ({ switchToSettings }) => {
           </div>
           <div className="form-div w50 px10">
             <label htmlFor="" className="info-text">
-              Enter User Name <span className="req">*</span>{" "}
+              {t("m-cust-name")} <span className="req">*</span>{" "}
             </label>
             <input
               className={`data ${errors.cname ? "input-error" : ""}`}
               type="text"
               required
-              placeholder="smartdairy user"
+              placeholder={`${t("m-cust-name")}`}
               name="cname"
               value={values.cname}
               readOnly
@@ -538,7 +544,7 @@ const MilkColleform = ({ switchToSettings }) => {
             <div className="milk-info w50 h1 ">
               <div className="form-div px10">
                 <label htmlFor="" className="info-text">
-                  Litters <span className="req">*</span>{" "}
+                  {t("common:c-liters")} <span className="req">*</span>{" "}
                 </label>
                 <input
                   className={`data ${errors.liters ? "input-error" : ""}`}
@@ -552,7 +558,7 @@ const MilkColleform = ({ switchToSettings }) => {
               </div>
               <div className="form-div  px10">
                 <label htmlFor="" className="info-text">
-                  FAT-1 <span className="req">*</span>{" "}
+                  {t("common:c-fat")} <span className="req">*</span>{" "}
                 </label>
                 <input
                   className={`data ${errors.fat ? "input-error" : ""}`}
@@ -566,7 +572,7 @@ const MilkColleform = ({ switchToSettings }) => {
               </div>
               <div className="form-div px10">
                 <label htmlFor="" className="info-text">
-                  SNF-1 <span className="req">*</span>{" "}
+                  {t("common:c-snf")} <span className="req">*</span>{" "}
                 </label>
                 <input
                   className={`data ${errors.snf ? "input-error" : ""}`}
@@ -582,7 +588,7 @@ const MilkColleform = ({ switchToSettings }) => {
             <div className="milk-info w50 h1 d-flex-col">
               <div className="form-div px10">
                 <label htmlFor="" className="info-text">
-                  Degree <span className="req">*</span>{" "}
+                  {t("common:c-deg")} <span className="req">*</span>{" "}
                 </label>
                 <input
                   className={`data ${errors.degree ? "input-error" : ""}`}
@@ -597,7 +603,7 @@ const MilkColleform = ({ switchToSettings }) => {
               </div>
               <div className="form-div px10">
                 <label htmlFor="" className="info-text">
-                  Rate <span className="req">*</span>{" "}
+                  {t("common:c-rate")} <span className="req">*</span>{" "}
                 </label>
                 <input
                   className={`data ${errors.rate ? "input-error" : ""}`}
@@ -611,7 +617,7 @@ const MilkColleform = ({ switchToSettings }) => {
               </div>
               <div className="form-div px10">
                 <label htmlFor="" className="info-text">
-                  Amount <span className="req">*</span>{" "}
+                  {t("common:c-amt")} <span className="req">*</span>{" "}
                 </label>
                 <input
                   className={`data ${errors.amt ? "input-error" : ""}`}
@@ -627,11 +633,11 @@ const MilkColleform = ({ switchToSettings }) => {
           </div>
         </div>
         <div className="form-btns w100 h10 d-flex a-center j-end">
-          <button className="w-btn " type="reset">
-            Cancel
+          <button className="w-btn label-text" type="reset">
+            {t("m-btn-cancel")}
           </button>
-          <button className="w-btn mx10" type="submit">
-            Save
+          <button className="w-btn label-text mx10" type="submit">
+            {t("m-btn-save")}
           </button>
         </div>
       </form>

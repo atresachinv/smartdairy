@@ -22,9 +22,16 @@
   "c-m/e": "M/E",
   "c-m": "M",
   "c-e": "E",
+  "c-mrg": "Morning",
+  "c-eve": "Evening",
   "c-c/b": "C/B",
   "c-c": "C",
   "c-b": "B",
+  "c-cow": "Cow",
+  "c-buffalo": "Buffalo",
+  "c-fat": "FAT",
+  "c-snf": "SNF",
+  "c-deg": "Degree",
   "c-rate": "Rate",
   "c-amt": "Amount",
   "c-liters": "Liters",
@@ -45,5 +52,7 @@
   "c-pay-details": "Payment Details",
   "c-mlik-summary": "Milk Summary",
   "c-coll-report": "Collection Report",
-  "c-sales-details": "Purchase Details"
+  "c-sales-details": "Purchase Details",
+  "c-mrg-coll": "Morning Milk Collection",
+  "c-eve-coll": "Evening Milk Collection"
 }

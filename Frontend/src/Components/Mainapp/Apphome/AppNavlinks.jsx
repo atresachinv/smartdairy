@@ -1,16 +1,14 @@
 import React, { useEffect, useState } from "react";
 import {
-  BsCurrencyRupee,
   BsDatabaseAdd,
   BsFileTextFill,
-  BsPassFill,
-  BsSaveFill,
-  BsFileEarmarkCodeFill,
+  BsFillFileEarmarkArrowUpFill,
 } from "react-icons/bs";
-import { TfiStatsUp } from "react-icons/tfi";
 import "../../../Styles/Mainapp/Apphome/Apphome.css";
+import { useTranslation } from "react-i18next";
 
 const AppNavlinks = ({ isselected, setIsSelected }) => {
+  const { t } = useTranslation(["milkcollection"]);
   const [userRole, setUserRole] = useState(null);
 
   useEffect(() => {
@@ -20,16 +18,22 @@ const AppNavlinks = ({ isselected, setIsSelected }) => {
 
   const hnavlinks = [
     {
-      name: "Milk Collection",
+      name: `${t("m-milkcoll")}`,
       icon: <BsDatabaseAdd className="icon" />,
       index: 0,
       role: ["super_admin", "admin", "manager"],
     },
     {
-      name: "Milk Collection",
+      name: `${t("m-milkcoll")}`,
       icon: <BsDatabaseAdd className="icon" />,
       index: 1,
-      role: ["super_admin", "milkcollector", "mobilecollector"],
+      role: [
+        "super_admin",
+        "admin",
+        "manager",
+        "milkcollector",
+        "mobilecollector",
+      ],
     },
     // {
     //   name: "Previous Collection",
@@ -42,10 +46,10 @@ const AppNavlinks = ({ isselected, setIsSelected }) => {
     //   ],
     // },
     {
-      name: "Complete Collection",
-      icon: <BsSaveFill className="icon" />,
+      name: `${t("m-complete-coll")}`,
+      icon: <BsFillFileEarmarkArrowUpFill className="icon" />,
       index: 2,
-      role: ["super_admin", "admin", "manager"],
+      role: ["super_admin", "admin", "manager", "admin", "manager"],
     },
     // {
     //   name: "Update Collection",
@@ -72,17 +76,23 @@ const AppNavlinks = ({ isselected, setIsSelected }) => {
     //   role: ["super_admin", "admin", "manager"],
     // },
     {
-      name: "Report",
+      name: `${t("m-reports")}`,
       icon: <BsFileTextFill className="icon" />,
       index: 4,
-      role: ["super_admin", "milkcollector", "mobilecollector"],
+      role: [
+        "super_admin",
+        "admin",
+        "manager",
+        "milkcollector",
+        "mobilecollector",
+      ],
     },
-    // {
-    //   name: "Reports",
-    //   icon: <BsCurrencyRupee className="icon" />,
-    //   index: 5,
-    //   role: ["super_admin", "admin", "manager"],
-    // },
+    {
+      name: `${t("m-reports")}`,
+      icon: <BsFileTextFill className="icon" />,
+      index: 5,
+      role: ["super_admin", "admin", "manager"],
+    },
   ];
 
   const filterRoutesByRole = (routes, userRole) => {
@@ -114,9 +124,9 @@ const AppNavlinks = ({ isselected, setIsSelected }) => {
           onClick={() => {
             setIsSelected(button.index);
           }}>
-          <a>
-            {button.icon}
-            <span>{button.name}</span>
+          <a className="f-label-text">
+            <span>{button.icon}</span>
+            {button.name}
           </a>
         </li>
       ))}

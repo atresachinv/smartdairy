@@ -7,7 +7,9 @@ const initialState = {
   allMilkColl: [],
   mobileColl: [],
   mobileCollection: [], //update mobile milk collection
+  todaysMilk: [],
   status: "idle",
+  tmstatus: "idle",
   error: null,
 };
 
@@ -61,7 +63,27 @@ export const saveMilkOneEntry = createAsyncThunk(
   }
 );
 
-//Mobile Milk Collection
+export const fetchTodaysMilk = createAsyncThunk(
+  "milkreport/fetchTodaysMilk",
+  async ({ date }, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.get("/fetch/collection", {
+        params: { date },
+      });
+      return response.data.todaysmilk;
+    } catch (error) {
+      const errorMessage = error.response
+        ? error.response.data
+        : "Failed to store milk collection.";
+      return rejectWithValue(errorMessage);
+    }
+  }
+);
+
+//...............................................................................
+//Mobile Milk Collection ........................................................
+//...............................................................................
+
 export const mobileMilkCollection = createAsyncThunk(
   "milkreport/mobileMilkCollection",
   async (values, { rejectWithValue }) => {
@@ -265,6 +287,18 @@ const milkCollectionSlice = createSlice({
       })
       .addCase(getAllMilkCollReport.rejected, (state, action) => {
         state.status = "failed";
+        state.error = action.payload;
+      })
+      .addCase(fetchTodaysMilk.pending, (state) => {
+        state.tmstatus = "loading";
+        state.error = null;
+      })
+      .addCase(fetchTodaysMilk.fulfilled, (state, action) => {
+        state.tmstatus = "succeeded";
+        state.todaysMilk = action.payload;
+      })
+      .addCase(fetchTodaysMilk.rejected, (state, action) => {
+        state.tmstatus = "failed";
         state.error = action.payload;
       });
   },

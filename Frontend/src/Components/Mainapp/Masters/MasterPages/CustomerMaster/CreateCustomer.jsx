@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import "../../../../../Styles/Mainapp/Masters/CustomerMaster.css";
 import { useDispatch, useSelector } from "react-redux";
 import {
   createCustomer,
@@ -8,6 +7,7 @@ import {
 } from "../../../../../App/Features/Customers/customerSlice";
 import { toast } from "react-toastify";
 import { updateCustomer } from "../../../../../App/Features/Mainapp/Masters/custMasterSlice";
+import "../../../../../Styles/Mainapp/Masters/CustomerMaster.css";
 
 const CreateCustomer = () => {
   const dispatch = useDispatch();
@@ -168,7 +168,7 @@ const CreateCustomer = () => {
         break;
 
       case "marathi_name":
-        if (!/^[\u0900-\u097F\sA-Za-z]+$/.test(value)) {
+        if (!/^[\u0900-\u097F\sA-Za-z\/^\d{10}]+$/.test(value)) {
           error[name] = "Invalid Marathi name.";
         } else {
           delete errors[name];
@@ -176,7 +176,7 @@ const CreateCustomer = () => {
         break;
 
       case "cust_name":
-        if (!/^[a-zA-Z\s]+$/.test(value)) {
+        if (!/^[a-zA-Z\/^\d{10}]+$/.test(value)) {
           error[name] = "Invalid English name.";
         } else {
           delete errors[name];
@@ -376,7 +376,7 @@ const CreateCustomer = () => {
             {isEditing ? "Update Customer" : "Create Customer"}
           </span>
           <div className="toggle-inputs-div w30 h40 d-flex a-center sa">
-            <span className="label-text w60 px10">
+            <span className="info-text w60 px10">
               Is Active <span className="req">*</span>
             </span>
             <button
@@ -389,8 +389,8 @@ const CreateCustomer = () => {
           </div>
         </div>
         <div className="cust-div cust-details-div w100 h15 d-flex a-center sb">
-          <div className="details-div w20 d-flex-col a-center px10">
-            <span className="label-text w100">
+          <div className="details-div w30 d-flex-col a-center px10">
+            <span className="info-text w100">
               Cust No.<span className="req">*</span>{" "}
               {errors.cust_no && (
                 <span className="text error-message">{errors.cust_no}</span>
@@ -405,13 +405,9 @@ const CreateCustomer = () => {
               onChange={handleInputChange}
             />
           </div>
-          <div className="details-div w25 d-flex a-center px10">
-            <input className="data w10 " type="checkbox" name="" id="" />
-            <span className="label-text p05 w90">As per Requirment </span>
-          </div>
-          <div className="details-div w60 d-flex a-center sb">
+          <div className="details-div w70 d-flex a-center sb">
             <div className="toggle-inputs-div w45 h40 d-flex a-center sa">
-              <span className="label-text w70 px10">Is Member</span>
+              <span className="info-text w70 px10">Is Member</span>
               <button
                 type="button"
                 onClick={handleIsMember}
@@ -421,7 +417,7 @@ const CreateCustomer = () => {
             </div>
             {isMember && (
               <div className="toggle-inputs-div w50 h40 d-flex-col sb">
-                <span className="label-text w100 px10">Membership Date</span>
+                <span className="info-text w100 px10">Membership Date</span>
                 <input
                   className={`data w100 ${errors.cust_no ? "input-error" : ""}`}
                   type="date"
@@ -434,8 +430,8 @@ const CreateCustomer = () => {
           </div>
         </div>
         <div className="cust-div cust-details-div w100 h15 d-flex sb">
-          <div className="details-div w50 d-flex-col a-center px10">
-            <span className="label-text w100">
+          <div className="mcname-details-div w50 d-flex-col a-center px10">
+            <span className=" info-text w100">
               Customer Marathi Name<span className="req">*</span>{" "}
               {errors.marathi_name && (
                 <span className="text error-message">
@@ -455,8 +451,8 @@ const CreateCustomer = () => {
               value={formData.marathi_name || ""}
             />
           </div>
-          <div className="details-div w50 d-flex-col a-center px10">
-            <span className="label-text w100">
+          <div className="cname-details-div w50 d-flex-col a-center px10">
+            <span className="info-text w100">
               Customer English Name<span className="req">*</span>
             </span>
             <input
@@ -470,9 +466,9 @@ const CreateCustomer = () => {
             />
           </div>
         </div>
-        <div className="cust-div cust-details-div w100 h15 d-flex sb">
-          <div className="details-div w25 d-flex-col a-center px10">
-            <span className="label-text w100 ">
+        <div className="cust-div contact-details-div w100 h15 d-flex sb">
+          <div className="mobile-details-div w25 d-flex-col a-center px10">
+            <span className="info-text w100 ">
               Mobile<span className="req">*</span>
             </span>
             <input
@@ -485,8 +481,8 @@ const CreateCustomer = () => {
               value={formData.mobile || ""}
             />
           </div>
-          <div className="details-div w30 d-flex-col a-center px10">
-            <span className="label-text w100">Aadhaar No.</span>{" "}
+          <div className="Aadhhar-details-div w30 d-flex-col a-center px10">
+            <span className="info-text w100">Aadhaar No.</span>{" "}
             {errors.aadhaar_no && (
               <span className="text error-message">{errors.aadhaar_no}</span>
             )}
@@ -498,8 +494,8 @@ const CreateCustomer = () => {
               value={formData.aadhaar_no || ""}
             />
           </div>
-          <div className="details-div w20 d-flex-col a-center px10">
-            <span className="label-text w100">Caste</span>{" "}
+          <div className="caste-details-div w20 d-flex-col a-center px10">
+            <span className="info-text w100">Caste</span>{" "}
             {errors.caste && (
               <span className="text error-message">{errors.caste}</span>
             )}
@@ -511,8 +507,8 @@ const CreateCustomer = () => {
               value={formData.caste || ""}
             />
           </div>
-          <div className="details-div w30 d-flex-col a-center px10">
-            <span className="label-text w100 h50">Gender</span>
+          <div className="gender-details-div w30 d-flex-col a-center px10">
+            <span className="info-text w100 h50">Gender</span>
             <div className="gender-input-div w100 h50 d-flex">
               <div className="gender-input w50 h40 d-flex a-center sb">
                 <input
@@ -524,7 +520,7 @@ const CreateCustomer = () => {
                   onChange={handleInputChange}
                   checked={formData.gender === "0"}
                 />
-                <span className="label-text w80">Male</span>
+                <span className="info-text w80">Male</span>
               </div>
               <div className="gender-input w50 h40 d-flex a-center sb">
                 <input
@@ -536,16 +532,16 @@ const CreateCustomer = () => {
                   onChange={handleInputChange}
                   checked={formData.gender === "1"}
                 />
-                <span className="label-text w80">Female</span>
+                <span className="info-text w80">Female</span>
               </div>
             </div>
           </div>
         </div>
         <div className="cust-div address-details-div w100 h15 d-flex-col sb">
-          <span className="label-text px10">Address Details :</span>
-          <div className="Address-details w100 h1 d-flex sb">
-            <div className="details-div w25 d-flex-col a-center px10">
-              <span className="label-text w100 ">
+          <span className="info-text px10">Address Details :</span>
+          <div className="address-details w100 h1 d-flex sb">
+            <div className="city-details-div w25 d-flex-col a-center px10">
+              <span className="info-text w100 ">
                 City<span className="req">*</span>
               </span>
               <input
@@ -558,8 +554,8 @@ const CreateCustomer = () => {
                 value={formData.city || ""}
               />
             </div>
-            <div className="details-div w30 d-flex-col a-center px10">
-              <span className="label-text w100">
+            <div className="tehsil-details-div w30 d-flex-col a-center px10">
+              <span className="info-text w100">
                 Tehsil<span className="req">*</span>{" "}
                 {errors.tehsil && (
                   <span className="text error-message">{errors.tehsil}</span>
@@ -575,8 +571,8 @@ const CreateCustomer = () => {
                 value={formData.tehsil || ""}
               />
             </div>
-            <div className="details-div w30 d-flex-col a-center px10">
-              <span className="label-text w100">
+            <div className="dist-details-div w30 d-flex-col a-center px10">
+              <span className="info-text w100">
                 District<span className="req">*</span>{" "}
                 {errors.district && (
                   <span className="text error-message">{errors.district}</span>
@@ -592,8 +588,8 @@ const CreateCustomer = () => {
                 value={formData.district || ""}
               />
             </div>
-            <div className="details-div w20 d-flex-col a-center px10">
-              <span className="label-text w100">
+            <div className="pincode-details-div w20 d-flex-col a-center px10">
+              <span className="info-text w100">
                 Pincode<span className="req">*</span>{" "}
                 {errors.pincode && (
                   <span className="text error-message">{errors.pincode}</span>
@@ -610,11 +606,11 @@ const CreateCustomer = () => {
             </div>
           </div>
         </div>
-        <div className="cust-div milk-details-div w100 h15 d-flex-col sb">
-          <span className="label-text px10">Milk Details :</span>
-          <div className="address-details w100 h1 d-flex sb">
-            <div className="details-div w40 d-flex-col a-center px10">
-              <span className="label-text w100 h50">
+        <div className="cust-div milk-details-container w100 h15 d-flex-col sb">
+          {/* <span className="info-text px10">Milk Details :</span> */}
+          <div className="milk-details-div w100 h1 d-flex  sb">
+            <div className="milk-type-details-div w40 d-flex-col a-center px10">
+              <span className="info-text w100 h50">
                 Milk Type <span className="req">*</span>
               </span>
               <div className="gender-input-div w100 h50 d-flex">
@@ -628,7 +624,7 @@ const CreateCustomer = () => {
                     onChange={handleInputChange}
                     checked={formData.milktype === "0"}
                   />
-                  <span className="label-text w80">Cow</span>
+                  <span className="info-text w80">Cow</span>
                 </div>
                 <div className="gender-input w50 h40 d-flex a-center sb">
                   <input
@@ -640,12 +636,12 @@ const CreateCustomer = () => {
                     onChange={handleInputChange}
                     checked={formData.milktype === "1"}
                   />
-                  <span className="label-text w80">Buffalo</span>
+                  <span className="info-text w80">Buffalo</span>
                 </div>
               </div>
             </div>
-            <div className="details-div w40 d-flex-col a-center px10">
-              <span className="label-text w100">Rate Chart Type</span>{" "}
+            <div className="ratechart-details-div w40 d-flex-col a-center px10">
+              <span className="info-text w100">Rate Chart Type</span>{" "}
               <input
                 className={`data w100 ${errors.rctype ? "input-error" : ""}`}
                 type="text"
@@ -663,8 +659,8 @@ const CreateCustomer = () => {
               </datalist>
             </div>
 
-            <div className="details-div w40 d-flex-col a-center px10">
-              <span className="label-text w100">Farmer Id</span>{" "}
+            <div className="farmerid-details-div w40 d-flex-col a-center px10">
+              <span className="info-text w100">Farmer Id</span>{" "}
               {errors.farmerid && (
                 <span className="text error-message">{errors.farmerid}</span>
               )}
@@ -680,10 +676,10 @@ const CreateCustomer = () => {
           </div>
         </div>
         <div className="cust-div Bank-details-div w100 h15 d-flex-col sb">
-          <span className="label-text px10">Bank Details :</span>
-          <div className="Bank-details w100 h1 d-flex sb">
-            <div className="details-div w40 d-flex-col a-center px10">
-              <span className="label-text w100 ">Bank Name</span>{" "}
+          {/* <span className="info-text px10">Bank Details :</span> */}
+          <div className="bank-details w100 h1 d-flex f-wrap sb">
+            <div className="bankname-details-div w40 d-flex-col a-center px10">
+              <span className="info-text w100 ">Bank Name</span>{" "}
               {errors.bankName && (
                 <span className="text error-message">{errors.bankName}</span>
               )}
@@ -696,8 +692,8 @@ const CreateCustomer = () => {
                 value={formData.bankName || ""}
               />
             </div>
-            <div className="details-div w30 d-flex-col a-center px10">
-              <span className="label-text w100">Bank A/C</span>{" "}
+            <div className="acc-details-div w30 d-flex-col a-center px10">
+              <span className="info-text w100">Bank A/C</span>{" "}
               {errors.bank_ac && (
                 <span className="text error-message">{errors.bank_ac}</span>
               )}
@@ -710,8 +706,8 @@ const CreateCustomer = () => {
                 value={formData.bank_ac || ""}
               />
             </div>
-            <div className="details-div w30 d-flex-col a-center px10">
-              <span className="label-text w100">Bank IFSC</span>{" "}
+            <div className="ifsc-details-div w30 d-flex-col a-center px10">
+              <span className="info-text w100">Bank IFSC</span>{" "}
               {errors.bankIFSC && (
                 <span className="text error-message">{errors.bankIFSC}</span>
               )}
@@ -731,7 +727,7 @@ const CreateCustomer = () => {
         <span className="sub-heading px10">Settings (Rs/ltr) : </span>
         <div className="cust-div milk-settings-div w100 h15 d-flex sa">
           <div className="details-div w45 h40 d-flex a-center">
-            <span className="label-text w70">Deposit :</span>
+            <span className="info-text w70">Deposit :</span>
             <input
               className="data w30"
               type="number"
@@ -742,7 +738,7 @@ const CreateCustomer = () => {
             />
           </div>
           <div className="details-div w45 h40 d-flex a-center ">
-            <span className="label-text w70">Commission :</span>
+            <span className="info-text w70">Commission :</span>
             <input
               className="data w30"
               type="number"
@@ -755,7 +751,7 @@ const CreateCustomer = () => {
         </div>
         <div className="cust-div milk-settings-div w100 h15 d-flex sa">
           <div className="details-div w45 h40 d-flex a-center ">
-            <span className="label-text w70">Rebat Commission :</span>
+            <span className="info-text w70">Rebat Commission :</span>
             <input
               className="data w30"
               type="number"
@@ -766,7 +762,7 @@ const CreateCustomer = () => {
             />
           </div>
           <div className="details-div w45 h40 d-flex a-center ">
-            <span className="label-text w70">Transportation :</span>
+            <span className="info-text w70">Transportation :</span>
             <input
               className="data w30"
               type="number"

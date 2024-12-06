@@ -1,13 +1,14 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { BsGearFill } from "react-icons/bs";
 import { mobileMilkCollection } from "../../../../../App/Features/Mainapp/Milk/MilkCollectionSlice";
 import { toast } from "react-toastify";
 import { listCustomer } from "../../../../../App/Features/Customers/customerSlice";
 import "../../../../../Styles/Mainapp/Apphome/Appnavview/Milkcollection.css";
+import { useTranslation } from "react-i18next";
 
 const MilkSankalan = () => {
   const dispatch = useDispatch();
+  const { t } = useTranslation(["common", "milkcollection"]);
   const tDate = useSelector((state) => state.date.toDate);
   const { customerlist, loading } = useSelector((state) => state.customer);
   const [collCount, setCollCount] = useState(
@@ -18,6 +19,8 @@ const MilkSankalan = () => {
   );
   const [customerList, setCustomerList] = useState([]);
   const [errors, setErrors] = useState({});
+  const [isSaving, setIsSaving] = useState(false); // To handle double-click issue
+  const codeInputRef = useRef(null); // Ref for code input
 
   const initialValues = {
     date: tDate,
@@ -71,7 +74,7 @@ const MilkSankalan = () => {
     );
 
     if (customer) {
-      setValues((prev) => ({ ...prev, cname: customer.cname }));
+      setValues((prev) => ({ ...prev, cname: customer.cname.toString() }));
       setValues((prev) => ({ ...prev, acccode: customer.cid }));
       setValues((prev) => ({ ...prev, rateChartNo: customer.rateChartNo }));
     } else {
@@ -80,7 +83,6 @@ const MilkSankalan = () => {
   };
 
   // Effect to search for customer when code changes
-
   useEffect(() => {
     const handler = setTimeout(() => {
       if (values.code.length >= 1) {
@@ -151,14 +153,6 @@ const MilkSankalan = () => {
         }
         break;
 
-      case "cname":
-        if (!/^[a-zA-Z\s]+$/.test(value)) {
-          error[name] = "Invalid Customer Name.";
-        } else {
-          delete errors[name];
-        }
-        break;
-
       case "liters":
         if (!/^\d+(\.\d{1,2})?$/.test(value.toString())) {
           error[name] = "Invalid liters.";
@@ -197,38 +191,45 @@ const MilkSankalan = () => {
       return;
     }
 
+    setIsSaving(true); // Disable button
     try {
       await dispatch(mobileMilkCollection(values));
       setValues(initialValues);
       toast.success("Milk Collection Saved Successfully!");
       setCollCount(collCount + 1);
       setLiterCount(literCount + parseFloat(values.liters));
+      codeInputRef.current.focus(); // Focus on the code input
     } catch (error) {
-      setValues(initialValues);
-      toast.error("failed to save Milk Collection, try again!");
+      toast.error("Failed to save Milk Collection, try again!");
+    } finally {
+      setIsSaving(false); // Enable button
     }
   };
 
+  const currentHour = new Date().getHours();
+  const heading =
+    currentHour < 12 ? `${t("c-mrg-coll")}` : `${t("c-eve-coll")}`;
+
   return (
     <div className="mobile-milk-collection-conainer w100 h1 d-flex-col center">
-      <span className="heading w100 h10 t-center">Milk Collection </span>
+      <span className="heading w100 h10 t-center">{heading}</span>
       <form
         onSubmit={handleMobileCollection}
         className="mobile-milk-coll-form w60 h70 d-flex-col sa bg p10">
         <div className="show-milk-data-container w100 h10 d-flex px10">
-          <div className="form-date w40 d-flex a-center">
+          <div className="form-date w50 d-flex a-center">
             <label htmlFor="date" className="label-text w60">
-              Collection Count :
+              {t("milkcollection:m-count")}:
             </label>
-            <label htmlFor="date" className="label-text w40">
+            <label htmlFor="date" className="heading w40">
               {collCount}
             </label>
           </div>
-          <div className="form-date w40 d-flex a-center">
+          <div className="form-date w50 d-flex a-center">
             <label htmlFor="date" className="label-text w60">
-              Total Liters :
+              {t("milkcollection:m-t-liters")}:
             </label>
-            <label htmlFor="date" className="label-text w40">
+            <label htmlFor="date" className="heading w40">
               {literCount.toFixed(2)}
             </label>
           </div>
@@ -246,7 +247,7 @@ const MilkSankalan = () => {
         <div className="form-setting w100 h10 d-flex a-center sa">
           <div className="form-date w40 d-flex a-center">
             <label htmlFor="date" className="info-text w40">
-              Date <span className="req">*</span>{" "}
+              {t("c-date")} <span className="req">*</span>{" "}
             </label>
             <input
               className={`data w60 ${errors.date ? "input-error" : ""}`}
@@ -263,15 +264,16 @@ const MilkSankalan = () => {
           </div>
           <div className="milk-details w50 d-flex a-center px10">
             <label htmlFor="animal" className="info-text w50">
-              Select Milk Type <span className="req">*</span>{" "}
+              {t("milkcollection:m-s-milk-type")}
+              <span className="req">*</span>{" "}
             </label>
             <select
               className="data w50"
               name="animal"
               id="animal"
               onChange={handleInputs}>
-              <option value="0">Cow</option>
-              <option value="1">Buffalo</option>
+              <option value="0">{t("c-cow")}</option>
+              <option value="1">{t("c-buffalo")}</option>
             </select>
           </div>
         </div>
@@ -280,7 +282,8 @@ const MilkSankalan = () => {
           <div className="milk-details w100 h90 d-flex">
             <div className="form-div user-code w30 px10">
               <label htmlFor="code" className="info-text">
-                Enter User Code <span className="req">*</span>{" "}
+                {t("milkcollection:m-cust-code")}:{" "}
+                <span className="req">*</span>{" "}
               </label>
               <input
                 id="code"
@@ -291,18 +294,19 @@ const MilkSankalan = () => {
                 name="code"
                 value={values.code}
                 onChange={handleInputs}
+                ref={codeInputRef}
               />
             </div>
             <div className="form-div user-name w70 px10">
               <label htmlFor="cname" className="info-text">
-                Customer Name <span className="req">*</span>{" "}
+                {t("milkcollection:m-cust-name")}:<span className="req">*</span>{" "}
               </label>
               <input
                 id="cname"
-                className={`data ${errors.cname ? "input-error" : ""}`}
+                className="data"
                 type="text"
                 required
-                placeholder="smartdairy user"
+                placeholder={`${t("milkcollection:m-cust-name")}`}
                 name="cname"
                 value={values.cname}
                 readOnly
@@ -315,7 +319,7 @@ const MilkSankalan = () => {
             <div className="milk-info w50 h1 ">
               <div className="form-div px10">
                 <label htmlFor="liters" className="info-text">
-                  Litters <span className="req">*</span>{" "}
+                  {t("c-liters")} <span className="req">*</span>{" "}
                 </label>
                 <input
                   id="liters"
@@ -332,7 +336,8 @@ const MilkSankalan = () => {
             <div className="milk-info w50 h1 d-flex-col">
               <div className="form-div px10">
                 <label htmlFor="sample" className="info-text">
-                  Sample No. <span className="req">*</span>{" "}
+                  {t("milkcollection:m-sample-no")}{" "}
+                  <span className="req">*</span>{" "}
                 </label>
                 <input
                   id="sample"
@@ -349,8 +354,8 @@ const MilkSankalan = () => {
           </div>
         </div>
         <div className="mobile-milkcoll-form-btns w100 h10 my10 d-flex a-center j-end">
-          <button className="btn " type="submit">
-            Save Collection
+          <button className="btn label-text" type="submit" disabled={isSaving}>
+            {isSaving ? `${t("milkcollection:m-btn-saving")}` : `${t("milkcollection:m-btn-save")}`}
           </button>
         </div>
       </form>

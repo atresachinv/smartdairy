@@ -951,7 +951,6 @@ exports.fetchMobileMilkColl = async (req, res) => {
       // Get the current hour to determine AM or PM
       const currentHour = new Date().getHours();
       const ME = currentHour < 12 ? 0 : 1;
-      console.log(ME);
 
       const dairy_table = `dailymilkentry_${dairy_id}`;
 
@@ -996,7 +995,7 @@ exports.fetchMobileMilkColl = async (req, res) => {
 };
 
 //.........................................................
-// fetch Mobile Milk Collection to update .................
+// (Update) fetch Mobile Milk Collection .................
 //.........................................................
 
 exports.fetchMobileMilkCollection = async (req, res) => {
@@ -1212,72 +1211,60 @@ exports.allMilkCollReport = async (req, res) => {
 // Fetch dairy Milk Collection Report ...........................
 //...............................................................
 
-exports.dairyMilkCollReort = async (req, res) => {
-  const { fromDate, toDate } = req.body;
+exports.todaysMilkCollReport = async (req, res) => {
+  const { date} = req.query; // Read from `req.query`
 
   pool.getConnection((err, connection) => {
     if (err) {
-      console.error("Error getting MySQL connection: ", err);
+      console.error("Error getting MySQL connection: ", err.message);
       return res.status(500).json({ message: "Database connection error" });
     }
 
-    const dairy_id = req.user.dairy_id;
-    const center_id = req.user.center_id;
+    try {
+      const dairy_id = req.user.dairy_id;
+      const center_id = req.user.center_id;
 
-    const morningQuery = `
-      SELECT fat, snf, rate, Litres, Amt 
-      FROM dailymilkentry_102 
-      WHERE ReceiptDate BETWEEN ? AND ? AND ME = 0 AND dairy_id = ? AND center_id = ?
-    `;
-    const eveningQuery = `
-      SELECT fat, snf, rate, Litres, Amt 
-      FROM dailymilkentry_102 
-      WHERE ReceiptDate BETWEEN ? AND ? AND ME = 1 AND dairy_id = ? AND center_id = ?
-    `;
-    const totalMilkQuery = `
-      SELECT SUM(Litres) AS totalLitres, COUNT(DISTINCT AccCode) AS totalCustomers, SUM(Amt) AS totalAmount
-      FROM dailymilkentry_102 
-      WHERE ReceiptDate = ?
-    `;
+      if (!dairy_id) {
+        return res
+          .status(400)
+          .json({ message: "Dairy ID not found in the request!" });
+      }
 
-    Promise.all([
-      new Promise((resolve, reject) =>
-        connection.query(morningQuery, [date], (err, results) =>
-          err ? reject(err) : resolve(results)
-        )
-      ),
-      new Promise((resolve, reject) =>
-        connection.query(eveningQuery, [date], (err, results) =>
-          err ? reject(err) : resolve(results)
-        )
-      ),
-      new Promise((resolve, reject) =>
-        connection.query(totalMilkQuery, [date], (err, results) =>
-          err ? reject(err) : resolve(results[0])
-        )
-      ),
-    ])
-      .then(([morningData, eveningData, totalResult]) => {
-        connection.release();
-        const totalMilk = totalResult.totalLitres || 0;
-        const totalCustomers = totalResult.totalCustomers || 0;
-        const totalAmount = totalResult.totalAmount || 0;
+      const dairy_table = `dailymilkentry_${dairy_id}`;
 
-        res.status(200).json({
-          morningData,
-          eveningData,
-          totalMilk,
-          totalCustomers,
-          totalAmount,
+      const todaysMilkQuery = `
+        SELECT 
+          ReceiptDate, ME, CB, Litres, fat, snf, rate, Amt, cname, rno
+        FROM ${dairy_table}
+        WHERE companyid = ? AND center_id = ? AND ReceiptDate = ?
+      `;
 
-          message: "Data Found !",
-        });
-      })
-      .catch((err) => {
-        connection.release();
-        console.error("Error executing query: ", err);
-        res.status(500).json({ message: "Server error" });
-      });
+      connection.query(
+        todaysMilkQuery,
+        [dairy_id, center_id, date],
+        (err, results) => {
+          connection.release();
+
+          if (err) {
+            console.error("Error executing query: ", err.message);
+            return res.status(500).json({ message: "Error executing query" });
+          }
+
+          if (results.length === 0) {
+            return res.status(200).json({
+              todaysmilk: [],
+              message: "No record found!",
+            });
+          }
+
+          res.status(200).json({ todaysmilk: results });
+        }
+      );
+    } catch (err) {
+      connection.release();
+      console.error("Unexpected error: ", err.message);
+      res.status(500).json({ message: "Unexpected server error" });
+    }
   });
 };
 

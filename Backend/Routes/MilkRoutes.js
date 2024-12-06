@@ -13,6 +13,7 @@ const {
   fetchMobileMilkColl,
   fetchMobileMilkCollection,
   updateMobileCollection,
+  todaysMilkCollReport,
 } = require("../Controllers/MilkController");
 const verifyToken = require("../Middlewares/VerifyToken");
 
@@ -27,18 +28,27 @@ router.route("/dashboard").post(verifyToken, dashboardInfo);
 //Milk Collection Customer Name
 router.route("/collection/custdata").post(verifyToken, custDetails);
 router.route("/collection/milkrate").post(verifyToken, getRateAmount);
+
+//dairy milk collection ........................................................................
 router.route("/save/milk/collection").post(verifyToken, milkCollection);
+router.route("/milk/coll/report").get(verifyToken, allMilkCollReport);
+router.route("/fetch/collection").get(verifyToken, todaysMilkCollReport);
+//...........................................................................................................
+
 router.route("/save/milk/one").post(verifyToken, milkCollectionOneEntry);
-router.route("/save/milk/one").post(verifyToken, milkCollectionOneEntry);
+
+// mobile Milkcollector........................................................................
 router
   .route("/save/mobile/milkcollection")
-  .post(verifyToken, mobileMilkCollection); // mobile Milkcollector
-router.route("/mobile/milkreport").get(verifyToken, fetchMobileMilkColl); // mobile Milkcollector
+  .post(verifyToken, mobileMilkCollection);
+router.route("/mobile/milkreport").get(verifyToken, fetchMobileMilkColl);
 router
   .route("/fetch/mobile/collection")
-  .get(verifyToken, fetchMobileMilkCollection);
+  .get(verifyToken, fetchMobileMilkCollection); // to update
 router.route("/update/mobile/coll").post(verifyToken, updateMobileCollection);
-router.route("/milk/coll/report").get(verifyToken, allMilkCollReport);
+//...........................................................................................................
+
+
 
 // Customer Routes
 module.exports = router;

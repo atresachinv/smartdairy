@@ -370,9 +370,15 @@
   font-weight: 300;
   /* margin-top: 5px; */
 }
+.f-info-text {
+  font-size: clamp(10px, 2vw, 14px);
+  font-weight: 400;
+  color: #ffffff;
+  /* margin-top: 5px; */
+}
 
 .text {
-  font-size: clamp(10px, 2vw, 14px);
+  font-size: clamp(10px, 2.5vw, 14px);
   font-weight: 300;
   margin-top: 5px;
   cursor: pointer;
@@ -435,6 +441,9 @@
 .bg6 {
   background-color: var(--bg-gray-color);
 }
+
+
+
 .bg {
   background-color: #ecfafd;
   border-radius: 8px;
@@ -570,4 +579,7 @@ body {
   } */
 }
 @media screen and (max-width: 426px) {
+  .info-text{
+    margin:  5px 0;
+  }
 }
