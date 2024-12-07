@@ -22,6 +22,7 @@ const SankalanReport = () => {
     return data.reduce((total, item) => total + parseFloat(item.Litres), 0);
   };
 
+  const records = mobileMilkReport.length;
   const totalLiters = calculateTotalLiters(mobileMilkReport);
 
   // Function to download Excel file
@@ -113,9 +114,14 @@ const SankalanReport = () => {
           )}
         </div>
       </div>
-      <span className="heading py10">
-        {t("milkcollection:m-t-liters")} : {totalLiters.toFixed(2)}
-      </span>
+      <div className="mobile-milk-btns w100 h10 d-flex a-center j-center sa">
+        <span className="heading py10">
+          {t("milkcollection:m-count")} : {records}
+        </span>
+        <span className="heading py10">
+          {t("milkcollection:m-t-liters")} : {totalLiters.toFixed(2)}
+        </span>
+      </div>
     </div>
   );
 };

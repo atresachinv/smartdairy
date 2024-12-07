@@ -76,7 +76,7 @@ export const getRateCharts = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const response = await axiosInstance.post("/milkcollection/ratechart");
-      return response.data;
+      return response.data.usedRateChart;
     } catch (error) {
       const errorMessage =
         error.response?.data?.message ||

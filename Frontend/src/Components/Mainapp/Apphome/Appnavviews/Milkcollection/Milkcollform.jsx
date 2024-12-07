@@ -129,56 +129,117 @@ const MilkColleform = ({ switchToSettings }) => {
   };
 
   // finding rate and calculating amount and degree
+
+  //   const calculateRateAndAmount = async () => {
+  //     try {
+  //       const { fat, snf, liters } = values;
+  //
+  //       // Access the correct array if milkRateChart is an object with a nested array
+  //       const rateChartArray = Array.isArray(milkRateChart)
+  //         ? milkRateChart
+  //         : milkRateChart.MilkCollRChart;
+  //
+  //       // Check if rateChartArray is an array before proceeding
+  //       if (!Array.isArray(rateChartArray)) {
+  //         console.error("rateChartArray is not an array. Check the data source.");
+  //         setValues((prev) => ({
+  //           ...prev,
+  //           rate: "N/A",
+  //           amt: "N/A",
+  //           degree: "N/A",
+  //         }));
+  //         return;
+  //       }
+  //
+  //       // Ensure that fat and snf values are parsed correctly for comparison
+  //       const parsedFat = parseFloat(fat);
+  //       const parsedSnf = parseFloat(snf);
+  //       const parsedLiters = parseFloat(liters);
+  //
+  //       // Calculate the degree of milk based on Maharashtra Government formula
+  //       const degree = (parsedFat * parsedSnf).toFixed(2);
+  //
+  //       // Find rate entry based on matching fat and snf values
+  //       const rateEntry = rateChartArray.find(
+  //         (entry) =>
+  //           entry.fat === parsedFat &&
+  //           entry.snf === parsedSnf &&
+  //           entry.rccode === values.rateChartNo
+  //       );
+  //
+  //       if (rateEntry) {
+  //         const rate = rateEntry.rate;
+  //         const amount = rate * parsedLiters;
+  //
+  //         // Update state with calculated rate, amount, and degree
+  //         setValues((prev) => ({
+  //           ...prev,
+  //           rate: rate.toFixed(2),
+  //           amt: amount.toFixed(2),
+  //           degree: degree, // Add the calculated degree to the state
+  //         }));
+  //       } else {
+  //         // Handle case where rate entry is not found
+  //         setValues((prev) => ({
+  //           ...prev,
+  //           rate: "N/A",
+  //           amt: "N/A",
+  //           degree: degree,
+  //         }));
+  //       }
+  //     } catch (error) {
+  //       console.error("Error calculating rate and amount:", error);
+  //     }
+  //   };
+
   const calculateRateAndAmount = async () => {
     try {
       const { fat, snf, liters } = values;
 
-      // Access the correct array if milkRateChart is an object with a nested array
-      const rateChartArray = Array.isArray(milkRateChart)
-        ? milkRateChart
-        : milkRateChart.MilkCollRChart;
+      // const rateChartArray = Array.isArray(milkRateChart)
+      //   ? milkRateChart
+      //   : milkRateChart.MilkCollRChart;
 
       // Check if rateChartArray is an array before proceeding
-      if (!Array.isArray(rateChartArray)) {
-        console.error("rateChartArray is not an array. Check the data source.");
-        setValues((prev) => ({
-          ...prev,
-          rate: "N/A",
-          amt: "N/A",
-          degree: "N/A",
-        }));
-        return;
-      }
+      // if (!Array.isArray(milkRateChart)) {
+      //   console.error(
+      //     "rateChartArray is not an array. milkRateChart:",
+      //     milkRateChart
+      //   );
+      //   setValues((prev) => ({
+      //     ...prev,
+      //     rate: "N/A",
+      //     amt: "N/A",
+      //     degree: "N/A",
+      //   }));
+      //   return;
+      // }
 
-      // Ensure that fat and snf values are parsed correctly for comparison
       const parsedFat = parseFloat(fat);
       const parsedSnf = parseFloat(snf);
       const parsedLiters = parseFloat(liters);
 
-      // Calculate the degree of milk based on Maharashtra Government formula
       const degree = (parsedFat * parsedSnf).toFixed(2);
 
-      // Find rate entry based on matching fat and snf values
-      const rateEntry = rateChartArray.find(
+      const rateEntry = milkRateChart.find(
         (entry) =>
           entry.fat === parsedFat &&
           entry.snf === parsedSnf &&
           entry.rccode === values.rateChartNo
       );
 
+      console.log(rateEntry);
       if (rateEntry) {
         const rate = rateEntry.rate;
         const amount = rate * parsedLiters;
 
-        // Update state with calculated rate, amount, and degree
         setValues((prev) => ({
           ...prev,
           rate: rate.toFixed(2),
           amt: amount.toFixed(2),
-          degree: degree, // Add the calculated degree to the state
+          degree: degree,
         }));
       } else {
-        // Handle case where rate entry is not found
         setValues((prev) => ({
           ...prev,
           rate: "N/A",
@@ -466,6 +527,8 @@ const MilkColleform = ({ switchToSettings }) => {
     //       );
     //     }
   };
+
+  // console.log(milkRateChart);
 
   return (
     <>

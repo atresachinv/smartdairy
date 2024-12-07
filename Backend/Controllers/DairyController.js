@@ -1463,6 +1463,7 @@ exports.getSelectedRateChart = async (req, res) => {
 // Retriving applied Ratechart for milk Collection .................
 // .................................................................
 //Incomplete
+
 exports.rateChartMilkColl = async (req, res) => {
   pool.getConnection((err, connection) => {
     if (err) {

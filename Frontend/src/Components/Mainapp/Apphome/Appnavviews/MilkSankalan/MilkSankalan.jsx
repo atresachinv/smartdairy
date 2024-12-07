@@ -3,8 +3,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { mobileMilkCollection } from "../../../../../App/Features/Mainapp/Milk/MilkCollectionSlice";
 import { toast } from "react-toastify";
 import { listCustomer } from "../../../../../App/Features/Customers/customerSlice";
-import "../../../../../Styles/Mainapp/Apphome/Appnavview/Milkcollection.css";
 import { useTranslation } from "react-i18next";
+import "../../../../../Styles/Mainapp/Apphome/Appnavview/Milkcollection.css";
 
 const MilkSankalan = () => {
   const dispatch = useDispatch();
@@ -245,7 +245,7 @@ const MilkSankalan = () => {
           </button> */}
         </div>
         <div className="form-setting w100 h10 d-flex a-center sa">
-          <div className="form-date w40 d-flex a-center">
+          <div className="form-date w40 d-flex a-center sa">
             <label htmlFor="date" className="info-text w40">
               {t("c-date")} <span className="req">*</span>{" "}
             </label>
@@ -324,7 +324,7 @@ const MilkSankalan = () => {
                 <input
                   id="liters"
                   className={`data ${errors.liters ? "input-error" : ""}`}
-                  type="decimal"
+                  type="number"
                   required
                   placeholder="00.0"
                   name="liters"
@@ -353,9 +353,11 @@ const MilkSankalan = () => {
             </div>
           </div>
         </div>
-        <div className="mobile-milkcoll-form-btns w100 h10 my10 d-flex a-center j-end">
-          <button className="btn label-text" type="submit" disabled={isSaving}>
-            {isSaving ? `${t("milkcollection:m-btn-saving")}` : `${t("milkcollection:m-btn-save")}`}
+        <div className="mobile-milkcoll-form-btns w100 my10 d-flex a-center j-end">
+          <button className="btn heading" type="submit" disabled={isSaving}>
+            {isSaving
+              ? `${t("milkcollection:m-btn-saving")}`
+              : `${t("milkcollection:m-btn-save")}`}
           </button>
         </div>
       </form>

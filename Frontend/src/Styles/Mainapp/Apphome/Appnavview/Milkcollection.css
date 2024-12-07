@@ -118,7 +118,9 @@
 
   .apphome-nav-views .mobile-milk-coll-form {
     width: 100%;
+    height: 65%;
   }
+  
   .form-setting .setting-btn-switch,
   .form-setting .form-date {
     width: 50%;
