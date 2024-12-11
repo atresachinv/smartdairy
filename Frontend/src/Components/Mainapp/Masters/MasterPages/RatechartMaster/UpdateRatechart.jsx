@@ -1,19 +1,25 @@
 import React, { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
+import Spinner from "../../../../Home/Spinner/Spinner";
+import { updateRatechart } from "../../../../../App/Features/Mainapp/Masters/rateChartSlice";
 
-const UpdateRatechart = ({ isSet }) => {
+const UpdateRatechart = ({ isSet, ratechart }) => {
+  const dispatch = useDispatch();
+
+  const status = useSelector((state) => state.ratechart.updatestatus);
   const tDate = useSelector((state) => state.date.toDate);
   const [errors, setErrors] = useState({});
-console.log("alla na data",isSet);
 
   const [formData, setFormData] = useState({
     amount: "",
     rctype: "",
-    time: "",
     animalType: "",
     rcdate: "",
+    rccode: "",
   });
+
+  console.log(status);
 
   const handleInput = (e) => {
     const { name, value } = e.target;
@@ -21,92 +27,120 @@ console.log("alla na data",isSet);
       ...prevData,
       [name]: value,
     }));
+
+    const fieldError = validateField(name, value);
+    setErrors((prevErrors) => {
+      const updatedErrors = { ...prevErrors, ...fieldError };
+      if (!value) delete updatedErrors[name]; // Clear error if field is empty
+      return updatedErrors;
+    });
   };
 
-    const validateField = (name, value) => {
-      let error = {};
+  const validateField = (name, value) => {
+    let error = {};
 
-      switch (name) {
-        case "amount":
-          if (!/^[-+]?[0-9]{1,2}$/.test(value)) {
-            error[name] = `Invalid value of ${name}.`;
-          } else {
-            delete errors[name];
-          }
-          break;
+    switch (name) {
+      case "amount":
+        if (!/^[-+]?\d+(\.\d{1,2})?$/.test(value)) {
+          error[name] = `Invalid value of ${name}.`;
+        } else {
+          delete errors[name];
+        }
+        break;
 
-        case "rcdate":
-          // Check if the value is in YYYY-MM-DD format
-          if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) {
-            errors[name] = `Invalid value of ${name}.`;
-          } else {
-            delete errors[name];
-          }
-          break;
+      case "rcdate":
+        // Check if the value is in YYYY-MM-DD format
+        if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) {
+          errors[name] = `Invalid value of ${name}.`;
+        } else {
+          delete errors[name];
+        }
+        break;
 
-        default:
-          break;
-      }
+      default:
+        break;
+    }
 
-      return error;
-    };
+    return error;
+  };
 
-    const validateFields = () => {
-      const fieldsToValidate = [
-        "amount",
-        "rcdate",
-      ];
-      const validationErrors = {};
-      fieldsToValidate.forEach((field) => {
-        const fieldError = validateField(field, formData[field]);
-        Object.assign(validationErrors, fieldError);
-      });
-      return validationErrors;
-    };
+  const validateFields = () => {
+    const fieldsToValidate = ["amount", "rcdate"];
+    const validationErrors = {};
+    fieldsToValidate.forEach((field) => {
+      const fieldError = validateField(field, formData[field]);
+      Object.assign(validationErrors, fieldError);
+    });
+    return validationErrors;
+  };
 
   const handleRatechartUpdate = async (e) => {
     e.preventDefault();
+
+    // Validate fields before submission
+    const validationErrors = validateFields();
+    if (Object.keys(validationErrors).length) {
+      setErrors(validationErrors);
+      return;
+    }
     if (!isSet) {
-      toast.error("no is set");
-    }else{
-      toast.success(" isset");
+      toast.error("Please select a ratechart to Update!.");
+      return;
+    } else {
+      console.log("alla na data", formData);
+      dispatch(
+        updateRatechart({
+          amt: formData.amount,
+          rccode: isSet.rccode,
+          rcdate: isSet.rcdate.slice(0, 10),
+          rctype: isSet.rctypename,
+          rate: ratechart,
+        })
+      );
     }
   };
 
   return (
     <>
       <form
-        className="rate-chart-setting-div w100 h1 d-flex-col sa my10"
+        className="rate-chart-setting-div w100 h1 d-flex-col my10"
         onSubmit={handleRatechartUpdate}>
         <span className="heading">Update Selected Ratechart</span>
         <div className="select-time-animal-type w100 h25 d-flex sb">
-          <div className="select-time w100 h1 a-center d-flex sb">
-            <label htmlFor="amount" className="info-text w70">
-              Increase or decrease a specific amount from the selected rate
-              chart :
-            </label>
-            <input
-              className="data w20"
-              type="text"
-              name="amount"
-              id="amount"
-              value={formData.amount}
-              onChange={handleInput}
-            />
-          </div>
+          {status === "loading" ? (
+            <div className="loading-ToastContainer w100 h1 d-flex center">
+              <Spinner />
+            </div>
+          ) : (
+            <div className="select-time w100 h1 a-center d-flex sb">
+              <label htmlFor="amount" className="info-text w70">
+                Increase or decrease a specific amount from the selected rate
+                chart :
+              </label>
+              <input
+                className={`data w20 ${errors.amount ? "input-error" : ""}`}
+                type="text"
+                name="amount"
+                id="amount"
+                value={formData.amount}
+                placeholder="+0.0"
+                onChange={handleInput}
+              />
+            </div>
+          )}
         </div>
-        <div className="select-animal-type w100 h1 a-center d-flex j-start">
+        {/* <div className="select-animal-type w100 h1 a-center d-flex j-start">
           <label htmlFor="newdate" className="info-text w40">
             New Ratechart Date:
           </label>
           <input className="data w30 " type="date" name="" id="newdate" />
-        </div>
+        </div> */}
         <div className="button-div w100 h25 d-flex j-end my10">
           <button
             type="submit"
             className="btn mx10"
             disabled={status === "loading"}>
-            Update Ratechart
+            {status === "loading" ? "Updating..." : "Update Ratechart"}
           </button>
         </div>
       </form>

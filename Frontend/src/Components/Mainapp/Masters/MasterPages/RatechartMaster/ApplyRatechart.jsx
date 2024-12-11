@@ -1,17 +1,30 @@
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
+import { listCustomer } from "../../../../../App/Features/Customers/customerSlice";
 
-const ApplyRatechart = () => {
+const ApplyRatechart = ({ isSet }) => {
   const tDate = useSelector((state) => state.date.toDate);
+  const customers = useSelector((state) => state.customer.customerlist);
   const [errors, setErrors] = useState({});
+
+  
+  // const custCount = Array.isArray(customerlist) ? customerlist.length : 0;
   const [formData, setFormData] = useState({
-    rccode: "",
-    rctype: "",
-    time: "",
-    animalType: "",
     rcdate: "",
+    fromCust: 1 ,
+    toCust: "",
   });
+
+  useEffect(() => {
+    const custCount = Array.isArray(customers) ? customers.length : 0;
+    console.log(custCount);
+
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      toCust: custCount, // Dynamically update toCust
+    }));
+  }, [customers]);
 
   const handleInput = (e) => {
     const { name, value } = e.target;
@@ -23,7 +36,8 @@ const ApplyRatechart = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+    console.log(formData);
+
   };
 
   return (
@@ -52,30 +66,30 @@ const ApplyRatechart = () => {
         <span className="label-text">Select Customers</span>
         <div className="select-time-animal-type w100 h25 d-flex">
           <div className="select-animal-type w30 h1 a-center d-flex">
-            <label htmlFor="time" className="info-text w40">
+            <label htmlFor="fromCust" className="info-text w40">
               From :
             </label>
             <input
               type="number"
-              className={`data w60 ${errors.time ? "input-error" : ""}`}
-              name="time"
-              id="time"
+              className={`data w60 ${errors.fromCust ? "input-error" : ""}`}
+              name="fromCust"
+              id="fromCust"
               required
-              value={formData.time}
+              value={formData.fromCust || ""}
               onChange={handleInput}
             />
           </div>
           <div className="select-animal-type w30 h1 a-center d-flex mx10">
-            <label htmlFor="animalType" className="info-text w40">
+            <label htmlFor="toCust" className="info-text w40">
               To :
             </label>
             <input
               type="number"
-              className="data w60 "
-              name="animalType"
-              id="animalType"
+              className={`data w60 ${errors.toCust ? "input-error" : ""}`}
+              name="toCust"
+              id="toCust"
               required
-              value={formData.animalType}
+              value={formData.toCust || ""}
               onChange={handleInput}
             />
           </div>

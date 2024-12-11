@@ -139,13 +139,6 @@ const CreateCustomer = () => {
         [name]: value,
       }));
 
-      // Field-level validation on input change
-      // const fieldError = validateField(name, value);
-      // setErrors((prevErrors) => ({
-      //   ...prevErrors,
-      //   ...fieldError,
-      // }));
-
        const fieldError = validateField(name, value);
        setErrors((prevErrors) => {
          const updatedErrors = { ...prevErrors, ...fieldError };

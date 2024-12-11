@@ -3,16 +3,16 @@ import SaveRateChart from "./SaveRateChart";
 import UpdateRatechart from "./UpdateRatechart";
 import ApplyRatechart from "./ApplyRatechart";
 
-const RateChartNavViews = ({ index, isSet }) => {
+const RateChartNavViews = ({ index, isSet, ratechart }) => {
   switch (index) {
     case 0:
       return <SaveRateChart />;
       break;
     case 1:
-      return <UpdateRatechart isSet={isSet} />;
+      return <UpdateRatechart isSet={isSet} ratechart={ratechart} />;
       break;
     case 2:
-      return <ApplyRatechart />;
+      return <ApplyRatechart isSet={isSet} />;
       break;
 
     default:

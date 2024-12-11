@@ -5,10 +5,11 @@ const initialState = {
   ratechartList: [],
   rateChart: [], //used for milk collection
   selectedRateChart: [], // selected for operations
-  maxRcCode: 1,
+  maxRcCode: "",
   excelRatechart: [],
   status: "idle",
-  rcsavestatus:"idle",
+  updatestatus: "idle",
+  savercstatus: "idle",
   error: null,
   progress: 0,
 };
@@ -188,6 +189,24 @@ export const fetchMilkCollRatechart = createAsyncThunk(
   }
 );
 
+// Update rate chart
+export const updateRatechart = createAsyncThunk(
+  "ratechart/updateRatechart",
+  async ({ amt, rccode, rcdate, rctype, rate }, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.post("/update/ratechart", {
+        amt, rccode, rcdate, rctype, rate,
+      });
+      return response.data;
+    } catch (error) {
+      const errorMessage =
+        error.response?.data?.message ||
+        "Failed to fetch milk collection ratechart!.";
+      return rejectWithValue(errorMessage);
+    }
+  }
+);
+
 // Slice
 const rateChartSlice = createSlice({
   name: "ratechart",
@@ -217,16 +236,16 @@ const rateChartSlice = createSlice({
         state.status = "failed";
       })
       .addCase(saveRateChart.pending, (state) => {
-        state.rcsavestatus = "loading";
+        state.savercstatus = "loading";
         state.error = null;
         state.progress = 0;
       })
       .addCase(saveRateChart.fulfilled, (state) => {
-        state.rcsavestatus = "succeeded";
+        state.savercstatus = "succeeded";
         state.progress = 100;
       })
       .addCase(saveRateChart.rejected, (state, action) => {
-        state.rcsavestatus = "failed";
+        state.savercstatus = "failed";
         state.error = action.payload;
         state.progress = 0;
       }) // Rate chart used for milk Collection
@@ -294,10 +313,22 @@ const rateChartSlice = createSlice({
       .addCase(fetchselectedRateChart.rejected, (state, action) => {
         state.error = action.payload;
         state.status = "failed";
+      })
+      .addCase(updateRatechart.pending, (state) => {
+        state.updatestatus = "loading";
+      })
+      .addCase(updateRatechart.fulfilled, (state, action) => {
+        state.selectedRateChart = action.payload;
+        state.updatestatus = "succeeded";
+      })
+      .addCase(updateRatechart.rejected, (state, action) => {
+        state.error = action.payload;
+        state.updatestatus = "failed";
       });
   },
 });
 
-export const { updateProgress, resetProgress, setData } = rateChartSlice.actions;
+export const { updateProgress, resetProgress, setData } =
+  rateChartSlice.actions;
 
 export default rateChartSlice.reducer;

@@ -29,6 +29,33 @@ const Custdashboard = () => {
   const fromDate = `${fDate}`;
   const toDate = `${tDate}`;
 
+  // Initialize totals
+  let totalLiters = 0;
+  let totalFat = 0;
+  let totalSNF = 0;
+  let totalRate = 0;
+  let totalAmt = 0;
+
+  const getTotals = () => {
+    if (summary && summary.length > 0) {
+      summary.forEach((item) => {
+        totalLiters += item.Litres || 0;
+        totalFat += (item.fat || 0) * (item.Litres || 0); // Weighted sum for fat
+        totalSNF += (item.snf || 0) * (item.Litres || 0); // Weighted sum for SNF
+        totalRate += (item.Rate || 0) * (item.Litres || 0); // Weighted sum for Rate
+        totalAmt += item.Amt || 0;
+      });
+    }
+  };
+
+  const avgFat = totalLiters > 0 ? totalFat / totalLiters : 0;
+  const avgSNF = totalLiters > 0 ? totalSNF / totalLiters : 0;
+  const avgRate = totalLiters > 0 ? totalRate / totalLiters : 0;
+
+  useEffect(() => {
+    getTotals();
+  }, [summary]);
+
   useEffect(() => {
     dispatch(getDashboardInfo({ fromDate, toDate }));
     dispatch(getMilkReports({ fromDate, toDate }));
@@ -42,11 +69,11 @@ const Custdashboard = () => {
       amount: item.dailyAmount,
     }));
 
-  const safeToFixed = (value, decimals = 2) => {
-    return value !== null && value !== undefined
-      ? value.toFixed(decimals)
-      : "0.00";
-  };
+  // const safeToFixed = (value, decimals = 2) => {
+  //   return value !== null && value !== undefined
+  //     ? value.toFixed(decimals)
+  //     : "0.00";
+  // };
 
   return (
     <div className="cust-dashboard-information w100 h1 d-flex-col">
@@ -59,27 +86,23 @@ const Custdashboard = () => {
       <div className="cust-dashboard-data w70 mx-15 h15 d-flex sa p10">
         <div className="data-conatiner w20 h1 t-center bg">
           <span className="sub-heading"> {t("c-t-liters")}</span>
-          <span className="info-text">
-            {safeToFixed(summary.totalLiters, 1)}
-          </span>
+          <span className="info-text">{totalLiters.toFixed(2)}</span>
         </div>
         <div className="data-conatiner w15 h1 t-center bg">
           <span className="sub-heading">{t("c-avg-fat")}</span>
-          <span className="info-text">{safeToFixed(summary.avgFat, 1)}</span>
+          <span className="info-text">{avgFat.toFixed(2)}</span>
         </div>
         <div className="data-conatiner w15 h1 t-center bg">
           <span className="sub-heading">{t("c-avg-snf")}</span>
-          <span className="info-text">{safeToFixed(summary.avgSNF, 1)}</span>
+          <span className="info-text">{avgSNF.toFixed(2)}</span>
         </div>
         <div className="data-conatiner w15 h1 t-center bg">
           <span className="sub-heading">{t("c-avg-rate")}</span>
-          <span className="info-text">{safeToFixed(summary.avgRate, 1)}</span>
+          <span className="info-text">{avgRate.toFixed(2)}</span>
         </div>
         <div className="data-conatiner w20 h1 t-center bg">
           <span className="sub-heading">{t("c-t-amt")}</span>
-          <span className="info-text">
-            {safeToFixed(summary.totalAmount, 2)}
-          </span>
+          <span className="info-text">{totalAmt.toFixed(2)}</span>
         </div>
       </div>
       <div className="cust-dashboard-charts w70 h70 mh70 mx-15 d-flex-col hidescrollbar">

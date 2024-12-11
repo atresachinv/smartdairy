@@ -244,6 +244,9 @@ exports.userLogin = async (req, res) => {
 //Logout user......................................
 //.................................................
 
+//v2
+
+
 exports.userLogout = (req, res) => {
   res.clearCookie("token", {
     httpOnly: true,

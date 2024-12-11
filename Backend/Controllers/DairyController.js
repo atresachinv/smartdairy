@@ -1266,7 +1266,53 @@ exports.saveRateChart = async (req, res) => {
 
 //  only updates isActive 0 to 1
 
+// exports.applyRateChart = async (req, res) => {
+//   pool.getConnection(async (err, connection) => {
+//     if (err) {
+//       console.error("Error getting MySQL connection: ", err);
+//       return res.status(500).json({ message: "Database connection error" });
+//     }
+//
+//     try {
+//       const dairy_id = req.user.dairy_id;
+//       const center_id = req.user.center_id;
+//
+//       if (!dairy_id) {
+//         connection.release();
+//         return res.status(400).json({ message: "Dairy ID not found!" });
+//       }
+//
+//       const applyRatechartQuery = `
+//         UPDATE ratemaster
+//         SET isActive = ?
+//         WHERE companyid = ? AND center_id = ?
+//       `;
+//
+//       await connection.query(
+//         applyRatechartQuery,
+//         [1, dairy_id, center_id], // Pass 1 as an integer for isActive
+//         (err, results) => {
+//           connection.release(); // Always release the connection back to the pool
+//
+//           if (err) {
+//             console.error("Error executing query: ", err);
+//             return res.status(500).json({ message: "Query execution error" });
+//           }
+//
+//           res.status(201).json({
+//             message: "Ratechart applied successfully!",
+//           });
+//         }
+//       );
+//     } catch (error) {
+//       connection.release(); // Ensure the connection is released on error
+//       return res.status(400).json({ message: error.message });
+//     }
+//   });
+// };
+
 exports.applyRateChart = async (req, res) => {
+  const {} = req.body;
   pool.getConnection(async (err, connection) => {
     if (err) {
       console.error("Error getting MySQL connection: ", err);
@@ -1277,36 +1323,112 @@ exports.applyRateChart = async (req, res) => {
       const dairy_id = req.user.dairy_id;
       const center_id = req.user.center_id;
 
-      if (!dairy_id) {
+      if (!dairy_id || !center_id) {
         connection.release();
-        return res.status(400).json({ message: "Dairy ID not found!" });
+        return res
+          .status(400)
+          .json({ message: "Dairy ID or Center ID not found!" });
       }
 
-      const applyRatechartQuery = `
-        UPDATE ratemaster
-        SET isActive = ?
-        WHERE companyid = ? AND center_id = ? 
+      const dairy_table = `dailymilkentry_${dairy_id}`;
+
+      const currentDate = new Date().toISOString().split("T")[0]; // Get current date in YYYY-MM-DD format
+
+      // 1. Fetch the active rate chart for the dairy and center
+      const fetchRateChartQuery = `
+        SELECT ReceiptDate, litres, fat, snf, rate 
+        FROM ${dairy_table}
+        WHERE center_id = ? AND  ReceiptDate >= ? 
       `;
 
-      await connection.query(
-        applyRatechartQuery,
-        [1, dairy_id, center_id], // Pass 1 as an integer for isActive
-        (err, results) => {
-          connection.release(); // Always release the connection back to the pool
-
+      connection.query(
+        fetchRateChartQuery,
+        [center_id, currentDate],
+        (err, Result) => {
           if (err) {
-            console.error("Error executing query: ", err);
-            return res.status(500).json({ message: "Query execution error" });
+            connection.release();
+            console.error("Error fetching rate chart: ", err);
+            return res
+              .status(500)
+              .json({ message: "Error fetching rate chart" });
           }
 
-          res.status(201).json({
-            message: "Ratechart applied successfully!",
+          if (Result.length === 0) {
+            connection.release();
+            return res
+              .status(404)
+              .json({ message: "No active rate chart found!" });
+          }
+
+          const { milkentries } = Result;
+
+          // 2. Update the `dairy_milk` table with the new rates and recalculate amounts
+          const updateMilkDataQuery = `
+          UPDATE ${dairy_table}
+          SET rate = ?, amount = litres * ?
+          WHERE center_id = ? AND ReceiptDate <= ?
+        `;
+
+          const values = milkentries.map((record, index) => {
+            let { fat, snf, rate } = record;
+
+            if (
+              typeof fat !== "number" ||
+              typeof snf !== "number" ||
+              typeof rate !== "number"
+            ) {
+              throw new Error(
+                `Invalid record format at index ${index}. Each rate record must have numeric FAT, SNF, and Rate.`
+              );
+            }
+
+            fat = parseFloat(fat.toFixed(1));
+            snf = parseFloat(snf.toFixed(1));
+            rate = parseFloat(rate.toFixed(2));
+
+            return [
+              dairy_id,
+              rccode,
+              rcdate,
+              rctypecode,
+              rctype,
+              animal,
+              fat,
+              snf,
+              rate,
+              time,
+              center_id,
+            ];
           });
+
+          connection.query(
+            updateMilkDataQuery,
+            [rate, rate, dairy_id, center_id, currentDate],
+            (err, updateResult) => {
+              connection.release(); // Ensure the connection is released
+
+              if (err) {
+                console.error("Error updating dairy milk data: ", err);
+                return res
+                  .status(500)
+                  .json({ message: "Error updating dairy milk data" });
+              }
+
+              res.status(200).json({
+                message:
+                  "Ratechart applied and dairy milk data updated successfully!",
+                updatedRows: updateResult.affectedRows,
+              });
+            }
+          );
         }
       );
     } catch (error) {
-      connection.release(); // Ensure the connection is released on error
-      return res.status(400).json({ message: error.message });
+      connection.release();
+      console.error("Error: ", error);
+      return res
+        .status(500)
+        .json({ message: "Server error", error: error.message });
     }
   });
 };
@@ -1315,8 +1437,125 @@ exports.applyRateChart = async (req, res) => {
 // Updating selected Ratechart .................................................
 // .............................................................................
 
-//Incomplete
+//working...
+// exports.updateSelectedRateChart = async (req, res) => {
+//   const { amt, rccode, rcdate, rctype } = req.body;
+//
+//   pool.getConnection(async (err, connection) => {
+//     if (err) {
+//       console.error("Error getting MySQL connection: ", err);
+//       return res.status(500).json({ message: "Database connection error" });
+//     }
+//
+//     try {
+//       const dairy_id = req.user.dairy_id;
+//       const center_id = req.user.center_id;
+//
+//       if (!dairy_id) {
+//         connection.release();
+//         return res.status(400).json({ message: "Dairy ID not found!" });
+//       }
+//
+//       // Parse amt
+//       const parsedAmt = parseFloat(amt);
+//       if (isNaN(parsedAmt)) {
+//         connection.release();
+//         return res.status(400).json({ message: "Invalid amount value!" });
+//       }
+//
+//       const updateAmount = parsedAmt; // Use parsedAmt directly
+//
+//       // Retrieve ratechart records first
+//       const getRatechartQuery = `
+//         SELECT fat, snf, rate
+//         FROM ratemaster
+//         WHERE companyid = ? AND center_id = ? AND rcdate = ? AND rccode = ? AND rctypename = ?
+//       `;
+//
+//       connection.query(
+//         getRatechartQuery,
+//         [dairy_id, center_id, rcdate, rccode, rctype],
+//         async (err, ratechart) => {
+//           if (err) {
+//             connection.release();
+//             console.error("Error fetching ratechart: ", err);
+//             return res
+//               .status(500)
+//               .json({ message: "Error fetching ratechart" });
+//           }
+//
+//           // Adjust rates dynamically based on amt
+//           const updatedRates = ratechart.map((record) => ({
+//             ...record,
+//             rate: parseFloat((record.rate + updateAmount).toFixed(2)), // Add or subtract amt
+//           }));
+//
+//           // Update each record in the database
+//           const updateRateQuery = `
+//             UPDATE ratemaster
+//             SET rate = ?
+//             WHERE companyid = ? AND center_id = ? AND rcdate = ? AND rccode = ? AND rctypename = ? AND fat = ? AND snf = ?
+//           `;
+//
+//           let affectedRowsCount = 0; // Initialize the counter for affected rows
+//
+//           for (const record of updatedRates) {
+//             await new Promise((resolve, reject) => {
+//               connection.query(
+//                 updateRateQuery,
+//                 [
+//                   record.rate, // Updated rate
+//                   dairy_id,
+//                   center_id,
+//                   rcdate,
+//                   rccode,
+//                   rctype,
+//                   record.fat,
+//                   record.snf,
+//                 ],
+//                 (err, result) => {
+//                   if (err) {
+//                     console.error("Error updating rate: ", err);
+//                     reject(err);
+//                   }
+//
+//                   // Add the affected rows to the counter
+//                   affectedRowsCount += result.affectedRows;
+//                   // Log affected rows count
+//                   console.log(
+//                     `Updated ${affectedRowsCount} row(s) for rate: ${record.rate}`
+//                   );
+//
+//                   resolve();
+//                 }
+//               );
+//             });
+//           }
+//
+//           connection.release(); // Release connection after all updates
+//
+//           // Log the total number of affected rows
+//           console.log(`Total affected rows: ${affectedRowsCount}`);
+//
+//           res.status(200).json({
+//             message: "Ratechart updated successfully!",
+//             updatedRates,
+//             affectedRowsCount, // Return affected rows count in the response
+//           });
+//         }
+//       );
+//     } catch (error) {
+//       connection.release();
+//       console.error("Error processing request: ", error);
+//       return res.status(500).json({ message: "Internal server error" });
+//     }
+//   });
+// };
+
+//v2 function
 exports.updateSelectedRateChart = async (req, res) => {
+  const { amt, rccode, rcdate, rctype, rate } = req.body;
+
   pool.getConnection(async (err, connection) => {
     if (err) {
       console.error("Error getting MySQL connection: ", err);
@@ -1332,40 +1571,88 @@ exports.updateSelectedRateChart = async (req, res) => {
         return res.status(400).json({ message: "Dairy ID not found!" });
       }
 
-      const applyRatechartQuery = `
+      // Parse amt
+      const parsedAmt = parseFloat(amt);
+      if (isNaN(parsedAmt)) {
+        connection.release();
+        return res.status(400).json({ message: "Invalid amount value!" });
+      }
+
+      const updateAmount = parsedAmt; // Use parsedAmt directly
+
+      // Adjust rates dynamically based on amt
+      const updatedRates = rate.map((record) => ({
+        ...record,
+        rate: parseFloat((record.rate + updateAmount).toFixed(2)), // Add or subtract amt
+      }));
+
+      // Start a transaction
+      await connection.beginTransaction();
+
+      const updateRateQuery = `
         UPDATE ratemaster
-        SET isActive = ?
-        WHERE companyid = ? AND center_id = ? 
+        SET rate = ?
+        WHERE companyid = ? AND center_id = ? AND rcdate = ? AND rccode = ? AND rctypename = ? AND fat = ? AND snf = ?
       `;
 
-      await connection.query(
-        applyRatechartQuery,
-        [1, dairy_id, center_id], // Pass 1 as an integer for isActive
-        (err, results) => {
-          connection.release(); // Always release the connection back to the pool
+      for (const record of updatedRates) {
+        await new Promise((resolve, reject) => {
+          connection.query(
+            updateRateQuery,
+            [
+              record.rate, // Updated rate
+              dairy_id,
+              center_id,
+              rcdate,
+              rccode,
+              rctype,
+              record.fat,
+              record.snf,
+            ],
+            (err, result) => {
+              if (err) {
+                // If any error occurs, rollback the transaction and reject
+                console.error("Error updating rate: ", err);
+                return connection.rollback(() => {
+                  reject(err);
+                });
+              }
+              resolve();
+            }
+          );
+        });
+      }
 
+      // If all updates are successful, commit the transaction
+      await new Promise((resolve, reject) => {
+        connection.commit((err) => {
           if (err) {
-            console.error("Error executing query: ", err);
-            return res.status(500).json({ message: "Query execution error" });
+            // If commit fails, rollback the transaction and reject
+            console.error("Error committing transaction: ", err);
+            return connection.rollback(() => {
+              reject(err);
+            });
           }
-          // Clear the cache for rate charts of this dairy_id and center_id
-          const cacheKey = `ratecharts_${dairy_id}_${center_id}`;
-          cache.del(cacheKey);
+          resolve();
+        });
+      });
 
-          res.status(201).json({
-            message: "Ratechart applied successfully!",
-          });
-        }
-      );
+      connection.release(); // Release connection after transaction
+
+      res.status(200).json({
+        message: "Ratechart updated successfully!",
+        affectedRowsCount,
+      });
     } catch (error) {
-      connection.release(); // Ensure the connection is released on error
-      return res.status(400).json({ message: error.message });
+      connection.release();
+      console.error("Error processing request: ", error);
+      return res.status(500).json({ message: "Internal server error" });
     }
   });
 };
 
 // .............................................................................
-// Finding Distict Ratechart used by dairy to Show to Apply Customer............
+// Finding Distinct Ratechart used by dairy ....................................
 // .............................................................................
 //Incomplete
 exports.findUsedRc = async (req, res) => {
@@ -1384,7 +1671,7 @@ exports.findUsedRc = async (req, res) => {
       }
 
       // Query to get distinct ratecharttype values
-      const distinctRateChartsQuery = `SELECT DISTINCT ratecharttype FROM customer WHERE orgid = ? AND center_id = ? AND isActive = "1"`;
+      const distinctRateChartsQuery = `SELECT DISTINCT ratecharttype FROM customer WHERE orgid = ? AND centerid = ?`;
 
       connection.query(
         distinctRateChartsQuery,
@@ -1434,7 +1721,7 @@ exports.getSelectedRateChart = async (req, res) => {
         return res.status(400).json({ message: "Dairy ID not found!" });
       }
 
-      const getRatechartQuery = `SELECT fat, snf, rate FROM ratemaster WHERE companyid = ? AND center_id = ? AND rccode = ? AND time = ? AND rcdate = ? AND cb = ?`;
+      const getRatechartQuery = `SELECT fat, snf, rate FROM ratemaster WHERE companyid = ? AND center_id = ? AND rccode = ? AND time = ? AND rcdate = ? AND cb = ? ORDER BY fat ASC, snf ASC`;
 
       connection.query(
         getRatechartQuery,
@@ -1517,6 +1804,55 @@ exports.rateChartMilkColl = async (req, res) => {
   });
 };
 
+// .................................................................
+// Retriving perfect Ratechart for milk Collection .................
+// .................................................................
+
+exports.collectionRatecharts = async (req, res) => {
+  pool.getConnection((err, connection) => {
+    if (err) {
+      console.error("Error getting MySQL connection: ", err);
+      return res.status(500).json({ message: "Database connection error" });
+    }
+
+    try {
+      const dairy_id = req.user.dairy_id;
+      const center_id = req.user.center_id;
+
+      if (!dairy_id) {
+        connection.release();
+        return res.status(400).json({ message: "Unauthorized User!" });
+      }
+
+      const findRatechart = `
+      SELECT fat, snf, rate, rccode FROM ratemaster 
+            WHERE orgid = ? AND center_id = ?
+      `;
+
+      connection.query(
+        findRatechart,
+        [dairy_id, center_id, dairy_id, center_id],
+        (err, result) => {
+          connection.release();
+
+          if (err) {
+            console.error("Error executing query: ", err);
+            return res.status(500).json({ message: "Query execution error" });
+          }
+
+          res.status(200).json({
+            usedRateChart: result,
+            message: "Rate chart data retrieved successfully",
+          });
+        }
+      );
+    } catch (error) {
+      connection.release();
+      console.error("Error processing request: ", error);
+      return res.status(500).json({ message: "Internal server error" });
+    }
+  });
+};
 
 // .................................................................
 // Removing all cache data..........................................

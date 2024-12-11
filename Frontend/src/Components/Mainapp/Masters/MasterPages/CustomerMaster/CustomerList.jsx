@@ -16,125 +16,64 @@ const CustomerList = () => {
     dispatch(listCustomer());
   }, []);
 
-  // Function to download Excel file
-//   const downloadExcel = () => {
-//     if (customerlist.length === 0) {
-//       alert("No data available to export.");
-//       return;
-//     }
-// 
-//     // Prepare data for Excel (including all required fields)
-//     const excelData = customerlist.map((customer) => [
-//       customer.rno || "", // Code
-//       customer.cname || "", // Customer Name
-//       customer.mobile || "", // Mobile
-//       customer.cust_addhar || "", // Aadhar No
-//       customer.City || "", // City
-//       customer.tal || "", // Tehsil
-//       customer.dist || "", // District
-//       customer.cust_accno || "", // A/C No
-//       customer.cust_ifsc || "", // IFSC
-//       customer.caste || "", // Caste
-//       customer.customer.gender === 0 ? "Female" : "Male", // Gender
-//       customer.age || "-", // Age
-//       customer.createdon.slice(0, 10) || "", // MemberNo
-//       customer.createddate || "", // Mem. Date
-//       customer.rateChartNo || "", // Ratechart No.
-//       customer.milk_type || "", // MilkType
-//       customer.active === 1 ? "Yes" : "No", // Active
-//     ]);
-// 
-//     // Add headings manually
-//     const worksheet = XLSX.utils.aoa_to_sheet([
-//       [
-//         "Code",
-//         "Customer Name",
-//         "Mobile",
-//         "Aadhar No",
-//         "City",
-//         "Tehsil",
-//         "District",
-//         "A/C No",
-//         "IFSC",
-//         "Caste",
-//         "Gender",
-//         "Age",
-//         "MemberNo",
-//         "Mem. Date",
-//         "Ratechart No.",
-//         "MilkType",
-//         "Active",
-//       ],
-//       ...excelData,
-//     ]);
-// 
-//     const fileName = `Customer_List.xlsx`;
-// 
-//     // Create a workbook and export it
-//     const workbook = XLSX.utils.book_new();
-//     XLSX.utils.book_append_sheet(workbook, worksheet, "Customer Data");
-//     XLSX.writeFile(workbook, fileName);
-//   };
-const downloadExcel = () => {
-  if (!Array.isArray(customerlist) || customerlist.length === 0) {
-    alert("No data available to export.");
-    return;
-  }
+  const downloadExcel = () => {
+    if (!Array.isArray(customerlist) || customerlist.length === 0) {
+      alert("No data available to export.");
+      return;
+    }
 
-  // Prepare data for Excel (including all required fields)
-  const excelData = customerlist.map((customer) => [
-    customer.rno || "", // Code
-    customer.cname || "", // Customer Name
-    customer.mobile || "", // Mobile
-    customer.cust_addhar || "", // Aadhar No
-    customer.City || "", // City
-    customer.tal || "", // Tehsil
-    customer.dist || "", // District
-    customer.cust_accno || "", // A/C No
-    customer.cust_ifsc || "", // IFSC
-    customer.caste || "", // Caste
-    customer.gender === 0 ? "Female" : customer.gender === 1 ? "Male" : "-", // Gender
-    customer.age || "-", // Age
-    customer.createdon ? customer.createdon.slice(0, 10) : "-", // MemberNo
-    customer.createddate || "-", // Mem. Date
-    customer.rateChartNo || "-", // Ratechart No.
-    customer.milk_type || "-", // MilkType
-    customer.active === 1 ? "Yes" : "No", // Active
-  ]);
+    // Prepare data for Excel (including all required fields)
+    const excelData = customerlist.map((customer) => [
+      customer.rno || "", // Code
+      customer.cname || "", // Customer Name
+      customer.mobile || "", // Mobile
+      customer.cust_addhar || "", // Aadhar No
+      customer.City || "", // City
+      customer.tal || "", // Tehsil
+      customer.dist || "", // District
+      customer.cust_accno || "", // A/C No
+      customer.cust_ifsc || "", // IFSC
+      customer.caste || "", // Caste
+      customer.gender === 0 ? "Female" : customer.gender === 1 ? "Male" : "-", // Gender
+      customer.age || "-", // Age
+      customer.createdon ? customer.createdon.slice(0, 10) : "-", // MemberNo
+      customer.createddate || "-", // Mem. Date
+      customer.rateChartNo || "-", // Ratechart No.
+      customer.milk_type || "-", // MilkType
+      customer.active === 1 ? "Yes" : "No", // Active
+    ]);
 
-  // Add headings manually
-  const worksheet = XLSX.utils.aoa_to_sheet([
-    [
-      "Code",
-      "Customer Name",
-      "Mobile",
-      "Aadhar No",
-      "City",
-      "Tehsil",
-      "District",
-      "A/C No",
-      "IFSC",
-      "Caste",
-      "Gender",
-      "Age",
-      "MemberNo",
-      "Mem. Date",
-      "Ratechart No.",
-      "MilkType",
-      "Active",
-    ],
-    ...excelData,
-  ]);
+    // Add headings manually
+    const worksheet = XLSX.utils.aoa_to_sheet([
+      [
+        "Code",
+        "Customer Name",
+        "Mobile",
+        "Aadhar No",
+        "City",
+        "Tehsil",
+        "District",
+        "A/C No",
+        "IFSC",
+        "Caste",
+        "Gender",
+        "Age",
+        "MemberNo",
+        "Mem. Date",
+        "Ratechart No.",
+        "MilkType",
+        "Active",
+      ],
+      ...excelData,
+    ]);
 
-  const fileName = `Customer_List.xlsx`;
+    const fileName = `Customer_List.xlsx`;
 
-  // Create a workbook and export it
-  const workbook = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(workbook, worksheet, "Customer Data");
-  XLSX.writeFile(workbook, fileName);
-};
-
-
+    // Create a workbook and export it
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Customer Data");
+    XLSX.writeFile(workbook, fileName);
+  };
 
   useEffect(() => {
     // When the customer list is updated, store it in localStorage

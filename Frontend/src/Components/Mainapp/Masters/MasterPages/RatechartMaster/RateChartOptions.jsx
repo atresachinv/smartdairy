@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import RateChartNavViews from "./RateChartNavViews";
 import RateChartNavlinks from "./RateChartNavlinks";
 
-const RateChartOptions = ({ isSet }) => {
+const RateChartOptions = ({ isSet , ratechart}) => {
   const [isselected, setIsSelected] = useState(
     parseInt(localStorage.getItem("selectedRCTab")) || 0
   );
@@ -20,8 +20,8 @@ const RateChartOptions = ({ isSet }) => {
           setIsSelected={setIsSelected}
         />
       </div>
-      <div className="apphome-nav-views w100 h90 d-flex center">
-        <RateChartNavViews index={isselected} isSet={isSet} />
+      <div className="ratechart-nav-views w100 h90 d-flex center">
+        <RateChartNavViews index={isselected} isSet={isSet} ratechart={ratechart}/>
       </div>
     </div>
   );

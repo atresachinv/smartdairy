@@ -367,7 +367,6 @@ const MilkRateMaster = () => {
       toast.error("Please select a ratechart to Update!.");
       return;
     } else {
-
     }
   };
 
@@ -417,10 +416,10 @@ const MilkRateMaster = () => {
               Selected Rate Chart from Excel :{" "}
             </span>
             <div className="rate-chart-col-title w100 d-flex a-center t-center sa py10 bg1">
-              <span className="info-text w5">No.</span>
-              <span className="info-text w15">FAT</span>
-              <span className="info-text w10">SNF</span>
-              <span className="info-text w15">Rate</span>
+              <span className="f-info-text w5">No.</span>
+              <span className="f-info-text w15">FAT</span>
+              <span className="f-info-text w10">SNF</span>
+              <span className="f-info-text w15">Rate</span>
             </div>
             <div className="rate-chart-div w100 h90 mh90 d-flex-col hidescrollbar">
               {rate.length > 0 ? (
@@ -455,11 +454,11 @@ const MilkRateMaster = () => {
           <div className="previous-rate-chart-container w100 h40 d-flex-col bg my10">
             <span className="heading p10">Previous Rate Charts : </span>
             <div className="rate-chart-col-title w100 d-flex a-center t-center sa py10 bg1">
-              <span className="info-text w10">No.</span>
-              <span className="info-text w20">Date</span>
-              <span className="info-text w15">Time</span>
-              <span className="info-text w15">Animal</span>
-              <span className="info-text w15">Option</span>
+              <span className="f-info-text w10">No.</span>
+              <span className="f-info-text w20">Date</span>
+              <span className="f-info-text w15">Time</span>
+              <span className="f-info-text w15">Animal</span>
+              <span className="f-info-text w25">Type</span>
             </div>
             <div className="rate-chart-div w100 h90 mh90 d-flex-col hidescrollbar">
               {ratechartlist.map((ratechart, index) => (
@@ -489,12 +488,14 @@ const MilkRateMaster = () => {
                       ? "Mrg"
                       : ratechart.time === 1
                       ? "Eve"
-                      : "Both"}
+                      : ratechart.time === 2
+                      ? "Both"
+                      : ""}
                   </span>
                   <span className="info-text w15">
                     {ratechart.cb === 0 ? "Cow" : "Buffalo"}
                   </span>
-                  <span className="info-text w15">{ratechart.isActive}</span>
+                  <span className="info-text w25">{ratechart.rctypename}</span>
                 </div>
               ))}
             </div>
@@ -522,8 +523,11 @@ const MilkRateMaster = () => {
               Show
             </button>
           </div>
-          <div className="w100 h50 d-flex-col sa my10">
-            <RateChartOptions isSet={selectedRateChart} />
+          <div className="rate-chart-options-container w100 h50 d-flex-col sa my10">
+            <RateChartOptions
+              isSet={selectedRateChart}
+              ratechart={Selectedrc}
+            />
           </div>
           {/* <form
             className="rate-chart-setting-div w100 h40 d-flex-col sa my10 px10"

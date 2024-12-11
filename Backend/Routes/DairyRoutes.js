@@ -16,6 +16,7 @@ const {
   applyRateChart,
   rateChartMilkColl,
   getSelectedRateChart,
+  updateSelectedRateChart,
 } = require("../Controllers/DairyController");
 const router = express.Router();
 
@@ -36,6 +37,6 @@ router.route("/ratechart/list").post(verifyToken, listRatecharts);
 router.route("/apply/ratechart").post(verifyToken, applyRateChart);
 router.route("/milkcollection/ratechart").post(verifyToken, rateChartMilkColl);
 router.route("/selected/ratechart").get(verifyToken, getSelectedRateChart);
-
+router.route("/update/ratechart").post(verifyToken, updateSelectedRateChart);
 
 module.exports = router;
