@@ -141,7 +141,7 @@ const SaveRateChart = ({ rate }) => {
       })
     );
 
-    if (rcsavestatus === "succeeded") {
+    if (status === "succeeded") {
       toast.success("Ratechart saved successfully!");
       dispatch(fetchMaxRcCode());
       dispatch(listRateCharts());
@@ -165,7 +165,7 @@ const SaveRateChart = ({ rate }) => {
         onSubmit={handleSubmit}>
         <span className="heading">Save Selected Ratechart</span>
         {status === "loading" ? (
-          <div className="loading-ToastContainer w100 h1 d-flex center">
+          <div className="loading-ToastContainer w100 h25 d-flex center">
             <Spinner />
           </div>
         ) : (

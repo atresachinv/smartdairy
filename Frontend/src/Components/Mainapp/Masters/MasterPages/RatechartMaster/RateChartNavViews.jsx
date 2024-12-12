@@ -12,7 +12,7 @@ const RateChartNavViews = ({ index, isSet, ratechart }) => {
       return <UpdateRatechart isSet={isSet} ratechart={ratechart} />;
       break;
     case 2:
-      return <ApplyRatechart isSet={isSet} />;
+      return <ApplyRatechart isSet={isSet} ratechart={ratechart} />;
       break;
 
     default:

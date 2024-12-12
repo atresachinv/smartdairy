@@ -119,7 +119,7 @@ const CustomerList = () => {
             <span className="f-info-text w5">Age</span>
             <span className="f-info-text w10">MemberNo</span>
             <span className="f-info-text w10">Mem. Date</span>
-            <span className="f-info-text w15">Ratechart No.</span>
+            <span className="f-info-text w15">Ratechart</span>
             <span className="f-info-text w5">MilkType</span>
             <span className="f-info-text w5">Active</span>
           </div>
@@ -157,7 +157,7 @@ const CustomerList = () => {
                 <span className="text w10">
                   {new Date(customer.createdon).toLocaleDateString()}
                 </span>
-                <span className="text w15">{customer.rateChartNo}</span>
+                <span className="text w15">{customer.rcName}</span>
                 <span className="text w5">
                   {customer.milktype === 1 ? "Cow" : "Buffalo"}
                 </span>

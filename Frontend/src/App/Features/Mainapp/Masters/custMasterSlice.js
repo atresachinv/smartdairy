@@ -53,7 +53,7 @@ export const listCustomer = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const response = await axiosInstance.post("/customer/list");
-      return response.data; // return the response data
+      return response.data.customerList; // return the response data
     } catch (error) {
       return rejectWithValue(error.response?.data || error.message);
     }

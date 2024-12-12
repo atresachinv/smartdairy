@@ -27,9 +27,10 @@ const MilkColleform = ({ switchToSettings }) => {
   const [time, setTime] = useState(true);
   const [errors, setErrors] = useState({});
   const [slotCount, setSlotCount] = useState(0); //To rerive local stored milk entries
-  const [milkEntry, setmilkEntry] = useState([]); //To store retrived milk entries
-  const [milkCollEntry, setMilkCollEntry] = useState([]); //To store Each retrived milk entries
-  const [fullSlots, setFullSlots] = useState(0); //To check slots
+  
+  // const [milkEntry, setmilkEntry] = useState([]); //To store retrived milk entries
+  // const [milkCollEntry, setMilkCollEntry] = useState([]); //To store Each retrived milk entries
+  // const [fullSlots, setFullSlots] = useState(0); //To check slots
 
   const initialValues = {
     date: new Date().toISOString().split("T")[0],
@@ -47,6 +48,9 @@ const MilkColleform = ({ switchToSettings }) => {
     rateChartNo: "",
   };
 
+
+  console.log("ratecharts", milkRateChart);
+  
   const [values, setValues] = useState(initialValues);
 
   const handleInputs = (e) => {
@@ -129,68 +133,6 @@ const MilkColleform = ({ switchToSettings }) => {
   };
 
   // finding rate and calculating amount and degree
-
-  //   const calculateRateAndAmount = async () => {
-  //     try {
-  //       const { fat, snf, liters } = values;
-  //
-  //       // Access the correct array if milkRateChart is an object with a nested array
-  //       const rateChartArray = Array.isArray(milkRateChart)
-  //         ? milkRateChart
-  //         : milkRateChart.MilkCollRChart;
-  //
-  //       // Check if rateChartArray is an array before proceeding
-  //       if (!Array.isArray(rateChartArray)) {
-  //         console.error("rateChartArray is not an array. Check the data source.");
-  //         setValues((prev) => ({
-  //           ...prev,
-  //           rate: "N/A",
-  //           amt: "N/A",
-  //           degree: "N/A",
-  //         }));
-  //         return;
-  //       }
-  //
-  //       // Ensure that fat and snf values are parsed correctly for comparison
-  //       const parsedFat = parseFloat(fat);
-  //       const parsedSnf = parseFloat(snf);
-  //       const parsedLiters = parseFloat(liters);
-  //
-  //       // Calculate the degree of milk based on Maharashtra Government formula
-  //       const degree = (parsedFat * parsedSnf).toFixed(2);
-  //
-  //       // Find rate entry based on matching fat and snf values
-  //       const rateEntry = rateChartArray.find(
-  //         (entry) =>
-  //           entry.fat === parsedFat &&
-  //           entry.snf === parsedSnf &&
-  //           entry.rccode === values.rateChartNo
-  //       );
-  //
-  //       if (rateEntry) {
-  //         const rate = rateEntry.rate;
-  //         const amount = rate * parsedLiters;
-  //
-  //         // Update state with calculated rate, amount, and degree
-  //         setValues((prev) => ({
-  //           ...prev,
-  //           rate: rate.toFixed(2),
-  //           amt: amount.toFixed(2),
-  //           degree: degree, // Add the calculated degree to the state
-  //         }));
-  //       } else {
-  //         // Handle case where rate entry is not found
-  //         setValues((prev) => ({
-  //           ...prev,
-  //           rate: "N/A",
-  //           amt: "N/A",
-  //           degree: degree,
-  //         }));
-  //       }
-  //     } catch (error) {
-  //       console.error("Error calculating rate and amount:", error);
-  //     }
-  //   };
 
   const calculateRateAndAmount = async () => {
     try {
@@ -390,13 +332,6 @@ const MilkColleform = ({ switchToSettings }) => {
     // console.log("remainning", custList);
   }, [slotCount]);
 
-  // const removeCustomerFromList = () => {
-  //   setCustList(custList.filter((customer) => customer.srno !== values.code));
-  // };
-
-  // Save Milk Collection
-
-  // console.log("remainning customers list", custList);
 
   //Handling Collection Notification
 

@@ -5,13 +5,13 @@ import Spinner from "../../../../Home/Spinner/Spinner";
 
 const TodaysMilkReport = () => {
   const dispatch = useDispatch();
-  // const tDate = useSelector((state) => state.date.toDate);
+  const tDate = useSelector((state) => state.date.toDate);
   const todaysMilk = useSelector((state) => state.milkCollection.todaysMilk);
   const tmstatus = useSelector((state) => state.milkCollection.todaysMilk);
 
   console.log("Data", todaysMilk);
 
-  const tDate = "2024-11-19";
+  // const tDate = "2024-11-19";
 
   useEffect(() => {
     dispatch(fetchTodaysMilk({ date: tDate }));

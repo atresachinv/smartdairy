@@ -10,6 +10,7 @@ const initialState = {
   status: "idle",
   updatestatus: "idle",
   savercstatus: "idle",
+  applyrcstatus: "idle",
   error: null,
   progress: 0,
 };
@@ -161,9 +162,14 @@ export const fetchselectedRateChart = createAsyncThunk(
 
 export const applyRateChart = createAsyncThunk(
   "ratechart/applyRateChart",
-  async (_, { rejectWithValue }) => {
+  async ({ applydate, custFrom, custTo, ratechart }, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.post("/apply/ratechart");
+      const response = await axiosInstance.post("/apply/ratechart", {
+        applydate,
+        custFrom,
+        custTo,
+        ratechart,
+      });
       return response.data;
     } catch (error) {
       const errorMessage =
@@ -178,8 +184,8 @@ export const fetchMilkCollRatechart = createAsyncThunk(
   "ratechart/fetchMilkCollRatechart",
   async (_, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.post("");
-      return response.data;
+      const response = await axiosInstance.post("/milkcollection/ratechart");
+      return response.data.usedRateChart;
     } catch (error) {
       const errorMessage =
         error.response?.data?.message ||
@@ -195,7 +201,11 @@ export const updateRatechart = createAsyncThunk(
   async ({ amt, rccode, rcdate, rctype, rate }, { rejectWithValue }) => {
     try {
       const response = await axiosInstance.post("/update/ratechart", {
-        amt, rccode, rcdate, rctype, rate,
+        amt,
+        rccode,
+        rcdate,
+        rctype,
+        rate,
       });
       return response.data;
     } catch (error) {
@@ -283,14 +293,14 @@ const rateChartSlice = createSlice({
         state.status = "failed";
       })
       .addCase(applyRateChart.pending, (state) => {
-        state.status = "loading";
+        state.applyrcstatus = "loading";
       })
       .addCase(applyRateChart.fulfilled, (state) => {
-        state.status = "succeeded";
+        state.applyrcstatus = "succeeded";
       })
       .addCase(applyRateChart.rejected, (state, action) => {
         state.error = action.payload;
-        state.status = "failed";
+        state.applyrcstatus = "failed";
       })
       .addCase(fetchMilkCollRatechart.pending, (state) => {
         state.status = "loading";

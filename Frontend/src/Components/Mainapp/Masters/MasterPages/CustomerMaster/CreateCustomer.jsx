@@ -8,6 +8,7 @@ import {
 import { toast } from "react-toastify";
 import { updateCustomer } from "../../../../../App/Features/Mainapp/Masters/custMasterSlice";
 import "../../../../../Styles/Mainapp/Masters/CustomerMaster.css";
+import { listRateCharts } from "../../../../../App/Features/Mainapp/Masters/rateChartSlice";
 
 const CreateCustomer = () => {
   const dispatch = useDispatch();
@@ -41,7 +42,7 @@ const CreateCustomer = () => {
     district: "",
     pincode: "",
     milktype: 0,
-    rctype: 0,
+    rctype: "",
     farmerid: "",
     bankName: "",
     bank_ac: "",
@@ -57,6 +58,12 @@ const CreateCustomer = () => {
     h_dairyrebet: 0,
     h_transportation: 0,
   });
+
+  useState(() => {
+    dispatch(listRateCharts());
+  }, []);
+
+  console.log(customerList);
 
   const handleEditClick = () => {
     setIsEditing((prev) => !prev);
@@ -139,12 +146,12 @@ const CreateCustomer = () => {
         [name]: value,
       }));
 
-       const fieldError = validateField(name, value);
-       setErrors((prevErrors) => {
-         const updatedErrors = { ...prevErrors, ...fieldError };
-         if (!value) delete updatedErrors[name]; // Clear error if field is empty
-         return updatedErrors;
-       });
+      const fieldError = validateField(name, value);
+      setErrors((prevErrors) => {
+        const updatedErrors = { ...prevErrors, ...fieldError };
+        if (!value) delete updatedErrors[name]; // Clear error if field is empty
+        return updatedErrors;
+      });
     }
   };
 
@@ -161,7 +168,7 @@ const CreateCustomer = () => {
         break;
 
       case "marathi_name":
-        if (!/^[\u0900-\u097F\sA-Za-z\/^\d{10}]+$/.test(value)) {
+        if (!/^[\u0900-\u097F\sA-Za-z0-9\/]+$/.test(value)) {
           error[name] = "Invalid Marathi name.";
         } else {
           delete errors[name];
@@ -169,7 +176,7 @@ const CreateCustomer = () => {
         break;
 
       case "cust_name":
-        if (!/^[a-zA-Z\/^\d{10}]+$/.test(value)) {
+        if (!/^[a-zA-Z0-9\s\/]+$/.test(value)) {
           error[name] = "Invalid English name.";
         } else {
           delete errors[name];
@@ -259,8 +266,12 @@ const CreateCustomer = () => {
     const validationErrors = {};
     fieldsToValidate.forEach((field) => {
       const fieldError = validateField(field, formData[field]);
-      Object.assign(validationErrors, fieldError);
+      if (Object.keys(fieldError).length > 0) {
+        validationErrors[field] = fieldError[field];
+      }
     });
+
+    setErrors(validationErrors);
     return validationErrors;
   };
 
@@ -635,21 +646,24 @@ const CreateCustomer = () => {
             </div>
             <div className="ratechart-details-div w40 d-flex-col a-center px10">
               <span className="info-text w100">Rate Chart Type</span>{" "}
-              <input
-                className={`data w100 ${errors.rctype ? "input-error" : ""}`}
-                type="text"
+              <select
                 name="rctype"
-                list="ratechartlist"
+                id="ratechartlist"
+                className={`data w100 ${errors.rctype ? "input-error" : ""}`}
                 onChange={handleInputChange}
-                value={formData.rctype}
-              />
-              <datalist id="ratechartlist">
-                {ratechartlist.map((chart, i) => (
-                  <option key={i} value={chart.rctypename}>
-                    {chart.rctypename}
-                  </option>
-                ))}
-              </datalist>
+                value={formData.rctype || ""}
+                aria-label="Select Ratechart">
+                <option value="">-- select --</option>
+                {ratechartlist && ratechartlist.length > 0 ? (
+                  ratechartlist.map((chart, i) => (
+                    <option key={i} value={chart.rctypename}>
+                      {chart.rctypename}
+                    </option>
+                  ))
+                ) : (
+                  <option disabled>No Rate Charts Available</option>
+                )}
+              </select>
             </div>
 
             <div className="farmerid-details-div w40 d-flex-col a-center px10">

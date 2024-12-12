@@ -2,9 +2,8 @@ const mysql = require("mysql");
 const dotenv = require("dotenv");
 dotenv.config({ path: ".env" });
 
-
 const pool = mysql.createPool({
-  connectionLimit: 10, // Maximum number of connections in the pool
+  connectionLimit: 1000, // Maximum number of connections in the pool
   port: process.env.DB_PORT,
   host: process.env.DB_HOST,
   user: process.env.DB_USER,
@@ -16,8 +15,4 @@ const pool = mysql.createPool({
   timezone: "Z",
 });
 
-
-
-
 module.exports = pool;
-
