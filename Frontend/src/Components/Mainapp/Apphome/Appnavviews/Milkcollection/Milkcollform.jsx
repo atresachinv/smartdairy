@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { BsGearFill } from "react-icons/bs";
 import { useDispatch, useSelector } from "react-redux";
 import { saveMilkCollection } from "../../../../../App/Features/Mainapp/Dairyinfo/milkCollectionSlice";
-import "../../../../../Styles/Mainapp/Apphome/Appnavview/Milkcollection.css";
 import {
   fetchEntries,
   saveMilkOneEntry,
@@ -13,6 +12,7 @@ import {
   sendNewNotification,
 } from "../../../../../App/Features/Notifications/notificationSlice";
 import { useTranslation } from "react-i18next";
+import "../../../../../Styles/Mainapp/Apphome/Appnavview/Milkcollection.css";
 
 const MilkColleform = ({ switchToSettings }) => {
   const dispatch = useDispatch();
@@ -27,7 +27,7 @@ const MilkColleform = ({ switchToSettings }) => {
   const [time, setTime] = useState(true);
   const [errors, setErrors] = useState({});
   const [slotCount, setSlotCount] = useState(0); //To rerive local stored milk entries
-  
+
   // const [milkEntry, setmilkEntry] = useState([]); //To store retrived milk entries
   // const [milkCollEntry, setMilkCollEntry] = useState([]); //To store Each retrived milk entries
   // const [fullSlots, setFullSlots] = useState(0); //To check slots
@@ -45,12 +45,9 @@ const MilkColleform = ({ switchToSettings }) => {
     rate: "",
     cname: "",
     acccode: "",
-    rateChartNo: "",
+    rcName: "",
   };
 
-
-  console.log("ratecharts", milkRateChart);
-  
   const [values, setValues] = useState(initialValues);
 
   const handleInputs = (e) => {
@@ -96,6 +93,42 @@ const MilkColleform = ({ switchToSettings }) => {
     }));
   };
 
+  // used for decimal input correction
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+
+    // Validate and allow only numeric input with an optional single decimal point
+    if (value === "" || /^[0-9]*\.?[0-9]*$/.test(value)) {
+      setValues((prev) => ({
+        ...prev,
+        [name]: value,
+      }));
+
+      // Clear previous errors if the input is valid
+      setErrors((prevErrors) => {
+        const { [name]: removedError, ...rest } = prevErrors;
+        return rest; // Remove the specific error for this field
+      });
+    } else {
+      // Set an error for invalid input
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        [name]:
+          "Invalid input. Only numbers and one decimal point are allowed.",
+      }));
+      return; // Stop further processing if input is invalid
+    }
+
+    // Normalize the value only when it's a valid integer and greater than 9
+    if (/^\d+$/.test(value) && value.length > 1) {
+      const normalizedValue = (parseInt(value, 10) / 10).toFixed(1);
+      setValues((prev) => ({
+        ...prev,
+        [name]: normalizedValue,
+      }));
+    }
+  };
+
   // Effect to load customer list from local storage
   useEffect(() => {
     const storedCustomerList = localStorage.getItem("customerlist");
@@ -138,25 +171,6 @@ const MilkColleform = ({ switchToSettings }) => {
     try {
       const { fat, snf, liters } = values;
 
-      // const rateChartArray = Array.isArray(milkRateChart)
-      //   ? milkRateChart
-      //   : milkRateChart.MilkCollRChart;
-
-      // Check if rateChartArray is an array before proceeding
-      // if (!Array.isArray(milkRateChart)) {
-      //   console.error(
-      //     "rateChartArray is not an array. milkRateChart:",
-      //     milkRateChart
-      //   );
-      //   setValues((prev) => ({
-      //     ...prev,
-      //     rate: "N/A",
-      //     amt: "N/A",
-      //     degree: "N/A",
-      //   }));
-      //   return;
-      // }
-
       const parsedFat = parseFloat(fat);
       const parsedSnf = parseFloat(snf);
       const parsedLiters = parseFloat(liters);
@@ -167,7 +181,7 @@ const MilkColleform = ({ switchToSettings }) => {
         (entry) =>
           entry.fat === parsedFat &&
           entry.snf === parsedSnf &&
-          entry.rccode === values.rateChartNo
+          entry.rctypename === values.rcName
       );
 
       console.log(rateEntry);
@@ -230,9 +244,12 @@ const MilkColleform = ({ switchToSettings }) => {
     );
 
     if (customer) {
-      setValues((prev) => ({ ...prev, cname: customer.cname }));
-      setValues((prev) => ({ ...prev, acccode: customer.cid }));
-      setValues((prev) => ({ ...prev, rateChartNo: customer.rateChartNo }));
+      setValues((prev) => ({
+        ...prev,
+        cname: customer.cname,
+        acccode: customer.cid,
+        rcName: customer.rcName,
+      }));
     } else {
       setValues((prev) => ({ ...prev, cname: "" })); // Clear cname if not found
     }
@@ -332,7 +349,6 @@ const MilkColleform = ({ switchToSettings }) => {
     // console.log("remainning", custList);
   }, [slotCount]);
 
-
   //Handling Collection Notification
 
   const sendNotifications = () => {
@@ -352,7 +368,6 @@ const MilkColleform = ({ switchToSettings }) => {
       console.error("Device token is missing");
       return;
     }
-
     // Dispatch with a single payload object
     dispatch(
       sendNewNotification({
@@ -378,21 +393,21 @@ const MilkColleform = ({ switchToSettings }) => {
       const allEntries = JSON.parse(localStorage.getItem("milkentries")) || [];
       console.log(allEntries);
 
-      await dispatch(saveMilkOneEntry(values));
+      dispatch(saveMilkOneEntry(values));
       const existingEntries =
         JSON.parse(localStorage.getItem("milkentries")) || [];
 
-      existingEntries.push(values);
+      await existingEntries.push(values);
       localStorage.setItem("milkentries", JSON.stringify(existingEntries));
       setValues(initialValues); // Reset form to initial values
       setErrors({}); // Reset errors
 
-      await sendNotifications();
+      sendNotifications();
 
       toast.success(`Milk Collection of ${values.cname} saved successfully!`);
 
       // Remove customer from custList
-      await setCustList((prevList) =>
+      setCustList((prevList) =>
         prevList.filter((customer) => customer.srno !== values.code)
       );
       console.log("asas", custList);
@@ -463,7 +478,7 @@ const MilkColleform = ({ switchToSettings }) => {
     //     }
   };
 
-  // console.log(milkRateChart);
+  console.log(milkRateChart);
 
   return (
     <>
@@ -474,9 +489,9 @@ const MilkColleform = ({ switchToSettings }) => {
           {!time ? `${t("common:c-eve")}` : `${t("common:c-mrg")}`}{" "}
           {t("m-milkcoll")}
         </span>
-        <div className="form-setting w100 h10 d-flex a-center sb">
+        <div className="form-setting w100 h10 d-flex a-center sa">
           <div className="w40 d-flex a-center px10">
-            <label htmlFor="" className="info-text w30">
+            <label htmlFor="date" className="info-text w30">
               {t("common:c-date")} <span className="req">*</span>{" "}
             </label>
             <input
@@ -485,6 +500,7 @@ const MilkColleform = ({ switchToSettings }) => {
               required
               placeholder="0000"
               name="date"
+              id="date"
               onChange={handleInputs}
               value={values.date || ""}
               max={values.date}
@@ -501,14 +517,14 @@ const MilkColleform = ({ switchToSettings }) => {
             </button>
             {/* <span className="text">Evening</span> */}
           </div>
-          <BsGearFill className="color-icon mx10" onClick={switchToSettings} />
+          <BsGearFill className="color-icon w20" onClick={switchToSettings} />
         </div>
         <div className="setting-btn-switch w100 h10 d-flex a-center sb">
           {/* <span className="label-text"> User Details : </span> */}
         </div>
         <div className="user-details w100 h20 d-flex ">
           <div className="form-div w50 px10">
-            <label htmlFor="" className="info-text">
+            <label htmlFor="code" className="info-text">
               {t("m-cust-code")} <span className="req">*</span>{" "}
             </label>
             <input
@@ -517,12 +533,13 @@ const MilkColleform = ({ switchToSettings }) => {
               required
               placeholder="0000"
               name="code"
+              id="code"
               value={values.code}
               onChange={handleInputs}
             />
           </div>
           <div className="form-div w50 px10">
-            <label htmlFor="" className="info-text">
+            <label htmlFor="cname" className="info-text">
               {t("m-cust-name")} <span className="req">*</span>{" "}
             </label>
             <input
@@ -531,6 +548,7 @@ const MilkColleform = ({ switchToSettings }) => {
               required
               placeholder={`${t("m-cust-name")}`}
               name="cname"
+              id="cname"
               value={values.cname}
               readOnly
             />
@@ -541,7 +559,7 @@ const MilkColleform = ({ switchToSettings }) => {
           <div className="milk-details w100 h90 d-flex">
             <div className="milk-info w50 h1 ">
               <div className="form-div px10">
-                <label htmlFor="" className="info-text">
+                <label htmlFor="liters" className="info-text">
                   {t("common:c-liters")} <span className="req">*</span>{" "}
                 </label>
                 <input
@@ -550,12 +568,13 @@ const MilkColleform = ({ switchToSettings }) => {
                   required
                   placeholder="00.0"
                   name="liters"
+                  id="liters"
                   onChange={handleInputs}
                   value={values.liters}
                 />
               </div>
               <div className="form-div  px10">
-                <label htmlFor="" className="info-text">
+                <label htmlFor="fat" className="info-text">
                   {t("common:c-fat")} <span className="req">*</span>{" "}
                 </label>
                 <input
@@ -564,12 +583,13 @@ const MilkColleform = ({ switchToSettings }) => {
                   required
                   placeholder="0.0"
                   name="fat"
-                  onChange={handleInputs}
+                  id="fat"
+                  onChange={handleInputChange}
                   value={values.fat}
                 />
               </div>
               <div className="form-div px10">
-                <label htmlFor="" className="info-text">
+                <label htmlFor="snf" className="info-text">
                   {t("common:c-snf")} <span className="req">*</span>{" "}
                 </label>
                 <input
@@ -578,14 +598,15 @@ const MilkColleform = ({ switchToSettings }) => {
                   required
                   placeholder="00.0"
                   name="snf"
+                  id="snf"
+                  onChange={handleInputChange}
                   value={values.snf}
-                  onChange={handleInputs}
                 />
               </div>
             </div>
             <div className="milk-info w50 h1 d-flex-col">
               <div className="form-div px10">
-                <label htmlFor="" className="info-text">
+                <label htmlFor="degree" className="info-text">
                   {t("common:c-deg")} <span className="req">*</span>{" "}
                 </label>
                 <input
@@ -595,12 +616,13 @@ const MilkColleform = ({ switchToSettings }) => {
                   disabled
                   placeholder="00.0"
                   name="degree"
+                  id="degree"
                   value={values.degree}
                   onChange={handleInputs}
                 />
               </div>
               <div className="form-div px10">
-                <label htmlFor="" className="info-text">
+                <label htmlFor="rate" className="info-text">
                   {t("common:c-rate")} <span className="req">*</span>{" "}
                 </label>
                 <input
@@ -610,11 +632,12 @@ const MilkColleform = ({ switchToSettings }) => {
                   readOnly
                   placeholder="00.0"
                   name="rate"
+                  id="rate"
                   value={values.rate}
                 />
               </div>
               <div className="form-div px10">
-                <label htmlFor="" className="info-text">
+                <label htmlFor="amt" className="info-text">
                   {t("common:c-amt")} <span className="req">*</span>{" "}
                 </label>
                 <input
@@ -624,6 +647,7 @@ const MilkColleform = ({ switchToSettings }) => {
                   readOnly
                   placeholder="00.0"
                   name="amt"
+                  id="amt"
                   value={values.amt}
                 />
               </div>

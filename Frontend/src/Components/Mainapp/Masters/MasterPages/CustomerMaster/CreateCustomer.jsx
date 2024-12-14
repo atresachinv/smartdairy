@@ -380,7 +380,7 @@ const CreateCustomer = () => {
             {isEditing ? "Update Customer" : "Create Customer"}
           </span>
           <div className="toggle-inputs-div w30 h40 d-flex a-center sa">
-            <span className="info-text w60 px10">
+            <span className="info-text w70 px10">
               Is Active <span className="req">*</span>
             </span>
             <button
@@ -410,8 +410,8 @@ const CreateCustomer = () => {
             />
           </div>
           <div className="details-div w70 d-flex a-center sb">
-            <div className="toggle-inputs-div w45 h40 d-flex a-center sa">
-              <span className="info-text w70 px10">Is Member</span>
+            <div className="toggle-inputs-div  h50 d-flex-col a-center sa">
+              <span className="info-text w100 px10">Is Member</span>
               <button
                 type="button"
                 onClick={handleIsMember}
@@ -420,7 +420,7 @@ const CreateCustomer = () => {
               </button>
             </div>
             {isMember && (
-              <div className="toggle-inputs-div w50 h40 d-flex-col sb">
+              <div className="toggle-inputs-div w60 h50 d-flex-col sb">
                 <span className="info-text w100 px10">Membership Date</span>
                 <input
                   className={`data w100 ${errors.cust_no ? "input-error" : ""}`}
@@ -542,7 +542,7 @@ const CreateCustomer = () => {
           </div>
         </div>
         <div className="cust-div address-details-div w100 h15 d-flex-col sb">
-          <span className="info-text px10">Address Details :</span>
+          {/* <span className="info-text px10">Address Details :</span> */}
           <div className="address-details w100 h1 d-flex sb">
             <div className="city-details-div w25 d-flex-col a-center px10">
               <span className="info-text w100 ">
@@ -732,8 +732,8 @@ const CreateCustomer = () => {
       </div>
       <div className="cust-data-settings w40 h1 d-flex-col p10">
         <span className="sub-heading px10">Settings (Rs/ltr) : </span>
-        <div className="cust-div milk-settings-div w100 h15 d-flex sa">
-          <div className="details-div w45 h40 d-flex a-center">
+        <div className="cust-div milk-settings-div w100 h20 d-flex sa">
+          <div className="details-div w45 h50 d-flex a-center">
             <span className="info-text w70">Deposit :</span>
             <input
               className="data w30"
@@ -744,7 +744,7 @@ const CreateCustomer = () => {
               value={formData.deposit || ""}
             />
           </div>
-          <div className="details-div w45 h40 d-flex a-center ">
+          <div className="details-div w45 h50 d-flex a-center ">
             <span className="info-text w70">Commission :</span>
             <input
               className="data w30"
@@ -757,7 +757,7 @@ const CreateCustomer = () => {
           </div>
         </div>
         <div className="cust-div milk-settings-div w100 h15 d-flex sa">
-          <div className="details-div w45 h40 d-flex a-center ">
+          <div className="details-div w45 h50 d-flex a-center ">
             <span className="info-text w70">Rebat Commission :</span>
             <input
               className="data w30"
@@ -768,7 +768,7 @@ const CreateCustomer = () => {
               value={formData.rebet || ""}
             />
           </div>
-          <div className="details-div w45 h40 d-flex a-center ">
+          <div className="details-div w45 h50 d-flex a-center ">
             <span className="info-text w70">Transportation :</span>
             <input
               className="data w30"
@@ -845,17 +845,6 @@ const CreateCustomer = () => {
             </div>
           </div>
         </div>
-        {/* <div className="button-container w50 h20 d-flex-col a-center sa">
-          <button
-            className="btn"
-            type="button"
-            disabled={status === "loading"}>
-            {status === "loading" ? "Downloading..." : "Download Excel Format"}
-          </button>
-          <button className="btn" type="button" disabled={status === "loading"}>
-            {status === "loading" ? "Creating..." : "Upload Customer Excel"}
-          </button>
-        </div> */}
         <div className="button-container w100 h10 d-flex sa">
           <button className="w-btn" type="submit" onClick={handleEditClick}>
             {isEditing ? "CREATE" : "EDIT"}

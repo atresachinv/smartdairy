@@ -170,7 +170,6 @@ exports.userLogin = async (req, res) => {
 //.................................................
 
 //v2
-
 exports.userLogout = (req, res) => {
   res.clearCookie("token", {
     httpOnly: true,

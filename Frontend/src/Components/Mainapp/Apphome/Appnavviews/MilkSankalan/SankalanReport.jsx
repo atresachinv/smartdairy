@@ -42,7 +42,7 @@ const SankalanReport = () => {
 
     // Add headings manually
     const worksheet = XLSX.utils.aoa_to_sheet([
-      ["Code", "Customer Name", "Liters", "Sample No."],
+      ["Code", "Customer Name", "Liters", "Sample No.", "FAT", "SNF"],
       ...excelData,
       [],
       ["Total Liters", "=", totalLiters.toFixed(2)],

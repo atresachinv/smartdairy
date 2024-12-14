@@ -1615,7 +1615,7 @@ exports.getSelectedRateChart = async (req, res) => {
 };
 
 // .................................................................
-// Retriving Ratecharts for milk Collection .........................
+// Milk Collection Ratecharts ......................................
 // .................................................................
 
 // exports.rateChartMilkColl = async (req, res) => {
@@ -1624,16 +1624,16 @@ exports.getSelectedRateChart = async (req, res) => {
 //       console.error("Error getting MySQL connection: ", err);
 //       return res.status(500).json({ message: "Database connection error" });
 //     }
-// 
+//
 //     try {
 //       const dairy_id = req.user.dairy_id;
 //       const center_id = req.user.center_id;
-// 
+//
 //       if (!dairy_id) {
 //         connection.release();
 //         return res.status(400).json({ message: "Unauthorized User!" });
 //       }
-// 
+//
 //       const findRatechartDates = `
 //         SELECT rm.rctypename, MAX(rm.rcdate) AS max_rcdate
 //         FROM ratemaster AS rm
@@ -1645,18 +1645,18 @@ exports.getSelectedRateChart = async (req, res) => {
 //           )
 //         GROUP BY rm.rctypename
 //       `;
-// 
+//
 //       connection.query(
 //         findRatechartDates,
 //         [dairy_id, center_id, dairy_id, center_id],
 //         (err, result) => {
 //           connection.release();
-// 
+//
 //           if (err) {
 //             console.error("Error executing query: ", err);
 //             return res.status(500).json({ message: "Query execution error" });
 //           }
-// 
+//
 //           res.status(200).json({
 //             usedRateChart: result,
 //             message: "Rate chart data retrieved successfully",
@@ -1681,6 +1681,7 @@ exports.rateChartMilkColl = async (req, res) => {
     try {
       const dairy_id = req.user.dairy_id;
       const center_id = req.user.center_id;
+      console.log(dairy_id, center_id);
 
       if (!dairy_id || !center_id) {
         connection.release();
@@ -1690,28 +1691,23 @@ exports.rateChartMilkColl = async (req, res) => {
       }
 
       const findRatecharts = `
-        SELECT rm.fat, rm.snf, rm.rate, rm.rctypename, rm.rcdate 
+        SELECT rm.fat, rm.snf, rm.rate, rm.rctypename, rm.rcdate
         FROM ratemaster AS rm
-        INNER JOIN (
-          SELECT 
-            rctypename,
-            MAX(rcdate) AS max_rcdate
-          FROM 
-            ratemaster
-          WHERE 
-            companyid = ?
-            AND center_id = ?
-            AND rctypename IN (
-              SELECT DISTINCT rcName
-              FROM customer
-              WHERE orgid = ? AND centerid = ?
-            )
-          GROUP BY
-            rctypename
-        ) AS latest_rates ON rm.rctypename = latest_rates.rctypename
-          AND rm.rcdate = latest_rates.max_rcdate
+        JOIN customer AS c
+        ON c.rcName = rm.rctypename
         WHERE
-          rm.companyid = ? AND rm.center_id = ?
+        rm.companyid = ?
+        AND rm.center_id = ?
+        AND c.orgid = ?
+        AND c.centerid = ?
+        AND rm.rcdate = (
+        SELECT MAX(rcdate)
+        FROM ratemaster
+        WHERE
+          companyid = ?
+          AND center_id = ?
+          AND rctypename = rm.rctypename
+          )
       `;
 
       connection.query(
@@ -1744,7 +1740,81 @@ exports.rateChartMilkColl = async (req, res) => {
     }
   });
 };
-
+//v3
+// exports.rateChartMilkColl = async (req, res) => {
+//   pool.getConnection((err, connection) => {
+//     if (err) {
+//       console.error("Error getting MySQL connection: ", err);
+//       return res.status(500).json({ message: "Database connection error" });
+//     }
+//
+//     try {
+//       const dairy_id = req.user.dairy_id;
+//       const center_id = req.user.center_id;
+//       console.log(dairy_id, center_id);
+//
+//       if (!dairy_id || !center_id) {
+//         connection.release();
+//         return res
+//           .status(400)
+//           .json({ message: "Unauthorized or missing user information!" });
+//       }
+//
+//       const findRatecharts = `
+//         SELECT rm.fat, rm.snf, rm.rate, rm.rctypename, rm.rcdate
+//         FROM ratemaster AS rm
+//         INNER JOIN (
+//           SELECT
+//             rctypename,
+//             MAX(rcdate) AS max_rcdate
+//           FROM
+//             ratemaster
+//           WHERE
+//             companyid = ?
+//             AND center_id = ?
+//             AND rctypename IN (
+//               SELECT DISTINCT rcName
+//               FROM customer
+//               WHERE orgid = ? AND centerid = ?
+//             )
+//           GROUP BY
+//             rctypename
+//         ) AS latest_rates ON rm.rctypename = latest_rates.rctypename
+//           AND rm.rcdate = latest_rates.max_rcdate
+//         WHERE
+//           rm.companyid = ? AND rm.center_id = ?
+//       `;
+//
+//       connection.query(
+//         findRatecharts,
+//         [dairy_id, center_id, dairy_id, center_id, dairy_id, center_id],
+//         (err, result) => {
+//           connection.release();
+//
+//           if (err) {
+//             console.error("Error executing query: ", err);
+//             return res.status(500).json({ message: "Query execution error" });
+//           }
+//
+//           if (result.length === 0) {
+//             return res.status(404).json({
+//               message: "No rate chart data found for the specified criteria.",
+//             });
+//           }
+//
+//           res.status(200).json({
+//             usedRateChart: result,
+//             message: "Rate chart data retrieved successfully",
+//           });
+//         }
+//       );
+//     } catch (error) {
+//       connection.release();
+//       console.error("Error processing request: ", error);
+//       return res.status(500).json({ message: "Internal server error" });
+//     }
+//   });
+// };
 
 // .................................................................
 // Retriving perfect Ratechart for milk Collection .................

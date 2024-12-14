@@ -3,9 +3,11 @@ import { useDispatch, useSelector } from "react-redux";
 import { FaDownload } from "react-icons/fa6";
 import * as XLSX from "xlsx";
 import { mobileMilkCollReport } from "../../../../../App/Features/Mainapp/Milk/MilkCollectionSlice";
+import { useTranslation } from "react-i18next";
 
 const MilkCollectorsReports = () => {
   const dispatch = useDispatch();
+  const { t } = useTranslation(["common", "milkcollection"]);
   const tDate = useSelector((state) => state.date.toDate);
   const mobileMilkReport = useSelector(
     (state) => state.milkCollection.mobileColl
@@ -13,12 +15,13 @@ const MilkCollectorsReports = () => {
 
   useEffect(() => {
     dispatch(mobileMilkCollReport());
-  }, []);
+  }, [dispatch]);
 
   const calculateTotalLiters = (data) => {
     return data.reduce((total, item) => total + parseFloat(item.Litres), 0);
   };
 
+  const records = mobileMilkReport.length;
   const totalLiters = calculateTotalLiters(mobileMilkReport);
 
   // Function to download Excel file
@@ -59,53 +62,66 @@ const MilkCollectorsReports = () => {
   };
   return (
     <>
-      <div className="mobile-milk-collection-report w100 h1 d-flex-col center sa">
-        <div className="page-title-button-div w70 h10 d-flex a-center sb">
-          <label className="heading w80">
-            Milk Collection Report{" "}
-            <span className="label-text px10">{tDate}</span>
-          </label>
-          <button className="w-btn" onClick={downloadExcel}>
-            <span className="f-heading px10">Excel</span>
-            <FaDownload />
-          </button>
-        </div>
-        <div className="milk-collection-info-div w80 h80 d-flex-col sa bg">
-          <div className="collection-info-heading w100 h10 d-flex a-center t-start sa bg1">
-            <span className="label-text w10">NO.</span>
-            <span className="label-text w10">Code</span>
-            <span className="label-text w30">Customer Name</span>
-            <span className="label-text w15">Liters</span>
-            <span className="label-text w20">Sample No.</span>
-          </div>
-          <div className="milk-collection-data-div w100 d-flex-col h90 mh90 hidescrollbar">
-            {mobileMilkReport.length > 0 ? (
-              mobileMilkReport.map((collection, index) => (
-                <div
-                  key={index}
-                  className={`collection-info-heading w100 h10 d-flex a-center t-start sa ${
-                    index % 2 === 0 ? "bg-light" : "bg-dark"
-                  }`}
-                  style={{
-                    backgroundColor: index % 2 === 0 ? "#faefe3" : "#fff",
-                  }}>
-                  <span className="text w10">{index + 1}</span>
-                  <span className="text w10">{collection.rno}</span>
-                  <span className="text w30">{collection.cname}</span>
-                  <span className="text w15">{collection.Litres}</span>
-                  <span className="text  w20">{collection.SampleNo}</span>
-                </div>
-              ))
-            ) : (
-              <div className="w100 h1 d-flex center">
-                <span className="label-text">No Records Found !</span>
+       <div className="mobile-milk-collection-report w100 h1 d-flex-col center sa">
+            <div className="page-title-button-div w70 h10 d-flex a-center sb">
+              <label className="heading w80">
+                {t("milkcollection:m-milk-coll-report")}
+                <span className="label-text px10">{tDate}</span>
+              </label>
+              <button className="btn" onClick={downloadExcel}>
+                <span className="f-heading px10">
+                  {t("milkcollection:m-d-excel")}
+                </span>
+                <FaDownload />
+              </button>
+            </div>
+            <div className="milk-collection-info-div w70 h80 d-flex-col sa bg">
+              <div className="collection-info-heading w100 h10 d-flex a-center t-center sa bg1">
+                <span className="f-label-text w10">
+                  {t("milkcollection:m-cust-code")}
+                </span>
+                <span className="f-label-text w40">
+                  {t("milkcollection:m-cust-name")}
+                </span>
+                <span className="f-label-text w10">{t("c-liters")}</span>
+                <span className="f-label-text w20">
+                  {" "}
+                  {t("milkcollection:m-sample-no")}
+                </span>
               </div>
-            )}
+              <div className="milk-collection-data-div w100 d-flex-col h90 mh90 hidescrollbar">
+                {mobileMilkReport.length > 0 ? (
+                  mobileMilkReport.map((collection, index) => (
+                    <div
+                      key={index}
+                      className={`collection-info-heading w100 h10 d-flex a-center t-center sa ${
+                        index % 2 === 0 ? "bg-light" : "bg-dark"
+                      }`}
+                      style={{
+                        backgroundColor: index % 2 === 0 ? "#faefe3" : "#fff",
+                      }}>
+                      <span className="text w10">{collection.rno}</span>
+                      <span className="text w40 t-center">{collection.cname}</span>
+                      <span className="text w10">{collection.Litres}</span>
+                      <span className="text w20">{collection.SampleNo}</span>
+                    </div>
+                  ))
+                ) : (
+                  <div className="w100 h1 d-flex center">
+                    <span className="label-text">{t("c-no-data-avai")}</span>
+                  </div>
+                )}
+              </div>
+            </div>
+            <div className="mobile-milk-btns w100 h10 d-flex a-center j-center sa">
+              <span className="heading py10">
+                {t("milkcollection:m-count")} : {records}
+              </span>
+              <span className="heading py10">
+                {t("milkcollection:m-t-liters")} : {totalLiters.toFixed(2)}
+              </span>
+            </div>
           </div>
-        </div>
-
-        <span className="heading py10">Total Liters : {totalLiters}</span>
-      </div>
     </>
   );
 };

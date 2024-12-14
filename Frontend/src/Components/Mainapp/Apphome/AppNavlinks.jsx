@@ -87,12 +87,12 @@ const AppNavlinks = ({ isselected, setIsSelected }) => {
         "mobilecollector",
       ],
     },
-    {
-      name: `${t("m-reports")}`,
-      icon: <BsFileTextFill className="icon" />,
-      index: 5,
-      role: ["super_admin", "admin", "manager"],
-    },
+    // {
+    //   name: `${t("m-reports")}`,
+    //   icon: <BsFileTextFill className="icon" />,
+    //   index: 5,
+    //   role: ["super_admin", "admin", "manager"],
+    // },
   ];
 
   const filterRoutesByRole = (routes, userRole) => {

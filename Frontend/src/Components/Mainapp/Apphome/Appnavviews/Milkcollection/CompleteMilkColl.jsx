@@ -43,8 +43,6 @@ const CompleteMilkColl = () => {
 
   const [values, setValues] = useState(initialValues);
 
-  console.log(values);
-
   const validateField = (name, value) => {
     let error = {};
 
@@ -145,6 +143,42 @@ const CompleteMilkColl = () => {
       ...prevErrors,
       ...fieldError,
     }));
+  };
+
+  // used for decimal input correction
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+
+    // Validate and allow only numeric input with an optional single decimal point
+    if (value === "" || /^[0-9]*\.?[0-9]*$/.test(value)) {
+      setValues((prev) => ({
+        ...prev,
+        [name]: value,
+      }));
+
+      // Clear previous errors if the input is valid
+      setErrors((prevErrors) => {
+        const { [name]: removedError, ...rest } = prevErrors;
+        return rest; // Remove the specific error for this field
+      });
+    } else {
+      // Set an error for invalid input
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        [name]:
+          "Invalid input. Only numbers and one decimal point are allowed.",
+      }));
+      return; // Stop further processing if input is invalid
+    }
+
+    // Normalize the value only when it's a valid integer and greater than 9
+    if (/^\d+$/.test(value) && value.length > 1) {
+      const normalizedValue = (parseInt(value, 10) / 10).toFixed(1);
+      setValues((prev) => ({
+        ...prev,
+        [name]: normalizedValue,
+      }));
+    }
   };
 
   //.......................................................................................
@@ -388,7 +422,7 @@ const CompleteMilkColl = () => {
         </span>
         <div className="form-setting w100 h10 d-flex a-center sb">
           <div className="w45 d-flex a-center px10">
-            <label htmlFor="" className="info-text w30">
+            <label htmlFor="date" className="info-text w30">
               {t("common:c-date")}
               <span className="req">*</span>{" "}
             </label>
@@ -398,6 +432,7 @@ const CompleteMilkColl = () => {
               required
               placeholder="0000"
               name="date"
+              id="date"
               onChange={handleInputs}
               value={values.date || ""}
               max={values.date}
@@ -422,7 +457,7 @@ const CompleteMilkColl = () => {
         </div>
         <div className="user-details w100 h20 d-flex ">
           <div className="form-div w30 px10">
-            <label htmlFor="" className="info-text ">
+            <label htmlFor="sample" className="info-text ">
               {t("m-sample-no")} <span className="req">*</span>{" "}
             </label>
             <input
@@ -431,12 +466,13 @@ const CompleteMilkColl = () => {
               required
               placeholder="00"
               name="sample"
+              id="sample"
               value={values.sample}
               onChange={handleInputs}
             />
           </div>
           <div className="form-div w20 px10">
-            <label htmlFor="" className="info-text">
+            <label htmlFor="code" className="info-text">
               {t("m-cust-code")} <span className="req">*</span>{" "}
             </label>
             <input
@@ -444,13 +480,14 @@ const CompleteMilkColl = () => {
               type="number"
               placeholder="0000"
               name="code"
+              id="code"
               value={values.code}
               onChange={handleInputs}
               readOnly
             />
           </div>
           <div className="form-div w50 px10">
-            <label htmlFor="" className="info-text">
+            <label htmlFor="cname" className="info-text">
               {t("m-cust-name")} <span className="req">*</span>{" "}
             </label>
             <input
@@ -459,6 +496,7 @@ const CompleteMilkColl = () => {
               required
               placeholder="smartdairy user"
               name="cname"
+              id="cname"
               value={values.cname}
               readOnly
             />
@@ -469,7 +507,7 @@ const CompleteMilkColl = () => {
           <div className="milk-details w100 h90 d-flex">
             <div className="milk-info w50 h1 ">
               <div className="form-div px10">
-                <label htmlFor="" className="info-text">
+                <label htmlFor="liters" className="info-text">
                   {t("common:c-liters")} <span className="req">*</span>{" "}
                 </label>
                 <input
@@ -478,13 +516,14 @@ const CompleteMilkColl = () => {
                   required
                   placeholder="00.0"
                   name="liters"
+                  id="liters"
                   onChange={handleInputs}
                   value={values.liters}
                   readOnly
                 />
               </div>
               <div className="form-div  px10">
-                <label htmlFor="" className="info-text">
+                <label htmlFor="fat" className="info-text">
                   {t("common:c-fat")} <span className="req">*</span>{" "}
                 </label>
                 <input
@@ -493,12 +532,13 @@ const CompleteMilkColl = () => {
                   required
                   placeholder="0.0"
                   name="fat"
-                  onChange={handleInputs}
+                  id="fat"
+                  onChange={handleInputChange}
                   value={values.fat}
                 />
               </div>
               <div className="form-div px10">
-                <label htmlFor="" className="info-text">
+                <label htmlFor="snf" className="info-text">
                   {t("common:c-snf")} <span className="req">*</span>{" "}
                 </label>
                 <input
@@ -507,14 +547,15 @@ const CompleteMilkColl = () => {
                   required
                   placeholder="00.0"
                   name="snf"
+                  id="snf"
                   value={values.snf}
-                  onChange={handleInputs}
+                  onChange={handleInputChange}
                 />
               </div>
             </div>
             <div className="milk-info w50 h1 d-flex-col">
               <div className="form-div px10">
-                <label htmlFor="" className="info-text">
+                <label htmlFor="degree" className="info-text">
                   {t("common:c-deg")} <span className="req">*</span>{" "}
                 </label>
                 <input
@@ -524,12 +565,13 @@ const CompleteMilkColl = () => {
                   disabled
                   placeholder="00.0"
                   name="degree"
+                  id="degree"
                   value={values.degree}
                   onChange={handleInputs}
                 />
               </div>
               <div className="form-div px10">
-                <label htmlFor="" className="info-text">
+                <label htmlFor="rate" className="info-text">
                   {t("common:c-rate")} <span className="req">*</span>{" "}
                 </label>
                 <input
@@ -539,11 +581,12 @@ const CompleteMilkColl = () => {
                   readOnly
                   placeholder="00.0"
                   name="rate"
+                  id="rate"
                   value={values.rate}
                 />
               </div>
               <div className="form-div px10">
-                <label htmlFor="" className="info-text">
+                <label htmlFor="amt" className="info-text">
                   {t("common:c-amt")} <span className="req">*</span>{" "}
                 </label>
                 <input
@@ -553,6 +596,7 @@ const CompleteMilkColl = () => {
                   readOnly
                   placeholder="00.0"
                   name="amt"
+                  id="amt"
                   value={values.amt}
                 />
               </div>

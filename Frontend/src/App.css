@@ -273,6 +273,7 @@
 
 .data {
   padding: 10px;
+  font-size: 16px;
   border: 1px solid #cccccc;
   border-radius: 4px;
   background-color: #fcfbfb;
@@ -520,63 +521,24 @@ body {
 @media screen and (max-width: 769px) {
   .data {
     padding: 5px;
+    font-size: 16px;
   }
   .react-tosts {
     font-size: 12px;
   }
   .w-btn {
     width: 70px;
-    height: 30px;
+    height: 35px;
   }
   .btn {
-    height: 30px;
+    height: 40px;
   }
-
-  /* font sizes */
-
-  /* .title1 {
-    font-size: 28px;
-    font-weight: 800;
-  }
-  .title {
-    font-size: 16px;
-    font-weight: 600;
-  }
-  .subtitle {
-    font-size: 16px;
-    font-weight: 500;
-  }
-  .heading {
-    font-size: 14px;
-    font-weight: 500;
-  }
-  .f-heading {
-    font-size: 14px;
-    font-weight: 400;
-  }
-  .sub-heading {
-    font-size: 14px;
-    font-weight: 400;
-  }
-  .label-text {
-    font-size: 12px;
-    font-weight: 400;
-  }
-  .text {
-    font-size: 12px;
-    font-weight: 400;
-  }
-  .info-text {
-    font-size: 10px;
-    font-weight: 400;
-  }
-  .info-txt {
-    font-size: 12px;
-    font-weight: 400;
-  } */
 }
 @media screen and (max-width: 426px) {
   .info-text {
     margin: 5px 0;
+  }
+  .data {
+    font-size: 14px;
   }
 }

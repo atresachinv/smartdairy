@@ -16,9 +16,11 @@ const serviceAccount = {
   universe_domain: "googleapis.com",
 };
 
+
 // Example: Initialize Firebase Admin SDK
 const admin = require("firebase-admin");
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
 });
+
