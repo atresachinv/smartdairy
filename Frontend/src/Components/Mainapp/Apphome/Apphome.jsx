@@ -4,9 +4,7 @@ import "../../../Styles/Mainapp/Apphome/Apphome.css";
 import AppNavlinks from "./AppNavlinks";
 import { useDispatch, useSelector } from "react-redux";
 import { listCustomer } from "../../../App/Features/Customers/customerSlice";
-import {
-  getRateCharts,
-} from "../../../App/Features/Mainapp/Masters/rateChartSlice";
+import { getRateCharts } from "../../../App/Features/Mainapp/Masters/rateChartSlice";
 import { getMasterDates } from "../../../App/Features/Customers/Date/masterSlice";
 import { generateMaster } from "../../../App/Features/Customers/Date/masterdateSlice";
 
@@ -25,7 +23,6 @@ const Apphome = () => {
   useEffect(() => {
     localStorage.setItem("MilkCollTabIndex", isselected);
   }, [isselected]);
-
 
   //Store Milk Collection Ratechart to localstorage
   useEffect(() => {

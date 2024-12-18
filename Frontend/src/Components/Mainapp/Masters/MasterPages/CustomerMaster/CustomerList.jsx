@@ -4,8 +4,8 @@ import * as XLSX from "xlsx";
 import { FaDownload } from "react-icons/fa6";
 import { listCustomer } from "../../../../../App/Features/Customers/customerSlice";
 import Spinner from "../../../../Home/Spinner/Spinner";
-import "../../../../../Styles/Mainapp/Masters/CustomerMaster.css";
 import { useTranslation } from "react-i18next";
+import "../../../../../Styles/Mainapp/Masters/CustomerMaster.css";
 
 const CustomerList = () => {
   const dispatch = useDispatch();

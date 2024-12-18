@@ -221,6 +221,50 @@ exports.findEmpByCode = async (req, res) => {
   });
 };
 
+//v3
+// exports.findEmpByCode = async (req, res) => {
+//   const { code } = req.body;
+//
+//   const dairy_id = req.user.dairy_id;
+//   const center_id = req.user.center_id;
+//
+//   let connection;
+//
+//   try {
+//     // Get MySQL connection
+//     connection = await pool.getConnection();
+//
+//     const findEmpQuery = `
+//       SELECT * FROM EmployeeMaster
+//       WHERE dairy_id = ? AND center_id = ? AND emp_id = ?
+//     `;
+//
+//     // Execute the query
+//     connection.query(
+//       findEmpQuery,
+//       [dairy_id, center_id, code],
+//       (error, result) => {
+//         if (error) {
+//           console.error("Error executing query: ", error);
+//           return res
+//             .status(500)
+//             .json({ message: "Error retrieving employee data" });
+//         }
+//
+//         return res.status(200).json({ employee: result[0] });
+//       }
+//     );
+//   } catch (error) {
+//     console.error("Unexpected error: ", error);
+//     return res.status(500).json({ message: "Unexpected error occurred" });
+//   } finally {
+//     // Ensure the connection is released
+//     if (connection) {
+//       connection.release();
+//     }
+//   }
+// };
+
 //.................................................................
 // Update Emp Info (Admin Route) ..................................
 //.................................................................
@@ -314,52 +358,6 @@ exports.updateEmployee = async (req, res) => {
 // Delete Emp (Admin Route) .......................................
 //.................................................................
 
-// exports.deleteEmployee = async (req, res) => {
-//   const { emp_id } = req.body;
-//
-//   const dairy_id = req.user.dairy_id;
-//   const center_id = req.user.center_id;
-//
-//   pool.getConnection((err, connection) => {
-//     if (err) {
-//       console.error("Error getting MySQL connection: ", err);
-//       return res.status(500).json({ message: "Database connection error" });
-//     }
-//
-//     try {
-//       const deleteEmpQuery = `
-//         DELETE FROM  EmployeeMaster
-//         WHERE dairy_id = ? AND center_id = ? AND emp_id = ?
-//       `;
-//
-//       connection.query(
-//         deleteEmpQuery,
-//         [dairy_id, center_id, emp_id],
-//         (error, results) => {
-//           connection.release();
-//
-//           if (error) {
-//             console.error("Error executing query: ", error);
-//             return res.status(500).json({ message: "Error updating customer" });
-//           }
-//
-//           if (results.affectedRows === 0) {
-//             return res.status(404).json({ message: "Employee not found" });
-//           }
-//
-//           return res
-//             .status(200)
-//             .json({ message: "Employee Deleted successfully" });
-//         }
-//       );
-//     } catch (error) {
-//       connection.release();
-//       console.error("Error processing request: ", error);
-//       return res.status(500).json({ message: "Internal server error" });
-//     }
-//   });
-// };
-
 //v2
 exports.deleteEmployee = async (req, res) => {
   const { emp_id } = req.body;
@@ -407,45 +405,13 @@ exports.deleteEmployee = async (req, res) => {
       connection.release();
       console.error("Error processing request: ", error);
       return res.status(500).json({ message: "Internal server error" });
-    }
+    } 
   });
 };
 
 //.................................................................
 // Employee List (Admin Route) ....................................
 //.................................................................
-
-// exports.employeeList = async (req, res) => {
-//   const dairy_id = req.user.dairy_id;
-//   const center_id = req.user.center_id;
-//
-//   pool.getConnection((err, connection) => {
-//     if (err) {
-//       console.error("Error getting MySQL connection: ", err);
-//       return res.status(500).json({ message: "Database connection error" });
-//     }
-//
-//     const emplist = `
-//       SELECT emp_name, emp_mobile, designation, salary , emp_id
-//       FROM EmployeeMaster
-//       WHERE dairy_id = ? AND center_id = ?
-//     `;
-//
-//     connection.query(emplist, [dairy_id, center_id], (error, result) => {
-//       connection.release();
-//
-//       if (error) {
-//         console.error("Error executing query: ", error);
-//         return res
-//           .status(500)
-//           .json({ message: "Error retrieving employee data" });
-//       }
-//
-//       return res.status(200).json({ empList: result });
-//     });
-//   });
-// };
-
 //v2
 exports.employeeList = async (req, res) => {
   const dairy_id = req.user.dairy_id;
@@ -470,28 +436,91 @@ exports.employeeList = async (req, res) => {
       console.error("Error getting MySQL connection: ", err);
       return res.status(500).json({ message: "Database connection error" });
     }
-
-    const emplist = `
+    try {
+      const emplist = `
       SELECT emp_name, emp_mobile, designation, salary, emp_id
       FROM EmployeeMaster
       WHERE dairy_id = ? AND center_id = ?
     `;
 
-    connection.query(emplist, [dairy_id, center_id], (error, result) => {
-      connection.release(); // Release connection back to the pool
+      connection.query(emplist, [dairy_id, center_id], (error, result) => {
+        connection.release(); // Release connection back to the pool
 
-      if (error) {
-        console.error("Error executing query: ", error);
-        return res
-          .status(500)
-          .json({ message: "Error retrieving employee data" });
-      }
+        if (error) {
+          console.error("Error executing query: ", error);
+          return res
+            .status(500)
+            .json({ message: "Error retrieving employee data" });
+        }
 
-      // Cache the result for future requests
-      cache.set(cacheKey, result);
+        // Cache the result for future requests
+        cache.set(cacheKey, result);
 
-      // Return the result
-      return res.status(200).json({ empList: result });
-    });
+        // Return the result
+        return res.status(200).json({ empList: result });
+      });
+    } catch (error) {
+      connection.release();
+      console.error("Error processing request: ", error);
+      return res.status(500).json({ message: "Internal server error" });
+    }
   });
 };
+
+//v3
+// exports.employeeList = async (req, res) => {
+//   const dairy_id = req.user.dairy_id;
+//   const center_id = req.user.center_id;
+//
+//   if (!dairy_id) {
+//     return res.status(400).json({ message: "Dairy ID not found!" });
+//   }
+//
+//   // Construct the cache key
+//   const cacheKey = `employeeList_${dairy_id}_${center_id}`;
+//
+//   try {
+//     // Check if data is already cached
+//     const cachedData = cache.get(cacheKey);
+//     if (cachedData) {
+//       return res.status(200).json({ empList: cachedData });
+//     }
+//
+//     // If cache miss, query the database
+//     pool.getConnection((err, connection) => {
+//       if (err) {
+//         console.error("Error getting MySQL connection: ", err);
+//         return res.status(500).json({ message: "Database connection error" });
+//       }
+//
+//       const emplist = `
+//         SELECT emp_name, emp_mobile, designation, salary, emp_id
+//         FROM EmployeeMaster
+//         WHERE dairy_id = ? AND center_id = ?
+//       `;
+//
+//       connection.query(emplist, [dairy_id, center_id], (error, result) => {
+//         // Release connection back to the pool
+//         connection.release();
+//
+//         if (error) {
+//           console.error("Error executing query: ", error);
+//           return res
+//             .status(500)
+//             .json({ message: "Error retrieving employee data" });
+//         }
+//
+//         // Cache the result for future requests
+//         cache.set(cacheKey, result);
+//
+//         // Return the result
+//         return res.status(200).json({ empList: result });
+//       });
+//     });
+//   } catch (error) {
+//     console.error("Unexpected error: ", error);
+//     return res.status(500).json({ message: "Unexpected error occurred" });
+//   } finally {
+//     connection.release();
+//   }
+// };

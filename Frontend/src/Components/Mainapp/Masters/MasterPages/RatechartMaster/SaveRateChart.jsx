@@ -153,7 +153,7 @@ const SaveRateChart = ({ rate }) => {
         rcdate: "",
       });
       setRate([]);
-    } else {
+    } else if (status === "failed") {
       toast.error("Failed to save ratechart, Please try again!");
     }
   };

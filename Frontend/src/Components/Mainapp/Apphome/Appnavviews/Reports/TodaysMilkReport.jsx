@@ -9,10 +9,6 @@ const TodaysMilkReport = () => {
   const todaysMilk = useSelector((state) => state.milkCollection.todaysMilk);
   const tmstatus = useSelector((state) => state.milkCollection.todaysMilk);
 
-  console.log("Data", todaysMilk);
-
-  // const tDate = "2024-11-19";
-
   useEffect(() => {
     dispatch(fetchTodaysMilk({ date: tDate }));
   }, [tDate]);
@@ -20,9 +16,6 @@ const TodaysMilkReport = () => {
   // Filter and calculate data
   const morningData = todaysMilk?.filter((item) => item.ME === 0) || [];
   const eveningData = todaysMilk?.filter((item) => item.ME === 1) || [];
-
-  console.log(morningData);
-  
 
   const totalMorningLitres = morningData.reduce(
     (acc, item) => acc + item.Litres,

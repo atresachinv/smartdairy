@@ -1,65 +1,82 @@
-import React, { PureComponent, useEffect } from "react";
-import { BarChart, Bar, ResponsiveContainer } from "recharts";
+import React, { PureComponent, useEffect, Suspense, useState } from "react";
+import {
+  BarChart,
+  Bar,
+  ResponsiveContainer,
+  CartesianGrid,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
 import { BsDatabaseAdd, BsPersonFill, BsCurrencyRupee } from "react-icons/bs";
 import { TfiStatsUp } from "react-icons/tfi";
+import { BsCalendar3 } from "react-icons/bs";
+import { useDispatch, useSelector } from "react-redux";
+import { useTranslation } from "react-i18next";
+import { getAllMilkCollReport } from "../../../App/Features/Mainapp/Milk/MilkCollectionSlice";
 import "../../../Styles/Mainapp/Dashbaord/Dashboard.css";
-import { useSelector } from "react-redux";
+import { generateMaster } from "../../../App/Features/Customers/Date/masterdateSlice";
+import { listCustomer } from "../../../App/Features/Customers/customerSlice";
+import Spinner from "../../Home/Spinner/Spinner";
 
 const Dashboard = () => {
-  const data = [
-    {
-      name: "Page A",
-      uv: 4000,
-      pv: 2400,
-      amt: 2400,
-    },
-    {
-      name: "Page B",
-      uv: 3000,
-      pv: 1398,
-      amt: 2210,
-    },
-    {
-      name: "Page C",
-      uv: 2000,
-      pv: 9800,
-      amt: 2290,
-    },
-    {
-      name: "Page D",
-      uv: 2780,
-      pv: 3908,
-      amt: 2000,
-    },
-    {
-      name: "Page E",
-      uv: 1890,
-      pv: 4800,
-      amt: 2181,
-    },
-    {
-      name: "Page F",
-      uv: 2390,
-      pv: 3800,
-      amt: 2500,
-    },
-    {
-      name: "Page G",
-      uv: 3490,
-      pv: 4300,
-      amt: 2100,
-    },
-  ];
-  const customerlist = useSelector((state) => state.customer); //save customer list
+  const { t } = useTranslation("common");
+  const dispatch = useDispatch();
+  const date = useSelector((state) => state.date.toDate);
+  const manualMaster = useSelector((state) => state.manualMasters.masterlist);
+  const mastermilk = useSelector((state) => state.milkCollection.allMilkColl);
+  const status = useSelector((state) => state.milkCollection.allmilkstatus);
+  const customerslist = useSelector((state) => state.customer.customerlist); //save customer list
+
+  // Generate master dates based on the initial date
+  useEffect(() => {
+    dispatch(generateMaster(date));
+    dispatch(listCustomer());
+  }, []);
+
+  const customerCount = customerslist.length;
+
+  const totalLitres = mastermilk.reduce((acc, item) => acc + item.Litres, 0);
+  const totalAmt = mastermilk.reduce((acc, item) => acc + item.Amt, 0);
+
+  const aggregatedData = mastermilk.reduce((acc, curr) => {
+    const date = new Date(curr.ReceiptDate).toISOString().split("T")[0];
+    if (!acc[date]) {
+      acc[date] = { totalLitres: 0, totalAmt: 0 };
+    }
+    acc[date].totalLitres += curr.Litres;
+    acc[date].totalAmt += curr.Amt;
+    return acc;
+  }, {});
+
+  const chartData = Object.keys(aggregatedData).map((date) => ({
+    date,
+    totalLitres: aggregatedData[date].totalLitres.toFixed(1),
+    totalAmt: aggregatedData[date].totalAmt.toFixed(1),
+  }));
 
   const saveCustomerList = () => {
-    localStorage.setItem("customerlist", JSON.stringify(customerlist));
+    localStorage.setItem("customerlist", JSON.stringify(customerslist));
   };
 
   // Store customerlist in localStorage whenever it updates
   useEffect(() => {
     saveCustomerList();
-  }, [customerlist]);
+  }, [customerslist]);
+
+  // Handle the date selection
+  const handleSelectChange = async (e) => {
+    const selectedIndex = e.target.value;
+    if (selectedIndex !== "") {
+      const selectedDates = manualMaster[selectedIndex];
+      dispatch(
+        getAllMilkCollReport({
+          fromDate: selectedDates.start,
+          toDate: selectedDates.end,
+        })
+      );
+    }
+  };
 
   return (
     <div className="main-dashboard-container w100 h1 d-flex-col">
@@ -71,52 +88,65 @@ const Dashboard = () => {
           <div className="select-data-text w20 h50 d-flex-col p10">
             <span className="text">Select Data Period</span>
           </div>
-          <form className="priod-container w40 h50 d-flex a-center sb p10">
-            <select className="months-selector w50" name="" id="">
-              <option>-- Select Month --</option>
-              <option value="1">January</option>
-              <option value="2">Feburary</option>
-              <option value="3">March</option>
-              <option value="4">April</option>
-              <option value="5">May</option>
-              <option value="6">June</option>
-              <option value="7">July</option>
-              <option value="8">Augast</option>
-              <option value="9">Sepetaber</option>
-              <option value="10">October</option>
-              <option value="11">November</option>
-              <option value="12">December</option>
+          <div className="custmize-report-div w30 h50 px10 d-flex a-center sb">
+            <span className="cl-icon w10 h1 d-flex center">
+              <BsCalendar3 />
+            </span>
+            <select
+              className="custom-select label-text w90 h1 p10"
+              onChange={handleSelectChange}>
+              <option className="label-text w100 d-flex">
+                --Select Master--
+              </option>
+              {manualMaster.map((dates, index) => (
+                <option
+                  className="label-text w100 d-flex sa"
+                  key={index}
+                  value={index}>
+                  {new Date(dates.start).toLocaleDateString("en-GB", {
+                    day: "2-digit",
+                    month: "short", // Abbreviated month format
+                    year: "numeric",
+                  })}
+                  To :
+                  {new Date(dates.end).toLocaleDateString("en-GB", {
+                    day: "2-digit",
+                    month: "short", // Abbreviated month format
+                    year: "numeric",
+                  })}
+                </option>
+              ))}
             </select>
-            <button className="show-btn w20">SHOW</button>
-          </form>
+          </div>
         </form>
-        <div className="dashboard-cards w100 h20 d-flex sa">
-          <div className="card">
+        <div className="dashboard-cards w100 h20 d-flex j-start">
+          <div className="card mx10">
             <BsDatabaseAdd className="card-icon" />
             <div className="card-inner">
               <h3 className="text">Milk Collection</h3>
               <h3 className="heading">
-                1000 <span>ltr</span>
+                {totalLitres.toFixed(1)}
+                <span>ltr</span>
               </h3>
             </div>
           </div>
-          <div className="card">
+          <div className="card mx10">
             <BsPersonFill className="card-icon" />
             <div className="card-inner">
               <h3 className="text">Customers</h3>
-              <h3 className="heading">100</h3>
+              <h3 className="heading">{customerCount}</h3>
             </div>
           </div>
-          <div className="card">
+          <div className="card mx10">
             <TfiStatsUp className="card-icon" />
             <div className="card-inner">
               <h3 className="text">Sales</h3>
               <h3 className="heading">
-                100 <span>Rs</span>
+                {totalAmt.toFixed(1) || 0} <span>Rs</span>
               </h3>
             </div>
           </div>
-          <div className="card">
+          {/* <div className="card">
             <BsCurrencyRupee className="card-icon" />
             <div className="card-inner">
               <h3 className="text">Revenue</h3>
@@ -124,28 +154,92 @@ const Dashboard = () => {
                 100 <span>Rs</span>
               </h3>
             </div>
-          </div>
+          </div> */}
         </div>
         <div className="dashboard-data-charts w100 h50 d-flex a-center sa">
           <div className="milk-collection-chart w40 h1 d-flex-col p10 bg">
             <div className="chart-title w100">
-              <span className="text">Milk Collection</span>
+              <span className="label-text">Liters</span>
             </div>
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart width={150} height={40} data={data}>
-                <Bar dataKey="uv" fill="#8884d8" />
-              </BarChart>
-            </ResponsiveContainer>
+            {/* {status === "loading" ? (
+              <div className="w100 h80 d-flex center">
+                <Spinner />
+              </div>
+            ) : (
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart width={100} height={40} data={chartData} barSize={20}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis
+                    dataKey="name"
+                    tick={{ fontSize: 8 }} // Set font size for X-axis
+                  />
+                  <YAxis
+                    tick={{ fontSize: 8 }} // Set font size for Y-axis
+                    domain={[0, "dataMax + 10"]} // Adjust the Y-axis domain as needed
+                  />
+                  <Tooltip />
+                  <Bar dataKey="totalLitres" fill="#8884d8" />
+                </BarChart>
+              </ResponsiveContainer>
+            )} */}
+            <Suspense
+              fallback={
+                <div className="w100 h80 d-flex center">
+                  <Spinner />
+                </div>
+              }>
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart width={100} height={40} data={chartData} barSize={20}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="date" tick={{ fontSize: 8 }} />
+                  <YAxis tick={{ fontSize: 8 }} domain={[0, "dataMax + 10"]} />
+                  <Tooltip />
+                  <Bar dataKey="totalLitres" fill="#8884d8" />
+                </BarChart>
+              </ResponsiveContainer>
+            </Suspense>
           </div>
           <div className="milk-collection-chart w40 h1 d-flex-col p10 bg">
             <div className="chart-title w100">
-              <span className="text">Milk Collection</span>
+              <span className="label-text">Amount</span>
             </div>
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart width={150} height={40} data={data}>
-                <Bar dataKey="uv" fill="#8884d8" />
-              </BarChart>
-            </ResponsiveContainer>
+            {/* {status === "loading" ? (
+              <div className="w100 h80 d-flex center">
+                <Spinner />
+              </div>
+            ) : (
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart width={100} height={40} data={chartData} barSize={20}>
+                  <CartesianGrid strokeDasharray="3 5" />
+                  <XAxis
+                    dataKey="name"
+                    tick={{ fontSize: 8 }} // Set font size for X-axis
+                  />
+                  <YAxis
+                    tick={{ fontSize: 8 }} // Set font size for Y-axis
+                    domain={[0, "dataMax + 10"]} // Adjust the Y-axis domain as needed
+                  />
+                  <Tooltip />
+                  <Bar dataKey="totalAmt" fill="#ffcc99" />
+                </BarChart>
+              </ResponsiveContainer>
+            )} */}
+            <Suspense
+              fallback={
+                <div className="w100 h80 d-flex center">
+                  <Spinner />
+                </div>
+              }>
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart width={100} height={40} data={chartData} barSize={20}>
+                  <CartesianGrid strokeDasharray="3 5" />
+                  <XAxis dataKey="date" tick={{ fontSize: 8 }} />
+                  <YAxis tick={{ fontSize: 8 }} domain={[0, "dataMax + 10"]} />
+                  <Tooltip />
+                  <Bar dataKey="totalAmt" fill="#ffcc99" />
+                </BarChart>
+              </ResponsiveContainer>
+            </Suspense>
           </div>
         </div>
       </div>

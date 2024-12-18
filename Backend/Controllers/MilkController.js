@@ -342,11 +342,10 @@ exports.updateMilkCollSetting = async (req, res) => {
 
 exports.milkCollection = async (req, res) => {
   const { milkColl } = req.body;
+  
   const dairy_id = req.user.dairy_id;
   const user_role = req.user.user_role;
   const center_id = req.user.center_id;
-
-  console.log(milkColl);
 
   if (!dairy_id) {
     return res.status(400).json({ message: "Dairy ID not found!" });
@@ -1142,8 +1141,7 @@ exports.updateMobileCollection = async (req, res) => {
 //...............................................................
 
 exports.allMilkCollReport = async (req, res) => {
-  const { fromDate, toDate } = req.query; // Read from `req.query`
-  console.log(fromDate, toDate);
+  const { fromDate, toDate } = req.query;
 
   pool.getConnection((err, connection) => {
     if (err) {

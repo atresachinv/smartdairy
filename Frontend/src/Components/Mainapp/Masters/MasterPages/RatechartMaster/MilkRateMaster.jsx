@@ -10,6 +10,7 @@ import {
   fetchselectedRateChart,
   fetchRateChart,
   setData,
+  deleteRatechart,
 } from "../../../../../App/Features/Mainapp/Masters/rateChartSlice";
 import { toast } from "react-toastify";
 import "../../../../../Styles/Mainapp/Masters/MilkRateMaster.css";
@@ -320,6 +321,7 @@ const MilkRateMaster = () => {
           time: ratechart.time,
         })
       );
+      toast.success("Ratechart Deleted Successfully!")
     }
   };
 

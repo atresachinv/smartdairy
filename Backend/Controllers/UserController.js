@@ -98,25 +98,86 @@ exports.userRegister = async (req, res) => {
 // .........................................
 
 //v2
+// exports.userLogin = async (req, res) => {
+//   const { user_id, user_password } = req.body;
+// 
+//   // Get a connection from the pool
+//   pool.getConnection((err, connection) => {
+//     if (err) {
+//       console.error("Error getting MySQL connection: ", err);
+//       return res.status(500).json({ message: "Database connection error" });
+//     }
+// 
+//     const checkUser =
+//       "SELECT username, password, isActive, designation, SocietyCode, pcode, center_id FROM users WHERE username = ?";
+// 
+//     connection.query(checkUser, [user_id], (err, result) => {
+//       connection.release();
+// 
+//       if (err) {
+//         return res.status(500).json({ message: "Database query error" });
+//       }
+// 
+//       if (result.length === 0) {
+//         return res
+//           .status(401)
+//           .json({ message: "Invalid User ID or password, try again!" });
+//       }
+// 
+//       const user = result[0];
+// 
+//       // Verify user password
+//       if (user_password !== user.password) {
+//         return res
+//           .status(401)
+//           .json({ message: "Invalid User ID and password, try again!" });
+//       }
+// 
+//       // Generate JWT token for authentication
+//       const token = jwt.sign(
+//         {
+//           user_id: user.username,
+//           user_code: user.pcode,
+//           is_active: user.isActive,
+//           user_role: user.designation,
+//           dairy_id: user.SocietyCode,
+//           center_id: user.center_id,
+//         },
+//         process.env.SECRET_KEY,
+//         { expiresIn: "4hr" }
+//       );
+// 
+//       // Set token in cookie
+//       res.cookie("token", token, {
+//         httpOnly: true,
+//         // secure: true,
+//         sameSite: "strict",
+//         maxAge: 4 * 60 * 60 * 1000, // 4 hours
+//       });
+// 
+//       // Send success response
+//       res.status(200).json({
+//         message: "Login successful",
+//         token,
+//         user_role: user.designation,
+//       });
+//     });
+//   });
+// };
+
+// v3
 exports.userLogin = async (req, res) => {
   const { user_id, user_password } = req.body;
 
-  // Get a connection from the pool
-  pool.getConnection((err, connection) => {
-    if (err) {
-      console.error("Error getting MySQL connection: ", err);
-      return res.status(500).json({ message: "Database connection error" });
-    }
+  try {
+    // Get a connection from the pool
+    const connection = await pool.promise().getConnection();
 
-    const checkUser =
-      "SELECT username, password, isActive, designation, SocietyCode, pcode, center_id FROM users WHERE username = ?";
+    try {
+      const checkUser =
+        "SELECT username, password, isActive, designation, SocietyCode, pcode, center_id FROM users WHERE username = ?";
 
-    connection.query(checkUser, [user_id], (err, result) => {
-      connection.release();
-
-      if (err) {
-        return res.status(500).json({ message: "Database query error" });
-      }
+      const [result] = await connection.query(checkUser, [user_id]);
 
       if (result.length === 0) {
         return res
@@ -156,14 +217,22 @@ exports.userLogin = async (req, res) => {
       });
 
       // Send success response
-      res.status(200).json({
+      return res.status(200).json({
         message: "Login successful",
         token,
         user_role: user.designation,
       });
-    });
-  });
+    } finally {
+      // Always release the connection
+      connection.release();
+    }
+  } catch (err) {
+    console.error("Database connection error: ", err);
+    return res.status(500).json({ message: "Database connection error" });
+  }
 };
+
+
 
 //.................................................
 //Logout user......................................

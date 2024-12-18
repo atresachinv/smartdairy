@@ -23,6 +23,7 @@ import DairyInitialInfo from "./DairyInfo/DairyInitialInfo";
 import CustomersMaster from "./Masters/MasterPages/CustomerMaster/CustomersMaster";
 import Centers from "./DairyInfo/Centers/Centers";
 import MilkReports from "./Reports/MilkReports/MilkReports";
+import MilkcollectionReports from "./Reports/MilkReports/MilkcollectionReports";
 
 const Mainappviews = ({ index }) => {
   switch (index) {
@@ -69,7 +70,7 @@ const Mainappviews = ({ index }) => {
     case 6.1:
       return <MainLedger />;
     case 6.2:
-      return <MilkReports/>;
+      return <MilkcollectionReports/>;
     case 6.3:
       return <CustomersMaster />;
     case 6.4:

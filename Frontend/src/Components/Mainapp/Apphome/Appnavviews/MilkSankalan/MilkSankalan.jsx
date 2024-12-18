@@ -354,7 +354,7 @@ const MilkSankalan = () => {
           </div>
         </div>
         <div className="mobile-milkcoll-form-btns w100 my10 d-flex a-center j-end">
-          <button className="w-btn heading" type="submit" disabled={isSaving}>
+          <button className="btn heading" type="submit" disabled={isSaving}>
             {isSaving
               ? `${t("milkcollection:m-btn-saving")}`
               : `${t("milkcollection:m-btn-save")}`}

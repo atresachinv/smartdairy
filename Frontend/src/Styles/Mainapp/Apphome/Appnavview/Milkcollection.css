@@ -4,8 +4,9 @@
   flex-direction: column;
 }
 .form-div label {
-  margin: 5px 0 5px 15px;
+  margin: 5px 0;
 }
+
 .form-div .form-inputs {
   width: 90%;
   margin: 0 5% 10px 5%;
@@ -118,16 +119,33 @@
 
   .apphome-nav-views .mobile-milk-coll-form {
     width: 100%;
-    height: 65%;
+    height: 55%;
   }
-  
+  .form-setting {
+    padding: 0 10px;
+  }
+
   .form-setting .setting-btn-switch,
-  .form-setting .form-date {
+  .form-setting .form-date,
+  .form-setting .milk-details {
     width: 50%;
+    align-items: flex-start;
+    justify-content: flex-start;
+    flex-direction: column;
+  }
+  .form-setting .form-date,
+  .form-setting .milk-details {
+    width: 50%;
+    align-items: flex-start;
+    justify-content: flex-start;
+    flex-direction: column;
   }
 
   .form-setting .form-date .data {
     width: 70%;
+  }
+  .form-setting .milk-details .data {
+    width: 100%;
   }
 
   .milk-details .user-code {

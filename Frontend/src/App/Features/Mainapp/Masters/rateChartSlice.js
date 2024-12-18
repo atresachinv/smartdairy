@@ -77,7 +77,7 @@ export const getRateCharts = createAsyncThunk(
   "ratechart/getRateCharts",
   async (_, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.post("/milkcollection/ratechart");
+      const response = await axiosInstance.post("/sankalan/ratechart");
       return response.data.usedRateChart;
     } catch (error) {
       const errorMessage =
@@ -180,20 +180,20 @@ export const applyRateChart = createAsyncThunk(
 );
 
 //
-export const fetchMilkCollRatechart = createAsyncThunk(
-  "ratechart/fetchMilkCollRatechart",
-  async (_, { rejectWithValue }) => {
-    try {
-      const response = await axiosInstance.post("/milkcollection/ratechart");
-      return response.data.usedRateChart;
-    } catch (error) {
-      const errorMessage =
-        error.response?.data?.message ||
-        "Failed to fetch milk collection ratechart!.";
-      return rejectWithValue(errorMessage);
-    }
-  }
-);
+// export const fetchMilkCollRatechart = createAsyncThunk(
+//   "ratechart/fetchMilkCollRatechart",
+//   async (_, { rejectWithValue }) => {
+//     try {
+//       const response = await axiosInstance.post("/milkcollection/ratechart");
+//       return response.data.usedRateChart;
+//     } catch (error) {
+//       const errorMessage =
+//         error.response?.data?.message ||
+//         "Failed to fetch milk collection ratechart!.";
+//       return rejectWithValue(errorMessage);
+//     }
+//   }
+// );
 
 // Update rate chart
 export const updateRatechart = createAsyncThunk(
@@ -302,17 +302,17 @@ const rateChartSlice = createSlice({
         state.error = action.payload;
         state.applyrcstatus = "failed";
       })
-      .addCase(fetchMilkCollRatechart.pending, (state) => {
-        state.status = "loading";
-      })
-      .addCase(fetchMilkCollRatechart.fulfilled, (state, action) => {
-        state.rateChart = action.payload;
-        state.status = "succeeded";
-      })
-      .addCase(fetchMilkCollRatechart.rejected, (state, action) => {
-        state.error = action.payload;
-        state.status = "failed";
-      })
+      // .addCase(fetchMilkCollRatechart.pending, (state) => {
+      //   state.status = "loading";
+      // })
+      // .addCase(fetchMilkCollRatechart.fulfilled, (state, action) => {
+      //   state.rateChart = action.payload;
+      //   state.status = "succeeded";
+      // })
+      // .addCase(fetchMilkCollRatechart.rejected, (state, action) => {
+      //   state.error = action.payload;
+      //   state.status = "failed";
+      // })
       .addCase(fetchselectedRateChart.pending, (state) => {
         state.status = "loading";
       })
