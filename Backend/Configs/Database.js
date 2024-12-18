@@ -10,9 +10,18 @@ const pool = mysql.createPool({
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
   connectTimeout: 10000, // 10 seconds
-  // acquireTimeout: 10000,
+  acquireTimeout: 10000,
   charset: "utf8mb4",
   timezone: "Z",
+});
+
+pool.getConnection((err, connection) => {
+  if (err) {
+    console.error("Error connecting to MySQL:", err);
+    return;
+  }
+  console.log("Successfully connected to MySQL");
+  connection.release();
 });
 
 module.exports = pool;

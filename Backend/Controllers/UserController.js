@@ -163,7 +163,7 @@ exports.userLogin = async (req, res) => {
         });
       });
     } catch (error) {
-      connection.release();
+      connection.release(); // Ensure the connection is released in case of an error
       console.error("Error processing request: ", error);
       return res.status(500).json({ message: "Internal server error" });
     }
