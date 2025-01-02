@@ -8,14 +8,21 @@ import {
   applyRateChart,
   listRateCharts,
   fetchselectedRateChart,
-} from "../../../../App/Features/Mainapp/Masters/rateChartSlice";
+  fetchRateChart,
+  setData,
+  deleteRatechart,
+} from "../../../../../App/Features/Mainapp/Masters/rateChartSlice";
 import { toast } from "react-toastify";
+import "../../../../../Styles/Mainapp/Masters/MilkRateMaster.css";
+import RateChartOptions from "./RateChartOptions";
 
 const MilkRateMaster = () => {
   const dispatch = useDispatch();
+  const tDate = useSelector((state) => state.date.toDate);
   const { status, error, progress } = useSelector((state) => state.ratechart);
   const maxRcCode = useSelector((state) => state.ratechart.maxRcCode);
   const ratechartlist = useSelector((state) => state.ratechart.ratechartList);
+  const Selectedrc = useSelector((state) => state.ratechart.selectedRateChart);
 
   useEffect(() => {
     dispatch(fetchMaxRcCode());
@@ -25,18 +32,19 @@ const MilkRateMaster = () => {
   const fileInputRef = React.useRef(null);
   const [selectedRateChart, setSelectedRateChart] = useState(null);
   const [rate, setRate] = useState([]);
+  const [localError, setLocalError] = useState("");
+  const [errors, setErrors] = useState({});
+  const [loading, setLoading] = useState(false);
 
   const [formData, setFormData] = useState({
     rccode: maxRcCode,
     rctype: "",
     time: "",
-    animalType: "",
+    animalType: 0,
     rcdate: "",
   });
 
-  const [localError, setLocalError] = useState("");
-  const [errors, setErrors] = useState({});
-  const [loading, setLoading] = useState(false);
+  // console.log(rate);
 
   // useEffect(() => {
   //   if (status === "succeeded") {
@@ -60,6 +68,11 @@ const MilkRateMaster = () => {
   // }, [status, error, dispatch]);
 
   // handling choose file button
+
+  useEffect(() => {
+    dispatch(fetchMaxRcCode());
+  }, []);
+
   const handleButtonClick = () => {
     fileInputRef.current.click();
   };
@@ -85,6 +98,7 @@ const MilkRateMaster = () => {
       // Transform the data
       const transformedData = transformExcelData(excelJson);
       setRate(transformedData);
+      dispatch(setData(transformedData));
       setLocalError("");
     } catch (err) {
       console.error("Error reading Excel file:", err);
@@ -130,9 +144,9 @@ const MilkRateMaster = () => {
         }
 
         transformed.push({
-          FAT: commonFAT,
-          SNF: snf,
-          Rate: Math.round(rate * 100) / 100, // Round to two decimal places
+          fat: commonFAT,
+          snf: snf,
+          rate: Math.round(rate * 100) / 100, // Round to two decimal places
         });
       });
     });
@@ -267,35 +281,79 @@ const MilkRateMaster = () => {
   };
 
   // Function to handle row click
-  const handleRowClick = (ratechart) => {
+  const handleRowClick = async (ratechart) => {
     // If the clicked rate chart is already selected, deselect it
     if (selectedRateChart === ratechart) {
       setSelectedRateChart(null);
     } else {
       setSelectedRateChart(ratechart);
+      await dispatch(
+        fetchRateChart({
+          cb: ratechart.cb,
+          rccode: ratechart.rccode,
+          rcdate: ratechart.rcdate,
+          time: ratechart.time,
+        })
+      );
     }
   };
 
-  console.log(selectedRateChart);
+  // Handle show Ratechart button
+  const ShowRatechart = async () => {
+    if (!selectedRateChart) {
+      toast.error("Please select a rate chart to Show.");
+      return;
+    } else {
+      await setRate(Selectedrc);
+    }
+  };
 
-  //download Ratechart
+  const deleteRateChart = async () => {
+    if (!selectedRateChart) {
+      toast.error("Please select a rate chart to download.");
+      return;
+    } else {
+      dispatch(
+        deleteRatechart({
+          cb: ratechart.cb,
+          rccode: ratechart.rccode,
+          rcdate: ratechart.rcdate,
+          time: ratechart.time,
+        })
+      );
+      toast.success("Ratechart Deleted Successfully!")
+    }
+  };
+
   const downloadRateChart = async () => {
     if (!selectedRateChart) {
       toast.error("Please select a rate chart to download.");
       return;
+    } else {
+      // Convert data to worksheet
+      const worksheet = xlsx.utils.json_to_sheet(Selectedrc);
+
+      // Create a new workbook and append the worksheet
+      const workbook = xlsx.utils.book_new();
+      xlsx.utils.book_append_sheet(workbook, worksheet, "Rate Chart");
+
+      // Generate a Blob for the Excel file
+      const excelBuffer = xlsx.write(workbook, {
+        bookType: "xlsx",
+        type: "array",
+      });
+      const blob = new Blob([excelBuffer], {
+        type: "application/octet-stream",
+      });
+
+      // Trigger the download
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = "rate_chart.xlsx"; // Specify the file name
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
     }
-
-    await dispatch(fetchselectedRateChart(selectedRateChart));
-    
-    // Create a new workbook and add a worksheet
-    const wb = xlsx.utils.book_new();
-    const ws = xlsx.utils.json_to_sheet([selectedRateChart]);
-
-    // Append the worksheet to the workbook
-    xlsx.utils.book_append_sheet(wb, ws, "RateChart");
-
-    // Generate and download the Excel file
-    xlsx.writeFile(wb, `${selectedRateChart.rccode}_rate_chart.xlsx`);
   };
 
   const handleApplyRatechart = async (e) => {
@@ -305,12 +363,21 @@ const MilkRateMaster = () => {
     toast.success("Rate chart Applied successfully!");
   };
 
+  const handleRatechartUpdate = async () => {
+    e.preventDefault();
+    if (!selectedRateChart) {
+      toast.error("Please select a ratechart to Update!.");
+      return;
+    } else {
+    }
+  };
+
   return (
     <>
       <div className="rate-chart-master-container w100 h1 d-flex sb">
         <div className="select-ratechart-container w40 h1 d-flex-col sa p10">
           <div className="select-excel-container w100 h10 d-flex a-center my10 sb">
-            <span className="label-text w40">Select Excel File</span>
+            <span className="info-text w40">Select Excel File</span>
             <input
               ref={fileInputRef}
               type="file"
@@ -351,16 +418,16 @@ const MilkRateMaster = () => {
               Selected Rate Chart from Excel :{" "}
             </span>
             <div className="rate-chart-col-title w100 d-flex a-center t-center sa py10 bg1">
-              <span className="info-text w5">No.</span>
-              <span className="info-text w15">FAT</span>
-              <span className="info-text w10">SNF</span>
-              <span className="info-text w15">Rate</span>
+              <span className="f-info-text w5">No.</span>
+              <span className="f-info-text w15">FAT</span>
+              <span className="f-info-text w10">SNF</span>
+              <span className="f-info-text w15">Rate</span>
             </div>
             <div className="rate-chart-div w100 h90 mh90 d-flex-col hidescrollbar">
               {rate.length > 0 ? (
                 rate.map((item, index) => (
                   <div
-                    key={`${item.FAT}-${item.SNF}-${index}`}
+                    key={`${item.fat}-${item.snf}-${index}`}
                     className={`rate-chart-row-value w100 h10 d-flex a-center t-center sa ${
                       index % 2 === 0 ? "bg-light" : "bg-dark"
                     }`}
@@ -369,13 +436,13 @@ const MilkRateMaster = () => {
                     }}>
                     <span className="info-text w5">{index + 1}</span>
                     <span className="info-text w15">
-                      {item.FAT !== undefined ? item.FAT.toFixed(1) : "N/A"}
+                      {item.fat !== undefined ? item.fat.toFixed(1) : "N/A"}
                     </span>
                     <span className="info-text w10">
-                      {item.SNF !== undefined ? item.SNF.toFixed(1) : "N/A"}
+                      {item.snf !== undefined ? item.snf.toFixed(1) : "N/A"}
                     </span>
                     <span className="info-text w15">
-                      {item.Rate !== undefined ? item.Rate.toFixed(2) : "N/A"}
+                      {item.rate !== undefined ? item.rate.toFixed(2) : "N/A"}
                     </span>
                   </div>
                 ))
@@ -389,18 +456,18 @@ const MilkRateMaster = () => {
           <div className="previous-rate-chart-container w100 h40 d-flex-col bg my10">
             <span className="heading p10">Previous Rate Charts : </span>
             <div className="rate-chart-col-title w100 d-flex a-center t-center sa py10 bg1">
-              <span className="info-text w10">No.</span>
-              <span className="info-text w20">Date</span>
-              <span className="info-text w15">Time</span>
-              <span className="info-text w15">Animal</span>
-              <span className="info-text w15">Option</span>
+              <span className="f-info-text w10">No.</span>
+              <span className="f-info-text w20">Date</span>
+              <span className="f-info-text w15">Time</span>
+              <span className="f-info-text w15">Animal</span>
+              <span className="f-info-text w25">Type</span>
             </div>
             <div className="rate-chart-div w100 h90 mh90 d-flex-col hidescrollbar">
               {ratechartlist.map((ratechart, index) => (
                 <div
                   onClick={() => handleRowClick(ratechart)}
                   key={index}
-                  className="rate-chart-row-value w100  d-flex a-center t-center sa"
+                  className="rate-chart-row-value w100  d-flex a-center t-center py10 sa"
                   style={{
                     backgroundColor:
                       selectedRateChart === ratechart
@@ -413,9 +480,9 @@ const MilkRateMaster = () => {
                   <span className="info-text w10">{ratechart.rccode}</span>
                   <span className="info-text w20">
                     {new Date(ratechart.rcdate).toLocaleDateString("en-GB", {
-                      day: "2-digit",
-                      month: "2-digit",
                       year: "2-digit",
+                      month: "2-digit",
+                      day: "2-digit",
                     })}
                   </span>
                   <span className="info-text w15">
@@ -423,12 +490,14 @@ const MilkRateMaster = () => {
                       ? "Mrg"
                       : ratechart.time === 1
                       ? "Eve"
-                      : "Both"}
+                      : ratechart.time === 2
+                      ? "Both"
+                      : ""}
                   </span>
                   <span className="info-text w15">
                     {ratechart.cb === 0 ? "Cow" : "Buffalo"}
                   </span>
-                  <span className="info-text w15">{ratechart.isActive}</span>
+                  <span className="info-text w25">{ratechart.rctypename}</span>
                 </div>
               ))}
             </div>
@@ -437,7 +506,8 @@ const MilkRateMaster = () => {
             <button
               type="submit"
               className="btn mx10"
-              disabled={status === "loading"}>
+              disabled={status === "loading"}
+              onClick={deleteRateChart}>
               Delete
             </button>
             <button
@@ -450,43 +520,44 @@ const MilkRateMaster = () => {
             <button
               type="submit"
               className="btn mx10"
-              disabled={status === "loading"}>
-              Update
-            </button>
-            <button
-              type="submit"
-              className="btn mx10"
-              disabled={status === "loading"}>
+              disabled={status === "loading"}
+              onClick={ShowRatechart}>
               Show
             </button>
           </div>
-          <form
-            className="rate-chart-setting div w100 h40 d-flex-col sa my10 px10"
+          <div className="rate-chart-options-container w100 h50 d-flex-col sa my10">
+            <RateChartOptions
+              isSet={selectedRateChart}
+              ratechart={Selectedrc}
+            />
+          </div>
+          {/* <form
+            className="rate-chart-setting-div w100 h40 d-flex-col sa my10 px10"
             onSubmit={handleSubmit}>
             <div className="select-time-animal-type w100 h25 d-flex sb">
               <div className="select-time w25 h1 a-center d-flex-col ">
-                <label htmlFor="time" className="label-text w100">
+                <label htmlFor="rccode" className="info-text w100">
                   Ratechart No :
                 </label>
                 <input
                   className="data w100"
                   type="number"
                   name="rccode"
-                  id=""
+                  id="rccode"
                   value={formData.rccode}
                   onChange={handleInput}
                   readOnly
                 />
               </div>
               <div className="select-animal-type w70 h1 a-center d-flex-col">
-                <label htmlFor="animalType" className="label-text w100">
+                <label htmlFor="rctype" className="info-text w100">
                   Ratechart Type:{" "}
                 </label>
                 <input
                   className={`data w100 ${errors.rctype ? "input-error" : ""}`}
                   type="text"
                   name="rctype"
-                  id=""
+                  id="rctype"
                   value={formData.rctype}
                   onChange={handleInput}
                 />
@@ -494,7 +565,7 @@ const MilkRateMaster = () => {
             </div>
             <div className="select-time-animal-type w100 h25 d-flex sb">
               <div className="select-animal-type w50 h1 a-center d-flex">
-                <label htmlFor="time" className="label-text w50">
+                <label htmlFor="time" className="info-text w50">
                   Time:
                 </label>
                 <select
@@ -516,7 +587,7 @@ const MilkRateMaster = () => {
                 </select>
               </div>
               <div className="select-animal-type w50 h1 a-center d-flex">
-                <label htmlFor="animalType" className="label-text w50">
+                <label htmlFor="animalType" className="info-text w50">
                   Animal Type:
                 </label>
                 <select
@@ -542,7 +613,7 @@ const MilkRateMaster = () => {
               </div>
             </div>
             <div className="rate-chart-date w100 h25 d-flex sb">
-              <label htmlFor="implementationDate" className="label-text w60">
+              <label htmlFor="implementationDate" className="info-text w60">
                 Rate Chart Implementation Date:
               </label>
               <input
@@ -553,6 +624,7 @@ const MilkRateMaster = () => {
                 id="implementationDate"
                 value={formData.rcdate}
                 onChange={handleInput}
+                max={tDate}
               />
             </div>
             <div className="button-div w100 h25 d-flex j-end">
@@ -570,7 +642,7 @@ const MilkRateMaster = () => {
                 Save Rate Chart
               </button>
             </div>
-          </form>
+          </form> */}
         </div>
       </div>
     </>

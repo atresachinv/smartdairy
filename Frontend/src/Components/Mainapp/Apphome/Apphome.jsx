@@ -4,9 +4,7 @@ import "../../../Styles/Mainapp/Apphome/Apphome.css";
 import AppNavlinks from "./AppNavlinks";
 import { useDispatch, useSelector } from "react-redux";
 import { listCustomer } from "../../../App/Features/Customers/customerSlice";
-import {
-  getRateCharts,
-} from "../../../App/Features/Mainapp/Masters/rateChartSlice";
+import { getRateCharts } from "../../../App/Features/Mainapp/Masters/rateChartSlice";
 import { getMasterDates } from "../../../App/Features/Customers/Date/masterSlice";
 import { generateMaster } from "../../../App/Features/Customers/Date/masterdateSlice";
 
@@ -18,18 +16,19 @@ const Apphome = () => {
   const yearEnd = useSelector((state) => state.date.yearEnd);
 
   const [isselected, setIsSelected] = useState(
-    parseInt(localStorage.getItem("selectedTabIndex")) || 0
+    parseInt(localStorage.getItem("MilkCollTabIndex")) || 0
   );
 
   // Update localStorage whenever isselected changes
   useEffect(() => {
-    localStorage.setItem("selectedTabIndex", isselected);
+    localStorage.setItem("MilkCollTabIndex", isselected);
   }, [isselected]);
-
 
   //Store Milk Collection Ratechart to localstorage
   useEffect(() => {
-    saveRatechart();
+    if (milkcollRatechart.length > 0) {
+      saveRatechart();
+    }
   }, [milkcollRatechart]);
 
   const saveRatechart = () => {
@@ -57,12 +56,14 @@ const Apphome = () => {
     }
   }, []);
 
+  console.log(milkcollRatechart);
+
   return (
     <div className="app-home-container w100 h1">
-      <div className="header-nav w100 d-flex a-center">
+      <div className="header-nav w100 h10 d-flex a-center">
         <AppNavlinks isselected={isselected} setIsSelected={setIsSelected} />
       </div>
-      <div className="home-nav-views w100 h90 d-flex center">
+      <div className="apphome-nav-views w100 h90 d-flex center p10">
         <AppNavviews index={isselected} />
       </div>
     </div>

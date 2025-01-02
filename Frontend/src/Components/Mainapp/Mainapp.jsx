@@ -10,8 +10,9 @@ import {
 } from "../../App/Features/Dairy/Center/centerSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchDairyInfo } from "../../App/Features/Admin/Dairyinfo/dairySlice";
-import { fetchMilkCollRatechart } from "../../App/Features/Mainapp/Masters/rateChartSlice";
+// import { fetchMilkCollRatechart } from "../../App/Features/Mainapp/Masters/rateChartSlice";
 import { listCustomer } from "../../App/Features/Customers/customerSlice";
+import Footer from "./Footer";
 
 const Mainapp = () => {
   const dispatch = useDispatch();
@@ -32,11 +33,10 @@ const Mainapp = () => {
     localStorage.setItem("selectedNavIndex", isselected);
   }, [isselected]);
 
-
   useEffect(() => {
     dispatch(centerDetails());
     dispatch(centersLists());
-    dispatch(fetchMilkCollRatechart());
+    // dispatch(fetchMilkCollRatechart());
     dispatch(listCustomer());
   }, []);
 
@@ -60,6 +60,7 @@ const Mainapp = () => {
         <div className="main-view-container w100 h90 d-flex">
           <Mainappviews index={isselected} />
         </div>
+        {/* <Footer/> */}
       </div>
     </div>
   );

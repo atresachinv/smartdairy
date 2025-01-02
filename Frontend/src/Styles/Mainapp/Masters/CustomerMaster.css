@@ -6,7 +6,8 @@
   min-width: 1900px;
   position: sticky;
   top: 0;
-  background-color: antiquewhite;
+  background-color: #17acc0;
+  padding: 5px 0;
 }
 .data-values-div {
   min-width: 1900px;
@@ -60,6 +61,7 @@
 @media screen and (max-width: 426px) {
   /* .cust-details-setting-div {
     padding: 5px;
+    contact-details-div
   } */
   .cust-details-setting-div {
     max-height: 100%;
@@ -99,5 +101,64 @@
     padding: 5px 8px;
     font-size: 8px;
   }
+  .data-headings-div {
+    min-width: 1600px;
+    position: sticky;
+    top: 0;
+    background-color: #17acc0;
+  }
+  .data-values-div {
+    min-width: 1600px;
+  }
 }
 /* Create Customer Responsive Css end */
+
+@media screen and (max-width: 426px) {
+  .cust-details-setting-di .customer-details-container .info-text {
+    margin: 5px 0;
+  }
+  .cust-details-setting-div .customer-details-container {
+    height: auto;
+  }
+  .customer-details-container .cust-details-div,
+  .customer-details-container .contact-details-div,
+  .customer-details-container .address-details,
+  .customer-details-container .milk-details-div,
+  .customer-details-container .Bank-details-div {
+    height: auto;
+    flex-wrap: wrap;
+    flex: 1 1 100px;
+  }
+  .cust-details-div .mcname-details-div,
+  .cust-details-div .cname-details-div {
+    width: 100%;
+  }
+  .contact-details-div .mobile-details-div,
+  .contact-details-div .Aadhhar-details-div,
+  .contact-details-div .caste-details-div,
+  .contact-details-div .gender-details-div {
+    width: 50%;
+  }
+
+  .address-details .city-details-div,
+  .address-details .tehsil-details-div,
+  .address-details .dist-details-div,
+  .address-details .pincode-details-div {
+    width: 50%;
+  }
+
+  .milk-details-div .milk-type-details-div,
+  .milk-details-div .ratechart-details-div {
+    width: 50%;
+  }
+  .milk-details-div .farmerid-details-div {
+    width: 100%;
+  }
+  .Bank-details-div .bankname-details-div {
+    width: 100%;
+  }
+  .Bank-details-div .acc-details-div,
+  .Bank-details-div .ifsc-details-div {
+    width: 50%;
+  }
+}

@@ -44,6 +44,7 @@
 .remember-me-div .checkbx {
   border: #5d06ad;
 }
+
 .password-input-container {
   border: 1px solid #cccccc;
   border-radius: 4px;
@@ -51,6 +52,10 @@
 }
 .password-input-container:hover {
   box-shadow: 1px 2px 2px #fcfbfb;
+  border: 1px solid #7235ed;
+  -webkit-box-shadow: 1px 2px 16px -4px rgba(117, 111, 117, 1);
+  -moz-box-shadow: 1px 2px 16px -4px rgba(117, 111, 117, 1);
+  box-shadow: 1px 2px 16px -4px rgba(117, 111, 117, 1);
 }
 .password-input-container .pss-eye {
   font-size: 18px;
@@ -65,7 +70,7 @@
 .pass:focus {
   outline: none;
 }
-.pss-eye{
+.pss-eye {
   margin-right: 5px;
 }
 /* ............................... */
@@ -92,6 +97,9 @@
     margin-top: 50px;
     width: 100%;
   }
+  .pass {
+    padding: 5px;
+  }
 }
 
 @media screen and (max-width: 426px) {
@@ -113,5 +121,11 @@
   }
   .account-check-div {
     text-align: center;
+  }
+  .password-input-container {
+    padding: 0;
+  }
+  .pass {
+    padding: 5px;
   }
 }

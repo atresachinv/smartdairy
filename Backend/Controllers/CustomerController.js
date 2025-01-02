@@ -146,15 +146,15 @@ exports.createCustomer = async (req, res) => {
               fax,
               dairy_id,
               marathi_name,
-              rctype,
+              rctype || null,
               centerid,
               cust_no,
               pincode,
-              aadhaar_no,
-              farmerid,
-              bankName,
-              bankIFSC,
-              caste,
+              aadhaar_no || null,
+              farmerid || null,
+              bankName || null,
+              bankIFSC || null,
+              caste || null,
               gender,
               milktype,
               member_date,
@@ -526,7 +526,7 @@ exports.updateCustomer = async (req, res) => {
 //       console.error("Error getting MySQL connection: ", err);
 //       return res.status(500).json({ message: "Database connection error" });
 //     }
-// 
+//
 //     try {
 //       const dairy_id = req.user.dairy_id;
 //       const center_id = req.user.center_id;
@@ -534,26 +534,26 @@ exports.updateCustomer = async (req, res) => {
 //         console.log("Unauthorized User!");
 //         connection.release();
 //       }
-// 
+//
 //       const getCustList = `
-//         SELECT cid, cname, Phone, fax, City, tal, dist, cust_accno, createdby, 
-//                createdon, mobile, isSabhasad, rno, orgid, engName, rateChartNo, 
-//                centerid, srno, cust_pincode, cust_addhar, cust_farmerid, cust_bankname, 
+//         SELECT cid, cname, Phone, fax, City, tal, dist, cust_accno, createdby,
+//                createdon, mobile, isSabhasad, rno, orgid, engName, rateChartNo,
+//                centerid, srno, cust_pincode, cust_addhar, cust_farmerid, cust_bankname,
 //                cust_ifsc, caste, gender, milktype ,isActive ,
-//         FROM customer 
+//         FROM customer
 //         WHERE orgid = ? AND centerid = ?
 //       `;
-// 
+//
 //       connection.query(getCustList, [dairy_id, center_id], (err, result) => {
 //         connection.release(); // Release the connection back to the pool
-// 
+//
 //         if (err) {
 //           console.error("Error executing query: ", err); // Correct error reference
 //           return res
 //             .status(500)
 //             .json({ message: "Error fetching customer list" });
 //         }
-// 
+//
 //         return res.status(200).json({
 //           customerList: result, // Return the entire result array
 //           message: "Customer list retrieved successfully", // Updated message
@@ -573,37 +573,37 @@ exports.updateCustomer = async (req, res) => {
 //       console.error("Error getting MySQL connection: ", err);
 //       return res.status(500).json({ message: "Database connection error" });
 //     }
-// 
+//
 //     try {
 //       const dairy_id = req.user.dairy_id;
 //       const center_id = req.user.center_id;
-// 
+//
 //       // Check for unauthorized access
 //       if (!dairy_id) {
 //         console.log("Unauthorized User!");
 //         connection.release();
 //         return res.status(400).json({ message: "Unauthorized User!" });
 //       }
-// 
+//
 //       const getCustList = `
-//         SELECT cid, cname, Phone, fax, City, tal, dist, cust_accno, createdby, 
-//                createdon, mobile, isSabhasad, rno, orgid, engName, rateChartNo, 
-//                centerid, srno, cust_pincode, cust_addhar, cust_farmerid, cust_bankname, 
+//         SELECT cid, cname, Phone, fax, City, tal, dist, cust_accno, createdby,
+//                createdon, mobile, isSabhasad, rno, orgid, engName, rateChartNo,
+//                centerid, srno, cust_pincode, cust_addhar, cust_farmerid, cust_bankname,
 //                cust_ifsc, caste, gender, milktype, isActive
-//         FROM customer 
+//         FROM customer
 //         WHERE orgid = ? AND centerid = ?
 //       `;
-// 
+//
 //       connection.query(getCustList, [dairy_id, center_id], (err, result) => {
 //         connection.release(); // Always release the connection after query execution
-// 
+//
 //         if (err) {
 //           console.error("Error executing query: ", err); // Correct error reference
 //           return res
 //             .status(500)
 //             .json({ message: "Error fetching customer list" });
 //         }
-// 
+//
 //         return res.status(200).json({
 //           customerList: result, // Return the entire result array
 //           message: "Customer list retrieved successfully", // Updated message
@@ -617,7 +617,6 @@ exports.updateCustomer = async (req, res) => {
 //   });
 // };
 
-
 exports.customerList = async (req, res) => {
   pool.getConnection((err, connection) => {
     if (err) {
@@ -629,9 +628,10 @@ exports.customerList = async (req, res) => {
       const dairy_id = req.user.dairy_id;
       const center_id = req.user.center_id;
 
+      console.log(dairy_id, center_id);
+
       // Check for unauthorized access
-      if (!dairy_id) {
-        console.log("Unauthorized User!");
+      if (!dairy_id || !center_id) {
         connection.release();
         return res.status(400).json({ message: "Unauthorized User!" });
       }
@@ -654,7 +654,7 @@ exports.customerList = async (req, res) => {
             .status(500)
             .json({ message: "Error fetching customer list" });
         }
-
+        
         return res.status(200).json({
           customerList: result, // Return the entire result array
           message: "Customer list retrieved successfully", // Updated message
@@ -667,7 +667,6 @@ exports.customerList = async (req, res) => {
     }
   });
 };
-
 
 //..................................................
 // Get list of unique RateCharts....................
@@ -1189,7 +1188,6 @@ exports.custMilkReport = async (req, res) => {
     }
   });
 };
-
 
 // ..................................................
 // Download Customer List Upload Excel Format .......

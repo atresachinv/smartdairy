@@ -16,12 +16,14 @@ import InventorySettings from "./Settings/InventorySettings/InventorySettings";
 import MachineSettings from "./Settings/MachineSettings/MachineSettings";
 import MainLedger from "./Masters/MasterPages/MainLedger";
 import SubLedger from "./Masters/MasterPages/SubLedger";
-import MilkRateMaster from "./Masters/MasterPages/MilkRateMaster";
+import MilkRateMaster from "./Masters/MasterPages/RatechartMaster/MilkRateMaster";
 import EmployeeMaster from "./Masters/MasterPages/EmployeeMaster/EmployeeMaster";
 import DairyInfo from "./DairyInfo/DairyInfo";
 import DairyInitialInfo from "./DairyInfo/DairyInitialInfo";
 import CustomersMaster from "./Masters/MasterPages/CustomerMaster/CustomersMaster";
 import Centers from "./DairyInfo/Centers/Centers";
+// import MilkReports from "./Reports/MilkReports/MilkReports";
+// import MilkcollectionReports from "./Reports/MilkReports/MilkcollectionReports";
 
 const Mainappviews = ({ index }) => {
   switch (index) {
@@ -53,22 +55,55 @@ const Mainappviews = ({ index }) => {
       return <EmployeeMaster />;
     case 4.5:
       return <MilkRateMaster />;
-    //Dairy Submenus
+    //Sales Submenus
     case 5.1:
-      return <DairyInfo />;
+      return <MainLedger />;
     case 5.2:
-      return <DairyInitialInfo />;
+      return <SubLedger />;
     case 5.3:
+      return <CustomersMaster />;
+    case 5.4:
+      return <EmployeeMaster />;
+    case 5.5:
+      return <MilkRateMaster />;
+    //Report Submenus
+    case 6.1:
+      return <MainLedger />;
+    case 6.2:
+      return <MilkCollectorsReports />;
+    case 6.3:
+      return <CustomersMaster />;
+    case 6.4:
+      return <EmployeeMaster />;
+    case 6.5:
+      return <MilkRateMaster />;
+    //Payments Submenus
+    case 7.1:
+      return <MainLedger />;
+    case 7.2:
+      return <SubLedger />;
+    case 7.3:
+      return <CustomersMaster />;
+    case 7.4:
+      return <EmployeeMaster />;
+    case 7.5:
+      return <MilkRateMaster />;
+    //Dairy Submenus
+    case 8.1:
+      return <DairyInfo />;
+    case 8.2:
+      return <DairyInitialInfo />;
+    case 8.3:
       return <Centers />;
     // Settings Submenus
-    case 6.1:
+    case 9.1:
       return <DairySettings />;
-    case 6.2:
+    case 9.2:
       return <InventorySettings />;
-    case 6.3:
+    case 9.3:
       return <MachineSettings />;
     default:
-      break;
+      return <Dashboard />;
   }
 };
 

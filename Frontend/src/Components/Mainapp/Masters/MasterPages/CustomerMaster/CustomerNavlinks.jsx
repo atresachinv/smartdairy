@@ -3,12 +3,12 @@ import { IoPersonAdd, IoList } from "react-icons/io5";
 
 const CustomerNavlinks = ({ isselected, setIsSelected }) => {
   const CustNavbuttons = [
+    { name: "Customer List", icon: <IoList className="icon" />, index: 0 },
     {
       name: "Create Customer",
       icon: <IoPersonAdd className="icon" />,
-      index: 0,
+      index: 1,
     },
-    { name: "Customer List", icon: <IoList className="icon" />, index: 1 },
   ];
   return (
     <>

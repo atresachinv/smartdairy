@@ -51,6 +51,7 @@ const Login = ({ switchToRegister, switchToOptSend }) => {
       .post("/login", values)
       .then((res) => {
         const { user_role } = res.data;
+        console.log(user_role);
 
         // If "Remember Me" is checked, store credentials in localStorage
         if (rememberMe) {
@@ -109,7 +110,7 @@ const Login = ({ switchToRegister, switchToOptSend }) => {
           <input
             type="text"
             name="user_id"
-            className="password-input-container pass"
+            className="data password-input-container pass"
             required
             value={values.user_id}
             onChange={handleInputs}

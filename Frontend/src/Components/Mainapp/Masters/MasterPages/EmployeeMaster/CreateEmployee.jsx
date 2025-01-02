@@ -8,6 +8,7 @@ import {
   listEmployee,
   updateEmp,
 } from "../../../../../App/Features/Mainapp/Masters/empMasterSlice";
+import "../../../../../Styles/Mainapp/Masters/EmpMaster.css";
 
 const CreateEmployee = () => {
   const dispatch = useDispatch();
@@ -16,8 +17,6 @@ const CreateEmployee = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState({});
-
-  console.log("emp", empData);
 
   const [formData, setFormData] = useState({
     date: toDate,
@@ -36,7 +35,6 @@ const CreateEmployee = () => {
     bankIFSC: "",
     password: "",
   });
-  console.log("form.", formData);
 
   const validateField = (name, value) => {
     let error = {};
@@ -52,7 +50,7 @@ const CreateEmployee = () => {
         break;
 
       case "marathi_name":
-        if (!/^[\u0900-\u097F\s]+$/.test(value)) {
+        if (!/^[\u0900-\u097F\sA-Za-z]+$/.test(value)) {
           error[name] = "Invalid Marathi name.";
         } else {
           delete errors[name];
@@ -161,7 +159,6 @@ const CreateEmployee = () => {
         ...prevData,
         cust_no: "",
       }));
-       
     } else {
       resetForm();
     }
@@ -204,11 +201,17 @@ const CreateEmployee = () => {
       }));
 
       // Field-level validation on input change
+      // const fieldError = validateField(name, value);
+      // setErrors((prevErrors) => ({
+      //   ...prevErrors,
+      //   ...fieldError,
+      // }));
       const fieldError = validateField(name, value);
-      setErrors((prevErrors) => ({
-        ...prevErrors,
-        ...fieldError,
-      }));
+      setErrors((prevErrors) => {
+        const updatedErrors = { ...prevErrors, ...fieldError };
+        if (!value) delete updatedErrors[name]; // Clear error if field is empty
+        return updatedErrors;
+      });
     }
   };
 
@@ -235,7 +238,6 @@ const CreateEmployee = () => {
 
   useEffect(() => {
     if (isEditing && empData) {
-      console.log("Populating form with empData:", empData);
       setFormData((prev) => ({
         ...prev,
         marathi_name: empData.marathi_name || "",
@@ -243,7 +245,7 @@ const CreateEmployee = () => {
         designation: empData.designation || "",
         salary: empData.salary || "",
         city: empData.emp_city || "",
-        tehsil: empData.emp_tel || "",
+        tehsil: empData.emp_tal || "",
         district: empData.emp_dist || "",
         pincode: empData.pincode || "",
         bankName: empData.emp_bankname || "",
@@ -257,7 +259,7 @@ const CreateEmployee = () => {
     if (isEditing) {
       // Only search in editing mode
       const handler = setTimeout(() => {
-        if (formData.code && formData.code.length >= 1) {
+        if (formData.code && formData.code.length > 0) {
           // Adjust length as necessary
           dispatch(findEmp({ code: formData.code }));
         }
@@ -267,10 +269,9 @@ const CreateEmployee = () => {
     }
   }, [formData.code, isEditing]);
 
-
   // .................................................................................
 
-  const handleCreateEmployee = (e) => {
+  const handleEmployee = (e) => {
     e.preventDefault();
 
     const validationErrors = validateFields();
@@ -300,29 +301,29 @@ const CreateEmployee = () => {
   return (
     <>
       <form
-        onSubmit={handleCreateEmployee}
+        onSubmit={handleEmployee}
         className={`create-emp-container w60 h90 d-flex sa ${
           isEditing ? "edit-bg" : "bg"
         }`}>
         <div className="emp-details-container w100 h1 d-flex-col sb">
           <div className="tilte-container w100 d-flex a-center sb p10">
-            <span className="heading ">
+            <span className="heading">
               {isEditing ? "Update Employee" : "Create Employee"}
             </span>
           </div>
 
           {isEditing ? (
-            <div className="emp-div emp-details-div w100 h15 d-flex sb">
-              <div className="details-div w25 d-flex-col a-center px10">
-                <span className="label-text w100">
+            <div className="emp-div emp-details-div w100 d-flex sb">
+              <div className="details-div w30 d-flex-col px10">
+                <label htmlFor="ecode" className="info-text w100">
                   Employee Code<span className="req">*</span>
-                </span>
+                </label>
                 <input
                   required
                   className={`data w100 ${errors.code ? "input-error" : ""}`}
                   type="number"
                   name="code"
-                  id=""
+                  id="ecode"
                   onChange={handleInputChange}
                   value={formData.code || ""}
                 />
@@ -331,11 +332,11 @@ const CreateEmployee = () => {
           ) : (
             ""
           )}
-          <div className="emp-div emp-details-div w100 h15 d-flex sb">
+          <div className="emp-div emp-details-div w100 d-flex sa">
             <div className="details-div w50 d-flex-col a-center px10">
-              <span className="label-text w100">
+              <label htmlFor="mname" className="info-text w100">
                 Employee Marathi Name<span className="req">*</span>{" "}
-              </span>
+              </label>
               <input
                 required
                 className={`data w100 ${
@@ -343,41 +344,41 @@ const CreateEmployee = () => {
                 }`}
                 type="text"
                 name="marathi_name"
-                id=""
+                id="mname"
                 onChange={handleInputChange}
                 value={formData.marathi_name || ""}
               />
             </div>
             <div className="details-div w50 d-flex-col a-center px10">
-              <span className="label-text w100">
+              <label htmlFor="engname" className="info-text w100">
                 Employee English Name<span className="req">*</span>
-              </span>
+              </label>
               <input
                 required
                 className={`data w100 ${errors.emp_name ? "input-error" : ""}`}
                 type="text"
                 name="emp_name"
-                id=""
+                id="engname"
                 value={formData.emp_name || ""}
                 onChange={handleInputChange}
               />
             </div>
           </div>
 
-          <div className="emp-div emp-details-div w100 h15 d-flex sb">
+          <div className="emp-div emp-details-div w100 d-flex sb">
             {isEditing ? (
               ""
             ) : (
               <div className="details-div w25 d-flex-col a-center px10">
-                <span className="label-text w100">
+                <label htmlFor="mobile" className="info-text w100">
                   Mobile<span className="req">*</span>
-                </span>
+                </label>
                 <input
                   required
                   className={`data w100 ${errors.mobile ? "input-error" : ""}`}
                   type="number"
                   name="mobile"
-                  id=""
+                  id="mobile"
                   onChange={handleInputChange}
                   value={formData.mobile || ""}
                 />
@@ -385,16 +386,16 @@ const CreateEmployee = () => {
             )}
 
             <div className="details-div w40 d-flex-col a-center px10">
-              <span className="label-text w100">
+              <label htmlFor="designation" className="info-text w100">
                 Designation<span className="req">*</span>{" "}
-              </span>
+              </label>
               <select
-                className="data w100"
+                className="data w100 "
                 name="designation"
-                id=""
+                id="designation"
                 onChange={handleInputChange}
                 value={formData.designation || ""}>
-                <option value="">--Select Designation--</option>
+                {/* <option value="">--Select Designation--</option> */}
                 <option value="manager">Manager</option>
                 <option value="milkcollector">Milk Collector</option>
                 <option value="mobilecollector">Mobile Milk Collector</option>
@@ -402,55 +403,55 @@ const CreateEmployee = () => {
               </select>
             </div>
             <div className="details-div w30 d-flex-col a-center px10">
-              <span className="label-text w100 ">
+              <label htmlFor="salary" className="info-text w100 ">
                 Salary<span className="req">*</span>
-              </span>
+              </label>
               <input
                 required
                 className={`data w100 ${errors.salary ? "input-error" : ""}`}
                 type="number"
                 name="salary"
-                id=""
+                id="salary"
                 onChange={handleInputChange}
                 value={formData.salary || ""}
               />
             </div>
           </div>
-          <div className="emp-div address-details-div w100 h15 d-flex-col sb">
-            <span className="label-text px10">Address Details :</span>
+          <div className="emp-div address-details-div w100 d-flex-col sb">
+            <span className="info-text px10">Address Details :</span>
             <div className="Address-details w100 h1 d-flex sb">
               <div className="details-div w25 d-flex-col a-center px10">
-                <span className="label-text w100 ">
+                <label htmlFor="city" className="info-text w100 ">
                   City<span className="req">*</span>
-                </span>
+                </label>
                 <input
                   required
                   className={`data w100 ${errors.city ? "input-error" : ""}`}
                   type="text"
                   name="city"
-                  id=""
+                  id="city"
                   onChange={handleInputChange}
                   value={formData.city || ""}
                 />
               </div>
               <div className="details-div w30 d-flex-col a-center px10">
-                <span className="label-text w100">
+                <label htmlFor="tehsil" className="info-text w100">
                   Tehsil<span className="req">*</span>{" "}
-                </span>
+                </label>
                 <input
                   required
                   className={`data w100 ${errors.tehsil ? "input-error" : ""}`}
                   type="text"
                   name="tehsil"
-                  id=""
+                  id="tehsil"
                   onChange={handleInputChange}
                   value={formData.tehsil || ""}
                 />
               </div>
               <div className="details-div w30 d-flex-col a-center px10">
-                <span className="label-text w100">
+                <label htmlFor="dist" className="info-text w100">
                   District<span className="req">*</span>{" "}
-                </span>
+                </label>
                 <input
                   required
                   className={`data w100 ${
@@ -458,20 +459,21 @@ const CreateEmployee = () => {
                   }`}
                   type="text"
                   name="district"
-                  id=""
+                  id="disttehsil"
                   onChange={handleInputChange}
                   value={formData.district || ""}
                 />
               </div>
               <div className="details-div w20 d-flex-col a-center px10">
-                <span className="label-text w100">
+                <label htmlFor="pincode" className="info-text w100">
                   Pincode<span className="req">*</span>{" "}
-                </span>
+                </label>
                 <input
                   required
                   className={`data w100 ${errors.pincode ? "input-error" : ""}`}
                   type="text"
                   name="pincode"
+                  id="pincode"
                   onChange={handleInputChange}
                   value={formData.pincode || ""}
                 />
@@ -479,42 +481,48 @@ const CreateEmployee = () => {
             </div>
           </div>
 
-          <div className="emp-div Bank-details-div w100 h15 d-flex-col sb">
-            <span className="label-text px10">Bank Details :</span>
+          <div className="emp-div Bank-details-div w100 d-flex-col sb">
+            <span className="info-text px10">Bank Details :</span>
             <div className="Bank-details w100 h1 d-flex sb">
               <div className="details-div w40 d-flex-col a-center px10">
-                <span className="label-text w100 ">Bank Name</span>{" "}
+                <label htmlFor="bank" className="info-text w100 ">
+                  Bank Name
+                </label>{" "}
                 <input
                   className={`data w100 ${
                     errors.bankName ? "input-error" : ""
                   }`}
                   type="text"
                   name="bankName"
-                  id=""
+                  id="bank"
                   onChange={handleInputChange}
                   value={formData.bankName || ""}
                 />
               </div>
               <div className="details-div w30 d-flex-col a-center px10">
-                <span className="label-text w100">Bank A/C</span>{" "}
+                <label htmlFor="acc" className="info-text w100">
+                  Bank A/C
+                </label>{" "}
                 <input
                   className={`data w100 ${errors.bank_ac ? "input-error" : ""}`}
                   type="number"
                   name="bank_ac"
-                  id=""
+                  id="acc"
                   onChange={handleInputChange}
                   value={formData.bank_ac || ""}
                 />
               </div>
               <div className="details-div w30 d-flex-col a-center px10">
-                <span className="label-text w100">Bank IFSC</span>{" "}
+                <label htmlFor="ifsc" className="info-text w100">
+                  Bank IFSC
+                </label>{" "}
                 <input
                   className={`data w100 ${
                     errors.bankIFSC ? "input-error" : ""
                   }`}
                   type="text"
                   name="bankIFSC"
-                  id=""
+                  id="ifsc"
                   onChange={handleInputChange}
                   value={formData.bankIFSC || ""}
                 />
@@ -525,35 +533,35 @@ const CreateEmployee = () => {
           {isEditing ? (
             ""
           ) : (
-            <div className="emp-div emp-details-div w100 h15 d-flex py10 sb">
+            <div className="emp-div emp-details-div w100 d-flex py10 sb">
               <div className="details-div w50 d-flex-col a-center px10">
-                <span className="label-text w100">
+                <label htmlFor="pass" className="info-text w100">
                   Enter Password<span className="req">*</span>
-                </span>
+                </label>
                 <input
                   required
                   className={`data w100 ${
                     errors.password ? "input-error" : ""
                   }`}
-                  type="text"
+                  type="password"
                   name="password"
-                  id=""
+                  id="pass"
                   onChange={handleInputChange}
                   value={formData.password || ""}
                 />
               </div>
               <div className="details-div w50 d-flex-col a-center px10">
-                <span className="label-text w100">
+                <label htmlFor="cpass" className="info-text w100">
                   Confirm Password<span className="req">*</span>
-                </span>
+                </label>
                 <input
                   required
                   className={`data w100 ${
                     errors.confirm_pass ? "input-error" : ""
                   }`}
-                  type="text"
+                  type="password"
                   name="confirm_pass"
-                  id=""
+                  id="cpass"
                   value={formData.confirm_pass || ""}
                   onChange={handleInputChange}
                 />
@@ -561,11 +569,11 @@ const CreateEmployee = () => {
             </div>
           )}
 
-          <div className="button-container w50 h15 d-flex  p10  sb">
+          <div className="button-container w100 d-flex j-end p10">
             <button type="button" className="w-btn" onClick={handleEditClick}>
               {isEditing ? "Cancel" : "Edit"}
             </button>
-            <button type="submit" className="btn" disabled={isLoading}>
+            <button type="submit" className="btn mx10" disabled={isLoading}>
               {isLoading ? (
                 <Spinner />
               ) : isEditing ? (

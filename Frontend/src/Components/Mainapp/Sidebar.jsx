@@ -22,11 +22,11 @@ const Sidebar = ({ setselected, handleSidebar }) => {
       await localStorage.removeItem("milkentries");
 
       if (userRole === "milkcollector" || userRole === "mobilecollector") {
-        await localStorage.setItem("selectedNavIndex", 1);
-        await localStorage.setItem("selectedTabIndex", 0);
+        localStorage.setItem("selectedNavIndex", 1);
+        localStorage.setItem("selectedTabIndex", 0);
       } else {
-        await localStorage.setItem("selectedNavIndex", 0);
-        await localStorage.setItem("selectedTabIndex", 0);
+        localStorage.setItem("selectedNavIndex", 0);
+        localStorage.setItem("selectedTabIndex", 0);
       }
 
       localStorage.removeItem("token");

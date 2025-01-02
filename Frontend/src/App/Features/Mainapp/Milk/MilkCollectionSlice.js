@@ -5,9 +5,15 @@ const initialState = {
   records: [],
   collectionReport: [],
   allMilkColl: [],
+  allMilkCollector: [],
   mobileColl: [],
   mobileCollection: [], //update mobile milk collection
+  PrevLiters: [], //Previous liters
+  todaysMilk: [],
   status: "idle",
+  allmilkstatus: "idle",
+  allmilkcollstatus: "idle",
+  tmstatus: "idle",
   error: null,
 };
 
@@ -61,7 +67,27 @@ export const saveMilkOneEntry = createAsyncThunk(
   }
 );
 
-//Mobile Milk Collection
+export const fetchTodaysMilk = createAsyncThunk(
+  "milkreport/fetchTodaysMilk",
+  async ({ date }, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.get("/fetch/collection", {
+        params: { date },
+      });
+      return response.data.todaysmilk;
+    } catch (error) {
+      const errorMessage = error.response
+        ? error.response.data
+        : "Failed to store milk collection.";
+      return rejectWithValue(errorMessage);
+    }
+  }
+);
+
+//...............................................................................
+//Mobile Milk Collection ........................................................
+//...............................................................................
+
 export const mobileMilkCollection = createAsyncThunk(
   "milkreport/mobileMilkCollection",
   async (values, { rejectWithValue }) => {
@@ -83,14 +109,34 @@ export const mobileMilkCollection = createAsyncThunk(
 //Mobile Milk Collection Report
 export const mobileMilkCollReport = createAsyncThunk(
   "milkreport/mobileMilkCollReport",
-  async (_, { rejectWithValue }) => {
+  async ({ date }, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.get("/mobile/milkreport");
+      const response = await axiosInstance.get("/mobile/milkreport", {
+        params: { date },
+      });
       return response.data.mobileMilk;
     } catch (error) {
       const errorMessage = error.response
         ? error.response.data
         : "Failed to store Mobile milk collection.";
+      return rejectWithValue(errorMessage);
+    }
+  }
+);
+
+//Mobile Milk Collection Previous Liters
+export const mobilePrevLiters = createAsyncThunk(
+  "milkreport/mobilePrevLiters",
+  async ({ date }, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.get("/mobile/prevliters", {
+        params: { date },
+      });
+      return response.data.PrevLiters;
+    } catch (error) {
+      const errorMessage = error.response
+        ? error.response.data
+        : "Failed to fetch Previous Liters.";
       return rejectWithValue(errorMessage);
     }
   }
@@ -154,6 +200,24 @@ export const getAllMilkCollReport = createAsyncThunk(
         params: { fromDate, toDate }, // Use the `params` key for query parameters
       });
       return response.data.milkcollection;
+    } catch (error) {
+      const errorMessage = error.response
+        ? error.response.data
+        : "Failed to fetch milk reports.";
+      return rejectWithValue(errorMessage);
+    }
+  }
+);
+
+//milk collector milk collection
+export const getAllMilkSankalan = createAsyncThunk(
+  "milkreport/getAllMilkSankalan",
+  async ({ fromDate, toDate }, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.get("/milk/sankalan", {
+        params: { fromDate, toDate }, // Use the `params` key for query parameters
+      });
+      return response.data.milkCollectorcoll;
     } catch (error) {
       const errorMessage = error.response
         ? error.response.data
@@ -255,16 +319,52 @@ const milkCollectionSlice = createSlice({
         state.status = "failed";
         state.error = action.payload;
       })
-      .addCase(getAllMilkCollReport.pending, (state) => {
+      .addCase(mobilePrevLiters.pending, (state) => {
         state.status = "loading";
         state.error = null;
       })
-      .addCase(getAllMilkCollReport.fulfilled, (state, action) => {
+      .addCase(mobilePrevLiters.fulfilled, (state, action) => {
         state.status = "succeeded";
+        state.PrevLiters = action.payload;
+      })
+      .addCase(mobilePrevLiters.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.payload;
+      })
+      .addCase(getAllMilkCollReport.pending, (state) => {
+        state.allmilkstatus = "loading";
+        state.error = null;
+      })
+      .addCase(getAllMilkCollReport.fulfilled, (state, action) => {
+        state.allmilkstatus = "succeeded";
         state.allMilkColl = action.payload;
       })
       .addCase(getAllMilkCollReport.rejected, (state, action) => {
-        state.status = "failed";
+        state.allmilkstatus = "failed";
+        state.error = action.payload;
+      })
+      .addCase(getAllMilkSankalan.pending, (state) => {
+        state.allmilkcollstatus = "loading";
+        state.error = null;
+      })
+      .addCase(getAllMilkSankalan.fulfilled, (state, action) => {
+        state.allmilkcollstatus = "succeeded";
+        state.allMilkCollector = action.payload;
+      })
+      .addCase(getAllMilkSankalan.rejected, (state, action) => {
+        state.allmilkcollstatus = "failed";
+        state.error = action.payload;
+      })
+      .addCase(fetchTodaysMilk.pending, (state) => {
+        state.tmstatus = "loading";
+        state.error = null;
+      })
+      .addCase(fetchTodaysMilk.fulfilled, (state, action) => {
+        state.tmstatus = "succeeded";
+        state.todaysMilk = action.payload;
+      })
+      .addCase(fetchTodaysMilk.rejected, (state, action) => {
+        state.tmstatus = "failed";
         state.error = action.payload;
       });
   },

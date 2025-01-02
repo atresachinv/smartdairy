@@ -4,9 +4,13 @@ import axiosInstance from "../../../axiosInstance";
 const initialState = {
   ratechartList: [],
   rateChart: [], //used for milk collection
-  selectedRateChart: {}, // selected for operations
-  maxRcCode: 1,
+  selectedRateChart: [], // selected for operations
+  maxRcCode: "",
+  excelRatechart: [],
   status: "idle",
+  updatestatus: "idle",
+  savercstatus: "idle",
+  applyrcstatus: "idle",
   error: null,
   progress: 0,
 };
@@ -32,7 +36,7 @@ export const fetchMaxRcCode = createAsyncThunk(
 export const saveRateChart = createAsyncThunk(
   "ratechart/saveRateChart",
   async (
-    { rccode, rctype, rcdate, time, animal, rate },
+    { rccode, rctype, rcdate, time, animal, ratechart },
     { rejectWithValue, signal, dispatch }
   ) => {
     try {
@@ -44,9 +48,10 @@ export const saveRateChart = createAsyncThunk(
           rcdate,
           time,
           animal,
-          rate,
+          ratechart,
         },
         {
+          headers: { "Content-Type": "application/json" },
           onUploadProgress: (progressEvent) => {
             const percentCompleted = Math.round(
               (progressEvent.loaded * 100) / progressEvent.total
@@ -67,13 +72,12 @@ export const saveRateChart = createAsyncThunk(
 );
 
 //fetch used ratecharts
-
 export const getRateCharts = createAsyncThunk(
   "ratechart/getRateCharts",
   async (_, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.post("/milkcollection/ratechart");
-      return response.data.usedRateChart;
+      const response = await axiosInstance.post("/sankalan/ratechart");
+      return response.data.sankalanrc;
     } catch (error) {
       const errorMessage =
         error.response?.data?.message ||
@@ -87,13 +91,33 @@ export const getRateCharts = createAsyncThunk(
 
 export const fetchRateChart = createAsyncThunk(
   "ratechart/fetchRateChart",
-  async (_, { rejectWithValue }) => {
+  async ({ cb, rccode, rcdate, time }, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.post("/ratechart/selected");
-      return response.data;
+      const response = await axiosInstance.get("/selected/ratechart", {
+        params: { cb, rccode, rcdate, time },
+      });
+      return response.data.selectedRChart;
     } catch (error) {
       const errorMessage =
-        error.response?.data?.message || "Failed to fetch ratechart!.";
+        error.response?.data?.message || "Failed to fetch ratechart.";
+      return rejectWithValue(errorMessage);
+    }
+  }
+);
+
+// Delete selected ratechart
+
+export const deleteRatechart = createAsyncThunk(
+  "ratechart/fetchRateChart",
+  async ({ cb, rccode, rcdate, time }, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.get("/selected/ratechart", {
+        params: { cb, rccode, rcdate, time },
+      });
+      return response.data.selectedRChart;
+    } catch (error) {
+      const errorMessage =
+        error.response?.data?.message || "Failed to fetch ratechart.";
       return rejectWithValue(errorMessage);
     }
   }
@@ -115,11 +139,11 @@ export const listRateCharts = createAsyncThunk(
   }
 );
 
-//Fetch Selected rate chart 
+//Fetch Selected rate chart
 
 export const fetchselectedRateChart = createAsyncThunk(
   "ratechart/fetchselectedRateChart",
-  async ({selectedRateChart}, { rejectWithValue }) => {
+  async ({ selectedRateChart }, { rejectWithValue }) => {
     try {
       const response = await axiosInstance.post("/selected/ratechart", {
         selectedRateChart,
@@ -137,9 +161,14 @@ export const fetchselectedRateChart = createAsyncThunk(
 
 export const applyRateChart = createAsyncThunk(
   "ratechart/applyRateChart",
-  async (_, { rejectWithValue }) => {
+  async ({ applydate, custFrom, custTo, ratechart }, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.post("/apply/ratechart");
+      const response = await axiosInstance.post("/apply/ratechart", {
+        applydate,
+        custFrom,
+        custTo,
+        ratechart,
+      });
       return response.data;
     } catch (error) {
       const errorMessage =
@@ -149,12 +178,34 @@ export const applyRateChart = createAsyncThunk(
   }
 );
 
-// 
-export const fetchMilkCollRatechart = createAsyncThunk(
-  "ratechart/fetchMilkCollRatechart",
-  async (_, { rejectWithValue }) => {
+//
+// export const fetchMilkCollRatechart = createAsyncThunk(
+//   "ratechart/fetchMilkCollRatechart",
+//   async (_, { rejectWithValue }) => {
+//     try {
+//       const response = await axiosInstance.post("/milkcollection/ratechart");
+//       return response.data.usedRateChart;
+//     } catch (error) {
+//       const errorMessage =
+//         error.response?.data?.message ||
+//         "Failed to fetch milk collection ratechart!.";
+//       return rejectWithValue(errorMessage);
+//     }
+//   }
+// );
+
+// Update rate chart
+export const updateRatechart = createAsyncThunk(
+  "ratechart/updateRatechart",
+  async ({ amt, rccode, rcdate, rctype, rate }, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.post("");
+      const response = await axiosInstance.post("/update/ratechart", {
+        amt,
+        rccode,
+        rcdate,
+        rctype,
+        rate,
+      });
       return response.data;
     } catch (error) {
       const errorMessage =
@@ -164,7 +215,6 @@ export const fetchMilkCollRatechart = createAsyncThunk(
     }
   }
 );
-
 
 // Slice
 const rateChartSlice = createSlice({
@@ -176,6 +226,9 @@ const rateChartSlice = createSlice({
     },
     resetProgress(state) {
       state.progress = 0;
+    },
+    setData: (state, action) => {
+      state.excelRatechart = action.payload;
     },
   },
   extraReducers: (builder) => {
@@ -192,16 +245,16 @@ const rateChartSlice = createSlice({
         state.status = "failed";
       })
       .addCase(saveRateChart.pending, (state) => {
-        state.status = "loading";
+        state.savercstatus = "loading";
         state.error = null;
         state.progress = 0;
       })
       .addCase(saveRateChart.fulfilled, (state) => {
-        state.status = "succeeded";
+        state.savercstatus = "succeeded";
         state.progress = 100;
       })
       .addCase(saveRateChart.rejected, (state, action) => {
-        state.status = "failed";
+        state.savercstatus = "failed";
         state.error = action.payload;
         state.progress = 0;
       }) // Rate chart used for milk Collection
@@ -239,26 +292,26 @@ const rateChartSlice = createSlice({
         state.status = "failed";
       })
       .addCase(applyRateChart.pending, (state) => {
-        state.status = "loading";
+        state.applyrcstatus = "loading";
       })
       .addCase(applyRateChart.fulfilled, (state) => {
-        state.status = "succeeded";
+        state.applyrcstatus = "succeeded";
       })
       .addCase(applyRateChart.rejected, (state, action) => {
         state.error = action.payload;
-        state.status = "failed";
+        state.applyrcstatus = "failed";
       })
-      .addCase(fetchMilkCollRatechart.pending, (state) => {
-        state.status = "loading";
-      })
-      .addCase(fetchMilkCollRatechart.fulfilled, (state, action) => {
-        state.rateChart = action.payload;
-        state.status = "succeeded";
-      })
-      .addCase(fetchMilkCollRatechart.rejected, (state, action) => {
-        state.error = action.payload;
-        state.status = "failed";
-      })
+      // .addCase(fetchMilkCollRatechart.pending, (state) => {
+      //   state.status = "loading";
+      // })
+      // .addCase(fetchMilkCollRatechart.fulfilled, (state, action) => {
+      //   state.rateChart = action.payload;
+      //   state.status = "succeeded";
+      // })
+      // .addCase(fetchMilkCollRatechart.rejected, (state, action) => {
+      //   state.error = action.payload;
+      //   state.status = "failed";
+      // })
       .addCase(fetchselectedRateChart.pending, (state) => {
         state.status = "loading";
       })
@@ -269,10 +322,22 @@ const rateChartSlice = createSlice({
       .addCase(fetchselectedRateChart.rejected, (state, action) => {
         state.error = action.payload;
         state.status = "failed";
+      })
+      .addCase(updateRatechart.pending, (state) => {
+        state.updatestatus = "loading";
+      })
+      .addCase(updateRatechart.fulfilled, (state, action) => {
+        state.selectedRateChart = action.payload;
+        state.updatestatus = "succeeded";
+      })
+      .addCase(updateRatechart.rejected, (state, action) => {
+        state.error = action.payload;
+        state.updatestatus = "failed";
       });
   },
 });
 
-export const { updateProgress, resetProgress } = rateChartSlice.actions;
+export const { updateProgress, resetProgress, setData } =
+  rateChartSlice.actions;
 
 export default rateChartSlice.reducer;

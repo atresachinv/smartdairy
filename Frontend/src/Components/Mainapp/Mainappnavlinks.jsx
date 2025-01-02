@@ -10,7 +10,14 @@ import {
   BsBuildingFillGear,
   BsHouseGearFill,
 } from "react-icons/bs";
-import { FaGears } from "react-icons/fa6";
+import {
+  FaGears,
+  FaFileLines,
+  FaFileContract,
+  FaFileInvoice,
+  FaFileInvoiceDollar,
+} from "react-icons/fa6";
+import { IoDocuments } from "react-icons/io5";
 import { GrNotes, GrOrganization } from "react-icons/gr";
 import "../../Styles/Mainapp/Mainapphome.css";
 
@@ -125,27 +132,159 @@ const Mainappnavlinks = ({ setselected, handleSidebar }) => {
       ],
     },
     {
-      name: "Dairy",
-      icon: <BsCoin className="icon" />,
+      name: "Sales",
+      icon: <TbMilk className="icon" />,
       index: 5,
-      role: ["admin", "super_admin", "manager"],
+      role: ["super_admin", "admin", "manager"],
       submenus: [
         {
-          name: "Dairy Information",
-          icon: <GrOrganization className="icon" />,
+          name: "Main Ledger",
+          icon: <BsGridFill className="icon" />,
           index: 5.1,
           role: ["admin", "super_admin", "manager"],
         },
         {
-          name: "Initial Information",
+          name: "Sub Ledger",
           icon: <BsGridFill className="icon" />,
           index: 5.2,
           role: ["admin", "super_admin", "manager"],
         },
         {
-          name: "Create New Center",
+          name: "Customer Master",
           icon: <BsGridFill className="icon" />,
           index: 5.3,
+          role: ["admin", "super_admin", "manager"],
+        },
+        {
+          name: "Employee Master",
+          icon: <BsGridFill className="icon" />,
+          index: 5.4,
+          role: ["admin", "super_admin", "manager"],
+        },
+        {
+          name: "Milk Rate Master",
+          icon: <BsGridFill className="icon" />,
+          index: 5.5,
+          role: ["admin", "super_admin", "manager"],
+        },
+      ],
+    },
+    {
+      name: "Reports",
+      icon: <TbMilk className="icon" />,
+      index: 6,
+      role: ["super_admin", "admin", "manager"],
+      submenus: [
+        {
+          name: "Center Reports",
+          icon: <FaFileLines className="icon" />,
+          index: 6.1,
+          role: ["admin", "super_admin", "manager"],
+        },
+        {
+          name: "Milk Reports",
+          icon: <FaFileContract className="icon" />,
+          index: 6.2,
+          role: ["admin", "super_admin", "manager"],
+        },
+        {
+          name: "Customer Reports",
+          icon: <FaFileLines className="icon" />,
+          index: 6.3,
+          role: ["admin", "super_admin", "manager"],
+        },
+        {
+          name: "Employee Reports",
+          icon: <FaFileLines className="icon" />,
+          index: 6.4,
+          role: ["admin", "super_admin", "manager"],
+        },
+        {
+          name: "Inventory Reports",
+          icon: <FaFileInvoice className="icon" />,
+          index: 6.5,
+          role: ["admin", "super_admin", "manager"],
+        },
+        {
+          name: "Sales Reports",
+          icon: <FaFileInvoice className="icon" />,
+          index: 6.6,
+          role: ["admin", "super_admin", "manager"],
+        },
+        {
+          name: "Payment Reports",
+          icon: <FaFileInvoiceDollar className="icon" />,
+          index: 6.7,
+          role: ["admin", "super_admin", "manager"],
+        },
+        // {
+        //   name: "Milk Rate Master",
+        //   icon: <BsGridFill className="icon" />,
+        //   index: 6.5,
+        //   role: ["admin", "super_admin", "manager"],
+        // },
+      ],
+    },
+    {
+      name: "Payments",
+      icon: <TbMilk className="icon" />,
+      index: 7,
+      role: ["super_admin", "admin", "manager"],
+      submenus: [
+        {
+          name: "Main Ledger",
+          icon: <BsGridFill className="icon" />,
+          index: 7.1,
+          role: ["admin", "super_admin", "manager"],
+        },
+        {
+          name: "Sub Ledger",
+          icon: <BsGridFill className="icon" />,
+          index: 7.2,
+          role: ["admin", "super_admin", "manager"],
+        },
+        {
+          name: "Customer Master",
+          icon: <BsGridFill className="icon" />,
+          index: 7.3,
+          role: ["admin", "super_admin", "manager"],
+        },
+        {
+          name: "Employee Master",
+          icon: <BsGridFill className="icon" />,
+          index: 7.4,
+          role: ["admin", "super_admin", "manager"],
+        },
+        {
+          name: "Milk Rate Master",
+          icon: <BsGridFill className="icon" />,
+          index: 7.5,
+          role: ["admin", "super_admin", "manager"],
+        },
+      ],
+    },
+    {
+      name: "Dairy",
+      icon: <BsCoin className="icon" />,
+      index: 8,
+      role: ["admin", "super_admin", "manager"],
+      submenus: [
+        {
+          name: "Dairy Information",
+          icon: <GrOrganization className="icon" />,
+          index: 8.1,
+          role: ["admin", "super_admin", "manager"],
+        },
+        {
+          name: "Initial Information",
+          icon: <BsGridFill className="icon" />,
+          index: 8.2,
+          role: ["admin", "super_admin", "manager"],
+        },
+        {
+          name: "Create New Center",
+          icon: <BsGridFill className="icon" />,
+          index: 8.3,
           role: ["admin", "super_admin", "manager"],
         },
       ],
@@ -153,25 +292,25 @@ const Mainappnavlinks = ({ setselected, handleSidebar }) => {
     {
       name: "Settings",
       icon: <BsGearFill className="icon" />,
-      index: 6,
+      index: 9,
       role: ["super_admin", "admin", "manager"],
       submenus: [
         {
           name: "Dairy Settings",
           icon: <BsBuildingFillGear className="icon" />,
-          index: 6.1,
+          index: 9.1,
           role: ["super_admin", "admin", "manager"],
         },
         {
           name: "Inventory Settings",
           icon: <BsHouseGearFill className="icon" />,
-          index: 6.2,
+          index: 9.2,
           role: ["super_admin", "admin", "manager"],
         },
         {
           name: "Machine Settings",
           icon: <FaGears className="icon" />,
-          index: 6.3,
+          index: 9.3,
           role: ["super_admin", "admin", "manager"],
         },
       ],
@@ -218,13 +357,13 @@ const Mainappnavlinks = ({ setselected, handleSidebar }) => {
   return (
     <ul className="sidenav-btns">
       {filteredNavButtons.map((button) => (
-        <li key={button.index} className="py5">
+        <li key={button.index} className="main-navs py5">
           <div
             className="nav-link w90 d-flex"
             onClick={() => handleMainClick(button)}>
             <div className="nav-main w70">
               {button.icon}
-              <span className="px5 f-heading">{button.name}</span>
+              <span className="main-nav-text px5 f-heading">{button.name}</span>
             </div>
             {button.submenus && (
               <span className="submenu-arrow w10">

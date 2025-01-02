@@ -1,6 +1,6 @@
-import React from 'react'
-import Milkcollection from './Milkcollection';
-import CompleteMilkColl from './CompleteMilkColl';
+import React from "react";
+import Milkcollection from "./Milkcollection";
+import CompleteMilkColl from "./CompleteMilkColl";
 
 const OptionViews = ({ index }) => {
   switch (index) {
@@ -15,4 +15,4 @@ const OptionViews = ({ index }) => {
   }
 };
 
-export default OptionViews
+export default OptionViews;

@@ -1,8 +1,10 @@
 import React from "react";
 import { useSelector } from "react-redux";
+import { useTranslation } from "react-i18next";
 import "../../../../../Styles/Mainapp/Apphome/Appnavview/Milkcollection.css";
 
 const Milkcollelist = () => {
+  const { t } = useTranslation(["milkcollection", "common"]);
   // Retrieve milk collection data and sort in descending order
   const milkColl = useSelector((state) => state.milkCollection.entries || [])
     .slice()
@@ -11,7 +13,7 @@ const Milkcollelist = () => {
   return (
     <div className="milk-collection-list w100 h1 d-flex-col bg">
       <div className="title-container w100 h10 p10">
-        <h2 className="heading">Milk Collection List</h2>
+        <h2 className="heading">{t("m-coll-list")}</h2>
       </div>
       <div className="collection-list-container w100 h90 d-flex-col hidescrollbar p10">
         {milkColl.length > 0 ? (
@@ -24,12 +26,24 @@ const Milkcollelist = () => {
               <div className="line"></div>
               <div className="col-milk-info w100 h60 d-flex-col">
                 <div className="info-title w100 h50 d-flex sa">
-                  <span className="text w15 d-flex center">FAT</span>
-                  <span className="text w15 d-flex center">SNF</span>
-                  <span className="text w10 d-flex center">Deg</span>
-                  <span className="text w20 d-flex center">Liters</span>
-                  <span className="text w20 d-flex center">Rate</span>
-                  <span className="text w20 d-flex center">Amount</span>
+                  <span className="text w15 d-flex center">
+                    {t("common:c-fat")}
+                  </span>
+                  <span className="text w15 d-flex center">
+                    {t("common:c-snf")}
+                  </span>
+                  <span className="text w15 d-flex center">
+                    {t("common:c-deg")}
+                  </span>
+                  <span className="text w15 d-flex center">
+                    {t("common:c-liters")}
+                  </span>
+                  <span className="text w20 d-flex center">
+                    {t("common:c-rate")}
+                  </span>
+                  <span className="text w20 d-flex center">
+                    {t("common:c-amt")}
+                  </span>
                 </div>
                 <div className="info-value w100 h50 d-flex sa">
                   <span className="text w15 d-flex center">
@@ -38,10 +52,10 @@ const Milkcollelist = () => {
                   <span className="text w15 d-flex center">
                     {entry.snf || "00.0"}
                   </span>
-                  <span className="text w10 d-flex center">
+                  <span className="text w15 d-flex center">
                     {entry.degree || "00.0"}
                   </span>
-                  <span className="text w20 d-flex center">
+                  <span className="text w15 d-flex center">
                     {entry.liters || "00.0"}
                   </span>
                   <span className="text w20 d-flex center">
@@ -56,7 +70,7 @@ const Milkcollelist = () => {
           ))
         ) : (
           <div className="no-records w100 h1 d-flex center">
-            <span className="heading">No record found !</span>
+            <span className="label-text">{t("common:c-no-data-avai")}</span>
           </div>
         )}
       </div>

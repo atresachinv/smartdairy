@@ -5,10 +5,10 @@ import CustomerList from "./CustomerList";
 const CustomerNavViews = ({ index }) => {
   switch (index) {
     case 0:
-      return <CreateCustomer />;
+      return <CustomerList />;
       break;
     case 1:
-      return <CustomerList />;
+      return <CreateCustomer />;
       break;
 
     default:

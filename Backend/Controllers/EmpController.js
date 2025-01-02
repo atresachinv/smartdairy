@@ -45,7 +45,7 @@ dotenv.config({ path: "Backend/.env" });
 //         // Step 2: Insert into EmployeeMaster table
 //         const createEmployeeQuery = `
 //           INSERT INTO EmployeeMaster (
-//              dairy_id, center_id, emp_name , marathi_name, emp_mobile , emp_bankname , emp_accno , emp_ifsc , emp_city , emp_tal , emp_dist , createdon, createdby , designation , salary , pincode, emp_id
+//  dairy_id, center_id, emp_name , marathi_name, emp_mobile , emp_bankname , emp_accno , emp_ifsc , emp_city , emp_tal , emp_dist , createdon, createdby , designation , salary , pincode, emp_id
 //           ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 //         `;
 //
@@ -202,7 +202,7 @@ exports.createEmployee = async (req, res) => {
 
             const maxEmpId = results[0].maxEmpId || `1`;
             const newEmpId = maxEmpId + 1;
-            
+
             // Step 2: Insert into EmployeeMaster table
             const createEmployeeQuery = `
             INSERT INTO EmployeeMaster (
@@ -219,9 +219,9 @@ exports.createEmployee = async (req, res) => {
                 emp_name,
                 marathi_name,
                 mobile,
-                bankName,
-                bank_ac,
-                bankIFSC,
+                bankName || null,
+                bank_ac || null,
+                bankIFSC || null,
                 city,
                 tehsil,
                 district,
@@ -495,7 +495,95 @@ exports.deleteEmployee = async (req, res) => {
 // Employee List (Admin Route) ....................................
 //.................................................................
 
+// exports.employeeList = async (req, res) => {
+//   const dairy_id = req.user.dairy_id;
+//   const center_id = req.user.center_id;
+//
+//   pool.getConnection((err, connection) => {
+//     if (err) {
+//       console.error("Error getting MySQL connection: ", err);
+//       return res.status(500).json({ message: "Database connection error" });
+//     }
+//
+//     const deleteEmpQuery = `
+//       SELECT emp_name, emp_mobile, designation, salary , emp_id
+//       FROM EmployeeMaster
+//       WHERE dairy_id = ?
+//     `;
+//
+//     connection.query(deleteEmpQuery, [dairy_id, center_id], (error, result) => {
+//       connection.release();
+//
+//       if (error) {
+//         console.error("Error executing query: ", error);
+//         return res
+//           .status(500)
+//           .json({ message: "Error retrieving employee data" });
+//       }
+//
+//       return res.status(200).json({ empList: result });
+//     });
+//   });
+// };
+
+//v2 function
 exports.employeeList = async (req, res) => {
+  const dairy_id = req.user.dairy_id;
+  const center_id = req.user.center_id;
+
+  pool.getConnection((err, connection) => {
+    if (err) {
+      console.error("Error getting MySQL connection: ", err);
+      return res.status(500).json({ message: "Database connection error" });
+    }
+
+    try {
+      let query;
+      let queryParams;
+
+      if (center_id === 0) {
+        // Query for center_id = 0
+        query = `
+          SELECT emp_name, emp_mobile, designation, salary, emp_id
+          FROM EmployeeMaster
+          WHERE dairy_id = ?
+        `;
+        queryParams = [dairy_id];
+      } else {
+        // Query for center_id != 0
+        query = `
+          SELECT emp_name, emp_mobile, designation, salary, emp_id
+          FROM EmployeeMaster
+          WHERE dairy_id = ? AND center_id = ?
+        `;
+        queryParams = [dairy_id, center_id];
+      }
+
+      connection.query(query, queryParams, (error, result) => {
+        connection.release();
+
+        if (error) {
+          console.error("Error executing query: ", error);
+          return res
+            .status(500)
+            .json({ message: "Error retrieving employee data" });
+        }
+
+        return res.status(200).json({ empList: result });
+      });
+    } catch (error) {
+      connection.release();
+      console.error("Unexpected error: ", error);
+      return res.status(500).json({ message: "Unexpected server error" });
+    }
+  });
+};
+
+//.................................................................
+// Employee Details................................................
+//.................................................................
+
+exports.employeeDetails = async (req, res) => {
   const dairy_id = req.user.dairy_id;
   const center_id = req.user.center_id;
 

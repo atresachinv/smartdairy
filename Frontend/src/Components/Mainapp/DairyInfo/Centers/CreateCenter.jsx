@@ -223,12 +223,12 @@ const CreateCenter = () => {
   return (
     <div className="center-main-container w100 h1 d-flex center">
       <form
-        className="center-information-div w50 h90 d-flex-col sa bg p10"
+        className="center-information-div w50 h1 d-flex-col sa bg p10"
         onSubmit={handleSubmit}>
         <span className="heading h10">Create New Dairy Center</span>
         {/* Form Fields */}
         <div className="center-name-div w100 h15 d-flex-col sa">
-          <span className="label-text w100">
+          <span className="info-text w100">
             Marathi Name{" "}
             {errors.marathi_name && (
               <span className="text error-message">{errors.marathi_name}</span>
@@ -244,7 +244,7 @@ const CreateCenter = () => {
           />
         </div>
         <div className="center-name-div w100 h15 d-flex-col sa">
-          <span className="label-text w100">
+          <span className="info-text w100">
             English Name{" "}
             {errors.center_name && (
               <span className="text error-message">{errors.center_name}</span>
@@ -259,9 +259,9 @@ const CreateCenter = () => {
             required
           />
         </div>
-        <div className="center-add-data-div w100 h15 d-flex a-center sb">
-          <div className="center-details-div w20 d-flex-col sa">
-            <span className="label-text w100">Center No.</span>
+        <div className="center-add-data-div w100 h10 d-flex a-center sb">
+          <div className="center-details-div center-data w20 d-flex-col sa">
+            <span className="info-text w100">Center No.</span>
             <input
               className="data w100"
               type="number"
@@ -272,8 +272,8 @@ const CreateCenter = () => {
               required
             />
           </div>
-          <div className="center-details-div w20 d-flex-col sa">
-            <span className="label-text w100">
+          <div className="center-details-div center-data w20 d-flex-col sa">
+            <span className="info-text w100">
               Audit Class{" "}
               {errors.auditclass && (
                 <span className="text error-message">{errors.auditclass}</span>
@@ -286,8 +286,8 @@ const CreateCenter = () => {
               onChange={handleChange}
             />
           </div>
-          <div className="center-details-div w20 d-flex-col sa">
-            <span className="label-text w100">
+          <div className="center-details-div center-data w20 d-flex-col sa">
+            <span className="info-text w100">
               Register No.{" "}
               {errors.reg_no && (
                 <span className="text error-message">{errors.reg_no}</span>
@@ -300,8 +300,8 @@ const CreateCenter = () => {
               onChange={handleChange}
             />
           </div>
-          <div className="center-details-div w30 d-flex-col sa">
-            <span className="label-text w100">
+          <div className="center-details-div center-data w30 d-flex-col sa">
+            <span className="info-text w100">
               Register Date{" "}
               {errors.reg_date && (
                 <span className="text error-message">{errors.reg_date}</span>
@@ -317,7 +317,7 @@ const CreateCenter = () => {
         </div>
         <div className="center-add-data-div w100 h15 d-flex a-center sb">
           <div className="center-details-div w30 d-flex-col sa">
-            <span className="label-text">
+            <span className="info-text">
               Mobile{" "}
               {errors.mobile && (
                 <span className="text error-message">{errors.mobile}</span>
@@ -331,7 +331,7 @@ const CreateCenter = () => {
             />
           </div>
           <div className="center-details-div w60 d-flex-col sa">
-            <span className="label-text">
+            <span className="info-text">
               Email{" "}
               {errors.email && (
                 <span className="text error-message">{errors.email}</span>
@@ -345,9 +345,9 @@ const CreateCenter = () => {
             />
           </div>
         </div>
-        <div className="center-add-data-div w100 h15 d-flex a-center sb">
-          <div className="center-details-div w20 d-flex-col sa">
-            <span className="label-text w100">
+        <div className="center-add-data-div w100 h10 d-flex a-center sb">
+          <div className="center-details-div center-data w20 d-flex-col sa">
+            <span className="info-text w100">
               City{" "}
               {errors.city && (
                 <span className="text error-message">{errors.city}</span>
@@ -360,8 +360,8 @@ const CreateCenter = () => {
               onChange={handleChange}
             />
           </div>
-          <div className="center-details-div w25 d-flex-col sa">
-            <span className="label-text w100">
+          <div className="center-details-div center-data w25 d-flex-col sa">
+            <span className="info-text w100">
               Tehsil{" "}
               {errors.tehsil && (
                 <span className="text error-message">{errors.tehsil}</span>
@@ -374,8 +374,8 @@ const CreateCenter = () => {
               onChange={handleChange}
             />
           </div>
-          <div className="center-details-div w25 d-flex-col sa">
-            <span className="label-text w100">
+          <div className="center-details-div center-data w25 d-flex-col sa">
+            <span className="info-text w100">
               District{" "}
               {errors.district && (
                 <span className="text error-message">{errors.district}</span>
@@ -388,8 +388,8 @@ const CreateCenter = () => {
               onChange={handleChange}
             />
           </div>
-          <div className="center-details-div w20 d-flex-col sa">
-            <span className="label-text w100">
+          <div className="center-details-div center-data w20 d-flex-col sa">
+            <span className="info-text w100">
               Pincode{" "}
               {errors.pincode && (
                 <span className="text error-message">{errors.pincode}</span>
@@ -403,9 +403,50 @@ const CreateCenter = () => {
             />
           </div>
         </div>
-        <div className="center-add-data-div w100 h15 d-flex a-center sb">
-          <div className="center-details-div w45 d-flex-col sa">
-            <span className="label-text w100">
+        <div className="add-data-div w100 h10 d-flex a-center my10 sb">
+          <div className="center-pass-details-div w45">
+            <span className="text w100">Password</span>
+            <div className="password-input-container w100 d-flex a-center">
+              <input
+                className="pass w90"
+                type={showMPassword ? "text" : "password"}
+                name="password"
+                onChange={handleChange}
+              />
+              <span
+                className="eye-icon w10 d-flex a-center"
+                onClick={() => setShowPassword(!showPassword)}>
+                {showPassword ? (
+                  <IoMdEyeOff className="pss-eye" />
+                ) : (
+                  <IoMdEye className="pss-eye" />
+                )}
+              </span>
+            </div>
+          </div>
+          <div className="center-pass-details-div w45">
+            <span className="text w100">Confirm Password</span>
+            <div className="password-input-container d-flex a-center">
+              <input
+                className="pass w90"
+                type={showPassword ? "text" : "password"}
+                name="confirm_pass"
+                onChange={handleChange}
+              />
+              <span
+                className="eye-icon w10 d-flex a-center"
+                onClick={() => setShowPassword(!showPassword)} // Toggle password visibility
+              >
+                {showPassword ? (
+                  <IoMdEyeOff className="pss-eye" />
+                ) : (
+                  <IoMdEye className="pss-eye" />
+                )}
+              </span>
+            </div>
+          </div>
+          {/* <div className="data center-details-div w45 d-flex-col sa">
+            <span className="info-text w100">
               Password{" "}
               {errors.password && (
                 <span className="text error-message">{errors.password}</span>
@@ -429,9 +470,9 @@ const CreateCenter = () => {
                 )}
               </span>
             </div>
-          </div>
-          <div className="center-details-div w45 d-flex-col sa">
-            <span className="label-text w100">
+          </div> */}
+          {/* <div className="center-details-div w45 d-flex-col sa">
+            <span className="info-text w100">
               Confirm Password{" "}
               {errors.confirm_pass && (
                 <span className="text error-message">
@@ -457,7 +498,7 @@ const CreateCenter = () => {
                 )}
               </span>
             </div>
-          </div>
+          </div> */}
         </div>
         <button
           type="submit"

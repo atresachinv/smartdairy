@@ -379,7 +379,8 @@ const CompleteMilkColl = () => {
     <>
       <form
         onSubmit={handleCollection}
-        className="milk-col-form w60 h90 d-flex-col center bg p10">
+        className="complete-mobile-milk-coll w60 h90 d-flex-col center bg p10">
+        <span className="heading w100 h10 t-center">Complete Milk Collection </span>
         <div className="form-setting w100 h10 d-flex a-center sb">
           <div className="w40 d-flex a-center px10">
             <label htmlFor="" className="info-text w40">

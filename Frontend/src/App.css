@@ -15,6 +15,9 @@
 .w70 {
   width: 70%;
 }
+.w65 {
+  width: 65%;
+}
 .w60 {
   width: 60%;
 }
@@ -26,6 +29,9 @@
 }
 .w40 {
   width: 40%;
+}
+.w35 {
+  width: 35%;
 }
 .w30 {
   width: 30%;
@@ -270,6 +276,7 @@
 
 .data {
   padding: 10px;
+  font-size: 16px;
   border: 1px solid #cccccc;
   border-radius: 4px;
   background-color: #fcfbfb;
@@ -311,21 +318,22 @@
   cursor: pointer;
 }
 .title {
-  font-size: 20px;
+  font-size: clamp(14px, 3vw, 26px);
   font-weight: 600;
   color: #f16868;
   cursor: pointer;
 }
 .subtitle {
-  font-size: 18px;
-  font-weight: 500;
-  color: #ad8cf0;
+  font-size: clamp(16px, 3vw, 20px);
+  font-weight: 600;
+  color: #7235ed;
   cursor: pointer;
 }
+
 .heading {
-  font-size: 16px;
-  font-weight: 400;
-  color: #773cee;
+  font-size: clamp(16px, 2vw, 18px);
+  font-weight: 600;
+  color: #7235ed;
   cursor: pointer;
 }
 .f-heading {
@@ -335,49 +343,65 @@
   cursor: pointer;
 }
 .sub-heading {
-  font-size: 16px;
-  font-weight: 300;
+  font-size: clamp(10px, 2vw, 16px);
+  font-weight: 500;
   color: #0e0e0e;
   cursor: pointer;
 }
-.labeltext{
-  font-size: 16px;
+.labeltext {
+  font-size: clamp(14px, 2vw, 16px);
   font-weight: 400;
   color: #10062c;
   cursor: pointer;
 }
-.label-text {
-  font-size: 14px;
-  font-weight: 300;
-  /* margin-top: 5px; */
-  color: #121212;
-  cursor: pointer;
-}
+
 .f-label-text {
-  font-size: 14px;
-  font-weight: 300;
-  margin-top: 5px;
+  font-size: clamp(14px, 2vw, 16px);
+  font-weight: 400;
   color: #fff;
   cursor: pointer;
 }
+.label-text {
+  font-size: clamp(14px, 2vw, 16px);
+  font-weight: 400;
+  color: #083b64;
+  cursor: pointer;
+}
+
+.info-text {
+  font-size: clamp(14px, 2vw, 14px);
+  font-weight: 300;
+  /* margin-top: 5px; */
+}
+.f-info-text {
+  font-size: clamp(14px, 2vw, 14px);
+  font-weight: 400;
+  color: #ffffff;
+  /* margin-top: 5px; */
+}
+
 .text {
-  font-size: 14px;
+  font-size: clamp(12px, 2vw, 14px);
   font-weight: 300;
   margin-top: 5px;
   cursor: pointer;
 }
-.info-text {
-  font-size: 14px;
+/* .num-text {
+  font-size: clamp(10px, 2vw, 14px);
   font-weight: 300;
+  font-variant-numeric: tabular-nums;
   margin-top: 5px;
-}
+  cursor: pointer;
+} */
+
 .info-txt {
   font-size: 16px;
   color: #3c1e20;
   font-weight: 300;
   margin-top: 5px;
 }
-.noti-title{
+
+.noti-title {
   color: #34078e;
 }
 /* Titles and text */
@@ -420,6 +444,7 @@
 .bg6 {
   background-color: var(--bg-gray-color);
 }
+
 .bg {
   background-color: #ecfafd;
   border-radius: 8px;
@@ -499,97 +524,24 @@ body {
 @media screen and (max-width: 769px) {
   .data {
     padding: 5px;
+    font-size: 16px;
   }
   .react-tosts {
     font-size: 12px;
   }
   .w-btn {
     width: 70px;
-    height: 30px;
+    height: 35px;
   }
   .btn {
-    height: 30px;
-  }
-
-  /* font sizes */
-
-  .title1 {
-    font-size: 28px;
-    font-weight: 800;
-  }
-  .title {
-    font-size: 16px;
-    font-weight: 600;
-  }
-  .subtitle {
-    font-size: 16px;
-    font-weight: 500;
-  }
-  .heading {
-    font-size: 14px;
-    font-weight: 500;
-  }
-  .f-heading {
-    font-size: 14px;
-    font-weight: 400;
-  }
-  .sub-heading {
-    font-size: 14px;
-    font-weight: 400;
-  }
-  .label-text {
-    font-size: 12px;
-    font-weight: 400;
-  }
-  .text {
-    font-size: 12px;
-    font-weight: 400;
-  }
-  .info-text {
-    font-size: 10px;
-    font-weight: 400;
-  }
-  .info-txt {
-    font-size: 12px;
-    font-weight: 400;
+    height: 40px;
   }
 }
 @media screen and (max-width: 426px) {
-  /* font sizes */
-  .title1 {
-    font-size: 24px;
-    font-weight: 600;
-  }
-  .title {
-    font-size: 14px;
-    font-weight: 500;
-  }
-  .subtitle {
-    font-size: 14px;
-    font-weight: 500;
-  }
-  .heading {
-    font-size: 12px;
-    font-weight: 500;
-  }
-  .f-heading {
-    font-size: 12px;
-    font-weight: 400;
-  }
-  .sub-heading {
-    font-size: 14px;
-    font-weight: 400;
-  }
-  .label-text {
-    font-size: 10px;
-    font-weight: 400;
-  }
-  .text {
-    font-size: 10px;
-    font-weight: 400;
-  }
   .info-text {
-    font-size: 12px;
-    font-weight: 400;
+    margin: 5px 0;
+  }
+  .data {
+    font-size: 14px;
   }
 }
