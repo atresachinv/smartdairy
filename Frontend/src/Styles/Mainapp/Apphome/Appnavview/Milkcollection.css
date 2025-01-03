@@ -119,7 +119,7 @@
 
   .apphome-nav-views .mobile-milk-coll-form {
     width: 100%;
-    height: 55%;
+    height: 70%;
   }
   .form-setting {
     padding: 0 10px;
@@ -170,7 +170,9 @@
   .mobile-milk-collection-report .f-heading {
     display: none;
   }
-
+  .mobile-milk-collection-report .fetch-sankalan-div {
+    width: 100%;
+  }
   /* complete mobile milk collection form */
   .apphome-nav-views .complete-mobile-milk-coll {
     width: 100%;
