@@ -25,11 +25,11 @@ const Apphome = () => {
   }, [isselected]);
 
   //Store Milk Collection Ratechart to localstorage
-  useEffect(() => {
-    if (milkcollRatechart.length > 0) {
-      saveRatechart();
-    }
-  }, [milkcollRatechart]);
+ useEffect(() => {
+   if (milkcollRatechart && milkcollRatechart.length > 0) {
+     saveRatechart();
+   }
+ }, [milkcollRatechart]);
 
   const saveRatechart = () => {
     // Convert data to JSON and calculate size

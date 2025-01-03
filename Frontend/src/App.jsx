@@ -56,26 +56,52 @@ function App() {
     })
     .catch((err) => console.error("Error in onMessageListener:", err));
 
-  useEffect(() => {
-    // When the customer list is updated, store it in localStorage
-    if (!fcmToken) {
-      localStorage.setItem("fcmtoken", JSON.stringify("yes"));
-    }
-  }, [fcmToken]);
+  
 
-  useEffect(() => {
-    const fetchFCMToken = async () => {
-      try {
-        const token = await requestForToken();
-        if (fcmToken === null && profile.srno !== undefined) {
+  // useEffect(() => {
+  //   const fetchFCMToken = async () => {
+  //     try {
+  //       const token = await requestForToken();
+  //       if (fcmToken === null && profile.srno !== undefined) {
+  //         await dispatch(saveFCMTokenToDB({ token, cust_no: profile.srno }));
+  //       }
+  //     } catch (err) {
+  //       console.error("User declined Notification permission!");
+  //     }
+  //   };
+  //   fetchFCMToken();
+  // }, [profile.srno]);
+
+useEffect(() => {
+  const fetchFCMToken = async () => {
+    try {
+      const token = await requestForToken();
+      if (token) {
+        setFCMToken(token);
+        if (profile?.srno) {
           await dispatch(saveFCMTokenToDB({ token, cust_no: profile.srno }));
         }
-      } catch (err) {
-        console.error("User declined Notification permission!");
+      } else {
+        console.warn("No FCM token returned!");
       }
-    };
-    fetchFCMToken();
-  }, [profile.srno]);
+    } catch (err) {
+      console.error(
+        err.message === "Notification not granted!"
+          ? "User declined Notification permission!"
+          : "Error fetching FCM token.",
+        err
+      );
+    }
+  };
+  fetchFCMToken();
+}, [profile?.srno]);
+
+useEffect(() => {
+  // When the customer list is updated, store it in localStorage
+  if (!fcmToken) {
+    localStorage.setItem("fcmtoken", JSON.stringify("yes"));
+  }
+}, [fcmToken]);
 
   return (
     <>

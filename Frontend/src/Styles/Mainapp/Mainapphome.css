@@ -23,9 +23,17 @@
 .sidebar-list-item {
   cursor: pointer;
 }
+
+
+.main-nav-text{
+  font-size: clamp(14px, 3vw, 16px);
+}
+
 .submenu .submenu-item {
   padding-left: 40px;
+  font-size: clamp(14px, 3vw, 16px);
 }
+
 
 .sidenav-btns {
   cursor: pointer;

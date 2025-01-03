@@ -2,6 +2,8 @@ const jwt = require("jsonwebtoken");
 const dotenv = require("dotenv");
 const pool = require("../Configs/Database");
 dotenv.config({ path: "Backend/.env" });
+const NodeCache = require("node-cache");
+const cache = new NodeCache({});
 
 //.................................................................
 // Create Emp (Admin Route)........................................
@@ -45,7 +47,7 @@ dotenv.config({ path: "Backend/.env" });
 //         // Step 2: Insert into EmployeeMaster table
 //         const createEmployeeQuery = `
 //           INSERT INTO EmployeeMaster (
-//  dairy_id, center_id, emp_name , marathi_name, emp_mobile , emp_bankname , emp_accno , emp_ifsc , emp_city , emp_tal , emp_dist , createdon, createdby , designation , salary , pincode, emp_id
+//              dairy_id, center_id, emp_name , marathi_name, emp_mobile , emp_bankname , emp_accno , emp_ifsc , emp_city , emp_tal , emp_dist , createdon, createdby , designation , salary , pincode, emp_id
 //           ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 //         `;
 //
@@ -184,7 +186,7 @@ exports.createEmployee = async (req, res) => {
 
       try {
         // Step 1: Find the maximum emp_id and increment it
-        const findMaxEmpIdQuery = `SELECT MAX(emp_id) AS maxEmpId FROM EmployeeMaster WHERE dairy_id = ? AND center_id = ?`;
+        const findMaxEmpIdQuery = `SELECT MAX(emp_id) AS maxEmpId FROM employeemaster WHERE dairy_id = ? AND center_id = ?`;
 
         connection.query(
           findMaxEmpIdQuery,
@@ -200,12 +202,12 @@ exports.createEmployee = async (req, res) => {
               });
             }
 
-            const maxEmpId = results[0].maxEmpId || `1`;
+            const maxEmpId = results[0].maxEmpId || 0;
             const newEmpId = maxEmpId + 1;
 
             // Step 2: Insert into EmployeeMaster table
             const createEmployeeQuery = `
-            INSERT INTO EmployeeMaster (
+            INSERT INTO employeemaster (
               dairy_id, center_id, emp_name, marathi_name, emp_mobile, emp_bankname, emp_accno, emp_ifsc, 
               emp_city, emp_tal, emp_dist, createdon, createdby, designation, salary, pincode, emp_id
             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
@@ -302,6 +304,10 @@ exports.createEmployee = async (req, res) => {
                 );
               }
             );
+
+            // Remove the cached employee list
+            const cacheKey = `employeeList_${dairy_id}_${center_id}`;
+            cache.del(cacheKey);
           }
         );
       } catch (error) {
@@ -319,9 +325,9 @@ exports.createEmployee = async (req, res) => {
 // Find Employee By Code To update ................................
 //.................................................................
 
+//v2
 exports.findEmpByCode = async (req, res) => {
   const { code } = req.body;
-  console.log(code);
 
   const dairy_id = req.user.dairy_id;
   const center_id = req.user.center_id;
@@ -349,17 +355,61 @@ exports.findEmpByCode = async (req, res) => {
             .status(500)
             .json({ message: "Error retrieving employee data" });
         }
-
-        return res.status(200).json({ employee: result });
+        return res.status(200).json({ employee: result[0] });
       }
     );
   });
 };
 
+//v3
+// exports.findEmpByCode = async (req, res) => {
+//   const { code } = req.body;
+//
+//   const dairy_id = req.user.dairy_id;
+//   const center_id = req.user.center_id;
+//
+//   let connection;
+//
+//   try {
+//     // Get MySQL connection
+//     connection = await pool.getConnection();
+//
+//     const findEmpQuery = `
+//       SELECT * FROM EmployeeMaster
+//       WHERE dairy_id = ? AND center_id = ? AND emp_id = ?
+//     `;
+//
+//     // Execute the query
+//     connection.query(
+//       findEmpQuery,
+//       [dairy_id, center_id, code],
+//       (error, result) => {
+//         if (error) {
+//           console.error("Error executing query: ", error);
+//           return res
+//             .status(500)
+//             .json({ message: "Error retrieving employee data" });
+//         }
+//
+//         return res.status(200).json({ employee: result[0] });
+//       }
+//     );
+//   } catch (error) {
+//     console.error("Unexpected error: ", error);
+//     return res.status(500).json({ message: "Unexpected error occurred" });
+//   } finally {
+//     // Ensure the connection is released
+//     if (connection) {
+//       connection.release();
+//     }
+//   }
+// };
+
 //.................................................................
 // Update Emp Info (Admin Route) ..................................
 //.................................................................
 
+//v2
 exports.updateEmployee = async (req, res) => {
   const {
     code,
@@ -427,6 +477,9 @@ exports.updateEmployee = async (req, res) => {
           if (results.affectedRows === 0) {
             return res.status(404).json({ message: "Employee not found" });
           }
+          // Remove the cached employee list
+          const cacheKey = `employeeList_${dairy_id}_${center_id}`;
+          cache.del(cacheKey);
 
           return res
             .status(200)
@@ -445,6 +498,7 @@ exports.updateEmployee = async (req, res) => {
 // Delete Emp (Admin Route) .......................................
 //.................................................................
 
+//v2
 exports.deleteEmployee = async (req, res) => {
   const { emp_id } = req.body;
 
@@ -459,7 +513,7 @@ exports.deleteEmployee = async (req, res) => {
 
     try {
       const deleteEmpQuery = `
-        DELETE FROM  EmployeeMaster
+        DELETE FROM EmployeeMaster
         WHERE dairy_id = ? AND center_id = ? AND emp_id = ?
       `;
 
@@ -471,23 +525,27 @@ exports.deleteEmployee = async (req, res) => {
 
           if (error) {
             console.error("Error executing query: ", error);
-            return res.status(500).json({ message: "Error updating customer" });
+            return res.status(500).json({ message: "Error deleting employee" });
           }
 
           if (results.affectedRows === 0) {
             return res.status(404).json({ message: "Employee not found" });
           }
 
+          // Remove the cached employee list
+          const cacheKey = `employeeList_${dairy_id}_${center_id}`;
+          cache.del(cacheKey);
+
           return res
             .status(200)
-            .json({ message: "Employee Deleted successfully" });
+            .json({ message: "Employee deleted successfully" });
         }
       );
     } catch (error) {
       connection.release();
       console.error("Error processing request: ", error);
       return res.status(500).json({ message: "Internal server error" });
-    }
+    } 
   });
 };
 
@@ -495,38 +553,6 @@ exports.deleteEmployee = async (req, res) => {
 // Employee List (Admin Route) ....................................
 //.................................................................
 
-// exports.employeeList = async (req, res) => {
-//   const dairy_id = req.user.dairy_id;
-//   const center_id = req.user.center_id;
-//
-//   pool.getConnection((err, connection) => {
-//     if (err) {
-//       console.error("Error getting MySQL connection: ", err);
-//       return res.status(500).json({ message: "Database connection error" });
-//     }
-//
-//     const deleteEmpQuery = `
-//       SELECT emp_name, emp_mobile, designation, salary , emp_id
-//       FROM EmployeeMaster
-//       WHERE dairy_id = ?
-//     `;
-//
-//     connection.query(deleteEmpQuery, [dairy_id, center_id], (error, result) => {
-//       connection.release();
-//
-//       if (error) {
-//         console.error("Error executing query: ", error);
-//         return res
-//           .status(500)
-//           .json({ message: "Error retrieving employee data" });
-//       }
-//
-//       return res.status(200).json({ empList: result });
-//     });
-//   });
-// };
-
-//v2 function
 exports.employeeList = async (req, res) => {
   const dairy_id = req.user.dairy_id;
   const center_id = req.user.center_id;
@@ -587,29 +613,110 @@ exports.employeeDetails = async (req, res) => {
   const dairy_id = req.user.dairy_id;
   const center_id = req.user.center_id;
 
+  if (!dairy_id) {
+    return res.status(400).json({ message: "Dairy ID not found!" });
+  }
+
+  // Construct the cache key
+  const cacheKey = `employeeList_${dairy_id}_${center_id}`;
+
+  // Check if data is already cached
+  const cachedData = cache.get(cacheKey);
+  if (cachedData) {
+    return res.status(200).json({ empList: cachedData });
+  }
+
+  // If cache miss, query the database
   pool.getConnection((err, connection) => {
     if (err) {
       console.error("Error getting MySQL connection: ", err);
       return res.status(500).json({ message: "Database connection error" });
     }
-
-    const deleteEmpQuery = `
-      SELECT emp_name, emp_mobile, designation, salary , emp_id
+    try {
+      const emplist = `
+      SELECT emp_name, emp_mobile, designation, salary, emp_id
       FROM EmployeeMaster
       WHERE dairy_id = ? AND center_id = ?
     `;
 
-    connection.query(deleteEmpQuery, [dairy_id, center_id], (error, result) => {
+      connection.query(emplist, [dairy_id, center_id], (error, result) => {
+        connection.release(); // Release connection back to the pool
+
+        if (error) {
+          console.error("Error executing query: ", error);
+          return res
+            .status(500)
+            .json({ message: "Error retrieving employee data" });
+        }
+
+        // Cache the result for future requests
+        cache.set(cacheKey, result);
+
+        // Return the result
+        return res.status(200).json({ empList: result });
+      });
+    } catch (error) {
       connection.release();
-
-      if (error) {
-        console.error("Error executing query: ", error);
-        return res
-          .status(500)
-          .json({ message: "Error retrieving employee data" });
-      }
-
-      return res.status(200).json({ empList: result });
-    });
+      console.error("Error processing request: ", error);
+      return res.status(500).json({ message: "Internal server error" });
+    }
   });
 };
+
+//v3
+// exports.employeeList = async (req, res) => {
+//   const dairy_id = req.user.dairy_id;
+//   const center_id = req.user.center_id;
+//
+//   if (!dairy_id) {
+//     return res.status(400).json({ message: "Dairy ID not found!" });
+//   }
+//
+//   // Construct the cache key
+//   const cacheKey = `employeeList_${dairy_id}_${center_id}`;
+//
+//   try {
+//     // Check if data is already cached
+//     const cachedData = cache.get(cacheKey);
+//     if (cachedData) {
+//       return res.status(200).json({ empList: cachedData });
+//     }
+//
+//     // If cache miss, query the database
+//     pool.getConnection((err, connection) => {
+//       if (err) {
+//         console.error("Error getting MySQL connection: ", err);
+//         return res.status(500).json({ message: "Database connection error" });
+//       }
+//
+//       const emplist = `
+//         SELECT emp_name, emp_mobile, designation, salary, emp_id
+//         FROM EmployeeMaster
+//         WHERE dairy_id = ? AND center_id = ?
+//       `;
+//
+//       connection.query(emplist, [dairy_id, center_id], (error, result) => {
+//         // Release connection back to the pool
+//         connection.release();
+//
+//         if (error) {
+//           console.error("Error executing query: ", error);
+//           return res
+//             .status(500)
+//             .json({ message: "Error retrieving employee data" });
+//         }
+//
+//         // Cache the result for future requests
+//         cache.set(cacheKey, result);
+//
+//         // Return the result
+//         return res.status(200).json({ empList: result });
+//       });
+//     });
+//   } catch (error) {
+//     console.error("Unexpected error: ", error);
+//     return res.status(500).json({ message: "Unexpected error occurred" });
+//   } finally {
+//     connection.release();
+//   }
+// };

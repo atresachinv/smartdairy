@@ -38,6 +38,8 @@ const CustDeductions = () => {
       );
     }
   };
+  
+  // console.log(deduction);
 
   return (
     <div className="deduction-info-container w100 h1 d-flex-col">
@@ -50,14 +52,14 @@ const CustDeductions = () => {
             <BsCalendar3 />
           </span>
           <select
-            className="custom-select sub-heading w80 h1 p10"
+            className="custom-select label-text w80 h1 p10"
             onChange={handleSelectChange}>
-            <option className="sub-heading w100 d-flex">
+            <option className="label-text w100 d-flex">
               --{t("c-select-master")}--
             </option>
             {manualMaster.map((dates, index) => (
               <option
-                className="sub-heading w100 d-flex sa"
+                className="label-text w100 d-flex sa"
                 key={index}
                 value={index}>
                 {new Date(dates.start).toLocaleDateString("en-GB", {

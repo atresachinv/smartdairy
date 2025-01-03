@@ -40,7 +40,7 @@ export const listCustomer = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const response = await axiosInstance.post("/customer/list");
-      return response.data; // return the response data
+      return response.data.customerList; // return the response data
     } catch (error) {
       return rejectWithValue(error.response?.data || error.message);
     }
@@ -82,7 +82,7 @@ const customerSlice = createSlice({
       })
       .addCase(listCustomer.fulfilled, (state, action) => {
         state.status = "succeeded";
-        state.customerlist = action.payload.customerList; // Replace the customer list with the fetched data
+        state.customerlist = action.payload; // Replace the customer list with the fetched data
       })
       .addCase(listCustomer.rejected, (state, action) => {
         state.status = "failed";

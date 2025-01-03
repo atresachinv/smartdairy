@@ -281,16 +281,16 @@ const CollectionReport = () => {
           <BsCalendar3 />
         </span>
         <select
-          className="custom-select sub-heading w80 h1 p10"
+          className="custom-select label-text w80 h1 p10"
           onChange={handleSelectChange}
           aria-label={t("c-select-master")}>
-          <option className="sub-heading w100 d-flex" value="">
+          <option className="label-text w100 d-flex" value="">
             --{t("c-select-master")}--
           </option>
           {Array.isArray(manualMaster) && manualMaster.length > 0 ? (
             manualMaster.map((dates, index) => (
               <option
-                className="sub-heading w100 d-flex sa"
+                className="label-text w100 d-flex sa"
                 key={`${dates.start}-${dates.end}-${index}`}
                 value={index}>
                 {new Date(dates.start).toLocaleDateString("en-GB", {

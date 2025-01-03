@@ -4,6 +4,7 @@ import axiosInstance from "../../axiosInstance"; // Adjust the path as necessary
 // Initial state
 const initialState = {
   status: "idle",
+  updateDDstatus: "idle",
   error: null,
   userData: null,
   dairyData: {},
@@ -95,15 +96,15 @@ const registerSlice = createSlice({
       })
       // Handle dairy update actions
       .addCase(updateDairyDetails.pending, (state) => {
-        state.loading = true;
+        state.updateDDstatus = "loading";
       })
       .addCase(updateDairyDetails.fulfilled, (state, action) => {
-        state.loading = false;
-        state.success = true; // Mark the update as successful
+        state.updateDDstatus = false;
+        state.success = "succeeded"; // Mark the update as successful
         state.dairyData = { ...state.dairyData, ...action.payload };
       })
       .addCase(updateDairyDetails.rejected, (state, action) => {
-        state.loading = false;
+        state.updateDDstatus = "failed";
         state.error = action.payload; // Capture the error
       });
   },

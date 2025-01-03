@@ -314,12 +314,13 @@ const MilkReports = () => {
             </select>
           </div>
           <div className="fillter-results-container w100 h90 d-flex-c0l mh90 hidescrollbar sa">
+            
             {Object.keys(groupedData).map((key) => (
               <div key={key} className="fillter-data-headings-customers-div">
                 {groupedData[key].map((record) => (
                   <div className="custome-info-div w100 h10 d-flex px10">
-                    <span className="labeltext w50">Name: {record.cname}</span>
                     <span className="labeltext w20">Code: {record.rno}</span>
+                    <span className="labeltext w50">Name: {record.cname}</span>
                   </div>
                 ))}
                 <div className="collection-data-container w100 mh100 hidescrollbar d-flex-col sa bg">
@@ -352,6 +353,7 @@ const MilkReports = () => {
                 </div>
               </div>
             ))}
+           
           </div>
         </div>
 

@@ -4,12 +4,14 @@ import { BiLogOutCircle } from "react-icons/bi";
 import { useNavigate } from "react-router-dom";
 import applogo from "../../assets/samrtdairylogo.png";
 import Mainappnavlinks from "./Mainappnavlinks";
+
 import axios from "axios";
 import "../../Styles/Mainapp/Sidebar.css";
 import { useSelector } from "react-redux";
 
 const Sidebar = ({ setselected, handleSidebar }) => {
   const navigate = useNavigate();
+
   axios.defaults.baseURL = import.meta.env.VITE_BASE_URI;
   axios.defaults.withCredentials = true;
 
@@ -20,6 +22,8 @@ const Sidebar = ({ setselected, handleSidebar }) => {
       await axios.post("/logout");
       await localStorage.removeItem("customerlist");
       await localStorage.removeItem("milkentries");
+      await localStorage.removeItem("literCount");
+      await localStorage.removeItem("collCount");
 
       if (userRole === "milkcollector" || userRole === "mobilecollector") {
         localStorage.setItem("selectedNavIndex", 1);

@@ -2,6 +2,8 @@ const jwt = require("jsonwebtoken");
 const dotenv = require("dotenv");
 const pool = require("../Configs/Database");
 dotenv.config({ path: "Backend/.env" });
+const NodeCache = require("node-cache");
+const cache = new NodeCache({});
 
 //..................................................
 // Create New Customer (Admin Route)................
@@ -530,53 +532,6 @@ exports.updateCustomer = async (req, res) => {
 //     try {
 //       const dairy_id = req.user.dairy_id;
 //       const center_id = req.user.center_id;
-//       if (!dairy_id) {
-//         console.log("Unauthorized User!");
-//         connection.release();
-//       }
-//
-//       const getCustList = `
-//         SELECT cid, cname, Phone, fax, City, tal, dist, cust_accno, createdby,
-//                createdon, mobile, isSabhasad, rno, orgid, engName, rateChartNo,
-//                centerid, srno, cust_pincode, cust_addhar, cust_farmerid, cust_bankname,
-//                cust_ifsc, caste, gender, milktype ,isActive ,
-//         FROM customer
-//         WHERE orgid = ? AND centerid = ?
-//       `;
-//
-//       connection.query(getCustList, [dairy_id, center_id], (err, result) => {
-//         connection.release(); // Release the connection back to the pool
-//
-//         if (err) {
-//           console.error("Error executing query: ", err); // Correct error reference
-//           return res
-//             .status(500)
-//             .json({ message: "Error fetching customer list" });
-//         }
-//
-//         return res.status(200).json({
-//           customerList: result, // Return the entire result array
-//           message: "Customer list retrieved successfully", // Updated message
-//         });
-//       });
-//     } catch (error) {
-//       connection.release();
-//       console.error("Error processing request: ", error);
-//       return res.status(500).json({ message: "Internal server error" });
-//     }
-//   });
-// };
-
-// exports.customerList = async (req, res) => {
-//   pool.getConnection((err, connection) => {
-//     if (err) {
-//       console.error("Error getting MySQL connection: ", err);
-//       return res.status(500).json({ message: "Database connection error" });
-//     }
-//
-//     try {
-//       const dairy_id = req.user.dairy_id;
-//       const center_id = req.user.center_id;
 //
 //       // Check for unauthorized access
 //       if (!dairy_id) {
@@ -640,7 +595,7 @@ exports.customerList = async (req, res) => {
         SELECT cid, cname, Phone, fax, City, tal, dist, cust_accno, createdby, 
                createdon, mobile, isSabhasad, rno, orgid, engName, rateChartNo, 
                centerid, srno, cust_pincode, cust_addhar, cust_farmerid, cust_bankname, 
-               cust_ifsc, caste, gender, milktype, isActive
+               cust_ifsc, caste, gender, milktype, isActive , rcName
         FROM customer 
         WHERE orgid = ? AND centerid = ?
       `;
@@ -671,6 +626,7 @@ exports.customerList = async (req, res) => {
 //..................................................
 // Get list of unique RateCharts....................
 //..................................................
+
 exports.uniqueRchartList = async (req, res) => {
   const dairy_id = req.user.dairy_id;
   const center_id = req.user.center_id;
@@ -683,7 +639,7 @@ exports.uniqueRchartList = async (req, res) => {
 
     try {
       const geturcList = `
-       SELECT DISTINCT rateChartNo FROM customer WHERE orgid = ? AND centerid = ?
+       SELECT DISTINCT rcName FROM customer WHERE orgid = ? AND centerid = ?
       `;
 
       connection.query(geturcList, [dairy_id, center_id], (err, result) => {
@@ -812,6 +768,38 @@ exports.custDashboardInfo = async (req, res) => {
 // Profile Info..........................
 // ......................................
 
+// exports.profileInfo = async (req, res) => {
+//   pool.getConnection((err, connection) => {
+//     if (err) {
+//       console.error("Error getting MySQL connection: ", err);
+//       return res.status(500).json({ message: "Database connection error" });
+//     }
+//     try {
+//       const user_id = req.user.user_id;
+//
+//       if (!user_id) {
+//         return res.status(400).json({ message: "User ID not found!" });
+//       }
+//
+//       const profileInfo = `SELECT cname, City, cust_pincode, mobile, cust_addhar, cust_farmerid, cust_bankname, cust_accno, cust_ifsc,  srno FROM customer WHERE fax =?`;
+//
+//       connection.query(profileInfo, [user_id], (err, result) => {
+//         connection.release();
+//         if (err) {
+//           console.error("Error executing summary query: ", err);
+//           return res.status(500).json({ message: "query execution error" });
+//         }
+//         const profileInfo = result[0];
+//         res.status(200).json({ profileInfo });
+//       });
+//     } catch (error) {
+//       console.error("Error processing request: ", error);
+//       return res.status(500).json({ message: "Internal server error" });
+//     }
+//   });
+// };
+
+//v2 function
 exports.profileInfo = async (req, res) => {
   pool.getConnection((err, connection) => {
     if (err) {
@@ -825,15 +813,23 @@ exports.profileInfo = async (req, res) => {
         return res.status(400).json({ message: "User ID not found!" });
       }
 
-      const profileInfo = `SELECT cname, City, cust_pincode, mobile, cust_addhar, cust_farmerid, cust_bankname, cust_accno, cust_ifsc,  srno FROM customer WHERE fax =?`;
+      // Check if the profileInfo is already in the cache
+      const cachedProfile = cache.get(`profile_${user_id}`);
+      if (cachedProfile) {
+        return res.status(200).json({ profileInfo: cachedProfile });
+      }
 
-      connection.query(profileInfo, [user_id], (err, result) => {
+      const profileInfoQuery = `SELECT cname, City, cust_pincode, mobile, cust_addhar, cust_farmerid, cust_bankname, cust_accno, cust_ifsc, srno FROM customer WHERE fax =?`;
+
+      connection.query(profileInfoQuery, [user_id], (err, result) => {
         connection.release();
         if (err) {
           console.error("Error executing summary query: ", err);
-          return res.status(500).json({ message: "query execution error" });
+          return res.status(500).json({ message: "Query execution error" });
         }
         const profileInfo = result[0];
+        // Store the profileInfo in the cache with a unique key
+        cache.set(`profile_${user_id}`, profileInfo);
         res.status(200).json({ profileInfo });
       });
     } catch (error) {
@@ -925,7 +921,79 @@ exports.profileInfo = async (req, res) => {
 
 //new
 
-exports.milkReport = async (req, res) => {
+// exports.milkReport = async (req, res) => {
+//   const { fromDate, toDate } = req.body;
+//
+//   pool.getConnection((err, connection) => {
+//     if (err) {
+//       console.error("Error getting MySQL connection: ", err);
+//       return res.status(500).json({ message: "Database connection error" });
+//     }
+//
+//     try {
+//       const dairy_id = req.user.dairy_id;
+//       const user_code = req.user.user_code;
+//
+//       if (!dairy_id) {
+//         connection.release();
+//         return res.status(400).json({ message: "Dairy ID not found!" });
+//       }
+//
+//       const dairy_table = `dailymilkentry_${dairy_id}`;
+//
+//       const combinedQuery = `
+//         SELECT
+//           ReceiptDate, ME, CB, Litres, fat, snf, Rate, Amt,
+//           summary.totalLiters,
+//           summary.avgFat,
+//           summary.avgSNF,
+//           summary.avgRate,
+//           summary.totalAmount
+//         FROM ${dairy_table}
+//         JOIN (
+//           SELECT
+//             SUM(Litres) AS totalLiters,
+//             AVG(fat) AS avgFat,
+//             AVG(snf) AS avgSNF,
+//             AVG(Rate) AS avgRate,
+//             SUM(Amt) AS totalAmount
+//           FROM ${dairy_table}
+//           WHERE ReceiptDate BETWEEN ? AND ? AND AccCode = ?
+//         ) AS summary
+//         WHERE ReceiptDate BETWEEN ? AND ? AND AccCode = ?
+//         ORDER BY ReceiptDate ASC;
+//       `;
+//
+//       connection.query(
+//         combinedQuery,
+//         [fromDate, toDate, user_code, fromDate, toDate, user_code],
+//         (err, results) => {
+//           connection.release();
+//
+//           if (err) {
+//             console.error("Error executing query: ", err);
+//             return res.status(500).json({ message: "Query execution error" });
+//           }
+//
+//           const summaryData = {
+//             totalLiters: results[0].totalLiters,
+//             avgFat: results[0].avgFat,
+//             avgSNF: results[0].avgSNF,
+//             avgRate: results[0].avgRate,
+//             totalAmount: results[0].totalAmount,
+//           };
+//
+//           res.status(200).json({ records: results, summary: summaryData });
+//         }
+//       );
+//     } catch (error) {
+//       console.error("Error processing request: ", error);
+//       return res.status(500).json({ message: "Internal server error" });
+//     }
+//   });
+// };
+
+exports.milkcollReport = async (req, res) => {
   const { fromDate, toDate } = req.body;
 
   pool.getConnection((err, connection) => {
@@ -945,49 +1013,25 @@ exports.milkReport = async (req, res) => {
 
       const dairy_table = `dailymilkentry_${dairy_id}`;
 
-      const combinedQuery = `
-        SELECT 
-          ReceiptDate, ME, CB, Litres, fat, snf, Rate, Amt,
-          summary.totalLiters, 
-          summary.avgFat, 
-          summary.avgSNF, 
-          summary.avgRate, 
-          summary.totalAmount
-        FROM ${dairy_table}
-        JOIN (
+      const milkcollDataQuery = `
           SELECT 
-            SUM(Litres) AS totalLiters,
-            AVG(fat) AS avgFat,
-            AVG(snf) AS avgSNF,
-            AVG(Rate) AS avgRate,
-            SUM(Amt) AS totalAmount
+             ReceiptDate, ME, CB, Litres, fat, snf, Rate, Amt
           FROM ${dairy_table}
           WHERE ReceiptDate BETWEEN ? AND ? AND AccCode = ?
-        ) AS summary
-        WHERE ReceiptDate BETWEEN ? AND ? AND AccCode = ?
         ORDER BY ReceiptDate ASC;
       `;
 
       connection.query(
-        combinedQuery,
-        [fromDate, toDate, user_code, fromDate, toDate, user_code],
-        (err, results) => {
+        milkcollDataQuery,
+        [fromDate, toDate, user_code],
+        (err, result) => {
           connection.release();
 
           if (err) {
             console.error("Error executing query: ", err);
             return res.status(500).json({ message: "Query execution error" });
           }
-
-          const summaryData = {
-            totalLiters: results[0].totalLiters,
-            avgFat: results[0].avgFat,
-            avgSNF: results[0].avgSNF,
-            avgRate: results[0].avgRate,
-            totalAmount: results[0].totalAmount,
-          };
-
-          res.status(200).json({ records: results, summary: summaryData });
+          res.status(200).json({ records: result });
         }
       );
     } catch (error) {

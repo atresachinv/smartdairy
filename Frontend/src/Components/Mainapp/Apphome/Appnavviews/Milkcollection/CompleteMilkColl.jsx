@@ -5,8 +5,11 @@ import {
   updateMobileColl,
 } from "../../../../../App/Features/Mainapp/Milk/MilkCollectionSlice";
 import { toast } from "react-toastify";
+import "../../../../../Styles/Mainapp/Apphome/Appnavview/Milkcollection.css";
+import { useTranslation } from "react-i18next";
 
 const CompleteMilkColl = () => {
+  const { t } = useTranslation(["milkcollection", "common"]);
   const dispatch = useDispatch();
   const colldata = useSelector(
     (state) => state.milkCollection.mobileCollection
@@ -39,8 +42,6 @@ const CompleteMilkColl = () => {
   };
 
   const [values, setValues] = useState(initialValues);
-
-  console.log(values);
 
   const validateField = (name, value) => {
     let error = {};
@@ -142,6 +143,42 @@ const CompleteMilkColl = () => {
       ...prevErrors,
       ...fieldError,
     }));
+  };
+
+  // used for decimal input correction
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+
+    // Validate and allow only numeric input with an optional single decimal point
+    if (value === "" || /^[0-9]*\.?[0-9]*$/.test(value)) {
+      setValues((prev) => ({
+        ...prev,
+        [name]: value,
+      }));
+
+      // Clear previous errors if the input is valid
+      setErrors((prevErrors) => {
+        const { [name]: removedError, ...rest } = prevErrors;
+        return rest; // Remove the specific error for this field
+      });
+    } else {
+      // Set an error for invalid input
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        [name]:
+          "Invalid input. Only numbers and one decimal point are allowed.",
+      }));
+      return; // Stop further processing if input is invalid
+    }
+
+    // Normalize the value only when it's a valid integer and greater than 9
+    if (/^\d+$/.test(value) && value.length > 1) {
+      const normalizedValue = (parseInt(value, 10) / 10).toFixed(1);
+      setValues((prev) => ({
+        ...prev,
+        [name]: normalizedValue,
+      }));
+    }
   };
 
   //.......................................................................................
@@ -382,16 +419,18 @@ const CompleteMilkColl = () => {
         className="complete-mobile-milk-coll w60 h90 d-flex-col center bg p10">
         <span className="heading w100 h10 t-center">Complete Milk Collection </span>
         <div className="form-setting w100 h10 d-flex a-center sb">
-          <div className="w40 d-flex a-center px10">
-            <label htmlFor="" className="info-text w40">
-              Date <span className="req">*</span>{" "}
+          <div className="w45 d-flex a-center px10">
+            <label htmlFor="date" className="info-text w30">
+              {t("common:c-date")}
+              <span className="req">*</span>{" "}
             </label>
             <input
-              className={`data w60 ${errors.date ? "input-error" : ""}`}
+              className={`data w70 ${errors.date ? "input-error" : ""}`}
               type="date"
               required
               placeholder="0000"
               name="date"
+              id="date"
               onChange={handleInputs}
               value={values.date || ""}
               max={values.date}
@@ -416,8 +455,8 @@ const CompleteMilkColl = () => {
         </div>
         <div className="user-details w100 h20 d-flex ">
           <div className="form-div w30 px10">
-            <label htmlFor="" className="info-text ">
-              SampleNo <span className="req">*</span>{" "}
+            <label htmlFor="sample" className="info-text ">
+              {t("m-sample-no")} <span className="req">*</span>{" "}
             </label>
             <input
               className={`data ${errors.sample ? "input-error" : ""}`}
@@ -425,27 +464,29 @@ const CompleteMilkColl = () => {
               required
               placeholder="00"
               name="sample"
+              id="sample"
               value={values.sample}
               onChange={handleInputs}
             />
           </div>
           <div className="form-div w20 px10">
-            <label htmlFor="" className="info-text">
-              Code <span className="req">*</span>{" "}
+            <label htmlFor="code" className="info-text">
+              {t("m-cust-code")} <span className="req">*</span>{" "}
             </label>
             <input
               className={`data ${errors.code ? "input-error" : ""}`}
               type="number"
               placeholder="0000"
               name="code"
+              id="code"
               value={values.code}
               onChange={handleInputs}
               readOnly
             />
           </div>
           <div className="form-div w50 px10">
-            <label htmlFor="" className="info-text">
-              Enter User Name <span className="req">*</span>{" "}
+            <label htmlFor="cname" className="info-text">
+              {t("m-cust-name")} <span className="req">*</span>{" "}
             </label>
             <input
               className={`data ${errors.cname ? "input-error" : ""}`}
@@ -453,6 +494,7 @@ const CompleteMilkColl = () => {
               required
               placeholder="smartdairy user"
               name="cname"
+              id="cname"
               value={values.cname}
               readOnly
             />
@@ -463,8 +505,8 @@ const CompleteMilkColl = () => {
           <div className="milk-details w100 h90 d-flex">
             <div className="milk-info w50 h1 ">
               <div className="form-div px10">
-                <label htmlFor="" className="info-text">
-                  Litters <span className="req">*</span>{" "}
+                <label htmlFor="liters" className="info-text">
+                  {t("common:c-liters")} <span className="req">*</span>{" "}
                 </label>
                 <input
                   className={`data ${errors.liters ? "input-error" : ""}`}
@@ -472,14 +514,15 @@ const CompleteMilkColl = () => {
                   required
                   placeholder="00.0"
                   name="liters"
+                  id="liters"
                   onChange={handleInputs}
                   value={values.liters}
                   readOnly
                 />
               </div>
               <div className="form-div  px10">
-                <label htmlFor="" className="info-text">
-                  FAT-1 <span className="req">*</span>{" "}
+                <label htmlFor="fat" className="info-text">
+                  {t("common:c-fat")} <span className="req">*</span>{" "}
                 </label>
                 <input
                   className={`data ${errors.fat ? "input-error" : ""}`}
@@ -487,13 +530,14 @@ const CompleteMilkColl = () => {
                   required
                   placeholder="0.0"
                   name="fat"
-                  onChange={handleInputs}
+                  id="fat"
+                  onChange={handleInputChange}
                   value={values.fat}
                 />
               </div>
               <div className="form-div px10">
-                <label htmlFor="" className="info-text">
-                  SNF-1 <span className="req">*</span>{" "}
+                <label htmlFor="snf" className="info-text">
+                  {t("common:c-snf")} <span className="req">*</span>{" "}
                 </label>
                 <input
                   className={`data ${errors.snf ? "input-error" : ""}`}
@@ -501,15 +545,16 @@ const CompleteMilkColl = () => {
                   required
                   placeholder="00.0"
                   name="snf"
+                  id="snf"
                   value={values.snf}
-                  onChange={handleInputs}
+                  onChange={handleInputChange}
                 />
               </div>
             </div>
             <div className="milk-info w50 h1 d-flex-col">
               <div className="form-div px10">
-                <label htmlFor="" className="info-text">
-                  Degree <span className="req">*</span>{" "}
+                <label htmlFor="degree" className="info-text">
+                  {t("common:c-deg")} <span className="req">*</span>{" "}
                 </label>
                 <input
                   className={`data ${errors.degree ? "input-error" : ""}`}
@@ -518,13 +563,14 @@ const CompleteMilkColl = () => {
                   disabled
                   placeholder="00.0"
                   name="degree"
+                  id="degree"
                   value={values.degree}
                   onChange={handleInputs}
                 />
               </div>
               <div className="form-div px10">
-                <label htmlFor="" className="info-text">
-                  Rate <span className="req">*</span>{" "}
+                <label htmlFor="rate" className="info-text">
+                  {t("common:c-rate")} <span className="req">*</span>{" "}
                 </label>
                 <input
                   className={`data ${errors.rate ? "input-error" : ""}`}
@@ -533,12 +579,13 @@ const CompleteMilkColl = () => {
                   readOnly
                   placeholder="00.0"
                   name="rate"
+                  id="rate"
                   value={values.rate}
                 />
               </div>
               <div className="form-div px10">
-                <label htmlFor="" className="info-text">
-                  Amount <span className="req">*</span>{" "}
+                <label htmlFor="amt" className="info-text">
+                  {t("common:c-amt")} <span className="req">*</span>{" "}
                 </label>
                 <input
                   className={`data ${errors.amt ? "input-error" : ""}`}
@@ -547,6 +594,7 @@ const CompleteMilkColl = () => {
                   readOnly
                   placeholder="00.0"
                   name="amt"
+                  id="amt"
                   value={values.amt}
                 />
               </div>
@@ -554,11 +602,11 @@ const CompleteMilkColl = () => {
           </div>
         </div>
         <div className="form-btns w100 h10 d-flex a-center j-end">
-          <button className="w-btn " type="reset">
-            Cancel
+          <button className="w-btn  label-text" type="reset">
+            {t("m-btn-cancel")}
           </button>
-          <button className="w-btn mx10" type="submit">
-            Save
+          <button className="w-btn label-text mx10" type="submit">
+            {t("m-btn-save")}
           </button>
         </div>
       </form>

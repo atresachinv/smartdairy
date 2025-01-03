@@ -6,10 +6,10 @@ import { toast } from 'react-toastify';
 // Thunk for login
 export const loginUser = createAsyncThunk(
   'auth/loginUser',
-  async (credentials, { rejectWithValue }) => {
+  async (values, { rejectWithValue }) => {
     try {
-      const response = await axios.post('/login', credentials);
-      return response.data; // Contains user_role
+      const response = await axios.post('/login', values);
+      return response.data.user_role; // Contains user_role
     } catch (err) {
       const errorMessage = err.response?.data?.message || 'Login failed';
       toast.error(errorMessage);
@@ -60,7 +60,7 @@ const authSlice = createSlice({
         state.error = null;
       })
       .addCase(loginUser.fulfilled, (state, action) => {
-        state.userRole = action.payload.user_role;
+        state.userRole = action.payload;
         state.isAuthenticated = true;
         state.loading = false;
       })

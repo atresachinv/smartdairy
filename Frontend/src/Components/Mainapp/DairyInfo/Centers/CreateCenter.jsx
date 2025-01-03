@@ -13,14 +13,14 @@ const CreateCenter = () => {
   const dispatch = useDispatch();
   const dairy_id = useSelector((state) => state.dairy.dairyData.SocietyCode);
   const centerId = useSelector((state) => state.center.maxId.centerId);
-  const status = useSelector((state) => state.center.status);
+  const status = useSelector((state) => state.center.createcstatus);
   const date = useSelector((state) => state.date.toDate);
 
   const [loading, setLoading] = useState(true);
   const [errors, setErrors] = useState({});
   const [prefixString, setPrefixString] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [showMPassword, setShowMPassword] = useState(false);
+  const [showCPassword, setShowCPassword] = useState(false);
 
   //   // Generate prefix string on component mount
   //   useEffect(() => {
@@ -51,11 +51,9 @@ const CreateCenter = () => {
     district: "",
     pincode: "",
     password: "",
-    confirm_pass: "", // Add confirm_pass field
     date: date,
     prefix: prefixString,
   });
-  console.log(formData);
 
   useEffect(() => {
     const generatePrefix = () => {
@@ -67,7 +65,6 @@ const CreateCenter = () => {
       }
       setPrefixString(prefix);
     };
-
     generatePrefix();
   }, []);
 
@@ -95,10 +92,11 @@ const CreateCenter = () => {
     }));
 
     const fieldError = validateField(name, value);
-    setErrors((prevErrors) => ({
-      ...prevErrors,
-      ...fieldError,
-    }));
+    setErrors((prevErrors) => {
+      const updatedErrors = { ...prevErrors, ...fieldError };
+      if (!value) delete updatedErrors[name]; // Clear error if field is empty
+      return updatedErrors;
+    });
   };
 
   const validateField = (name, value) => {
@@ -194,11 +192,16 @@ const CreateCenter = () => {
       "password",
       "confirm_pass",
     ];
+
     const validationErrors = {};
     fieldsToValidate.forEach((field) => {
-      const fieldError = validateField(field, formData[field]);
-      Object.assign(validationErrors, fieldError);
+      const fieldError = validateField(field, values[field]);
+      if (Object.keys(fieldError).length > 0) {
+        validationErrors[field] = fieldError[field];
+      }
     });
+
+    setErrors(validationErrors);
     return validationErrors;
   };
 
@@ -235,9 +238,10 @@ const CreateCenter = () => {
             )}
           </span>
           <input
-            className="data w100"
+            className={`data w100 ${errors.date ? "input-error" : ""}`}
             type="text"
             name="marathi_name"
+            id="marathi_name"
             placeholder="सेंटरचे नाव"
             onChange={handleChange}
             required
@@ -251,9 +255,10 @@ const CreateCenter = () => {
             )}{" "}
           </span>
           <input
-            className="data w100"
+            className={`data w100 ${errors.date ? "input-error" : ""}`}
             type="text"
             name="center_name"
+            id="center_name"
             placeholder="Center Name"
             onChange={handleChange}
             required
@@ -263,9 +268,10 @@ const CreateCenter = () => {
           <div className="center-details-div center-data w20 d-flex-col sa">
             <span className="info-text w100">Center No.</span>
             <input
-              className="data w100"
+              className={`data w100 ${errors.date ? "input-error" : ""}`}
               type="number"
               name="center_id"
+              id="center_id"
               value={formData.center_id}
               onChange={handleChange}
               disabled
@@ -280,9 +286,10 @@ const CreateCenter = () => {
               )}
             </span>
             <input
-              className="data w100"
+              className={`data w100 ${errors.date ? "input-error" : ""}`}
               type="text"
               name="auditclass"
+              id="auditclass"
               onChange={handleChange}
             />
           </div>
@@ -294,9 +301,10 @@ const CreateCenter = () => {
               )}
             </span>
             <input
-              className="data w100"
+              className={`data w100 ${errors.date ? "input-error" : ""}`}
               type="number"
               name="reg_no"
+              id="reg_no"
               onChange={handleChange}
             />
           </div>
@@ -308,9 +316,10 @@ const CreateCenter = () => {
               )}
             </span>
             <input
-              className="data w100"
+              className={`data w100 ${errors.date ? "input-error" : ""}`}
               type="date"
               name="reg_date"
+              id="reg_date"
               onChange={handleChange}
             />
           </div>
@@ -324,9 +333,10 @@ const CreateCenter = () => {
               )}
             </span>
             <input
-              className="data w100"
+              className={`data w100 ${errors.date ? "input-error" : ""}`}
               type="text"
               name="mobile"
+              id="mobile"
               onChange={handleChange}
             />
           </div>
@@ -338,9 +348,10 @@ const CreateCenter = () => {
               )}
             </span>
             <input
-              className="data w100"
+              className={`data w100 ${errors.date ? "input-error" : ""}`}
               type="email"
               name="email"
+              id="email"
               onChange={handleChange}
             />
           </div>
@@ -354,9 +365,10 @@ const CreateCenter = () => {
               )}
             </span>
             <input
-              className="data w100"
+              className={`data w100 ${errors.date ? "input-error" : ""}`}
               type="text"
               name="city"
+              id="city"
               onChange={handleChange}
             />
           </div>
@@ -368,9 +380,10 @@ const CreateCenter = () => {
               )}
             </span>
             <input
-              className="data w100"
+              className={`data w100 ${errors.date ? "input-error" : ""}`}
               type="text"
               name="tehsil"
+              id="tehsil"
               onChange={handleChange}
             />
           </div>
@@ -382,9 +395,10 @@ const CreateCenter = () => {
               )}
             </span>
             <input
-              className="data w100"
+              className={`data w100 ${errors.date ? "input-error" : ""}`}
               type="text"
               name="district"
+              id="district"
               onChange={handleChange}
             />
           </div>
@@ -396,9 +410,10 @@ const CreateCenter = () => {
               )}
             </span>
             <input
-              className="data w100"
+              className={`data w100 ${errors.date ? "input-error" : ""}`}
               type="text"
               name="pincode"
+              id="pincode"
               onChange={handleChange}
             />
           </div>
@@ -455,15 +470,15 @@ const CreateCenter = () => {
             <div className="password-input-container w100 d-flex sb">
               <input
                 className="pass w90"
-                type={showMPassword ? "text" : "password"}
+                type={showPassword ? "text" : "password"}
                 name="password"
+                id="pass"
                 onChange={handleChange}
               />
               <span
-                className="eye-icon w15 d-flex a-center"
-                onClick={() => setShowMPassword(!showMPassword)} // Toggle password visibility
-              >
-                {showMPassword ? (
+                className="eye-icon w10 d-flex a-center"
+                onClick={() => setShowPassword(!showPassword)}>
+                {showPassword ? (
                   <IoMdEyeOff className="pss-eye" />
                 ) : (
                   <IoMdEye className="pss-eye" />
@@ -483,15 +498,15 @@ const CreateCenter = () => {
             <div className="password-input-container w100 d-flex sb">
               <input
                 className="pass w90"
-                type={showPassword ? "text" : "password"}
+                type={showCPassword ? "text" : "password"}
                 name="confirm_pass"
+                id="confirm_pass"
                 onChange={handleChange}
               />
               <span
-                className="eye-icon w15 d-flex a-center"
-                onClick={() => setShowPassword(!showPassword)} // Toggle password visibility
-              >
-                {showPassword ? (
+                className="eye-icon w10 d-flex a-center"
+                onClick={() => setShowCPassword(!showCPassword)}>
+                {showCPassword ? (
                   <IoMdEyeOff className="pss-eye" />
                 ) : (
                   <IoMdEye className="pss-eye" />

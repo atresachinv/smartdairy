@@ -51,7 +51,10 @@
   background-color: #fcfbfb;
 }
 .password-input-container:hover {
+<<<<<<< HEAD
   box-shadow: 1px 2px 2px #fcfbfb;
+=======
+>>>>>>> 7baf9bb618f3d73d8ed0f1a9d2d52236a2d7af66
   border: 1px solid #7235ed;
   -webkit-box-shadow: 1px 2px 16px -4px rgba(117, 111, 117, 1);
   -moz-box-shadow: 1px 2px 16px -4px rgba(117, 111, 117, 1);
@@ -65,7 +68,7 @@
   padding: 10px;
   border: none;
   border-radius: 4px;
-  background-color: #fcfbfb;
+  background-color: transparent;
 }
 .pass:focus {
   outline: none;
@@ -97,6 +100,10 @@
     margin-top: 50px;
     width: 100%;
   }
+<<<<<<< HEAD
+=======
+
+>>>>>>> 7baf9bb618f3d73d8ed0f1a9d2d52236a2d7af66
   .pass {
     padding: 5px;
   }
@@ -116,16 +123,28 @@
     width: 80%;
     margin: 0 10%;
   }
+
   .remember-me-div {
     text-align: start;
   }
+
   .account-check-div {
     text-align: center;
   }
+<<<<<<< HEAD
   .password-input-container {
     padding: 0;
   }
   .pass {
     padding: 5px;
+=======
+
+  .password-input-container {
+    padding: 0;
+  }
+
+  .pass {
+    padding: 6px;
+>>>>>>> 7baf9bb618f3d73d8ed0f1a9d2d52236a2d7af66
   }
 }

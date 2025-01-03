@@ -26,15 +26,16 @@ const Customers = () => {
   
 
   return (
-    <div className="customer-container w100 h100 d-flex-col">
-      <CustNavbar
-        handleBackButton={handleBackButton}
-        setselected={setIsselected}
-      />
-      <div className="customer-nav-view-container w100 h90 d-flex">
-        <Custnavviews setselected={setIsselected} index={isselected} />
+  
+      <div className="customer-container w100 h100 d-flex-col">
+        <CustNavbar
+          handleBackButton={handleBackButton}
+          setselected={setIsselected}
+        />
+        <div className="customer-nav-view-container w100 h90 d-flex">
+          <Custnavviews setselected={setIsselected} index={isselected} />
+        </div>
       </div>
-    </div>
   );
 };
 

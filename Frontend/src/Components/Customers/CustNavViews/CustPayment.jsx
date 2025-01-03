@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { BsCalendar3 } from "react-icons/bs";
 import Spinner from "../../Home/Spinner/Spinner";
@@ -23,6 +23,8 @@ const CustPayment = () => {
   const payment = useSelector((state) => state.payment.payment);
   const status = useSelector((state) => state.mMilk.status);
   const [selectedPeriod, setSelectedPeriod] = useState(null);
+
+  console.log(payment);
 
   const handleSelectChange = (e) => {
     const selectedIndex = e.target.value;
@@ -70,14 +72,14 @@ const CustPayment = () => {
             <BsCalendar3 />
           </span>
           <select
-            className="custom-select sub-heading w80 h1 p10"
+            className="custom-select w80 h1 p10"
             onChange={handleSelectChange}>
-            <option className="sub-heading w100 d-flex">
+            <option className="label-text w100 d-flex">
               --{t("c-select-master")}--
             </option>
             {manualMaster.map((dates, index) => (
               <option
-                className="sub-heading w100 d-flex sa"
+                className="label-text w100 d-flex sa"
                 key={index}
                 value={index}>
                 {new Date(dates.start).toLocaleDateString("en-GB", {
@@ -224,7 +226,7 @@ const CustPayment = () => {
               </div>
             </div>
             {/* deduction info */}
-            <div className="deduction-summary-div w100 h50 d-flex-col py10 bg">
+            <div className="deduction-summary-div w100 h60 d-flex-col py10 bg">
               <span className="heading px10">{t("c-pay-details")} : </span>
               {payment.length > 0 ? (
                 <div className="deduction-info-details w100 h1 d-flex-col p10">
@@ -267,6 +269,20 @@ const CustPayment = () => {
                       <span className="label-text">{t("c-t-deduct")} :</span>
                       <span className="info-text">
                         {payment[0]?.damt || "N/A"}
+                      </span>
+                    </div>
+                    <div className="rate w100 h1 d-flex sb">
+                      <span className="label-text">{t("c-last-dedu")} :</span>
+                      <span className="info-text">
+                        {"0.0"}
+                      </span>
+                    </div>
+                    <div className="rate w100 h1 d-flex sb">
+                      <span className="label-text">
+                        {t("c-remaining-dedu")} :
+                      </span>
+                      <span className="info-text">
+                        {"0.0"}
                       </span>
                     </div>
                     <div className="rate w100 h1 d-flex sb">

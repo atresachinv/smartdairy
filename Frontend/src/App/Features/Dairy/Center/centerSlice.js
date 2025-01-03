@@ -4,10 +4,11 @@ import axiosInstance from "../../../axiosInstance"; // Adjust the path as necess
 // Initial state
 const initialState = {
   status: "idle",
+  createcstatus: "idle",
   error: null,
   maxId: null,
-  centerData: {}, 
-  centersList: [], 
+  centerData: {},
+  centersList: [],
   loading: false,
   success: false,
 };
@@ -118,15 +119,15 @@ const centerSlice = createSlice({
       })
       // Handle center creation actions
       .addCase(createCenter.pending, (state) => {
-        state.loading = true;
+        state.createcstatus = "loading";
       })
       .addCase(createCenter.fulfilled, (state, action) => {
-        state.loading = false;
+        state.createcstatus = "succeeded";
         state.success = true;
         state.centerData = { ...state.centerData, ...action.payload };
       })
       .addCase(createCenter.rejected, (state, action) => {
-        state.loading = false;
+        state.createcstatus = "failed";
         state.error = action.payload;
       })
       // Handle fetching single center details

@@ -20,11 +20,11 @@ const CenterList = ({ onEdit }) => {
     <div className="center-list-container w100 h1 d-flex-col p10">
       <div className="center-list-div w100 h1 d-flex-col bg">
         <div className="table-titles w100 h10 d-flex a-center t-center hidescrollbar sb">
-          <span className="label-text w5">Edit</span>
+          {/* <span className="label-text w5">Edit</span> */}
           <span className="label-text w5">No.</span>
           <span className="label-text w30">Center Name</span>
           <span className="label-text w10">Reg. No</span>
-          <span className="label-text w10">Reg. Date</span>
+          <span className="label-text w15">Reg. Date</span>
           <span className="label-text w10">Mobile</span>
           <span className="label-text w25">Email</span>
           <span className="label-text w15">City</span>
@@ -54,7 +54,7 @@ const CenterList = ({ onEdit }) => {
               <span className="label-text w5">{center.center_id}</span>
               <span className="label-text w30">{center.center_name}</span>
               <span className="label-text w10">{center.reg_no}</span>
-              <span className="label-text w10">
+              <span className="label-text w15">
                 {formatDate(center.reg_date)}
               </span>
               <span className="label-text w10">{center.mobile}</span>
