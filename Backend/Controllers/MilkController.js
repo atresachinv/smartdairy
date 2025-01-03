@@ -1615,7 +1615,6 @@ exports.updateMobileCollection = async (req, res) => {
 
 exports.allMilkCollReport = async (req, res) => {
   const { fromDate, toDate } = req.query; // Read from `req.query`
-  console.log(fromDate, toDate);
 
   pool.getConnection((err, connection) => {
     if (err) {
