@@ -522,56 +522,6 @@ exports.updateCustomer = async (req, res) => {
 //Fetch Customers List .........................................
 //..............................................................
 
-// exports.customerList = async (req, res) => {
-//   pool.getConnection((err, connection) => {
-//     if (err) {
-//       console.error("Error getting MySQL connection: ", err);
-//       return res.status(500).json({ message: "Database connection error" });
-//     }
-//
-//     try {
-//       const dairy_id = req.user.dairy_id;
-//       const center_id = req.user.center_id;
-//
-//       // Check for unauthorized access
-//       if (!dairy_id) {
-//         console.log("Unauthorized User!");
-//         connection.release();
-//         return res.status(400).json({ message: "Unauthorized User!" });
-//       }
-//
-//       const getCustList = `
-//         SELECT cid, cname, Phone, fax, City, tal, dist, cust_accno, createdby,
-//                createdon, mobile, isSabhasad, rno, orgid, engName, rateChartNo,
-//                centerid, srno, cust_pincode, cust_addhar, cust_farmerid, cust_bankname,
-//                cust_ifsc, caste, gender, milktype, isActive
-//         FROM customer
-//         WHERE orgid = ? AND centerid = ?
-//       `;
-//
-//       connection.query(getCustList, [dairy_id, center_id], (err, result) => {
-//         connection.release(); // Always release the connection after query execution
-//
-//         if (err) {
-//           console.error("Error executing query: ", err); // Correct error reference
-//           return res
-//             .status(500)
-//             .json({ message: "Error fetching customer list" });
-//         }
-//
-//         return res.status(200).json({
-//           customerList: result, // Return the entire result array
-//           message: "Customer list retrieved successfully", // Updated message
-//         });
-//       });
-//     } catch (error) {
-//       connection.release();
-//       console.error("Error processing request: ", error);
-//       return res.status(500).json({ message: "Internal server error" });
-//     }
-//   });
-// };
-
 exports.customerList = async (req, res) => {
   pool.getConnection((err, connection) => {
     if (err) {
@@ -582,21 +532,18 @@ exports.customerList = async (req, res) => {
     try {
       const dairy_id = req.user.dairy_id;
       const center_id = req.user.center_id;
-
-      console.log(dairy_id, center_id);
-
       // Check for unauthorized access
-      if (!dairy_id || !center_id) {
+      if (!dairy_id) {
         connection.release();
         return res.status(400).json({ message: "Unauthorized User!" });
       }
 
       const getCustList = `
-        SELECT cid, cname, Phone, fax, City, tal, dist, cust_accno, createdby, 
-               createdon, mobile, isSabhasad, rno, orgid, engName, rateChartNo, 
-               centerid, srno, cust_pincode, cust_addhar, cust_farmerid, cust_bankname, 
-               cust_ifsc, caste, gender, milktype, isActive , rcName
-        FROM customer 
+        SELECT cid, cname, Phone, fax, City, tal, dist, cust_accno, createdby,
+               createdon, mobile, isSabhasad, rno, orgid, engName, rateChartNo,
+               centerid, srno, cust_pincode, cust_addhar, cust_farmerid, cust_bankname,
+               cust_ifsc, caste, gender, milktype, isActive
+        FROM customer
         WHERE orgid = ? AND centerid = ?
       `;
 
@@ -609,7 +556,7 @@ exports.customerList = async (req, res) => {
             .status(500)
             .json({ message: "Error fetching customer list" });
         }
-        
+
         return res.status(200).json({
           customerList: result, // Return the entire result array
           message: "Customer list retrieved successfully", // Updated message
@@ -622,6 +569,7 @@ exports.customerList = async (req, res) => {
     }
   });
 };
+
 
 //..................................................
 // Get list of unique RateCharts....................

@@ -1271,6 +1271,7 @@ exports.mobileMilkCollection = async (req, res) => {
 //v2 function
 exports.fetchMobileMilkColl = async (req, res) => {
   const { date } = req.query;
+
   pool.getConnection((err, connection) => {
     if (err) {
       console.error("Error getting MySQL connection: ", err);
@@ -1281,7 +1282,6 @@ exports.fetchMobileMilkColl = async (req, res) => {
       const dairy_id = req.user.dairy_id;
       const user = req.user.user_id;
       const center_id = req.user.center_id;
-
       // Check if dairy_id, user_role, and center_id are available
       if (!dairy_id) {
         connection.release();

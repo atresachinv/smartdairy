@@ -1,6 +1,9 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { mobileMilkCollection } from "../../../../../App/Features/Mainapp/Milk/MilkCollectionSlice";
+import {
+  mobileMilkCollection,
+  mobilePrevLiters,
+} from "../../../../../App/Features/Mainapp/Milk/MilkCollectionSlice";
 import { toast } from "react-toastify";
 import { listCustomer } from "../../../../../App/Features/Customers/customerSlice";
 import { useTranslation } from "react-i18next";
@@ -11,6 +14,7 @@ const MilkSankalan = () => {
   const { t } = useTranslation(["common", "milkcollection"]);
   const tDate = useSelector((state) => state.date.toDate);
   const { customerlist, loading } = useSelector((state) => state.customer);
+  const PrevLiters = useSelector((state) => state.milkCollection.PrevLiters);
   const [collCount, setCollCount] = useState(
     Number(localStorage.getItem("collCount")) || 0
   );
@@ -27,6 +31,7 @@ const MilkSankalan = () => {
     code: "",
     animal: 0,
     liters: "",
+    prevliters: "",
     cname: "",
     sample: "",
     acccode: "",
@@ -45,6 +50,7 @@ const MilkSankalan = () => {
 
   useEffect(() => {
     dispatch(listCustomer());
+    dispatch(mobilePrevLiters());
   }, []);
 
   useEffect(() => {
@@ -61,6 +67,24 @@ const MilkSankalan = () => {
       setCustomerList(JSON.parse(storedCustomerList));
     }
   }, []);
+
+  //finding Customers Previous Liters
+  const findPrevLitersByCode = (code) => {
+    if (!code) {
+      setValues((prev) => ({ ...prev, prevliters: 0 }));
+      return;
+    }
+    // Ensure the code is a string for comparison
+    const prevLiters = PrevLiters.find(
+      (liters) => liters.rno.toString() === code
+    );
+
+    if (prevLiters) {
+      setValues((prev) => ({ ...prev, prevliters: prevLiters.Litres }));
+    } else {
+      setValues((prev) => ({ ...prev, prevliters: 0 })); // Clear cname if not found
+    }
+  };
 
   //finding customer name
   const findCustomerByCode = (code) => {
@@ -88,6 +112,7 @@ const MilkSankalan = () => {
       if (values.code.length >= 1) {
         // Adjust length as necessary
         findCustomerByCode(values.code);
+        findPrevLitersByCode(values.code);
       }
     }, 500);
     return () => clearTimeout(handler);
@@ -193,7 +218,7 @@ const MilkSankalan = () => {
 
     setIsSaving(true); // Disable button
     try {
-      await dispatch(mobileMilkCollection(values));
+      dispatch(mobileMilkCollection(values));
       setValues(initialValues);
       toast.success("Milk Collection Saved Successfully!");
       setCollCount(collCount + 1);
@@ -233,7 +258,7 @@ const MilkSankalan = () => {
               {literCount.toFixed(2)}
             </label>
           </div>
-          {/* <button
+          <button
             className="w-btn"
             onClick={() => {
               setCollCount(0);
@@ -241,8 +266,8 @@ const MilkSankalan = () => {
               localStorage.removeItem("collCount");
               localStorage.removeItem("literCount");
             }}>
-            clear
-          </button> */}
+            {t("milkcollection:m-btn-reset")}
+          </button>
         </div>
         <div className="form-setting w100 h10 d-flex a-center sa">
           <div className="form-date w40 d-flex a-center sa">
@@ -320,6 +345,7 @@ const MilkSankalan = () => {
               <div className="form-div px10">
                 <label htmlFor="liters" className="info-text">
                   {t("c-liters")} <span className="req">*</span>{" "}
+                  <span className="heading mx10">{values.prevliters}</span>
                 </label>
                 <input
                   id="liters"

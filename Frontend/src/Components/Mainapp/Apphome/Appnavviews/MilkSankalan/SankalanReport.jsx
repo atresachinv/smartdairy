@@ -22,6 +22,7 @@ const SankalanReport = () => {
     setFilteredData(mobileMilkReport);
   }, []);
 
+
   const calculateTotalLiters = (data) => {
     return data.reduce((total, item) => total + parseFloat(item.Litres), 0);
   };
@@ -148,7 +149,7 @@ const SankalanReport = () => {
 
   const handleMilkColletorData = (e) => {
     e.preventDefault();
-    console.log("exicuted", values);
+    console.log("exicuted", values.date);
     dispatch(mobileMilkCollReport({ date: values.date }));
   };
 

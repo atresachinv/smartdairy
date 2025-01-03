@@ -15,6 +15,8 @@ const CustomerList = () => {
   useEffect(() => {
     dispatch(listCustomer());
   }, []);
+  
+  console.log("customerlist", customerlist);
 
   const downloadExcel = () => {
     if (!Array.isArray(customerlist) || customerlist.length === 0) {
