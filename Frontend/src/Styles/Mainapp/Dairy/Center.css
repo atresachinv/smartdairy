@@ -5,13 +5,13 @@
   overflow-x: auto;
 }
 .table-titles {
-  min-width: 1200px;
+  min-width: 1400px;
   position: sticky;
   top: 0;
   background-color: antiquewhite;
 }
 .table-data {
-  min-width: 1200px;
+  min-width: 1400px;
 }
 
 .label-text .icons {
@@ -45,7 +45,7 @@
     flex-wrap: wrap;
     gap: 5px;
   }
-  .add-data-div .center-pass-details-div{
+  .add-data-div .center-pass-details-div {
     flex: 2 1 150px;
   }
 }
@@ -57,7 +57,7 @@
   .center-main-container .center-information-div {
     width: 100%;
   }
-  .center-add-data-div .center-data{
+  .center-add-data-div .center-data {
     flex-direction: column;
   }
 
