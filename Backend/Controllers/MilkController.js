@@ -315,7 +315,7 @@ exports.updateMilkCollSetting = async (req, res) => {
 
 exports.milkCollection = async (req, res) => {
   const { milkColl } = req.body;
-  
+
   const dairy_id = req.user.dairy_id;
   const user_role = req.user.user_role;
   const center_id = req.user.center_id;
@@ -1271,8 +1271,6 @@ exports.mobileMilkCollection = async (req, res) => {
 //v2 function
 exports.fetchMobileMilkColl = async (req, res) => {
   const { date } = req.query;
-  console.log(req.query);
-
   pool.getConnection((err, connection) => {
     if (err) {
       console.error("Error getting MySQL connection: ", err);
@@ -1815,7 +1813,7 @@ exports.allMilkCollection = async (req, res) => {
 //...............................................................
 
 exports.todaysMilkCollReport = async (req, res) => {
-  const { date} = req.query; // Read from `req.query`
+  const { date } = req.query; // Read from `req.query`
 
   pool.getConnection((err, connection) => {
     if (err) {
