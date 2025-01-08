@@ -542,7 +542,7 @@ exports.customerList = async (req, res) => {
         SELECT cid, cname, Phone, fax, City, tal, dist, cust_accno, createdby,
                createdon, mobile, isSabhasad, rno, orgid, engName, rateChartNo,
                centerid, srno, cust_pincode, cust_addhar, cust_farmerid, cust_bankname,
-               cust_ifsc, caste, gender, milktype, isActive
+               cust_ifsc, caste, gender, milktype, isActive, rcName
         FROM customer
         WHERE orgid = ? AND centerid = ?
       `;
@@ -569,7 +569,6 @@ exports.customerList = async (req, res) => {
     }
   });
 };
-
 
 //..................................................
 // Get list of unique RateCharts....................

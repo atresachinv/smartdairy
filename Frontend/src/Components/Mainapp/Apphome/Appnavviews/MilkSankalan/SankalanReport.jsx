@@ -1,27 +1,50 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { FaDownload } from "react-icons/fa6";
+import { FaDownload, FaFilePdf } from "react-icons/fa6";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
 import * as XLSX from "xlsx";
 import { mobileMilkCollReport } from "../../../../../App/Features/Mainapp/Milk/MilkCollectionSlice";
 import "../../../../../Styles/Mainapp/Apphome/Appnavview/Milkcollection.css";
 import { useTranslation } from "react-i18next";
+import { toast } from "react-toastify";
+import { RiFileExcel2Fill } from "react-icons/ri";
 
 const SankalanReport = () => {
   const dispatch = useDispatch();
   const { t } = useTranslation(["common", "milkcollection"]);
   const [period, setPeriod] = useState("2");
   const [filteredData, setFilteredData] = useState([]);
+  const dairyname = useSelector(
+    (state) =>
+      state.dairy.dairyData.SocietyName || state.dairy.dairyData.center_name
+  );
   // const tDate = useSelector((state) => state.date.toDate);
   const mobileMilkReport = useSelector(
     (state) => state.milkCollection.mobileColl
   );
 
+  const initialValues = {
+    date: "",
+  };
+
+  const [values, setValues] = useState(initialValues);
+
+  const handleInputs = (e) => {
+    const { name, value } = e.target;
+    setValues({ ...values, [name]: value });
+
+    // // Validate field and update errors state
+    // const fieldError = validateField(name, value);
+    // setErrors((prevErrors) => ({
+    //   ...prevErrors,
+    //   ...fieldError,
+    // }));
+  };
+
   useEffect(() => {
     setFilteredData(mobileMilkReport);
   }, []);
-
 
   const calculateTotalLiters = (data) => {
     return data.reduce((total, item) => total + parseFloat(item.Litres), 0);
@@ -68,18 +91,97 @@ const SankalanReport = () => {
   };
 
   // Function to download PDF file
+  //   const downloadPDF = () => {
+  //     if (filteredData.length === 0) {
+  //       toast.error("No data available to export.");
+  //       return;
+  //     }
+  //
+  //     // Create a new PDF instance
+  //     const doc = new jsPDF();
+  //
+  //     // Add title and metadata
+  //     doc.setFontSize(14);
+  //     doc.text("Mobile Milk Collection Report", 14, 20);
+  //
+  //     // Prepare data for the table
+  //     const tableData = filteredData.map((collection) => [
+  //       collection.rno,
+  //       collection.cname,
+  //       collection.Litres.toFixed(2),
+  //       collection.SampleNo,
+  //     ]);
+  //
+  //     // Table headers
+  //     const tableHeaders = [
+  //       "Code",
+  //       "Customer Name",
+  //       "Liters",
+  //       "Sample No.",
+  //       "FAT",
+  //       "SNF",
+  //     ];
+  //
+  //     // Add table to the PDF
+  //     doc.autoTable({
+  //       head: [tableHeaders],
+  //       body: tableData,
+  //       startY: 30,
+  //     });
+  //
+  //     // Calculate totals and add a summary row
+  //     const totalLiters = filteredData.reduce(
+  //       (sum, item) => sum + item.Litres,
+  //       0
+  //     );
+  //     doc.text(
+  //       `Total Sample: ${records} , Total Liters: ${totalLiters.toFixed(2)}`,
+  //       14,
+  //       doc.lastAutoTable.finalY + 10
+  //     );
+  //
+  //     // Get current date for the file name
+  //     const now = new Date();
+  //     const formattedDate = `${now.getFullYear()}-${String(
+  //       now.getMonth() + 1
+  //     ).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
+  //
+  //     const fileName = `Mobile_Milk_Collection_${formattedDate}.pdf`;
+  //
+  //     // Save the PDF
+  //     doc.save(fileName);
+  //   };
+
   const downloadPDF = () => {
     if (filteredData.length === 0) {
-      alert("No data available to export.");
+      toast.error("No data available to export.");
       return;
     }
 
     // Create a new PDF instance
     const doc = new jsPDF();
 
-    // Add title and metadata
+    // Define page width for horizontal centering
+    const pageWidth = doc.internal.pageSize.getWidth();
+
+    // Dairy name, report name, date, and shift
+    const dairyName = dairyname; // Replace with your actual dairy name
+    const reportName = "Mobile Milk Collection Report";
+    const Dates = values.date; // Get the selected date from values.date
+
+    // Shift based on period (0: morning, 1: evening, 2: all day)
+    const shift =
+      period === 0 ? "Morning" : period === 1 ? "Evening" : "All Day";
+
+    // Add title and metadata to the PDF
     doc.setFontSize(14);
-    doc.text("Mobile Milk Collection Report", 14, 20);
+    doc.text(dairyName, pageWidth / 2, 10, { align: "center" }); // Dairy name
+
+    doc.setFontSize(12);
+
+    doc.text(reportName, pageWidth / 2, 20, {
+      align: "center",
+    }); // Report name & date
 
     // Prepare data for the table
     const tableData = filteredData.map((collection) => [
@@ -97,13 +199,16 @@ const SankalanReport = () => {
       "Sample No.",
       "FAT",
       "SNF",
+      " ",
     ];
 
     // Add table to the PDF
+    doc.setFontSize(8);
     doc.autoTable({
       head: [tableHeaders],
       body: tableData,
-      startY: 30,
+      startY: 30, // Table starts after the header
+      styles: { fontSize: 8 }, // Font size for table
     });
 
     // Calculate totals and add a summary row
@@ -112,9 +217,10 @@ const SankalanReport = () => {
       0
     );
     doc.text(
-      `Total Sample: ${records} , Total Liters: ${totalLiters.toFixed(2)}`,
-      14,
-      doc.lastAutoTable.finalY + 10
+      `Total Sample: ${records}, Total Liters: ${totalLiters.toFixed(2)}`,
+      pageWidth / 2,
+      doc.lastAutoTable.finalY + 10,
+      { align: "center" }
     );
 
     // Get current date for the file name
@@ -127,24 +233,6 @@ const SankalanReport = () => {
 
     // Save the PDF
     doc.save(fileName);
-  };
-
-  const initialValues = {
-    date: "",
-  };
-
-  const [values, setValues] = useState(initialValues);
-
-  const handleInputs = (e) => {
-    const { name, value } = e.target;
-    setValues({ ...values, [name]: value });
-
-    // // Validate field and update errors state
-    // const fieldError = validateField(name, value);
-    // setErrors((prevErrors) => ({
-    //   ...prevErrors,
-    //   ...fieldError,
-    // }));
   };
 
   const handleMilkColletorData = (e) => {
@@ -172,20 +260,20 @@ const SankalanReport = () => {
         </label>
         <button className="btn" onClick={downloadPDF}>
           <span className="f-heading px10">PDF</span>
-          <FaDownload className="d-icons" />
+          <FaFilePdf className="d-icons" />
         </button>
         <button className="btn" onClick={downloadExcel}>
           <span className="f-heading px10">
             {t("milkcollection:m-d-excel")}
           </span>
-          <FaDownload className="d-icons" />
+          <RiFileExcel2Fill className="d-icons" />
         </button>
       </div>
       <form
         onSubmit={handleMilkColletorData}
         className="fetch-sankalan-div w70 h10 d-flex a-center sb">
         <div className="input-date-div w65 d-flex a-center sb">
-          <label htmlFor="date" className="label-text w30">
+          <label htmlFor="date" className="label-text w30 t-center">
             {t("milkcollection:m-s-date")}
           </label>
           <input
@@ -200,7 +288,7 @@ const SankalanReport = () => {
           </button>
         </div>
         <div className="input-date-div w40 d-flex a-center">
-          <label htmlFor="period" className="label-text w40">
+          <label htmlFor="period" className="label-text w40 t-center">
             {t("milkcollection:m-s-shift")}
           </label>
           <select

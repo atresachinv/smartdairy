@@ -108,6 +108,9 @@
     width: 100%;
   }
 
+  .mobile-milk-collection-report .fetch-sankalan-div {
+    width: 100%;
+  }
   .milk-form-list-container .milk-coll-list-div {
     margin: 10px 0 0 0;
   }
@@ -167,14 +170,34 @@
     width: 100%;
     padding: 0 10px;
   }
-  .mobile-milk-collection-report .f-heading {
+  .mobile-milk-collection-report .d-icons {
     display: none;
   }
-  .mobile-milk-collection-report .fetch-sankalan-div {
-    width: 100%;
-  }
+
   /* complete mobile milk collection form */
   .apphome-nav-views .complete-mobile-milk-coll {
     width: 100%;
+  }
+
+  /* css for Milk Collector reports */
+  .select-milk-collector-conatiner {
+    min-height: fit-content;
+    flex-direction: column;
+  }
+
+  .select-milk-collector-conatiner .form-label-select-div {
+    width: 100%;
+  }
+
+  .select-milk-collector-conatiner .selectand-btn-div {
+    width: 100%;
+    margin: 5px 0;
+  }
+  .collection-download-btn {
+    margin-bottom: 5px;
+  }
+  .milkdata-container .employeename-and-data-tile-container {
+    position: sticky;
+    top: 0;
   }
 }

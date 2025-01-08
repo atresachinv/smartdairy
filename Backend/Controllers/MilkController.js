@@ -1137,7 +1137,6 @@ exports.mobileMilkCollection = async (req, res) => {
       const dairy_id = req.user.dairy_id;
       const center_id = req.user.center_id;
       const user = req.user.user_id;
-      console.log(user);
 
       if (!dairy_id) {
         connection.release();

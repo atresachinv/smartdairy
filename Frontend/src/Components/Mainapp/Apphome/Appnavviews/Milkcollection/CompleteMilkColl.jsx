@@ -37,7 +37,7 @@ const CompleteMilkColl = () => {
     rate: "",
     cname: "",
     acccode: "",
-    rateChartNo: "",
+    rcName: "",
     sample: "",
   };
 
@@ -227,61 +227,102 @@ const CompleteMilkColl = () => {
   }, []);
 
   // finding rate and calculating amount and degree
+  //   const calculateRateAndAmount = async () => {
+  //     try {
+  //       const { fat, snf, liters , rcName } = values;
+  //
+  //       // Access the correct array if milkRateChart is an object with a nested array
+  //       const rateChartArray = Array.isArray(milkRateChart)
+  //         ? milkRateChart
+  //         : milkRateChart.MilkCollRChart;
+  //
+  //       // Check if rateChartArray is an array before proceeding
+  //       if (!Array.isArray(rateChartArray)) {
+  //         console.error("rateChartArray is not an array. Check the data source.");
+  //         setValues((prev) => ({
+  //           ...prev,
+  //           rate: "N/A",
+  //           amt: "N/A",
+  //           degree: "N/A",
+  //         }));
+  //         return;
+  //       }
+  //
+  //       // Ensure that fat and snf values are parsed correctly for comparison
+  //       const parsedFat = parseFloat(fat);
+  //       const parsedSnf = parseFloat(snf);
+  //       const parsedLiters = parseFloat(liters);
+  //
+  //       // Calculate the degree of milk based on Maharashtra Government formula
+  //       const degree = (parsedFat * parsedSnf).toFixed(2);
+  //
+  //       // Find rate entry based on matching fat and snf values
+  //       const rateEntry = rateChartArray.find(
+  //         (entry) =>
+  //           entry.fat === parsedFat &&
+  //           entry.snf === parsedSnf &&
+  //           entry.rctypename === rcName
+  //       );
+  //
+  //       if (rateEntry) {
+  //         const rate = rateEntry.rate;
+  //         const amount = rate * parsedLiters;
+  //
+  //         // Update state with calculated rate, amount, and degree
+  //         setValues((prev) => ({
+  //           ...prev,
+  //           rate: rate.toFixed(2),
+  //           amt: amount.toFixed(2),
+  //           degree: degree, // Add the calculated degree to the state
+  //         }));
+  //       } else {
+  //         // Handle case where rate entry is not found
+  //         setValues((prev) => ({
+  //           ...prev,
+  //           rate: "N/A",
+  //           amt: "N/A",
+  //           degree: degree,
+  //         }));
+  //       }
+  //     } catch (error) {
+  //       console.error("Error calculating rate and amount:", error);
+  //     }
+  //   };
+console.log("ratechart", milkRateChart);
   const calculateRateAndAmount = async () => {
     try {
-      const { fat, snf, liters } = values;
+      const { fat, snf, liters, rcName } = values;
 
-      // Access the correct array if milkRateChart is an object with a nested array
-      const rateChartArray = Array.isArray(milkRateChart)
-        ? milkRateChart
-        : milkRateChart.MilkCollRChart;
-
-      // Check if rateChartArray is an array before proceeding
-      if (!Array.isArray(rateChartArray)) {
-        console.error("rateChartArray is not an array. Check the data source.");
-        setValues((prev) => ({
-          ...prev,
-          rate: "N/A",
-          amt: "N/A",
-          degree: "N/A",
-        }));
-        return;
-      }
-
-      // Ensure that fat and snf values are parsed correctly for comparison
       const parsedFat = parseFloat(fat);
       const parsedSnf = parseFloat(snf);
       const parsedLiters = parseFloat(liters);
-
-      // Calculate the degree of milk based on Maharashtra Government formula
       const degree = (parsedFat * parsedSnf).toFixed(2);
+      console.log("ratechart", milkRateChart);
 
-      // Find rate entry based on matching fat and snf values
-      const rateEntry = rateChartArray.find(
+      const rateEntry = milkRateChart.find(
         (entry) =>
           entry.fat === parsedFat &&
           entry.snf === parsedSnf &&
-          entry.rccode === values.rateChartNo
+          entry.rctypename === rcName
       );
+      console.log(rateEntry);
 
       if (rateEntry) {
-        const rate = rateEntry.rate;
+        const rate = parseFloat(rateEntry.rate);
         const amount = rate * parsedLiters;
 
-        // Update state with calculated rate, amount, and degree
         setValues((prev) => ({
           ...prev,
           rate: rate.toFixed(2),
           amt: amount.toFixed(2),
-          degree: degree, // Add the calculated degree to the state
+          degree: 0,
         }));
       } else {
-        // Handle case where rate entry is not found
         setValues((prev) => ({
           ...prev,
           rate: "N/A",
           amt: "N/A",
-          degree: degree,
+          degree: 0,
         }));
       }
     } catch (error) {
@@ -302,6 +343,7 @@ const CompleteMilkColl = () => {
     const customer = customerList.find(
       (customer) => customer.srno.toString() === code
     );
+console.log("customer", customer);
 
     if (customer) {
       setValues((prev) => ({
@@ -329,9 +371,16 @@ const CompleteMilkColl = () => {
         cname: collection.cname,
         code: collection.rno,
         liters: collection.Litres,
+        rcName: collection.rcName,
       }));
     } else {
-      setValues((prev) => ({ ...prev, code: "", cname: "", liters: "" })); // Clear cname if not found
+      setValues((prev) => ({
+        ...prev,
+        code: "",
+        cname: "",
+        liters: "",
+        rcName: "",
+      })); // Clear cname if not found
     }
   };
 
@@ -417,7 +466,9 @@ const CompleteMilkColl = () => {
       <form
         onSubmit={handleCollection}
         className="complete-mobile-milk-coll w60 h90 d-flex-col center bg p10">
-        <span className="heading w100 h10 t-center">Complete Milk Collection </span>
+        <span className="heading w100 h10 t-center">
+          Complete Milk Collection{" "}
+        </span>
         <div className="form-setting w100 h10 d-flex a-center sb">
           <div className="w45 d-flex a-center px10">
             <label htmlFor="date" className="info-text w30">

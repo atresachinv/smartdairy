@@ -1,6 +1,6 @@
 @media screen and (max-width: 769px) {
-  .rate-chart-master-container .select-ratechart-container ,
-   .rate-chart-master-container .save-ratechart-container {
+  .rate-chart-master-container .select-ratechart-container,
+  .rate-chart-master-container .save-ratechart-container {
     width: 50%;
   }
 }
@@ -18,10 +18,13 @@
     width: 100%;
     min-height: 100%;
   }
-  .save-ratechart-container .previous-rate-chart-container{
+  .save-ratechart-container .previous-rate-chart-container {
     min-height: 50%;
   }
-  .save-ratechart-container .rate-chart-setting-div{
-    min-height: 50%;
+  .apphome-nav-views .rate-chart-setting-div {
+    min-height: 65%;
+  }
+  .rate-chart-div .rate-chart-row-value {
+    padding: 5px 0;
   }
 }

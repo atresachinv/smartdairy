@@ -335,7 +335,7 @@ const CreateEmployee = () => {
           <div className="emp-div emp-details-div w100 d-flex sa">
             <div className="details-div w50 d-flex-col a-center px10">
               <label htmlFor="mname" className="info-text w100">
-                Employee Marathi Name<span className="req">*</span>{" "}
+                Marathi Name<span className="req">*</span>{" "}
               </label>
               <input
                 required
@@ -351,7 +351,7 @@ const CreateEmployee = () => {
             </div>
             <div className="details-div w50 d-flex-col a-center px10">
               <label htmlFor="engname" className="info-text w100">
-                Employee English Name<span className="req">*</span>
+                English Name<span className="req">*</span>
               </label>
               <input
                 required

@@ -11,8 +11,8 @@
   "m-cust-name": "Customer Name",
   "m-sample-no": "Smaple No",
   "m-s-milk-type": "Select Milk Type",
-  "m-s-date": "Select Date",
-  "m-s-shift": "Select Shift",
+  "m-s-date": "Date",
+  "m-s-shift": "Shift",
 
   "m-btn-cancel": "Cancel",
   "m-btn-save": "Save",

@@ -44,6 +44,13 @@ const MilkSankalan = () => {
     localStorage.setItem("literCount", literCount);
   }, [collCount, literCount]);
 
+  const resetData = () => {
+    localStorage.removeItem("collCount");
+    localStorage.removeItem("literCount");
+    setCollCount(0);
+    setLiterCount(0);
+  };
+
   //............................................................................
   // Customer List .............................................................
   //............................................................................
@@ -258,14 +265,7 @@ const MilkSankalan = () => {
               {literCount.toFixed(2)}
             </label>
           </div>
-          <button
-            className="w-btn"
-            onClick={() => {
-              setCollCount(0);
-              setLiterCount(0);
-              localStorage.removeItem("collCount");
-              localStorage.removeItem("literCount");
-            }}>
+          <button className="w-btn" onClick={resetData}>
             {t("milkcollection:m-btn-reset")}
           </button>
         </div>

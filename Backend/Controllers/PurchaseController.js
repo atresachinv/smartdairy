@@ -147,64 +147,6 @@ exports.paymentDetails = async (req, res) => {
 //Deduction Customer Route....................
 //............................................
 
-// exports.deductionInfo = async (req, res) => {
-//   const { fromDate, toDate } = req.body;
-//
-//   pool.getConnection((err, connection) => {
-//     if (err) {
-//       console.error("Error getting MySQL connection: ", err);
-//       return res.status(500).json({ message: "Database connection error" });
-//     }
-//
-//     try {
-//       const dairy_id = req.user.dairy_id;
-//       const user_code = req.user.user_code;
-//
-//       if (!dairy_id) {
-//         return res.status(400).json({ message: "Dairy ID not found!" });
-//       }
-//
-//       const deductionInfo = `
-//         SELECT ToDate, BillNo, dname, Amt, arate, tliters, pamt, damt, namt
-//         FROM custbilldetails
-//         WHERE companyid = ? AND AccCode = ? AND ToDate BETWEEN ? AND ? AND  DeductionId <> 0
-//       `;
-//
-//       connection.query(
-//         deductionInfo,
-//         [dairy_id, user_code, fromDate, toDate],
-//         (err, result) => {
-//           connection.release();
-//           if (err) {
-//             console.error("Error executing query: ", err);
-//             return res.status(500).json({ message: "Query execution error" });
-//           }
-//
-//           if (result.length === 0) {
-//             return res.status(404).json({ message: "No records found!" });
-//           }
-//           console.log(result);
-//
-//           // // Filter the main deduction (Deductionid "0") and additional deductions (based on dname)
-//           // const mainDeduction = result.find((item) => item.dname === "");
-//           // const additionalDeductions = result.filter(
-//           //   (item) => item.dname !== ""
-//           // );
-//
-//           // Send the response with separated data
-//           res.status(200).json({
-//             // mainDeduction: mainDeduction || null,
-//             // otherDeductions: additionalDeductions || [],
-//             otherDeductions: result,
-//           });
-//         }
-//       );
-//     } catch (error) {
-//       console.error("Error processing request: ", error);
-//       return res.status(500).json({ message: "Internal server error" });
-//     }
-//   });
-// };
 
 exports.deductionInfo = async (req, res) => {
   const { fromDate, toDate } = req.body;

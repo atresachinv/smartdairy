@@ -13,6 +13,7 @@ import {
 } from "../../../../../App/Features/Notifications/notificationSlice";
 import { useTranslation } from "react-i18next";
 import "../../../../../Styles/Mainapp/Apphome/Appnavview/Milkcollection.css";
+import { getRateCharts } from "../../../../../App/Features/Mainapp/Masters/rateChartSlice";
 
 const MilkColleform = ({ switchToSettings }) => {
   const dispatch = useDispatch();
@@ -136,7 +137,10 @@ const MilkColleform = ({ switchToSettings }) => {
       setCustomerList(JSON.parse(storedCustomerList));
       setCustList(JSON.parse(storedCustomerList));
     }
+    dispatch(getRateCharts());
   }, [dispatch]);
+
+  console.log("rate",milkRateChart);
 
   // Retrieve the stored rate chart from localStorage on component mount
   useEffect(() => {
@@ -167,22 +171,64 @@ const MilkColleform = ({ switchToSettings }) => {
 
   // finding rate and calculating amount and degree
 
+  //   const calculateRateAndAmount = async () => {
+  //     try {
+  //       const { fat, snf, liters } = values;
+  //
+  //       const parsedFat = parseFloat(fat);
+  //       const parsedSnf = parseFloat(snf);
+  //       const parsedLiters = parseFloat(liters);
+  //       const degree = (parsedFat * parsedSnf).toFixed(2);
+  //       const rateEntry = milkRateChart.find(
+  //         (entry) =>
+  //           entry.fat === parsedFat &&
+  //           entry.snf === parsedSnf &&
+  //           entry.rctypename === values.rcName
+  //       );
+  //       console.log(milkRateChart);
+  //       console.log(rateEntry);
+  //
+  //       if (rateEntry) {
+  //         const rate = rateEntry.rate;
+  //         const amount = rate * parsedLiters;
+  //
+  //         setValues((prev) => ({
+  //           ...prev,
+  //           rate: rate.toFixed(2),
+  //           amt: amount.toFixed(2),
+  //           degree: 0,
+  //         }));
+  //       } else {
+  //         setValues((prev) => ({
+  //           ...prev,
+  //           rate: "N/A",
+  //           amt: "N/A",
+  //           degree: 0,
+  //         }));
+  //       }
+  //     } catch (error) {
+  //       console.error("Error calculating rate and amount:", error);
+  //     }
+  //   };
+
   const calculateRateAndAmount = async () => {
     try {
-      const { fat, snf, liters } = values;
+      const { fat, snf, liters, rcName } = values;
 
       const parsedFat = parseFloat(fat);
       const parsedSnf = parseFloat(snf);
       const parsedLiters = parseFloat(liters);
       const degree = (parsedFat * parsedSnf).toFixed(2);
+
       const rateEntry = milkRateChart.find(
         (entry) =>
           entry.fat === parsedFat &&
           entry.snf === parsedSnf &&
-          entry.rctypename === values.rcName
+          entry.rctypename === rcName
       );
+
       if (rateEntry) {
-        const rate = rateEntry.rate;
+        const rate = parseFloat(rateEntry.rate);
         const amount = rate * parsedLiters;
 
         setValues((prev) => ({
@@ -474,7 +520,7 @@ const MilkColleform = ({ switchToSettings }) => {
     //     }
   };
 
-  console.log("ratechart", milkRateChart);
+  // console.log("ratechart", milkRateChart);
 
   return (
     <>

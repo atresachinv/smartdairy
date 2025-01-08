@@ -56,7 +56,6 @@ const Apphome = () => {
     }
   }, []);
 
-  console.log(milkcollRatechart);
 
   return (
     <div className="app-home-container w100 h1">

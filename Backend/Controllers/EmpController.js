@@ -507,7 +507,6 @@ exports.deleteEmployee = async (req, res) => {
 
   pool.getConnection((err, connection) => {
     if (err) {
-      console.error("Error getting MySQL connection: ", err);
       return res.status(500).json({ message: "Database connection error" });
     }
 
@@ -545,7 +544,7 @@ exports.deleteEmployee = async (req, res) => {
       connection.release();
       console.error("Error processing request: ", error);
       return res.status(500).json({ message: "Internal server error" });
-    } 
+    }
   });
 };
 
@@ -559,7 +558,6 @@ exports.employeeList = async (req, res) => {
 
   pool.getConnection((err, connection) => {
     if (err) {
-      console.error("Error getting MySQL connection: ", err);
       return res.status(500).json({ message: "Database connection error" });
     }
 
@@ -570,7 +568,7 @@ exports.employeeList = async (req, res) => {
       if (center_id === 0) {
         // Query for center_id = 0
         query = `
-          SELECT emp_name, emp_mobile, designation, salary, emp_id
+          SELECT center_id, emp_name, emp_mobile, designation, salary, emp_id
           FROM EmployeeMaster
           WHERE dairy_id = ?
         `;
@@ -578,7 +576,7 @@ exports.employeeList = async (req, res) => {
       } else {
         // Query for center_id != 0
         query = `
-          SELECT emp_name, emp_mobile, designation, salary, emp_id
+          SELECT center_id, emp_name, emp_mobile, designation, salary, emp_id
           FROM EmployeeMaster
           WHERE dairy_id = ? AND center_id = ?
         `;
@@ -594,7 +592,6 @@ exports.employeeList = async (req, res) => {
             .status(500)
             .json({ message: "Error retrieving employee data" });
         }
-
         return res.status(200).json({ empList: result });
       });
     } catch (error) {

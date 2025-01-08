@@ -16,10 +16,11 @@
   }
   .Employee-views {
     padding: 10px;
+    min-height: 100%;
   }
   .Employee-views .create-emp-container {
     width: 100%;
-    height: 80%;
+    min-height: -webkit-fill-available;
   }
   .Employee-views .emp-list-container {
     width: 100%;

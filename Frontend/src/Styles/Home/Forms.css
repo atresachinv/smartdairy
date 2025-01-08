@@ -73,6 +73,11 @@
 .pss-eye {
   margin-right: 5px;
 }
+
+.loaging-spinner {
+  width: 100px;
+  height: 100px;
+}
 /* ............................... */
 /*Responsive css*/
 /* ............................... */

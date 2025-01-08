@@ -8,8 +8,9 @@ import SankalanReport from "./Appnavviews/MilkSankalan/SankalanReport";
 import PrivMilkCollection from "./Appnavviews/PrevCollection/PrivMilkCollection";
 import CompleteMilkColl from "./Appnavviews/Milkcollection/CompleteMilkColl";
 // import UpdateMilkCollection from "./Appnavviews/Milkcollection/UpdateMilkCollection";
-import MilkCollectionReport from "./Appnavviews/Reports/MilkCollectionReport";
+// import MilkCollectionReport from "./Appnavviews/Reports/MilkCollectionReport";
 import UpdateCollection from "./Appnavviews/Milkcollection/UpdateCollection";
+import MilkCollectorsReports from "./Appnavviews/Reports/MilkCollectorsReports";
 
 const AppNavViews = ({ index }) => {
   switch (index) {
@@ -32,7 +33,7 @@ const AppNavViews = ({ index }) => {
       return <SankalanReport />;
       break;
     case 5:
-      return <MilkCollectionReport />;
+      return <MilkCollectorsReports />;
       break;
 
     default:

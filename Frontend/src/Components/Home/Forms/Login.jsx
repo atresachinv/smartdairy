@@ -7,6 +7,7 @@ import axios from "axios";
 import "../../../Styles/Home/Forms.css";
 import { useDispatch, useSelector } from "react-redux";
 import { loginUser, setLogin } from "../../../App/Features/Users/authSlice";
+import Spinner from "../Spinner/Spinner";
 
 const Login = ({ switchToRegister, switchToOptSend }) => {
   const dispatch = useDispatch();
@@ -49,21 +50,77 @@ const Login = ({ switchToRegister, switchToOptSend }) => {
   axios.defaults.baseURL = import.meta.env.VITE_BASE_URI;
   axios.defaults.withCredentials = true;
 
+  //   const handleLogin = (e) => {
+  //     e.preventDefault();
+  //     setIsSaving(true);
+  //     console.log(isSaving);
+  //     axios
+  //       .post("/login", values)
+  //       .then((res) => {
+  //         const { user_role } = res.data;
+  //
+  //         // If "Remember Me" is checked, store credentials in localStorage
+  //         if (rememberMe) {
+  //           localStorage.setItem("user_id", values.user_id);
+  //           localStorage.setItem("user_password", values.user_password);
+  //           localStorage.setItem("rememberMe", "true");
+  //         } else {
+  //           // If "Remember Me" is not checked, remove credentials from localStorage
+  //           localStorage.removeItem("user_id");
+  //           localStorage.removeItem("user_password");
+  //           localStorage.removeItem("rememberMe");
+  //         }
+  //
+  //         const userRole = user_role.toLowerCase();
+  //         dispatch(setLogin({ userRole: userRole }));
+  //         localStorage.setItem("userRole", userRole);
+  //         // Redirect based on user_role
+  //         if (userRole === "customer") {
+  //           navigate("/customer/dashboard");
+  //           toast.success(`Login Successful`);
+  //         } else if (
+  //           userRole === "admin" ||
+  //           userRole === "manager" ||
+  //           userRole === "milkcollector" ||
+  //           userRole === "mobilecollector" ||
+  //           userRole === "salesman"
+  //         ) {
+  //           navigate("/mainapp/home");
+  //           toast.success(`Login Successful`);
+  //         } else if (userRole === "super_admin") {
+  //           navigate("/adminpanel");
+  //           toast.success(`Login Successful`);
+  //         } else {
+  //           toast.error("Unexpected user type!");
+  //         }
+  //       })
+  //       .catch((err) => {
+  //         if (err.response) {
+  //           console.error(`Error during login: ${err.response.data.message}`);
+  //           toast.error(err.response.data.message);
+  //         } else {
+  //           console.error(`Error during login: ${err.message}`);
+  //           toast.error("An error occurred during login.");
+  //         }
+  //       });
+  //     setIsSaving(false);
+  //     console.log(isSaving);
+  //   };
+
   const handleLogin = (e) => {
     e.preventDefault();
+    setIsSaving(true);
     axios
       .post("/login", values)
       .then((res) => {
         const { user_role } = res.data;
-        console.log(user_role);
 
-        // If "Remember Me" is checked, store credentials in localStorage
+        // Handle "Remember Me" functionality
         if (rememberMe) {
           localStorage.setItem("user_id", values.user_id);
           localStorage.setItem("user_password", values.user_password);
           localStorage.setItem("rememberMe", "true");
         } else {
-          // If "Remember Me" is not checked, remove credentials from localStorage
           localStorage.removeItem("user_id");
           localStorage.removeItem("user_password");
           localStorage.removeItem("rememberMe");
@@ -72,10 +129,11 @@ const Login = ({ switchToRegister, switchToOptSend }) => {
         const userRole = user_role.toLowerCase();
         dispatch(setLogin({ userRole: userRole }));
         localStorage.setItem("userRole", userRole);
+
         // Redirect based on user_role
         if (userRole === "customer") {
           navigate("/customer/dashboard");
-          toast.success(`Login Successful`);
+          toast.success("Login Successful");
         } else if (
           userRole === "admin" ||
           userRole === "manager" ||
@@ -84,14 +142,13 @@ const Login = ({ switchToRegister, switchToOptSend }) => {
           userRole === "salesman"
         ) {
           navigate("/mainapp/home");
-          toast.success(`Login Successful`);
+          toast.success("Login Successful");
         } else if (userRole === "super_admin") {
           navigate("/adminpanel");
-          toast.success(`Login Successful`);
+          toast.success("Login Successful");
         } else {
           toast.error("Unexpected user type!");
         }
-        setIsSaving(false);
       })
       .catch((err) => {
         if (err.response) {
@@ -101,9 +158,11 @@ const Login = ({ switchToRegister, switchToOptSend }) => {
           console.error(`Error during login: ${err.message}`);
           toast.error("An error occurred during login.");
         }
+      })
+      .finally(() => {
+        setIsSaving(false);
       });
   };
-  
 
   return (
     <div className="form-container w50 h1 d-flex-col p10">
@@ -157,6 +216,14 @@ const Login = ({ switchToRegister, switchToOptSend }) => {
         <button className="form-btn" type="submit" disabled={isSaving}>
           {isSaving ? "Loging..." : "Login"}
         </button>
+        {isSaving ? (
+          <div className="loaging-spinner w100 d-flex center">
+            {" "}
+            <Spinner />
+          </div>
+        ) : (
+          ""
+        )}
         <div className="account-check-div">
           <h2 className="text">
             <button

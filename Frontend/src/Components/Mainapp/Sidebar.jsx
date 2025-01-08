@@ -20,10 +20,10 @@ const Sidebar = ({ setselected, handleSidebar }) => {
   const handleLogout = async () => {
     try {
       await axios.post("/logout");
-      await localStorage.removeItem("customerlist");
-      await localStorage.removeItem("milkentries");
-      await localStorage.removeItem("literCount");
-      await localStorage.removeItem("collCount");
+      localStorage.removeItem("customerlist");
+      localStorage.removeItem("milkentries");
+      localStorage.removeItem("literCount");
+      localStorage.removeItem("collCount");
 
       if (userRole === "milkcollector" || userRole === "mobilecollector") {
         localStorage.setItem("selectedNavIndex", 1);
