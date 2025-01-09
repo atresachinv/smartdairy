@@ -264,14 +264,13 @@ const SankalanReport = () => {
 
   return (
     <div className="mobile-milk-collection-report w100 h1 d-flex-col center sa">
-      <div className="page-title-button-div w70 h10 d-flex a-center sb">
+      <div className="page-title-button-div w70 h10 d-flex a-center">
         <label className="heading w60">
           {t("milkcollection:m-milk-coll-report")}
-          {/* <span className="label-text px10">{tDate}</span> */}
         </label>
         <button className="btn" onClick={downloadPDF}>
           <span className="f-heading px10">PDF</span>
-          <FaFilePdf className="d-icons" />
+          <FaFilePdf className="d-icons"/>
         </button>
         <button className="btn" onClick={downloadExcel}>
           <span className="f-heading px10">
