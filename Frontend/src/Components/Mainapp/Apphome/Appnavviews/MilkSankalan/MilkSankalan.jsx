@@ -27,7 +27,7 @@ const MilkSankalan = () => {
   const codeInputRef = useRef(null); // Ref for code input
 
   const initialValues = {
-    date: tDate,
+    date: localStorage.getItem("today") || tDate,
     code: "",
     animal: 0,
     liters: "",
@@ -42,7 +42,8 @@ const MilkSankalan = () => {
   useEffect(() => {
     localStorage.setItem("collCount", collCount);
     localStorage.setItem("literCount", literCount);
-  }, [collCount, literCount]);
+    localStorage.setItem("today", tDate);
+  }, [collCount, literCount ,tDate]);
 
   const resetData = () => {
     localStorage.removeItem("collCount");
@@ -282,7 +283,7 @@ const MilkSankalan = () => {
               name="date"
               id="date"
               onChange={handleInputs}
-              value={values.date || ""}
+              value={values.date}
               max={values.date}
               readOnly
             />

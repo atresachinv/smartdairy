@@ -9,12 +9,14 @@ import "../../../../../Styles/Mainapp/Apphome/Appnavview/Milkcollection.css";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 import { RiFileExcel2Fill } from "react-icons/ri";
+import Spinner from "../../../../Home/Spinner/Spinner";
 
 const SankalanReport = () => {
   const dispatch = useDispatch();
   const { t } = useTranslation(["common", "milkcollection"]);
-  const [period, setPeriod] = useState("2");
-  const [filteredData, setFilteredData] = useState([]);
+
+  //redux states
+  const tDate = useSelector((state) => state.date.toDate);
   const dairyname = useSelector(
     (state) =>
       state.dairy.dairyData.SocietyName || state.dairy.dairyData.center_name
@@ -23,9 +25,14 @@ const SankalanReport = () => {
   const mobileMilkReport = useSelector(
     (state) => state.milkCollection.mobileColl
   );
+  const status = useSelector((state) => state.milkCollection.milkstatus);
+
+  //local states
+  const [period, setPeriod] = useState("2");
+  const [filteredData, setFilteredData] = useState([]);
 
   const initialValues = {
-    date: "",
+    date: localStorage.getItem("today") || tDate,
   };
 
   const [values, setValues] = useState(initialValues);
@@ -237,9 +244,13 @@ const SankalanReport = () => {
 
   const handleMilkColletorData = (e) => {
     e.preventDefault();
-    console.log("exicuted", values.date);
     dispatch(mobileMilkCollReport({ date: values.date }));
   };
+
+  useEffect(() => {
+    // Call the function on initial load
+    dispatch(mobileMilkCollReport({ date: values.date }));
+  }, [dispatch, values.date]);
 
   useEffect(() => {
     if (period === "0") {
@@ -281,6 +292,7 @@ const SankalanReport = () => {
             type="date"
             name="date"
             id="date"
+            value={values.date || ""}
             onChange={handleInputs}
           />
           <button className="heading btn ">
@@ -317,7 +329,11 @@ const SankalanReport = () => {
           </span>
         </div>
         <div className="milk-collection-data-div w100 d-flex-col h90 mh90 hidescrollbar">
-          {filteredData.length > 0 ? (
+          {status === "loading" ? (
+            <div className="w100 h80 d-flex center">
+              <Spinner />
+            </div>
+          ) : filteredData.length > 0 ? (
             filteredData.map((collection, index) => (
               <div
                 key={index}

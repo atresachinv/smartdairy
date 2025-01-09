@@ -11,6 +11,7 @@ const initialState = {
   PrevLiters: [], //Previous liters
   todaysMilk: [],
   status: "idle",
+  milkstatus: "idle",
   allmilkstatus: "idle",
   allmilkcollstatus: "idle",
   tmstatus: "idle",
@@ -308,15 +309,15 @@ const milkCollectionSlice = createSlice({
         state.error = action.payload;
       })
       .addCase(mobileMilkCollReport.pending, (state) => {
-        state.status = "loading";
+        state.milkstatus = "loading";
         state.error = null;
       })
       .addCase(mobileMilkCollReport.fulfilled, (state, action) => {
-        state.status = "succeeded";
+        state.milkstatus = "succeeded";
         state.mobileColl = action.payload;
       })
       .addCase(mobileMilkCollReport.rejected, (state, action) => {
-        state.status = "failed";
+        state.milkstatus = "failed";
         state.error = action.payload;
       })
       .addCase(mobilePrevLiters.pending, (state) => {
