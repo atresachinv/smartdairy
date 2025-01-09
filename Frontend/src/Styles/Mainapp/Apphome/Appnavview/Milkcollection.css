@@ -167,36 +167,6 @@
   .form-setting .milk-details {
     width: 100%;
   }
-
-  /* .form-setting .setting-btn-switch,
-  .form-setting .form-date,
-  .form-setting .milk-details {
-    width: 50%;
-    align-items: flex-start;
-    justify-content: flex-start;
-    flex-direction: column;
-  }
-  .form-setting .form-date,
-  .form-setting .milk-details {
-    width: 50%;
-    align-items: flex-start;
-    justify-content: flex-start;
-    flex-direction: column;
-  } */
-
-  /* .form-setting .form-date .data {
-    width: 70%;
-  }
-  .form-setting .milk-details .data {
-    width: 100%;
-  } */
-
-  /* .milk-details .user-code {
-    width: 40%;
-  }
-  .milk-details .user-name {
-    width: 60%;
-  } */
   .mobile-milkcoll-form-btns .btn {
     margin-top: 10px;
   }

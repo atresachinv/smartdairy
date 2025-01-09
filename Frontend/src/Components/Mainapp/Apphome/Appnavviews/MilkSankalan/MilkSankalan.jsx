@@ -216,7 +216,7 @@ const MilkSankalan = () => {
   };
 
   const handleMobileCollection = async (e) => {
-    e.preventDefault();
+    if (e) e.preventDefault();
     // Validate fields before submission
     const validationErrors = validateFields();
     if (Object.keys(validationErrors).length > 0) {

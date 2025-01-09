@@ -29,9 +29,6 @@ const MilkColleform = ({ switchToSettings }) => {
   const [errors, setErrors] = useState({});
   const [slotCount, setSlotCount] = useState(0); //To rerive local stored milk entries
 
-  // const [milkEntry, setmilkEntry] = useState([]); //To store retrived milk entries
-  // const [milkCollEntry, setMilkCollEntry] = useState([]); //To store Each retrived milk entries
-  // const [fullSlots, setFullSlots] = useState(0); //To check slots
 
   const initialValues = {
     date: new Date().toISOString().split("T")[0],
@@ -170,46 +167,6 @@ const MilkColleform = ({ switchToSettings }) => {
   };
 
   // finding rate and calculating amount and degree
-
-  //   const calculateRateAndAmount = async () => {
-  //     try {
-  //       const { fat, snf, liters } = values;
-  //
-  //       const parsedFat = parseFloat(fat);
-  //       const parsedSnf = parseFloat(snf);
-  //       const parsedLiters = parseFloat(liters);
-  //       const degree = (parsedFat * parsedSnf).toFixed(2);
-  //       const rateEntry = milkRateChart.find(
-  //         (entry) =>
-  //           entry.fat === parsedFat &&
-  //           entry.snf === parsedSnf &&
-  //           entry.rctypename === values.rcName
-  //       );
-  //       console.log(milkRateChart);
-  //       console.log(rateEntry);
-  //
-  //       if (rateEntry) {
-  //         const rate = rateEntry.rate;
-  //         const amount = rate * parsedLiters;
-  //
-  //         setValues((prev) => ({
-  //           ...prev,
-  //           rate: rate.toFixed(2),
-  //           amt: amount.toFixed(2),
-  //           degree: 0,
-  //         }));
-  //       } else {
-  //         setValues((prev) => ({
-  //           ...prev,
-  //           rate: "N/A",
-  //           amt: "N/A",
-  //           degree: 0,
-  //         }));
-  //       }
-  //     } catch (error) {
-  //       console.error("Error calculating rate and amount:", error);
-  //     }
-  //   };
 
   const calculateRateAndAmount = async () => {
     try {

@@ -22,6 +22,7 @@ import DairyInfo from "./DairyInfo/DairyInfo";
 import DairyInitialInfo from "./DairyInfo/DairyInitialInfo";
 import CustomersMaster from "./Masters/MasterPages/CustomerMaster/CustomersMaster";
 import Centers from "./DairyInfo/Centers/Centers";
+import Profile from "./Profile/Profile";
 // import MilkReports from "./Reports/MilkReports/MilkReports";
 // import MilkcollectionReports from "./Reports/MilkReports/MilkcollectionReports";
 
@@ -102,6 +103,8 @@ const Mainappviews = ({ index }) => {
       return <InventorySettings />;
     case 9.3:
       return <MachineSettings />;
+    case 10:
+      return <Profile />;
     default:
       return <Dashboard />;
   }

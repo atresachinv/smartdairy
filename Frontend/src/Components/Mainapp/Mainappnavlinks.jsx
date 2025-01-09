@@ -10,6 +10,7 @@ import {
   BsBuildingFillGear,
   BsHouseGearFill,
 } from "react-icons/bs";
+import { FaUserCircle } from "react-icons/fa";
 import {
   FaGears,
   FaFileLines,
@@ -314,6 +315,12 @@ const Mainappnavlinks = ({ setselected, handleSidebar }) => {
           role: ["super_admin", "admin", "manager"],
         },
       ],
+    },
+    {
+      name: "My Profile",
+      icon: <FaUserCircle className="icon" />,
+      index: 10,
+      role: ["admin", "milkcollector", "mobilecollector"],
     },
   ];
 

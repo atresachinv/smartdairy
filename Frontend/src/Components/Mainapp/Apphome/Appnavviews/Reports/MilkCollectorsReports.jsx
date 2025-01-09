@@ -80,8 +80,6 @@ const MilkCollectorsReports = () => {
     const selectedEmpname = Emplist.find(
       (emp) => emp.emp_mobile.toString() === selectedEmp
     );
-   
-
     setSelectedEmpName(selectedEmpname ? selectedEmpname.emp_name : "");
     setSelectedEmp(selectedEmp);
   };

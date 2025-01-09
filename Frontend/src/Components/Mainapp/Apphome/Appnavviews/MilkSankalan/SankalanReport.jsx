@@ -5,17 +5,18 @@ import jsPDF from "jspdf";
 import "jspdf-autotable";
 import * as XLSX from "xlsx";
 import { mobileMilkCollReport } from "../../../../../App/Features/Mainapp/Milk/MilkCollectionSlice";
-import "../../../../../Styles/Mainapp/Apphome/Appnavview/Milkcollection.css";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 import { RiFileExcel2Fill } from "react-icons/ri";
 import Spinner from "../../../../Home/Spinner/Spinner";
+import "../../../../../Styles/Mainapp/Apphome/Appnavview/Milkcollection.css";
+import { getProfileInfo } from "../../../../../App/Features/Mainapp/Profile/ProfileSlice";
 
 const SankalanReport = () => {
   const dispatch = useDispatch();
   const { t } = useTranslation(["common", "milkcollection"]);
-
   //redux states
+  const collectorname = useSelector((state) => state.userinfo.profile.emp_name);
   const tDate = useSelector((state) => state.date.toDate);
   const dairyname = useSelector(
     (state) =>
@@ -59,6 +60,7 @@ const SankalanReport = () => {
 
   const records = filteredData.length;
   const totalLiters = calculateTotalLiters(filteredData);
+  console.log(filteredData);
 
   // Function to download Excel file
   const downloadExcel = () => {
@@ -97,68 +99,6 @@ const SankalanReport = () => {
     XLSX.writeFile(workbook, fileName);
   };
 
-  // Function to download PDF file
-  //   const downloadPDF = () => {
-  //     if (filteredData.length === 0) {
-  //       toast.error("No data available to export.");
-  //       return;
-  //     }
-  //
-  //     // Create a new PDF instance
-  //     const doc = new jsPDF();
-  //
-  //     // Add title and metadata
-  //     doc.setFontSize(14);
-  //     doc.text("Mobile Milk Collection Report", 14, 20);
-  //
-  //     // Prepare data for the table
-  //     const tableData = filteredData.map((collection) => [
-  //       collection.rno,
-  //       collection.cname,
-  //       collection.Litres.toFixed(2),
-  //       collection.SampleNo,
-  //     ]);
-  //
-  //     // Table headers
-  //     const tableHeaders = [
-  //       "Code",
-  //       "Customer Name",
-  //       "Liters",
-  //       "Sample No.",
-  //       "FAT",
-  //       "SNF",
-  //     ];
-  //
-  //     // Add table to the PDF
-  //     doc.autoTable({
-  //       head: [tableHeaders],
-  //       body: tableData,
-  //       startY: 30,
-  //     });
-  //
-  //     // Calculate totals and add a summary row
-  //     const totalLiters = filteredData.reduce(
-  //       (sum, item) => sum + item.Litres,
-  //       0
-  //     );
-  //     doc.text(
-  //       `Total Sample: ${records} , Total Liters: ${totalLiters.toFixed(2)}`,
-  //       14,
-  //       doc.lastAutoTable.finalY + 10
-  //     );
-  //
-  //     // Get current date for the file name
-  //     const now = new Date();
-  //     const formattedDate = `${now.getFullYear()}-${String(
-  //       now.getMonth() + 1
-  //     ).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
-  //
-  //     const fileName = `Mobile_Milk_Collection_${formattedDate}.pdf`;
-  //
-  //     // Save the PDF
-  //     doc.save(fileName);
-  //   };
-
   const downloadPDF = () => {
     if (filteredData.length === 0) {
       toast.error("No data available to export.");
@@ -174,7 +114,8 @@ const SankalanReport = () => {
     // Dairy name, report name, date, and shift
     const dairyName = dairyname; // Replace with your actual dairy name
     const reportName = "Mobile Milk Collection Report";
-    const Dates = values.date; // Get the selected date from values.date
+    const Dates = values.date;
+    const milkcollector = collectorname;
 
     // Shift based on period (0: morning, 1: evening, 2: all day)
     const shift =
@@ -182,17 +123,28 @@ const SankalanReport = () => {
 
     // Add title and metadata to the PDF
     doc.setFontSize(14);
-    doc.text(dairyName, pageWidth / 2, 10, { align: "center" }); // Dairy name
+    doc.text(reportName, pageWidth / 2, 10, { align: "center" }); // Dairy name
 
     doc.setFontSize(12);
 
-    doc.text(reportName, pageWidth / 2, 20, {
+    doc.text(dairyName, pageWidth / 2, 16, {
       align: "center",
-    }); // Report name & date
+    });
+
+    doc.setFontSize(12);
+    doc.text(milkcollector, pageWidth / 2, 24, {
+      align: "center",
+    });
+
+    doc.setFontSize(10);
+    doc.text(Dates, 15, 24, {
+      align: "left",
+    });
 
     // Prepare data for the table
     const tableData = filteredData.map((collection) => [
       collection.rno,
+      collection.ME === 0 ? "M" : "E",
       collection.cname,
       collection.Litres.toFixed(2),
       collection.SampleNo,
@@ -201,21 +153,22 @@ const SankalanReport = () => {
     // Table headers
     const tableHeaders = [
       "Code",
+      "ME",
       "Customer Name",
       "Liters",
       "Sample No.",
+      "Update Liters",
       "FAT",
       "SNF",
-      " ",
     ];
 
     // Add table to the PDF
-    doc.setFontSize(8);
+    doc.setFontSize(10);
     doc.autoTable({
       head: [tableHeaders],
       body: tableData,
-      startY: 30, // Table starts after the header
-      styles: { fontSize: 8 }, // Font size for table
+      startY: 28, // Table starts after the header
+      styles: { fontSize: 10 }, // Font size for table
     });
 
     // Calculate totals and add a summary row
@@ -248,7 +201,6 @@ const SankalanReport = () => {
   };
 
   useEffect(() => {
-    // Call the function on initial load
     dispatch(mobileMilkCollReport({ date: values.date }));
   }, [dispatch, values.date]);
 
@@ -270,7 +222,7 @@ const SankalanReport = () => {
         </label>
         <button className="btn" onClick={downloadPDF}>
           <span className="f-heading px10">PDF</span>
-          <FaFilePdf className="d-icons"/>
+          <FaFilePdf className="d-icons" />
         </button>
         <button className="btn" onClick={downloadExcel}>
           <span className="f-heading px10">
@@ -287,16 +239,16 @@ const SankalanReport = () => {
             {t("milkcollection:m-s-date")}
           </label>
           <input
-            className="w40 data"
+            className="w60 data"
             type="date"
             name="date"
             id="date"
             value={values.date || ""}
             onChange={handleInputs}
           />
-          <button className="heading btn ">
+          {/* <button className="heading btn ">
             {t("milkcollection:m-d-show")}
-          </button>
+          </button> */}
         </div>
         <div className="input-date-div w40 d-flex a-center">
           <label htmlFor="period" className="label-text w40 t-center">

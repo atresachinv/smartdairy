@@ -191,6 +191,51 @@ exports.userLogout = (req, res) => {
 };
 
 //.................................................
+//User Information ................................
+//.................................................
+
+exports.getUserProfile = async (req, res) => {
+  pool.getConnection((err, connection) => {
+    if (err) {
+      console.error("Error getting MySQL connection: ", err);
+      return res.status(500).json({ message: "Database connection error" });
+    }
+    const dairy_id = req.user.dairy_id;
+    const center_id = req.user.center_id;
+    const user_id = req.user.user_id;
+
+    try {
+      const getUserInfo = `SELECT emp_name, emp_mobile, emp_city, emp_tal, emp_dist, designation FROM employeemaster WHERE dairy_id = ? AND center_id = ? AND emp_mobile = ?`;
+
+      connection.query(
+        getUserInfo,
+        [dairy_id, center_id, user_id],
+        (err, result) => {
+          connection.release();
+          if (err) {
+            console.error("Error executing query: ", err);
+            return res.status(500).json({ message: "Database query error" });
+          }
+
+          if (result.length === 0) {
+            return res.status(404).json({ message: "User not found!" });
+          }
+
+          const userData = result[0];
+          res.status(200).json({
+            userData: userData,
+          });
+        }
+      );
+    } catch (error) {
+      connection.release(); // Ensure the connection is released in case of an error
+      console.error("Error processing request: ", error);
+      return res.status(500).json({ message: "Internal server error" });
+    }
+  });
+};
+
+//.................................................
 //Forget Password .................................
 //.................................................
 

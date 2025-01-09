@@ -1683,8 +1683,6 @@ exports.rateChartMilkColl = async (req, res) => {
       const dairy_id = req.user.dairy_id;
       const center_id = req.user.center_id;
 
-      console.log(dairy_id, center_id);
-
       if (!dairy_id) {
         connection.release();
         return res
@@ -1733,7 +1731,6 @@ exports.rateChartMilkColl = async (req, res) => {
               message: "No rate chart data found for the specified criteria.",
             });
           }
-          console.log(result);
 
           res.status(200).json({
             usedRateChart: result,

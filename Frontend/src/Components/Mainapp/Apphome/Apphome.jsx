@@ -7,6 +7,7 @@ import { listCustomer } from "../../../App/Features/Customers/customerSlice";
 import { getRateCharts } from "../../../App/Features/Mainapp/Masters/rateChartSlice";
 import { getMasterDates } from "../../../App/Features/Customers/Date/masterSlice";
 import { generateMaster } from "../../../App/Features/Customers/Date/masterdateSlice";
+import { getProfileInfo } from "../../../App/Features/Mainapp/Profile/ProfileSlice";
 
 const Apphome = () => {
   const dispatch = useDispatch();
@@ -25,11 +26,11 @@ const Apphome = () => {
   }, [isselected]);
 
   //Store Milk Collection Ratechart to localstorage
- useEffect(() => {
-   if (milkcollRatechart && milkcollRatechart.length > 0) {
-     saveRatechart();
-   }
- }, [milkcollRatechart]);
+  useEffect(() => {
+    if (milkcollRatechart && milkcollRatechart.length > 0) {
+      saveRatechart();
+    }
+  }, [milkcollRatechart]);
 
   const saveRatechart = () => {
     // Convert data to JSON and calculate size
@@ -50,12 +51,12 @@ const Apphome = () => {
   useEffect(() => {
     dispatch(listCustomer());
     dispatch(getRateCharts());
+    dispatch(getProfileInfo());
     dispatch(generateMaster(date));
     if (yearStart && yearEnd) {
       dispatch(getMasterDates({ yearStart, yearEnd }));
     }
   }, []);
-
 
   return (
     <div className="app-home-container w100 h1">

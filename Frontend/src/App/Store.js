@@ -23,10 +23,13 @@ import milkcolleReducer from "./Features/Mainapp/Milk/MilkCollectionSlice";
 import ratchartReducer from "./Features/Mainapp/Masters/rateChartSlice";
 import milkInfoReducer from "./Features/Mainapp/Dairyinfo/milkCollectionSlice";
 import registerReducer from "./Features/Dairy/registerSlice";
+//user profile
+import userDataReducer from "./Features/Mainapp/Profile/ProfileSlice";
 
 export const store = configureStore({
   reducer: {
     users: userReducer,
+    userinfo: userDataReducer, //user profile info
     date: dateReducer,
     milk: milkReducer,
     notify: notificationReducer,
@@ -50,6 +53,5 @@ export const store = configureStore({
     custinfo: custInfoReducer,
     ratechart: ratchartReducer,
     milkCollection: milkcolleReducer,
-
   },
 });
