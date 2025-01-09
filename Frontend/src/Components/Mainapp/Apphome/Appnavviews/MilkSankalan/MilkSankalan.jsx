@@ -43,7 +43,7 @@ const MilkSankalan = () => {
     localStorage.setItem("collCount", collCount);
     localStorage.setItem("literCount", literCount);
     localStorage.setItem("today", tDate);
-  }, [collCount, literCount ,tDate]);
+  }, [collCount, literCount, tDate]);
 
   const resetData = () => {
     localStorage.removeItem("collCount");
@@ -271,7 +271,7 @@ const MilkSankalan = () => {
           </button>
         </div>
         <div className="form-setting w100 h10 d-flex a-center sa">
-          <div className="form-date w40 d-flex a-center sa">
+          <div className="form-date-div w40 d-flex a-center sa">
             <label htmlFor="date" className="info-text w40">
               {t("c-date")} <span className="req">*</span>{" "}
             </label>
@@ -304,80 +304,70 @@ const MilkSankalan = () => {
           </div>
         </div>
 
-        <div className="milk-details-div w100 h15 d-flex-col">
-          <div className="milk-details w100 h90 d-flex">
-            <div className="form-div user-code w30 px10">
-              <label htmlFor="code" className="info-text">
-                {t("milkcollection:m-cust-code")}:{" "}
-                <span className="req">*</span>{" "}
-              </label>
-              <input
-                id="code"
-                className={`data  ${errors.code ? "input-error" : ""}`}
-                type="number"
-                required
-                placeholder="0000"
-                name="code"
-                value={values.code}
-                onChange={handleInputs}
-                ref={codeInputRef}
-              />
-            </div>
-            <div className="form-div user-name w70 px10">
-              <label htmlFor="cname" className="info-text">
-                {t("milkcollection:m-cust-name")}:<span className="req">*</span>{" "}
-              </label>
-              <input
-                id="cname"
-                className="data"
-                type="text"
-                required
-                placeholder={`${t("milkcollection:m-cust-name")}`}
-                name="cname"
-                value={values.cname}
-                readOnly
-              />
-            </div>
+        <div className="milk-details-div w100 h15 d-flex a-center sb">
+          <div className="form-div user-name w30 px10">
+            <label htmlFor="code" className="info-text">
+              {t("milkcollection:m-cust-code")}: <span className="req">*</span>{" "}
+            </label>
+            <input
+              id="code"
+              className={`data  ${errors.code ? "input-error" : ""}`}
+              type="number"
+              required
+              placeholder="0000"
+              name="code"
+              value={values.code}
+              onChange={handleInputs}
+              ref={codeInputRef}
+            />
+          </div>
+          <div className="form-div user-name w70  px10">
+            <label htmlFor="cname" className="info-text">
+              {t("milkcollection:m-cust-name")}:<span className="req">*</span>{" "}
+            </label>
+            <input
+              id="cname"
+              className="data"
+              type="text"
+              required
+              placeholder={`${t("milkcollection:m-cust-name")}`}
+              name="cname"
+              value={values.cname}
+              readOnly
+            />
           </div>
         </div>
-        <div className="milk-details-div w100 h15 d-flex-col">
-          <div className="milk-details w100 h90 d-flex">
-            <div className="milk-info w50 h1 ">
-              <div className="form-div px10">
-                <label htmlFor="liters" className="info-text">
-                  {t("c-liters")} <span className="req">*</span>{" "}
-                  <span className="heading mx10">{values.prevliters}</span>
-                </label>
-                <input
-                  id="liters"
-                  className={`data ${errors.liters ? "input-error" : ""}`}
-                  type="number"
-                  required
-                  placeholder="00.0"
-                  name="liters"
-                  onChange={handleInputs}
-                  value={values.liters}
-                />
-              </div>
-            </div>
-            <div className="milk-info w50 h1 d-flex-col">
-              <div className="form-div px10">
-                <label htmlFor="sample" className="info-text">
-                  {t("milkcollection:m-sample-no")}{" "}
-                  <span className="req">*</span>{" "}
-                </label>
-                <input
-                  id="sample"
-                  className={`data ${errors.sample ? "input-error" : ""}`}
-                  type="number"
-                  required
-                  placeholder="0"
-                  name="sample"
-                  value={values.sample || ""}
-                  onChange={handleInputs}
-                />
-              </div>
-            </div>
+        <div className="milk-details-div w100 h15 d-flex a-center sb">
+          <div className="form-div w50 px10">
+            <label htmlFor="liters" className="info-text">
+              {t("c-liters")} <span className="req">*</span>{" "}
+              <span className="heading mx10">{values.prevliters}</span>
+            </label>
+            <input
+              id="liters"
+              className={`data ${errors.liters ? "input-error" : ""}`}
+              type="number"
+              required
+              placeholder="00.0"
+              name="liters"
+              onChange={handleInputs}
+              value={values.liters}
+            />
+          </div>
+          <div className="form-div w50 px10">
+            <label htmlFor="sample" className="info-text">
+              {t("milkcollection:m-sample-no")} <span className="req">*</span>{" "}
+            </label>
+            <input
+              id="sample"
+              className={`data ${errors.sample ? "input-error" : ""}`}
+              type="number"
+              required
+              placeholder="0"
+              name="sample"
+              value={values.sample || ""}
+              onChange={handleInputs}
+            />
           </div>
         </div>
         <div className="mobile-milkcoll-form-btns w100 my10 d-flex a-center j-end">

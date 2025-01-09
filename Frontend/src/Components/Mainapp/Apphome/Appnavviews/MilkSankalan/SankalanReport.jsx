@@ -264,7 +264,7 @@ const SankalanReport = () => {
 
   return (
     <div className="mobile-milk-collection-report w100 h1 d-flex-col center sa">
-      <div className="page-title-button-div w70 h10 d-flex a-center">
+      <div className="page-title-button-div w70 h10 d-flex a-center sb">
         <label className="heading w60">
           {t("milkcollection:m-milk-coll-report")}
         </label>

@@ -122,13 +122,53 @@
 
   .apphome-nav-views .mobile-milk-coll-form {
     width: 100%;
-    height: 70%;
+    min-height: fit-content;
   }
   .form-setting {
+    flex-direction: column;
     padding: 0 10px;
+    margin-bottom: 25px;
+  }
+  .form-setting .form-date-div {
+    margin-bottom: 10px;
   }
 
-  .form-setting .setting-btn-switch,
+  .mobile-milk-coll-form .milk-details-div {
+    flex-direction: column;
+    padding: 0 10px;
+    margin: 5px 0;
+  }
+  .milk-details-div .form-div {
+    width: 100%;
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 0;
+    margin-bottom: 10px;
+  }
+
+  .form-setting .milk-details {
+    padding: 0;
+    margin-bottom: 10px;
+  }
+
+  .form-date-div label,
+  .milk-details label,
+  .milk-details-div .form-div label {
+    width: 30%;
+  }
+
+  .form-date-div input,
+  .milk-details select,
+  .milk-details-div .form-div input {
+    width: 70%;
+  }
+
+  .form-setting .form-date-div,
+  .form-setting .milk-details {
+    width: 100%;
+  }
+
+  /* .form-setting .setting-btn-switch,
   .form-setting .form-date,
   .form-setting .milk-details {
     width: 50%;
@@ -142,21 +182,21 @@
     align-items: flex-start;
     justify-content: flex-start;
     flex-direction: column;
-  }
+  } */
 
-  .form-setting .form-date .data {
+  /* .form-setting .form-date .data {
     width: 70%;
   }
   .form-setting .milk-details .data {
     width: 100%;
-  }
+  } */
 
-  .milk-details .user-code {
+  /* .milk-details .user-code {
     width: 40%;
   }
   .milk-details .user-name {
     width: 60%;
-  }
+  } */
   .mobile-milkcoll-form-btns .btn {
     margin-top: 10px;
   }
