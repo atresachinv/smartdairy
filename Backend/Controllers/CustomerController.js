@@ -90,7 +90,6 @@ exports.createCustomer = async (req, res) => {
   const designation = "Customer";
   const isAdmin = "0";
   const fax = `${prefix}${cust_no}`;
-  console.log(fax);
 
   pool.getConnection((err, connection) => {
     if (err) {
@@ -122,7 +121,7 @@ exports.createCustomer = async (req, res) => {
           const createCustomerQuery = `
             INSERT INTO customer (
               cid, cname, Phone, fax, City, tal, dist, cust_accno, createdby, 
-              createdon, mobile, isSabhasad, rno, orgid, engName, ratecharttype, 
+              createdon, mobile, isSabhasad, rno, orgid, engName, rcName, 
               centerid, srno, cust_pincode, cust_addhar, cust_farmerid, cust_bankname, 
               cust_ifsc, caste, gender, milktype, sabhasad_date, isActive, deposit, 
               commission, rebet, transportation, h_deposit, h_deduction, h_allrebet, 

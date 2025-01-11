@@ -1520,6 +1520,101 @@ exports.updateSelectedRateChart = async (req, res) => {
 };
 
 // .............................................................................
+// Save Updated Ratechart ......................................................
+// .............................................................................
+
+exports.saveUpdatedRC= async (req, res) => {
+  const { ratechart, rccode, rctype, animal ,time } = req.body;
+
+  // Acquire a connection from the pool
+  pool.getConnection(async (err, connection) => {
+    if (err) {
+      console.error("Error getting MySQL connection: ", err);
+      return res.status(500).json({ message: "Database connection error" });
+    }
+
+    try {
+      const dairy_id = req.user.dairy_id;
+      const center_id = req.user.center_id;
+
+      if (!dairy_id) {
+        connection.release();
+        return res.status(400).json({ message: "Dairy ID not found!" });
+      }
+
+      // Start transaction
+      await connection.beginTransaction();
+
+      
+      const saveRatesQuery = `
+        INSERT INTO ratemaster (companyid, rccode, rcdate, rctypecode, rctypename, cb, fat, snf, rate, time, center_id)
+        VALUES ?
+      `;
+
+      const values = ratechart.map((record, index) => {
+        let { fat, snf, rcdate, rate } = record;
+
+        if (
+          typeof fat !== "number" ||
+          typeof snf !== "number" ||
+          typeof rate !== "number"
+        ) {
+          throw new Error(
+            `Invalid record format at index ${index}. Each rate record must have numeric FAT, SNF, and Rate.`
+          );
+        }
+
+        fat = parseFloat(fat.toFixed(1));
+        snf = parseFloat(snf.toFixed(1));
+        rate = parseFloat(rate.toFixed(2));
+
+        return [
+          dairy_id,
+          rccode,
+          rcdate,
+          0,
+          rctype,
+          animal,
+          fat,
+          snf,
+          rate,
+          time,
+          center_id,
+        ];
+      });
+
+      connection.query(saveRatesQuery, [values], async (err, results) => {
+        if (err) {
+          await connection.rollback();
+          connection.release();
+          console.error("Error executing query: ", err);
+          return res.status(500).json({ message: "Query execution error" });
+        }
+
+        // Commit the transaction
+        await connection.commit();
+        connection.release();
+
+        res.status(200).json({
+          message: "Ratechart saved successfully!",
+          insertedRecords: results.affectedRows,
+        });
+      });
+    } catch (error) {
+      if (connection) {
+        try {
+          await connection.rollback();
+        } catch (rollbackError) {
+          console.error("Error rolling back transaction:", rollbackError);
+        }
+        connection.release();
+      }
+      return res.status(400).json({ message: error.message });
+    }
+  });
+};
+
+// .............................................................................
 // Finding Distinct Ratechart used by dairy ....................................
 // .............................................................................
 

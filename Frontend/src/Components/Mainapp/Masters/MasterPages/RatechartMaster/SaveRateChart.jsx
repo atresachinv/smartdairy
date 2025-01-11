@@ -169,11 +169,11 @@ const SaveRateChart = ({ rate }) => {
             <Spinner />
           </div>
         ) : (
-          <>
-            <div className="select-time-animal-type w100 h25 d-flex sb">
+          <div className="save-ratechart-contaner w100 h1 d-flex-col sb">
+            <div className="select-time-animal-type w100 h50 d-flex sb">
               <div className="select-time w25 h1 a-center d-flex-col ">
                 <label htmlFor="rccode" className="info-text w100">
-                  Ratechart No :
+                  No :
                 </label>
                 <input
                   className="data w100"
@@ -187,7 +187,7 @@ const SaveRateChart = ({ rate }) => {
               </div>
               <div className="select-animal-type w70 h1 a-center d-flex-col">
                 <label htmlFor="rctype" className="info-text w100">
-                  Ratechart Type:{" "}
+                  Ratechart Type :
                 </label>
                 <input
                   className={`data w100 ${errors.rctype ? "input-error" : ""}`}
@@ -199,7 +199,7 @@ const SaveRateChart = ({ rate }) => {
                 />
               </div>
             </div>
-            <div className="select-time-animal-type w100 h25 d-flex sb">
+            <div className="select-time-animal-type w100 h50 d-flex sb">
               <div className="select-animal-type w50 h1 a-center d-flex">
                 <label htmlFor="time" className="info-text w30">
                   Time:
@@ -224,7 +224,7 @@ const SaveRateChart = ({ rate }) => {
               </div>
               <div className="select-animal-type w50 h1 a-center d-flex">
                 <label htmlFor="animalType" className="info-text w50">
-                  Animal Type:
+                  Animal :
                 </label>
                 <select
                   className="data w50 "
@@ -258,7 +258,7 @@ const SaveRateChart = ({ rate }) => {
                 onChange={handleInput}
               />
             </div>
-          </>
+          </div>
         )}
         <div className="button-div w100 h20 d-flex j-end my10">
           <button

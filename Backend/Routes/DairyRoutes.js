@@ -17,6 +17,7 @@ const {
   rateChartMilkColl,
   getSelectedRateChart,
   updateSelectedRateChart,
+  saveUpdatedRC,
 } = require("../Controllers/DairyController");
 const router = express.Router();
 
@@ -38,5 +39,6 @@ router.route("/apply/ratechart").post(verifyToken, applyRateChart);
 router.route("/sankalan/ratechart").post(verifyToken, rateChartMilkColl);
 router.route("/selected/ratechart").get(verifyToken, getSelectedRateChart);
 router.route("/update/ratechart").post(verifyToken, updateSelectedRateChart);
+router.route("/save/updated/ratechart").post(verifyToken, saveUpdatedRC);
 
 module.exports = router;

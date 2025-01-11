@@ -12,8 +12,8 @@ import {
   sendNewNotification,
 } from "../../../../../App/Features/Notifications/notificationSlice";
 import { useTranslation } from "react-i18next";
-import "../../../../../Styles/Mainapp/Apphome/Appnavview/Milkcollection.css";
 import { getRateCharts } from "../../../../../App/Features/Mainapp/Masters/rateChartSlice";
+import "../../../../../Styles/Mainapp/Apphome/Appnavview/Milkcollection.css";
 
 const MilkColleform = ({ switchToSettings }) => {
   const dispatch = useDispatch();
@@ -28,7 +28,6 @@ const MilkColleform = ({ switchToSettings }) => {
   const [time, setTime] = useState(true);
   const [errors, setErrors] = useState({});
   const [slotCount, setSlotCount] = useState(0); //To rerive local stored milk entries
-
 
   const initialValues = {
     date: new Date().toISOString().split("T")[0],
@@ -137,7 +136,6 @@ const MilkColleform = ({ switchToSettings }) => {
     dispatch(getRateCharts());
   }, [dispatch]);
 
-  console.log("rate",milkRateChart);
 
   // Retrieve the stored rate chart from localStorage on component mount
   useEffect(() => {
@@ -375,6 +373,7 @@ const MilkColleform = ({ switchToSettings }) => {
         deviceToken: token, // Device token for the notification
       })
     );
+    toast.success(`Notification sent successfully!`);
   };
 
   //Handling Milk Collection
@@ -390,8 +389,6 @@ const MilkColleform = ({ switchToSettings }) => {
     }
     try {
       const allEntries = JSON.parse(localStorage.getItem("milkentries")) || [];
-      console.log(allEntries);
-
       dispatch(saveMilkOneEntry(values));
       const existingEntries =
         JSON.parse(localStorage.getItem("milkentries")) || [];
@@ -401,7 +398,7 @@ const MilkColleform = ({ switchToSettings }) => {
       setValues(initialValues); // Reset form to initial values
       setErrors({}); // Reset errors
 
-      sendNotifications();
+      // sendNotifications();
 
       toast.success(`Milk Collection of ${values.cname} saved successfully!`);
 
@@ -409,7 +406,6 @@ const MilkColleform = ({ switchToSettings }) => {
       setCustList((prevList) =>
         prevList.filter((customer) => customer.srno !== values.code)
       );
-      console.log("asas", custList);
     } catch (error) {
       console.error("Error sending milk entries to backend:", error);
     }
@@ -477,24 +473,22 @@ const MilkColleform = ({ switchToSettings }) => {
     //     }
   };
 
-  // console.log("ratechart", milkRateChart);
-
   return (
     <>
       <form
         onSubmit={handleCollection}
         className="milk-col-form w100 h1 d-flex-col bg p10">
-        <span className="heading w100 t-center ">
+        <span className="heading w100 t-center py10">
           {!time ? `${t("common:c-eve")}` : `${t("common:c-mrg")}`}{" "}
           {t("m-milkcoll")}
         </span>
-        <div className="form-setting w100 h10 d-flex a-center sa">
-          <div className="w40 d-flex a-center px10">
+        <div className="form-setting w100 h10 d-flex a-center sb ">
+          <div className="w60 d-flex a-center px10">
             <label htmlFor="date" className="info-text w30">
               {t("common:c-date")} <span className="req">*</span>{" "}
             </label>
             <input
-              className={`data w70 ${errors.date ? "input-error" : ""}`}
+              className={`data w50 ${errors.date ? "input-error" : ""}`}
               type="date"
               required
               placeholder="0000"
@@ -505,7 +499,7 @@ const MilkColleform = ({ switchToSettings }) => {
               max={values.date}
             />
           </div>
-          <div className="setting-btn-switch w20 d-flex">
+          <div className="setting-btn-switch w20 j-center d-flex">
             {/* <span className="text">Morning</span> */}
             <button
               type="button"
@@ -516,12 +510,9 @@ const MilkColleform = ({ switchToSettings }) => {
             </button>
             {/* <span className="text">Evening</span> */}
           </div>
-          <BsGearFill className="color-icon w20" onClick={switchToSettings} />
+          <BsGearFill className="color-icon w10" onClick={switchToSettings} />
         </div>
-        <div className="setting-btn-switch w100 h10 d-flex a-center sb">
-          {/* <span className="label-text"> User Details : </span> */}
-        </div>
-        <div className="user-details w100 h20 d-flex ">
+        <div className="user-details w100 h20 d-flex">
           <div className="form-div w50 px10">
             <label htmlFor="code" className="info-text">
               {t("m-cust-code")} <span className="req">*</span>{" "}
@@ -553,10 +544,10 @@ const MilkColleform = ({ switchToSettings }) => {
             />
           </div>
         </div>
-        <div className="milk-details-div w100 h70 d-flex-col">
+        <div className="milk-details-div w100 h70 d-flex">
           {/* <span className="label-text">Milk Details : </span> */}
-          <div className="milk-details w100 h90 d-flex">
-            <div className="milk-info w50 h1 ">
+          {/* <div className="milk-details w100 h90 d-flex"> */}
+            <div className="milk-info w50 h1 d-flex-col">
               <div className="form-div px10">
                 <label htmlFor="liters" className="info-text">
                   {t("common:c-liters")} <span className="req">*</span>{" "}
@@ -651,7 +642,7 @@ const MilkColleform = ({ switchToSettings }) => {
                 />
               </div>
             </div>
-          </div>
+          {/* </div> */}
         </div>
         <div className="form-btns w100 h10 d-flex a-center j-end">
           <button className="w-btn label-text" type="reset">

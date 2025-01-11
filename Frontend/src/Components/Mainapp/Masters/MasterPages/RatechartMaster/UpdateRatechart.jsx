@@ -2,11 +2,11 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import Spinner from "../../../../Home/Spinner/Spinner";
-import { updateRatechart } from "../../../../../App/Features/Mainapp/Masters/rateChartSlice";
+import { saveUpdatedRC } from "../../../../../App/Features/Mainapp/Masters/rateChartSlice";
 
 const UpdateRatechart = ({ isSet, ratechart }) => {
   const dispatch = useDispatch();
-
+  const maxRcCode = useSelector((state) => state.ratechart.maxRcCode);
   const status = useSelector((state) => state.ratechart.updatestatus);
   const tDate = useSelector((state) => state.date.toDate);
   const [errors, setErrors] = useState({});
@@ -19,9 +19,22 @@ const UpdateRatechart = ({ isSet, ratechart }) => {
     rccode: "",
   });
 
-  console.log(status);
-
   const handleInput = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+
+    const fieldError = validateField(name, value);
+    setErrors((prevErrors) => {
+      const updatedErrors = { ...prevErrors, ...fieldError };
+      if (!value) delete updatedErrors[name]; // Clear error if field is empty
+      return updatedErrors;
+    });
+  };
+
+  const handleRCDate = (e) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({
       ...prevData,
@@ -74,6 +87,36 @@ const UpdateRatechart = ({ isSet, ratechart }) => {
     return validationErrors;
   };
 
+  // const updateRatechart = () => {
+  //   const updatedRates = ratechart.map((record) => ({
+  //     ...record,
+  //     rate: parseFloat((record.rate + formData.amount).toFixed(2)),
+  //     rcdate: formData.rcdate,
+  //   }));
+  //   console.log("updated rates", updatedRates);
+  // };
+
+  //   const updateRatechart = () => {
+  //     const updatedRates = ratechart.map((record) => {
+  //       // Parse both rate and amount to ensure they are numbers
+  //       const rate = parseFloat(record.rate);
+  //       const amount = parseFloat(formData.amount);
+  //
+  //       if (isNaN(rate) || isNaN(amount)) {
+  //         console.error("Invalid rate or amount value", { rate, amount });
+  //         return { ...record, rate: record.rate }; // Return the original rate if parsing fails
+  //       }
+  //
+  //       return {
+  //         ...record,
+  //         rate: parseFloat((rate + amount).toFixed(2)),
+  //         rcdate: formData.rcdate,
+  //       };
+  //     });
+  //
+  //     console.log("updated rates", isSet, updatedRates);
+  //   };
+
   const handleRatechartUpdate = async (e) => {
     e.preventDefault();
 
@@ -83,20 +126,38 @@ const UpdateRatechart = ({ isSet, ratechart }) => {
       setErrors(validationErrors);
       return;
     }
+
     if (!isSet) {
       toast.error("Please select a ratechart to Update!.");
       return;
     } else {
-      console.log("alla na data", formData);
+      const updatedRates = ratechart.map((record) => {
+        // Parse both rate and amount to ensure they are numbers
+        const rate = parseFloat(record.rate);
+        const amount = parseFloat(formData.amount);
+
+        if (isNaN(rate) || isNaN(amount)) {
+          console.error("Invalid rate or amount value", { rate, amount });
+          return { ...record, rate: record.rate }; // Return the original rate if parsing fails
+        }
+
+        return {
+          ...record,
+          rate: parseFloat((rate + amount).toFixed(2)),
+          rcdate: formData.rcdate,
+        };
+      });
+
       dispatch(
-        updateRatechart({
-          amt: formData.amount,
-          rccode: isSet.rccode,
-          rcdate: isSet.rcdate.slice(0, 10),
+        saveUpdatedRC({
+          ratechart: updatedRates,
+          rccode: maxRcCode,
           rctype: isSet.rctypename,
-          rate: ratechart,
+          animal: isSet.cb,
+          time: isSet.time,
         })
       );
+      toast.success("Ratechart updated successfully!");
     }
   };
 
@@ -106,35 +167,44 @@ const UpdateRatechart = ({ isSet, ratechart }) => {
         className="rate-chart-setting-div w100 h1 d-flex-col my10"
         onSubmit={handleRatechartUpdate}>
         <span className="heading">Update Selected Ratechart</span>
-        <div className="select-time-animal-type w100 h25 d-flex sb">
+        <div className="select-time-animal-type w100 h70 d-flex sb">
           {status === "loading" ? (
             <div className="loading-ToastContainer w100 h1 d-flex center">
               <Spinner />
             </div>
           ) : (
-            <div className="select-time w100 h1 a-center d-flex sb">
-              <label htmlFor="amount" className="info-text w70">
-                Increase or decrease a specific amount from the selected rate
-                chart :
-              </label>
-              <input
-                className={`data w20 ${errors.amount ? "input-error" : ""}`}
-                type="text"
-                name="amount"
-                id="amount"
-                value={formData.amount}
-                placeholder="+0.0"
-                onChange={handleInput}
-              />
+            <div className="update-rate-date-contaner w100 h1 d-flex-col">
+              <div className="select-time w100 h50 a-center d-flex sb">
+                <label htmlFor="amount" className="info-text w70">
+                  Increase or decrease a specific amount from the selected rate
+                  chart :
+                </label>
+                <input
+                  className={`data w20 ${errors.amount ? "input-error" : ""}`}
+                  type="text"
+                  name="amount"
+                  id="amount"
+                  value={formData.amount}
+                  placeholder="+0.0"
+                  onChange={handleInput}
+                />
+              </div>
+              <div className="select-animal-type w100 h30 a-center d-flex j-start sb">
+                <label htmlFor="newdate" className="info-text w50">
+                  New Ratechart Date :
+                </label>
+                <input
+                  className="data w40"
+                  type="date"
+                  name="rcdate"
+                  id="newdate"
+                  max={tDate}
+                  onChange={handleRCDate}
+                />
+              </div>
             </div>
           )}
         </div>
-        {/* <div className="select-animal-type w100 h1 a-center d-flex j-start">
-          <label htmlFor="newdate" className="info-text w40">
-            New Ratechart Date:
-          </label>
-          <input className="data w30 " type="date" name="" id="newdate" />
-        </div> */}
         <div className="button-div w100 h25 d-flex j-end my10">
           <button
             type="submit"

@@ -11,6 +11,7 @@ const initialState = {
   updatestatus: "idle",
   savercstatus: "idle",
   applyrcstatus: "idle",
+  supdatedrcstatus: "idle",
   error: null,
   progress: 0,
 };
@@ -77,7 +78,7 @@ export const getRateCharts = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const response = await axiosInstance.post("/sankalan/ratechart");
-      return response.data.sankalanrc;
+      return response.data.usedRateChart;
     } catch (error) {
       const errorMessage =
         error.response?.data?.message ||
@@ -216,6 +217,28 @@ export const updateRatechart = createAsyncThunk(
   }
 );
 
+// Save Updated ratechart
+export const saveUpdatedRC = createAsyncThunk(
+  "ratechart/saveUpdatedRC",
+  async ({ratechart, rccode, rctype, animal, time }, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.post("/save/updated/ratechart", {
+        ratechart,
+        rccode,
+        rctype,
+        animal,
+        time,
+      });
+      return response.data;
+    } catch (error) {
+      const errorMessage =
+        error.response?.data?.message ||
+        "Failed to fetch milk collection ratechart!.";
+      return rejectWithValue(errorMessage);
+    }
+  }
+);
+
 // Slice
 const rateChartSlice = createSlice({
   name: "ratechart",
@@ -301,17 +324,16 @@ const rateChartSlice = createSlice({
         state.error = action.payload;
         state.applyrcstatus = "failed";
       })
-      // .addCase(fetchMilkCollRatechart.pending, (state) => {
-      //   state.status = "loading";
-      // })
-      // .addCase(fetchMilkCollRatechart.fulfilled, (state, action) => {
-      //   state.rateChart = action.payload;
-      //   state.status = "succeeded";
-      // })
-      // .addCase(fetchMilkCollRatechart.rejected, (state, action) => {
-      //   state.error = action.payload;
-      //   state.status = "failed";
-      // })
+      .addCase(saveUpdatedRC.pending, (state) => {
+        state.supdatedrcstatus = "loading";
+      })
+      .addCase(saveUpdatedRC.fulfilled, (state) => {
+        state.supdatedrcstatus = "succeeded";
+      })
+      .addCase(saveUpdatedRC.rejected, (state, action) => {
+        state.error = action.payload;
+        state.supdatedrcstatus = "failed";
+      })
       .addCase(fetchselectedRateChart.pending, (state) => {
         state.status = "loading";
       })

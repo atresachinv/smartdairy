@@ -245,14 +245,14 @@ const MilkSankalan = () => {
 
   return (
     <div className="mobile-milk-collection-conainer w100 h1 d-flex-col center">
-      <span className="heading w100 h10 t-center">{heading}</span>
+      <span className="heading w100 h10 t-center py10">{heading}</span>
       <form
         onSubmit={handleMobileCollection}
         className="mobile-milk-coll-form w60 h70 d-flex-col sa bg p10">
-        <div className="show-milk-data-container w100 h10 d-flex px10">
+        <div className="show-milk-data-container w100 h10 d-flex a-center px10">
           <div className="form-date w50 d-flex a-center">
             <label htmlFor="date" className="label-text w60">
-              {t("milkcollection:m-count")}:
+              {t("milkcollection:m-count")} :
             </label>
             <label htmlFor="date" className="heading w40">
               {collCount}
@@ -260,7 +260,7 @@ const MilkSankalan = () => {
           </div>
           <div className="form-date w50 d-flex a-center">
             <label htmlFor="date" className="label-text w60">
-              {t("milkcollection:m-t-liters")}:
+              {t("milkcollection:m-t-liters")} :
             </label>
             <label htmlFor="date" className="heading w40">
               {literCount.toFixed(2)}
@@ -273,7 +273,7 @@ const MilkSankalan = () => {
         <div className="form-setting w100 h10 d-flex a-center sa">
           <div className="form-date-div w40 d-flex a-center sa">
             <label htmlFor="date" className="info-text w40">
-              {t("c-date")} <span className="req">*</span>{" "}
+              {t("c-date")} <span className="req">*</span>
             </label>
             <input
               className={`data w60 ${errors.date ? "input-error" : ""}`}
@@ -291,7 +291,7 @@ const MilkSankalan = () => {
           <div className="milk-details w50 d-flex a-center px10">
             <label htmlFor="animal" className="info-text w50">
               {t("milkcollection:m-s-milk-type")}
-              <span className="req">*</span>{" "}
+              <span className="req">*</span>
             </label>
             <select
               className="data w50"
@@ -307,7 +307,7 @@ const MilkSankalan = () => {
         <div className="milk-details-div w100 h15 d-flex a-center sb">
           <div className="form-div user-name w30 px10">
             <label htmlFor="code" className="info-text">
-              {t("milkcollection:m-cust-code")}: <span className="req">*</span>{" "}
+              {t("milkcollection:m-cust-code")} <span className="req">*</span>{" "}
             </label>
             <input
               id="code"
@@ -323,7 +323,7 @@ const MilkSankalan = () => {
           </div>
           <div className="form-div user-name w70  px10">
             <label htmlFor="cname" className="info-text">
-              {t("milkcollection:m-cust-name")}:<span className="req">*</span>{" "}
+              {t("milkcollection:m-cust-name")}<span className="req">*</span>{" "}
             </label>
             <input
               id="cname"

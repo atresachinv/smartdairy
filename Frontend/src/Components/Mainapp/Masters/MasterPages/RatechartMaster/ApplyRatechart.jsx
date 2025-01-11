@@ -137,14 +137,14 @@ const ApplyRatechart = ({ isSet, ratechart }) => {
             />
           </div>
         </div>
-        <span className="label-text">Select Customers</span>
+        <span className="info-text">Select Customers</span>
         {status === "loading" ? (
           <div className="loading-ToastContainer w100 h25 d-flex center">
             <Spinner />
           </div>
         ) : (
           <div className="select-time-animal-type w100 h25 d-flex">
-            <div className="select-animal-type w30 h1 a-center d-flex">
+            <div className="select-animal-type w40 h1 a-center d-flex">
               <label htmlFor="fromCust" className="info-text w40">
                 From :
               </label>
@@ -158,7 +158,7 @@ const ApplyRatechart = ({ isSet, ratechart }) => {
                 onChange={handleInput}
               />
             </div>
-            <div className="select-animal-type w30 h1 a-center d-flex mx10">
+            <div className="select-animal-type w40 h1 a-center d-flex mx10">
               <label htmlFor="toCust" className="info-text w40">
                 To :
               </label>

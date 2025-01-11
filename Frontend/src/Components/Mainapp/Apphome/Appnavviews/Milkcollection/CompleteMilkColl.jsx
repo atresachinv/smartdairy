@@ -5,8 +5,8 @@ import {
   updateMobileColl,
 } from "../../../../../App/Features/Mainapp/Milk/MilkCollectionSlice";
 import { toast } from "react-toastify";
-import "../../../../../Styles/Mainapp/Apphome/Appnavview/Milkcollection.css";
 import { useTranslation } from "react-i18next";
+import "../../../../../Styles/Mainapp/Apphome/Appnavview/Milkcollection.css";
 
 const CompleteMilkColl = () => {
   const { t } = useTranslation(["milkcollection", "common"]);
@@ -288,7 +288,7 @@ const CompleteMilkColl = () => {
   //       console.error("Error calculating rate and amount:", error);
   //     }
   //   };
-console.log("ratechart", milkRateChart);
+  console.log("ratechart", milkRateChart);
   const calculateRateAndAmount = async () => {
     try {
       const { fat, snf, liters, rcName } = values;
@@ -343,7 +343,8 @@ console.log("ratechart", milkRateChart);
     const customer = customerList.find(
       (customer) => customer.srno.toString() === code
     );
-console.log("customer", customer);
+
+    console.log("customer", customer);
 
     if (customer) {
       setValues((prev) => ({
@@ -462,49 +463,31 @@ console.log("customer", customer);
   };
 
   return (
-    <>
+    <div className="complete-mobile-milk-container w100 h1 d-flex-col center">
+      <span className="page-heading heading w100 h10 t-center">
+        Complete Milk Collection
+      </span>
       <form
         onSubmit={handleCollection}
-        className="complete-mobile-milk-coll w60 h90 d-flex-col center bg p10">
-        <span className="heading w100 h10 t-center">
-          Complete Milk Collection{" "}
-        </span>
-        <div className="form-setting w100 h10 d-flex a-center sb">
-          <div className="w45 d-flex a-center px10">
-            <label htmlFor="date" className="info-text w30">
-              {t("common:c-date")}
-              <span className="req">*</span>{" "}
-            </label>
-            <input
-              className={`data w70 ${errors.date ? "input-error" : ""}`}
-              type="date"
-              required
-              placeholder="0000"
-              name="date"
-              id="date"
-              onChange={handleInputs}
-              value={values.date || ""}
-              max={values.date}
-            />
-          </div>
-
-          {/* <div className="setting-btn-switch w40 h10 d-flex a-center sb">
-            <span className="text">Morning</span>
-            <button
-              type="button"
-              onClick={handleTime}
-              className={`sakalan-time ${time ? "on" : "off"}`}
-              aria-pressed={time}>
-              {time ? "Morning" : "Evening"}
-            </button>
-            <span className="text">Evening</span>
-          </div>
-          <BsGearFill className="color-icon mx10" onClick={switchToSettings} /> */}
+        className="complete-mobile-milk-coll w60 h80 d-flex-col center bg p10">
+        <div className="form-date-div w100 h10 d-flex a-center j-start px10 my10">
+          <label htmlFor="date" className="info-text w10">
+            {t("common:c-date")}
+            <span className="req">*</span>
+          </label>
+          <input
+            className={`data w30 ${errors.date ? "input-error" : ""}`}
+            type="date"
+            required
+            placeholder="0000"
+            name="date"
+            id="date"
+            onChange={handleInputs}
+            value={values.date || ""}
+            max={values.date}
+          />
         </div>
-        <div className="setting-btn-switch w100 h10 d-flex a-center sb">
-          {/* <span className="heading "> User Details : </span> */}
-        </div>
-        <div className="user-details w100 h20 d-flex ">
+        <div className="user-details w100 h20 d-flex">
           <div className="form-div w30 px10">
             <label htmlFor="sample" className="info-text ">
               {t("m-sample-no")} <span className="req">*</span>{" "}
@@ -551,104 +534,101 @@ console.log("customer", customer);
             />
           </div>
         </div>
-        <div className="milk-details-div w100 h70 d-flex-col">
-          {/* <span className="heading">Milk Details : </span> */}
-          <div className="milk-details w100 h90 d-flex">
-            <div className="milk-info w50 h1 ">
-              <div className="form-div px10">
-                <label htmlFor="liters" className="info-text">
-                  {t("common:c-liters")} <span className="req">*</span>{" "}
-                </label>
-                <input
-                  className={`data ${errors.liters ? "input-error" : ""}`}
-                  type="decimal"
-                  required
-                  placeholder="00.0"
-                  name="liters"
-                  id="liters"
-                  onChange={handleInputs}
-                  value={values.liters}
-                  readOnly
-                />
-              </div>
-              <div className="form-div  px10">
-                <label htmlFor="fat" className="info-text">
-                  {t("common:c-fat")} <span className="req">*</span>{" "}
-                </label>
-                <input
-                  className={`data ${errors.fat ? "input-error" : ""}`}
-                  type="decimal"
-                  required
-                  placeholder="0.0"
-                  name="fat"
-                  id="fat"
-                  onChange={handleInputChange}
-                  value={values.fat}
-                />
-              </div>
-              <div className="form-div px10">
-                <label htmlFor="snf" className="info-text">
-                  {t("common:c-snf")} <span className="req">*</span>{" "}
-                </label>
-                <input
-                  className={`data ${errors.snf ? "input-error" : ""}`}
-                  type="decimal"
-                  required
-                  placeholder="00.0"
-                  name="snf"
-                  id="snf"
-                  value={values.snf}
-                  onChange={handleInputChange}
-                />
-              </div>
+        <div className="milk-details-div w100 h60 d-flex">
+          <div className="milk-info w50 h1 d-flex-col ">
+            <div className="form-div px10">
+              <label htmlFor="liters" className="info-text">
+                {t("common:c-liters")} <span className="req">*</span>{" "}
+              </label>
+              <input
+                className={`data ${errors.liters ? "input-error" : ""}`}
+                type="decimal"
+                required
+                placeholder="00.0"
+                name="liters"
+                id="liters"
+                onChange={handleInputs}
+                value={values.liters}
+                readOnly
+              />
             </div>
-            <div className="milk-info w50 h1 d-flex-col">
-              <div className="form-div px10">
-                <label htmlFor="degree" className="info-text">
-                  {t("common:c-deg")} <span className="req">*</span>{" "}
-                </label>
-                <input
-                  className={`data ${errors.degree ? "input-error" : ""}`}
-                  type="decimal"
-                  required
-                  disabled
-                  placeholder="00.0"
-                  name="degree"
-                  id="degree"
-                  value={values.degree}
-                  onChange={handleInputs}
-                />
-              </div>
-              <div className="form-div px10">
-                <label htmlFor="rate" className="info-text">
-                  {t("common:c-rate")} <span className="req">*</span>{" "}
-                </label>
-                <input
-                  className={`data ${errors.rate ? "input-error" : ""}`}
-                  type="decimal"
-                  required
-                  readOnly
-                  placeholder="00.0"
-                  name="rate"
-                  id="rate"
-                  value={values.rate}
-                />
-              </div>
-              <div className="form-div px10">
-                <label htmlFor="amt" className="info-text">
-                  {t("common:c-amt")} <span className="req">*</span>{" "}
-                </label>
-                <input
-                  className={`data ${errors.amt ? "input-error" : ""}`}
-                  type="decimal"
-                  required
-                  readOnly
-                  placeholder="00.0"
-                  name="amt"
-                  id="amt"
-                  value={values.amt}
-                />
-              </div>
+            <div className="form-div  px10">
+              <label htmlFor="fat" className="info-text">
+                {t("common:c-fat")} <span className="req">*</span>{" "}
+              </label>
+              <input
+                className={`data ${errors.fat ? "input-error" : ""}`}
+                type="decimal"
+                required
+                placeholder="0.0"
+                name="fat"
+                id="fat"
+                onChange={handleInputChange}
+                value={values.fat}
+              />
+            </div>
+            <div className="form-div px10">
+              <label htmlFor="snf" className="info-text">
+                {t("common:c-snf")} <span className="req">*</span>{" "}
+              </label>
+              <input
+                className={`data ${errors.snf ? "input-error" : ""}`}
+                type="decimal"
+                required
+                placeholder="00.0"
+                name="snf"
+                id="snf"
+                value={values.snf}
+                onChange={handleInputChange}
+              />
+            </div>
+          </div>
+          <div className="milk-info w50 h1 d-flex-col">
+            <div className="form-div px10">
+              <label htmlFor="degree" className="info-text">
+                {t("common:c-deg")} <span className="req">*</span>{" "}
+              </label>
+              <input
+                className={`data ${errors.degree ? "input-error" : ""}`}
+                type="decimal"
+                required
+                disabled
+                placeholder="00.0"
+                name="degree"
+                id="degree"
+                value={values.degree}
+                onChange={handleInputs}
+              />
+            </div>
+            <div className="form-div px10">
+              <label htmlFor="rate" className="info-text">
+                {t("common:c-rate")} <span className="req">*</span>{" "}
+              </label>
+              <input
+                className={`data ${errors.rate ? "input-error" : ""}`}
+                type="decimal"
+                required
+                readOnly
+                placeholder="00.0"
+                name="rate"
+                id="rate"
+                value={values.rate}
+              />
+            </div>
+            <div className="form-div px10">
+              <label htmlFor="amt" className="info-text">
+                {t("common:c-amt")} <span className="req">*</span>{" "}
+              </label>
+              <input
+                className={`data ${errors.amt ? "input-error" : ""}`}
+                type="decimal"
+                required
+                readOnly
+                placeholder="00.0"
+                name="amt"
+                id="amt"
+                value={values.amt}
+              />
             </div>
           </div>
         </div>
@@ -661,7 +641,7 @@ console.log("customer", customer);
           </button>
         </div>
       </form>
-    </>
+    </div>
   );
 };
 

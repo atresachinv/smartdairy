@@ -12,19 +12,22 @@ import { useTranslation } from "react-i18next";
 import { listEmployee } from "../../../../../App/Features/Mainapp/Masters/empMasterSlice";
 import { RiFileExcel2Fill } from "react-icons/ri";
 import "../../../../../Styles/Mainapp/Apphome/Appnavview/Milkcollection.css";
+import Spinner from "../../../../Home/Spinner/Spinner";
 
 const MilkCollectorsReports = () => {
   const dispatch = useDispatch();
   const { t } = useTranslation(["common", "milkcollection"]);
-  const dairy_info = useSelector((state) => state.dairy.dairyData);
+  const dairy_name = useSelector((state) => state.dairy.dairyData.SocietyName);
   // State selectors
   const tDate = useSelector((state) => state.date.toDate);
+  const status = useSelector((state) => state.milkCollection.allmilkcollstatus);
   const milkData = useSelector(
     (state) => state.milkCollection.allMilkCollector || []
   );
   const centerList = useSelector(
     (state) => state.center.centersList.centersDetails || []
   );
+
   const Emplist = useSelector((state) => state.emp.emplist || []);
 
   // Local states
@@ -35,7 +38,6 @@ const MilkCollectorsReports = () => {
   const [selectedCenterName, setSelectedCenterName] = useState("");
   const [selectedEmpName, setSelectedEmpName] = useState("");
   const [values, setValues] = useState({ fromDate: "", toDate: "" });
-
 
   useEffect(() => {
     setFilteredMilkData(milkData);
@@ -183,7 +185,7 @@ const MilkCollectorsReports = () => {
 
     // Add dairy name centered
     doc.setFontSize(14);
-    doc.text(dairy_info.SocietyName, doc.internal.pageSize.getWidth() / 2, 18, {
+    doc.text(dairy_name, doc.internal.pageSize.getWidth() / 2, 18, {
       align: "center",
     });
 
@@ -262,7 +264,7 @@ const MilkCollectorsReports = () => {
             Select Dates
           </label>
           <div className="dates-btn-container w100 h1 d-flex a-center sb">
-            <div className="dates-container w80 h1 d-flex a-center">
+            <div className="dates-container w80 h1 d-flex a-center sb">
               <input
                 className={`data w45 ${errors.fromDate ? "input-error" : ""}`}
                 type="date"
@@ -297,7 +299,7 @@ const MilkCollectorsReports = () => {
               id="center"
               value={selectedCenterId}
               onChange={handleCenterChange}>
-              <option value="">--Select Center--</option>
+              {/* <option value="">--Select Center--</option> */}
               {centerList.map((center, i) => (
                 <option key={i} value={center.center_id}>
                   {center.center_name}
@@ -332,31 +334,42 @@ const MilkCollectorsReports = () => {
         </div>
       </div>
       <div className="milkdata-container w100 h80 d-flex-col mh90 hidescrollbar bg">
-        <div className="employeename-and-data-tile-container w100 h15 d-flex-col t-center bg1">
-          <div className="empname-container w100 h50 d-flex a-center">
-            <span className="f-label-text w20">Emp ID</span>
-            <span className="f-label-text w50">Employee Name</span>
-          </div>
-          <div className="data-headings w100 h50 d-flex a-center sa">
-            <span className="f-label-text w10">Code</span>
-            <span className="f-label-text w40">Customer Name</span>
-            <span className="f-label-text w10">Liters</span>
-            <span className="f-label-text w20">Sample No.</span>
-          </div>
+        <div className="milkdata-data-headings w100 h10 d-flex a-center t-center sa py10 bg1">
+          <span className="f-label-text w10">Code</span>
+          <span className="f-label-text w60">Customer Name</span>
+          <span className="f-label-text w10">Liters</span>
+          <span className="f-label-text w20">SampleNo.</span>
         </div>
-        <div className="milkdata-card-container w100 d-flex-col hidescrollbar">
-          {filteredMilkData.map((milkdata, index) => (
-            <div
-              key={index}
-              className="milkdata-card w100 h10 d-flex a-center p10 sa">
-              <span className="label-text w10 t-center">{milkdata.rno}</span>
-              <span className="label-text w40">{milkdata.cname}</span>
-              <span className="label-text w10 t-center">{milkdata.Litres}</span>
-              <span className="label-text w20 t-center">
-                {milkdata.SampleNo}
-              </span>
+        <div className="milkdata-card-container w100 h90 d-flex-col hidescrollbar">
+          {status === "loading" ? (
+            <div className="w100 h1 d-flex center">
+              <Spinner />
             </div>
-          ))}
+          ) : filteredMilkData.length > 0 ? (
+            filteredMilkData.map((milkdata, index) => (
+              <div
+                key={index}
+                className={`milkdata-card w100 d-flex a-center sa ${
+                  index % 2 === 0 ? "bg-light" : "bg-dark"
+                }`}
+                style={{
+                  backgroundColor: index % 2 === 0 ? "#faefe3" : "#fff",
+                }}>
+                <span className="label-text w10 t-center">{milkdata.rno}</span>
+                <span className="label-text w60">{milkdata.cname}</span>
+                <span className="label-text w10 t-center">
+                  {milkdata.Litres}
+                </span>
+                <span className="label-text w20 t-center">
+                  {milkdata.SampleNo}
+                </span>
+              </div>
+            ))
+          ) : (
+            <div className="w100 h1 d-flex center">
+              <span className="label-text">{t("c-no-data-avai")}</span>
+            </div>
+          )}
         </div>
       </div>
     </div>

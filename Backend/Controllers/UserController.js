@@ -8,7 +8,92 @@ dotenv.config({ path: "Backend/.env" });
 // .........................................
 // Register.................................
 // .........................................
+// don't delete working function 
+// exports.userRegister = async (req, res) => {
+//   const {
+//     dairy_name,
+//     user_name,
+//     user_phone,
+//     user_city,
+//     user_pincode,
+//     user_password,
+//     terms,
+//     prefix,
+//     date,
+//     endDate,
+//   } = req.body;
+// 
+//   pool.getConnection((err, connection) => {
+//     if (err) {
+//       console.error("Error getting MySQL connection: ", err);
+//       return res.status(500).json({ message: "Database connection error" });
+//     }
+// 
+//     // Query to get the maximum SocietCode
+//     const getMaxSocietCode = `SELECT MAX(SocietyCode) AS maxCode FROM societymaster`;
+// 
+//     connection.query(getMaxSocietCode, (err, result) => {
+//       if (err) {
+//         connection.release();
+//         console.error("Error fetching max SocietyCode: ", err);
+//         return res.status(500).json({ message: "Database query error" });
+//       }
+// 
+//       // Increment SocietCode by 1
+//       const newSocietCode = result[0].maxCode ? result[0].maxCode + 1 : 1;
+// 
+//       // Query to insert into societymaster
+//       const createdairy = `INSERT INTO societymaster (SocietyCode, SocietyName, PhoneNo, city, PinCode, prefix, terms, startdate, enddate) VALUES (?,?,?,?,?,?,?,?,?)`;
+// 
+//       connection.query(
+//         createdairy,
+//         [
+//           newSocietCode,
+//           dairy_name,
+//           user_phone,
+//           user_city,
+//           user_pincode,
+//           prefix,
+//           terms,
+//           date,
+//           endDate,
+//         ],
+//         (err, result) => {
+//           if (err) {
+//             connection.release();
+//             console.error("Error inserting into societymaster: ", err);
+//             return res.status(500).json({ message: "Database query error" });
+//           }
+//           const designation = "Admin";
+//           const isAdmin = "1";
+//           // Query to insert into users
+//           const createuser = `INSERT INTO users (username, password, designation, isAdmin, SocietyCode ) VALUES (?,?,?,?,?)`;
+// 
+//           connection.query(
+//             createuser,
+//             [user_name, user_password, designation, isAdmin, newSocietCode],
+//             (err, result) => {
+//               connection.release();
+//               if (err) {
+//                 console.error("Error inserting into users: ", err);
+//                 return res
+//                   .status(500)
+//                   .json({ message: "Database query error" });
+//               }
+// 
+//               // Success response
+//               res
+//                 .status(200)
+//                 .json({ message: "User registered successfully!" });
+//             }
+//           );
+//         }
+//       );
+//     });
+//   });
+// };
 
+//v2 function
 exports.userRegister = async (req, res) => {
   const {
     dairy_name,
@@ -64,27 +149,54 @@ exports.userRegister = async (req, res) => {
             console.error("Error inserting into societymaster: ", err);
             return res.status(500).json({ message: "Database query error" });
           }
-          const designation = "Admin";
-          const isAdmin = "1";
-          // Query to insert into users
-          const createuser = `INSERT INTO users (username, password, designation, isAdmin, SocietyCode ) VALUES (?,?,?,?,?)`;
+
+          // Query to insert into centermaster
+          const createcenter = `INSERT INTO centermaster (center_id, center_name, marathi_name, mobile, city, pincode, orgid, prefix) VALUES (?,?,?,?,?,?,?)`;
 
           connection.query(
-            createuser,
-            [user_name, user_password, designation, isAdmin, newSocietCode],
+            createcenter,
+            [
+              0,
+              dairy_name,
+              dairy_name,
+              user_phone,
+              user_city,
+              user_pincode,
+              newSocietCode,
+              prefix,
+            ],
             (err, result) => {
-              connection.release();
               if (err) {
-                console.error("Error inserting into users: ", err);
+                connection.release();
+                console.error("Error inserting into centermaster: ", err);
                 return res
                   .status(500)
                   .json({ message: "Database query error" });
               }
 
-              // Success response
-              res
-                .status(200)
-                .json({ message: "User registered successfully!" });
+              const designation = "Admin";
+              const isAdmin = "1";
+              // Query to insert into users
+              const createuser = `INSERT INTO users (username, password, designation, isAdmin, SocietyCode) VALUES (?,?,?,?,?)`;
+
+              connection.query(
+                createuser,
+                [user_name, user_password, designation, isAdmin, newSocietCode],
+                (err, result) => {
+                  connection.release();
+                  if (err) {
+                    console.error("Error inserting into users: ", err);
+                    return res
+                      .status(500)
+                      .json({ message: "Database query error" });
+                  }
+
+                  // Success response
+                  res
+                    .status(200)
+                    .json({ message: "User registered successfully!" });
+                }
+              );
             }
           );
         }
@@ -92,6 +204,7 @@ exports.userRegister = async (req, res) => {
     });
   });
 };
+
 
 // .........................................
 // Login....................................
@@ -109,9 +222,9 @@ exports.userLogin = async (req, res) => {
     }
     try {
       const checkUser =
-        "SELECT username, password, isActive, designation, SocietyCode, pcode, center_id FROM users WHERE username = ?";
+        "SELECT username, isActive, designation, SocietyCode, pcode, center_id FROM users WHERE username = ? AND password = ? ";
 
-      connection.query(checkUser, [user_id], (err, result) => {
+      connection.query(checkUser, [user_id , user_password], (err, result) => {
         connection.release();
 
         if (err) {
@@ -126,12 +239,12 @@ exports.userLogin = async (req, res) => {
 
         const user = result[0];
 
-        // Verify user password
-        if (user_password !== user.password) {
-          return res
-            .status(401)
-            .json({ message: "Invalid User ID and password, try again!" });
-        }
+        // // Verify user password
+        // if (user_password !== user.password) {
+        //   return res
+        //     .status(401)
+        //     .json({ message: "Invalid User ID and password, try again!" });
+        // }
 
         // Generate JWT token for authentication
         const token = jwt.sign(

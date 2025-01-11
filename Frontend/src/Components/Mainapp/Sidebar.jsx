@@ -22,6 +22,7 @@ const Sidebar = ({ setselected, handleSidebar }) => {
       await axios.post("/logout");
       localStorage.removeItem("customerlist");
       localStorage.removeItem("milkentries");
+      localStorage.removeItem("milkcollrcharts");
 
       if (userRole === "milkcollector" || userRole === "mobilecollector") {
         localStorage.setItem("selectedNavIndex", 1);
