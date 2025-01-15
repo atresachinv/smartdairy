@@ -8,12 +8,14 @@ const initialState = {
   allMilkCollector: [],
   mobileColl: [],
   mobileCollection: [], //update mobile milk collection
+  completedColle: [], //completed milk collection
   PrevLiters: [], //Previous liters
   todaysMilk: [],
   status: "idle",
   milkstatus: "idle",
   allmilkstatus: "idle",
   allmilkcollstatus: "idle",
+  compcollstatus: "idle",
   tmstatus: "idle",
   error: null,
 };
@@ -198,7 +200,7 @@ export const getAllMilkCollReport = createAsyncThunk(
   async ({ fromDate, toDate }, { rejectWithValue }) => {
     try {
       const response = await axiosInstance.get("/milk/coll/report", {
-        params: { fromDate, toDate }, // Use the `params` key for query parameters
+        params: { fromDate, toDate },
       });
       return response.data.milkcollection;
     } catch (error) {
@@ -219,6 +221,24 @@ export const getAllMilkSankalan = createAsyncThunk(
         params: { fromDate, toDate }, // Use the `params` key for query parameters
       });
       return response.data.milkCollectorcoll;
+    } catch (error) {
+      const errorMessage = error.response
+        ? error.response.data
+        : "Failed to fetch milk reports.";
+      return rejectWithValue(errorMessage);
+    }
+  }
+);
+
+//Completed milk collection Report
+export const completedMilkSankalan = createAsyncThunk(
+  "milkreport/completedMilkSankalan",
+  async ({ date ,time }, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.get("/completed/collection/report", {
+        params: { date, time }, // Use the `params` key for query parameters
+      });
+      return response.data.compCollection;
     } catch (error) {
       const errorMessage = error.response
         ? error.response.data
@@ -366,6 +386,18 @@ const milkCollectionSlice = createSlice({
       })
       .addCase(fetchTodaysMilk.rejected, (state, action) => {
         state.tmstatus = "failed";
+        state.error = action.payload;
+      })
+      .addCase(completedMilkSankalan.pending, (state) => {
+        state.compcollstatus = "loading";
+        state.error = null;
+      })
+      .addCase(completedMilkSankalan.fulfilled, (state, action) => {
+        state.compcollstatus = "succeeded";
+        state.completedColle = action.payload; 
+      })
+      .addCase(completedMilkSankalan.rejected, (state, action) => {
+        state.compcollstatus = "failed";
         state.error = action.payload;
       });
   },

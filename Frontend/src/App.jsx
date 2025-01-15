@@ -56,6 +56,21 @@ function App() {
     })
     .catch((err) => console.error("Error in onMessageListener:", err));
 
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker
+          .register("/firebase-messaging-sw.js")
+          .then((registration) => {
+            console.log(
+              "Service Worker registered with scope:",
+              registration.scope
+            );
+          })
+          .catch((error) => {
+            console.error("Service Worker registration failed:", error);
+          });
+      });
+    }
   
 
   // useEffect(() => {
@@ -79,7 +94,7 @@ useEffect(() => {
       if (token) {
         setFCMToken(token);
         if (profile?.srno) {
-          await dispatch(saveFCMTokenToDB({ token, cust_no: profile.srno }));
+           dispatch(saveFCMTokenToDB({ token, cust_no: profile.srno }));
         }
       } else {
         console.warn("No FCM token returned!");

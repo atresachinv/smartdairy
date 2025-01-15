@@ -1199,74 +1199,6 @@ exports.mobileMilkCollection = async (req, res) => {
 // fetch Mobile Milk Collection (for mobile collector) ................
 //.................................................................
 
-// exports.fetchMobileMilkColl = async (req, res) => {
-//   pool.getConnection((err, connection) => {
-//     if (err) {
-//       console.error("Error getting MySQL connection: ", err);
-//       return res.status(500).json({ message: "Database connection error" });
-//     }
-//
-//     try {
-//       const dairy_id = req.user.dairy_id;
-//       const user = req.user.user_id;
-//       const center_id = req.user.center_id;
-//
-//       // Check if dairy_id, user_role, and center_id are available
-//       if (!dairy_id) {
-//         connection.release();
-//         return res.status(400).json({ message: "Missing required fields" });
-//       }
-//
-//       // Get the current date in YYYY-MM-DD format
-//       const currentDate = new Date().toISOString().split("T")[0];
-//
-//       // Get the current hour to determine AM or PM
-//       const currentHour = new Date().getHours();
-//       const ME = currentHour < 12 ? 0 : 1;
-//
-//       const dairy_table = `dailymilkentry_${dairy_id}`;
-//
-//       // Prepare the SQL query without the trailing comma and ensure `date` is currentDate
-//       const milkcollReport = `
-//         SELECT ReceiptDate, Litres, cname, rno, SampleNo
-//         FROM ${dairy_table}
-//         WHERE companyid = ? AND center_id = ? AND ReceiptDate = ? AND userid = ? AND ME = ?
-//       `;
-//
-//       // Execute the query
-//       connection.query(
-//         milkcollReport,
-//         [
-//           dairy_id,
-//           center_id,
-//           currentDate, // Pass the current date to the query
-//           user, // Ensure user_role is passed correctly
-//           ME,
-//         ],
-//         (err, result) => {
-//           connection.release();
-//
-//           if (err) {
-//             console.error("Error executing query: ", err);
-//             return res.status(500).json({ message: "Query execution error" });
-//           }
-//
-//           // If there are no records for the given day, send an empty result with a success status
-//           if (result.length === 0) {
-//             return res.status(200).json({ mobileMilk: [] }); // Return empty array instead of 404
-//           }
-//
-//           res.status(200).json({ mobileMilk: result });
-//         }
-//       );
-//     } catch (error) {
-//       connection.release();
-//       console.error("Error processing request: ", error);
-//       return res.status(500).json({ message: "Internal server error" });
-//     }
-//   });
-// };
-
 //v2 function
 exports.fetchMobileMilkColl = async (req, res) => {
   const { date } = req.query;
@@ -1326,68 +1258,6 @@ exports.fetchMobileMilkColl = async (req, res) => {
 //.................................................................
 // Fetch code & Liter to Show prev ................................
 //.................................................................
-
-// exports.fetchPrevLiters = async (req, res) => {
-//   const { date } = req.query;
-//
-//   pool.getConnection((err, connection) => {
-//     if (err) {
-//       console.error("Error getting MySQL connection: ", err);
-//       return res.status(500).json({ message: "Database connection error" });
-//     }
-//
-//     try {
-//       const dairy_id = req.user.dairy_id;
-//       const user = req.user.user_id;
-//       const center_id = req.user.center_id;
-//
-//       // Check if dairy_id, user_role, and center_id are available
-//       if (!dairy_id) {
-//         connection.release();
-//         return res.status(400).json({ message: "Missing required fields" });
-//       }
-//
-//
-//       // Get the current hour to determine AM or PM
-//       const currentHour = new Date().getHours();
-//       const ME = currentHour < 12 ? 0 : 1;
-//
-//       const dairy_table = `dailymilkentry_${dairy_id}`;
-//
-//       // Prepare the SQL query without the trailing comma and ensure `date` is currentDate
-//       const prevliterReport = `
-//         SELECT rno , Litres
-//         FROM ${dairy_table}
-//         WHERE center_id = ? AND ReceiptDate = ? AND userid = ? AND ME = ?
-//       `;
-//
-//       // Execute the query
-//       connection.query(
-//         prevliterReport,
-//         [center_id, date, user, ME],
-//         (err, result) => {
-//           connection.release();
-//
-//           if (err) {
-//             console.error("Error executing query: ", err);
-//             return res.status(500).json({ message: "Query execution error" });
-//           }
-//
-//           // If there are no records for the given day, send an empty result with a success status
-//           if (result.length === 0) {
-//             return res.status(200).json({ PrevLiters: [] }); // Return empty array instead of 404
-//           }
-//
-//           res.status(200).json({ PrevLiters: result });
-//         }
-//       );
-//     } catch (error) {
-//       connection.release();
-//       console.error("Error processing request: ", error);
-//       return res.status(500).json({ message: "Internal server error" });
-//     }
-//   });
-// };
 
 //v2 function
 exports.fetchPrevLiters = async (req, res) => {
@@ -1472,6 +1342,65 @@ exports.fetchPrevLiters = async (req, res) => {
 // (Update) fetch Mobile Milk Collection .................
 //.........................................................
 
+// exports.fetchMobileMilkCollection = async (req, res) => {
+//   pool.getConnection((err, connection) => {
+//     if (err) {
+//       console.error("Error getting MySQL connection: ", err);
+//       return res.status(500).json({ message: "Database connection error" });
+//     }
+//
+//     try {
+//       const dairy_id = req.user.dairy_id;
+//       const center_id = req.user.center_id;
+//
+//       // Check if dairy_id, user_role, and center_id are available
+//       if (!dairy_id) {
+//         connection.release();
+//         return res.status(400).json({ message: "Missing required fields" });
+//       }
+//
+//       // Get the current date in YYYY-MM-DD format
+//       const currentDate = new Date().toISOString().split("T")[0];
+//
+//       // Get the current hour to determine AM or PM
+//       const currentHour = new Date().getHours();
+//       const time = currentHour < 12 ? 0 : 1;
+//
+//       const dairy_table = `dailymilkentry_${dairy_id}`;
+//
+//       const milkcollReport = `
+//         SELECT Litres, cname, rno, SampleNo
+//         FROM ${dairy_table}
+//         WHERE ReceiptDate = ? AND companyid = ? AND center_id = ?  AND ME = ? AND Driver = "1"
+//       `;
+//
+//       // Execute the query
+//       connection.query(
+//         milkcollReport,
+//         [currentDate, dairy_id, center_id, time],
+//         (err, result) => {
+//           connection.release();
+//
+//           if (err) {
+//             console.error("Error executing query: ", err);
+//             return res.status(500).json({ message: "Query execution error" });
+//           }
+//
+//           if (result.length === 0) {
+//             return res.status(200).json({ mobileMilk: [] }); // Return empty array instead of 404
+//           }
+//
+//           res.status(200).json({ mobileMilkcoll: result });
+//         }
+//       );
+//     } catch (error) {
+//       connection.release();
+//       console.error("Error processing request: ", error);
+//       return res.status(500).json({ message: "Internal server error" });
+//     }
+//   });
+// };
+
 exports.fetchMobileMilkCollection = async (req, res) => {
   pool.getConnection((err, connection) => {
     if (err) {
@@ -1492,22 +1421,18 @@ exports.fetchMobileMilkCollection = async (req, res) => {
       // Get the current date in YYYY-MM-DD format
       const currentDate = new Date().toISOString().split("T")[0];
 
-      // Get the current hour to determine AM or PM
-      const currentHour = new Date().getHours();
-      const time = currentHour < 12 ? 0 : 1;
-
       const dairy_table = `dailymilkentry_${dairy_id}`;
 
       const milkcollReport = `
-        SELECT Litres, cname, rno, SampleNo
+        SELECT userid, Litres, cname, rno, SampleNo , ME
         FROM ${dairy_table}
-        WHERE ReceiptDate = ? AND companyid = ? AND center_id = ?  AND ME = ? AND Driver = "1"
+        WHERE ReceiptDate = ? AND companyid = ? AND center_id = ?  AND Driver = "1"
       `;
 
       // Execute the query
       connection.query(
         milkcollReport,
-        [currentDate, dairy_id, center_id, time],
+        [currentDate, dairy_id, center_id],
         (err, result) => {
           connection.release();
 
@@ -1530,7 +1455,6 @@ exports.fetchMobileMilkCollection = async (req, res) => {
     }
   });
 };
-
 //.........................................................
 // Update Mobile Milk Collection ..........................
 //.........................................................
@@ -1566,8 +1490,8 @@ exports.updateMobileCollection = async (req, res) => {
       // Prepare the SQL query
       const updatemilkcollection = `
          UPDATE ${dairy_table}
-          SET  fat = ?,  snf = ?,  Amt = ?,  GLCode = ?,  AccCode = ?,  Digree = ?,  rate = ?,  updatedOn = ?,  UpdatedBy = ? 
-          WHERE  companyid = ? AND  center_id = ? AND  rno = ? AND  SampleNo = ?
+          SET  fat = ?,  snf = ?,  Amt = ?,  GLCode = ?,  AccCode = ?,  Digree = ?,  rate = ?,  updatedOn = ?,  UpdatedBy = ? , Driver = 0 
+          WHERE  companyid = ? AND  center_id = ? AND  rno = ? AND  SampleNo = ? 
       `;
 
       // Execute the query
@@ -1613,7 +1537,7 @@ exports.updateMobileCollection = async (req, res) => {
 //...............................................................
 
 exports.allMilkCollReport = async (req, res) => {
-  const { fromDate, toDate } = req.query; // Read from `req.query`
+  const { fromDate, toDate } = req.query;
 
   pool.getConnection((err, connection) => {
     if (err) {
@@ -1680,62 +1604,6 @@ exports.allMilkCollReport = async (req, res) => {
 //...............................................................
 // Milk Collection of MilkCollector (for admin) .................
 //...............................................................
-
-// exports.allMilkCollection = async (req, res) => {
-//   const { fromDate, toDate } = req.query;
-//
-//   pool.getConnection((err, connection) => {
-//     if (err) {
-//       console.error("Error getting MySQL connection: ", err.message);
-//       return res.status(500).json({ message: "Database connection error" });
-//     }
-//
-//     try {
-//       const dairy_id = req.user.dairy_id;
-//       const center_id = req.user.center_id;
-//
-//       if (!dairy_id) {
-//         return res
-//           .status(400)
-//           .json({ message: "Dairy ID not found in the request!" });
-//       }
-//
-//       const dairy_table = `dailymilkentry_${dairy_id}`;
-//
-//       const milkCollectionQuery = `
-//         SELECT
-//          userid, ReceiptDate, ME,  CB,  Litres,  fat,  snf,  rate,  Amt,  cname,  rno, SampleNo
-//         FROM ${dairy_table}
-//         WHERE ReceiptDate BETWEEN ? AND ? AND Driver = 1
-//       `;
-//
-//       connection.query(
-//         milkCollectionQuery,
-//         [fromDate, toDate],
-//         (err, results) => {
-//           connection.release();
-//
-//           if (err) {
-//             console.error("Error executing query: ", err.message);
-//             return res.status(500).json({ message: "Error executing query" });
-//           }
-//
-//           if (results.length === 0) {
-//             return res.status(200).json({
-//               milkCollectorcoll: [],
-//               message: "No record found!",
-//             });
-//           }
-//           res.status(200).json({ milkCollectorcoll: results });
-//         }
-//       );
-//     } catch (err) {
-//       connection.release();
-//       console.error("Unexpected error: ", err.message);
-//       res.status(500).json({ message: "Unexpected server error" });
-//     }
-//   });
-// };
 
 //v2 function
 exports.allMilkCollection = async (req, res) => {
@@ -2221,9 +2089,74 @@ exports.dashboardInfo = async (req, res) => {
   });
 };
 
-// ............................................
-// Dashboard Info Admin .......................
-// ............................................
+// ..................................................................
+// Complete Milk Collection Report ..................................
+// ..................................................................
+
+exports.completedMilkReport = async (req, res) => {
+  const { date, time } = req.query;
+
+  // If no date is provided, return an error
+  if (!date) {
+    return res.status(400).json({ message: "Date is required" });
+  }
+
+  pool.getConnection((err, connection) => {
+    if (err) {
+      console.error("Error getting MySQL connection: ", err);
+      return res.status(500).json({ message: "Database connection error" });
+    }
+
+    try {
+      const dairy_id = req.user.dairy_id;
+      const center_id = req.user.center_id;
+
+      // Check if dairy_id, user, and center_id are available
+      if (!dairy_id || !center_id) {
+        connection.release();
+        return res.status(400).json({ message: "Missing required fields" });
+      }
+
+      // // Determine the current shift (ME: 0 for Morning, 1 for Evening)
+      // const currentHour = new Date().getHours();
+      // const ME = currentHour < 12 ? 0 : 1;
+
+      const dairy_table = `dailymilkentry_${dairy_id}`;
+
+      // Prepare the SQL query
+      const completedCollReport = `
+        SELECT ReceiptDate, ME, rno, Litres, fat, snf, cname, rate, Amt, CB 
+        FROM ${dairy_table}
+        WHERE center_id = ? AND ReceiptDate = ? AND ME = ? AND Driver = 0
+      `;
+
+      // Execute the query
+      connection.query(
+        completedCollReport,
+        [center_id, date, time],
+        (err, result) => {
+          connection.release();
+
+          if (err) {
+            console.error("Error executing query: ", err);
+            return res.status(500).json({ message: "Query execution error" });
+          }
+
+          // If no records are found, return an empty result
+          if (result.length === 0) {
+            return res.status(200).json({ PrevLiters: [] });
+          }
+
+          res.status(200).json({ compCollection: result });
+        }
+      );
+    } catch (error) {
+      connection.release();
+      console.error("Error processing request: ", error);
+      return res.status(500).json({ message: "Internal server error" });
+    }
+  });
+};
 
 // ............................................
 // Dashboard Info Admin .......................

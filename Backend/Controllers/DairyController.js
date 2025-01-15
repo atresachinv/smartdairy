@@ -1523,8 +1523,8 @@ exports.updateSelectedRateChart = async (req, res) => {
 // Save Updated Ratechart ......................................................
 // .............................................................................
 
-exports.saveUpdatedRC= async (req, res) => {
-  const { ratechart, rccode, rctype, animal ,time } = req.body;
+exports.saveUpdatedRC = async (req, res) => {
+  const { ratechart, rccode, rctype, animal, time } = req.body;
 
   // Acquire a connection from the pool
   pool.getConnection(async (err, connection) => {
@@ -1545,7 +1545,6 @@ exports.saveUpdatedRC= async (req, res) => {
       // Start transaction
       await connection.beginTransaction();
 
-      
       const saveRatesQuery = `
         INSERT INTO ratemaster (companyid, rccode, rcdate, rctypecode, rctypename, cb, fat, snf, rate, time, center_id)
         VALUES ?

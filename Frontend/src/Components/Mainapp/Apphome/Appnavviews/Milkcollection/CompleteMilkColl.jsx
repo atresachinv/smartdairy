@@ -1,21 +1,30 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
+  completedMilkSankalan,
   fetchMobileColl,
   updateMobileColl,
 } from "../../../../../App/Features/Mainapp/Milk/MilkCollectionSlice";
 import { toast } from "react-toastify";
+import * as XLSX from "xlsx";
 import { useTranslation } from "react-i18next";
 import "../../../../../Styles/Mainapp/Apphome/Appnavview/Milkcollection.css";
-
+import Spinner from "../../../../Home/Spinner/Spinner";
 const CompleteMilkColl = () => {
   const { t } = useTranslation(["milkcollection", "common"]);
   const dispatch = useDispatch();
   const colldata = useSelector(
-    (state) => state.milkCollection.mobileCollection
-  );
+    (state) => state.milkCollection.mobileCollection 
+  ); //mobile milk collection data
+  const completedcolldata = useSelector(
+    (state) => state.milkCollection.completedColle
+  ); //completed Collection data
+  const status = useSelector((state) => state.milkCollection.compcollstatus); //completed collection status
   const token = useSelector((state) => state.notify.fcmToken);
+  const Emplist = useSelector((state) => state.emp.emplist || []);
   const [errors, setErrors] = useState({});
+  const [time, setTime] = useState(true);
+  const [selectedEmp, setSelectedEmp] = useState("");
   const [customerList, setCustomerList] = useState([]);
   const [collectionList, setCollectionList] = useState([]);
   const [milkRateChart, setMilkRatechart] = useState([]);
@@ -28,7 +37,7 @@ const CompleteMilkColl = () => {
     date: new Date().toISOString().split("T")[0],
     code: "",
     time: 0,
-    animal: 0,
+    // animal: 0,
     liters: "",
     fat: "",
     snf: "",
@@ -36,12 +45,14 @@ const CompleteMilkColl = () => {
     degree: 0,
     rate: "",
     cname: "",
+    // userid: "",
     acccode: "",
     rcName: "",
-    sample: "",
+    // sample: "",
   };
 
   const [values, setValues] = useState(initialValues);
+
 
   const validateField = (name, value) => {
     let error = {};
@@ -145,6 +156,19 @@ const CompleteMilkColl = () => {
     }));
   };
 
+  // morning evening
+  const handleTime = () => {
+    setTime((prev) => !prev);
+    setValues((prevData) => ({
+      ...prevData,
+      time: !time ? 0 : 1,
+    }));
+  };
+
+  const milkCollectors = useMemo(() => {
+    return Emplist.filter((emp) => emp.designation === "mobilecollector");
+  }, [Emplist]);
+
   // used for decimal input correction
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -227,68 +251,7 @@ const CompleteMilkColl = () => {
   }, []);
 
   // finding rate and calculating amount and degree
-  //   const calculateRateAndAmount = async () => {
-  //     try {
-  //       const { fat, snf, liters , rcName } = values;
-  //
-  //       // Access the correct array if milkRateChart is an object with a nested array
-  //       const rateChartArray = Array.isArray(milkRateChart)
-  //         ? milkRateChart
-  //         : milkRateChart.MilkCollRChart;
-  //
-  //       // Check if rateChartArray is an array before proceeding
-  //       if (!Array.isArray(rateChartArray)) {
-  //         console.error("rateChartArray is not an array. Check the data source.");
-  //         setValues((prev) => ({
-  //           ...prev,
-  //           rate: "N/A",
-  //           amt: "N/A",
-  //           degree: "N/A",
-  //         }));
-  //         return;
-  //       }
-  //
-  //       // Ensure that fat and snf values are parsed correctly for comparison
-  //       const parsedFat = parseFloat(fat);
-  //       const parsedSnf = parseFloat(snf);
-  //       const parsedLiters = parseFloat(liters);
-  //
-  //       // Calculate the degree of milk based on Maharashtra Government formula
-  //       const degree = (parsedFat * parsedSnf).toFixed(2);
-  //
-  //       // Find rate entry based on matching fat and snf values
-  //       const rateEntry = rateChartArray.find(
-  //         (entry) =>
-  //           entry.fat === parsedFat &&
-  //           entry.snf === parsedSnf &&
-  //           entry.rctypename === rcName
-  //       );
-  //
-  //       if (rateEntry) {
-  //         const rate = rateEntry.rate;
-  //         const amount = rate * parsedLiters;
-  //
-  //         // Update state with calculated rate, amount, and degree
-  //         setValues((prev) => ({
-  //           ...prev,
-  //           rate: rate.toFixed(2),
-  //           amt: amount.toFixed(2),
-  //           degree: degree, // Add the calculated degree to the state
-  //         }));
-  //       } else {
-  //         // Handle case where rate entry is not found
-  //         setValues((prev) => ({
-  //           ...prev,
-  //           rate: "N/A",
-  //           amt: "N/A",
-  //           degree: degree,
-  //         }));
-  //       }
-  //     } catch (error) {
-  //       console.error("Error calculating rate and amount:", error);
-  //     }
-  //   };
-  console.log("ratechart", milkRateChart);
+
   const calculateRateAndAmount = async () => {
     try {
       const { fat, snf, liters, rcName } = values;
@@ -297,7 +260,6 @@ const CompleteMilkColl = () => {
       const parsedSnf = parseFloat(snf);
       const parsedLiters = parseFloat(liters);
       const degree = (parsedFat * parsedSnf).toFixed(2);
-      console.log("ratechart", milkRateChart);
 
       const rateEntry = milkRateChart.find(
         (entry) =>
@@ -305,6 +267,7 @@ const CompleteMilkColl = () => {
           entry.snf === parsedSnf &&
           entry.rctypename === rcName
       );
+
       console.log(rateEntry);
 
       if (rateEntry) {
@@ -343,14 +306,11 @@ const CompleteMilkColl = () => {
     const customer = customerList.find(
       (customer) => customer.srno.toString() === code
     );
-
-    console.log("customer", customer);
-
     if (customer) {
       setValues((prev) => ({
         ...prev,
-        rateChartNo: customer.rateChartNo,
         acccode: customer.cid,
+        rcName: customer.rcName,
       }));
     }
   };
@@ -361,9 +321,13 @@ const CompleteMilkColl = () => {
       setValues((prev) => ({ ...prev, code: "", cname: "", liters: "" }));
       return;
     }
+
     // Ensure the code is a string for comparison
     const collection = collectionList.find(
-      (collection) => collection.SampleNo.toString() === sample
+      (collection) =>
+        collection.SampleNo.toString() === sample &&
+        collection.ME.toString() === values.time.toString() &&
+        collection.userid.toString() === selectedEmp.toString()
     );
 
     if (collection) {
@@ -373,6 +337,7 @@ const CompleteMilkColl = () => {
         code: collection.rno,
         liters: collection.Litres,
         rcName: collection.rcName,
+        userid: collection.userid,
       }));
     } else {
       setValues((prev) => ({
@@ -385,18 +350,62 @@ const CompleteMilkColl = () => {
     }
   };
 
+  //Finding Milk Collection By Code
+  const findCustomerByCode = (code) => {
+    if (!code) {
+      setValues((prev) => ({ ...prev, code: "", cname: "", liters: "" }));
+      return;
+    }
+
+    // Ensure the code is a string for comparison
+    const collection = collectionList.find(
+      (collection) =>
+        collection.rno.toString() === code &&
+        collection.ME.toString() === values.time.toString() &&
+        collection.userid.toString() === selectedEmp.toString()
+    );
+
+    if (collection) {
+      setValues((prev) => ({
+        ...prev,
+        cname: collection.cname,
+        sample: collection.SampleNo,
+        liters: collection.Litres,
+        rcName: collection.rcName,
+        userid: collection.userid,
+      }));
+    } else {
+      setValues((prev) => ({
+        ...prev,
+        sample: "",
+        cname: "",
+        liters: "",
+        rcName: "",
+      })); // Clear cname if not found
+    }
+  };
+
   // Effect to search for customer when code changes
+
   useEffect(() => {
-    if (values.sample.trim().length > 0) {
-      const handler = setTimeout(async () => {
-        // Ensure `code` has valid content before making API calls
+    if (values.sample) {
+      const handler = setTimeout(() => {
         findCustomerBySample(values.sample.trim());
-        await findmilkCollByCode(values.code.trim());
-        // getToken();
+        findmilkCollByCode(values.code.trim());
       }, 500);
       return () => clearTimeout(handler);
     }
-  }, [values.sample, values.code]);
+  }, [values.sample]);
+
+  useEffect(() => {
+    if (values.code) {
+      const handler = setTimeout(() => {
+        findCustomerByCode(values.code.trim());
+        findmilkCollByCode(values.code.trim());
+      }, 500);
+      return () => clearTimeout(handler);
+    }
+  }, [values.code]);
 
   //Handling Collection Notification
 
@@ -437,15 +446,8 @@ const CompleteMilkColl = () => {
       return;
     }
     try {
-      // const allEntries = JSON.parse(localStorage.getItem("milkentries")) || [];
-      // console.log(allEntries);
+     dispatch(updateMobileColl(values));
 
-      await dispatch(updateMobileColl(values));
-      //       const existingEntries =
-      //         JSON.parse(localStorage.getItem("milkentries")) || [];
-      //
-      //       existingEntries.push(values);
-      //       localStorage.setItem("milkentries", JSON.stringify(existingEntries));
       setValues(initialValues); // Reset form to initial values
       setErrors({}); // Reset errors
 
@@ -453,14 +455,50 @@ const CompleteMilkColl = () => {
 
       toast.success(`Milk Collection saved successfully!`);
 
-      // Remove customer from custList
-      await setCustList((prevList) =>
-        prevList.filter((customer) => customer.srno !== values.code)
-      );
+
     } catch (error) {
       console.error("Error sending milk entries to backend:", error);
     }
   };
+
+  // Handling Download excel
+  const downloadExcel = async () => {
+    await dispatch(
+      completedMilkSankalan({ date: values.date, time: values.time })
+    );
+    if (completedcolldata) {
+      const handler = setTimeout(() => {
+        exportToExcel();
+      }, 500);
+      return () => clearTimeout(handler);
+    }
+  };
+
+  // >>>>> Excel ----
+  const exportToExcel = () => {
+    if (!completedcolldata || completedcolldata.length === 0) {
+      toast.error("No data available to export!");
+      return;
+    }
+    const worksheet = XLSX.utils.json_to_sheet(
+      completedcolldata.map((row, i) => ({
+        Date: row.ReceiptDate,
+        Time: row.ME,
+        Code: row.rno,
+        Liters: row.Litres,
+        Fat: row.fat,
+        SNF: row.snf,
+        Name: row.cname,
+        "Rate/Liter (₹)": row.rate,
+        "Amount (₹)": row.Amt,
+        Animal: row.CB,
+      }))
+    );
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Milk Collection");
+    XLSX.writeFile(workbook, "milk-collection-report.xlsx");
+  };
+
 
   return (
     <div className="complete-mobile-milk-container w100 h1 d-flex-col center">
@@ -469,23 +507,49 @@ const CompleteMilkColl = () => {
       </span>
       <form
         onSubmit={handleCollection}
-        className="complete-mobile-milk-coll w60 h80 d-flex-col center bg p10">
-        <div className="form-date-div w100 h10 d-flex a-center j-start px10 my10">
-          <label htmlFor="date" className="info-text w10">
-            {t("common:c-date")}
-            <span className="req">*</span>
-          </label>
-          <input
-            className={`data w30 ${errors.date ? "input-error" : ""}`}
-            type="date"
-            required
-            placeholder="0000"
-            name="date"
-            id="date"
-            onChange={handleInputs}
-            value={values.date || ""}
-            max={values.date}
-          />
+        className="complete-mobile-milk-coll w60 h90 d-flex-col center bg p10">
+        <div className="form-date-div w100 h10 d-flex a-center j-start px10 my10 sb">
+          <div className="select-mobile-collector-div w40 d-flex a-center sb">
+            <label htmlFor="date" className="info-text w30">
+              {t("common:c-date")}
+              <span className="req">*</span>
+            </label>
+            <input
+              className={`data w70 ${errors.date ? "input-error" : ""}`}
+              type="date"
+              required
+              placeholder="0000"
+              name="date"
+              id="date"
+              onChange={handleInputs}
+              value={values.date || ""}
+              max={values.date}
+            />
+          </div>
+          <div className="setting-btn-switch w15 j-center d-flex">
+            <button
+              type="button"
+              onClick={handleTime}
+              className={`sakalan-time text ${time ? "on" : "off"}`}
+              aria-pressed={time}>
+              {time ? `${t("common:c-mrg")}` : `${t("common:c-eve")}`}
+            </button>
+          </div>
+          <div className="select-mobile-collector-div w40 d-flex sb">
+            <select
+              className="data w100 h50"
+              id="milk-collector"
+              name="userid"
+              value={selectedEmp}
+              onChange={(e) => setSelectedEmp(e.target.value)}>
+              <option value="">--Select Milk Collector--</option>
+              {milkCollectors.map((emp, i) => (
+                <option key={i} value={emp.emp_mobile}>
+                  {emp.emp_name}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
         <div className="user-details w100 h20 d-flex">
           <div className="form-div w30 px10">
@@ -500,6 +564,7 @@ const CompleteMilkColl = () => {
               name="sample"
               id="sample"
               value={values.sample}
+              disabled={!selectedEmp}
               onChange={handleInputs}
             />
           </div>
@@ -514,8 +579,9 @@ const CompleteMilkColl = () => {
               name="code"
               id="code"
               value={values.code}
+              disabled={!selectedEmp}
               onChange={handleInputs}
-              readOnly
+              // readOnly
             />
           </div>
           <div className="form-div w50 px10">
@@ -565,6 +631,7 @@ const CompleteMilkColl = () => {
                 id="fat"
                 onChange={handleInputChange}
                 value={values.fat}
+                disabled={!values.code}
               />
             </div>
             <div className="form-div px10">
@@ -579,6 +646,7 @@ const CompleteMilkColl = () => {
                 name="snf"
                 id="snf"
                 value={values.snf}
+                disabled={!values.fat || !values.code}
                 onChange={handleInputChange}
               />
             </div>
@@ -633,6 +701,13 @@ const CompleteMilkColl = () => {
           </div>
         </div>
         <div className="form-btns w100 h10 d-flex a-center j-end">
+          <button
+            className="w-btn  label-text mx10"
+            onClick={downloadExcel}
+            disabled={status === "loading"}>
+            {status === "loading" ? "Generating..." : "Excel"}
+          </button>
+
           <button className="w-btn  label-text" type="reset">
             {t("m-btn-cancel")}
           </button>

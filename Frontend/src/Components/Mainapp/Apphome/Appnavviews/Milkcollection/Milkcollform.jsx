@@ -21,7 +21,7 @@ const MilkColleform = ({ switchToSettings }) => {
 
   const tDate = useSelector((state) => state.date.toDate);
   const token = useSelector((state) => state.notify.fcmToken);
-  const milkColl = useSelector((state) => state.milkCollection.entries || []);
+  // const milkColl = useSelector((state) => state.milkCollection.entries || []);
   const [customerList, setCustomerList] = useState([]);
   const [custList, setCustList] = useState({}); // to check remainning customer list
   const [milkRateChart, setMilkRatechart] = useState([]);
@@ -135,7 +135,6 @@ const MilkColleform = ({ switchToSettings }) => {
     }
     dispatch(getRateCharts());
   }, [dispatch]);
-
 
   // Retrieve the stored rate chart from localStorage on component mount
   useEffect(() => {
@@ -343,8 +342,7 @@ const MilkColleform = ({ switchToSettings }) => {
   // retriving milk entry from localstorage to display
   useEffect(() => {
     dispatch(fetchEntries());
-    // console.log("remainning", custList);
-  }, [slotCount]);
+  }, [custList]);
 
   //Handling Collection Notification
 
@@ -376,6 +374,17 @@ const MilkColleform = ({ switchToSettings }) => {
     toast.success(`Notification sent successfully!`);
   };
 
+  // Remove customer from custList
+  const removeCustomer = () => {
+    setCustList((custList) => {
+      const updatedList = custList.filter(
+        (customer) => customer.srno.toString() !== values.code
+      );
+      localStorage.setItem("rcustlist", JSON.stringify(updatedList)); // Update localStorage
+      return updatedList;
+    });
+  };
+
   //Handling Milk Collection
 
   const handleCollection = async (e) => {
@@ -398,14 +407,15 @@ const MilkColleform = ({ switchToSettings }) => {
       setValues(initialValues); // Reset form to initial values
       setErrors({}); // Reset errors
 
-      // sendNotifications();
+      sendNotifications();
 
       toast.success(`Milk Collection of ${values.cname} saved successfully!`);
 
       // Remove customer from custList
-      setCustList((prevList) =>
-        prevList.filter((customer) => customer.srno !== values.code)
-      );
+      // setCustList((prevList) =>
+      //   prevList.filter((customer) => customer.srno.toString() !== values.code)
+      // );
+      removeCustomer();
     } catch (error) {
       console.error("Error sending milk entries to backend:", error);
     }
@@ -547,101 +557,104 @@ const MilkColleform = ({ switchToSettings }) => {
         <div className="milk-details-div w100 h70 d-flex">
           {/* <span className="label-text">Milk Details : </span> */}
           {/* <div className="milk-details w100 h90 d-flex"> */}
-            <div className="milk-info w50 h1 d-flex-col">
-              <div className="form-div px10">
-                <label htmlFor="liters" className="info-text">
-                  {t("common:c-liters")} <span className="req">*</span>{" "}
-                </label>
-                <input
-                  className={`data ${errors.liters ? "input-error" : ""}`}
-                  type="decimal"
-                  required
-                  placeholder="00.0"
-                  name="liters"
-                  id="liters"
-                  onChange={handleInputs}
-                  value={values.liters}
-                />
-              </div>
-              <div className="form-div  px10">
-                <label htmlFor="fat" className="info-text">
-                  {t("common:c-fat")} <span className="req">*</span>{" "}
-                </label>
-                <input
-                  className={`data ${errors.fat ? "input-error" : ""}`}
-                  type="decimal"
-                  required
-                  placeholder="0.0"
-                  name="fat"
-                  id="fat"
-                  onChange={handleInputChange}
-                  value={values.fat}
-                />
-              </div>
-              <div className="form-div px10">
-                <label htmlFor="snf" className="info-text">
-                  {t("common:c-snf")} <span className="req">*</span>{" "}
-                </label>
-                <input
-                  className={`data ${errors.snf ? "input-error" : ""}`}
-                  type="decimal"
-                  required
-                  placeholder="00.0"
-                  name="snf"
-                  id="snf"
-                  onChange={handleInputChange}
-                  value={values.snf}
-                />
-              </div>
+          <div className="milk-info w50 h1 d-flex-col">
+            <div className="form-div px10">
+              <label htmlFor="liters" className="info-text">
+                {t("common:c-liters")} <span className="req">*</span>{" "}
+              </label>
+              <input
+                className={`data ${errors.liters ? "input-error" : ""}`}
+                type="decimal"
+                required
+                placeholder="00.0"
+                name="liters"
+                id="liters"
+                onChange={handleInputs}
+                disabled={!values.code}
+                value={values.liters}
+              />
             </div>
-            <div className="milk-info w50 h1 d-flex-col">
-              <div className="form-div px10">
-                <label htmlFor="degree" className="info-text">
-                  {t("common:c-deg")} <span className="req">*</span>{" "}
-                </label>
-                <input
-                  className={`data ${errors.degree ? "input-error" : ""}`}
-                  type="decimal"
-                  required
-                  disabled
-                  placeholder="00.0"
-                  name="degree"
-                  id="degree"
-                  value={values.degree}
-                  onChange={handleInputs}
-                />
-              </div>
-              <div className="form-div px10">
-                <label htmlFor="rate" className="info-text">
-                  {t("common:c-rate")} <span className="req">*</span>{" "}
-                </label>
-                <input
-                  className={`data ${errors.rate ? "input-error" : ""}`}
-                  type="decimal"
-                  required
-                  readOnly
-                  placeholder="00.0"
-                  name="rate"
-                  id="rate"
-                  value={values.rate}
-                />
-              </div>
-              <div className="form-div px10">
-                <label htmlFor="amt" className="info-text">
-                  {t("common:c-amt")} <span className="req">*</span>{" "}
-                </label>
-                <input
-                  className={`data ${errors.amt ? "input-error" : ""}`}
-                  type="decimal"
-                  required
-                  readOnly
-                  placeholder="00.0"
-                  name="amt"
-                  id="amt"
-                  value={values.amt}
-                />
-              </div>
+            <div className="form-div  px10">
+              <label htmlFor="fat" className="info-text">
+                {t("common:c-fat")} <span className="req">*</span>{" "}
+              </label>
+              <input
+                className={`data ${errors.fat ? "input-error" : ""}`}
+                type="decimal"
+                required
+                placeholder="0.0"
+                name="fat"
+                id="fat"
+                onChange={handleInputChange}
+                value={values.fat}
+                disabled={!values.liters || !values.code}
+              />
             </div>
+            <div className="form-div px10">
+              <label htmlFor="snf" className="info-text">
+                {t("common:c-snf")} <span className="req">*</span>{" "}
+              </label>
+              <input
+                className={`data ${errors.snf ? "input-error" : ""}`}
+                type="decimal"
+                required
+                placeholder="00.0"
+                name="snf"
+                id="snf"
+                onChange={handleInputChange}
+                value={values.snf}
+                disabled={!values.fat || !values.liters || !values.code}
+              />
+            </div>
+          </div>
+          <div className="milk-info w50 h1 d-flex-col">
+            <div className="form-div px10">
+              <label htmlFor="degree" className="info-text">
+                {t("common:c-deg")} <span className="req">*</span>{" "}
+              </label>
+              <input
+                className={`data ${errors.degree ? "input-error" : ""}`}
+                type="decimal"
+                required
+                disabled
+                placeholder="00.0"
+                name="degree"
+                id="degree"
+                value={values.degree}
+                onChange={handleInputs}
+              />
+            </div>
+            <div className="form-div px10">
+              <label htmlFor="rate" className="info-text">
+                {t("common:c-rate")} <span className="req">*</span>{" "}
+              </label>
+              <input
+                className={`data ${errors.rate ? "input-error" : ""}`}
+                type="decimal"
+                required
+                readOnly
+                placeholder="00.0"
+                name="rate"
+                id="rate"
+                value={values.rate}
+              />
+            </div>
+            <div className="form-div px10">
+              <label htmlFor="amt" className="info-text">
+                {t("common:c-amt")} <span className="req">*</span>{" "}
+              </label>
+              <input
+                className={`data ${errors.amt ? "input-error" : ""}`}
+                type="decimal"
+                required
+                readOnly
+                placeholder="00.0"
+                name="amt"
+                id="amt"
+                value={values.amt}
+              />
+            </div>
+          </div>
           {/* </div> */}
         </div>
         <div className="form-btns w100 h10 d-flex a-center j-end">

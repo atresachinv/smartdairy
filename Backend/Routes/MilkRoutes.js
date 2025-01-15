@@ -16,6 +16,7 @@ const {
   allMilkCollection,
   fetchPrevLiters,
   todaysMilkCollReport,
+  completedMilkReport,
 } = require("../Controllers/MilkController");
 const verifyToken = require("../Middlewares/VerifyToken");
 
@@ -45,6 +46,8 @@ router
   .route("/fetch/mobile/collection")
   .get(verifyToken, fetchMobileMilkCollection); // to update
 router.route("/update/mobile/coll").post(verifyToken, updateMobileCollection);
+router.route("/milk/coll/report").get(verifyToken, allMilkCollReport);
+router.route("/completed/collection/report").get(verifyToken, completedMilkReport);
 //...........................................................................................................
 
 

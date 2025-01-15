@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { FaDownload, FaFilePdf } from "react-icons/fa6";
+import {FaFilePdf } from "react-icons/fa6";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
 import * as XLSX from "xlsx";
@@ -10,7 +10,6 @@ import { toast } from "react-toastify";
 import { RiFileExcel2Fill } from "react-icons/ri";
 import Spinner from "../../../../Home/Spinner/Spinner";
 import "../../../../../Styles/Mainapp/Apphome/Appnavview/Milkcollection.css";
-import { getProfileInfo } from "../../../../../App/Features/Mainapp/Profile/ProfileSlice";
 
 const SankalanReport = () => {
   const dispatch = useDispatch();
@@ -60,12 +59,11 @@ const SankalanReport = () => {
 
   const records = filteredData.length;
   const totalLiters = calculateTotalLiters(filteredData);
-  console.log(filteredData);
 
   // Function to download Excel file
   const downloadExcel = () => {
     if (filteredData.length === 0) {
-      alert("No data available to export.");
+      toast.error("No data available to export.");
       return;
     }
 

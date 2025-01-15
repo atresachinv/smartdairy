@@ -86,7 +86,7 @@ const Dashboard = () => {
       <div className="dashboard-scrll-container w100">
         <form className="selection-container w100 h20 d-flex sa">
           <div className="select-data-text w20 h50 d-flex-col p10">
-            <span className="text">Select Data Period</span>
+            <span className="info-text">Select Data Period</span>
           </div>
           <div className="custmize-report-div w30 h50 px10 d-flex a-center sb">
             <span className="cl-icon w10 h1 d-flex center">
@@ -120,7 +120,7 @@ const Dashboard = () => {
           </div>
         </form>
         <div className="dashboard-cards w100 h20 d-flex j-start">
-          <div className="card mx10">
+          <div className="card sb">
             <BsDatabaseAdd className="card-icon" />
             <div className="card-inner">
               <h3 className="text">Milk Collection</h3>
@@ -130,14 +130,14 @@ const Dashboard = () => {
               </h3>
             </div>
           </div>
-          <div className="card mx10">
+          <div className="card sb">
             <BsPersonFill className="card-icon" />
             <div className="card-inner">
               <h3 className="text">Customers</h3>
               <h3 className="heading">{customerCount}</h3>
             </div>
           </div>
-          <div className="card mx10">
+          <div className="card sb">
             <TfiStatsUp className="card-icon" />
             <div className="card-inner">
               <h3 className="text">Sales</h3>

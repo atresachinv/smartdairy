@@ -32,7 +32,7 @@ const MilkCollectorsReports = () => {
 
   // Local states
   const [errors, setErrors] = useState({});
-  const [selectedCenterId, setSelectedCenterId] = useState("");
+  const [selectedCenterId, setSelectedCenterId] = useState("0");
   const [selectedEmp, setSelectedEmp] = useState("");
   const [filteredMilkData, setFilteredMilkData] = useState([]);
   const [selectedCenterName, setSelectedCenterName] = useState("");
@@ -287,7 +287,7 @@ const MilkCollectorsReports = () => {
                 max={tDate}
               />
             </div>
-            <button type="submit" className="btn">
+            <button type="submit" className="btn" disabled={!values.fromDate || !values.toDate}>
               Show
             </button>
           </div>
@@ -338,7 +338,7 @@ const MilkCollectorsReports = () => {
           <span className="f-label-text w10">Code</span>
           <span className="f-label-text w60">Customer Name</span>
           <span className="f-label-text w10">Liters</span>
-          <span className="f-label-text w20">SampleNo.</span>
+          <span className="f-label-text w20">Sample</span>
         </div>
         <div className="milkdata-card-container w100 h90 d-flex-col hidescrollbar">
           {status === "loading" ? (

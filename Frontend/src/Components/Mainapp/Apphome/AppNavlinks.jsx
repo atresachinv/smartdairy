@@ -27,13 +27,7 @@ const AppNavlinks = ({ isselected, setIsSelected }) => {
       name: `${t("m-milkcoll")}`,
       icon: <BsDatabaseAdd className="icon" />,
       index: 1,
-      role: [
-        "super_admin",
-        "admin",
-        "manager",
-        "milkcollector",
-        "mobilecollector",
-      ],
+      role: ["super_admin", "milkcollector", "mobilecollector"],
     },
     // {
     //   name: "Previous Collection",
@@ -79,13 +73,7 @@ const AppNavlinks = ({ isselected, setIsSelected }) => {
       name: `${t("m-reports")}`,
       icon: <BsFileTextFill className="icon" />,
       index: 4,
-      role: [
-        "super_admin",
-        "admin",
-        "manager",
-        "milkcollector",
-        "mobilecollector",
-      ],
+      role: ["super_admin", "milkcollector", "mobilecollector"],
     },
     {
       name: `${t("m-reports")}`,

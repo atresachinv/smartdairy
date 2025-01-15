@@ -224,7 +224,7 @@
 }
 /* css for Milk Collector reports */
 @media screen and (max-width: 426px) {
-  .select-milk-collector-conatiner {
+  .milk-collector-reports .select-milk-collector-conatiner {
     min-height: fit-content;
     flex-direction: column;
     padding: 0;
@@ -287,6 +287,15 @@
   }
   .mobile-milk-collection-report .d-icons {
     display: none;
+  }
+}
+/* milk collection list and remaing customer */
+@media screen and (max-width: 426px) {
+  .milk-collection-list{
+    min-height: fit-content;
+  }
+  .milk-collection-list .title-container{
+    min-height: fit-content;
   }
 }
 
