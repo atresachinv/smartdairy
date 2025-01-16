@@ -20,21 +20,23 @@ app.use(
 
 // Route Imports
 const user = require("./Routes/UserRoutes");
+const dairy = require("./Routes/DairyRoutes");
+const ratechart = require("./Routes/RatechartRoutes");
 const milk = require("./Routes/MilkRoutes");
 const cust = require("./Routes/CustomerRoutes");
 const emp = require("./Routes/EmpRoutes");
 const purchase = require("./Routes/PurchaseRoutes");
-const dairy = require("./Routes/DairyRoutes");
 const notify = require("./Routes/fireBaseRoutes");
 
 //Common api starting
 
 app.use("/smartdairy/api", user);
+app.use("/smartdairy/api", dairy);
 app.use("/smartdairy/api", milk);
+app.use("/smartdairy/api", ratechart);
 app.use("/smartdairy/api", cust);
 app.use("/smartdairy/api", emp);
 app.use("/smartdairy/api", purchase);
-app.use("/smartdairy/api", dairy);
 app.use("/smartdairy/api", notify);
 
 module.exports = app;

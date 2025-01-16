@@ -564,7 +564,7 @@ const MilkColleform = ({ switchToSettings }) => {
               </label>
               <input
                 className={`data ${errors.liters ? "input-error" : ""}`}
-                type="decimal"
+                type="number"
                 required
                 placeholder="00.0"
                 name="liters"
@@ -580,7 +580,7 @@ const MilkColleform = ({ switchToSettings }) => {
               </label>
               <input
                 className={`data ${errors.fat ? "input-error" : ""}`}
-                type="decimal"
+                type="number"
                 required
                 placeholder="0.0"
                 name="fat"
@@ -596,7 +596,7 @@ const MilkColleform = ({ switchToSettings }) => {
               </label>
               <input
                 className={`data ${errors.snf ? "input-error" : ""}`}
-                type="decimal"
+                type="number"
                 required
                 placeholder="00.0"
                 name="snf"
@@ -614,7 +614,7 @@ const MilkColleform = ({ switchToSettings }) => {
               </label>
               <input
                 className={`data ${errors.degree ? "input-error" : ""}`}
-                type="decimal"
+                type="number"
                 required
                 disabled
                 placeholder="00.0"
@@ -630,7 +630,7 @@ const MilkColleform = ({ switchToSettings }) => {
               </label>
               <input
                 className={`data ${errors.rate ? "input-error" : ""}`}
-                type="decimal"
+                type="number"
                 required
                 readOnly
                 placeholder="00.0"
@@ -645,7 +645,7 @@ const MilkColleform = ({ switchToSettings }) => {
               </label>
               <input
                 className={`data ${errors.amt ? "input-error" : ""}`}
-                type="decimal"
+                type="number"
                 required
                 readOnly
                 placeholder="00.0"

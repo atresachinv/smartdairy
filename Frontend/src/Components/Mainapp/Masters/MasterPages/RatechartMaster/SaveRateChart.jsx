@@ -169,14 +169,14 @@ const SaveRateChart = ({ rate }) => {
             <Spinner />
           </div>
         ) : (
-          <div className="save-ratechart-contaner w100 h1 d-flex-col sb">
-            <div className="select-time-animal-type w100 h50 d-flex sb">
-              <div className="select-time w25 h1 a-center d-flex-col ">
+          <div className="save-ratechart-contaner w100 h60 d-flex-col sb">
+            <div className="select-time-animal-type w100 h30 d-flex sb">
+              <div className="select-time w25 h1 a-center d-flex ">
                 <label htmlFor="rccode" className="info-text w100">
                   No :
                 </label>
                 <input
-                  className="data w100"
+                  className="data w100 t-center"
                   type="number"
                   name="rccode"
                   id="rccode"
@@ -185,8 +185,8 @@ const SaveRateChart = ({ rate }) => {
                   readOnly
                 />
               </div>
-              <div className="select-animal-type w70 h1 a-center d-flex-col">
-                <label htmlFor="rctype" className="info-text w100">
+              <div className="select-animal-type w70 h1 a-center d-flex">
+                <label htmlFor="rctype" className="info-text w50">
                   Ratechart Type :
                 </label>
                 <input
@@ -199,7 +199,7 @@ const SaveRateChart = ({ rate }) => {
                 />
               </div>
             </div>
-            <div className="select-time-animal-type w100 h50 d-flex sb">
+            <div className="select-time-animal-type w100 h30 d-flex sb">
               <div className="select-animal-type w50 h1 a-center d-flex">
                 <label htmlFor="time" className="info-text w30">
                   Time:
@@ -245,7 +245,7 @@ const SaveRateChart = ({ rate }) => {
                 </select>
               </div>
             </div>
-            <div className="select-animal-type w100 h25 a-center d-flex sb">
+            <div className="select-time-animal-type w100 h30 d-flex sb">
               <label htmlFor="rcdate" className="info-text w50">
                 Ratechart date :{" "}
               </label>
@@ -260,7 +260,7 @@ const SaveRateChart = ({ rate }) => {
             </div>
           </div>
         )}
-        <div className="button-div w100 h20 d-flex j-end my10">
+        <div className="button-div w100 h20 d-flex j-end">
           <button
             type="submit"
             className="btn mx10"

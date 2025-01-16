@@ -1635,7 +1635,7 @@ exports.allMilkCollection = async (req, res) => {
           SELECT 
             userid, ReceiptDate, ME, CB, Litres, fat, snf, rate, Amt, cname, rno, SampleNo
           FROM ${dairy_table}
-          WHERE ReceiptDate BETWEEN ? AND ? AND Driver = 1
+          WHERE ReceiptDate BETWEEN ? AND ? AND Driver IN (0, 1)
         `;
         queryParams = [fromDate, toDate];
       } else {
@@ -1644,7 +1644,7 @@ exports.allMilkCollection = async (req, res) => {
           SELECT 
             userid, ReceiptDate, ME, CB, Litres, fat, snf, rate, Amt, cname, rno, SampleNo
           FROM ${dairy_table}
-          WHERE center_id = ? AND ReceiptDate BETWEEN ? AND ? AND Driver = 1
+          WHERE center_id = ? AND ReceiptDate BETWEEN ? AND ? AND Driver IN (0, 1)
         `;
         queryParams = [center_id, fromDate, toDate];
       }

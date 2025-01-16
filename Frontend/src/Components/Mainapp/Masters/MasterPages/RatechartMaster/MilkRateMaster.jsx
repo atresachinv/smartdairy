@@ -21,13 +21,8 @@ const MilkRateMaster = () => {
   const tDate = useSelector((state) => state.date.toDate);
   const { status, error, progress } = useSelector((state) => state.ratechart);
   const maxRcCode = useSelector((state) => state.ratechart.maxRcCode);
-  const ratechartlist = useSelector((state) => state.ratechart.ratechartList); 
+  const ratechartlist = useSelector((state) => state.ratechart.ratechartList);
   const Selectedrc = useSelector((state) => state.ratechart.selectedRateChart);
-
-  useEffect(() => {
-    dispatch(fetchMaxRcCode());
-    dispatch(listRateCharts());
-  }, []);
 
   const fileInputRef = React.useRef(null);
   const [selectedRateChart, setSelectedRateChart] = useState(null);
@@ -44,34 +39,10 @@ const MilkRateMaster = () => {
     rcdate: "",
   });
 
-  console.log(Selectedrc);
-
-  // useEffect(() => {
-  //   if (status === "succeeded") {
-  //     toast.success("Rate chart saved successfully!");
-  //     setLoading(false);
-  //     dispatch(resetProgress());
-  //     // Optionally, reset formData and rate
-  //     setFormData({
-  //       rccode: "",
-  //       rctype: "",
-  //       time: "",
-  //       animalType: "",
-  //       rcdate: "",
-  //     });
-  //     setRate([]);
-  //   } else if (status === "failed") {
-  //     toast.error(`Error: ${error}`);
-  //     setLoading(false);
-  //     dispatch(resetProgress());
-  //   }
-  // }, [status, error, dispatch]);
-
-  // handling choose file button
-
   useEffect(() => {
     dispatch(fetchMaxRcCode());
-  }, []);
+    dispatch(listRateCharts());
+  }, [dispatch]);
 
   const handleButtonClick = () => {
     fileInputRef.current.click();
@@ -308,20 +279,31 @@ const MilkRateMaster = () => {
     }
   };
 
-  const deleteRateChart = async () => {
+  const deleteSelectedRateChart = async () => {
     if (!selectedRateChart) {
-      toast.error("Please select a rate chart to download.");
+      toast.error("Please select a rate chart to delete.");
       return;
-    } else {
-      dispatch(
+    }
+    const ratechartDate = selectedRateChart.rcdate.slice(0, 10);
+    try {
+      const response = await dispatch(
         deleteRatechart({
-          cb: ratechart.cb,
-          rccode: ratechart.rccode,
-          rcdate: ratechart.rcdate,
-          time: ratechart.time,
+          cb: selectedRateChart.cb,
+          rccode: selectedRateChart.rccode,
+          rcdate: ratechartDate,
+          time: selectedRateChart.time,
         })
       );
-      toast.success("Ratechart Deleted Successfully!");
+
+      if (response.meta.requestStatus === "fulfilled") {
+        toast.success("Ratechart Deleted Successfully!");
+        dispatch(fetchMaxRcCode());
+        dispatch(listRateCharts());
+      } else {
+        toast.error(response.payload || "Failed to delete ratechart.");
+      }
+    } catch (error) {
+      toast.error("An error occurred while deleting the ratechart.");
     }
   };
 
@@ -506,8 +488,8 @@ const MilkRateMaster = () => {
             <button
               type="submit"
               className="btn mx10"
-              disabled={status === "loading"}
-              onClick={deleteRateChart}>
+              // disabled={status === "loading"}
+              onClick={deleteSelectedRateChart}>
               Delete
             </button>
             <button
@@ -531,118 +513,6 @@ const MilkRateMaster = () => {
               ratechart={Selectedrc}
             />
           </div>
-          {/* <form
-            className="rate-chart-setting-div w100 h40 d-flex-col sa my10 px10"
-            onSubmit={handleSubmit}>
-            <div className="select-time-animal-type w100 h25 d-flex sb">
-              <div className="select-time w25 h1 a-center d-flex-col ">
-                <label htmlFor="rccode" className="info-text w100">
-                  Ratechart No :
-                </label>
-                <input
-                  className="data w100"
-                  type="number"
-                  name="rccode"
-                  id="rccode"
-                  value={formData.rccode}
-                  onChange={handleInput}
-                  readOnly
-                />
-              </div>
-              <div className="select-animal-type w70 h1 a-center d-flex-col">
-                <label htmlFor="rctype" className="info-text w100">
-                  Ratechart Type:{" "}
-                </label>
-                <input
-                  className={`data w100 ${errors.rctype ? "input-error" : ""}`}
-                  type="text"
-                  name="rctype"
-                  id="rctype"
-                  value={formData.rctype}
-                  onChange={handleInput}
-                />
-              </div>
-            </div>
-            <div className="select-time-animal-type w100 h25 d-flex sb">
-              <div className="select-animal-type w50 h1 a-center d-flex">
-                <label htmlFor="time" className="info-text w50">
-                  Time:
-                </label>
-                <select
-                  className={`data w45 ${errors.time ? "input-error" : ""}`}
-                  name="time"
-                  id="time"
-                  required
-                  value={formData.time}
-                  onChange={handleInput}>
-                  <option className="info-text" value="2">
-                    Both
-                  </option>
-                  <option className="info-text" value="0">
-                    Mornning
-                  </option>
-                  <option className="info-text" value="1">
-                    Evenning
-                  </option>
-                </select>
-              </div>
-              <div className="select-animal-type w50 h1 a-center d-flex">
-                <label htmlFor="animalType" className="info-text w50">
-                  Animal Type:
-                </label>
-                <select
-                  className="data w50 "
-                  name="animalType"
-                  id="animalType"
-                  required
-                  value={formData.animalType}
-                  onChange={handleInput}>
-                  <option className="info-text" value="">
-                    --Select--
-                  </option>
-                  <option className="info-text" value="0">
-                    Cow
-                  </option>
-                  <option className="info-text" value="1">
-                    Buffalo
-                  </option>
-                  <option className="info-text" value="2">
-                    Other
-                  </option>
-                </select>
-              </div>
-            </div>
-            <div className="rate-chart-date w100 h25 d-flex sb">
-              <label htmlFor="implementationDate" className="info-text w60">
-                Rate Chart Implementation Date:
-              </label>
-              <input
-                className="data w30 h50"
-                required
-                type="date"
-                name="rcdate"
-                id="implementationDate"
-                value={formData.rcdate}
-                onChange={handleInput}
-                max={tDate}
-              />
-            </div>
-            <div className="button-div w100 h25 d-flex j-end">
-              <button
-                type="submit"
-                className="btn mx10"
-                disabled={status === "loading"}
-                onClick={handleApplyRatechart}>
-                Apply Rate Chart
-              </button>
-              <button
-                type="submit"
-                className="btn mx10"
-                disabled={status === "loading"}>
-                Save Rate Chart
-              </button>
-            </div>
-          </form> */}
         </div>
       </div>
     </>

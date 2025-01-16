@@ -50,7 +50,7 @@ const CompleteMilkColl = () => {
     // userid: "",
     acccode: "",
     rcName: "",
-    // sample: "",
+    sample: "",
   };
 
   const [values, setValues] = useState(initialValues);
@@ -538,7 +538,9 @@ const CompleteMilkColl = () => {
               name="userid"
               value={selectedEmp}
               onChange={(e) => setSelectedEmp(e.target.value)}>
-              <option value="">--Select Milk Collector--</option>
+              <option value="">
+                -{t("m-select-coll")}-
+              </option>
               {milkCollectors.map((emp, i) => (
                 <option key={i} value={emp.emp_mobile}>
                   {emp.emp_name}
@@ -577,7 +579,6 @@ const CompleteMilkColl = () => {
               value={values.code}
               disabled={!selectedEmp}
               onChange={handleInputs}
-              // readOnly
             />
           </div>
           <div className="form-div w50 px10">
@@ -604,7 +605,7 @@ const CompleteMilkColl = () => {
               </label>
               <input
                 className={`data ${errors.liters ? "input-error" : ""}`}
-                type="decimal"
+                type="number"
                 required
                 placeholder="00.0"
                 name="liters"
@@ -620,7 +621,7 @@ const CompleteMilkColl = () => {
               </label>
               <input
                 className={`data ${errors.fat ? "input-error" : ""}`}
-                type="decimal"
+                type="number"
                 required
                 placeholder="0.0"
                 name="fat"
@@ -636,7 +637,7 @@ const CompleteMilkColl = () => {
               </label>
               <input
                 className={`data ${errors.snf ? "input-error" : ""}`}
-                type="decimal"
+                type="number"
                 required
                 placeholder="00.0"
                 name="snf"
@@ -654,7 +655,7 @@ const CompleteMilkColl = () => {
               </label>
               <input
                 className={`data ${errors.degree ? "input-error" : ""}`}
-                type="decimal"
+                type="number"
                 required
                 disabled
                 placeholder="00.0"
@@ -670,7 +671,7 @@ const CompleteMilkColl = () => {
               </label>
               <input
                 className={`data ${errors.rate ? "input-error" : ""}`}
-                type="decimal"
+                type="number"
                 required
                 readOnly
                 placeholder="00.0"
@@ -685,7 +686,7 @@ const CompleteMilkColl = () => {
               </label>
               <input
                 className={`data ${errors.amt ? "input-error" : ""}`}
-                type="decimal"
+                type="number"
                 required
                 readOnly
                 placeholder="00.0"
@@ -698,12 +699,12 @@ const CompleteMilkColl = () => {
         </div>
         <div className="form-btns w100 h10 d-flex a-center j-end">
           <button
+            type="button"
             className="w-btn  label-text mx10"
             onClick={downloadExcel}
             disabled={status === "loading"}>
             {status === "loading" ? "Generating..." : "Excel"}
           </button>
-
           <button className="w-btn  label-text" type="reset">
             {t("m-btn-cancel")}
           </button>

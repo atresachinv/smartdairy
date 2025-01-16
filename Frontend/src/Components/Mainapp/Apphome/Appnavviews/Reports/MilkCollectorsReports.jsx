@@ -261,7 +261,7 @@ const MilkCollectorsReports = () => {
           onSubmit={handleShowData}
           className="form-label-select-div w50 d-flex-col a-center j-start">
           <label htmlFor="date" className="label-text w100">
-            Select Dates
+            {t("common:c-date")} :
           </label>
           <div className="dates-btn-container w100 h1 d-flex a-center sb">
             <div className="dates-container w80 h1 d-flex a-center sb">
@@ -287,8 +287,11 @@ const MilkCollectorsReports = () => {
                 max={tDate}
               />
             </div>
-            <button type="submit" className="btn" disabled={!values.fromDate || !values.toDate}>
-              Show
+            <button
+              type="submit"
+              className="btn"
+              disabled={!values.fromDate || !values.toDate}>
+              {t("milkcollection:m-d-show")}
             </button>
           </div>
         </form>
@@ -299,7 +302,6 @@ const MilkCollectorsReports = () => {
               id="center"
               value={selectedCenterId}
               onChange={handleCenterChange}>
-              {/* <option value="">--Select Center--</option> */}
               {centerList.map((center, i) => (
                 <option key={i} value={center.center_id}>
                   {center.center_name}
@@ -311,7 +313,7 @@ const MilkCollectorsReports = () => {
               id="milk-collector"
               value={selectedEmp}
               onChange={handleCollectorChange}>
-              <option value="">--Select Collector--</option>
+              <option value="">-{t("milkcollection:m-select-coll")}-</option>
               {milkCollectors.map((emp, i) => (
                 <option key={i} value={emp.emp_mobile}>
                   {emp.emp_name}
@@ -335,10 +337,14 @@ const MilkCollectorsReports = () => {
       </div>
       <div className="milkdata-container w100 h80 d-flex-col mh90 hidescrollbar bg">
         <div className="milkdata-data-headings w100 h10 d-flex a-center t-center sa py10 bg1">
-          <span className="f-label-text w10">Code</span>
-          <span className="f-label-text w60">Customer Name</span>
-          <span className="f-label-text w10">Liters</span>
-          <span className="f-label-text w20">Sample</span>
+          <span className="f-label-text w10">{t("c-date")}</span>
+          <span className="f-label-text w60">
+            {t("milkcollection:m-cust-name")}
+          </span>
+          <span className="f-label-text w10">{t("c-liters")}</span>
+          <span className="f-label-text w20">
+            {t("milkcollection:m-sample-no")}
+          </span>
         </div>
         <div className="milkdata-card-container w100 h90 d-flex-col hidescrollbar">
           {status === "loading" ? (

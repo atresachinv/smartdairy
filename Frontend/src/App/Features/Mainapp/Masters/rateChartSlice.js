@@ -10,6 +10,7 @@ const initialState = {
   status: "idle",
   updatestatus: "idle",
   savercstatus: "idle",
+  deletercstatus: "idle",
   applyrcstatus: "idle",
   supdatedrcstatus: "idle",
   error: null,
@@ -109,20 +110,24 @@ export const fetchRateChart = createAsyncThunk(
 // Delete selected ratechart
 
 export const deleteRatechart = createAsyncThunk(
-  "ratechart/fetchRateChart",
+  "ratechart/deleteRatechart",
   async ({ cb, rccode, rcdate, time }, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.get("/selected/ratechart", {
-        params: { cb, rccode, rcdate, time },
+      const response = await axiosInstance.post("/delete/ratechart", {
+        cb,
+        rccode,
+        rcdate,
+        time,
       });
       return response.data.selectedRChart;
     } catch (error) {
       const errorMessage =
-        error.response?.data?.message || "Failed to fetch ratechart.";
+        error.response?.data?.message || "Failed to delete ratechart.";
       return rejectWithValue(errorMessage);
     }
   }
 );
+
 
 //list all ratecharts
 
@@ -179,22 +184,6 @@ export const applyRateChart = createAsyncThunk(
   }
 );
 
-//
-// export const fetchMilkCollRatechart = createAsyncThunk(
-//   "ratechart/fetchMilkCollRatechart",
-//   async (_, { rejectWithValue }) => {
-//     try {
-//       const response = await axiosInstance.post("/milkcollection/ratechart");
-//       return response.data.usedRateChart;
-//     } catch (error) {
-//       const errorMessage =
-//         error.response?.data?.message ||
-//         "Failed to fetch milk collection ratechart!.";
-//       return rejectWithValue(errorMessage);
-//     }
-//   }
-// );
-
 // Update rate chart
 export const updateRatechart = createAsyncThunk(
   "ratechart/updateRatechart",
@@ -220,7 +209,7 @@ export const updateRatechart = createAsyncThunk(
 // Save Updated ratechart
 export const saveUpdatedRC = createAsyncThunk(
   "ratechart/saveUpdatedRC",
-  async ({ratechart, rccode, rctype, animal, time }, { rejectWithValue }) => {
+  async ({ ratechart, rccode, rctype, animal, time }, { rejectWithValue }) => {
     try {
       const response = await axiosInstance.post("/save/updated/ratechart", {
         ratechart,
@@ -302,6 +291,16 @@ const rateChartSlice = createSlice({
       .addCase(fetchRateChart.rejected, (state, action) => {
         state.error = action.payload;
         state.status = "failed";
+      }) 
+      .addCase(deleteRatechart.pending, (state) => {
+        state.deletercstatus = "loading";
+      })
+      .addCase(deleteRatechart.fulfilled, (state) => {
+        state.deletercstatus = "succeeded";
+      })
+      .addCase(deleteRatechart.rejected, (state, action) => {
+        state.error = action.payload;
+        state.deletercstatus = "failed";
       })
       .addCase(listRateCharts.pending, (state) => {
         state.status = "loading";

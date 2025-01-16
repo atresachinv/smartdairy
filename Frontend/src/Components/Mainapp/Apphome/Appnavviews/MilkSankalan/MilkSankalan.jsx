@@ -284,7 +284,7 @@ const MilkSankalan = () => {
               {literCount.toFixed(2)}
             </label>
           </div>
-          <button className="w-btn" onClick={resetData}>
+          <button className="w-btn" type="button" onClick={resetData}>
             {t("milkcollection:m-btn-reset")}
           </button>
         </div>

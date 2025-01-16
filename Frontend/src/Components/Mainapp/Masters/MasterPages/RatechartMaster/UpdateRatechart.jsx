@@ -2,7 +2,11 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import Spinner from "../../../../Home/Spinner/Spinner";
-import { saveUpdatedRC } from "../../../../../App/Features/Mainapp/Masters/rateChartSlice";
+import {
+  fetchMaxRcCode,
+  listRateCharts,
+  saveUpdatedRC,
+} from "../../../../../App/Features/Mainapp/Masters/rateChartSlice";
 
 const UpdateRatechart = ({ isSet, ratechart }) => {
   const dispatch = useDispatch();
@@ -87,36 +91,6 @@ const UpdateRatechart = ({ isSet, ratechart }) => {
     return validationErrors;
   };
 
-  // const updateRatechart = () => {
-  //   const updatedRates = ratechart.map((record) => ({
-  //     ...record,
-  //     rate: parseFloat((record.rate + formData.amount).toFixed(2)),
-  //     rcdate: formData.rcdate,
-  //   }));
-  //   console.log("updated rates", updatedRates);
-  // };
-
-  //   const updateRatechart = () => {
-  //     const updatedRates = ratechart.map((record) => {
-  //       // Parse both rate and amount to ensure they are numbers
-  //       const rate = parseFloat(record.rate);
-  //       const amount = parseFloat(formData.amount);
-  //
-  //       if (isNaN(rate) || isNaN(amount)) {
-  //         console.error("Invalid rate or amount value", { rate, amount });
-  //         return { ...record, rate: record.rate }; // Return the original rate if parsing fails
-  //       }
-  //
-  //       return {
-  //         ...record,
-  //         rate: parseFloat((rate + amount).toFixed(2)),
-  //         rcdate: formData.rcdate,
-  //       };
-  //     });
-  //
-  //     console.log("updated rates", isSet, updatedRates);
-  //   };
-
   const handleRatechartUpdate = async (e) => {
     e.preventDefault();
 
@@ -158,6 +132,8 @@ const UpdateRatechart = ({ isSet, ratechart }) => {
         })
       );
       toast.success("Ratechart updated successfully!");
+      dispatch(fetchMaxRcCode());
+      dispatch(listRateCharts());
     }
   };
 
