@@ -23,7 +23,6 @@ const Milkcollelist = () => {
       setCustomersList([]);
     }
   };
-  console.log("remainning customer", custList);
   return (
     <div className="milk-collection-list w100 h1 d-flex-col bg">
       <div className="title-container w100 h10 d-flex a-center sb p10">

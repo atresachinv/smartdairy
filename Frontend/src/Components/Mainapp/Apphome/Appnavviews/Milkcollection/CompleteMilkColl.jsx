@@ -10,11 +10,12 @@ import * as XLSX from "xlsx";
 import { useTranslation } from "react-i18next";
 import "../../../../../Styles/Mainapp/Apphome/Appnavview/Milkcollection.css";
 import Spinner from "../../../../Home/Spinner/Spinner";
+import { listEmployee } from "../../../../../App/Features/Mainapp/Masters/empMasterSlice";
 const CompleteMilkColl = () => {
   const { t } = useTranslation(["milkcollection", "common"]);
   const dispatch = useDispatch();
   const colldata = useSelector(
-    (state) => state.milkCollection.mobileCollection 
+    (state) => state.milkCollection.mobileCollection
   ); //mobile milk collection data
   const completedcolldata = useSelector(
     (state) => state.milkCollection.completedColle
@@ -30,6 +31,7 @@ const CompleteMilkColl = () => {
   const [milkRateChart, setMilkRatechart] = useState([]);
 
   useEffect(() => {
+    dispatch(listEmployee());
     dispatch(fetchMobileColl());
   }, []);
 
@@ -52,7 +54,6 @@ const CompleteMilkColl = () => {
   };
 
   const [values, setValues] = useState(initialValues);
-
 
   const validateField = (name, value) => {
     let error = {};
@@ -446,7 +447,7 @@ const CompleteMilkColl = () => {
       return;
     }
     try {
-     dispatch(updateMobileColl(values));
+      dispatch(updateMobileColl(values));
 
       setValues(initialValues); // Reset form to initial values
       setErrors({}); // Reset errors
@@ -454,8 +455,6 @@ const CompleteMilkColl = () => {
       // await sendNotifications();
 
       toast.success(`Milk Collection saved successfully!`);
-
-
     } catch (error) {
       console.error("Error sending milk entries to backend:", error);
     }
@@ -463,13 +462,11 @@ const CompleteMilkColl = () => {
 
   // Handling Download excel
   const downloadExcel = async () => {
-    await dispatch(
-      completedMilkSankalan({ date: values.date, time: values.time })
-    );
+    dispatch(completedMilkSankalan({ date: values.date, time: values.time }));
     if (completedcolldata) {
       const handler = setTimeout(() => {
         exportToExcel();
-      }, 500);
+      }, 800);
       return () => clearTimeout(handler);
     }
   };
@@ -482,7 +479,7 @@ const CompleteMilkColl = () => {
     }
     const worksheet = XLSX.utils.json_to_sheet(
       completedcolldata.map((row, i) => ({
-        Date: row.ReceiptDate,
+        Date: row.ReceiptDate.slice(0,10),
         Time: row.ME,
         Code: row.rno,
         Liters: row.Litres,
@@ -498,7 +495,6 @@ const CompleteMilkColl = () => {
     XLSX.utils.book_append_sheet(workbook, worksheet, "Milk Collection");
     XLSX.writeFile(workbook, "milk-collection-report.xlsx");
   };
-
 
   return (
     <div className="complete-mobile-milk-container w100 h1 d-flex-col center">

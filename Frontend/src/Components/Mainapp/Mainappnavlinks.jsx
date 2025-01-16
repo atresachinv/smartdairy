@@ -233,33 +233,21 @@ const Mainappnavlinks = ({ setselected, handleSidebar }) => {
       role: ["super_admin", "admin", "manager"],
       submenus: [
         {
-          name: "Main Ledger",
+          name: "Milk Correction",
           icon: <BsGridFill className="icon" />,
           index: 7.1,
           role: ["admin", "super_admin", "manager"],
         },
         {
-          name: "Sub Ledger",
+          name: "Payment Deductions",
           icon: <BsGridFill className="icon" />,
           index: 7.2,
           role: ["admin", "super_admin", "manager"],
         },
         {
-          name: "Customer Master",
+          name: "Generate Payments",
           icon: <BsGridFill className="icon" />,
           index: 7.3,
-          role: ["admin", "super_admin", "manager"],
-        },
-        {
-          name: "Employee Master",
-          icon: <BsGridFill className="icon" />,
-          index: 7.4,
-          role: ["admin", "super_admin", "manager"],
-        },
-        {
-          name: "Milk Rate Master",
-          icon: <BsGridFill className="icon" />,
-          index: 7.5,
           role: ["admin", "super_admin", "manager"],
         },
       ],

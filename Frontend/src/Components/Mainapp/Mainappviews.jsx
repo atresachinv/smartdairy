@@ -24,6 +24,10 @@ import CustomersMaster from "./Masters/MasterPages/CustomerMaster/CustomersMaste
 import Centers from "./DairyInfo/Centers/Centers";
 import Profile from "./Profile/Profile";
 import MilkcollectionReports from "./Reports/MilkReports/MilkcollectionReports";
+import MilkCorrection from "./Payments/PaymentPages/MilkCorrection/MilkCorrection";
+// import PayDeductions from "./Payments/PaymentPages/PayDeductions";
+import Payments from "./Payments/Payments";
+import PayDeductions from "./Payments/PaymentPages/PayDeductions/PayDeductions";
 // import MilkReports from "./Reports/MilkReports/MilkReports";
 // import MilkcollectionReports from "./Reports/MilkReports/MilkcollectionReports";
 
@@ -81,15 +85,11 @@ const Mainappviews = ({ index }) => {
       return <MilkRateMaster />;
     //Payments Submenus
     case 7.1:
-      return <MainLedger />;
+      return <MilkCorrection />;
     case 7.2:
-      return <SubLedger />;
+      return <PayDeductions />;
     case 7.3:
-      return <CustomersMaster />;
-    case 7.4:
-      return <EmployeeMaster />;
-    case 7.5:
-      return <MilkRateMaster />;
+      return <Payments />;
     //Dairy Submenus
     case 8.1:
       return <DairyInfo />;

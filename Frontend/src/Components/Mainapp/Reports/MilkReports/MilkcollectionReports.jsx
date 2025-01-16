@@ -71,21 +71,6 @@ const MilkcollectionReports = () => {
   // Download pdf, excel and print functions------------------------->
   // >>>> PDF ----
 
-  // const calculateTotalAmountFiltered = (filteredData) => {
-  //   return filteredData.reduce(
-  //     (total, item) => total + parseFloat(item.Amt || 0),
-  //     0
-  //   );
-  // };
-  // const calculateTotalAmountSummary = (summaryData) => {
-  //   return summaryData.reduce(
-  //     (total, item) => total + parseFloat(item.Amt || 0),
-  //     0
-  //   );
-  // };
-  // const totalFilteredAmount = calculateTotalAmountFiltered(filteredData);
-  // const totalSummaryAmount = calculateTotalAmountSummary(summaryData);
-
   const [calculatedSummary, setCalculatedSummary] = useState({
     avgFat: 0,
     avgSNF: 0,

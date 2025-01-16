@@ -25,8 +25,8 @@ const Sidebar = ({ setselected, handleSidebar }) => {
       localStorage.removeItem("milkcollrcharts");
 
       if (userRole === "milkcollector" || userRole === "mobilecollector") {
+        localStorage.setItem("selectedTabIndex", 1);
         localStorage.setItem("selectedNavIndex", 1);
-        localStorage.setItem("selectedTabIndex", 0);
       } else {
         localStorage.setItem("selectedNavIndex", 0);
         localStorage.setItem("selectedTabIndex", 0);
