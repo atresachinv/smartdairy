@@ -40,7 +40,7 @@ const MilkSankalan = () => {
   };
 
   const [values, setValues] = useState(initialValues);
-
+  
   useEffect(() => {
     localStorage.setItem("collCount", collCount);
     localStorage.setItem("literCount", literCount);
@@ -108,9 +108,12 @@ const MilkSankalan = () => {
     );
 
     if (customer) {
-      setValues((prev) => ({ ...prev, cname: customer.cname.toString() }));
-      setValues((prev) => ({ ...prev, acccode: customer.cid }));
-      setValues((prev) => ({ ...prev, rateChartNo: customer.rateChartNo }));
+      setValues((prev) => ({
+        ...prev,
+        cname: customer.cname.toString(),
+        acccode: customer.cid,
+        rateChartNo: customer.rateChartNo,
+      }));
     } else {
       setValues((prev) => ({ ...prev, cname: "" })); // Clear cname if not found
     }
