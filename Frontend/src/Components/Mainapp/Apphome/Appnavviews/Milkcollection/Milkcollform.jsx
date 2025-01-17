@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { BsGearFill } from "react-icons/bs";
 import { useDispatch, useSelector } from "react-redux";
 import { saveMilkCollection } from "../../../../../App/Features/Mainapp/Dairyinfo/milkCollectionSlice";
@@ -28,6 +28,10 @@ const MilkColleform = ({ switchToSettings }) => {
   const [time, setTime] = useState(true);
   const [errors, setErrors] = useState({});
   const [slotCount, setSlotCount] = useState(0); //To rerive local stored milk entries
+  const codeInputRef = useRef(null);
+  const litersRef = useRef(null);
+  const fatRef = useRef(null);
+  const snfRef = useRef(null);
 
   const initialValues = {
     date: new Date().toISOString().split("T")[0],
@@ -385,6 +389,65 @@ const MilkColleform = ({ switchToSettings }) => {
     });
   };
 
+  // ------------------------------------------------------------------------------------->
+  // Send Milk Collection Whatsapp Message ------------------------------------------------>
+
+  //  const [responseMessage, setResponseMessage] = useState("");
+  //   const sendMessage = async () => {
+  //     const url = "https://partnersv1.pinbot.ai/v3/560504630471076/messages";
+  //     const apiKey = "0a4a47a3-d03c-11ef-bb5a-02c8a5e042bd";
+  //
+  //     const body = {
+  //       messaging_product: "whatsapp",
+  //       recipient_type: "individual",
+  //       to: "+919730999296",
+  //       type: "template",
+  //       template: {
+  //         name: "milk_collection_Reciept",
+  //         language: { code: "en" },
+  //         components: [
+  //           {
+  //             type: "body",
+  //             parameters: [
+  //               { type: "text", text: "15th January 2025" },
+  //               { type: "text", text: "Hari Om Dudh Sankalan Nimon" },
+  //               { type: "text", text: "01" },
+  //               { type: "text", text: "text-string" },
+  //               { type: "text", text: "text-string" },
+  //               { type: "text", text: "text-string" },
+  //               { type: "text", text: "text-string" },
+  //               { type: "text", text: "text-string" },
+  //               { type: "text", text: "text-string" },
+  //               { type: "text", text: "text-string" }
+  //             ]
+  //           }
+  //         ]
+  //       }
+  //     };
+  //
+  //     try {
+  //       const response = await fetch(url, {
+  //         method: 'POST',
+  //         headers: {
+  //           'Content-Type': 'application/json',
+  //           'apikey': apiKey
+  //         },
+  //         body: JSON.stringify(body)
+  //       });
+  //
+  //       if (!response.ok) {
+  //         throw new Error('Network response was not ok');
+  //       }
+  //
+  //       const responseData = await response.json();
+  //       setResponseMessage(JSON.stringify(responseData, null, 2));
+  //     } catch (error) {
+  //       console.error('There was a problem with the fetch operation:', error);
+  //     }
+  //   };
+
+  // ------------------------------------------------------------------------------------->
+
   //Handling Milk Collection
 
   const handleCollection = async (e) => {
@@ -416,6 +479,8 @@ const MilkColleform = ({ switchToSettings }) => {
       //   prevList.filter((customer) => customer.srno.toString() !== values.code)
       // );
       removeCustomer();
+      // sendMessage();
+      codeInputRef.current.focus();
     } catch (error) {
       console.error("Error sending milk entries to backend:", error);
     }
@@ -536,6 +601,7 @@ const MilkColleform = ({ switchToSettings }) => {
               id="code"
               value={values.code}
               onChange={handleInputs}
+              ref={codeInputRef}
             />
           </div>
           <div className="form-div w50 px10">
@@ -569,9 +635,12 @@ const MilkColleform = ({ switchToSettings }) => {
                 placeholder="00.0"
                 name="liters"
                 id="liters"
+                step="any"
                 onChange={handleInputs}
                 disabled={!values.code}
                 value={values.liters}
+                onKeyDown={(e) => handleKeyDown(e, fatRef)}
+                ref={litersRef}
               />
             </div>
             <div className="form-div  px10">
@@ -585,9 +654,12 @@ const MilkColleform = ({ switchToSettings }) => {
                 placeholder="0.0"
                 name="fat"
                 id="fat"
+                step="any"
                 onChange={handleInputChange}
                 value={values.fat}
                 disabled={!values.liters || !values.code}
+                onKeyDown={(e) => handleKeyDown(e, snfRef)}
+                ref={fatRef}
               />
             </div>
             <div className="form-div px10">
@@ -601,9 +673,11 @@ const MilkColleform = ({ switchToSettings }) => {
                 placeholder="00.0"
                 name="snf"
                 id="snf"
+                step="any"
                 onChange={handleInputChange}
                 value={values.snf}
                 disabled={!values.fat || !values.liters || !values.code}
+                ref={snfRef}
               />
             </div>
           </div>

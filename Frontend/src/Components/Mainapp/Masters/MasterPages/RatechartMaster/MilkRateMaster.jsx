@@ -19,7 +19,7 @@ import RateChartOptions from "./RateChartOptions";
 const MilkRateMaster = () => {
   const dispatch = useDispatch();
   const tDate = useSelector((state) => state.date.toDate);
-  const { status, error, progress } = useSelector((state) => state.ratechart);
+  const { status, progress } = useSelector((state) => state.ratechart);
   const maxRcCode = useSelector((state) => state.ratechart.maxRcCode);
   const ratechartlist = useSelector((state) => state.ratechart.ratechartList);
   const Selectedrc = useSelector((state) => state.ratechart.selectedRateChart);
@@ -338,21 +338,6 @@ const MilkRateMaster = () => {
     }
   };
 
-  const handleApplyRatechart = async (e) => {
-    e.preventDefault();
-    await dispatch(applyRateChart(selectedRateChart.rccode));
-    dispatch(listRateCharts());
-    toast.success("Rate chart Applied successfully!");
-  };
-
-  const handleRatechartUpdate = async () => {
-    e.preventDefault();
-    if (!selectedRateChart) {
-      toast.error("Please select a ratechart to Update!.");
-      return;
-    } else {
-    }
-  };
 
   return (
     <>

@@ -1,12 +1,16 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   createCustomer,
   getMaxCustNo,
   listCustomer,
 } from "../../../../../App/Features/Customers/customerSlice";
+import * as XLSX from "xlsx";
 import { toast } from "react-toastify";
-import { updateCustomer } from "../../../../../App/Features/Mainapp/Masters/custMasterSlice";
+import {
+  updateCustomer,
+  uploadCustomerExcel,
+} from "../../../../../App/Features/Mainapp/Masters/custMasterSlice";
 import "../../../../../Styles/Mainapp/Masters/CustomerMaster.css";
 import { listRateCharts } from "../../../../../App/Features/Mainapp/Masters/rateChartSlice";
 
@@ -21,7 +25,11 @@ const CreateCustomer = () => {
   const custno = useSelector((state) => state.customer.maxCustNo);
   const prefix = useSelector((state) => state.dairy.dairyData.prefix);
   const status = useSelector((state) => state.customer.status);
+  const excelstatus = useSelector((state) => state.customer.excelstatus);
   const ratechartlist = useSelector((state) => state.ratechart.ratechartList);
+
+  const fileInputRef = useRef(null); // for excel file input
+  const [excelData, setExcelData] = useState(null); // selected excel file data
 
   const [formData, setFormData] = useState({
     cid: "",
@@ -62,8 +70,6 @@ const CreateCustomer = () => {
   useState(() => {
     dispatch(listRateCharts());
   }, []);
-
-  console.log(customerList);
 
   const handleEditClick = () => {
     setIsEditing((prev) => !prev);
@@ -364,6 +370,74 @@ const CreateCustomer = () => {
       resetForm();
     } catch (error) {
       toast.error("Failed to create Customer. Please try again.");
+    }
+  };
+
+  //----------------------------------------------------------------------------------->
+  // Download Excel format fto Upload customer >>>>>>>>>
+
+  const downloadEmptyExcel = () => {
+    // Define the column headers
+    const headers = [
+      "Code",
+      "Customer_Name",
+      "Marathi_Name",
+      "Mobile",
+      "Addhar_No",
+      "Farmer_Id",
+      "City",
+      "Tehsil",
+      "Ditrict",
+      "Pincode",
+      "Bank_Name",
+      "Bank_AccNo",
+      "Bank_IFSC",
+      "Caste",
+      "Gender",
+      "Ratechart_Type",
+    ];
+
+    // Create a new workbook and add a worksheet
+    const workbook = XLSX.utils.book_new();
+    const worksheet = XLSX.utils.aoa_to_sheet([headers]);
+
+    // Append the worksheet to the workbook
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
+
+    // Generate the Excel file and trigger download
+    XLSX.writeFile(workbook, "customer_excel_format.xlsx");
+  };
+
+  //----------------------------------------------------------------------------------->
+  // select excel file and upload
+
+  const handleButtonClick = () => {
+    fileInputRef.current.click(); // Trigger the file input click
+  };
+
+  const handleExcelChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const binaryStr = event.target.result;
+        const workbook = XLSX.read(binaryStr, { type: "binary" });
+        const sheetName = workbook.SheetNames[0];
+        const data = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName]);
+        setExcelData(data); // Set processed data
+      };
+      reader.readAsArrayBuffer(file);
+    }
+  };
+
+  const handleExcelUpload = (e) => {
+    e.preventDefault();
+    if (excelData && excelData.length > 0) {
+      dispatch(uploadCustomerExcel(excelData, prefix)); // Send processed data to backend
+      setExcelData([]);
+      toast.success("Customer's uploaded Successfully!");
+    } else {
+      toast.error("Please select and process an Excel file first.");
     }
   };
 
@@ -844,6 +918,7 @@ const CreateCustomer = () => {
             </div>
           </div>
         </div>
+
         <div className="button-container w100 h10 d-flex sa">
           <button className="w-btn" type="submit" onClick={handleEditClick}>
             {isEditing ? "CREATE" : "EDIT"}
@@ -863,6 +938,46 @@ const CreateCustomer = () => {
               {status === "loading" ? "Creating..." : "CREATE "}
             </button>
           )}
+        </div>
+        <div className="select-excel-button-container w100 h30 d-flex-col sa">
+          <div className="excel-format-container w100 h50 d-flex a-center sb">
+            <label htmlFor="d-excel" className="label-text">
+              Download Excel Format
+            </label>
+            <button
+              type="button"
+              className="w-btn"
+              id="d-excel"
+              onClick={downloadEmptyExcel}>
+              Excel Format
+            </button>
+          </div>
+          <div className="excel-format-container w100 h50 d-flex a-center sb">
+            <label htmlFor="selectExcel" className="label-text">
+              Select Excel
+            </label>
+            <button
+              id="selectExcel"
+              className="choose-excel-btn"
+              type="button"
+              onClick={handleButtonClick}>
+              Choose File
+            </button>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept=".xlsx, .xls"
+              style={{ display: "none" }}
+              onChange={handleExcelChange}
+            />
+            <button
+              className="w-btn "
+              type="submit"
+              onClick={handleExcelUpload}
+              disabled={excelstatus === "loading"}>
+              {excelstatus === "loading" ? "Uploading..." : "Upload"}
+            </button>
+          </div>
         </div>
       </div>
     </form>

@@ -44,9 +44,9 @@ const cache = new NodeCache({});
 //       }
 //
 //       try {
-//         // Step 2: Insert into EmployeeMaster table
+//         // Step 2: Insert into employeemaster table
 //         const createEmployeeQuery = `
-//           INSERT INTO EmployeeMaster (
+//           INSERT INTO employeemaster (
 //              dairy_id, center_id, emp_name , marathi_name, emp_mobile , emp_bankname , emp_accno , emp_ifsc , emp_city , emp_tal , emp_dist , createdon, createdby , designation , salary , pincode, emp_id
 //           ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 //         `;
@@ -77,7 +77,7 @@ const cache = new NodeCache({});
 //               return connection.rollback(() => {
 //                 connection.release();
 //                 console.error(
-//                   "Error inserting into EmployeeMaster table: ",
+//                   "Error inserting into employeemaster table: ",
 //                   err
 //                 );
 //                 return res
@@ -205,7 +205,7 @@ exports.createEmployee = async (req, res) => {
             const maxEmpId = results[0].maxEmpId || 0;
             const newEmpId = maxEmpId + 1;
 
-            // Step 2: Insert into EmployeeMaster table
+            // Step 2: Insert into employeemaster table
             const createEmployeeQuery = `
             INSERT INTO employeemaster (
               dairy_id, center_id, emp_name, marathi_name, emp_mobile, emp_bankname, emp_accno, emp_ifsc, 
@@ -239,7 +239,7 @@ exports.createEmployee = async (req, res) => {
                   return connection.rollback(() => {
                     connection.release();
                     console.error(
-                      "Error inserting into EmployeeMaster table: ",
+                      "Error inserting into employeemaster table: ",
                       err
                     );
                     return res
@@ -339,7 +339,7 @@ exports.findEmpByCode = async (req, res) => {
     }
 
     const deleteEmpQuery = `
-      SELECT * FROM EmployeeMaster
+      SELECT * FROM employeemaster
       WHERE dairy_id = ? AND center_id = ? AND emp_id = ?
     `;
 
@@ -375,7 +375,7 @@ exports.findEmpByCode = async (req, res) => {
 //     connection = await pool.getConnection();
 //
 //     const findEmpQuery = `
-//       SELECT * FROM EmployeeMaster
+//       SELECT * FROM employeemaster
 //       WHERE dairy_id = ? AND center_id = ? AND emp_id = ?
 //     `;
 //
@@ -438,9 +438,9 @@ exports.updateEmployee = async (req, res) => {
     }
 
     try {
-      // Corrected table name to EmployeeMaster
+      // Corrected table name to employeemaster
       const updateEmpQuery = `
-        UPDATE EmployeeMaster
+        UPDATE employeemaster
         SET
            dairy_id = ?, center_id = ?, emp_name = ?, marathi_name = ?, emp_bankname = ?, emp_accno = ?, emp_ifsc = ?, emp_city = ?, emp_tal = ?, emp_dist = ?, updatedon = ?, updatedby = ?, designation = ?, salary = ?, pincode = ?
         WHERE emp_id = ?
@@ -512,7 +512,7 @@ exports.deleteEmployee = async (req, res) => {
 
     try {
       const deleteEmpQuery = `
-        DELETE FROM EmployeeMaster
+        DELETE FROM employeemaster
         WHERE dairy_id = ? AND center_id = ? AND emp_id = ?
       `;
 
@@ -569,7 +569,7 @@ exports.employeeList = async (req, res) => {
         // Query for center_id = 0
         query = `
           SELECT center_id, emp_name, emp_mobile, designation, salary, emp_id
-          FROM EmployeeMaster
+          FROM employeemaster
           WHERE dairy_id = ?
         `;
         queryParams = [dairy_id];
@@ -577,7 +577,7 @@ exports.employeeList = async (req, res) => {
         // Query for center_id != 0
         query = `
           SELECT center_id, emp_name, emp_mobile, designation, salary, emp_id
-          FROM EmployeeMaster
+          FROM employeemaster
           WHERE dairy_id = ? AND center_id = ?
         `;
         queryParams = [dairy_id, center_id];
@@ -632,7 +632,7 @@ exports.employeeDetails = async (req, res) => {
     try {
       const emplist = `
       SELECT emp_name, emp_mobile, designation, salary, emp_id
-      FROM EmployeeMaster
+      FROM employeemaster
       WHERE dairy_id = ? AND center_id = ?
     `;
 
@@ -688,7 +688,7 @@ exports.employeeDetails = async (req, res) => {
 //
 //       const emplist = `
 //         SELECT emp_name, emp_mobile, designation, salary, emp_id
-//         FROM EmployeeMaster
+//         FROM employeemaster
 //         WHERE dairy_id = ? AND center_id = ?
 //       `;
 //

@@ -158,9 +158,9 @@ const MilkCollectorsReports = () => {
     XLSX.utils.book_append_sheet(wb, worksheet, "Milk Collection Report");
 
     const now = new Date();
-    const formattedDate = `${now.getFullYear()}-${String(
+    const formattedDate = `${String(now.getDate()).padStart(2, "0")}/${String(
       now.getMonth() + 1
-    ).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
+    ).padStart(2, "0")}/${now.getFullYear()}`;
 
     // Save the workbook as a file
     XLSX.writeFile(wb, `Mobile_Milk_Collection_Report_${formattedDate}.xlsx`);

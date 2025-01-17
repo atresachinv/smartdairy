@@ -6,6 +6,7 @@ const initialState = {
   maxCustNo: "",
   usedRCNO: [],
   status: "idle",
+  excelstatus: "idle",
   error: null,
 };
 
@@ -73,6 +74,22 @@ export const fetchURCNo = createAsyncThunk(
   }
 );
 
+// Upload customer Excel to database
+export const uploadCustomerExcel = createAsyncThunk(
+  "customer/uploadCustomerExcel",
+  async ({ excelData, prefix }, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.post("/upload/customer/excel", {
+        excelData,
+        prefix,
+      });
+      return response.data; // return the response data
+    } catch (error) {
+      return rejectWithValue(error.response?.data || error.message);
+    }
+  }
+);
+
 const custMasterSlice = createSlice({
   name: "customer",
   initialState,
@@ -119,10 +136,20 @@ const custMasterSlice = createSlice({
       })
       .addCase(fetchURCNo.fulfilled, (state, action) => {
         state.status = "succeeded";
-        state.usedRCNO = action.payload; 
+        state.usedRCNO = action.payload;
       })
       .addCase(fetchURCNo.rejected, (state, action) => {
         state.status = "failed";
+        state.error = action.payload;
+      })
+      .addCase(uploadCustomerExcel.pending, (state) => {
+        state.excelstatus = "loading";
+      })
+      .addCase(uploadCustomerExcel.fulfilled, (state) => {
+        state.excelstatus = "succeeded";
+      })
+      .addCase(uploadCustomerExcel.rejected, (state, action) => {
+        state.excelstatus = "failed";
         state.error = action.payload;
       });
   },

@@ -15,8 +15,6 @@ const CustomerList = () => {
   useEffect(() => {
     dispatch(listCustomer());
   }, []);
-  
-  console.log("customerlist", customerlist);
 
   const downloadExcel = () => {
     if (!Array.isArray(customerlist) || customerlist.length === 0) {
@@ -139,7 +137,7 @@ const CustomerList = () => {
                   backgroundColor: index % 2 === 0 ? "#faefe3" : "#fff",
                 }}>
                 <span className="text w5">edit</span>
-                <span className="text w5">{customer.cid}</span>
+                <span className="text w5">{customer.srno}</span>
                 <span className="text w25 t-start">{customer.cname}</span>
                 <span className="text w10">
                   {customer.mobile || customer.Phone}
@@ -157,7 +155,11 @@ const CustomerList = () => {
                 <span className="text w5">-</span> {/* Placeholder for age */}
                 <span className="text w10">{customer.rno}</span>
                 <span className="text w10">
-                  {new Date(customer.createdon).toLocaleDateString()}
+                  {new Date(customer.createdon).toLocaleDateString("en-GB", {
+                    day: "2-digit",
+                    month: "2-digit",
+                    year: "numeric",
+                  })}
                 </span>
                 <span className="text w15">{customer.rcName}</span>
                 <span className="text w5">

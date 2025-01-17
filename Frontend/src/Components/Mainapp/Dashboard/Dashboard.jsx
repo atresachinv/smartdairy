@@ -35,10 +35,8 @@ const Dashboard = () => {
   }, []);
 
   const customerCount = customerslist.length;
-
   const totalLitres = mastermilk.reduce((acc, item) => acc + item.Litres, 0);
   const totalAmt = mastermilk.reduce((acc, item) => acc + item.Amt, 0);
-
   const aggregatedData = mastermilk.reduce((acc, curr) => {
     const date = new Date(curr.ReceiptDate).toISOString().split("T")[0];
     if (!acc[date]) {

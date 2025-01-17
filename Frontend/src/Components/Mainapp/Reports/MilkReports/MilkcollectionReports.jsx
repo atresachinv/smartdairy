@@ -114,126 +114,126 @@ const MilkcollectionReports = () => {
   }, [summaryData]);
 
   // >>>>> PDF ----
-//   function exportToPDF() {
-//     const dataToExport = sumreport ? summaryData : filteredData;
-// 
-//     if (!dataToExport || dataToExport.length === 0) {
-//       alert("No data available to export!");
-//       return;
-//     }
-// 
-//     const doc = new jsPDF();
-//     const formatDate = selectedDate;
-//     const fromDate = formatDate.start;
-//     const toDate = formatDate.end.slice(0, 10);
-// 
-//     const dairyName = dairyinfo.SocietyName.toUpperCase(); // Replace with actual dairy name
-//     const pageWidth = doc.internal.pageSize.getWidth();
-// 
-//     // Add dairy name
-//     doc.setFontSize(16);
-//     doc.setFont("helvetica", "bold");
-//     const dairyTextWidth = doc.getTextWidth(dairyName);
-//     const dairyXOffset = (pageWidth - dairyTextWidth) / 2; // Center align
-//     doc.text(dairyName, dairyXOffset, 10);
-// 
-//     // Add report name
-//     const reportName = sumreport
-//       ? "Milk Collection Summary Report"
-//       : "Milk Collection Detailed Report";
-//     doc.setFontSize(14);
-//     const reportTextWidth = doc.getTextWidth(reportName);
-//     const reportXOffset = (pageWidth - reportTextWidth) / 2; // Center align
-//     doc.text(reportName, reportXOffset, 20);
-// 
-//     // Add date range details
-//     const detailsText = `From: ${fromDate}  To: ${toDate}`;
-//     doc.setFontSize(12);
-//     const detailsTextWidth = doc.getTextWidth(detailsText);
-//     const detailsXOffset = (pageWidth - detailsTextWidth) / 2;
-//     doc.text(detailsText, detailsXOffset, 30);
-// 
-//     // Table configuration based on sumreport
-//     const tableColumn = sumreport
-//       ? ["Code", "Liters", "Fat", "Snf", "Name", "Rate", "Amount", "C/B"]
-//       : [
-//           "Date",
-//           "Shift",
-//           "Code",
-//           "Liters",
-//           "Fat",
-//           "Snf",
-//           "Name",
-//           "Rate",
-//           "Amount",
-//           "C/B",
-//         ];
-// 
-//     const tableRows = dataToExport.map((row) =>
-//       sumreport
-//         ? [
-//             row.code,
-//             row.Liters,
-//             row.avgFat || row.fat,
-//             row.avgSNF || row.snf,
-//             row.cname.toUpperCase(),
-//             row.avgRate || row.rate,
-//             row.totalAmt || row.Amt,
-//             row.CB === 0 ? "C" : "B",
-//           ]
-//         : [
-//             row.ReceiptDate.slice(0, 10),
-//             row.ME === 0 ? "M" : "E",
-//             row.rno,
-//             row.Litres,
-//             row.fat,
-//             row.snf,
-//             row.cname.toUpperCase(),
-//             row.rate,
-//             row.Amt,
-//             row.CB === 0 ? "C" : "B",
-//           ]
-//     );
-// 
-//     // Generate table
-//     doc.autoTable({
-//       head: [tableColumn],
-//       body: tableRows,
-//       startY: 40,
-//       styles: {
-//         font: "helvetica",
-//         lineColor: [0, 0, 0],
-//         lineWidth: 0.1,
-//         fontSize: 8,
-//       },
-//       columnStyles: sumreport
-//         ? {
-//             0: { halign: "right" },
-//             1: { halign: "right" },
-//             2: { halign: "right" },
-//             3: { halign: "right" },
-//             4: { halign: "left" },
-//             5: { halign: "right" },
-//             6: { halign: "right" },
-//             7: { halign: "center" },
-//           }
-//         : {
-//             1: { halign: "center" },
-//             3: { halign: "right" },
-//             4: { halign: "right" },
-//             5: { halign: "right" },
-//             6: { halign: "left" },
-//             7: { halign: "right" },
-//             8: { halign: "right" },
-//             9: { halign: "center" },
-//           },
-//     });
-// 
-//     // Save the PDF
-//     doc.save(
-//       sumreport ? "MilkCollectionSummary.pdf" : "MilkCollectionDetails.pdf"
-//     );
-//   }
+  //   function exportToPDF() {
+  //     const dataToExport = sumreport ? summaryData : filteredData;
+  //
+  //     if (!dataToExport || dataToExport.length === 0) {
+  //       alert("No data available to export!");
+  //       return;
+  //     }
+  //
+  //     const doc = new jsPDF();
+  //     const formatDate = selectedDate;
+  //     const fromDate = formatDate.start;
+  //     const toDate = formatDate.end.slice(0, 10);
+  //
+  //     const dairyName = dairyinfo.SocietyName.toUpperCase(); // Replace with actual dairy name
+  //     const pageWidth = doc.internal.pageSize.getWidth();
+  //
+  //     // Add dairy name
+  //     doc.setFontSize(16);
+  //     doc.setFont("helvetica", "bold");
+  //     const dairyTextWidth = doc.getTextWidth(dairyName);
+  //     const dairyXOffset = (pageWidth - dairyTextWidth) / 2; // Center align
+  //     doc.text(dairyName, dairyXOffset, 10);
+  //
+  //     // Add report name
+  //     const reportName = sumreport
+  //       ? "Milk Collection Summary Report"
+  //       : "Milk Collection Detailed Report";
+  //     doc.setFontSize(14);
+  //     const reportTextWidth = doc.getTextWidth(reportName);
+  //     const reportXOffset = (pageWidth - reportTextWidth) / 2; // Center align
+  //     doc.text(reportName, reportXOffset, 20);
+  //
+  //     // Add date range details
+  //     const detailsText = `From: ${fromDate}  To: ${toDate}`;
+  //     doc.setFontSize(12);
+  //     const detailsTextWidth = doc.getTextWidth(detailsText);
+  //     const detailsXOffset = (pageWidth - detailsTextWidth) / 2;
+  //     doc.text(detailsText, detailsXOffset, 30);
+  //
+  //     // Table configuration based on sumreport
+  //     const tableColumn = sumreport
+  //       ? ["Code", "Liters", "Fat", "Snf", "Name", "Rate", "Amount", "C/B"]
+  //       : [
+  //           "Date",
+  //           "Shift",
+  //           "Code",
+  //           "Liters",
+  //           "Fat",
+  //           "Snf",
+  //           "Name",
+  //           "Rate",
+  //           "Amount",
+  //           "C/B",
+  //         ];
+  //
+  //     const tableRows = dataToExport.map((row) =>
+  //       sumreport
+  //         ? [
+  //             row.code,
+  //             row.Liters,
+  //             row.avgFat || row.fat,
+  //             row.avgSNF || row.snf,
+  //             row.cname.toUpperCase(),
+  //             row.avgRate || row.rate,
+  //             row.totalAmt || row.Amt,
+  //             row.CB === 0 ? "C" : "B",
+  //           ]
+  //         : [
+  //             row.ReceiptDate.slice(0, 10),
+  //             row.ME === 0 ? "M" : "E",
+  //             row.rno,
+  //             row.Litres,
+  //             row.fat,
+  //             row.snf,
+  //             row.cname.toUpperCase(),
+  //             row.rate,
+  //             row.Amt,
+  //             row.CB === 0 ? "C" : "B",
+  //           ]
+  //     );
+  //
+  //     // Generate table
+  //     doc.autoTable({
+  //       head: [tableColumn],
+  //       body: tableRows,
+  //       startY: 40,
+  //       styles: {
+  //         font: "helvetica",
+  //         lineColor: [0, 0, 0],
+  //         lineWidth: 0.1,
+  //         fontSize: 8,
+  //       },
+  //       columnStyles: sumreport
+  //         ? {
+  //             0: { halign: "right" },
+  //             1: { halign: "right" },
+  //             2: { halign: "right" },
+  //             3: { halign: "right" },
+  //             4: { halign: "left" },
+  //             5: { halign: "right" },
+  //             6: { halign: "right" },
+  //             7: { halign: "center" },
+  //           }
+  //         : {
+  //             1: { halign: "center" },
+  //             3: { halign: "right" },
+  //             4: { halign: "right" },
+  //             5: { halign: "right" },
+  //             6: { halign: "left" },
+  //             7: { halign: "right" },
+  //             8: { halign: "right" },
+  //             9: { halign: "center" },
+  //           },
+  //     });
+  //
+  //     // Save the PDF
+  //     doc.save(
+  //       sumreport ? "MilkCollectionSummary.pdf" : "MilkCollectionDetails.pdf"
+  //     );
+  //   }
 
   function exportToPDF() {
     const dataToExport = sumreport ? summaryData : filteredData;
@@ -384,16 +384,24 @@ const MilkcollectionReports = () => {
     );
   };
 
-
   // >>>>> Excel ----
   const exportToExcel = () => {
     if (!data || data.length === 0) {
       alert("No data available to export!");
       return;
     }
+
+    const formatDate = (dateString) => {
+      const date = new Date(dateString);
+      const day = String(date.getDate()).padStart(2, "0");
+      const month = String(date.getMonth() + 1).padStart(2, "0");
+      const year = date.getFullYear();
+      return `${day}/${month}/${year}`;
+    };
+
     const worksheet = XLSX.utils.json_to_sheet(
-      filteredData.map((row, i) => ({
-        Date: row.ReceiptDate,
+      filteredData.map((row) => ({
+        Date: formatDate(row.ReceiptDate),
         Time: row.ME,
         Code: row.rno,
         Liters: row.Litres,
@@ -405,8 +413,9 @@ const MilkcollectionReports = () => {
         Animal: row.CB,
       }))
     );
+
     const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Milk Collection");
+    XLSX.utils.book_append_sheet(workbook, worksheet, "sheet1");
     XLSX.writeFile(workbook, "milk-collection-report.xlsx");
   };
 
@@ -672,7 +681,6 @@ const MilkcollectionReports = () => {
   };
 
   // ------------------------------------------------------------->
-
   // Generating Daswada Reports ---------------------------------->
 
   const handleSumAvgChange = () => {

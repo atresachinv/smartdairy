@@ -49,6 +49,9 @@ const Milkcollelist = () => {
                 <div className="col-milk-info w100 h60 d-flex-col">
                   <div className="info-title w100 h50 d-flex sa">
                     <span className="text w15 d-flex center">
+                      {t("common:c-liters")}
+                    </span>
+                    <span className="text w15 d-flex center">
                       {t("common:c-fat")}
                     </span>
                     <span className="text w15 d-flex center">
@@ -56,9 +59,6 @@ const Milkcollelist = () => {
                     </span>
                     <span className="text w15 d-flex center">
                       {t("common:c-deg")}
-                    </span>
-                    <span className="text w15 d-flex center">
-                      {t("common:c-liters")}
                     </span>
                     <span className="text w20 d-flex center">
                       {t("common:c-rate")}
@@ -69,6 +69,9 @@ const Milkcollelist = () => {
                   </div>
                   <div className="info-value w100 h50 d-flex sa">
                     <span className="text w15 d-flex center">
+                      {entry.liters || "00.0"}
+                    </span>
+                    <span className="text w15 d-flex center">
                       {entry.fat || "00.0"}
                     </span>
                     <span className="text w15 d-flex center">
@@ -76,9 +79,6 @@ const Milkcollelist = () => {
                     </span>
                     <span className="text w15 d-flex center">
                       {entry.degree || "00.0"}
-                    </span>
-                    <span className="text w15 d-flex center">
-                      {entry.liters || "00.0"}
                     </span>
                     <span className="text w20 d-flex center">
                       {entry.rate || "00.0"}

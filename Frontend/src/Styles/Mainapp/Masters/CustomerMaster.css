@@ -33,6 +33,29 @@
   color: white;
 }
 
+.choose-excel-btn {
+  width: auto;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
+  border: 1px solid blueviolet;
+  border-radius: 20px;
+  font-weight: 500;
+  color: blue;
+  background-color: transparent;
+
+  transition: all 0.3s ease-in-out;
+}
+
+.choose-excel-btn:hover {
+  font-weight: 600;
+  border: none;
+  color: #fff;
+  background-color: rgb(75, 81, 102);
+}
+
 /* Customer List Scrollable css */
 
 /* ------------------------------------------ */

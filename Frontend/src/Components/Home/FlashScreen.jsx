@@ -6,7 +6,7 @@ const FalshScreen = () => {
     <div className="w100 h100 d-flex-col center bg1">
       <span className="f-heading my10">Welcome To Smartdairy</span>
       <img src={applogo} alt="" width={"100px"} height={"100px"} />
-      <span className="label-text">Powerd by Vikern Software Technology</span>
+      <span className="f-label-text">Powerd by Vikern Software Technology</span>
     </div>
   );
 };

@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   completedMilkSankalan,
@@ -29,6 +29,9 @@ const CompleteMilkColl = () => {
   const [customerList, setCustomerList] = useState([]);
   const [collectionList, setCollectionList] = useState([]);
   const [milkRateChart, setMilkRatechart] = useState([]);
+  const smapleRef = useRef(null);
+  const fatRef = useRef(null);
+  const snfRef = useRef(null);
 
   useEffect(() => {
     dispatch(listEmployee());
@@ -451,10 +454,9 @@ const CompleteMilkColl = () => {
 
       setValues(initialValues); // Reset form to initial values
       setErrors({}); // Reset errors
-
       // await sendNotifications();
-
       toast.success(`Milk Collection saved successfully!`);
+      smapleRef.current.focus();
     } catch (error) {
       console.error("Error sending milk entries to backend:", error);
     }
@@ -479,7 +481,7 @@ const CompleteMilkColl = () => {
     }
     const worksheet = XLSX.utils.json_to_sheet(
       completedcolldata.map((row, i) => ({
-        Date: row.ReceiptDate.slice(0,10),
+        Date: row.ReceiptDate.slice(0, 10),
         Time: row.ME,
         Code: row.rno,
         Liters: row.Litres,
@@ -538,9 +540,7 @@ const CompleteMilkColl = () => {
               name="userid"
               value={selectedEmp}
               onChange={(e) => setSelectedEmp(e.target.value)}>
-              <option value="">
-                -{t("m-select-coll")}-
-              </option>
+              <option value="">-{t("m-select-coll")}-</option>
               {milkCollectors.map((emp, i) => (
                 <option key={i} value={emp.emp_mobile}>
                   {emp.emp_name}
@@ -564,6 +564,8 @@ const CompleteMilkColl = () => {
               value={values.sample}
               disabled={!selectedEmp}
               onChange={handleInputs}
+              onKeyDown={(e) => handleKeyDown(e, fatRef)}
+              ref={smapleRef}
             />
           </div>
           <div className="form-div w20 px10">
@@ -579,6 +581,7 @@ const CompleteMilkColl = () => {
               value={values.code}
               disabled={!selectedEmp}
               onChange={handleInputs}
+              onKeyDown={(e) => handleKeyDown(e, fatRef)}
             />
           </div>
           <div className="form-div w50 px10">
@@ -629,6 +632,8 @@ const CompleteMilkColl = () => {
                 onChange={handleInputChange}
                 value={values.fat}
                 disabled={!values.code}
+                onKeyDown={(e) => handleKeyDown(e, snfRef)}
+                ref={fatRef}
               />
             </div>
             <div className="form-div px10">
@@ -645,6 +650,7 @@ const CompleteMilkColl = () => {
                 value={values.snf}
                 disabled={!values.fat || !values.code}
                 onChange={handleInputChange}
+                ref={snfRef}
               />
             </div>
           </div>

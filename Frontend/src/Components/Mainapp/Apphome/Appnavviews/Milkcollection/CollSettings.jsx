@@ -35,7 +35,7 @@ const CollSettings = ({ switchToColl }) => {
 
   const handleSettings = async (e) => {
     e.preventDefault();
-    await dispatch(saveMilkCollSetting(formData));
+    // await dispatch(saveMilkCollSetting(formData));
     toast.success("Milk Collection setting Saved Successfully!");
     switchToColl();
   };

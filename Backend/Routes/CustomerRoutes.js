@@ -10,6 +10,7 @@ const {
   updateCustomer,
   uniqueRchartList,
   milkcollReport,
+  uploadExcelCustomer,
 } = require("../Controllers/CustomerController");
 
 const router = express.Router();
@@ -24,6 +25,7 @@ router.route("/customer/profile").post(verifyToken, profileInfo);
 router.route("/customer/dashboard").post(verifyToken, custDashboardInfo);
 router.route("/customer/milkreport").post(verifyToken, milkcollReport);
 router.route("/customer/master/report").post(verifyToken, customMilkReport);
+router.route("/upload/customer/excel").post(verifyToken, uploadExcelCustomer);
 
 //Ratechart Routes
 router.route("/unique/rclist").post(verifyToken, uniqueRchartList);

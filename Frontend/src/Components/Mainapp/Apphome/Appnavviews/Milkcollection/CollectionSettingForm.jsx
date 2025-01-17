@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import MilkColleform from "./Milkcollform";
+import MilkCollform from "./Milkcollform";
 import CollSettings from "./CollSettings";
 import "../../../../../Styles/Mainapp/Apphome/Appnavview/collsetting.css";
 import { useDispatch, useSelector } from "react-redux";
@@ -28,7 +28,7 @@ const CollectionSettingForm = () => {
   return (
     <div className="forms-container-div w100 h1 d-flex center">
       {currentForm === form_type.collection && (
-        <MilkColleform switchToSettings={switchToSettings} />
+        <MilkCollform switchToSettings={switchToSettings} />
       )}
       {currentForm === form_type.settings && (
         <CollSettings switchToColl={switchToColl} />

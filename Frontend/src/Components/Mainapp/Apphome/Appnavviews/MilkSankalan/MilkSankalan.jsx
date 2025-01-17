@@ -25,9 +25,8 @@ const MilkSankalan = () => {
   const [errors, setErrors] = useState({});
   const [isSaving, setIsSaving] = useState(false); // To handle double-click issue
   const codeInputRef = useRef(null); // Ref for code input
-   const litersRef = useRef(null);
-   const sampleRef = useRef(null);
-
+  const litersRef = useRef(null);
+  const sampleRef = useRef(null);
   const initialValues = {
     date: localStorage.getItem("today") || tDate,
     code: "",
@@ -40,7 +39,7 @@ const MilkSankalan = () => {
   };
 
   const [values, setValues] = useState(initialValues);
-  
+
   useEffect(() => {
     localStorage.setItem("collCount", collCount);
     localStorage.setItem("literCount", literCount);
@@ -135,50 +134,50 @@ const MilkSankalan = () => {
   // Customer Info ......................................
   //.....................................................
 
-//   const handleInputs = (e) => {
-//     const { name, value } = e.target;
-// 
-//     if (name === "date") {
-//       if (value > tDate) {
-//         // Set an error for the date field
-//         setErrors((prevErrors) => ({
-//           ...prevErrors,
-//           date: "Selected date cannot be greater than the current date.",
-//         }));
-//         return; // Prevent updating the state if the date is invalid
-//       } else {
-//         // Clear the error if the date is valid
-//         setErrors((prevErrors) => {
-//           const { date, ...rest } = prevErrors;
-//           return rest; // Remove date error if valid
-//         });
-//       }
-// 
-//       // Update the values state
-//       setValues((prevValues) => ({
-//         ...prevValues,
-//         [name]: value,
-//       }));
-// 
-//       // Validate the field for other errors
-//       const fieldError = validateField(name, value);
-//       setErrors((prevErrors) => ({
-//         ...prevErrors,
-//         ...fieldError,
-//       }));
-//     }
-// 
-// 
-// 
-//     setValues({ ...values, [name]: value });
-// 
-//     // Validate field and update errors state
-//     const fieldError = validateField(name, value);
-//     setErrors((prevErrors) => ({
-//       ...prevErrors,
-//       ...fieldError,
-//     }));
-//   };
+  //   const handleInputs = (e) => {
+  //     const { name, value } = e.target;
+  //
+  //     if (name === "date") {
+  //       if (value > tDate) {
+  //         // Set an error for the date field
+  //         setErrors((prevErrors) => ({
+  //           ...prevErrors,
+  //           date: "Selected date cannot be greater than the current date.",
+  //         }));
+  //         return; // Prevent updating the state if the date is invalid
+  //       } else {
+  //         // Clear the error if the date is valid
+  //         setErrors((prevErrors) => {
+  //           const { date, ...rest } = prevErrors;
+  //           return rest; // Remove date error if valid
+  //         });
+  //       }
+  //
+  //       // Update the values state
+  //       setValues((prevValues) => ({
+  //         ...prevValues,
+  //         [name]: value,
+  //       }));
+  //
+  //       // Validate the field for other errors
+  //       const fieldError = validateField(name, value);
+  //       setErrors((prevErrors) => ({
+  //         ...prevErrors,
+  //         ...fieldError,
+  //       }));
+  //     }
+  //
+  //
+  //
+  //     setValues({ ...values, [name]: value });
+  //
+  //     // Validate field and update errors state
+  //     const fieldError = validateField(name, value);
+  //     setErrors((prevErrors) => ({
+  //       ...prevErrors,
+  //       ...fieldError,
+  //     }));
+  //   };
 
   const handleInputs = (e) => {
     const { name, value } = e.target;
@@ -339,6 +338,7 @@ const MilkSankalan = () => {
               name="code"
               value={values.code}
               onChange={handleInputs}
+              onKeyDown={(e) => handleKeyDown(e, litersRef)}
               ref={codeInputRef}
             />
           </div>
@@ -375,6 +375,8 @@ const MilkSankalan = () => {
               onChange={handleInputs}
               value={values.liters}
               disabled={!values.code}
+              onKeyDown={(e) => handleKeyDown(e, sampleRef)}
+              ref={litersRef}
             />
           </div>
           <div className="form-div w50 px10">
@@ -391,6 +393,7 @@ const MilkSankalan = () => {
               value={values.sample || ""}
               disabled={!values.liters || !values.code}
               onChange={handleInputs}
+              ref={sampleRef}
             />
           </div>
         </div>
