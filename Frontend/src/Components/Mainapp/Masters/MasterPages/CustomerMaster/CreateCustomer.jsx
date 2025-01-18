@@ -30,7 +30,6 @@ const CreateCustomer = () => {
 
   const fileInputRef = useRef(null); // for excel file input
   const [excelData, setExcelData] = useState(null); // selected excel file data
-
   const [formData, setFormData] = useState({
     cid: "",
     isActive: 1,
@@ -69,6 +68,7 @@ const CreateCustomer = () => {
 
   useState(() => {
     dispatch(listRateCharts());
+    dispatch(getMaxCustNo());
   }, []);
 
   const handleEditClick = () => {
@@ -425,6 +425,7 @@ const CreateCustomer = () => {
         const sheetName = workbook.SheetNames[0];
         const data = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName]);
         setExcelData(data); // Set processed data
+        console.log(data);
       };
       reader.readAsArrayBuffer(file);
     }
@@ -433,8 +434,10 @@ const CreateCustomer = () => {
   const handleExcelUpload = (e) => {
     e.preventDefault();
     if (excelData && excelData.length > 0) {
-      dispatch(uploadCustomerExcel(excelData, prefix)); // Send processed data to backend
+      dispatch(uploadCustomerExcel({ excelData, prefix })); // Send processed data to backend
       setExcelData([]);
+      dispatch(listCustomer());
+      dispatch(getMaxCustNo());
       toast.success("Customer's uploaded Successfully!");
     } else {
       toast.error("Please select and process an Excel file first.");

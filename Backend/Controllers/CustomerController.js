@@ -952,13 +952,11 @@ exports.custDashboardInfo = async (req, res) => {
 
 exports.uploadExcelCustomer = async (req, res) => {
   const { excelData, prefix } = req.body;
-
   const dairy_id = req.user.dairy_id;
   const centerid = req.user.center_id;
   const user_role = req.user.user_role;
   const designation = "Customer";
   const isAdmin = "0";
-  console.log("uploading data!");
 
   pool.getConnection((err, connection) => {
     if (err) {
@@ -1039,9 +1037,9 @@ exports.uploadExcelCustomer = async (req, res) => {
             const animal = Animal_Type === "cow" ? "0" : "1";
             const createCustomerQuery = `
               INSERT INTO customer (
-                cid, cname, Phone, fax, City, tal, dist, cust_accno, createdby, 
-                createdon, mobile, isSabhasad, rno, orgid, engName, 
-                centerid, srno, cust_pincode, cust_addhar, cust_farmerid, cust_bankname, 
+                cid, cname, Phone, fax, City, tal, dist, cust_accno, createdby,
+                createdon, mobile, isSabhasad, rno, orgid, engName,
+                centerid, srno, cust_pincode, cust_addhar, cust_farmerid, cust_bankname,
                 cust_ifsc, caste, gender, milktype, sabhasad_date, isActive, rcName
               ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? , ? , ?)
             `;
@@ -1091,7 +1089,7 @@ exports.uploadExcelCustomer = async (req, res) => {
 
                 const createUserQuery = `
                   INSERT INTO users (
-                    username, password, isAdmin, createdon, createdby, designation, 
+                    username, password, isAdmin, createdon, createdby, designation,
                     pincode, mobile, SocietyCode, pcode, center_id
                   ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 `;
@@ -1146,6 +1144,137 @@ exports.uploadExcelCustomer = async (req, res) => {
     });
   });
 };
+
+// exports.uploadExcelCustomer = async (req, res) => {
+//   const { excelData, prefix } = req.body;
+// 
+//   if (!Array.isArray(excelData) || excelData.length === 0) {
+//     return res.status(400).json({ message: "Invalid or empty excelData" });
+//   }
+//   console.log(excelData);
+// 
+//   const dairy_id = req.user.dairy_id;
+//   const centerid = req.user.center_id;
+//   const user_role = req.user.user_role;
+//   const designation = "Customer";
+//   const isAdmin = "0";
+// 
+//   try {
+//     const connection = await pool.getConnection();
+//     await connection.beginTransaction();
+// 
+//     const [maxCidResult] = await connection.query(
+//       `SELECT MAX(cid) AS maxCid FROM customer`
+//     );
+//     const cid = maxCidResult[0]?.maxCid || 0;
+// 
+//     for (let index = 0; index < excelData.length; index++) {
+//       const customer = excelData[index];
+//       const customerid = cid + index + 1;
+// 
+//       const {
+//         Code,
+//         Customer_Name,
+//         Marathi_Name,
+//         Mobile,
+//         Addhar_No,
+//         Farmer_Id,
+//         City,
+//         Tehsil,
+//         District,
+//         Pincode,
+//         Bank_Name,
+//         Bank_AccNo,
+//         Bank_IFSC,
+//         Caste,
+//         Gender,
+//         Animal_Type,
+//         Ratechart_Type,
+//       } = customer;
+// 
+//       const formattedCode = String(Code).padStart(3, "0");
+//       const fax = `${prefix}${formattedCode}`;
+//       const isMember = 0;
+//       const member_date = new Date();
+//       const isActive = 1;
+//       const createdOn = new Date();
+//       const animal = Animal_Type === "cow" ? "0" : "1";
+// 
+//       await connection.query(
+//         `
+//         INSERT INTO customer (
+//           cid, cname, Phone, fax, City, tal, dist, cust_accno, createdby, 
+//           createdon, mobile, isSabhasad, rno, orgid, engName, 
+//           centerid, srno, cust_pincode, cust_addhar, cust_farmerid, cust_bankname, 
+//           cust_ifsc, caste, gender, milktype, sabhasad_date, isActive, rcName
+//         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+//         `,
+//         [
+//           customerid,
+//           Customer_Name,
+//           Mobile,
+//           fax,
+//           City,
+//           Tehsil,
+//           District,
+//           Bank_AccNo,
+//           user_role,
+//           createdOn,
+//           Mobile,
+//           isMember,
+//           fax,
+//           dairy_id,
+//           Marathi_Name,
+//           centerid,
+//           Code,
+//           Pincode,
+//           Addhar_No || null,
+//           Farmer_Id || null,
+//           Bank_Name || null,
+//           Bank_IFSC || null,
+//           Caste || null,
+//           Gender,
+//           animal || 0,
+//           member_date,
+//           isActive,
+//           Ratechart_Type || null,
+//         ]
+//       );
+// 
+//       await connection.query(
+//         `
+//         INSERT INTO users (
+//           username, password, isAdmin, createdon, createdby, designation, 
+//           pincode, mobile, SocietyCode, pcode, center_id
+//         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+//         `,
+//         [
+//           fax,
+//           Mobile,
+//           isAdmin,
+//           createdOn,
+//           user_role,
+//           designation,
+//           Pincode,
+//           Mobile,
+//           dairy_id,
+//           cid,
+//           centerid,
+//         ]
+//       );
+//     }
+// 
+//     await connection.commit();
+//     res.status(200).json({ message: "Customers created successfully!" });
+//   } catch (error) {
+//     if (connection) {
+//       await connection.rollback();
+//       connection.release();
+//     }
+//     console.error("Error processing request: ", error);
+//     res.status(500).json({ message: "Internal server error" });
+//   }
+// };
 
 // ---------------------------------------------------------------------->
 // Profile Info --------------------------------------------------------->

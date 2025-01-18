@@ -5,6 +5,7 @@ const {
   deductionInfo,
   paymentDetails,
   allPaymentDetails,
+  paymentDeductionInfo,
 } = require("../Controllers/PurchaseController");
 const router = express.Router();
 
@@ -17,5 +18,6 @@ router.route("/sales/report").post(verifyToken, purchaseInfo);
 router.route("/payment-info").post(verifyToken, paymentDetails);
 router.route("/payment/details").post(verifyToken, allPaymentDetails);
 router.route("/deduction-info").post(verifyToken, deductionInfo);
+router.route("/payment/deduction-info").post(verifyToken, paymentDeductionInfo);
 
 module.exports = router;

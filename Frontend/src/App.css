@@ -450,6 +450,9 @@
 .bg6 {
   background-color: var(--bg-gray-color);
 }
+.bg7 {
+  background-color: #17acc0;
+}
 
 .bg {
   background-color: #ecfafd;

@@ -4,12 +4,13 @@ import axiosInstance from "../../axiosInstance";
 const initialState = {
   deductionInfo: {},
   subdeductions: [],
+  alldeductionInfo: [],
   status: "idle",
   error: null,
 };
 
 export const getDeductionInfo = createAsyncThunk(
-  "deduction/get",
+  "deduction/getDeductionInfo",
   async ({ fromDate, toDate }, { rejectWithValue }) => {
     try {
       const response = await axiosInstance.post("/deduction-info", {
@@ -17,6 +18,25 @@ export const getDeductionInfo = createAsyncThunk(
         toDate,
       });
       return response.data;
+    } catch (error) {
+      const errorMessage = error.response
+        ? error.response.data
+        : "Failed to fetch deduction information.";
+      return rejectWithValue(errorMessage);
+    }
+  }
+);
+
+// get payment deduction for admin
+export const getPaymentsDeductionInfo = createAsyncThunk(
+  "deduction/getPaymentsDeductionInfo",
+  async ({ fromDate, toDate }, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.post("/payment/deduction-info", {
+        fromDate,
+        toDate,
+      });
+      return response.data.AllDeductions;
     } catch (error) {
       const errorMessage = error.response
         ? error.response.data
@@ -45,6 +65,20 @@ const deductionSlice = createSlice({
         state.subdeductions = action.payload.otherDeductions;
       })
       .addCase(getDeductionInfo.rejected, (state, action) => {
+        state.loading = false;
+        state.status = "failed";
+        state.error = action.payload;
+      })
+      .addCase(getPaymentsDeductionInfo.pending, (state) => {
+        state.status = "loading";
+        state.error = null;
+      })
+      .addCase(getPaymentsDeductionInfo.fulfilled, (state, action) => {
+        state.loading = false;
+        state.status = "succeeded";
+        state.alldeductionInfo = action.payload;
+      })
+      .addCase(getPaymentsDeductionInfo.rejected, (state, action) => {
         state.loading = false;
         state.status = "failed";
         state.error = action.payload;

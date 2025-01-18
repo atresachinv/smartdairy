@@ -9,7 +9,7 @@ const initialState = {
 };
 
 export const getPurchaseBill = createAsyncThunk(
-  "purchase/get",
+  "purchase/getPurchaseBill",
   async ({ formDate, toDate }, { rejectWithValue }) => {
     try {
       const response = await axiosInstance.post("/sales/report", {

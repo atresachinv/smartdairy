@@ -629,6 +629,7 @@ const CompleteMilkColl = () => {
                 placeholder="0.0"
                 name="fat"
                 id="fat"
+                step="any"
                 onChange={handleInputChange}
                 value={values.fat}
                 disabled={!values.code}
@@ -647,6 +648,7 @@ const CompleteMilkColl = () => {
                 placeholder="00.0"
                 name="snf"
                 id="snf"
+                step="any"
                 value={values.snf}
                 disabled={!values.fat || !values.code}
                 onChange={handleInputChange}

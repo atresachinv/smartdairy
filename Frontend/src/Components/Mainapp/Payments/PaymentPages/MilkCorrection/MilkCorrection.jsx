@@ -27,10 +27,11 @@ const MilkCorrection = () => {
   const [fillteredData, setFillteredData] = useState([]); // corrent index of selected customer
   const [morningData, setMorningData] = useState([]);
   const [eveningData, setEveningData] = useState([]);
-  const [editIndex, setEditIndex] = useState(null);
-  const [editData, setEditData] = useState({});
-
-  console.log("All collection data", data);
+  const [editmrgIndex, setEditmrgIndex] = useState(null);
+  const [editeveIndex, setEditeveIndex] = useState(null);
+  const [editMData, setEditMData] = useState({});
+  const [editEData, setEditEData] = useState({});
+  console.log(editMData);
 
   //----------------------------------------------------------------->
   // Get master dates and list customer
@@ -116,9 +117,14 @@ const MilkCorrection = () => {
 
   //----------------------------------------------------------------->
   //functions to edit , save and delete the displayed data
-  const handleEditClick = (index) => {
-    setEditIndex(index);
-    setEditData(morningData[index]);
+  const handleEditmrgClick = (index) => {
+    setEditmrgIndex(index);
+    setEditMData(morningData[index]);
+  };
+
+  const handleEditeveClick = (index) => {
+    setEditeveIndex(index);
+    setEditEData(eveningData[index]);
   };
 
   //  const handleSaveClick = (index) => {
@@ -133,6 +139,7 @@ const MilkCorrection = () => {
   const handleChange = (e, field) => {
     setEditData({ ...editData, [field]: e.target.value });
   };
+
   return (
     <div className="milk-correction-container w100 h1 d-flex-col">
       <span className="heading p10">Milk Correction</span>
@@ -208,7 +215,7 @@ const MilkCorrection = () => {
       </div>
       <div className="milk-collection-data-container w100 h80 d-flex sa">
         <div className="morning-milk-collection-data w40 h1 mh100 hidescrollbar d-flex-col bg">
-          <div className="collection-heading-container w100 h10 d-flex a-center bg1 sticky-top sa">
+          <div className="collection-heading-container w100 h10 d-flex a-center bg7 sticky-top sa">
             <span className="f-info-text w10">Edit</span>
             <span className="f-info-text w20">Date</span>
             <span className="f-info-text w10">Liters</span>
@@ -227,14 +234,14 @@ const MilkCorrection = () => {
                 }`}
                 style={{
                   backgroundColor:
-                    editIndex === index
-                      ? "#ffd5d5"
+                    editmrgIndex === index
+                      ? "#f7bb79"
                       : index % 2 === 0
                       ? "#faefe3"
                       : "#fff",
                 }}>
                 <span className="text w5">
-                  {editIndex === index ? (
+                  {editmrgIndex === index ? (
                     <FaSave
                       className="color-icon"
                       onClick={() => handleSaveClick(index)}
@@ -242,7 +249,7 @@ const MilkCorrection = () => {
                   ) : (
                     <FaEdit
                       className="color-icon"
-                      onClick={() => handleEditClick(index)}
+                      onClick={() => handleEditmrgClick(index)}
                     />
                   )}
                 </span>
@@ -264,7 +271,7 @@ const MilkCorrection = () => {
           )}
         </div>
         <div className="evening-milk-collection-data w40 h1 mh100 hidescrollbar d-flex-col bg">
-          <div className="collection-heading-container w100 h10 d-flex a-center bg1 sticky-top  sa">
+          <div className="collection-heading-container w100 h10 d-flex a-center bg7 sticky-top  sa">
             <span className="f-info-text w10">Edit</span>
             <span className="f-info-text w20">Date</span>
             <span className="f-info-text w10">Liters</span>
@@ -283,14 +290,14 @@ const MilkCorrection = () => {
                 }`}
                 style={{
                   backgroundColor:
-                    editIndex === index
-                      ? "#ffd5d5"
+                    editeveIndex === index
+                      ? "#f7bb79"
                       : index % 2 === 0
                       ? "#faefe3"
                       : "#fff",
                 }}>
                 <span className="text w5 t-center">
-                  {editIndex === index ? (
+                  {editeveIndex === index ? (
                     <FaSave
                       className="color-icon"
                       onClick={() => handleSaveClick(index)}
@@ -298,7 +305,7 @@ const MilkCorrection = () => {
                   ) : (
                     <FaEdit
                       className="color-icon"
-                      onClick={() => handleEditClick(index)}
+                      onClick={() => handleEditeveClick(index)}
                     />
                   )}
                 </span>

@@ -372,6 +372,7 @@ const MilkSankalan = () => {
               required
               placeholder="00.0"
               name="liters"
+              step="any"
               onChange={handleInputs}
               value={values.liters}
               disabled={!values.code}
