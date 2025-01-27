@@ -1,6 +1,11 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
-import { FaArrowCircleRight, FaArrowCircleLeft } from "react-icons/fa";
+import {
+  FaArrowCircleRight,
+  FaArrowCircleLeft,
+  FaArrowCircleUp,
+  FaArrowCircleDown,
+} from "react-icons/fa";
 import "../../../../../Styles/Mainapp/Payments/MilkTransfer.css";
 
 const CustomerMilkTransfer = () => {
@@ -12,8 +17,8 @@ const CustomerMilkTransfer = () => {
       </span>
       <div className="view-milk-collection-container w100 h90 d-flex-col sb">
         <div className="customer-details-container w100 h20 d-flex sb">
-          <from className="cutsomer-1-details w45 h1 d-flex-col">
-            <div className="customer-details-container w100 h50 d-flex a-center sb">
+          <from className="from-cutsomer-details w45 h1 d-flex-col">
+            <div className="from-customer-details-container w100 h50 d-flex a-center sb">
               <span className="label-text px10">Customer</span>
               <input
                 className="data w20 t-center mx10"
@@ -33,7 +38,7 @@ const CustomerMilkTransfer = () => {
               />
             </div>
             <div className="date-container w100 h50 d-flex a-center sb">
-              <span className="label-text px10">Dates</span>
+              {/* <span className="label-text px10">Dates</span> */}
               <input
                 className="data w30 mx10"
                 type="date"
@@ -54,8 +59,8 @@ const CustomerMilkTransfer = () => {
               </button>
             </div>
           </from>
-          <div className="cutsomer-1-details w45 h1 d-flex-col ">
-            <div className="customer-details-container w100 h50 d-flex a-center sb">
+          <div className="cutsomer-details w45 h1 d-flex-col ">
+            <form className="to-customer-details-container w100 h50 d-flex a-center sb">
               <span className="label-text ">Customer</span>
               <input
                 className="data w20 t-center mx10"
@@ -73,7 +78,7 @@ const CustomerMilkTransfer = () => {
                 readOnly
                 placeholder="Customer Name"
               />
-            </div>
+            </form>
           </div>
         </div>
         <div className="milk-collection-data-container w100 h80 d-flex se">
@@ -174,8 +179,10 @@ const CustomerMilkTransfer = () => {
                   )} */}
           </div>
           <div className="transfer-logos-container w5 h1 d-flex-col center">
-            <FaArrowCircleRight className="transfer-icons my10" />
-            <FaArrowCircleLeft className="transfer-icons my10" />
+            <FaArrowCircleRight className="transfer-icons laptop-icons my10" />
+            <FaArrowCircleLeft className="transfer-icons laptop-icons my10" />
+            <FaArrowCircleUp className="transfer-icons mobile-icons my10" />
+            <FaArrowCircleDown className="transfer-icons mobile-icons my10" />
           </div>
           <div className="evening-milk-collection-data w45 h1 mh100 hidescrollbar d-flex-col bg">
             <div className="collection-heading-container w100 h10 d-flex a-center bg7 sticky-top  sa">

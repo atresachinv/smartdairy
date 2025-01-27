@@ -29,19 +29,11 @@ const CreateCattleFeed = () => {
     const myrole = localStorage.getItem("userRole");
     setUserRole(myrole);
   }, []);
+  
   console.log("all products", productlist);
 
   useEffect(() => {
     dispatch(getAllProducts());
-    // const fetchAllItems = async () => {
-    //   try {
-    //     const { data } = await axiosInstance.get("/item/all?ItemGroupCode=1");
-    //     setItemList(data.itemsData || []);
-    //   } catch (error) {
-    //     console.error("Error fetching items:", error);
-    //   }
-    // };
-    // fetchAllItems();
   }, []);
 
   useEffect(() => {

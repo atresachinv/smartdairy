@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import * as XLSX from "xlsx";
 import { FaDownload } from "react-icons/fa6";
@@ -11,6 +11,11 @@ const CustomerList = () => {
   const dispatch = useDispatch();
   const { t } = useTranslation(["common", "milkcollection"]);
   const { customerlist, loading } = useSelector((state) => state.customer);
+
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filteredData, setFilteredData] = useState(customerlist);
+
+  // console.log("list", customerlist);
 
   useEffect(() => {
     dispatch(listCustomer());
@@ -90,9 +95,45 @@ const CustomerList = () => {
     return <div>No customer found</div>;
   }
 
+  // Filter customer function fillter on name , code , mobile , city
+  const handleSearch = (e) => {
+    const value = e.target.value.toLowerCase();
+    setSearchTerm(value);
+  };
+
+  const debouncedFilter = useMemo(() => {
+    const timeout = setTimeout(() => {
+      const filtered = customerlist.filter((customer) => {
+        return (
+          (customer.cname &&
+            customer.cname.toLowerCase().includes(searchTerm)) ||
+          (customer.phone && customer.phone.includes(searchTerm)) ||
+          (customer.mobile && customer.mobile.includes(searchTerm)) ||
+          (customer.engName &&
+            customer.engName.toLowerCase().includes(searchTerm)) ||
+          (customer.city && customer.city.toLowerCase().includes(searchTerm)) ||
+          (customer.cust_pincode && customer.cust_pincode.includes(searchTerm))
+        );
+      });
+      setFilteredData(filtered);
+    }, 300); // 300ms delay
+
+    return () => clearTimeout(timeout);
+  }, [searchTerm, customerlist]);
+
   return (
     <div className="customer-list-container-div w100 h1 d-flex-col p10">
-      <div className="download-print-pdf-excel-container w100 h10 d-flex j-end">
+      <div className="download-print-pdf-excel-container w100 h10 d-flex a-center  sb">
+        <span className="heading p10">Customer List</span>
+        <input
+          type="text"
+          className="data w30"
+          name=""
+          id=""
+          placeholder="Search..."
+          value={searchTerm}
+          onChange={handleSearch}
+        />
         <button className="btn" onClick={downloadExcel}>
           <span className="f-label-text px10">
             {t("milkcollection:m-d-excel")}
@@ -101,7 +142,6 @@ const CustomerList = () => {
         </button>
       </div>
       <div className="customer-list-table w100 h1 d-flex-col hidescrollbar bg">
-        <span className="heading p10">Customer List</span>
         <div className="customer-heading-title-scroller w100 h1 mh100 d-flex-col">
           <div className="data-headings-div h10 d-flex center t-center sb">
             <span className="f-info-text w5">Edit</span>
@@ -126,8 +166,8 @@ const CustomerList = () => {
           {/* Show Spinner if loading, otherwise show the customer list */}
           {loading ? (
             <Spinner />
-          ) : customerlist.length > 0 ? (
-            customerlist.map((customer, index) => (
+          ) : filteredData.length > 0 ? (
+            filteredData.map((customer, index) => (
               <div
                 key={index}
                 className={`data-values-div w100 h10 d-flex center t-center sa ${

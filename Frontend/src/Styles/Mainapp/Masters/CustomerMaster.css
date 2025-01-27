@@ -98,6 +98,7 @@
 
   .customer-details-container .cust-div {
     height: 20%;
+    margin-bottom: 10px;
   }
   .customer-details-container .details-div,
   .cust-data-settings .details-div {
@@ -111,7 +112,7 @@
     width: 50%;
   }
   .cust-details-setting-div .cust-data-settings {
-    min-height: 65%;
+    min-height: 75%;
   }
 
   .customer-details-container .title-container .sub-heading,
@@ -134,6 +135,7 @@
     min-width: 1600px;
   }
 }
+
 /* Create Customer Responsive Css end */
 
 @media screen and (max-width: 426px) {
@@ -183,5 +185,9 @@
   .Bank-details-div .acc-details-div,
   .Bank-details-div .ifsc-details-div {
     width: 50%;
+  }
+
+  .button-container{
+    margin-bottom: 10px;
   }
 }

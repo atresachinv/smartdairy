@@ -125,9 +125,15 @@ const Mainappnavlinks = ({ setselected, handleSidebar }) => {
           role: ["admin", "super_admin", "manager"],
         },
         {
-          name: "Milk Rate Master",
+          name: "Bank Master",
           icon: <BsGridFill className="icon" />,
           index: 4.5,
+          role: ["admin", "super_admin", "manager"],
+        },
+        {
+          name: "Milk Rate Master",
+          icon: <BsGridFill className="icon" />,
+          index: 4.6,
           role: ["admin", "super_admin", "manager"],
         },
       ],

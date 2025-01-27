@@ -32,6 +32,7 @@ import MilkTransfer from "./Payments/PaymentPages/MilkTransfers/MilkTransfer";
 import PaymentReports from "./Reports/PaymentsReports/PaymentReports";
 import CustomerReports from "./Reports/CustomerReports/CustomerReports";
 import CattleFeedMaster from "./Sales/CattleFeed/CattleFeedMaster";
+import BankMaster from "./Masters/MasterPages/BankMaster/BankMaster";
 // import MilkReports from "./Reports/MilkReports/MilkReports";
 // import MilkcollectionReports from "./Reports/MilkReports/MilkcollectionReports";
 
@@ -64,6 +65,8 @@ const Mainappviews = ({ index }) => {
     case 4.4:
       return <EmployeeMaster />;
     case 4.5:
+      return <BankMaster />;
+    case 4.6:
       return <MilkRateMaster />;
     //Sales Submenus
     case 5.1:

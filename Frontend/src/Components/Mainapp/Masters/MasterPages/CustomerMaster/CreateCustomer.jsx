@@ -759,7 +759,6 @@ const CreateCustomer = () => {
           </div>
         </div>
         <div className="cust-div Bank-details-div w100 h15 d-flex-col sb">
-          {/* <span className="info-text px10">Bank Details :</span> */}
           <div className="bank-details w100 h1 d-flex f-wrap sb">
             <div className="bankname-details-div w40 d-flex-col a-center px10">
               <span className="info-text w100 ">Bank Name</span>{" "}
@@ -858,7 +857,7 @@ const CreateCustomer = () => {
         </div>
         <div className="data-show-hide--setting-container w100 h60 d-flex-col">
           <span className="sub-heading px10">Data Show/Hide Settings :</span>
-          <div className="show-hide-content-div w100 h10 d-flex sa">
+          <div className="show-hide-content-div w100 h20 d-flex sa">
             <div className="details-div w50 d-flex a-center ">
               <input
                 className="data w10"
@@ -878,7 +877,7 @@ const CreateCustomer = () => {
               <span className="label-text w90">Hide Deductions </span>
             </div>
           </div>
-          <div className="show-hide-content-div w100 h10 d-flex sa">
+          <div className="show-hide-content-div w100 h20 d-flex sa">
             <div className="details-div w50 d-flex a-center ">
               <input
                 className="data w10"
@@ -899,7 +898,7 @@ const CreateCustomer = () => {
               <span className="label-text w90">Hide Sangh Rebat </span>
             </div>
           </div>
-          <div className="show-hide-content-div w100 h10 d-flex sa">
+          <div className="show-hide-content-div w100 h20 d-flex sa">
             <div className="details-div w50 d-flex a-center ">
               <input
                 className="data w10"
@@ -922,8 +921,11 @@ const CreateCustomer = () => {
           </div>
         </div>
 
-        <div className="button-container w100 h10 d-flex sa">
-          <button className="w-btn" type="submit" onClick={handleEditClick}>
+        <div className="button-container w100 h10 d-flex j-end">
+          <button
+            className="w-btn mx10"
+            type="submit"
+            onClick={handleEditClick}>
             {isEditing ? "CREATE" : "EDIT"}
           </button>
           {isEditing ? (
@@ -952,7 +954,7 @@ const CreateCustomer = () => {
               className="w-btn"
               id="d-excel"
               onClick={downloadEmptyExcel}>
-              Excel Format
+              Format
             </button>
           </div>
           <div className="excel-format-container w100 h50 d-flex a-center sb">
