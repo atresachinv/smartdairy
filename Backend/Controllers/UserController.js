@@ -314,7 +314,7 @@ exports.userLogin = async (req, res) => {
           const user = result[0];
 
           // Check if user is already logged in
-          if (user.is_logged_in === "0") {
+          if (user.isLogedin === 0) {
             connection.release();
             return res.status(403).json({
               message: "User is already logged in from another session.",
