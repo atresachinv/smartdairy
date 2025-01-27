@@ -314,7 +314,7 @@ exports.userLogin = async (req, res) => {
           const user = result[0];
 
           // Check if user is already logged in
-          if (user.isLogedin === 0) {
+          if (user.isLogedin === 1) {
             connection.release();
             return res.status(403).json({
               message: "User is already logged in from another session.",
@@ -350,7 +350,7 @@ exports.userLogin = async (req, res) => {
 
           // Update is_logged_in to true
           const updateLoginStatus =
-            "UPDATE users SET isLogedin = 0 WHERE username = ?";
+            "UPDATE users SET isLogedin = 1 WHERE username = ?";
 
           connection.query(updateLoginStatus, [user_id], (updateErr) => {
             connection.release();
