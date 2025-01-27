@@ -26,7 +26,10 @@ const milk = require("./Routes/MilkRoutes");
 const cust = require("./Routes/CustomerRoutes");
 const emp = require("./Routes/EmpRoutes");
 const purchase = require("./Routes/PurchaseRoutes");
+const payment = require("./Routes/PaymentRoutes");
 const notify = require("./Routes/fireBaseRoutes");
+const sales = require("./Routes/SalesRoutes");
+const products = require("./Routes/ItemRoutes");
 
 //Common api starting
 
@@ -37,6 +40,9 @@ app.use("/smartdairy/api", ratechart);
 app.use("/smartdairy/api", cust);
 app.use("/smartdairy/api", emp);
 app.use("/smartdairy/api", purchase);
+app.use("/smartdairy/api", payment);
 app.use("/smartdairy/api", notify);
+app.use("/smartdairy/api", sales);
+app.use("/smartdairy/api", products);
 
 module.exports = app;

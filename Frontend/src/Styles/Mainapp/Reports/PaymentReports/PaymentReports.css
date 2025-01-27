@@ -1,0 +1,25 @@
+@media screen and (max-width: 426px) {
+  .deduction-first-filter-container{
+    height: auto;
+  }
+  .deduction-first-filter-container .filters-from-to-date-button-div {
+    min-height: fit-content;
+    flex-direction: column;
+    padding-bottom: 10px;
+  }
+  .filters-from-to-date-button-div .dates-and-filter-deduction-container {
+    width: 100%;
+  }
+  .dates-and-filter-deduction-container {
+    flex-direction: column;
+    padding-bottom: 10px;
+  }
+  .dates-and-filter-deduction-container .custmize-report-div,
+  .dates-and-filter-deduction-container .dropdwoun-div ,
+  .filters-from-to-date-button-div .action-buttons-div {
+    width: 100%;
+  }
+  .deduction-data-outer-container{
+    min-height: 80%;
+  }
+}

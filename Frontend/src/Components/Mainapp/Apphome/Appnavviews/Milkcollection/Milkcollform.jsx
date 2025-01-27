@@ -27,14 +27,16 @@ const MilkColleform = ({ switchToSettings }) => {
   const [milkRateChart, setMilkRatechart] = useState([]);
   const [time, setTime] = useState(true);
   const [errors, setErrors] = useState({});
+  const [changedDate, setChangedDate] = useState("");
   const [slotCount, setSlotCount] = useState(0); //To rerive local stored milk entries
   const codeInputRef = useRef(null);
   const litersRef = useRef(null);
   const fatRef = useRef(null);
   const snfRef = useRef(null);
+  console.log(changedDate);
 
   const initialValues = {
-    date: new Date().toISOString().split("T")[0],
+    date: changedDate || tDate,
     code: "",
     time: 0,
     animal: 0,
@@ -55,12 +57,13 @@ const MilkColleform = ({ switchToSettings }) => {
     const { name, value } = e.target;
 
     if (name === "date") {
+      setChangedDate(value);
       if (value > tDate) {
         // Set an error for the date field
         setErrors((prevErrors) => ({
           ...prevErrors,
-          date: "Selected date cannot be greater than the current date.",
         }));
+
         return; // Prevent updating the state if the date is invalid
       } else {
         // Clear the error if the date is valid
@@ -448,6 +451,11 @@ const MilkColleform = ({ switchToSettings }) => {
 
   // ------------------------------------------------------------------------------------->
 
+  const handleResetButton = (e) => {
+    e.preventDefault();
+    setValues(initialValues);
+  };
+
   //Handling Milk Collection
 
   const handleCollection = async (e) => {
@@ -470,7 +478,7 @@ const MilkColleform = ({ switchToSettings }) => {
       setValues(initialValues); // Reset form to initial values
       setErrors({}); // Reset errors
 
-      sendNotifications();
+      // sendNotifications();
 
       toast.success(`Milk Collection of ${values.cname} saved successfully!`);
 
@@ -570,8 +578,9 @@ const MilkColleform = ({ switchToSettings }) => {
               name="date"
               id="date"
               onChange={handleInputs}
+              // onChange={(e) => setChangedDate(e.target.value)}
               value={values.date || ""}
-              max={values.date}
+              max={tDate}
             />
           </div>
           <div className="setting-btn-switch w20 j-center d-flex">
@@ -732,7 +741,10 @@ const MilkColleform = ({ switchToSettings }) => {
           {/* </div> */}
         </div>
         <div className="form-btns w100 h10 d-flex a-center j-end">
-          <button className="w-btn label-text" type="reset">
+          <button
+            className="w-btn label-text"
+            type="reset"
+            onClick={handleResetButton}>
             {t("m-btn-cancel")}
           </button>
           <button className="w-btn label-text mx10" type="submit">

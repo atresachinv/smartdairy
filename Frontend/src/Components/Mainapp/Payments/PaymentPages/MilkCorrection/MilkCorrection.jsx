@@ -1,16 +1,26 @@
+// MilkCorrection;
 import React, { useEffect, useState } from "react";
 import {
   BsCalendar3,
   BsChevronDoubleLeft,
   BsChevronDoubleRight,
 } from "react-icons/bs";
-import { FaSave, FaEdit } from "react-icons/fa";
+import { FaEdit, FaSave } from "react-icons/fa";
 import { useTranslation } from "react-i18next";
+import { toast } from "react-toastify";
 import { useDispatch, useSelector } from "react-redux";
 import { generateMaster } from "../../../../../App/Features/Customers/Date/masterdateSlice";
 import { listCustomer } from "../../../../../App/Features/Customers/customerSlice";
 import { getAllMilkCollReport } from "../../../../../App/Features/Mainapp/Milk/MilkCollectionSlice";
 import { getRateCharts } from "../../../../../App/Features/Mainapp/Masters/rateChartSlice";
+import {
+  deleteMilkRecord,
+  transferTOCustomer,
+  transferTODate,
+  transferTOEvening,
+  transferTOMorning,
+  updateMilkData,
+} from "../../../../../App/Features/Payments/paymentSlice";
 
 const MilkCorrection = () => {
   const { t } = useTranslation(["common", "milkcollection"]);
@@ -18,20 +28,29 @@ const MilkCorrection = () => {
   const date = useSelector((state) => state.date.toDate);
   const manualMaster = useSelector((state) => state.manualMasters.masterlist);
   const data = useSelector((state) => state.milkCollection.allMilkColl);
-
   //Local State
   const [customerList, setCustomerList] = useState([]); // customerlist
   const [customerName, setCustomerName] = useState(""); // customername
   const [milkRateChart, setMilkRatechart] = useState([]); // milk ratechart
   const [currentIndex, setCurrentIndex] = useState(1); // corrent index of selected customer
-  const [fillteredData, setFillteredData] = useState([]); // corrent index of selected customer
+  const [selectedMaster, setSelectedMaster] = useState([]); // corrent index of selected customer
   const [morningData, setMorningData] = useState([]);
   const [eveningData, setEveningData] = useState([]);
   const [editmrgIndex, setEditmrgIndex] = useState(null);
   const [editeveIndex, setEditeveIndex] = useState(null);
-  const [editMData, setEditMData] = useState({});
-  const [editEData, setEditEData] = useState({});
-  console.log(editMData);
+  const [selectedMorningItems, setSelectedMorningItems] = useState([]);
+  const [selectedEveningItems, setSelectedEveningItems] = useState([]);
+
+  const initialData = {
+    id: "",
+    fat: "",
+    degree: "",
+    snf: "",
+    rate: "",
+    amt: "",
+    liters: "",
+  };
+  const [editedData, setEditedData] = useState(initialData);
 
   //----------------------------------------------------------------->
   // Get master dates and list customer
@@ -47,6 +66,7 @@ const MilkCorrection = () => {
     const selectedIndex = e.target.value;
     if (selectedIndex !== "") {
       const selectedDates = manualMaster[selectedIndex];
+      setSelectedMaster(selectedDates);
       dispatch(
         getAllMilkCollReport({
           fromDate: selectedDates.start,
@@ -87,6 +107,28 @@ const MilkCorrection = () => {
   //----------------------------------------------------------------->
   // Implemetation of customer prev next buttons and display customer name
 
+  // Handling Code inputs ----------------------------->
+  const handleInputChange = (e) => {
+    const value = parseInt(e.target.value, 10);
+    if (!isNaN(value)) {
+      setCurrentIndex(Math.min(Math.max(value, 1), customerList.length)); // Ensure within bounds
+    } else {
+      setCurrentIndex(""); // If not a valid number, reset to empty
+    }
+  };
+
+  // Handling "Enter" key press
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter") {
+      const value = parseInt(e.target.value, 10);
+      if (!isNaN(value)) {
+        setCurrentIndex(Math.min(Math.max(value, 1), customerList.length)); // Ensure within bounds
+      }
+    }
+  };
+
+  // Handling Prev Next Buttons ------------------------------------------>
+
   const handleNext = () => {
     setCurrentIndex((prevIndex) =>
       prevIndex === customerList.length ? 1 : prevIndex + 1
@@ -116,28 +158,229 @@ const MilkCorrection = () => {
   }, [data, currentIndex]);
 
   //----------------------------------------------------------------->
-  //functions to edit , save and delete the displayed data
-  const handleEditmrgClick = (index) => {
+  //functions to edit and save the displayed data
+  const handleEditMrgClick = (index, milk) => {
     setEditmrgIndex(index);
-    setEditMData(morningData[index]);
+    setEditedData({
+      id: milk.id,
+      fat: milk.fat,
+      liters: milk.Litres,
+      snf: milk.snf,
+      rate: milk.rate,
+      amt: milk.Amt,
+    });
   };
 
-  const handleEditeveClick = (index) => {
+  const handleEditEveClick = (index, milk) => {
     setEditeveIndex(index);
-    setEditEData(eveningData[index]);
+    setEditedData({
+      id: milk.id,
+      fat: milk.fat,
+      liters: milk.Litres,
+      snf: milk.snf,
+      rate: milk.rate,
+      amt: milk.Amt,
+    });
   };
 
-  //  const handleSaveClick = (index) => {
-  //    updateRow(index, editData);
-  //    setEditIndex(null);
-  //  };
-
-  const handleDeleteClick = (index) => {
-    deleteRow(index);
+  const handleEditedDataChange = (field, value) => {
+    setEditedData((prevData) => ({ ...prevData, [field]: value }));
   };
 
-  const handleChange = (e, field) => {
-    setEditData({ ...editData, [field]: e.target.value });
+  const handleSaveData = async (milk) => {
+    try {
+      // if (parseFloat(editedData.rate) === parseFloat(milk.rate)) {
+      //   setEditedData(initialData);
+      //   setEditmrgIndex(null);
+      //   setEditeveIndex(null);
+      //   return;
+      // }
+      dispatch(updateMilkData({ data: editedData }));
+      const handler = setTimeout(() => {
+        dispatch(
+          getAllMilkCollReport({
+            fromDate: selectedMaster.start,
+            toDate: selectedMaster.end,
+          })
+        );
+        setEditedData(initialData);
+        setEditmrgIndex(null);
+        setEditeveIndex(null);
+        toast.success("Selected record updated successfully!");
+      }, 500);
+      return () => clearTimeout(handler);
+    } catch (error) {
+      toast.error("Failed to update record!");
+      console.error("Error during handleTransferToEvening: ", error);
+    }
+  };
+
+  // Claculate rate and amount on value change >>>>>----------->
+
+  // Retrieve the stored ratechart from localStorage on component mount
+  useEffect(() => {
+    const storedRateChart = localStorage.getItem("milkcollrcharts");
+    if (storedRateChart) {
+      try {
+        const parsedRateChart = JSON.parse(storedRateChart);
+        setMilkRatechart(parsedRateChart);
+      } catch (error) {
+        console.error(
+          "Failed to parse milkcollrchart from localStorage:",
+          error
+        );
+      }
+    } else {
+      console.log("No data found in localStorage for milkcollrchart");
+    }
+  }, []);
+
+  const calculateRateAndAmount = async () => {
+    try {
+      const { fat, snf, liters } = editedData;
+      const parsedFat = parseFloat(fat);
+      const parsedSnf = parseFloat(snf);
+      const parsedLiters = parseFloat(liters);
+
+      const rateEntry = milkRateChart.find(
+        (entry) => entry.fat === parsedFat && entry.snf === parsedSnf
+      );
+
+      if (rateEntry) {
+        const rate = parseFloat(rateEntry.rate);
+        const amount = rate * parsedLiters;
+
+        setEditedData((prev) => ({
+          ...prev,
+          rate: rate.toFixed(1),
+          amt: amount.toFixed(1),
+          degree: 0,
+        }));
+      } else {
+        setEditedData((prev) => ({
+          ...prev,
+          rate: 0,
+          amt: 0,
+          degree: 0,
+        }));
+      }
+    } catch (error) {
+      console.error("Error calculating rate and amount:", error);
+    }
+  };
+
+  // Trigger calculation whenever liters, fat, or snf change-------------------------->
+  useEffect(() => {
+    if (editedData.liters && editedData.fat && editedData.snf) {
+      calculateRateAndAmount();
+    }
+  }, [editedData.liters, editedData.fat, editedData.snf]);
+
+  // ------------------------------------------------------------------------------------------------->
+  // Multiselect Feature
+  const handleSelectItem = (type, id) => {
+    if (type === "morning") {
+      setSelectedMorningItems((prev) =>
+        prev.includes(id)
+          ? prev.filter((itemId) => itemId !== id)
+          : [...prev, id]
+      );
+    } else {
+      setSelectedEveningItems((prev) =>
+        prev.includes(id)
+          ? prev.filter((itemId) => itemId !== id)
+          : [...prev, id]
+      );
+    }
+  };
+
+  //---------------------------------------------------------------------------------->
+  // morning to evening -------------------->
+
+  const handleTransferToEvening = () => {
+    try {
+      dispatch(transferTOEvening({ records: selectedMorningItems }));
+      setSelectedMorningItems([]);
+      const handler = setTimeout(() => {
+        dispatch(
+          getAllMilkCollReport({
+            fromDate: selectedMaster.start,
+            toDate: selectedMaster.end,
+          })
+        );
+        toast.success("Selected records transferred to Evening successfully!");
+      }, 500);
+      return () => clearTimeout(handler);
+    } catch (error) {
+      toast.error("Failed to transfer records or fetch updated data.");
+      console.error("Error during handleTransferToEvening: ", error);
+    }
+  };
+
+  // evening to morning -------------------->
+  const handleTransferToMorning = () => {
+    dispatch(transferTOMorning({ records: selectedEveningItems }));
+    setSelectedEveningItems([]);
+    const handler = setTimeout(() => {
+      dispatch(
+        getAllMilkCollReport({
+          fromDate: selectedMaster.start,
+          toDate: selectedMaster.end,
+        })
+      );
+      toast.success("Selected records Tranferred to Morning successfully!");
+    }, 500);
+    return () => clearTimeout(handler);
+  };
+
+  // customer to customer ------------------>
+  const handleTransferToCustomer = () => {
+    dispatch(transferTOCustomer());
+  };
+
+  // date to date -------------------------->
+  const handleTransferToDate = () => {
+    dispatch(transferTODate());
+  };
+
+  // delete selected record ---------------->
+  const handleDeleteRecord = () => {
+    if (
+      selectedMorningItems.length === 0 &&
+      selectedEveningItems.length === 0
+    ) {
+      toast.error("Please select record or records to delete!");
+      return;
+    }
+    if (selectedMorningItems.length > 0) {
+      dispatch(deleteMilkRecord({ records: selectedMorningItems }));
+      setSelectedMorningItems([]);
+
+      const handler = setTimeout(() => {
+        dispatch(
+          getAllMilkCollReport({
+            fromDate: selectedMaster.start,
+            toDate: selectedMaster.end,
+          })
+        );
+        toast.success("Selected record or records delete successfully!");
+      }, 500);
+      return () => clearTimeout(handler);
+    }
+    if (selectedEveningItems.length > 0) {
+      dispatch(deleteMilkRecord({ records: selectedEveningItems }));
+      setSelectedEveningItems([]);
+      const handler = setTimeout(() => {
+        dispatch(
+          getAllMilkCollReport({
+            fromDate: selectedMaster.start,
+            toDate: selectedMaster.end,
+          })
+        );
+        toast.success("Selected record or records delete successfully!");
+      }, 500);
+      return () => clearTimeout(handler);
+    }
   };
 
   return (
@@ -179,11 +422,13 @@ const MilkCorrection = () => {
                 <BsChevronDoubleLeft className="icon " />
               </button>
               <input
-                className="data w30 t-center"
+                className="data w45 t-center"
                 type="text"
-                value={currentIndex}
-                readOnly
-                placeholder="1"
+                value={currentIndex || ""}
+                name="code"
+                placeholder="code"
+                onChange={handleInputChange}
+                onKeyDown={handleKeyDown}
               />
               <button className="btn" onClick={handleNext}>
                 <BsChevronDoubleRight className="icon" />
@@ -229,39 +474,79 @@ const MilkCorrection = () => {
             morningData.map((milk, index) => (
               <div
                 key={index}
-                className={`collection-data-container w100 h10 d-flex a-center t-center sb ${
-                  index % 2 === 0 ? "bg-light" : "bg-dark"
-                }`}
+                className={`collection-data-container w100 h10 d-flex a-center t-center sb`}
                 style={{
                   backgroundColor:
+                    selectedMorningItems.includes(milk.id) ||
                     editmrgIndex === index
                       ? "#f7bb79"
                       : index % 2 === 0
                       ? "#faefe3"
                       : "#fff",
-                }}>
-                <span className="text w5">
+                }}
+                onClick={() => handleSelectItem("morning", milk.id)}>
+                <span className="text w10 t-center d-flex a-center sa">
                   {editmrgIndex === index ? (
                     <FaSave
                       className="color-icon"
-                      onClick={() => handleSaveClick(index)}
+                      onClick={() => handleSaveData(milk)}
                     />
                   ) : (
                     <FaEdit
                       className="color-icon"
-                      onClick={() => handleEditmrgClick(index)}
+                      onClick={() => handleEditMrgClick(index, milk)}
                     />
                   )}
                 </span>
                 <span className="text w20 t-start">
                   {milk.ReceiptDate.slice(0, 10)}
                 </span>
-                <span className="text w10">{milk.Litres}</span>
-                <span className="text w10">{milk.fat}</span>
-                <span className="text w10">{milk.degree || 0}</span>
-                <span className="text w10">{milk.snf}</span>
-                <span className="text w10">{milk.rate}</span>
-                <span className="text w15">{milk.Amt}</span>
+                {editmrgIndex === index ? (
+                  <>
+                    <span className="text w10 d-flex center">
+                      <input
+                        className="data w100 t-center"
+                        type="text"
+                        value={editedData.liters}
+                        onChange={(e) =>
+                          handleEditedDataChange("liters", e.target.value)
+                        }
+                      />
+                    </span>
+                    <span className="text w10">
+                      <input
+                        className="data w100 d-flex center t-center"
+                        type="text"
+                        value={editedData.fat}
+                        onChange={(e) =>
+                          handleEditedDataChange("fat", e.target.value)
+                        }
+                      />
+                    </span>
+                    <span className="text w10">{milk.degree || 0}</span>
+                    <span className="text w10">
+                      <input
+                        className="data w100 h1 d-flex center t-center"
+                        type="text"
+                        value={editedData.snf}
+                        onChange={(e) =>
+                          handleEditedDataChange("snf", e.target.value)
+                        }
+                      />
+                    </span>
+                    <span className="text w10">{editedData.rate}</span>
+                    <span className="text w15">{editedData.amt}</span>
+                  </>
+                ) : (
+                  <>
+                    <span className="text w10">{milk.Litres}</span>
+                    <span className="text w10">{milk.fat}</span>
+                    <span className="text w10">{milk.degree || 0}</span>
+                    <span className="text w10">{milk.snf}</span>
+                    <span className="text w10">{milk.rate}</span>
+                    <span className="text w15">{milk.Amt}</span>
+                  </>
+                )}
               </div>
             ))
           ) : (
@@ -290,34 +575,85 @@ const MilkCorrection = () => {
                 }`}
                 style={{
                   backgroundColor:
+                    selectedEveningItems.includes(milk.id) ||
                     editeveIndex === index
                       ? "#f7bb79"
                       : index % 2 === 0
                       ? "#faefe3"
                       : "#fff",
-                }}>
-                <span className="text w5 t-center">
+                }}
+                onClick={() => handleSelectItem("evening", milk.id)}>
+                <span className="text w10 t-center d-flex a-center sa">
                   {editeveIndex === index ? (
                     <FaSave
                       className="color-icon"
-                      onClick={() => handleSaveClick(index)}
+                      onClick={(e) => {
+                        e.stopPropagation(); // Prevent row click event
+                        handleSaveData(milk);
+                      }}
                     />
                   ) : (
                     <FaEdit
                       className="color-icon"
-                      onClick={() => handleEditeveClick(index)}
+                      onClick={(e) => {
+                        e.stopPropagation(); // Prevent row click event
+                        handleEditEveClick(index, milk);
+                      }}
                     />
                   )}
                 </span>
                 <span className="text w20 t-start">
                   {milk.ReceiptDate.slice(0, 10)}
                 </span>
-                <span className="text w10">{milk.Litres}</span>
-                <span className="text w10">{milk.fat}</span>
-                <span className="text w10">{milk.degree || 0}</span>
-                <span className="text w10">{milk.snf}</span>
-                <span className="text w10">{milk.rate}</span>
-                <span className="text w15 t-center">{milk.Amt}</span>
+                {editeveIndex === index ? (
+                  <>
+                    <span className="text w10 d-flex center">
+                      <input
+                        className="data w100 t-center"
+                        type="text"
+                        value={editedData.liters}
+                        onClick={(e) => e.stopPropagation()} // Prevent row click event
+                        onChange={(e) =>
+                          handleEditedDataChange("liters", e.target.value)
+                        }
+                      />
+                    </span>
+                    <span className="text w10">
+                      <input
+                        className="data w100 d-flex center t-center"
+                        type="text"
+                        value={editedData.fat}
+                        onClick={(e) => e.stopPropagation()} // Prevent row click event
+                        onChange={(e) =>
+                          handleEditedDataChange("fat", e.target.value)
+                        }
+                      />
+                    </span>
+                    <span className="text w10">{milk.degree || 0}</span>
+                    <span className="text w10">
+                      <input
+                        className="data w100 h1 d-flex center t-center"
+                        type="text"
+                        value={editedData.snf}
+                        onClick={(e) => e.stopPropagation()} // Prevent row click event
+                        onChange={(e) =>
+                          handleEditedDataChange("snf", e.target.value)
+                        }
+                      />
+                    </span>
+                    <span className="text w10">{editedData.rate}</span>
+                    <span className="text w15">{editedData.amt}</span>
+                  </>
+                ) : (
+                  <>
+                    <span className="text w10">{milk.Litres}</span>
+                    <span className="text w10">{milk.fat}</span>
+                    <span className="text w10">{milk.degree || 0}</span>
+                    <span className="text w10">{milk.snf}</span>
+                    <span className="text w10">{milk.rate}</span>
+                    <span className="text w15">{milk.Amt}</span>
+                  </>
+                )}
               </div>
             ))
           ) : (
@@ -327,9 +663,24 @@ const MilkCorrection = () => {
           )}
         </div>
         <div className="action-btn-container w10 h1 d-flex-col">
-          <button className="btn">Transfer To Morning</button>
-          <button className="btn my10">Transfer To Evening</button>
-          <button className="danger-btn">Delete</button>
+          <button
+            type="button"
+            className="btn"
+            onClick={handleTransferToMorning}>
+            Transfer To Morning
+          </button>
+          <button
+            type="button"
+            className="btn my10"
+            onClick={handleTransferToEvening}>
+            Transfer To Evening
+          </button>
+          <button
+            type="button"
+            className="danger-btn"
+            onClick={handleDeleteRecord}>
+            Delete
+          </button>
         </div>
       </div>
     </div>

@@ -5,6 +5,7 @@ import SankalanReport from "./Appnavviews/MilkSankalan/SankalanReport";
 import CompleteMilkColl from "./Appnavviews/Milkcollection/CompleteMilkColl";
 import UpdateCollection from "./Appnavviews/Milkcollection/UpdateCollection";
 import MilkCollectorsReports from "./Appnavviews/Milkcollection/MilkCollectorsReports";
+import CreateCattleFeed from "../Sales/CattleFeed/CreateCattleFeed";
 
 const AppNavViews = ({ index }) => {
   switch (index) {
@@ -25,6 +26,9 @@ const AppNavViews = ({ index }) => {
       break;
     case 5:
       return <MilkCollectorsReports />;
+      break;
+    case 6:
+      return <CreateCattleFeed />;
       break;
 
     default:

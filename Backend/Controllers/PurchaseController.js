@@ -149,7 +149,7 @@ exports.paymentDetails = async (req, res) => {
 
 exports.deductionInfo = async (req, res) => {
   const { fromDate, toDate } = req.body;
-  
+
   pool.getConnection((err, connection) => {
     if (err) {
       console.error("Error getting MySQL connection: ", err);
@@ -319,27 +319,27 @@ exports.allPaymentDetails = async (req, res) => {
 // exports.paymentDeductionInfo = async (req, res) => {
 //   const { fromDate, toDate } = req.body;
 //   console.log(req.body);
-// 
+//
 //   pool.getConnection((err, connection) => {
 //     if (err) {
 //       console.error("Error getting MySQL connection: ", err);
 //       return res.status(500).json({ message: "Database connection error" });
 //     }
-// 
+//
 //     try {
 //       const dairy_id = req.user.dairy_id;
 //       const center_id = req.user.center_id;
-// 
+//
 //       if (!dairy_id) {
 //         return res.status(400).json({ message: "Dairy ID not found!" });
 //       }
-// 
+//
 //       const deductionInfo = `
 //         SELECT ToDate, BillNo, dname, Amt, arate, tliters, pamt, damt, namt
-//         FROM custbilldetails 
+//         FROM custbilldetails
 //         WHERE companyid = ? AND center_id = ? AND ToDate BETWEEN ? AND ? AND  DeductionId <> 0
 //       `;
-// 
+//
 //       connection.query(
 //         deductionInfo,
 //         [dairy_id, center_id, fromDate, toDate],
@@ -348,9 +348,9 @@ exports.allPaymentDetails = async (req, res) => {
 //             console.error("Error executing query: ", err);
 //             return res.status(500).json({ message: "Query execution error" });
 //           }
-// 
+//
 //           console.log(result);
-// 
+//
 //           if (result.length === 0) {
 //             return res.status(404).json({ message: "No records found!" });
 //           }
@@ -366,62 +366,115 @@ exports.allPaymentDetails = async (req, res) => {
 //   });
 // };
 
+// exports.paymentDeductionInfo = async (req, res) => {
+//   const { fromDate, toDate } = req.body;
+//   console.log(`deduction function`);
+//
+//   pool.getConnection((err, connection) => {
+//     if (err) {
+//       console.error("Error getting MySQL connection: ", err);
+//       return res.status(500).json({ message: "Database connection error" });
+//     }
+//
+//     try {
+//       const dairy_id = req.user.dairy_id;
+//       const center_id = req.user.center_id;
+//
+//       if (!dairy_id) {
+//         return res.status(400).json({ message: "Dairy ID not found!" });
+//       }
+//
+//       const deductionInfo = `
+//         SELECT BillNo, AccCode, Code, dname, DeductionId, AMT, pamt, namt , damt, tliters
+//         FROM custbilldetails
+//         WHERE companyid = ? AND center_id = ? AND ToDate BETWEEN ? AND ?
+//       `;
+//       // WHERE companyid = ? AND center_id = ? AND ToDate BETWEEN ? AND ? AND  DeductionId <> 0
+//       connection.query(
+//         deductionInfo,
+//         [dairy_id, center_id, fromDate, toDate],
+//         (err, result) => {
+//           connection.release();
+//           if (err) {
+//             console.error("Error executing query: ", err);
+//             return res.status(500).json({ message: "Query execution error" });
+//           }
+//
+//           if (result.length === 0) {
+//             return res.status(404).json({ message: "No records found!" });
+//           }
+//
+//           // Filter the main deduction (Deductionid "0") and additional deductions (based on dname)
+//           // const mainDeduction = result.find((item) => item.DeductionId === 0);
+//           // const additionalDeductions = result.filter(
+//           //   (item) => item.DeductionId !== 0
+//           // );
+//
+//           // Send the response with separated data
+//           res.status(200).json({
+//             // mainDeduction: mainDeduction || null,
+//             // otherDeductions: additionalDeductions || [],
+//             AllDeductions: result,
+//           });
+//         }
+//       );
+//     } catch (error) {
+//       console.error("Error processing request: ", error);
+//       return res.status(500).json({ message: "Internal server error" });
+//     }
+//   });
+// };
 
 exports.paymentDeductionInfo = async (req, res) => {
- const { fromDate, toDate } = req.body;
+  const { fromDate, toDate } = req.body;
+
+  if (!fromDate || !toDate) {
+    return res
+      .status(400)
+      .json({ message: "From date and To date are required!" });
+  }
+
+  const dairy_id = req.user.dairy_id;
+  const center_id = req.user.center_id;
+
+  if (!dairy_id) {
+    return res.status(400).json({ message: "Dairy ID not found!" });
+  }
+
+  const query = `
+    SELECT BillNo, AccCode, Code, dname, DeductionId, AMT, pamt, namt, damt, tliters
+    FROM custbilldetails
+    WHERE companyid = ? AND center_id = ? AND ToDate BETWEEN ? AND ?
+  `;
 
   pool.getConnection((err, connection) => {
     if (err) {
-      console.error("Error getting MySQL connection: ", err);
+      console.error("Error getting MySQL connection:", err);
       return res.status(500).json({ message: "Database connection error" });
     }
 
-    try {
-      const dairy_id = req.user.dairy_id;
-      const center_id = req.user.center_id;
+    connection.query(
+      query,
+      [dairy_id, center_id, fromDate, toDate],
+      (queryErr, result) => {
+        connection.release();
 
-      if (!dairy_id) {
-        return res.status(400).json({ message: "Dairy ID not found!" });
-      }
-
-      const deductionInfo = `
-        SELECT BillNo, AccCode, Code, dname, DeductionId, AMT, pamt, namt , damt, tliters
-        FROM custbilldetails
-        
-        WHERE companyid = ? AND center_id = ? AND ToDate BETWEEN ? AND ? 
-      `;
-      // WHERE companyid = ? AND center_id = ? AND ToDate BETWEEN ? AND ? AND  DeductionId <> 0
-      connection.query(
-        deductionInfo,
-        [dairy_id, center_id, fromDate, toDate],
-        (err, result) => {
-          connection.release();
-          if (err) {
-            console.error("Error executing query: ", err);
-            return res.status(500).json({ message: "Query execution error" });
-          }
-
-          if (result.length === 0) {
-            return res.status(404).json({ message: "No records found!" });
-          }
-
-          // Filter the main deduction (Deductionid "0") and additional deductions (based on dname)
-          // const mainDeduction = result.find((item) => item.DeductionId === 0);
-          // const additionalDeductions = result.filter(
-          //   (item) => item.DeductionId !== 0
-          // );
-
-          // Send the response with separated data
-          res.status(200).json({
-            // mainDeduction: mainDeduction || null,
-            // otherDeductions: additionalDeductions || [],
-            AllDeductions: result,
-          });
+        if (queryErr) {
+          console.error("Error executing query:", queryErr);
+          return res.status(500).json({ message: "Query execution error" });
         }
-      );
-    } catch (error) {
-      console.error("Error processing request: ", error);
-      return res.status(500).json({ message: "Internal server error" });
-    }
+
+        if (result.length === 0) {
+          return res.status(404).json({ message: "No records found!" });
+        }
+
+        const additionalDeductions = result.filter(
+          (item) => item.DeductionId !== 0
+        );
+        res.status(200).json({
+          AllDeductions: additionalDeductions,
+        });
+      }
+    );
   });
 };

@@ -1,0 +1,266 @@
+.customer-table {
+  border-collapse: collapse;
+  width: 100%;
+}
+.no-data-message {
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  color: #999;
+  font-size: 16px;
+  font-weight: bold;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.customer-table thead {
+  display: table; /* Ensure proper table layout for the header */
+  width: 100%; /* Match width with the table */
+  position: sticky; /* Keep the header fixed while scrolling */
+  top: 0;
+  z-index: 1;
+  background-color: #dbb0b0; /* Optional: Ensure background color remains constant */
+}
+
+.customer-table tbody {
+  display: block; /* Make tbody scrollable */
+  max-height: 350px; /* Set the maximum height for scrollable content */
+  overflow-y: auto; /* Enable vertical scrolling */
+}
+
+.customer-table tbody::-webkit-scrollbar {
+  display: none; /* Hides scrollbar for Chrome, Safari, and Edge */
+}
+
+.customer-table tbody {
+  scrollbar-width: none; /* Hides scrollbar for Firefox */
+}
+
+.customer-table tr {
+  display: table; /* Ensure rows align properly */
+  width: 100%; /* Ensure rows span the full width of the table */
+  table-layout: fixed; /* Prevent columns from misaligning */
+}
+
+.customer-table th,
+.customer-table td {
+  text-align: left;
+  padding: 8px;
+  border: 1px solid #ddd; /* Optional: Add a border for better visibility */
+}
+.table-container {
+  overflow-x: auto; /* Enable horizontal scrolling */
+  width: 100%; /* Ensure the container takes up the full width */
+  display: block; /* Ensure it behaves like a block element */
+  white-space: nowrap; /* Prevent content wrapping inside the table */
+}
+
+.table-container::-webkit-scrollbar {
+  display: none; /* Hide the scrollbar in WebKit browsers */
+}
+
+.table-container {
+  -ms-overflow-style: none; /* Hide scrollbar in Internet Explorer and Edge */
+  scrollbar-width: none; /* Hide scrollbar in Firefox */
+}
+
+.customer-table {
+  width: max-content; /* Allow the table to take up only the necessary width */
+  border-collapse: collapse; /* Optional: Remove spacing between cells */
+}
+
+
+/* @media screen and (max-width: 426px) {
+  .customer-table {
+    font-size: xx-small;
+  }
+  .select-column-button .data-show-buttons {
+    justify-content: space-;
+    width: 100%;
+  }
+  .select-column-div span {
+    width: 150px;
+  }
+  .with-radio-buttton-filters {
+    flex-direction: column;
+  }
+  .with-radio-buttton-filters .member-non-member-list-active-non-activee {
+    width: 100%;
+  }
+  .with-radio-buttton-filters .second-centerwise-anamt-rebet-commisition {
+    width: 100%;
+  }
+  .centerwise-div {
+    margin: 5px;
+  }
+  .centerwise-div span {
+    width: 30%;
+  }
+  .centerwise-div select {
+    width: 50%;
+  }
+  .anamat-deduction-div .all-anamat-deduction {
+    width: 50%;
+  }
+  .dropdown-filter-checkbox-div {
+    flex-direction: column;
+  }
+  .dropdown-filter-checkbox-div .dropdown-filter-div {
+    width: 100%;
+  }
+  .dropdown-filter-checkbox-div .checkboxcommission-Deposite {
+    width: 100%;
+  }
+  .centerwise-and-button-div {
+    flex-direction: column;
+  }
+  .centerwise-and-button-div .centerwise-data-show {
+    width: 100%;
+  }
+  .select-column-button .select-column-div {
+    width: 100%;
+  }
+  .dropdown-filter-div .active-not-active-data select {
+    height: 28px;
+  }
+  .select-column-button .select-column-div {
+    height: auto;
+  }
+  .data-show-buttons {
+    height: 60px;
+  }
+  .data-show-buttons button {
+    height: 23px;
+  }
+  .centerwise-and-button-div .centerwise-data-show select {
+    height: 25px;
+  }
+  .select-column-button .select-column-div span {
+    width: 100px;
+  }
+  .select-column-button .select-column-div select {
+    width: 60px;
+    font-size: xx-small;
+  }
+  .dropdown-filter-checkbox-div .checkboxcommission-Deposite {
+    height: 20px;
+  }
+  .centerwise-and-button-div .centerwise-data-show {
+    height: 50px;
+  }
+  .select-column-div {
+    flex-direction: column;
+  }
+  .select-column-div .hide-selection-selection-bar {
+    width: 100%;
+  }
+    .dropdown-filter-checkbox-div
+    .dropdown-filter-div
+    .active-not-active-data {
+    flex-direction: column;
+  }
+    .dropdown-filter-checkbox-div
+    .dropdown-filter-div
+    .active-not-active-data span {
+    width: 80px;
+  }
+    .dropdown-filter-checkbox-div
+    .dropdown-filter-div
+    .active-not-active-data  select {
+    width: 90px;
+    font-size: xx-small;
+  }
+   .middel-filter-applay-div  .data-show-buttons button{
+   height: 25px;
+   font-size: xx-small;
+  }
+   .select-column-button  .select-column-div   .hide-selection-selection-bar select {
+   width: 45px;
+  }
+} */
+/* @media screen and (max-width: 768px) {
+  .customer-table {
+    font-size: xx-small;
+  }
+  .select-column-button .data-show-buttons {
+    justify-content: space-;
+    width: 100%;
+  }
+  .select-column-div span {
+    width: 150px;
+  }
+  .with-radio-buttton-filters {
+    flex-direction: column;
+  }
+  .with-radio-buttton-filters .member-non-member-list-active-non-activee {
+    width: 100%;
+  }
+  .with-radio-buttton-filters .second-centerwise-anamt-rebet-commisition {
+    width: 100%;
+  }
+  .centerwise-div {
+    margin: 5px;
+  }
+  .centerwise-div span {
+    width: 30%;
+  }
+  .centerwise-div select {
+    width: 50%;
+  }
+  .anamat-deduction-div .all-anamat-deduction {
+    width: 50%;
+  }
+  .dropdown-filter-checkbox-div {
+    flex-direction: column;
+  }
+  .dropdown-filter-checkbox-div .dropdown-filter-div {
+    width: 100%;
+  }
+  .dropdown-filter-checkbox-div .checkboxcommission-Deposite {
+    width: 100%;
+  }
+  .centerwise-and-button-div {
+    flex-direction: column;
+  }
+  .centerwise-and-button-div .centerwise-data-show {
+    width: 100%;
+  }
+  .select-column-button .select-column-div {
+    width: 100%;
+  }
+  .dropdown-filter-div .active-not-active-data select {
+    height: 28px;
+  }
+  .select-column-button .select-column-div {
+    height: auto;
+  }
+  .data-show-buttons {
+    height: 60px;
+  }
+  .data-show-buttons button {
+    height: 23px;
+  }
+  .centerwise-and-button-div .centerwise-data-show select {
+    height: 25px;
+  }
+  .select-column-button .select-column-div span {
+    width: 100px;
+  }
+  .select-column-button .select-column-div select {
+    width: 60px;
+    font-size: xx-small;
+  }
+  .dropdown-filter-checkbox-div .checkboxcommission-Deposite {
+    height: 20px;
+  }
+  .centerwise-and-button-div .centerwise-data-show {
+    height: 50px;
+  }
+  .select-column-div {
+    flex-direction: column;
+  }
+  .select-column-div .hide-selection-selection-bar {
+    width: 100%;
+  }
+} */

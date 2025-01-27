@@ -21,10 +21,11 @@ import custInfoReducer from "./Features/Mainapp/Dairyinfo/milkCollectionSlice";
 import milkcolleReducer from "./Features/Mainapp/Milk/MilkCollectionSlice";
 //ratechart
 import ratchartReducer from "./Features/Mainapp/Masters/rateChartSlice";
-import milkInfoReducer from "./Features/Mainapp/Dairyinfo/milkCollectionSlice";
 import registerReducer from "./Features/Dairy/registerSlice";
 //user profile
 import userDataReducer from "./Features/Mainapp/Profile/ProfileSlice";
+// Inventory
+import inventoryReducer from "./Features/Mainapp/Inventory/inventorySlice";
 
 export const store = configureStore({
   reducer: {
@@ -53,5 +54,7 @@ export const store = configureStore({
     custinfo: custInfoReducer,
     ratechart: ratchartReducer,
     milkCollection: milkcolleReducer,
+    // Inventory
+    inventory: inventoryReducer,
   },
 });

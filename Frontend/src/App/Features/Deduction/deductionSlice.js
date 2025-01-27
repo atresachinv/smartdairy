@@ -6,6 +6,7 @@ const initialState = {
   subdeductions: [],
   alldeductionInfo: [],
   status: "idle",
+  deductionstatus: "idle",
   error: null,
 };
 
@@ -70,17 +71,17 @@ const deductionSlice = createSlice({
         state.error = action.payload;
       })
       .addCase(getPaymentsDeductionInfo.pending, (state) => {
-        state.status = "loading";
+        state.deductionstatus = "loading";
         state.error = null;
       })
       .addCase(getPaymentsDeductionInfo.fulfilled, (state, action) => {
         state.loading = false;
-        state.status = "succeeded";
+        state.deductionstatus = "succeeded";
         state.alldeductionInfo = action.payload;
       })
       .addCase(getPaymentsDeductionInfo.rejected, (state, action) => {
         state.loading = false;
-        state.status = "failed";
+        state.deductionstatus = "failed";
         state.error = action.payload;
       });
   },

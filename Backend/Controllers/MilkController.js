@@ -1557,17 +1557,7 @@ exports.allMilkCollReport = async (req, res) => {
       const dairy_table = `dailymilkentry_${dairy_id}`;
 
       const milkCollectionQuery = `
-        SELECT 
-          ReceiptDate, 
-          ME, 
-          CB, 
-          Litres, 
-          fat, 
-          snf, 
-          rate, 
-          Amt, 
-          cname, 
-          rno
+        SELECT id, ReceiptDate,  ME,  CB,  Litres,  fat,  snf,  rate,  Amt,  cname,  rno , AccCode
         FROM ${dairy_table}
         WHERE ReceiptDate BETWEEN ? AND ?
       `;
@@ -1633,7 +1623,7 @@ exports.allMilkCollection = async (req, res) => {
         // Query for center_id = 0
         milkCollectionQuery = `
           SELECT 
-            userid, ReceiptDate, ME, CB, Litres, fat, snf, rate, Amt, cname, rno, SampleNo
+            id , userid, ReceiptDate, ME, CB, Litres, fat, snf, rate, Amt, cname, rno, SampleNo
           FROM ${dairy_table}
           WHERE ReceiptDate BETWEEN ? AND ? AND Driver IN (0, 1)
         `;
@@ -1642,7 +1632,7 @@ exports.allMilkCollection = async (req, res) => {
         // Query for center_id != 0
         milkCollectionQuery = `
           SELECT 
-            userid, ReceiptDate, ME, CB, Litres, fat, snf, rate, Amt, cname, rno, SampleNo
+           id, userid, ReceiptDate, ME, CB, Litres, fat, snf, rate, Amt, cname, rno, SampleNo
           FROM ${dairy_table}
           WHERE center_id = ? AND ReceiptDate BETWEEN ? AND ? AND Driver IN (0, 1)
         `;

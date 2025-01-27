@@ -435,6 +435,12 @@
 .bg1 {
   background-color: #8b52fc;
 }
+.nav-bg{
+  background-color: #c18383;
+}
+.t-heading-bg{
+   background-color: #17acc0;
+}
 .bg2 {
   background-color: #a386dc;
 }
@@ -464,6 +470,7 @@
   border-radius: 8px;
   box-shadow: 0 0 3px #e0e0e0;
 }
+
 html {
   overflow-x: hidden;
 }
@@ -477,6 +484,7 @@ body {
 
 /* Icons */
 .color-icon {
+  font-size: 20px;
   color: #34078e;
 }
 
@@ -539,7 +547,7 @@ body {
 }
 
 .danger-btn:hover {
-   background: linear-gradient(
+  background: linear-gradient(
     40deg,
     rgb(225, 126, 13) 10%,
     rgb(236, 43, 53) 53%

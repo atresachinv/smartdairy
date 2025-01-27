@@ -81,6 +81,12 @@ const AppNavlinks = ({ isselected, setIsSelected }) => {
       index: 5,
       role: ["super_admin", "admin", "manager"],
     },
+    {
+      name: "Sales",
+      icon: <BsFileTextFill className="icon" />,
+      index: 6,
+      role: ["super_admin", "admin", "milkcollector", "mobilecollector"],
+    },
   ];
 
   const filterRoutesByRole = (routes, userRole) => {

@@ -31,12 +31,12 @@ router.route("/dashboard").post(verifyToken, dashboardInfo);
 router.route("/collection/custdata").post(verifyToken, custDetails);
 router.route("/collection/milkrate").post(verifyToken, getRateAmount);
 
-//dairy milk collection ........................................................................
+//dairy milk collection ......................................................................................
 router.route("/save/milk/collection").post(verifyToken, milkCollection);
 router.route("/milk/sankalan").get(verifyToken, allMilkCollection); //milk collector milk collection
 router.route("/save/milk/one").post(verifyToken, milkCollectionOneEntry);
 
-// mobile Milkcollector........................................................................
+// mobile Milkcollector.......................................................................................
 router
   .route("/save/mobile/milkcollection")
   .post(verifyToken, mobileMilkCollection); // mobile Milkcollector
@@ -46,9 +46,9 @@ router
   .route("/fetch/mobile/collection")
   .get(verifyToken, fetchMobileMilkCollection); // to update
 router.route("/update/mobile/coll").post(verifyToken, updateMobileCollection);
-router.route("/milk/coll/report").get(verifyToken, allMilkCollReport);
+router.route("/milk/coll/report").get(verifyToken, allMilkCollReport); // All milk collection Records
 router.route("/completed/collection/report").get(verifyToken, completedMilkReport);
-//...........................................................................................................
+//............................................................................................................
 
 
 

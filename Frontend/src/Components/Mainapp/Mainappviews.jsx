@@ -28,6 +28,10 @@ import MilkCorrection from "./Payments/PaymentPages/MilkCorrection/MilkCorrectio
 // import PayDeductions from "./Payments/PaymentPages/PayDeductions";
 import Payments from "./Payments/Payments";
 import PayDeductions from "./Payments/PaymentPages/PayDeductions/PayDeductions";
+import MilkTransfer from "./Payments/PaymentPages/MilkTransfers/MilkTransfer";
+import PaymentReports from "./Reports/PaymentsReports/PaymentReports";
+import CustomerReports from "./Reports/CustomerReports/CustomerReports";
+import CattleFeedMaster from "./Sales/CattleFeed/CattleFeedMaster";
 // import MilkReports from "./Reports/MilkReports/MilkReports";
 // import MilkcollectionReports from "./Reports/MilkReports/MilkcollectionReports";
 
@@ -63,7 +67,7 @@ const Mainappviews = ({ index }) => {
       return <MilkRateMaster />;
     //Sales Submenus
     case 5.1:
-      return <MainLedger />;
+      return <CattleFeedMaster />;
     case 5.2:
       return <SubLedger />;
     case 5.3:
@@ -78,17 +82,23 @@ const Mainappviews = ({ index }) => {
     case 6.2:
       return <MilkcollectionReports />;
     case 6.3:
-      return <CustomersMaster />;
+      return <CustomerReports />;
     case 6.4:
       return <EmployeeMaster />;
     case 6.5:
       return <MilkRateMaster />;
+    case 6.6:
+      return <MilkRateMaster />;
+    case 6.7:
+      return <PaymentReports />;
     //Payments Submenus
     case 7.1:
       return <MilkCorrection />;
     case 7.2:
-      return <PayDeductions />;
+      return <MilkTransfer />;
     case 7.3:
+      return <PayDeductions />;
+    case 7.4:
       return <Payments />;
     //Dairy Submenus
     case 8.1:

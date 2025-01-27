@@ -156,7 +156,7 @@ const Login = ({ switchToRegister, switchToOptSend }) => {
           toast.error(err.response.data.message);
         } else {
           console.error(`Error during login: ${err.message}`);
-          toast.error("An error occurred during login.");
+          toast.error("An error occurred during login.", err.message);
         }
       })
       .finally(() => {
