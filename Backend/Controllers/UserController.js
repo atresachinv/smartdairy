@@ -264,7 +264,8 @@ exports.userLogin = async (req, res) => {
           httpOnly: true,
           secure: true,
           sameSite: "strict",
-          maxAge: 10 * 1000, // 10 min
+          // maxAge: 10 * 1000, // 10 min
+          maxAge: 4 * 60 * 60 * 1000, // 4hr
         });
 
         // Send success response
@@ -284,17 +285,17 @@ exports.userLogin = async (req, res) => {
 
 // exports.userLogin = async (req, res) => {
 //   const { user_id, user_password } = req.body;
-// 
+//
 //   pool.getConnection((err, connection) => {
 //     if (err) {
 //       console.error("Error getting MySQL connection: ", err);
 //       return res.status(500).json({ message: "Database connection error" });
 //     }
-// 
+//
 //     try {
 //       const checkUser =
 //         "SELECT username, isActive, designation, SocietyCode, pcode, center_id, password, isLogedin FROM users WHERE username = ? AND password = ?";
-// 
+//
 //       connection.query(
 //         checkUser,
 //         [user_id, user_password],
@@ -303,16 +304,16 @@ exports.userLogin = async (req, res) => {
 //             connection.release();
 //             return res.status(500).json({ message: "Database query error" });
 //           }
-// 
+//
 //           if (result.length === 0) {
 //             connection.release();
 //             return res
 //               .status(401)
 //               .json({ message: "Invalid User ID or password, try again!" });
 //           }
-// 
+//
 //           const user = result[0];
-// 
+//
 //           // Check if user is already logged in
 //           if (user.isLogedin === 1) {
 //             connection.release();
@@ -320,20 +321,20 @@ exports.userLogin = async (req, res) => {
 //               message: "User is already logged in from another device.",
 //             });
 //           }
-// 
+//
 //           // // Verify user password using bcrypt
 //           // const isPasswordValid = await bcrypt.compare(
 //           //   user_password,
 //           //   user.password
 //           // );
-// 
+//
 //           // if (!isPasswordValid) {
 //           //   connection.release();
 //           //   return res
 //           //     .status(401)
 //           //     .json({ message: "Invalid User ID or password, try again!" });
 //           // }
-// 
+//
 //           // Generate JWT token for authentication
 //           const token = jwt.sign(
 //             {
@@ -347,27 +348,27 @@ exports.userLogin = async (req, res) => {
 //             process.env.SECRET_KEY,
 //             { expiresIn: "10m" }
 //           );
-// 
+//
 //           // Update is_logged_in to true
 //           const updateLoginStatus =
 //             "UPDATE users SET isLogedin = 1 WHERE username = ?";
-// 
+//
 //           connection.query(updateLoginStatus, [user_id], (updateErr) => {
 //             connection.release();
-// 
+//
 //             if (updateErr) {
 //               return res
 //                 .status(500)
 //                 .json({ message: "Error updating login status" });
 //             }
-// 
+//
 //             // Set token in cookie
 //             res.cookie("token", token, {
 //               httpOnly: true,
 //               sameSite: "strict",
 //               maxAge: 10 * 60 * 1000,
 //             });
-// 
+//
 //             // Send success response
 //             res.status(200).json({
 //               message: "Login successful",
@@ -410,17 +411,17 @@ exports.userLogout = (req, res) => {
 //   try {
 //     const updateLogoutStatus =
 //       "UPDATE users SET isLogedin = 0 WHERE username = ?";
-// 
+//
 //     pool.query(updateLogoutStatus, [user_name], (err) => {
 //       if (err) {
 //         return res
 //           .status(500)
 //           .json({ message: "Error updating logout status" });
 //       }
-// 
+//
 //       // Clear the token cookie
 //       res.clearCookie("token");
-// 
+//
 //       res.status(200).json({ message: "Logout successful" });
 //     });
 //   } catch (error) {

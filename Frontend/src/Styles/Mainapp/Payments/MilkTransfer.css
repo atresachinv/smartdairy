@@ -48,3 +48,33 @@
     display: block;
   }
 }
+
+/* Shift Wise milk Transfer And copy milk css */
+@media screen and (max-width: 426px) {
+  .shift-wise-milk-transfer-container {
+    padding: 10px;
+  }
+  .shift-wise-milk-transfer-container .milk-date-transfer-container {
+    width: 100%;
+  }
+  .customer-codes-container input[type="radio"] {
+    width: 5%;
+    padding: 0;
+  }
+}
+
+/* delete milk css */
+@media screen and (max-width: 426px) {
+  .delete-milk-collection-container {
+    padding: 10px;
+  }
+  .delete-milk-collection-container .milk-date-delete-container {
+    width: 100%;
+  }
+  .delete-dates-container .date-container span:first-child {
+    display: none;
+  }
+  .delete-dates-container .date-container input {
+    width: 40%;
+  }
+}

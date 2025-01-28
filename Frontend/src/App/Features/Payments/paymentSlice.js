@@ -4,6 +4,8 @@ import axiosInstance from "../../axiosInstance";
 const initialState = {
   payment: {},
   status: "idle",
+  copyCollstatus: "idle",
+  deleteCollstatus: "idle",
   error: null,
 };
 
@@ -142,6 +144,46 @@ export const deleteMilkRecord = createAsyncThunk(
   }
 );
 
+// Copy milk collection ------------------>
+export const copyCollection = createAsyncThunk(
+  "payment/copyCollection",
+  async ({ values }, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.put("/copy-milk", {
+        values,
+      });
+      return response.data;
+    } catch (error) {
+      const errorMessage = error.response
+        ? error.response.data
+        : "Failed to update milk records!.";
+      return rejectWithValue(errorMessage);
+    }
+  }
+);
+
+// Delete milk collection ------------------>
+export const deleteCollection = createAsyncThunk(
+  "payment/deleteCollection",
+  async ({ values }, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.delete(
+        "/milk/correction/delete-milk",
+        {
+          data: { values },
+        }
+      );
+      return response.data;
+    } catch (error) {
+      const errorMessage =
+        error.response?.data?.message || "Failed to delete milk records.";
+      return rejectWithValue(errorMessage);
+    }
+  }
+);
+
+
+
 const paymentSlice = createSlice({
   name: "payment",
   initialState,
@@ -228,6 +270,28 @@ const paymentSlice = createSlice({
       })
       .addCase(deleteMilkRecord.rejected, (state, action) => {
         state.status = "failed";
+        state.error = action.payload;
+      }) // copy milk collection  ------------------------------------------->
+      .addCase(copyCollection.pending, (state) => {
+        state.copyCollstatus = "loading";
+        state.error = null;
+      })
+      .addCase(copyCollection.fulfilled, (state) => {
+        state.copyCollstatus = "succeeded";
+      })
+      .addCase(copyCollection.rejected, (state, action) => {
+        state.copyCollstatus = "failed";
+        state.error = action.payload;
+      }) //delete milk collection ------------------------------------------->
+      .addCase(deleteCollection.pending, (state) => {
+        state.deleteCollstatus = "loading";
+        state.error = null;
+      })
+      .addCase(deleteCollection.fulfilled, (state) => {
+        state.deleteCollstatus = "succeeded";
+      })
+      .addCase(deleteCollection.rejected, (state, action) => {
+        state.deleteCollstatus = "failed";
         state.error = action.payload;
       });
   },

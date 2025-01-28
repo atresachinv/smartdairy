@@ -33,7 +33,6 @@ const MilkColleform = ({ switchToSettings }) => {
   const litersRef = useRef(null);
   const fatRef = useRef(null);
   const snfRef = useRef(null);
-  console.log(changedDate);
 
   const initialValues = {
     date: changedDate || tDate,
