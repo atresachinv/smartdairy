@@ -262,7 +262,7 @@ exports.userLogin = async (req, res) => {
         // Set token in cookie
         res.cookie("token", token, {
           httpOnly: true,
-          secure: true,
+          // secure: true,
           sameSite: "strict",
           // maxAge: 10 * 1000, // 10 min
           maxAge: 4 * 60 * 60 * 1000, // 4hr

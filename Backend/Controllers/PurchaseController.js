@@ -442,7 +442,7 @@ exports.paymentDeductionInfo = async (req, res) => {
   }
 
   const query = `
-    SELECT BillNo, AccCode, Code, dname, DeductionId, AMT, pamt, namt, damt, tliters
+    SELECT id , ToDate, BillNo, AccCode, Code, dname, DeductionId, AMT, pamt, namt, damt, tliters
     FROM custbilldetails
     WHERE companyid = ? AND center_id = ? AND ToDate BETWEEN ? AND ?
   `;
@@ -465,16 +465,341 @@ exports.paymentDeductionInfo = async (req, res) => {
         }
 
         if (result.length === 0) {
-          return res.status(404).json({ message: "No records found!" });
+          return res
+            .status(200)
+            .json({ AllDeductions: [], message: "No records found!" });
         }
 
-        const additionalDeductions = result.filter(
-          (item) => item.DeductionId !== 0
-        );
+        // const additionalDeductions = result.filter(
+        //   (item) => item.DeductionId !== 0
+        // );
+
         res.status(200).json({
-          AllDeductions: additionalDeductions,
+          AllDeductions: result,
         });
       }
     );
+  });
+};
+
+// ------------------------------------------------------------------------------------------->
+// Pramod ------------------->
+// ------------------------------------------------------------------------------------------->
+
+// Creating new and multiple purchase items controller
+exports.createPurchases = async (req, res) => {
+  const purchaseData = req.body; // Expecting an array of purchase objects
+
+  const { dairy_id, center_id } = req.user;
+  // Validate input
+  if (!Array.isArray(purchaseData) || purchaseData.length === 0) {
+    return res.status(400).json({
+      success: false,
+      message: "Request body must be a non-empty array of purchase data.",
+    });
+  }
+
+  for (const purchase of purchaseData) {
+    const { purchasedate, itemcode, qty, dealerCode } = purchase;
+    if (!purchasedate || !itemcode || !qty || !dealerCode) {
+      return res.status(400).json({
+        success: false,
+        message:
+          "Each purchase must include purchasedate, itemcode, qty, and dealerCode.",
+      });
+    }
+  }
+
+  pool.getConnection((err, connection) => {
+    if (err) {
+      console.error("Error getting MySQL connection: ", err);
+      return res.status(500).json({ message: "Database connection error" });
+    }
+
+    try {
+      // Step 1: Build the bulk INSERT query dynamically, including dairy_id and center_id
+      let insertQuery =
+        "INSERT INTO PurchaseMaster (purchasedate, itemcode, qty, dealerCode, dairy_id, center_id";
+      const insertValues = [];
+      const valuePlaceholders = [];
+
+      for (const purchase of purchaseData) {
+        const { purchasedate, itemcode, qty, dealerCode, ...otherFields } =
+          purchase;
+        const rowValues = [
+          purchasedate,
+          itemcode,
+          qty,
+          dealerCode,
+          dairy_id,
+          center_id,
+        ];
+
+        for (const key of Object.keys(otherFields)) {
+          if (!insertQuery.includes(key)) {
+            insertQuery += `, ${key}`;
+          }
+          rowValues.push(otherFields[key]);
+        }
+
+        insertValues.push(...rowValues);
+        valuePlaceholders.push(`(${rowValues.map(() => "?").join(", ")})`);
+      }
+
+      insertQuery += `) VALUES ${valuePlaceholders.join(", ")}`;
+
+      // Step 2: Execute the bulk INSERT query
+      connection.query(insertQuery, insertValues, (err, result) => {
+        connection.release();
+
+        if (err) {
+          console.error("Error inserting purchase records: ", err);
+          return res
+            .status(500)
+            .json({ message: "Error creating purchase records" });
+        }
+
+        res.status(201).json({
+          success: true,
+          message: "Purchase records created successfully",
+          insertedRows: result.affectedRows,
+        });
+      });
+    } catch (error) {
+      connection.release();
+      console.error("Unexpected error: ", error);
+      return res.status(500).json({
+        success: false,
+        message: "Unexpected error occurred",
+        error: error.message,
+      });
+    }
+  });
+};
+// Get All purchase items controller
+exports.getAllPurchases = async (req, res) => {
+  const { date1, date2, fcode, ...dynamicFields } = req.query;
+  const { dairy_id, center_id } = req.user; // Get dairy_id and center_id from the logged-in user
+
+  let query = `
+    SELECT * 
+    FROM PurchaseMaster 
+    WHERE 1=1`;
+
+  let countQuery = `
+    SELECT COUNT(*) AS totalRecords 
+    FROM PurchaseMaster 
+    WHERE 1=1`;
+
+  const queryParams = [];
+
+  // Append filters for date range
+  if (date1 && date2) {
+    query += ` AND purchasedate BETWEEN ? AND ?`;
+    countQuery += ` AND purchasedate BETWEEN ? AND ?`;
+    queryParams.push(date1, date2);
+  } else {
+    // Default date range (last 10 days)
+    query += ` AND purchasedate >= DATE_SUB(CURDATE(), INTERVAL 10 DAY) AND purchasedate <= CURDATE()`;
+    countQuery += ` AND purchasedate >= DATE_SUB(CURDATE(), INTERVAL 10 DAY) AND purchasedate <= CURDATE()`;
+  }
+
+  // Append filter for fcode (Supplier code)
+  if (fcode) {
+    query += ` AND dealerCode = ?`;
+    countQuery += ` AND dealerCode = ?`;
+    queryParams.push(fcode);
+  }
+
+  // Append filter for dairy_id and center_id (Ensure these fields are in the WHERE clause)
+  query += ` AND dairy_id = ? AND center_id = ?`;
+  countQuery += ` AND dairy_id = ? AND center_id = ?`;
+  queryParams.push(dairy_id, center_id);
+
+  // Append dynamic fields (filters that come from query parameters)
+  for (const [field, value] of Object.entries(dynamicFields)) {
+    if (value) {
+      query += ` AND ${field} = ?`;
+      countQuery += ` AND ${field} = ?`;
+      queryParams.push(value);
+    }
+  }
+
+  pool.getConnection((err, connection) => {
+    if (err) {
+      console.error("Error getting MySQL connection: ", err);
+      return res.status(500).json({ message: "Database connection error" });
+    }
+
+    // First query to get the total record count
+    connection.query(countQuery, queryParams, (err, countResult) => {
+      if (err) {
+        connection.release();
+        console.error("Error executing count query: ", err);
+        return res
+          .status(500)
+          .json({ message: "Error fetching total record count", error: err });
+      }
+
+      const totalRecords = countResult[0]?.totalRecords || 0;
+
+      // Second query to get the purchase data based on dynamic filters
+      connection.query(query, queryParams, (err, result) => {
+        connection.release();
+
+        if (err) {
+          console.error("Error executing query: ", err);
+          return res
+            .status(500)
+            .json({ message: "Error fetching purchase data", error: err });
+        }
+
+        res.status(200).json({
+          success: true,
+          totalRecords,
+          purchaseData: result,
+        });
+      });
+    });
+  });
+};
+
+// Update purchase item controller
+exports.updatePurchase = async (req, res) => {
+  const { purchaseid, ...updateFields } = req.body;
+
+  const { dairy_id, center_id } = req.user; // Get dairy_id and center_id from the logged-in user
+
+  // Validate input
+  if (!purchaseid) {
+    return res.status(400).json({
+      success: false,
+      message: "Purchase ID is required to update a record.",
+    });
+  }
+
+  if (Object.keys(updateFields).length === 0) {
+    return res.status(400).json({
+      success: false,
+      message: "At least one field to update is required.",
+    });
+  }
+
+  pool.getConnection((err, connection) => {
+    if (err) {
+      console.error("Error getting MySQL connection: ", err);
+      return res.status(500).json({
+        success: false,
+        message: "Database connection error",
+      });
+    }
+
+    try {
+      // Dynamically construct the update query
+      const updateKeys = Object.keys(updateFields).map((key) => `${key} = ?`);
+      const updateQuery = `UPDATE PurchaseMaster SET ${updateKeys.join(
+        ", "
+      )} WHERE  purchaseid = ?`;
+      const values = [...Object.values(updateFields), purchaseid];
+
+      connection.query(updateQuery, values, (err, result) => {
+        connection.release();
+
+        if (err) {
+          console.error("Error updating purchase record: ", err);
+          return res.status(500).json({
+            success: false,
+            message: "Error updating purchase record",
+          });
+        }
+
+        if (result.affectedRows === 0) {
+          return res.status(404).json({
+            success: false,
+            message: "No purchase record found with the given ID.",
+          });
+        }
+
+        res.status(200).json({
+          success: true,
+          message: "Purchase record updated successfully",
+        });
+      });
+    } catch (error) {
+      connection.release();
+      console.error("Unexpected error: ", error);
+      return res.status(500).json({
+        success: false,
+        message: "Unexpected error occurred",
+        error: error.message,
+      });
+    }
+  });
+};
+
+// delete purchase item controller
+exports.deletePurchase = async (req, res) => {
+  const { purchaseid } = req.params;
+  const { dairy_id, center_id } = req.user;
+
+  // console.log(purchaseid, " ", dairy_id, " ", center_id);
+  // Validate input
+  if (!purchaseid || !dairy_id) {
+    return res.status(400).json({
+      success: false,
+      message:
+        "Purchase ID, Dairy ID, and Center ID are required to delete a record.",
+    });
+  }
+
+  pool.getConnection((err, connection) => {
+    if (err) {
+      console.error("Error getting MySQL connection: ", err);
+      return res.status(500).json({
+        success: false,
+        message: "Database connection error",
+      });
+    }
+
+    try {
+      const deleteQuery =
+        "DELETE FROM PurchaseMaster WHERE billno = ? AND dairy_id = ? AND center_id = ?";
+
+      connection.query(
+        deleteQuery,
+        [purchaseid, dairy_id, center_id],
+        (err, result) => {
+          connection.release();
+
+          if (err) {
+            console.error("Error deleting purchase record: ", err);
+            return res.status(500).json({
+              success: false,
+              message: "Error deleting purchase record",
+            });
+          }
+
+          if (result.affectedRows === 0) {
+            return res.status(404).json({
+              success: false,
+              message: "No purchase record found with the given criteria.",
+            });
+          }
+
+          res.status(200).json({
+            success: true,
+            message: "Purchase record deleted successfully",
+          });
+        }
+      );
+    } catch (error) {
+      connection.release();
+      console.error("Unexpected error: ", error);
+      return res.status(500).json({
+        success: false,
+        message: "Unexpected error occurred",
+        error: error.message,
+      });
+    }
   });
 };

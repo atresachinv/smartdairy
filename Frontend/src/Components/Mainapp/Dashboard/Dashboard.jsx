@@ -81,12 +81,12 @@ const Dashboard = () => {
       <div className="dashboard-title w100 d-flex p10">
         <h3 className="subtitle">Dashbord</h3>
       </div>
-      <div className="dashboard-scrll-container w100">
-        <form className="selection-container w100 h20 d-flex sa">
-          <div className="select-data-text w20 h50 d-flex-col p10">
+      <div className="dashboard-scrll-container w100 hidescrollbar">
+        <form className="selection-container w100 h10 d-flex a-center j-start">
+          <div className="select-data-text w20 h1 d-flex-col p10">
             <span className="info-text">Select Data Period</span>
           </div>
-          <div className="custmize-report-div w30 h50 px10 d-flex a-center sb">
+          <div className="custmize-report-div w30 h1 px10 d-flex a-center sb">
             <span className="cl-icon w10 h1 d-flex center">
               <BsCalendar3 />
             </span>
@@ -117,7 +117,7 @@ const Dashboard = () => {
             </select>
           </div>
         </form>
-        <div className="dashboard-cards w100 h20 d-flex j-start">
+        <div className="dashboard-cards w100 h20 d-flex j-start sa">
           <div className="card sb">
             <BsDatabaseAdd className="card-icon" />
             <div className="card-inner">
@@ -154,7 +154,7 @@ const Dashboard = () => {
             </div>
           </div> */}
         </div>
-        <div className="dashboard-data-charts w100 h50 d-flex a-center sa">
+        <div className="dashboard-data-charts w100 h50 d-flex a-center sa ">
           <div className="milk-collection-chart w40 h1 d-flex-col p10 bg">
             <div className="chart-title w100">
               <span className="label-text">Liters</span>

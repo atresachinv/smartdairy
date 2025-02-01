@@ -6,6 +6,10 @@ const {
   paymentDetails,
   allPaymentDetails,
   paymentDeductionInfo,
+  createPurchases,
+  getAllPurchases,
+  updatePurchase,
+  deletePurchase,
 } = require("../Controllers/PurchaseController");
 const router = express.Router();
 
@@ -19,5 +23,13 @@ router.route("/payment-info").post(verifyToken, paymentDetails);
 router.route("/payment/details").post(verifyToken, allPaymentDetails);
 router.route("/deduction-info").post(verifyToken, deductionInfo);
 router.route("/payment/deduction-info").post(verifyToken, paymentDeductionInfo);
+
+//dev pramod
+router.route("/purchase/new").post(verifyToken, createPurchases);
+router.route("/purchase/all").get(verifyToken, getAllPurchases);
+router.route("/purchase/update").put(verifyToken, updatePurchase);
+router
+  .route("/purchase/delete/:purchaseid")
+  .delete(verifyToken, deletePurchase);
 
 module.exports = router;

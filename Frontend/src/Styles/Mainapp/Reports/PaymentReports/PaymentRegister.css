@@ -1,0 +1,32 @@
+@media screen and (max-width: 426px) {
+  .payment-register-container {
+    min-height: fit-content;
+  }
+  .payment-register-container .from-to-date-button-container {
+    min-height: fit-content;
+    flex-direction: column;
+  }
+  .from-to-date-button-container .date-from-to-div,
+  .from-to-date-button-container .button-print-export-div {
+    width: 100%;
+    margin: 10px 0;
+  }
+  .payment-register-outer-container{
+    min-height: 70%;
+  }
+  .payment-register-total-details-container {
+    min-height: fit-content;
+    flex-wrap: wrap;
+    justify-content: space-between;
+  }
+  .payment-register-total-details-container  .headings-pay-register-totals-container {
+    width: 45%;
+    margin-bottom: 10px;
+  }
+
+  .payment-deduction-info-container .headings-pay-register-totals-container {
+    width: 100%;
+  }
+}
+
+

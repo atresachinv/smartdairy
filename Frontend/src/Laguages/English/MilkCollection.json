@@ -1,9 +1,10 @@
 {
+  "m-milkcoll": "Milk Collection",
   "m-complete-coll": "Complete Milk Collection",
   "m-milk-coll-report": "Milk Collection Report",
   "m-coll-list": "Milk Collection List",
-  "m-milkcoll": "Milk Collection",
   "m-select-coll": "Select Collector",
+  "m-sales": "Sales",
 
   "m-reports": "Reports",
   "m-count": "Sample Count",

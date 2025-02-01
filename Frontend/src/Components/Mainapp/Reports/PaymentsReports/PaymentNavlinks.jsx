@@ -11,6 +11,12 @@ const PaymentNavlinks = ({ isselected, setIsSelected }) => {
       index: 0,
       role: ["super_admin", "admin", "manager"],
     },
+    {
+      name: `Payment Register`,
+      icon: <BsDatabaseAdd className="icon" />,
+      index: 1,
+      role: ["super_admin", "admin", "manager"],
+    },
   ];
   return (
     <>

@@ -1,0 +1,37 @@
+.add-bank-btn {
+  margin-top: 25px;
+}
+
+@media screen and (max-width: 768px) {
+  .bank-master-container {
+    min-height: fit-content;
+  }
+  .bank-master-container .bank-master-form-container {
+    min-height: fit-content;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .bank-master-form-container .bank-details-code {
+    flex: 1 0 50px;
+  }
+  .bank-master-form-container .bank-details-bankname {
+    flex: 2 0 200px;
+  }
+  .bank-master-form-container .bank-details-branch {
+    flex: 1 0 170px;
+  }
+  .bank-master-form-container .bank-details-ifsc {
+    flex: 2 0 120px;
+  }
+  .bank-master-form-container .add-bank-btn {
+    margin: 0 0 10px 0;
+    flex: 2 0 120px;
+  }
+  .bank-details-container {
+    overflow-x: auto;
+    width: 100%;
+  }
+  .bank-details-headings {
+    min-width: 600px;
+  }
+}

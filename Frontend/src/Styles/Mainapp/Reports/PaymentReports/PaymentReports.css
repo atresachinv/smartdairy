@@ -1,5 +1,5 @@
 @media screen and (max-width: 426px) {
-  .deduction-first-filter-container{
+  .deduction-first-filter-container {
     height: auto;
   }
   .deduction-first-filter-container .filters-from-to-date-button-div {
@@ -15,11 +15,21 @@
     padding-bottom: 10px;
   }
   .dates-and-filter-deduction-container .custmize-report-div,
-  .dates-and-filter-deduction-container .dropdwoun-div ,
+  .dates-and-filter-deduction-container .dropdwoun-div,
   .filters-from-to-date-button-div .action-buttons-div {
     width: 100%;
   }
-  .deduction-data-outer-container{
+  .deduction-data-outer-container {
     min-height: 80%;
+  }
+}
+
+/* Payment report >> Deduction report */
+@media screen and (max-width: 426px) {
+  .deduction-report-container {
+    min-height: auto;
+  }
+  .deduction-first-filter-container  {
+    min-height: fit-content;
   }
 }

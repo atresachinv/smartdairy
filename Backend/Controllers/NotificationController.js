@@ -17,7 +17,7 @@ exports.saveFCMToken = async (req, res) => {
       const dairy_id = req.user.dairy_id;
       const center_id = req.user.center_id;
 
-      const savetoken = `INSERT INTO fcmTokens (dairy_id, center_id, cust_no, token) VALUES (?, ?, ?, ?)`;
+      const savetoken = `INSERT INTO fcmtokens (dairy_id, center_id, cust_no, token) VALUES (?, ?, ?, ?)`;
 
       connection.query(
         savetoken,
@@ -107,7 +107,7 @@ exports.checkFCMToken = async (req, res) => {
       const dairy_id = req.user.dairy_id;
       const center_id = req.user.center_id;
 
-      const query = `SELECT token FROM fcmTokens WHERE dairy_id = ? AND center_id = ? AND cust_no = ?`;
+      const query = `SELECT token FROM fcmtokens WHERE dairy_id = ? AND center_id = ? AND cust_no = ?`;
 
       connection.query(query, [dairy_id, center_id, cust_no], (err, result) => {
         connection.release();
@@ -222,30 +222,31 @@ exports.checkFCMToken = async (req, res) => {
 //Retrive Notification ................................
 //.....................................................
 
-exports.sendNotification = async (req, res) => {
-  const { title, body, deviceToken } = req.body;
-
-  try {
-    console.log("Request body:", req.body); // Log request body for debugging
-
-    const message = `Name: ${body.name} Date: ${body.date}\nFat: ${body.fat}, SNF: ${body.snf}, Liters: ${body.liters}, \nRate: ${body.rate}, Amount: ${body.amount}`;
-
-    const response = await NotificationService.sendNotification(
-      deviceToken,
-      title,
-      message
-    );
-
-    console.log("Notification response:", response); // Log Firebase response
-
-    res.status(200).json({
-      message: "Notification sent successfully!",
-      response,
-    });
-  } catch (error) {
-    console.error("Error in sendNotification:", error); // Log error details
-    res.status(500).json({
-      message: "Error sending notification",
-    });
-  }
-};
+// exports.sendNotification = async (req, res) => {
+//   const { title, body, deviceToken } = req.body;
+//   console.log(req.body);
+// 
+//   try {
+//     console.log("Request body:", req.body); // Log request body for debugging
+// 
+//     const message = `Name: ${body.name} Date: ${body.date}\nFat: ${body.fat}, SNF: ${body.snf}, Liters: ${body.liters}, \nRate: ${body.rate}, Amount: ${body.amount}`;
+// 
+//     const response = await NotificationService.sendNotification(
+//       deviceToken,
+//       title,
+//       message
+//     );
+// 
+//     console.log("Notification response:", response); // Log Firebase response
+// 
+//     res.status(200).json({
+//       message: "Notification sent successfully!",
+//       response,
+//     });
+//   } catch (error) {
+//     console.error("Error in sendNotification:", error); // Log error details
+//     res.status(500).json({
+//       message: "Error sending notification",
+//     });
+//   }
+// };

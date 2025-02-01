@@ -11,6 +11,10 @@ const {
   uniqueRchartList,
   milkcollReport,
   uploadExcelCustomer,
+  createDealer,
+  dealerList,
+  deleteCustomer,
+  updateDealer,
 } = require("../Controllers/CustomerController");
 
 const router = express.Router();
@@ -31,5 +35,11 @@ router.route("/upload/customer/excel").post(verifyToken, uploadExcelCustomer);
 router.route("/unique/rclist").post(verifyToken, uniqueRchartList);
 router.route("/customer/used/ratechartno").post(verifyToken, uniqueRchartList);
 // router.route("/app/milk-report").post(custMilkReport);
+
+// dev Pramod ------------------->
+router.route("/create/dealer").post(verifyToken, createDealer);
+router.route("/dealer").post(verifyToken, dealerList);
+router.route("/delete/customer").post(verifyToken, deleteCustomer);
+router.route("/update/dealer").patch(verifyToken, updateDealer);
 
 module.exports = router;

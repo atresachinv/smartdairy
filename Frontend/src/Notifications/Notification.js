@@ -9,7 +9,6 @@ const firebaseConfig = {
   messagingSenderId: "558719173258",
   appId: "1:558719173258:web:b14ac07f75d83ac1d9a373",
 };
-
 const vapidKey = import.meta.env.REACT_APP_VAPID_KEY;
 
 // Initialize Firebase app
@@ -17,21 +16,6 @@ const app = initializeApp(firebaseConfig);
 
 // Initialize messaging
 const messaging = getMessaging(app);
-
-// export const requestForToken = async () => {
-//   return Notification.requestPermission()
-//     .then((permission) => {
-//       if (permission === "granted") {
-//         return getToken(messaging, { vapidKey });
-//       } else {
-//         throw new error("Notification not granted!");
-//       }
-//     })
-//     .catch((err) => {
-//       console.log("Error getting FCM token", err);
-//       throw err;
-//     });
-// };
 
 export const requestForToken = async () => {
   try {
@@ -62,28 +46,3 @@ export const onMessageListener = () => {
   });
 };
 
-// // Request permission and get token
-// export const requestForToken = async () => {
-//   try {
-//     const currentToken = await getToken(messaging, {
-//       vapidKey: process.env.REACT_APP_VAPID_KEY, // Your VAPID key
-//     });
-//     if (currentToken) {
-//       console.log("FCM Token: ", currentToken);
-//       // You can send the token to your server if needed
-//       return currentToken;
-//     } else {
-//       console.log(
-//         "No registration token available. Request permission to generate one."
-//       );
-//       return null;
-//     }
-//   } catch (error) {
-//     console.error("An error occurred while retrieving token. ", error);
-//     return null;
-//   }
-// };
-//
-// // Handle incoming messages when the app is in the foreground
-
-// export default app;

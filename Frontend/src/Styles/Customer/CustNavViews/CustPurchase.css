@@ -24,3 +24,18 @@
 .purchase-table-total {
   border-radius: 0 0 6px 6px;
 }
+
+@media screen and (max-width: 426px) {
+  .cattel-feeds-summary-div {
+    min-height: fit-content;
+  }
+  .cattel-feeds-summary-div .purchase-detailsitable{
+    min-height: fit-content;
+  }
+  .deduction-summary-div {
+    min-height: fit-content;
+  }
+  .deduction-summary-div .deduction-info-details {
+    min-height: fit-content;
+  }
+}

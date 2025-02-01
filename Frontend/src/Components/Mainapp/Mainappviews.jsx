@@ -33,6 +33,15 @@ import PaymentReports from "./Reports/PaymentsReports/PaymentReports";
 import CustomerReports from "./Reports/CustomerReports/CustomerReports";
 import CattleFeedMaster from "./Sales/CattleFeed/CattleFeedMaster";
 import BankMaster from "./Masters/MasterPages/BankMaster/BankMaster";
+import PurchaseMaster from "./Purchase/CattleFeed/PurchaseMaster";
+import PurchaseGroceryMaster from "./Purchase/Grocery/PurchaseGroceryMaster";
+import PurchaseMedicinesMaster from "./Purchase/Medicines/PurchaseMedicinesMaster";
+import OthersPurMaster from "./Purchase/Others/OthersPurMaster";
+import GroceryMaster from "./Sales/Grocery/GroceryMaster";
+import MedicinesMaster from "./Sales/Medicines/MedicinesMaster";
+import OthersMaster from "./Sales/Others/OthersMaster";
+import Dealers from "./Inventory/InventroyPages/Dealers/Dealers";
+import Products from "./Inventory/InventroyPages/Products/Products";
 // import MilkReports from "./Reports/MilkReports/MilkReports";
 // import MilkcollectionReports from "./Reports/MilkReports/MilkcollectionReports";
 
@@ -46,9 +55,9 @@ const Mainappviews = ({ index }) => {
       return <Inventory />;
     // Inventory Submenus
     case 2.1:
-      return <ProductList />;
+      return <Dealers />;
     case 2.2:
-      return <ProductPurchase />;
+      return <Products />;
     case 2.3:
       return <ProductSale />;
     case 2.4:
@@ -68,56 +77,63 @@ const Mainappviews = ({ index }) => {
       return <BankMaster />;
     case 4.6:
       return <MilkRateMaster />;
-    //Sales Submenus
+    //Purchase Submenus
     case 5.1:
-      return <CattleFeedMaster />;
+      return <PurchaseMaster />;
     case 5.2:
-      return <SubLedger />;
+      return <PurchaseGroceryMaster />;
     case 5.3:
-      return <CustomersMaster />;
+      return <PurchaseMedicinesMaster />;
     case 5.4:
-      return <EmployeeMaster />;
-    case 5.5:
-      return <MilkRateMaster />;
-    //Report Submenus
+      return <OthersPurMaster />;
+    //Sales Submenus
     case 6.1:
-      return <MainLedger />;
+      return <CattleFeedMaster />;
     case 6.2:
-      return <MilkcollectionReports />;
+      return <GroceryMaster />;
     case 6.3:
-      return <CustomerReports />;
+      return <MedicinesMaster />;
     case 6.4:
+      return <OthersMaster />;
+    //Report Submenus
+    case 7.1:
+      return <MainLedger />;
+    case 7.2:
+      return <MilkcollectionReports />;
+    case 7.3:
+      return <CustomerReports />;
+    case 7.4:
       return <EmployeeMaster />;
-    case 6.5:
+    case 7.5:
       return <MilkRateMaster />;
-    case 6.6:
+    case 7.6:
       return <MilkRateMaster />;
-    case 6.7:
+    case 7.7:
       return <PaymentReports />;
     //Payments Submenus
-    case 7.1:
+    case 8.1:
       return <MilkCorrection />;
-    case 7.2:
+    case 8.2:
       return <MilkTransfer />;
-    case 7.3:
+    case 8.3:
       return <PayDeductions />;
-    case 7.4:
+    case 8.4:
       return <Payments />;
     //Dairy Submenus
-    case 8.1:
+    case 9.1:
       return <DairyInfo />;
-    case 8.2:
+    case 9.2:
       return <DairyInitialInfo />;
-    case 8.3:
+    case 9.3:
       return <Centers />;
     // Settings Submenus
-    case 9.1:
+    case 10.1:
       return <DairySettings />;
-    case 9.2:
+    case 10.2:
       return <InventorySettings />;
-    case 9.3:
+    case 10.3:
       return <MachineSettings />;
-    case 10:
+    case 11:
       return <Profile />;
     default:
       return <Dashboard />;

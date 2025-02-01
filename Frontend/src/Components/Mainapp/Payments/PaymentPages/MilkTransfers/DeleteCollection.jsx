@@ -130,6 +130,7 @@ const DeleteCollection = () => {
     console.log(values);
 
     dispatch(deleteCollection({ values }));
+    toast.success("Milk Collection Deleted Successfully!");
     // const handler = setTimeout(() => {
     //   if (status === "success") {
     //     toast.success("Milk Collection Deleted Successfully!");

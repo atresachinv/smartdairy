@@ -1,0 +1,20 @@
+@media screen and (max-width: 426px) {
+  /* create dealer css */
+  .create-dealer-container {
+    min-height: auto;
+    padding: 0;
+  }
+  .create-dealer-container .create-dealer-inner-div {
+    width: 100%;
+    min-height: fit-content;
+    margin: 0;
+  }
+  /* dealer list css */
+
+  .dealer-list-container-div {
+    padding: 0;
+  }
+  .dealer-list-container-div .download-pdf-excel-container button {
+    width: 30%;
+  }
+}

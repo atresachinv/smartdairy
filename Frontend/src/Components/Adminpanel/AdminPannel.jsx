@@ -2,7 +2,7 @@ import React from "react";
 
 const AdminPannel = () => {
   return (
-    <div>
+    <div className="super-admin-dashboard-container w100 h1 d-flex">
       <div className="title">Welcome to Admin Pannel</div>
     </div>
   );

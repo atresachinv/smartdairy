@@ -1,8 +1,4 @@
-// eslint-disable-next-line no-unused-vars
 import React, { useEffect, useState } from "react";
-// import "../../../../../Styles/Mainapp/Masters/CustomerMaster.css";
-import { useDispatch } from "react-redux";
-// import { getMaxCustNo } from "../../../../../App/Features/Customers/customerSlice";
 import CattleFeedNavlinks from "./CattleFeedNavlinks";
 import CattleFeedNavViews from "./CattleFeedNavViews";
 
@@ -16,14 +12,6 @@ const CattleFeedMaster = () => {
   useEffect(() => {
     localStorage.setItem("selectedCattleFeedSaleIndex", isselected);
   }, [isselected]);
-
-  // useEffect(() => {
-  //   localStorage.setItem("selectedCustIndex", isselected);
-  // }, [isselected]);
-
-  // useEffect(() => {
-  //   dispatch(getMaxCustNo());
-  // }, []);
 
   return (
     <div className="customer-master-container w100 h1 d-flex-col">

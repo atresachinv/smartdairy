@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   FaArrowCircleRight,
@@ -7,9 +7,239 @@ import {
   FaArrowCircleDown,
 } from "react-icons/fa";
 import "../../../../../Styles/Mainapp/Payments/MilkTransfer.css";
+import { useDispatch, useSelector } from "react-redux";
 
 const CustomerMilkTransfer = () => {
+  const dispatch = useDispatch();
   const { t } = useTranslation(["common", "milkcollection"]);
+  const tDate = useSelector((state) => state.date.toDate);
+  const [customerList, setCustomerList] = useState([]);
+  const [custList, setCustList] = useState({});
+  const [changedDate, setChangedDate] = useState("");
+  const [errors, setErrors] = useState({});
+
+  const initialValues = {
+    date: changedDate || tDate,
+    code: "",
+    cname: "",
+    updatecode: "",
+    updatecname: "",
+    acccode: "",
+    formDate: "",
+    toDate: "",
+  };
+
+  const [values, setValues] = useState(initialValues);
+  console.log("form values", values);
+
+  const handleInputs = (e) => {
+    const { name, value } = e.target;
+
+    if (name === "date") {
+      setChangedDate(value);
+      if (value > tDate) {
+        // Set an error for the date field
+        setErrors((prevErrors) => ({
+          ...prevErrors,
+        }));
+
+        return; // Prevent updating the state if the date is invalid
+      } else {
+        // Clear the error if the date is valid
+        setErrors((prevErrors) => {
+          const { date, ...rest } = prevErrors;
+          return rest; // Remove date error if valid
+        });
+      }
+
+      // Update the values state
+      setValues((prevValues) => ({
+        ...prevValues,
+        [name]: value,
+      }));
+
+      // Validate the field for other errors
+      const fieldError = validateField(name, value);
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        ...fieldError,
+      }));
+    }
+
+    setValues({ ...values, [name]: value });
+
+    // Validate field and update errors state
+    const fieldError = validateField(name, value);
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      ...fieldError,
+    }));
+  };
+
+  const validateField = (name, value) => {
+    let error = {};
+
+    switch (name) {
+      case "code":
+        if (!/^\d+$/.test(value.toString())) {
+          error[name] = "Invalid Customer code.";
+        } else {
+          delete errors[name];
+        }
+        break;
+
+      case "cname":
+        if (!/^[a-zA-Z\s]+$/.test(value)) {
+          error[name] = "Invalid Customer Name.";
+        } else {
+          delete errors[name];
+        }
+        break;
+
+      case "liters":
+        if (!/^\d+(\.\d{1,2})?$/.test(value.toString())) {
+          error[name] = "Invalid liters.";
+        } else {
+          delete errors[name];
+        }
+        break;
+
+      case "fat":
+      case "snf":
+        if (!/^\d+(\.\d{1,1})?$/.test(value.toString())) {
+          error[name] = `Invalid ${[name]}.`;
+        } else {
+          delete errors[name];
+        }
+        break;
+
+      default:
+        break;
+    }
+
+    return error;
+  };
+
+  const validateFields = () => {
+    const fieldsToValidate = [
+      "code",
+      "cname",
+      "liters",
+      "fat",
+      "snf",
+      "rate",
+      "amt",
+    ];
+
+    const validationErrors = {};
+    fieldsToValidate.forEach((field) => {
+      const fieldError = validateField(field, values[field]);
+      if (Object.keys(fieldError).length > 0) {
+        validationErrors[field] = fieldError[field];
+      }
+    });
+
+    setErrors(validationErrors);
+    return validationErrors;
+  };
+  console.log(customerList);
+
+  // Effect to load customer list from local storage
+  useEffect(() => {
+    const storedCustomerList = localStorage.getItem("customerlist");
+    if (storedCustomerList) {
+      setCustomerList(JSON.parse(storedCustomerList));
+    }
+  }, [dispatch]);
+
+  //   const findCustomerByCname = (cname) => {
+  //     if (!cname) {
+  //       setValues((prev) => ({ ...prev, cname: "" }));
+  //       return;
+  //     }
+  //     // Ensure the code is a string for comparison
+  //     const customer = customerList.find((customer) =>
+  //       customer.cname.toLowerCase().includes(values.cname.toLowerCase())
+  //     );
+  // console.log(customer);
+  //
+  //     if (customer) {
+  //       setValues((prev) => ({
+  //         ...prev,
+  //         code: customer.srno,
+  //         cname: customer.cname,
+  //         acccode: customer.cid,
+  //       }));
+  //     } else {
+  //       setValues((prev) => ({ ...prev, cname: "" })); // Clear cname if not found
+  //     }
+  //   };
+  //
+  //   useEffect(() => {
+  //     if (values.cname) {
+  //       const handler = setTimeout(() => {
+  //         findCustomerByCname();
+  //       }, 500);
+  //       return () => clearTimeout(handler);
+  //     }
+  //   }, [values.cname]);
+
+  const findCustomerByCode = (code) => {
+    if (!code) {
+      setValues((prev) => ({ ...prev, cname: "" }));
+      return;
+    }
+    // Ensure the code is a string for comparison
+    const customer = customerList.find(
+      (customer) => customer.srno.toString() === code
+    );
+
+    if (customer) {
+      setValues((prev) => ({
+        ...prev,
+        cname: customer.cname,
+        acccode: customer.cid,
+      }));
+    } else {
+      setValues((prev) => ({ ...prev, cname: "" })); // Clear cname if not found
+    }
+  };
+
+  // Effect to search for customer when code changes
+  useEffect(() => {
+    if (values.code.trim().length > 0) {
+      const handler = setTimeout(() => {
+        findCustomerByCode(values.code.trim());
+      }, 500);
+      return () => clearTimeout(handler);
+    }
+  }, [values.code, dispatch]);
+
+  // Select all the text when input is focused
+  const handleFocus = (e) => {
+    e.target.select();
+  };
+
+  const fetchCustomerMilkRecords = (e) => {
+    e.preventDefault();
+    // Validate fields before submission
+    const validationErrors = validateFields();
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      return;
+    }
+  };
+
+  const UpdateCustomerMilkRecords = (e) => {
+    e.preventDefault();
+    // Validate fields before submission
+    const validationErrors = validateFields();
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      return;
+    }
+  };
+
   return (
     <div className="customer-milk-transfer-container w100 h1 d-flex-col sb">
       <span className="heading h10 d-flex a-center px10">
@@ -17,42 +247,69 @@ const CustomerMilkTransfer = () => {
       </span>
       <div className="view-milk-collection-container w100 h90 d-flex-col sb">
         <div className="customer-details-container w100 h20 d-flex sb">
-          <from className="from-cutsomer-details w45 h1 d-flex-col">
+          <from
+            onSubmit={fetchCustomerMilkRecords}
+            className="from-cutsomer-details w45 h1 d-flex-col">
             <div className="from-customer-details-container w100 h50 d-flex a-center sb">
-              <span className="label-text px10">Customer</span>
+              <label htmlFor="code" className="label-text px10">
+                Customer
+              </label>
               <input
                 className="data w20 t-center mx10"
                 type="text"
-                value=""
                 name="code"
+                id="code"
                 placeholder="code"
+                value={values.code}
+                onChange={handleInputs}
               />
               <input
-                className="data w60 "
+                className="data w60"
                 type="text"
-                name=""
-                id=""
-                value=""
+                name="cname"
+                id="cname"
+                list="customer-list"
                 readOnly
+                value={values.cname}
                 placeholder="Customer Name"
+                onChange={handleInputs}
+                onFocus={handleFocus}
               />
+              <datalist id="customer-list">
+                {customerList
+                  .filter((customer) =>
+                    customer.cname
+                      .toLowerCase()
+                      .includes(values.cname.toLowerCase())
+                  )
+                  .map((customer, index) => (
+                    <option key={index} value={customer.cname} />
+                  ))}
+              </datalist>
             </div>
             <div className="date-container w100 h50 d-flex a-center sb">
               {/* <span className="label-text px10">Dates</span> */}
               <input
                 className="data w30 mx10"
                 type="date"
-                value=""
+                value={values.formDate || ""}
                 name="code"
                 placeholder="code"
+                onChange={handleInputs}
+                max={tDate}
               />
-              <span className="label-text">TO</span>
+              <label htmlFor="toDate" className="label-text">
+                TO
+              </label>
               <input
                 className="data w30 mx10"
                 type="date"
-                name=""
-                id=""
-                value=""
+                name="toDate"
+                id="toDate"
+                value={values.toDate || ""}
+                max={tDate}
+                min={values.formDate}
+                onChange={handleInputs}
               />
               <button type="button" className="w-btn">
                 SHOW
@@ -60,25 +317,29 @@ const CustomerMilkTransfer = () => {
             </div>
           </from>
           <div className="cutsomer-details w45 h1 d-flex-col ">
-            <form className="to-customer-details-container w100 h50 d-flex a-center sb">
-              <span className="label-text ">Customer</span>
+            <div className="to-customer-details-container w100 h50 d-flex a-center sb">
+              <label htmlFor="updatecode" className="label-text ">
+                Customer
+              </label>
               <input
                 className="data w20 t-center mx10"
                 type="text"
-                value=""
-                name="code"
+                id="updatecode"
+                name="updatecode"
+                value={values.updatecode || ""}
                 placeholder="code"
+                onChange={handleInputs}
               />
               <input
                 className="data w60 mx10"
                 type="text"
-                name=""
-                id=""
-                value=""
+                name="updatecname"
+                value={values.updatecname}
                 readOnly
                 placeholder="Customer Name"
+                onChange={handleInputs}
               />
-            </form>
+            </div>
           </div>
         </div>
         <div className="milk-collection-data-container w100 h80 d-flex se">
@@ -179,10 +440,16 @@ const CustomerMilkTransfer = () => {
                   )} */}
           </div>
           <div className="transfer-logos-container w5 h1 d-flex-col center">
-            <FaArrowCircleRight className="transfer-icons laptop-icons my10" />
+            <FaArrowCircleRight
+              className="transfer-icons laptop-icons my10"
+              onClick={UpdateCustomerMilkRecords}
+            />
             <FaArrowCircleLeft className="transfer-icons laptop-icons my10" />
             <FaArrowCircleUp className="transfer-icons mobile-icons my10" />
-            <FaArrowCircleDown className="transfer-icons mobile-icons my10" />
+            <FaArrowCircleDown
+              className="transfer-icons mobile-icons my10"
+              onClick={UpdateCustomerMilkRecords}
+            />
           </div>
           <div className="evening-milk-collection-data w45 h1 mh100 hidescrollbar d-flex-col bg">
             <div className="collection-heading-container w100 h10 d-flex a-center bg7 sticky-top  sa">

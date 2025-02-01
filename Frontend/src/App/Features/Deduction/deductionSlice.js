@@ -69,18 +69,16 @@ const deductionSlice = createSlice({
         state.loading = false;
         state.status = "failed";
         state.error = action.payload;
-      })
+      }) // payment deduction
       .addCase(getPaymentsDeductionInfo.pending, (state) => {
         state.deductionstatus = "loading";
         state.error = null;
       })
       .addCase(getPaymentsDeductionInfo.fulfilled, (state, action) => {
-        state.loading = false;
         state.deductionstatus = "succeeded";
         state.alldeductionInfo = action.payload;
       })
       .addCase(getPaymentsDeductionInfo.rejected, (state, action) => {
-        state.loading = false;
         state.deductionstatus = "failed";
         state.error = action.payload;
       });

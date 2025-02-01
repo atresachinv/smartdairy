@@ -161,7 +161,7 @@ const MilkCopyPaste = () => {
       className="shift-wise-milk-transfer-container w100 h1 d-flex-col a-center ">
       <span className="heading p10">Copy And Transfer Milk Collection</span>
       <div className="milk-date-transfer-container w50 h90 d-flex-col sa bg p10">
-        <span className="sub-heading t-center">Copy From</span>
+        <span className="subheading t-center">Copy From</span>
         <div className="transfer-dates-container w100 h40 d-flex-col sa bg3 br6 p10">
           <input
             type="date"
@@ -205,13 +205,10 @@ const MilkCopyPaste = () => {
               name="time"
               id="all"
               defaultChecked
+              value={2}
               onChange={handleInputs}
             />
-            <label
-              htmlFor="all"
-              className="info-text px10"
-              name="time"
-              value={2}>
+            <label htmlFor="all" className="info-text px10">
               All
             </label>
             <input

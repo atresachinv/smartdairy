@@ -126,8 +126,8 @@ exports.createCustomer = async (req, res) => {
               centerid, srno, cust_pincode, cust_addhar, cust_farmerid, cust_bankname, 
               cust_ifsc, caste, gender, milktype, sabhasad_date, isActive, deposit, 
               commission, rebet, transportation, h_deposit, h_deduction, h_allrebet, 
-              h_sanghrebet, h_dairyrebet, h_transportation
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+              h_sanghrebet, h_dairyrebet, h_transportation , ctype , isdeleted
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
           `;
 
           connection.query(
@@ -171,6 +171,8 @@ exports.createCustomer = async (req, res) => {
               h_sanghrebet,
               h_dairyrebet,
               h_transportation,
+              1,
+              0,
             ],
             (err, result) => {
               if (err) {
@@ -249,161 +251,6 @@ exports.createCustomer = async (req, res) => {
     });
   });
 };
-
-// exports.createCustomer = async (req, res) => {
-//   const {
-//     cust_name,
-//     isActive,
-//     isMember,
-//     date,
-//     prefix,
-//     cust_no,
-//     marathi_name,
-//     member_date,
-//     mobile,
-//     aadhaar_no,
-//     caste,
-//     gender,
-//     city,
-//     tehsil,
-//     district,
-//     pincode,
-//     milktype,
-//     rctype,
-//     farmerid,
-//     bankName,
-//     bank_ac,
-//     bankIFSC,
-//     deposit,
-//     commission,
-//     rebet,
-//     transportation,
-//     h_deposit,
-//     h_deduction,
-//     h_allrebet,
-//     h_sanghrebet,
-//     h_dairyrebet,
-//     h_transportation,
-//   } = req.body;
-//
-//   const dairy_id = req.user.dairy_id;
-//   const centerid = req.user.center_id;
-//   const user_role = req.user.user_role;
-//   const designation = "Customer";
-//   const isAdmin = "0";
-//   const fax = `${prefix}${cust_no}`;
-//
-//   console.log(fax);
-//
-//
-//   pool.getConnection(async (err, connection) => {
-//     if (err) {
-//       console.error("Error getting MySQL connection: ", err);
-//       return res.status(500).json({ message: "Database connection error" });
-//     }
-//
-//     try {
-//
-//       const query = (sql, params) => {
-//         return new Promise((resolve, reject) => {
-//           connection.query(sql, params, (error, results) => {
-//             if (error) {
-//               return reject(error);
-//             }
-//             resolve(results);
-//           });
-//         });
-//       };
-//
-//       // Get the maxCid first
-//       const [maxCidResult] = await query(
-//         "SELECT MAX(cid) AS maxCid FROM customer"
-//       );
-//       const cid = (maxCidResult?.maxCid || 0) + 1;
-//
-//       // Insert into customer table
-//       const createCustomerQuery = `
-//         INSERT INTO customer (
-//           cid, cname, Phone, fax, City, tal, dist, cust_accno, createdby,
-//           createdon, mobile, isSabhasad, rno, orgid, engName, ratecharttype,
-//           centerid, srno, cust_pincode, cust_addhar, cust_farmerid, cust_bankname,
-//           cust_ifsc, caste, gender, milktype, sabhasad_date, isActive, deposit,
-//           commission, rebet, transportation, h_deposit, h_deduction, h_allrebet,
-//           h_sanghrebet, h_dairyrebet, h_transportation
-//         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-//       `;
-//
-//       await query(createCustomerQuery, [
-//         cid,
-//         cust_name,
-//         mobile,
-//         fax,
-//         city,
-//         tehsil,
-//         district,
-//         bank_ac,
-//         user_role,
-//         date,
-//         mobile,
-//         isMember,
-//         fax,
-//         dairy_id,
-//         marathi_name,
-//         rctype,
-//         centerid,
-//         cust_no,
-//         pincode,
-//         aadhaar_no,
-//         farmerid,
-//         bankName,
-//         bankIFSC,
-//         caste,
-//         gender,
-//         milktype,
-//         member_date,
-//         isActive,
-//         deposit,
-//         commission,
-//         rebet,
-//         transportation,
-//         h_deposit,
-//         h_deduction,
-//         h_allrebet,
-//         h_sanghrebet,
-//         h_dairyrebet,
-//         h_transportation,
-//       ]);
-//
-//       // Insert into users table
-//       const createQuery = `
-//         INSERT INTO users (username, password, isAdmin, createdon, createdby, designation,
-//           pincode, mobile, SocietyCode, pcode, center_id
-//         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-//       `;
-//
-//       await query(createQuery, [
-//         mobile,
-//         mobile,
-//         isAdmin,
-//         date,
-//         user_role,
-//         designation,
-//         pincode,
-//         mobile,
-//         dairy_id,
-//         cid,
-//         centerid,
-//       ]);
-//
-//       connection.release();
-//       res.status(200).json({ message: "Customer created successfully!" });
-//     } catch (error) {
-//       connection.release();
-//       console.error("Error processing request: ", error);
-//       return res.status(500).json({ message: "Internal server error" });
-//     }
-//   });
-// };
 
 //..................................................
 // Update Customer Info (Admin Route) Active........
@@ -544,7 +391,7 @@ exports.customerList = async (req, res) => {
                centerid, srno, cust_pincode, cust_addhar, cust_farmerid, cust_bankname,
                cust_ifsc, caste, gender, milktype, isActive, rcName
         FROM customer
-        WHERE orgid = ? AND centerid = ?
+        WHERE orgid = ? AND centerid = ? AND (ctype IS NULL OR ctype = 1) AND (isdeleted IS NULL OR isdeleted = 0)
       `;
 
       connection.query(getCustList, [dairy_id, center_id], (err, result) => {
@@ -617,6 +464,7 @@ exports.uniqueRchartList = async (req, res) => {
 //..................................................
 // Delete Customer Info (Admin Route)...............
 //..................................................
+
 exports.deleteCustomer = async (req, res) => {
   const { cid } = req.body;
   pool.getConnection((err, connection) => {
@@ -625,7 +473,7 @@ exports.deleteCustomer = async (req, res) => {
       return res.status(500).json({ message: "Database connection error" });
     }
     try {
-      const isdeleted = "0";
+      const isdeleted = "1";
       const udeletequery = `
         UPDATE customer
         SET
@@ -1147,31 +995,31 @@ exports.uploadExcelCustomer = async (req, res) => {
 
 // exports.uploadExcelCustomer = async (req, res) => {
 //   const { excelData, prefix } = req.body;
-// 
+//
 //   if (!Array.isArray(excelData) || excelData.length === 0) {
 //     return res.status(400).json({ message: "Invalid or empty excelData" });
 //   }
 //   console.log(excelData);
-// 
+//
 //   const dairy_id = req.user.dairy_id;
 //   const centerid = req.user.center_id;
 //   const user_role = req.user.user_role;
 //   const designation = "Customer";
 //   const isAdmin = "0";
-// 
+//
 //   try {
 //     const connection = await pool.getConnection();
 //     await connection.beginTransaction();
-// 
+//
 //     const [maxCidResult] = await connection.query(
 //       `SELECT MAX(cid) AS maxCid FROM customer`
 //     );
 //     const cid = maxCidResult[0]?.maxCid || 0;
-// 
+//
 //     for (let index = 0; index < excelData.length; index++) {
 //       const customer = excelData[index];
 //       const customerid = cid + index + 1;
-// 
+//
 //       const {
 //         Code,
 //         Customer_Name,
@@ -1191,7 +1039,7 @@ exports.uploadExcelCustomer = async (req, res) => {
 //         Animal_Type,
 //         Ratechart_Type,
 //       } = customer;
-// 
+//
 //       const formattedCode = String(Code).padStart(3, "0");
 //       const fax = `${prefix}${formattedCode}`;
 //       const isMember = 0;
@@ -1199,13 +1047,13 @@ exports.uploadExcelCustomer = async (req, res) => {
 //       const isActive = 1;
 //       const createdOn = new Date();
 //       const animal = Animal_Type === "cow" ? "0" : "1";
-// 
+//
 //       await connection.query(
 //         `
 //         INSERT INTO customer (
-//           cid, cname, Phone, fax, City, tal, dist, cust_accno, createdby, 
-//           createdon, mobile, isSabhasad, rno, orgid, engName, 
-//           centerid, srno, cust_pincode, cust_addhar, cust_farmerid, cust_bankname, 
+//           cid, cname, Phone, fax, City, tal, dist, cust_accno, createdby,
+//           createdon, mobile, isSabhasad, rno, orgid, engName,
+//           centerid, srno, cust_pincode, cust_addhar, cust_farmerid, cust_bankname,
 //           cust_ifsc, caste, gender, milktype, sabhasad_date, isActive, rcName
 //         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 //         `,
@@ -1240,11 +1088,11 @@ exports.uploadExcelCustomer = async (req, res) => {
 //           Ratechart_Type || null,
 //         ]
 //       );
-// 
+//
 //       await connection.query(
 //         `
 //         INSERT INTO users (
-//           username, password, isAdmin, createdon, createdby, designation, 
+//           username, password, isAdmin, createdon, createdby, designation,
 //           pincode, mobile, SocietyCode, pcode, center_id
 //         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 //         `,
@@ -1263,7 +1111,7 @@ exports.uploadExcelCustomer = async (req, res) => {
 //         ]
 //       );
 //     }
-// 
+//
 //     await connection.commit();
 //     res.status(200).json({ message: "Customers created successfully!" });
 //   } catch (error) {
@@ -1803,6 +1651,302 @@ exports.downloadExcelFormat = async (req, res) => {
         }
       );
     } catch (error) {
+      console.error("Error processing request: ", error);
+      return res.status(500).json({ message: "Internal server error" });
+    }
+  });
+};
+
+// -------------------------------------------------------------------------------------------->
+// Dev Pramod ------------------------------------>
+// -------------------------------------------------------------------------------------------->
+
+//create a new dealer controller -------------------------------------------------------------->
+exports.createDealer = async (req, res) => {
+  const {
+    cust_name,
+    cust_no,
+    marathi_name,
+    mobile,
+    district,
+    city,
+    pincode,
+    bankName,
+    bank_ac,
+    bankIFSC,
+  } = req.body;
+
+  const { dairy_id, center_id: centerid, user_role } = req.user;
+
+  pool.getConnection((err, connection) => {
+    if (err) {
+      console.error("Database connection error:", err);
+      return res.status(500).json({ message: "Database connection error" });
+    }
+
+    connection.beginTransaction((err) => {
+      if (err) {
+        connection.release();
+        console.error("Transaction start error:", err);
+        return res.status(500).json({ message: "Error starting transaction" });
+      }
+
+      // Step 1: Get the next cid
+      const maxCidQuery = "SELECT MAX(cid) AS maxCid FROM customer";
+      connection.query(maxCidQuery, (err, maxCidResult) => {
+        if (err) {
+          return connection.rollback(() => {
+            connection.release();
+            console.error("Error fetching maxCid:", err);
+            return res.status(500).json({ message: "Database query error" });
+          });
+        }
+
+        const cid = (maxCidResult[0]?.maxCid || 0) + 1;
+
+        // Step 2: Insert into customer table
+        const createDealerQuery = `
+          INSERT INTO customer (
+            cid, cname, Phone, City, dist, cust_accno, createdby, 
+            createdon, mobile, orgid, engName, centerid, srno, 
+            cust_pincode, cust_bankname, cust_ifsc, isActive, ctype , isdeleted
+          ) VALUES (?, ?, ? ,?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? , ?)
+        `;
+        const dealerData = [
+          cid,
+          cust_name,
+          mobile,
+          city,
+          district,
+          bank_ac,
+          user_role,
+          new Date(),
+          mobile,
+          dairy_id,
+          marathi_name,
+          centerid,
+          cust_no,
+          pincode,
+          bankName,
+          bankIFSC,
+          1,
+          2,
+          0,
+        ];
+
+        connection.query(createDealerQuery, dealerData, (err) => {
+          if (err) {
+            return connection.rollback(() => {
+              connection.release();
+              console.error("Error inserting dealer:", err);
+              return res
+                .status(500)
+                .json({ message: "Error creating dealer record" });
+            });
+          }
+
+          // Step 3: Fetch the newly created dealer
+          const fetchCreatedDealerQuery =
+            "SELECT * FROM customer WHERE cid = ?";
+          connection.query(
+            fetchCreatedDealerQuery,
+            [cid],
+            (err, dealerResult) => {
+              if (err) {
+                return connection.rollback(() => {
+                  connection.release();
+                  console.error("Error fetching created dealer:", err);
+                  return res
+                    .status(500)
+                    .json({ message: "Error fetching dealer record" });
+                });
+              }
+
+              // Step 4: Commit transaction
+              connection.commit((commitErr) => {
+                if (commitErr) {
+                  return connection.rollback(() => {
+                    connection.release();
+                    console.error("Error committing transaction:", commitErr);
+                    return res
+                      .status(500)
+                      .json({ message: "Error committing transaction" });
+                  });
+                }
+
+                // Success
+                connection.release();
+                res.status(200).json({
+                  message: "Dealer created successfully!",
+                  dealer: dealerResult[0],
+                });
+              });
+            }
+          );
+        });
+      });
+    });
+  });
+};
+
+//-------------------------------------------------------------------------------------------->
+// create a new dealer controller ------------------------------------------------------------>
+//-------------------------------------------------------------------------------------------->
+
+exports.dealerList = async (req, res) => {
+  pool.getConnection((err, connection) => {
+    if (err) {
+      console.error("Error getting MySQL connection: ", err);
+      return res.status(500).json({ message: "Database connection error" });
+    }
+
+    try {
+      const dairy_id = req.user.dairy_id;
+      const center_id = req.user.center_id;
+      // Check for unauthorized access
+      if (!dairy_id) {
+        connection.release();
+        return res.status(400).json({ message: "Unauthorized User!" });
+      }
+
+      const getCustList = `
+        SELECT * FROM customer
+        WHERE orgid = ? AND centerid = ? AND ctype=2 AND (isdeleted IS NULL OR isdeleted != 1);
+      `;
+
+      connection.query(getCustList, [dairy_id, center_id], (err, result) => {
+        connection.release(); // Always release the connection after query execution
+
+        if (err) {
+          console.error("Error executing query: ", err); // Correct error reference
+          return res
+            .status(500)
+            .json({ message: "Error fetching customer list" });
+        }
+
+        return res.status(200).json({
+          customerList: result, // Return the entire result array
+          message: "Customer list retrieved successfully", // Updated message
+        });
+      });
+    } catch (error) {
+      connection.release();
+      console.error("Error processing request: ", error);
+      return res.status(500).json({ message: "Internal server error" });
+    }
+  });
+};
+
+// update delaer controller fun
+exports.updateDealer = async (req, res) => {
+  const { id, cname, Phone, City, cust_ifsc, dist, cust_accno } = req.body;
+
+  const { dairy_id, center_id } = req.user;
+  pool.getConnection((err, connection) => {
+    if (err) {
+      console.error("Error getting MySQL connection: ", err);
+      return res.status(500).json({ message: "Database connection error" });
+    }
+
+    try {
+      const updateDealerQuery = `
+        UPDATE customer
+        SET 
+          cname = ?, 
+          Phone = ?, 
+          City = ?, 
+          cust_ifsc = ?, 
+          dist = ?, 
+          cust_accno = ?
+        WHERE  orgid = ? AND center_id = ? AND id = ?
+      `;
+
+      connection.query(
+        updateDealerQuery,
+        [
+          cname,
+          Phone,
+          City,
+          cust_ifsc,
+          dist,
+          cust_accno,
+          dairy_id,
+          center_id,
+          id,
+        ],
+        (error, results) => {
+          connection.release(); // Release the connection back to the pool
+
+          if (error) {
+            console.error("Error executing query: ", error);
+            return res
+              .status(500)
+              .json({ message: "Error updating dealer", success: false });
+          }
+
+          if (results.affectedRows === 0) {
+            return res
+              .status(404)
+              .json({ message: "Dealer not found", success: false });
+          }
+
+          return res
+            .status(200)
+            .json({ message: "Dealer updated successfully", success: true });
+        }
+      );
+    } catch (error) {
+      connection.release();
+      console.error("Error processing request: ", error);
+      return res
+        .status(500)
+        .json({ message: "Internal server error", success: false });
+    }
+  });
+};
+
+// ----------------------------------------------------------------------------------->
+
+exports.deleteCustomer = async (req, res) => {
+  const { cid } = req.body;
+
+  const { dairy_id, center_id } = req.user;
+  pool.getConnection((err, connection) => {
+    if (err) {
+      console.error("Error getting MySQL connection: ", err);
+      return res.status(500).json({ message: "Database connection error" });
+    }
+    try {
+      const isdeleted = 0;
+      const udeletequery = `
+        UPDATE customer
+        SET
+          isdeleted = ?
+        WHERE orgid = ? AND centerid = ? AND cid = ?
+      `;
+
+      connection.query(
+        udeletequery,
+        [isdeleted, dairy_id, center_id, cid],
+        (error, results) => {
+          connection.release();
+
+          if (error) {
+            console.error("Error executing query: ", error);
+            return res.status(500).json({ message: "Error deleting customer" });
+          }
+
+          if (results.affectedRows === 0) {
+            return res.status(404).json({ message: "Customer not found" });
+          }
+
+          return res
+            .status(200)
+            .json({ message: "Customer deleted successfully" });
+        }
+      );
+    } catch (error) {
+      connection.release();
       console.error("Error processing request: ", error);
       return res.status(500).json({ message: "Internal server error" });
     }

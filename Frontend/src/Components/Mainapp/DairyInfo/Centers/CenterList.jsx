@@ -35,7 +35,7 @@ const CenterList = ({ onEdit }) => {
           <span className="label-text w5">Delete</span>
         </div>
 
-        {centerList.length > 0 ? (
+        {centerList ? (
           centerList.map((center, index) => (
             <div
               key={index}

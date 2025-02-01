@@ -3,7 +3,9 @@ import axiosInstance from "../../../../App/axiosInstance";
 import { MdDeleteOutline } from "react-icons/md";
 import { useDispatch, useSelector } from "react-redux";
 import { useTranslation } from "react-i18next";
+import {toast} from "react-toastify"
 import { getAllProducts } from "../../../../App/Features/Mainapp/Inventory/inventorySlice";
+import "../../../../Styles/Mainapp/Sales/Sales.css";
 
 const CreateCattleFeed = () => {
   const dispatch = useDispatch();
@@ -14,9 +16,9 @@ const CreateCattleFeed = () => {
   const [date, setDate] = useState("");
   const [itemList, setItemList] = useState([]);
   const [qty, setQty] = useState(1);
-  const [rate, setRate] = useState(0);
+  const [rate, setRate] = useState("");
   const [selectitemcode, setSelectitemcode] = useState(0);
-  const [amt, setAmt] = useState(0);
+  const [amt, setAmt] = useState("");
   const [rctno, setRctno] = useState(localStorage.getItem("receiptno") || 1);
   const customerslist = useSelector((state) => state.customer.customerlist);
   const productlist = useSelector((state) => state.inventory.allProducts || []);
@@ -29,8 +31,6 @@ const CreateCattleFeed = () => {
     const myrole = localStorage.getItem("userRole");
     setUserRole(myrole);
   }, []);
-  
-  console.log("all products", productlist);
 
   useEffect(() => {
     dispatch(getAllProducts());
@@ -62,26 +62,20 @@ const CreateCattleFeed = () => {
     return today.toISOString().split("T")[0];
   };
 
-  const handleFindItemName = (id) => {
-    const selectedItem = itemList.find((item) => item.ItemCode === id);
-    return selectedItem.ItemName;
-  };
-
   const handleAddToCart = () => {
     if (selectitemcode > 0 && qty > 0 && rate > 0) {
-      const selectedItem = itemList.find(
+      const selectedItem = productlist.find(
         (item) => item.ItemCode === selectitemcode
       );
       const newCartItem = {
-        companyid: selectedItem?.companyid,
-        ReceiptNo: rctno, // Receipt No
-        userid: userid,
+        ReceiptNo: rctno,
         BillNo: billNo,
         ItemCode: selectedItem?.ItemCode,
+        ItemName: selectedItem?.ItemName,
         BillDate: date + " 00:00:00",
         Qty: qty,
         CustCode: fcode,
-        ItemGroupCode: 1, // update Itemgroupcode
+        ItemGroupCode: 1,
         Rate: rate,
         Amount: qty * rate,
       };
@@ -89,15 +83,14 @@ const CreateCattleFeed = () => {
       // Update the cart items and log the updated array
       setCartItem((prev) => {
         const updatedCart = [...prev, newCartItem];
-        // console.log("Updated Cart:", updatedCart); // Logs the latest state
         return updatedCart;
       });
 
       // Reset the input values
       setQty(1);
-      setRate(0);
-      setAmt(0);
-      setSelectitemcode(0); // Reset amount to 0 after clearing rate and quantity
+      setRate("");
+      setAmt("");
+      setSelectitemcode(""); // Reset amount to 0 after clearing rate and quantity
     }
   };
 
@@ -147,10 +140,27 @@ const CreateCattleFeed = () => {
         console.error("Error Submitting items:", error);
       }
     }
-    
   };
 
+  // Set customer code (fcode) based on cname
+  useEffect(() => {
+    if (cname && customerslist.length > 0) {
+      const custname = customerslist.find((item) => item.cname === cname);
+      if (custname) {
+        setFcode(custname.srno ?? "");
+      } else {
+        setFcode("");
+      }
+    } else {
+      setFcode("");
+    }
+  }, [cname, customerslist]);
+
   const handlePrint = () => {
+    if (cartItem.length === 0) {
+      toast.error("You don't have Item's to Print , please add products!");
+      return;
+    }
     const printWindow = window.open("", "_blank");
     const printContent = document.getElementById("print-section").innerHTML;
     console.log(printContent);
@@ -183,28 +193,33 @@ const CreateCattleFeed = () => {
     }
   };
 
+  // Select all the text when input is focused
+  const handleFocus = (e) => {
+    e.target.select();
+  };
+
   return (
-    <div className="sale-add-container w100 h1 d-flex-col">
-      <span className="heading p10">Create Cattle Feed</span>
-      <div className="create-sales-outer-container w100 h1 d-flex p10">
-        <div className="create-sales-form-container w50 h60 d-flex-col p10 bg">
-          <div className="row w100 h20 d-flex a-center sb">
-            <div className="col w50 d-flex a-center">
-              <label htmlFor="date" className="info-text w30">
+    <div className="add-sale-container w100 h1 d-flex sa">
+      <div className="create-sales-outer-container w50 h90 d-flex-col p10 bg">
+        <span className="heading p10">Create Cattle Feed</span>
+        <div className="create-sales-form-container w100 h80 d-flex-col ">
+          <div className="sales-details w100 h20 d-flex a-center sb ">
+            <div className="col w50 d-flex a-center ">
+              <label htmlFor="date" className="info-text w100">
                 Date :
               </label>
               <input
                 type="date"
-                className="data w50"
+                className="data w100"
                 name="date"
                 id="date"
                 value={date}
                 onChange={(e) => setDate(e.target.value)}
                 max={date}
               />
-            </div>{" "}
-            <div className="col w50 d-flex a-center">
-              <label htmlFor="recieptno" className="info-text px10">
+            </div>
+            <div className="col w30 d-flex a-center">
+              <label htmlFor="recieptno" className="info-text w100">
                 Receipt No :
               </label>
               <input
@@ -212,53 +227,64 @@ const CreateCattleFeed = () => {
                 name="number"
                 id="recieptno"
                 value={rctno}
-                className="data w30"
+                className="data w100"
                 onChange={(e) => setRctno(e.target.value.replace(/\D/, ""))}
                 min="0"
               />
             </div>
           </div>
-          <div className="row w100 h20 d-flex a-center sb">
-            <div className="col w30 d-flex a-center">
-              <label htmlFor="code" className="info-text w40">
+          <div className="sale-details w100 h20 d-flex a-center sb ">
+            <div className="col w20 ">
+              <label htmlFor="code" className="info-text w100">
                 Code:
               </label>
               <input
                 type="number"
                 name="code"
                 id="code"
-                className="data w50"
+                className="data w100"
                 value={fcode}
                 onChange={(e) => setFcode(e.target.value)}
                 min="0"
               />
             </div>
-            <div className="col w70 d-flex a-center">
-              <label htmlFor="custname" className="info-text w35">
+            <div className="col w80">
+              <label htmlFor="custname" className="info-text w100">
                 Customer Name:
               </label>
               <input
                 type="text"
                 name="fname"
                 id="custname"
-                className="data w65"
+                list="farmer-list"
+                className="data w100"
                 value={cname}
-                readOnly
+                onChange={(e) => setCname(e.target.value)}
+                onFocus={handleFocus}
               />
+              <datalist id="farmer-list">
+                {customerslist
+                  .filter((customer) =>
+                    customer.cname.toLowerCase().includes(cname.toLowerCase())
+                  )
+                  .map((customer, index) => (
+                    <option key={index} value={customer.cname} />
+                  ))}
+              </datalist>
             </div>
           </div>
-          <div className="row w100 h20 d-flex a-center sb">
-            <div className="col w45 d-flex a-center">
-              <label htmlFor="items" className="info-text w35">
-                Select Items:
+          <div className="sales-details w100 h20 d-flex a-center sb ">
+            <div className="col w80">
+              <label htmlFor="items" className="info-text w100">
+                Select Product:
               </label>
               <select
                 disabled={!cname}
                 id="items"
                 value={selectitemcode}
-                className="data w65"
+                className="data w100"
                 onChange={(e) => setSelectitemcode(parseInt(e.target.value))}>
-                <option value="0">Select Item</option>
+                <option value="0">-- select product --</option>
                 {productlist.map((item, i) => (
                   <option key={i} value={i}>
                     {item.ItemName}
@@ -266,8 +292,8 @@ const CreateCattleFeed = () => {
                 ))}
               </select>
             </div>
-            <div className="col w45 d-flex a-center sb">
-              <label htmlFor="qty" className="info-text w30">
+            <div className="col w20">
+              <label htmlFor="qty" className="info-text w100">
                 QTY:
               </label>
               <input
@@ -275,7 +301,7 @@ const CreateCattleFeed = () => {
                 type="number"
                 id="qty"
                 value={qty}
-                className="data w70"
+                className="data w100"
                 name="qty"
                 min="1"
                 onChange={(e) => setQty(Math.max(1, parseInt(e.target.value)))}
@@ -283,16 +309,16 @@ const CreateCattleFeed = () => {
             </div>
           </div>
           {userRole !== "mobilecollector" ? (
-            <div className="row w100 h20 d-flex a-center sb">
-              <div className="col w45 d-flex a-center sb">
-                <label htmlFor="rate" className="info-text w35">
+            <div className="sales-details w100 h20 d-flex ">
+              <div className="col w30 ">
+                <label htmlFor="rate" className="info-text w100">
                   Rate:
                 </label>
                 <input
                   type="number"
                   name="rate"
                   id="rate"
-                  className="data w65"
+                  className="data w70"
                   value={rate}
                   onChange={(e) =>
                     setRate(Math.max(0, parseFloat(e.target.value)))
@@ -301,8 +327,8 @@ const CreateCattleFeed = () => {
                   disabled={!selectitemcode}
                 />
               </div>
-              <div className="col w45 d-flex a-center sb">
-                <label htmlFor="amt" className="info-text w30">
+              <div className="col w30">
+                <label htmlFor="amt" className="info-text w100">
                   Amount:
                 </label>
                 <input
@@ -320,189 +346,147 @@ const CreateCattleFeed = () => {
           )}
 
           <div className="sales-btn-container w100 h20 d-flex j-end my10">
-            <button className="w-btn" onClick={handelClear}>
+            <button className="w-btn m10" onClick={handelClear}>
               Clear
             </button>
-            <button className="w-btn mx10" onClick={handleAddToCart}>
+            <button className="btn m10" onClick={handleAddToCart}>
               Add to Cart
-            </button>
-            <button
-              className="w-btn"
-              onClick={handleSubmit}
-              disabled={cartItem.length == 0}>
-              Save
             </button>
           </div>
         </div>
-        <div className="sales-list-outer-container w50 h1 d-flex-col p10">
-          <span className="label-text t-center px10">-- ITEMS LIST --</span>
-          <div className="sales-list-conatainer w100 h1 d-flex-col bg">
-            <div className="sales-headings-row w100 h10 d-flex sb a-center t-center sticky-top t-heading-bg">
-              <span className="f-label-text w10">Sr.No</span>
-              <span className="f-label-text w40">Item Nam</span>
-              <span className="f-label-text w10">Qty</span>
-              <span className="f-label-text w10">Rate</span>
-              <span className="f-label-text w10">Amount</span>
-              {userRole !== "mobilecollector" ? (
-                <span className="f-label-text w20 t-center">Actions</span>
-              ) : (
-                <span className="w20"></span>
-              )}
-            </div>
-            {cartItem.lenght > 0 ? (
-              <>
-                {cartItem.map((item, i) => (
-                  <div className="sales-headings-row w100 h10 d-flex a-center sb">
-                    <span className="label-text w10 t-center">Sr.No</span>
-                    <span className="label-text w40 t-start">Item Nam</span>
-                    <span className="label-text w10 t-center">Qty</span>
-                    <span className="label-text w10 t-end">Rate</span>
-                    <span className="label-text w10 t-end">Amount</span>
-                    {userRole !== "mobilecollector" ? (
-                      <span className="label-text w20 t-center">
-                        <MdDeleteOutline
-                          size={20}
-                          className="table-icon"
-                          style={{ color: "red" }}
-                          onClick={() => handleDeleteItem(i)}
-                        />
-                      </span>
-                    ) : (
-                      <span className="label-text w20 t-center"></span>
-                    )}
-                  </div>
-                ))}
-                <div className="sales-headings-row w100 h10 d-flex a-center sb">
-                  <span className=" w10"></span>
-                  <span className=" w40"></span>
-                  <span className=" w10"></span>
-                  <span className="label-text w10">Total :</span>
-                  <span className="label-text w10 t-end">0</span>
-                  <span className=" w20"></span>
-                </div>
-              </>
+      </div>
+      <div className="sales-list-outer-container w45 h90 d-flex-col bg">
+        <span className="heading p10">Item List</span>
+        <div className="sales-list-conatainer w100 h1 d-flex-col">
+          <div className="sales-headings-row w100 h10 d-flex sb a-center t-center sticky-top t-heading-bg">
+            <span className="f-label-text w10">No.</span>
+            <span className="f-label-text w40">Name</span>
+            <span className="f-label-text w10">Qty</span>
+            <span className="f-label-text w10">Rate</span>
+            <span className="f-label-text w10">Amount</span>
+            {userRole !== "mobilecollector" ? (
+              <span className="f-label-text w20 t-center">Action</span>
             ) : (
-              <div className="box d-flex center">
-                <span className="label-text">{t("common:c-no-data-avai")}</span>
-              </div>
+              <span className="w20"></span>
             )}
           </div>
-          <div className="modal-content w100  ">
-            {/* <div className="sales-table-container w100">
-              <table className="sales-table w100 ">
-                <thead className="bg2">
+          {cartItem.length > 0 ? (
+            <>
+              {cartItem.map((item, i) => (
+                <div className="sales-headings-row w100 h10 d-flex a-center sb">
+                  <span className="label-text w10 t-center">{i + 1}</span>
+                  <span className="label-text w40 t-start">
+                    {item.ItemName}
+                  </span>
+                  <span className="label-text w10 t-center">{item.Qty}</span>
+                  <span className="label-text w10 t-end">{item.Rate}</span>
+                  <span className="label-text w10 t-end">{item.Amount}</span>
+                  {userRole !== "mobilecollector" ? (
+                    <span className="label-text w20 t-center">
+                      <MdDeleteOutline
+                        size={20}
+                        className="table-icon"
+                        style={{ color: "red" }}
+                        onClick={() => handleDeleteItem(i)}
+                      />
+                    </span>
+                  ) : (
+                    <span className="label-text w20 t-center"></span>
+                  )}
+                </div>
+              ))}
+              <div className="sales-total-headings-row w100 h10 d-flex a-center sb">
+                <span className=" w10"></span>
+                <span className=" w40"></span>
+                <span className=" w10"></span>
+                <span className="label-text w10">Total :</span>
+                <span className="label-text w10 t-end">
+                  {cartItem.reduce((acc, item) => acc + item.Amount, 0)}
+                </span>
+                <span className=" w20"></span>
+              </div>
+            </>
+          ) : (
+            <div className="box d-flex center">
+              <span className="label-text">{t("common:c-no-data-avai")}</span>
+            </div>
+          )}
+        </div>
+        <div className="modal-content w100">
+          <div id="print-section" style={{ display: "none" }}>
+            <div className="invoice">
+              <h2 className="invoice-header">हरि ओम दूध संकलन केंद्र</h2>
+              <table className="invoice-table">
+                <thead>
                   <tr>
-                    <th>Sr.No</th>
-                    <th>Item Name</th>
-                    <th>Rate</th>
-                    <th>Qty</th>
-                    <th>Amount</th>
-                    <th>Actions</th>
+                    <th>SrNo</th>
+                    <th>तारीख</th>
+                    <th>नरे</th>
+                    <th>रेट</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {cartItem.map((item, i) => (
-                    <tr key={i}>
-                      <td>{i + 1}</td>
-                      <td>{handleFindItemName(item.ItemCode)}</td>
-                      <td>{item.Rate}</td>
-                      <td>{item.Qty}</td>
-                      <td>{item.Amount}</td>
-                      <td>
-                        <MdDeleteOutline
-                          size={20}
-                          className="table-icon"
-                          style={{ color: "red" }}
-                          onClick={() => handleDeleteItem(i)}
-                        />
-                      </td>
-                    </tr>
-                  ))}
                   <tr>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td>
-                      <b>Total</b>
+                    <td>1</td>
+                    <td>20/01/2025</td>
+                    <td>10</td>
+                    <td>50</td>
+                  </tr>
+                  <tr>
+                    <td colSpan="3">
+                      <b>कुल रक्कम:</b>
                     </td>
-                    <td>
-                      {cartItem.reduce((acc, item) => acc + item.Amount, 0)}
-                    </td>
-                    <td></td>
+                    <td>500</td>
                   </tr>
                 </tbody>
               </table>
-            </div> */}
-
-            <div id="print-section" style={{ display: "none" }}>
-              <div className="invoice">
-                <h2 className="invoice-header">हरि ओम दूध संकलन केंद्र</h2>
-                <table className="invoice-table">
-                  <thead>
-                    <tr>
-                      <th>SrNo</th>
-                      <th>तारीख</th>
-                      <th>नरे</th>
-                      <th>रेट</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td>1</td>
-                      <td>20/01/2025</td>
-                      <td>10</td>
-                      <td>50</td>
-                    </tr>
-                    <tr>
-                      <td colSpan="3">
-                        <b>कुल रक्कम:</b>
-                      </td>
-                      <td>500</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-              <div className="invoice">
-                <h2 className="invoice-header">हरि ओम दूध संकलन केंद्र</h2>
-                <table className="invoice-table">
-                  <thead>
-                    <tr>
-                      <th>SrNo</th>
-                      <th>तारीख</th>
-                      <th>नरे</th>
-                      <th>रेट</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td>1</td>
-                      <td>20/01/2025</td>
-                      <td>15</td>
-                      <td>75</td>
-                    </tr>
-                    <tr>
-                      <td colSpan="3">
-                        <b>कुल रक्कम:</b>
-                      </td>
-                      <td>1125</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
             </div>
-            {userRole === "mobilecollector" ? (
-              <div className="w100 d-flex j-end  my10">
-                <button className="w-btn">PDF</button>
-              </div>
-            ) : (
-              <div className="w100 d-flex j-end  my10">
-                <button className="w-btn">PDF</button>
-                <button className="w-btn mx10" onClick={handlePrint}>
-                  Print
-                </button>
-              </div>
-            )}
+            <div className="invoice">
+              <h2 className="invoice-header">हरि ओम दूध संकलन केंद्र</h2>
+              <table className="invoice-table">
+                <thead>
+                  <tr>
+                    <th>SrNo</th>
+                    <th>तारीख</th>
+                    <th>नरे</th>
+                    <th>रेट</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>1</td>
+                    <td>20/01/2025</td>
+                    <td>15</td>
+                    <td>75</td>
+                  </tr>
+                  <tr>
+                    <td colSpan="3">
+                      <b>कुल रक्कम:</b>
+                    </td>
+                    <td>1125</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
           </div>
+          {userRole === "mobilecollector" ? (
+            <div className="w100 d-flex j-end  my10">
+              <button className="w-btn">PDF</button>
+            </div>
+          ) : (
+            <div className="w100 d-flex j-end  my10">
+              <button className="w-btn mx10">PDF</button>
+              <button className="w-btn" onClick={handlePrint}>
+                Print
+              </button>
+              <button
+                className="w-btn mx10"
+                onClick={handleSubmit}
+                disabled={cartItem.length == 0}>
+                Save
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </div>

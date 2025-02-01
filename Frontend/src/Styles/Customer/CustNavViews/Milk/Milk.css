@@ -55,3 +55,12 @@
 /* .content-titles-div{
   border-radius: 0 0 8px 8px;
 } */
+
+@media screen and (max-width: 426px) {
+  .coll-report-container {
+    min-height: fit-content;
+  }
+  .invoice-of-collection-div {
+    min-height: max-content;
+  }
+}

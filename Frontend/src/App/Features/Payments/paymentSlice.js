@@ -6,6 +6,7 @@ const initialState = {
   status: "idle",
   copyCollstatus: "idle",
   deleteCollstatus: "idle",
+  transferCollshiftstatus: "idle",
   error: null,
 };
 
@@ -182,7 +183,21 @@ export const deleteCollection = createAsyncThunk(
   }
 );
 
-
+export const transferToShift = createAsyncThunk(
+  "payment/transferToShift",
+  async ({ values }, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.patch("/transfer-milk/to-shift", {
+        values,
+      });
+      return response.data;
+    } catch (error) {
+      const errorMessage =
+        error.response?.data?.message || "Failed to delete milk records.";
+      return rejectWithValue(errorMessage);
+    }
+  }
+);
 
 const paymentSlice = createSlice({
   name: "payment",
@@ -270,6 +285,17 @@ const paymentSlice = createSlice({
       })
       .addCase(deleteMilkRecord.rejected, (state, action) => {
         state.status = "failed";
+        state.error = action.payload;
+      }) // transfer milk collection to shift ------------------------------------------->
+      .addCase(transferToShift.pending, (state) => {
+        state.transferCollshiftstatus = "loading";
+        state.error = null;
+      })
+      .addCase(transferToShift.fulfilled, (state) => {
+        state.transferCollshiftstatus = "succeeded";
+      })
+      .addCase(transferToShift.rejected, (state, action) => {
+        state.transferCollshiftstatus = "failed";
         state.error = action.payload;
       }) // copy milk collection  ------------------------------------------->
       .addCase(copyCollection.pending, (state) => {

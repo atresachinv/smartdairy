@@ -8,6 +8,7 @@ const {
   deleteSelectedMilkRecord,
   copyMilkCollection,
   deleteMilkCollection,
+  transferMilkCollectionToShift,
 } = require("../Controllers/PaymentController");
 
 const router = express.Router();
@@ -28,6 +29,9 @@ router
   .route("/delete/milk-record")
   .delete(verifyToken, deleteSelectedMilkRecord);
 router.route("/copy-milk").put(verifyToken, copyMilkCollection);
+router
+  .route("/transfer-milk/to-shift")
+  .patch(verifyToken, transferMilkCollectionToShift);
 router
   .route("/milk/correction/delete-milk")
   .post(verifyToken, deleteMilkCollection);

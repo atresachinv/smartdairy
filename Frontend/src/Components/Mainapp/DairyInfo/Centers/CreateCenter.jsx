@@ -424,7 +424,7 @@ const CreateCenter = () => {
             <div className="password-input-container w100 d-flex a-center">
               <input
                 className="pass w90"
-                type={showMPassword ? "text" : "password"}
+                type={showPassword ? "text" : "password"}
                 name="password"
                 onChange={handleChange}
               />

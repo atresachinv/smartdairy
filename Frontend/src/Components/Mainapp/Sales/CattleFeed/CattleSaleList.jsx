@@ -1,10 +1,7 @@
-// eslint-disable-next-line no-unused-vars
 import React, { useEffect, useState } from "react";
-import { FaDownload, FaRegEye } from "react-icons/fa6";
 import * as XLSX from "xlsx";
 import Spinner from "../../../Home/Spinner/Spinner";
 import { useSelector } from "react-redux";
-import { FaRegEdit } from "react-icons/fa";
 import axiosInstance from "../../../../App/axiosInstance";
 import { MdDeleteOutline } from "react-icons/md";
 // import "../../../../Styles/Mainapp/Sale/sale.css";
@@ -247,10 +244,6 @@ const CattleSaleList = () => {
             Export Excel
           </button>
         </div>
-        {/* <button className="btn" onClick={downloadExcel}>
-          <span className="f-label-text px10">Download Excel</span>
-          <FaDownload />
-        </button> */}
       </div>
       <div className="customer-list-table w100 h1 d-flex-col hidescrollbar bg">
         <span className="heading p10">Cattle Feed List</span>
@@ -277,19 +270,8 @@ const CattleSaleList = () => {
                 style={{
                   backgroundColor: index % 2 === 0 ? "#faefe3" : "#fff",
                 }}>
+                <span className="text w5">{index + 1}</span>
                 <span className="text w5">
-                  {
-                    /* <FaRegEdit
-                    size={15}
-                    className="table-icon"
-                    onClick={() => handleEditClick(sale)}
-                  /> */
-
-                    index + 1
-                  }
-                </span>
-                <span className="text w5">
-                  {" "}
                   {new Date(sale.BillDate).toLocaleDateString("en-US", {
                     dateStyle: "short",
                   })}
@@ -310,12 +292,10 @@ const CattleSaleList = () => {
                     style={{ color: "red" }}
                   />
                 </span>
-
-                {/* Assuming all customers are active */}
               </div>
             ))
           ) : (
-            <div>No Items found</div>
+            <div className="box d-flex center">No Items found</div>
           )}
         </div>
         {isModalOpen && (

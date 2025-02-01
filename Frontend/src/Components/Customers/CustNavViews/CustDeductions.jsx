@@ -21,7 +21,7 @@ const CustDeductions = () => {
   // Generate master dates based on the initial date
   useEffect(() => {
     dispatch(generateMaster(date));
-  }, []);
+  }, [date]);
 
   // Handle the date selection
   const handleSelectChange = async (e) => {
@@ -29,7 +29,7 @@ const CustDeductions = () => {
     if (selectedIndex !== "") {
       const selectedDates = manualMaster[selectedIndex];
       // Dispatch the action with the selected fromDate and toDate
-      await dispatch(resetDeduction());
+      dispatch(resetDeduction());
       dispatch(
         getDeductionInfo({
           fromDate: selectedDates.start,
@@ -38,8 +38,7 @@ const CustDeductions = () => {
       );
     }
   };
-  
-  // console.log(deduction);
+
 
   return (
     <div className="deduction-info-container w100 h1 d-flex-col">

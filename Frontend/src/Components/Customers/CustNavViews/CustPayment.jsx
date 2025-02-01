@@ -17,6 +17,7 @@ import {
 const CustPayment = () => {
   const { t } = useTranslation("common");
   const dispatch = useDispatch();
+  const date = useSelector((state) => state.date.toDate);
   const manualMaster = useSelector((state) => state.manualMasters.masterlist);
   const records = useSelector((state) => state.mMilk.mrecords);
   const subdeduction = useSelector((state) => state.deduction.subdeductions);
@@ -24,7 +25,10 @@ const CustPayment = () => {
   const status = useSelector((state) => state.mMilk.status);
   const [selectedPeriod, setSelectedPeriod] = useState(null);
 
-  console.log(payment);
+  // Generate master dates based on the initial date
+  useEffect(() => {
+    dispatch(generateMaster(date));
+  }, [date]);
 
   const handleSelectChange = (e) => {
     const selectedIndex = e.target.value;
@@ -168,39 +172,6 @@ const CustPayment = () => {
                     </div>
                   )}
                 </div>
-                {/* <hr />
-              <div className="content-total-value-div w100 h50 d-flex-col sb p10 ">
-                <div className="total-value-div w100 h10 d-flex sb">
-                  <span className="info-text w30">Total Liters :</span>
-                  <span className="text w30 t-center">
-                    {safeToFixed(summary.totalLiters, 1)}
-                  </span>
-                </div>
-                <div className="total-value-div w100 h10 d-flex sb">
-                  <span className="info-text w30">Avrage FAT : </span>
-                  <span className="text w30 t-center">
-                    {safeToFixed(summary.avgFat, 1)}
-                  </span>
-                </div>
-                <div className="total-value-div w100 h10 d-flex sb">
-                  <span className="info-text w30">Avrage SNF : </span>
-                  <span className="text w30 t-center">
-                    {safeToFixed(summary.avgSNF, 1)}
-                  </span>
-                </div>
-                <div className="total-value-div w100 h10 d-flex sb">
-                  <span className="info-text w30">Avrage Rate : </span>
-                  <span className="text w30 t-center">
-                    {safeToFixed(summary.avgRate, 1)}
-                  </span>
-                </div>
-                <div className="total-value-div w100 h10 d-flex sb">
-                  <span className="text w30">Total Amount : </span>
-                  <span className="text w30 t-center">
-                    {safeToFixed(summary.totalAmount, 2)}
-                  </span>
-                </div>
-              </div> */}
               </div>
             </div>
             {/* deduction info */}
@@ -230,8 +201,8 @@ const CustPayment = () => {
               <span className="heading px10">{t("c-pay-details")} : </span>
               {payment.length > 0 ? (
                 <div className="deduction-info-details w100 h1 d-flex-col p10">
-                  <div className="date-billno-div w100 h20 d-flex sb">
-                    <div className="dates w50 h1 d-flex sb">
+                  <div className="date-billno-div w100 h20 d-flex a-center sb">
+                    <div className="dates w50 h1 d-flex a-center sb">
                       <span className="label-text">{t("c-date")} : </span>
                       <span className="info-text">
                         {payment[0]?.ToDate
@@ -239,7 +210,7 @@ const CustPayment = () => {
                           : "N/A"}
                       </span>
                     </div>
-                    <div className="bill-div w30 h1 d-flex sb">
+                    <div className="bill-div w30 h1 d-flex a-center sb">
                       <span className="label-text">{t("c-billno")} : </span>
                       <span className="info-text">
                         {payment[0]?.BillNo || "N/A"}
@@ -273,17 +244,13 @@ const CustPayment = () => {
                     </div>
                     <div className="rate w100 h1 d-flex sb">
                       <span className="label-text">{t("c-last-dedu")} :</span>
-                      <span className="info-text">
-                        {"0.0"}
-                      </span>
+                      <span className="info-text">{"0.0"}</span>
                     </div>
                     <div className="rate w100 h1 d-flex sb">
                       <span className="label-text">
                         {t("c-remaining-dedu")} :
                       </span>
-                      <span className="info-text">
-                        {"0.0"}
-                      </span>
+                      <span className="info-text">{"0.0"}</span>
                     </div>
                     <div className="rate w100 h1 d-flex sb">
                       <span className="label-text">{t("c-net-pay")} :</span>

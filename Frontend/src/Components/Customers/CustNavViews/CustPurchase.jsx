@@ -20,14 +20,14 @@ const CustPurchase = () => {
   // Generate master dates based on the initial date
   useEffect(() => {
     dispatch(generateMaster(date));
-  }, [dispatch]);
+  }, [date]);
 
   // Handle the date selection
   const handleSelectChange = (e) => {
     const selectedIndex = e.target.value;
     if (selectedIndex !== "") {
       const selectedDates = manualMaster[selectedIndex];
-     
+
       // Dispatch the action with the selected fromDate and toDate
       dispatch(
         getPurchaseBill({

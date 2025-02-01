@@ -17,6 +17,7 @@ import Footer from "./Footer";
 const Mainapp = () => {
   const dispatch = useDispatch();
   const dairy_id = useSelector((state) => state.dairy.dairyData.SocietyCode);
+  // const dairy_info = useSelector((state) => state.dairy.dairyData);
   const [openSidebar, setOpenSidebar] = useState(false); //fuctional sidebar
 
   const handleSidebar = () => {

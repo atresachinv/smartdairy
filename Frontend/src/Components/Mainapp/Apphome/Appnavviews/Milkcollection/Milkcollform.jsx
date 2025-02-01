@@ -352,7 +352,35 @@ const MilkColleform = ({ switchToSettings }) => {
 
   //Handling Collection Notification
 
-  const sendNotifications = () => {
+  //   const sendNotifications = () => {
+  //     const title = "Milk Collection Receipt";
+  //     const body = {
+  //       name: values.cname,
+  //       date: values.date,
+  //       fat: values.fat,
+  //       snf: values.snf,
+  //       liters: values.liters,
+  //       rate: values.rate,
+  //       amount: values.amt,
+  //     };
+  //
+  //     // Ensure token is available before dispatching
+  //     if (!token) {
+  //       toast.error("Device token is missing");
+  //       return;
+  //     }
+  //     // Dispatch with a single payload object
+  //     dispatch(
+  //       sendNewNotification({
+  //         title, // Notification title
+  //         body, // Notification body details
+  //         deviceToken: token, // Device token for the notification
+  //       })
+  //     );
+  //     toast.success(`Notification sent successfully!`);
+  //   };
+
+  const sendNotifications = async () => {
     const title = "Milk Collection Receipt";
     const body = {
       name: values.cname,
@@ -364,20 +392,66 @@ const MilkColleform = ({ switchToSettings }) => {
       amount: values.amt,
     };
 
-    // Ensure token is available before dispatching
+    // Check if the token exists before proceeding
     if (!token) {
-      console.error("Device token is missing");
+      toast.error("Device token is missing");
       return;
     }
-    // Dispatch with a single payload object
-    dispatch(
-      sendNewNotification({
-        title, // Notification title
-        body, // Notification body details
-        deviceToken: token, // Device token for the notification
-      })
-    );
-    toast.success(`Notification sent successfully!`);
+
+    try {
+      // Show toast indicating the notification is being sent
+      toast.info("Sending notification...");
+
+      // Try sending the notification using the token
+      dispatch(
+        sendNewNotification({
+          title, // Notification title
+          body, // Notification body details
+          deviceToken: token, // Device token for the notification
+        })
+      );
+
+      // On success, show a success toast
+      toast.success(`Notification sent successfully!`);
+    } catch (error) {
+      // Handle different token errors
+      if (error.message.includes("token")) {
+        // If token is expired or invalid, attempt to refresh or notify the user
+        toast.error(
+          "Notification token expired or invalid. Attempting to refresh..."
+        );
+
+        try {
+          // Refresh token here (ensure you have a function to handle this)
+          const refreshedToken = await requestForToken();
+
+          if (refreshedToken) {
+            // Update state with new token
+            setToken(refreshedToken);
+
+            // Retry sending the notification with the new token
+            await dispatch(
+              sendNewNotification({
+                title,
+                body,
+                deviceToken: refreshedToken,
+              })
+            );
+
+            toast.success(
+              "Notification sent successfully with the refreshed token!"
+            );
+          } else {
+            toast.error("Failed to refresh token. Please try again later.");
+          }
+        } catch (refreshError) {
+          toast.error("Error refreshing token: " + refreshError.message);
+        }
+      } else {
+        // If it's another kind of error, display the general error
+        toast.error(`Error sending notification: ${error.message}`);
+      }
+    }
   };
 
   // Remove customer from custList

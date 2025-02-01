@@ -64,7 +64,7 @@ exports.getAllProducts = async (req, res) => {
     const center_id = req.user.center_id;
 
     try {
-      const query = `SELECT ItemName, ItemGroupCode FROM itemmaster WHERE companyid = ? AND center_id = ?`;
+      const query = `SELECT  ItemGroupCode, ItemCode, ItemName FROM itemmaster WHERE companyid = ? AND center_id = ?`;
 
       connection.query(query, [dairy_id, center_id], (err, result) => {
         connection.release();

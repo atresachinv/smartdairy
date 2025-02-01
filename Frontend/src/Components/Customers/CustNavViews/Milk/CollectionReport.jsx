@@ -6,7 +6,7 @@
 // import { useTranslation } from "react-i18next";
 // import "../../../../Styles/Customer/CustNavViews/Milk/Milk.css";
 // // import { generateMaster } from "../../../../App/Features/Customers/Date/masterdateSlice";
-// 
+//
 // const CollectionReport = () => {
 //   const { t } = useTranslation("common");
 //   const dispatch = useDispatch();
@@ -16,14 +16,14 @@
 //   const manualMaster = useSelector((state) => state.manualMasters.masterlist);
 //   const fDate = useSelector((state) => state.date.formDate);
 //   const tDate = useSelector((state) => state.date.toDate);
-// 
+//
 //   const [setectedDate, setSelectedDate] = useState(null);
-// 
+//
 //   const handleSelectChange = async (e) => {
 //     const selectedIndex = e.target.value;
 //     if (selectedIndex !== "") {
 //       const selectedDates = manualMaster[selectedIndex];
-// 
+//
 //       await setSelectedDate(selectedDates);
 //       // Dispatch the action with the selected fromDate and toDate
 //       await dispatch(
@@ -34,7 +34,7 @@
 //       );
 //     }
 //   };
-// 
+//
 //   const safeToFixed = (value, decimals = 2) => {
 //     return value !== null && value !== undefined
 //       ? value.toFixed(decimals)
@@ -107,7 +107,7 @@
 //           <span className="text w10">{t("c-rate")}</span>
 //           <span className="text w15">{t("c-amt")}</span>
 //         </div>
-// 
+//
 //         {status === "loading" ? (
 //           <div className="w100 h80 d-flex center">
 //             <Spinner />
@@ -168,9 +168,8 @@
 //     </div>
 //   );
 // };
-// 
+//
 // export default CollectionReport;
-
 
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -182,8 +181,9 @@ import "../../../../Styles/Customer/CustNavViews/Milk/Milk.css";
 // import { generateMaster } from "../../../../App/Features/Customers/Date/masterdateSlice";
 
 const CollectionReport = () => {
-  const { t } = useTranslation("common");
   const dispatch = useDispatch();
+  const { t } = useTranslation("common");
+  const date = useSelector((state) => state.date.toDate);
   const records = useSelector((state) => state.mMilk.mrecords);
   const summary = useSelector((state) => state.mMilk.msummary);
   const status = useSelector((state) => state.mMilk.status);
@@ -192,6 +192,11 @@ const CollectionReport = () => {
   const tDate = useSelector((state) => state.date.toDate);
 
   const [selectedDate, setSelectedDate] = useState(null);
+
+  // Generate master dates based on the initial date --------------------------->
+  useEffect(() => {
+    dispatch(generateMaster(date));
+  }, [date]);
 
   // useEffect to dispatch getMasterReports on initial render or when selectedDate changes
   useEffect(() => {

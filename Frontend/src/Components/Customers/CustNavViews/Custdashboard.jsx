@@ -69,12 +69,6 @@ const Custdashboard = () => {
       amount: item.dailyAmount,
     }));
 
-  // const safeToFixed = (value, decimals = 2) => {
-  //   return value !== null && value !== undefined
-  //     ? value.toFixed(decimals)
-  //     : "0.00";
-  // };
-
   return (
     <div className="cust-dashboard-information w100 h1 d-flex-col">
       <div className="menu-title-div w70 mx-15 h10 d-flex-col p10">
