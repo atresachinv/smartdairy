@@ -19,15 +19,12 @@ const AppNavViews = ({ index }) => {
       return <CompleteMilkColl />;
       break;
     case 3:
-      return <UpdateCollection />;
-      break;
-    case 4:
       return <SankalanReport />;
       break;
-    case 5:
+    case 4:
       return <MilkCollectorsReports />;
       break;
-    case 6:
+    case 5:
       return <CreateCattleFeed />;
       break;
 

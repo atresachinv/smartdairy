@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { TbMilk } from "react-icons/tb";
+import { v4 as uuidv4 } from "uuid";
 import {
   BsHouseFill,
   BsCoin,
@@ -18,8 +19,8 @@ import {
   FaFileInvoice,
   FaFileInvoiceDollar,
 } from "react-icons/fa6";
-import { IoDocuments } from "react-icons/io5";
 import { GrNotes, GrOrganization } from "react-icons/gr";
+import { NavLink } from "react-router-dom";
 import "../../Styles/Mainapp/Mainapphome.css";
 
 const Mainappnavlinks = ({ setselected, handleSidebar }) => {
@@ -35,13 +36,14 @@ const Mainappnavlinks = ({ setselected, handleSidebar }) => {
     {
       name: "Dashboard",
       icon: <BsGridFill className="icon" />,
-      index: 0,
+      // index: 0,
+      path: "dashboard",
       role: ["admin", "super_admin", "manager"],
     },
     {
-      name: "Milk",
+      name: "Milk Collection",
       icon: <TbMilk className="icon" />,
-      index: 1,
+      path: "milk",
       role: [
         "admin",
         "super_admin",
@@ -59,19 +61,19 @@ const Mainappnavlinks = ({ setselected, handleSidebar }) => {
         {
           name: "Dealer Master",
           icon: <BsGridFill className="icon" />,
-          index: 2.1,
+          path: "inventory/dealer",
           role: ["admin", "manager", "salesman"],
         },
         {
           name: "Product List",
           icon: <BsGridFill className="icon" />,
-          index: 2.2,
+          path: "inventory/product",
           role: ["admin", "manager", "salesman"],
         },
         {
           name: "Starting Stock",
           icon: <BsGridFill className="icon" />,
-          index: 2.3,
+          path: "inventory/product/stock",
           role: [
             "admin",
             "super_admin",
@@ -83,25 +85,25 @@ const Mainappnavlinks = ({ setselected, handleSidebar }) => {
         {
           name: "Expired Products",
           icon: <BsGridFill className="icon" />,
-          index: 2.4,
+          path: "inventory/expired/products",
           role: ["admin", "manager", "salesman"],
         },
         {
           name: "Customer Returns",
           icon: <BsGridFill className="icon" />,
-          index: 2.5,
+          path: "inventory/customer/returns",
           role: ["admin", "manager", "salesman"],
         },
         {
           name: "Dealer Returns",
           icon: <BsGridFill className="icon" />,
-          index: 2.6,
+          path: "inventory/dealer/returns",
           role: ["admin", "manager", "salesman"],
         },
         {
           name: "Update Sale Rate",
           icon: <BsGridFill className="icon" />,
-          index: 2.7,
+          path: "inventory/update/sale-rates",
           role: ["admin", "manager", "salesman"],
         },
       ],
@@ -109,7 +111,8 @@ const Mainappnavlinks = ({ setselected, handleSidebar }) => {
     {
       name: "Accounts",
       icon: <GrNotes className="icon" />,
-      index: 3,
+      // index: 3,
+      path: "accounts",
       role: ["admin", "super_admin", "manager", "salesman"],
     },
     {
@@ -121,37 +124,37 @@ const Mainappnavlinks = ({ setselected, handleSidebar }) => {
         {
           name: "Main Ledger",
           icon: <BsGridFill className="icon" />,
-          index: 4.1,
+          path: "master/main-ledger",
           role: ["admin", "super_admin", "manager"],
         },
         {
           name: "Sub Ledger",
           icon: <BsGridFill className="icon" />,
-          index: 4.2,
+          path: "master/sub-ledger",
           role: ["admin", "super_admin", "manager"],
         },
         {
           name: "Customer Master",
           icon: <BsGridFill className="icon" />,
-          index: 4.3,
+          path: "master/customer",
           role: ["admin", "super_admin", "manager"],
         },
         {
           name: "Employee Master",
           icon: <BsGridFill className="icon" />,
-          index: 4.4,
+          path: "master/employee",
           role: ["admin", "super_admin", "manager"],
         },
         {
           name: "Bank Master",
           icon: <BsGridFill className="icon" />,
-          index: 4.5,
+          path: "master/bank",
           role: ["admin", "super_admin", "manager"],
         },
         {
           name: "Milk Rate Master",
           icon: <BsGridFill className="icon" />,
-          index: 4.6,
+          path: "master/ratechart",
           role: ["admin", "super_admin", "manager"],
         },
       ],
@@ -165,25 +168,25 @@ const Mainappnavlinks = ({ setselected, handleSidebar }) => {
         {
           name: "Cattel Feed",
           icon: <BsGridFill className="icon" />,
-          index: 5.1,
+          path: "purchase/cattlefeed",
           role: ["admin", "super_admin", "manager"],
         },
         {
           name: "Grocery",
           icon: <BsGridFill className="icon" />,
-          index: 5.2,
+          path: "purchase/grocery",
           role: ["admin", "super_admin", "manager"],
         },
         {
           name: "Medicines",
           icon: <BsGridFill className="icon" />,
-          index: 5.3,
+          path: "purchase/medicines",
           role: ["admin", "super_admin", "manager"],
         },
         {
           name: "Others",
           icon: <BsGridFill className="icon" />,
-          index: 5.4,
+          path: "purchase/other",
           role: ["admin", "super_admin", "manager"],
         },
       ],
@@ -191,31 +194,30 @@ const Mainappnavlinks = ({ setselected, handleSidebar }) => {
     {
       name: "Sales",
       icon: <TbMilk className="icon" />,
-      index: 6,
       role: ["super_admin", "admin", "manager"],
       submenus: [
         {
-          name: "Cattel Feed",
+          name: "Cattle Feed",
           icon: <BsGridFill className="icon" />,
-          index: 6.1,
+          path: "sales/cattlefeed",
           role: ["admin", "super_admin", "manager"],
         },
         {
           name: "Grocery",
           icon: <BsGridFill className="icon" />,
-          index: 6.2,
+          path: "sales/grocery",
           role: ["admin", "super_admin", "manager"],
         },
         {
           name: "Medicines",
           icon: <BsGridFill className="icon" />,
-          index: 6.3,
+          path: "sales/medicines",
           role: ["admin", "super_admin", "manager"],
         },
         {
           name: "Others",
           icon: <BsGridFill className="icon" />,
-          index: 6.4,
+          path: "sales/other",
           role: ["admin", "super_admin", "manager"],
         },
       ],
@@ -230,42 +232,43 @@ const Mainappnavlinks = ({ setselected, handleSidebar }) => {
           name: "Center Reports",
           icon: <FaFileLines className="icon" />,
           index: 7.1,
+          path: "reports/center",
           role: ["admin", "super_admin", "manager"],
         },
         {
           name: "Milk Reports",
           icon: <FaFileContract className="icon" />,
-          index: 7.2,
+          path: "reports/milk",
           role: ["admin", "super_admin", "manager"],
         },
         {
           name: "Customer Reports",
           icon: <FaFileLines className="icon" />,
-          index: 7.3,
+          path: "reports/customer",
           role: ["admin", "super_admin", "manager"],
         },
         {
           name: "Employee Reports",
           icon: <FaFileLines className="icon" />,
-          index: 7.4,
+          path: "reports/employee",
           role: ["admin", "super_admin", "manager"],
         },
         {
           name: "Inventory Reports",
           icon: <FaFileInvoice className="icon" />,
-          index: 7.5,
+          path: "reports/inventory",
           role: ["admin", "super_admin", "manager"],
         },
         {
           name: "Sales Reports",
           icon: <FaFileInvoice className="icon" />,
-          index: 7.6,
+          path: "reports/sales",
           role: ["admin", "super_admin", "manager"],
         },
         {
           name: "Payment Reports",
           icon: <FaFileInvoiceDollar className="icon" />,
-          index: 7.7,
+          path: "reports/payment",
           role: ["admin", "super_admin", "manager"],
         },
       ],
@@ -279,25 +282,25 @@ const Mainappnavlinks = ({ setselected, handleSidebar }) => {
         {
           name: "Milk Correction",
           icon: <BsGridFill className="icon" />,
-          index: 8.1,
+          path: "payment/milk-correction",
           role: ["admin", "super_admin", "manager"],
         },
         {
           name: "Milk Transfer",
           icon: <BsGridFill className="icon" />,
-          index: 8.2,
+          path: "payment/milk-transfer",
           role: ["admin", "super_admin", "manager"],
         },
         {
           name: "Payment Deductions",
           icon: <BsGridFill className="icon" />,
-          index: 8.3,
+          path: "payment/add-deductions",
           role: ["admin", "super_admin", "manager"],
         },
         {
           name: "Generate Payments",
           icon: <BsGridFill className="icon" />,
-          index: 8.4,
+          path: "payment/generate",
           role: ["admin", "super_admin", "manager"],
         },
       ],
@@ -311,19 +314,19 @@ const Mainappnavlinks = ({ setselected, handleSidebar }) => {
         {
           name: "Dairy Information",
           icon: <GrOrganization className="icon" />,
-          index: 9.1,
+          path: "dairy/information",
           role: ["admin", "super_admin", "manager"],
         },
         {
           name: "Initial Information",
           icon: <BsGridFill className="icon" />,
-          index: 9.2,
+          path: "dairy/initial-info",
           role: ["admin", "super_admin", "manager"],
         },
         {
           name: "Create New Center",
           icon: <BsGridFill className="icon" />,
-          index: 9.3,
+          path: "dairy/create/center",
           role: ["admin", "super_admin", "manager"],
         },
       ],
@@ -337,19 +340,19 @@ const Mainappnavlinks = ({ setselected, handleSidebar }) => {
         {
           name: "Dairy Settings",
           icon: <BsBuildingFillGear className="icon" />,
-          index: 10.1,
+          path: "settings/dairy",
           role: ["super_admin", "admin", "manager"],
         },
         {
           name: "Inventory Settings",
           icon: <BsHouseGearFill className="icon" />,
-          index: 10.2,
+          path: "settings/inventory",
           role: ["super_admin", "admin", "manager"],
         },
         {
           name: "Machine Settings",
           icon: <FaGears className="icon" />,
-          index: 10.3,
+          path: "settings/machine",
           role: ["super_admin", "admin", "manager"],
         },
       ],
@@ -357,7 +360,7 @@ const Mainappnavlinks = ({ setselected, handleSidebar }) => {
     {
       name: "My Profile",
       icon: <FaUserCircle className="icon" />,
-      index: 11,
+      path: "profile-info",
       role: ["milkcollector", "mobilecollector"],
     },
   ];
@@ -401,35 +404,38 @@ const Mainappnavlinks = ({ setselected, handleSidebar }) => {
 
   return (
     <ul className="sidenav-btns">
-      {filteredNavButtons.map((button) => (
-        <li key={button.index} className="main-navs py5">
+      {filteredNavButtons.map((button, index) => (
+        <li key={uuidv4()} className="main-navs py5">
           <div
-            className="nav-link w90 d-flex"
+            className="nav-link w90 d-flex a-center"
             onClick={() => handleMainClick(button)}>
-            <div className="nav-main w70">
+            <div className="nav-main w80 d-flex a-center">
               {button.icon}
-              <span className="main-nav-text px5 f-heading">{button.name}</span>
+              <NavLink className="main-nav-text px5 f-heading" to={button.path}>
+                {button.name}
+              </NavLink>
             </div>
             {button.submenus && (
-              <span className="submenu-arrow w10">
+              <NavLink className="submenu-arrow w10">
                 {activeMenu === button.index ? (
                   <BsCaretUpFill />
                 ) : (
                   <BsCaretDownFill />
                 )}
-              </span>
+              </NavLink>
             )}
           </div>
           {button.submenus && activeMenu === button.index && (
             <ul className="submenu w100 d-flex-col j-end">
               {button.submenus.map((submenu) => (
-                <li
+                <NavLink
                   key={submenu.index}
-                  className="submenu-item"
+                  className="submenu-item w90 d-flex a-center"
+                  to={submenu.path}
                   onClick={() => handleSubmenuClick(submenu)}>
-                  {submenu.icon}{" "}
+                  {submenu.icon}
                   <span className="submenu-text px10">{submenu.name}</span>
-                </li>
+                </NavLink>
               ))}
             </ul>
           )}

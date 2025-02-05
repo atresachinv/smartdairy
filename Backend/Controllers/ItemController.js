@@ -189,86 +189,83 @@ exports.getItemById = async (req, res) => {
   });
 };
 
+// ------------------------------------------------------------------------------------------->
+// Create new Cattle Feed Bill (Pramod) updated by shubham ----------------------------------->
+// ------------------------------------------------------------------------------------------->
+
 exports.createItem = async (req, res) => {
-  const {
-    ItemName,
-    ItemGroupCode,
-    companyid,
-    ...otherFields // Rest of the fields
-  } = req.body;
+  // Extract companyid (from dairy_id), centerid, and user_role from req.user
+  const dairy_id = req.user.dairy_id;
+  const center_id = req.user.center_id;
+
+  const { ItemName, ItemGroupCode, ...otherFields } = req.body;
 
   // Validate required fields dynamically
   if (!ItemName || !ItemGroupCode || !companyid) {
     return res.status(400).json({
       success: false,
-      message:
-        "Missing required fields: ItemCode, ItemName, ItemGroupCode, or companyid",
+      message: "Missing required fields: ItemName, ItemGroupCode, or companyid",
     });
   }
-  // ItemCode, ItemName, ItemGroupCode, ItemPurchaseExpenseGL, ItemSaleIncomeGL, ItemPurchaseGl, ItemSaleGl, UnitCode, ITFlag, ItemDesc, Manufacturer, vat, disc, transport, min_qty, maxqty, reorderqty, location, ManufacturerName, packing, itemNameeng, cgst, sgst, UnitName, ITFlagName, companyid, marname, hinname, groupid, hsn
-  // Prepare insert query dynamically
 
+  // Establish database connection
   pool.getConnection((err, connection) => {
     if (err) {
       console.error("Error getting MySQL connection: ", err);
       return res.status(500).json({ message: "Database connection error" });
     }
 
-    try {
-      connection.query(
-        "SELECT MAX(ItemCode) AS totalRows FROM itemmaster",
-        (err, countResult) => {
+    connection.query(
+      "SELECT MAX(ItemCode) AS totalRows FROM itemmaster",
+      (err, countResult) => {
+        if (err) {
+          connection.release();
+          console.error("Error fetching row count: ", err);
+          return res
+            .status(500)
+            .json({ success: false, message: "Error fetching row count" });
+        }
+
+        const newItemId = (countResult[0]?.totalRows || 0) + 1; // Generate new ItemCode
+
+        // Build the INSERT query dynamically
+        let insertQuery =
+          "INSERT INTO itemmaster (ItemCode, ItemName, ItemGroupCode, companyid, center_id";
+        const insertValues = [
+          newItemId,
+          ItemName,
+          ItemGroupCode,
+          dairy_id,
+          center_id,
+        ];
+
+        for (const [key, value] of Object.entries(otherFields)) {
+          insertQuery += `, ${key}`;
+          insertValues.push(value);
+        }
+
+        insertQuery += ") VALUES (?";
+        insertQuery += ", ?".repeat(insertValues.length - 1) + ")";
+
+        // Execute the INSERT query
+        connection.query(insertQuery, insertValues, (err, result) => {
+          connection.release();
+
           if (err) {
-            connection.release();
-            console.error("Error counting rows: ", err);
+            console.error("Error inserting item record: ", err);
             return res
               .status(500)
-              .json({ message: "Error fetching row count" });
+              .json({ success: false, message: "Error creating item record" });
           }
 
-          const newItemId = countResult[0].totalRows + 1; // Generate new saleid
-
-          // Step 2: Build the INSERT query dynamically
-          let insertQuery =
-            "INSERT INTO itemmaster (ItemCode,ItemName,ItemGroupCode,companyid";
-          const insertValues = [newItemId, ItemName, ItemGroupCode, companyid];
-
-          for (const [key, value] of Object.entries(otherFields)) {
-            insertQuery += `, ${key}`;
-            insertValues.push(value);
-          }
-
-          insertQuery += ") VALUES (?";
-          insertQuery += ", ?".repeat(insertValues.length - 1) + ")";
-
-          // Step 3: Execute the INSERT query
-          connection.query(insertQuery, insertValues, (err, result) => {
-            connection.release();
-
-            if (err) {
-              console.error("Error inserting item record: ", err);
-              return res
-                .status(500)
-                .json({ message: "Error creating item record" });
-            }
-
-            res.status(201).json({
-              success: true,
-              message: "Item record created successfully",
-              itemid: newItemId,
-            });
+          return res.status(201).json({
+            success: true,
+            message: "Item record created successfully",
+            itemid: newItemId,
           });
-        }
-      );
-    } catch (error) {
-      connection.release();
-      console.error("Unexpected error: ", error);
-      return res.status(500).json({
-        success: false,
-        message: "Unexpected error occurred",
-        error: error.message,
-      });
-    }
+        });
+      }
+    );
   });
 };
 

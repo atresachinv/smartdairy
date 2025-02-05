@@ -1,10 +1,11 @@
 import Home from "./Components/Home/Home";
+import ProtectedRoute from "./ProtectedRoutes";
 import Mainapp from "./Components/Mainapp/Mainapp";
 import Customers from "./Components/Customers/Customers";
 import AdminPannel from "./Components/Adminpanel/AdminPannel";
 import { useEffect, useState } from "react";
 import { toast, ToastContainer } from "react-toastify";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import {
   setToDate,
@@ -17,7 +18,9 @@ import {
   onMessageListener,
 } from "./Notifications/Notification";
 import { saveFCMTokenToDB } from "./App/Features/Notifications/notificationSlice";
-import UnauthPage from "./Components/Home/UnauthPage";
+import Unauthorized from "./Components/Home/Unauthorized";
+import { logoutUser } from "./App/Features/Users/authSlice";
+import axiosInstance from "./App/axiosInstance";
 
 function App() {
   const dispatch = useDispatch();
@@ -28,10 +31,6 @@ function App() {
   useEffect(() => {
     dispatch(setToDate());
   }, [dispatch]);
-
-  useEffect(() => {
-    console.log("is token", fcmToken);
-  }, []);
 
   useEffect(() => {
     if (toDate) {
@@ -114,12 +113,35 @@ function App() {
     <>
       <BrowserRouter>
         <Routes>
-          <Route path={"/"} element={<Home />} />
-          <Route index path="/adminpanel" element={<AdminPannel />} />
-          <Route index path="/mainapp/home" element={<Mainapp />} />
-          <Route index path="/customer/dashboard" element={<Customers />} />
-          <Route path="/unauthorized" element={<UnauthPage />} />
-          {/* <Route path="*" element={<navigate to="/" />} /> */}
+          <Route path="/" element={<Home />} />
+          {/* Protected Routes admin pannel */}
+          <Route element={<ProtectedRoute allowedRoles={["super_admin"]} />}>
+            <Route path="/adminpanel" element={<AdminPannel />} />
+          </Route>
+          {/* Protected Routes main app */}
+          <Route
+            element={
+              <ProtectedRoute
+                allowedRoles={[
+                  "admin",
+                  "super_admin",
+                  "manager",
+                  "milkcollector",
+                  "mobilecollector",
+                ]}
+              />
+            }>
+            <Route path="/mainapp/*" element={<Mainapp />} />
+          </Route>
+          {/* Protected Routes customer app */}
+          <Route
+            element={
+              <ProtectedRoute allowedRoles={["super_admin", "customer"]} />
+            }>
+            <Route path="/customer/home" element={<Customers />} />
+          </Route>
+          {/* Unauthorized Page */}
+          <Route path="/unauthorized" element={<Unauthorized />} />
         </Routes>
       </BrowserRouter>
       <ToastContainer

@@ -3,6 +3,9 @@ import { useDispatch } from "react-redux";
 import EmployeeNavlinks from "./EmployeeNavlinks";
 import EmployeeNavViews from "./EmployeeNavViews";
 import "../../../../../Styles/Mainapp/Masters/EmpMaster.css";
+import CreateEmployee from "./CreateEmployee";
+import EmployeeList from "./EmployeeList";
+import { Route, Routes } from "react-router-dom";
 
 const EmployeeMaster = () => {
   const dispatch = useDispatch();
@@ -28,7 +31,12 @@ const EmployeeMaster = () => {
         />
       </div>
       <div className="Employee-views w100 h90 d-flex center">
-        <EmployeeNavViews index={isselected} />
+        {/* <EmployeeNavViews index={isselected} /> */}
+        <Routes>
+          <Route path="list" element={<EmployeeList />} />
+          <Route path="add-new" element={<CreateEmployee />} />
+          <Route path="*" element={<EmployeeList />} />
+        </Routes>
       </div>
     </div>
   );

@@ -3,6 +3,7 @@ import axiosInstance from "../../axiosInstance";
 
 const initialState = {
   purchaseBill: [],
+  salesRates: [],
   psummary: {},
   status: "idle",
   error: null,
@@ -26,6 +27,23 @@ export const getPurchaseBill = createAsyncThunk(
   }
 );
 
+// export const getProductSaleRates = createAsyncThunk(
+//   "purchase/getProductSaleRates",
+//   async (groupCode, { rejectWithValue }) => {
+//     try {
+//       const response = await axiosInstance.get("/sales-rate", {
+//         params: { groupCode },
+//       });
+//       return response.data.saleRates;
+//     } catch (error) {
+//       const errorMessage = error.response
+//         ? error.response.data
+//         : "Failed to fetch Sales Rates.";
+//       return rejectWithValue(errorMessage);
+//     }
+//   }
+// );
+
 const purchaseSlice = createSlice({
   name: "purchase",
   initialState,
@@ -48,7 +66,19 @@ const purchaseSlice = createSlice({
         state.loading = false;
         state.status = "failed";
         state.error = action.payload;
-      });
+      }); // Get Product Sales Rate -------------------------------->
+    // .addCase(getProductSaleRates.pending, (state) => {
+    //   state.status = "loading";
+    //   state.error = null;
+    // })
+    // .addCase(getProductSaleRates.fulfilled, (state, action) => {
+    //   state.status = "succeeded";
+    //   state.salesRates = action.payload;
+    // })
+    // .addCase(getProductSaleRates.rejected, (state, action) => {
+    //   state.status = "failed";
+    //   state.error = action.payload;
+    // });
   },
 });
 

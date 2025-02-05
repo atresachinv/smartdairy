@@ -1,14 +1,21 @@
 import React from "react";
 import { IoPersonAdd, IoList } from "react-icons/io5";
+import { NavLink } from "react-router-dom";
 
 const EmployeeNavlinks = ({ isselected, setIsSelected }) => {
   const empNavbuttons = [
     {
+      name: "Employee List",
+      icon: <IoList className="icon" />,
+      index: 1,
+      path: "list",
+    },
+    {
       name: "Create Employee",
       icon: <IoPersonAdd className="icon" />,
       index: 0,
+      path: "add-new",
     },
-    { name: "Employee List", icon: <IoList className="icon" />, index: 1 },
   ];
   return (
     <>
@@ -21,10 +28,16 @@ const EmployeeNavlinks = ({ isselected, setIsSelected }) => {
           onClick={() => {
             setIsSelected(index);
           }}>
-          <a>
+          <NavLink
+            to={button.path}
+            className={({ isActive }) =>
+              isActive
+                ? "sub-navlinks f-label-text selected"
+                : "sub-navlinks f-label-text"
+            }>
             {button.icon}
             <span>{button.name}</span>
-          </a>
+          </NavLink>
         </li>
       ))}
     </>

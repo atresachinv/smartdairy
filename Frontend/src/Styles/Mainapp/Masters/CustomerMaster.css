@@ -2,14 +2,14 @@
 .customer-list-table {
   overflow-x: auto;
 }
-.data-headings-div {
+.customer-data-headings-div {
   min-width: 1900px;
   position: sticky;
   top: 0;
   background-color: #17acc0;
   padding: 5px 0;
 }
-.data-values-div {
+.customer-data-values-div {
   min-width: 1900px;
 }
 
@@ -63,15 +63,7 @@
 /* ------------------------------------------ */
 
 /* Customer List Scrollable Responsive css */
-@media screen and (max-width: 426px) {
-  .data-headings-div {
-    min-width: 1200px;
-  }
-  .data-values-div {
-    min-width: 1200px;
-  }
-}
-/* Customer List Scrollable Responsive css end */
+
 
 /* Create Customer Responsive Css */
 @media screen and (max-width: 769px) {
@@ -82,10 +74,6 @@
 }
 
 @media screen and (max-width: 426px) {
-  /* .cust-details-setting-div {
-    padding: 5px;
-    contact-details-div
-  } */
   .cust-details-setting-div {
     max-height: 100%;
     overflow-y: scroll;
@@ -125,13 +113,13 @@
     padding: 5px 8px;
     font-size: 8px;
   }
-  .data-headings-div {
+  .customer-data-headings-div {
     min-width: 1600px;
     position: sticky;
     top: 0;
     background-color: #17acc0;
   }
-  .data-values-div {
+  .customer-data-values-div {
     min-width: 1600px;
   }
 }

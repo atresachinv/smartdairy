@@ -3,28 +3,30 @@ import axiosInstance from "../../../../App/axiosInstance";
 import { MdDeleteOutline } from "react-icons/md";
 import { useDispatch, useSelector } from "react-redux";
 import { useTranslation } from "react-i18next";
-import {toast} from "react-toastify"
+import { toast } from "react-toastify";
 import { getAllProducts } from "../../../../App/Features/Mainapp/Inventory/inventorySlice";
+import { getProductSaleRates } from "../../../../App/Features/Sales/salesSlice";
 import "../../../../Styles/Mainapp/Sales/Sales.css";
 
 const CreateCattleFeed = () => {
   const dispatch = useDispatch();
   const { t } = useTranslation(["milkcollection", "common"]);
+  const salesRates = useSelector((state) => state.sales.salesRates);
+  const customerslist = useSelector((state) => state.customer.customerlist);
+  const productlist = useSelector((state) => state.inventory.allProducts || []);
   const [cartItem, setCartItem] = useState([]);
   const [cname, setCname] = useState("");
   const [fcode, setFcode] = useState("");
   const [date, setDate] = useState("");
   const [itemList, setItemList] = useState([]);
   const [qty, setQty] = useState(1);
-  const [rate, setRate] = useState("");
+  const [rate, setRate] = useState(0);
   const [selectitemcode, setSelectitemcode] = useState(0);
+  const [userid, setUserid] = useState("");
   const [amt, setAmt] = useState("");
   const [rctno, setRctno] = useState(localStorage.getItem("receiptno") || 1);
-  const customerslist = useSelector((state) => state.customer.customerlist);
-  const productlist = useSelector((state) => state.inventory.allProducts || []);
-  const [userid, setUserid] = useState("");
-  const [billNo, setBillNo] = useState("9112");
-
+  const [filteredItems, setFilteredItems] = useState([]); //p--
+  const [purchaseData, setPurchaseData] = useState([]); //p--
   const [userRole, setUserRole] = useState(null);
 
   useEffect(() => {
@@ -34,6 +36,7 @@ const CreateCattleFeed = () => {
 
   useEffect(() => {
     dispatch(getAllProducts());
+    dispatch(getProductSaleRates(1));
   }, []);
 
   useEffect(() => {
@@ -47,15 +50,27 @@ const CreateCattleFeed = () => {
       );
       setCname(customer?.cname || "");
       setUserid(customer?.rno || "");
-      // console.log(customer);
     } else {
       setCname("");
     }
   }, [fcode, customerslist]);
 
+  // ----------------------------------------------------------------------------->
+  // find rate and amount for perticular item ----------------------------------->
   useEffect(() => {
-    setAmt(rate * qty);
-  }, [rate, qty]);
+    if (selectitemcode) {
+      const salesrate = salesRates.find(
+        (rate) => rate.itemcode.toString() === selectitemcode.toString()
+      );
+      if (salesrate) {
+        setRate(salesrate.salerate);
+        setAmt(salesrate.salerate * qty);
+      }
+      if (rate) {
+        setAmt(rate * qty);
+      }
+    }
+  }, [selectitemcode, qty, rate]);
 
   const getTodaysDate = () => {
     const today = new Date();
@@ -63,13 +78,16 @@ const CreateCattleFeed = () => {
   };
 
   const handleAddToCart = () => {
+    if (!selectitemcode) {
+      toast.error("please select product!");
+      return;
+    }
     if (selectitemcode > 0 && qty > 0 && rate > 0) {
       const selectedItem = productlist.find(
         (item) => item.ItemCode === selectitemcode
       );
       const newCartItem = {
         ReceiptNo: rctno,
-        BillNo: billNo,
         ItemCode: selectedItem?.ItemCode,
         ItemName: selectedItem?.ItemName,
         BillDate: date + " 00:00:00",
@@ -93,15 +111,6 @@ const CreateCattleFeed = () => {
       setSelectitemcode(""); // Reset amount to 0 after clearing rate and quantity
     }
   };
-
-  useEffect(() => {
-    const generateBillNo = () => {
-      const timestamp = Date.now(); // Unique value based on current time
-      console.log(timestamp);
-      setBillNo(`9${timestamp}`);
-    };
-    generateBillNo();
-  }, []);
 
   const handleDeleteItem = (id) => {
     if (confirm("Are you sure you want to Delete?")) {
@@ -193,6 +202,28 @@ const CreateCattleFeed = () => {
     }
   };
 
+  //use set rate in rate field
+  useEffect(() => {
+    if (purchaseData.length > 0) {
+      const sortedPurchaseData = [...purchaseData].sort(
+        (a, b) => new Date(b.purchaseid) - new Date(a.purchaseid)
+      );
+      const rateItem = sortedPurchaseData.find(
+        (item) => item.itemcode === selectitemcode
+      );
+      setRate(rateItem?.salerate ?? "");
+    }
+  }, [selectitemcode]);
+
+  // Filter out items that are already in the cart
+
+  useEffect(() => {
+    const itemsNotInCart = productlist.filter(
+      (item) => !cartItem.some((cart) => cart.ItemCode === item.ItemCode)
+    );
+    setFilteredItems(itemsNotInCart);
+  }, [itemList, cartItem]);
+
   // Select all the text when input is focused
   const handleFocus = (e) => {
     e.target.select();
@@ -202,7 +233,7 @@ const CreateCattleFeed = () => {
     <div className="add-sale-container w100 h1 d-flex sa">
       <div className="create-sales-outer-container w50 h90 d-flex-col p10 bg">
         <span className="heading p10">Create Cattle Feed</span>
-        <div className="create-sales-form-container w100 h80 d-flex-col ">
+        <div className="create-sales-form-container w100 h1 d-flex-col ">
           <div className="sales-details w100 h20 d-flex a-center sb ">
             <div className="col w50 d-flex a-center ">
               <label htmlFor="date" className="info-text w100">
@@ -226,6 +257,7 @@ const CreateCattleFeed = () => {
                 type="number"
                 name="number"
                 id="recieptno"
+                onFocus={handleFocus}
                 value={rctno}
                 className="data w100"
                 onChange={(e) => setRctno(e.target.value.replace(/\D/, ""))}
@@ -285,8 +317,8 @@ const CreateCattleFeed = () => {
                 className="data w100"
                 onChange={(e) => setSelectitemcode(parseInt(e.target.value))}>
                 <option value="0">-- select product --</option>
-                {productlist.map((item, i) => (
-                  <option key={i} value={i}>
+                {filteredItems.map((item, i) => (
+                  <option key={i} value={item.ItemCode}>
                     {item.ItemName}
                   </option>
                 ))}
@@ -301,6 +333,7 @@ const CreateCattleFeed = () => {
                 type="number"
                 id="qty"
                 value={qty}
+                onFocus={handleFocus}
                 className="data w100"
                 name="qty"
                 min="1"
@@ -320,6 +353,7 @@ const CreateCattleFeed = () => {
                   id="rate"
                   className="data w70"
                   value={rate}
+                  onFocus={handleFocus}
                   onChange={(e) =>
                     setRate(Math.max(0, parseFloat(e.target.value)))
                   }
@@ -355,8 +389,24 @@ const CreateCattleFeed = () => {
           </div>
         </div>
       </div>
-      <div className="sales-list-outer-container w45 h90 d-flex-col bg">
-        <span className="heading p10">Item List</span>
+      <div className="sales-list-outer-container w45 h1 d-flex-col bg">
+        <div className="title-and-button-container w100 d-flex a-center sb">
+          <span className="heading w30 p10">Item List</span>
+          {userRole === "mobilecollector" ? (
+            <div className="w70 d-flex a-center j-end ">
+              <div className="w100 d-flex j-end ">
+                <button className="w-btn">PDF</button>
+              </div>
+            </div>
+          ) : (
+            <div className="w70 d-flex j-end">
+              <button className="w-btn mx10">PDF</button>
+              <button className="w-btn" onClick={handlePrint}>
+                Print
+              </button>
+            </div>
+          )}
+        </div>
         <div className="sales-list-conatainer w100 h1 d-flex-col">
           <div className="sales-headings-row w100 h10 d-flex sb a-center t-center sticky-top t-heading-bg">
             <span className="f-label-text w10">No.</span>
@@ -367,13 +417,15 @@ const CreateCattleFeed = () => {
             {userRole !== "mobilecollector" ? (
               <span className="f-label-text w20 t-center">Action</span>
             ) : (
-              <span className="w20"></span>
+              <span></span>
             )}
           </div>
           {cartItem.length > 0 ? (
             <>
               {cartItem.map((item, i) => (
-                <div className="sales-headings-row w100 h10 d-flex a-center sb">
+                <div
+                  key={i}
+                  className="sales-headings-row w100 h10 d-flex a-center sb">
                   <span className="label-text w10 t-center">{i + 1}</span>
                   <span className="label-text w40 t-start">
                     {item.ItemName}
@@ -391,7 +443,7 @@ const CreateCattleFeed = () => {
                       />
                     </span>
                   ) : (
-                    <span className="label-text w20 t-center"></span>
+                    <span></span>
                   )}
                 </div>
               ))}
@@ -412,6 +464,15 @@ const CreateCattleFeed = () => {
             </div>
           )}
         </div>
+        <div className="sales-button-container w100 h10 d-flex j-end">
+          <button
+            className="w-btn mx10"
+            onClick={handleSubmit}
+            disabled={cartItem.length == 0}>
+            Save
+          </button>
+        </div>
+
         <div className="modal-content w100">
           <div id="print-section" style={{ display: "none" }}>
             <div className="invoice">
@@ -469,24 +530,6 @@ const CreateCattleFeed = () => {
               </table>
             </div>
           </div>
-          {userRole === "mobilecollector" ? (
-            <div className="w100 d-flex j-end  my10">
-              <button className="w-btn">PDF</button>
-            </div>
-          ) : (
-            <div className="w100 d-flex j-end  my10">
-              <button className="w-btn mx10">PDF</button>
-              <button className="w-btn" onClick={handlePrint}>
-                Print
-              </button>
-              <button
-                className="w-btn mx10"
-                onClick={handleSubmit}
-                disabled={cartItem.length == 0}>
-                Save
-              </button>
-            </div>
-          )}
         </div>
       </div>
     </div>

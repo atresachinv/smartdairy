@@ -3,6 +3,7 @@ import { BsSaveFill } from "react-icons/bs";
 import { VscSave } from "react-icons/vsc";
 import { CiSaveUp1 } from "react-icons/ci";
 import { GrUpdate } from "react-icons/gr";
+import { NavLink } from "react-router-dom";
 
 const RateChartNavlinks = ({ isselected, setIsSelected }) => {
   const ratechartnavlinks = [
@@ -10,16 +11,19 @@ const RateChartNavlinks = ({ isselected, setIsSelected }) => {
       name: "Save",
       icon: <VscSave className="icon" />,
       index: 0,
+      path: "save",
     },
     {
       name: "Update",
       icon: <GrUpdate className="icon" />,
       index: 1,
+      path: "update-save",
     },
     {
       name: "Apply",
       icon: <BsSaveFill className="icon" />,
       index: 2,
+      path: "apply",
     },
   ];
   return (
@@ -33,10 +37,10 @@ const RateChartNavlinks = ({ isselected, setIsSelected }) => {
           onClick={() => {
             setIsSelected(button.index);
           }}>
-          <a>
+          <NavLink to={button.path} className="sub-navlinks f-label-text">
             {button.icon}
             <span>{button.name}</span>
-          </a>
+          </NavLink>
         </li>
       ))}
     </>

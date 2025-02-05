@@ -16,11 +16,12 @@
 .home-nav-item a {
   cursor: pointer;
 }
-
+.sub-navlinks {
+  text-decoration: none;
+}
 /*--------Mobile Screen CSS-------*/
 
 @media screen and (max-width: 426px) {
-  
   .home-nav-item > a > span {
     display: none;
   }

@@ -1,7 +1,8 @@
-// eslint-disable-next-line no-unused-vars
 import React, { useEffect, useState } from "react";
 import ProductsNavlinks from "./ProductsNavlinks";
-import ProductsNavViews from "./ProductsNavViews";
+import { Route, Routes } from "react-router-dom";
+import CreateProducts from "./CreateProducts";
+import ProductsList from "./ProductsList";
 
 const Products = () => {
   const [isselected, setIsSelected] = useState(
@@ -23,7 +24,12 @@ const Products = () => {
           />
         </div>
         <div className="product-views w100 h90 d-flex center">
-          <ProductsNavViews index={isselected} />
+          {/* <ProductsNavViews index={isselected} /> */}
+          <Routes>
+            <Route path="list" element={<ProductsList />} />
+            <Route path="add-product" element={<CreateProducts />} />
+            <Route path="*" element={<ProductsList />} />
+          </Routes>
         </div>
       </div>
     </>

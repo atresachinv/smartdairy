@@ -1,8 +1,12 @@
 import React, { useEffect, useState } from "react";
 import RateChartNavViews from "./RateChartNavViews";
 import RateChartNavlinks from "./RateChartNavlinks";
+import { Route, Routes } from "react-router-dom";
+import SaveRateChart from "./SaveRateChart";
+import UpdateRatechart from "./UpdateRatechart";
+import ApplyRatechart from "./ApplyRatechart";
 
-const RateChartOptions = ({ isSet , ratechart}) => {
+const RateChartOptions = ({ isSet, ratechart }) => {
   const [isselected, setIsSelected] = useState(
     parseInt(localStorage.getItem("selectedRCTab")) || 0
   );
@@ -21,7 +25,23 @@ const RateChartOptions = ({ isSet , ratechart}) => {
         />
       </div>
       <div className="ratechart-nav-views w100 h90 d-flex center">
-        <RateChartNavViews index={isselected} isSet={isSet} ratechart={ratechart}/>
+        {/* <RateChartNavViews
+          index={isselected}
+          isSet={isSet}
+          ratechart={ratechart}
+        /> */}
+        <Routes>
+          <Route path="save-new" element={<SaveRateChart />} />
+          <Route
+            path="update-save"
+            element={<UpdateRatechart isSet={isSet} ratechart={ratechart} />}
+          />
+          <Route
+            path="apply"
+            element={<ApplyRatechart isSet={isSet} ratechart={ratechart} />}
+          />
+          <Route path="*" element={<SaveRateChart />} />
+        </Routes>
       </div>
     </div>
   );

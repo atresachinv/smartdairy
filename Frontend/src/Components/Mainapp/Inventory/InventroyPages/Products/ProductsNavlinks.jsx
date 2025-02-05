@@ -1,15 +1,16 @@
 // eslint-disable-next-line no-unused-vars
 import React from "react";
 import { IoPersonAdd, IoList } from "react-icons/io5";
+import { NavLink } from "react-router-dom";
 
 // eslint-disable-next-line react/prop-types
 const ProductsNavlinks = ({ isselected, setIsSelected }) => {
   const CustNavbuttons = [
-    { name: "Product List", icon: <IoList className="icon" />, index: 0 },
+    { name: "Product List", icon: <IoList className="icon" />, path: "list" },
     {
       name: "Create Products",
       icon: <IoPersonAdd className="icon" />,
-      index: 1,
+      path: "add-product",
     },
   ];
   return (
@@ -24,10 +25,10 @@ const ProductsNavlinks = ({ isselected, setIsSelected }) => {
             setIsSelected(index);
           }}
         >
-          <a>
+          <NavLink to={button.path} className="sub-navlinks f-label-text">
             {button.icon}
             <span>{button.name}</span>
-          </a>
+          </NavLink>
         </li>
       ))}
     </>

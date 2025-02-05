@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from "react";
 import DealersNavlinks from "./DealersNavlinks";
 import DealersNavViews from "./DealersNavViews";
+import DealersList from "./DealersList";
+import CreateDealers from "./CreateDealers";
+import { Route, Routes } from "react-router-dom";
 
 const Dealers = () => {
   const [isselected, setIsSelected] = useState(
@@ -22,7 +25,12 @@ const Dealers = () => {
           />
         </div>
         <div className="customer-views w100 h90 d-flex center">
-          <DealersNavViews index={isselected} />
+          {/* <DealersNavViews index={isselected} /> */}
+          <Routes>
+            <Route path="list" element={<DealersList />} />
+            <Route path="add-dealer" element={<CreateDealers />} />
+            <Route path="*" element={<DealersList />} />
+          </Routes>
         </div>
       </div>
     </>

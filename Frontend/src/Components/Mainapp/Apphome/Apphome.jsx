@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { Route, Routes } from "react-router-dom";
 import AppNavviews from "./AppNavviews";
 import "../../../Styles/Mainapp/Apphome/Apphome.css";
 import AppNavlinks from "./AppNavlinks";
@@ -8,6 +9,16 @@ import { getRateCharts } from "../../../App/Features/Mainapp/Masters/rateChartSl
 import { getMasterDates } from "../../../App/Features/Customers/Date/masterSlice";
 import { generateMaster } from "../../../App/Features/Customers/Date/masterdateSlice";
 import { getProfileInfo } from "../../../App/Features/Mainapp/Profile/ProfileSlice";
+import Milkcollection from "./Appnavviews/Milkcollection/Milkcollection";
+import MilkSankalan from "./Appnavviews/MilkSankalan/MilkSankalan";
+import CompleteMilkColl from "./Appnavviews/Milkcollection/CompleteMilkColl";
+import SankalanReport from "./Appnavviews/MilkSankalan/SankalanReport";
+import MilkCollectorsReports from "./Appnavviews/Milkcollection/MilkCollectorsReports";
+import CreateCattleFeed from "../Sales/CattleFeed/CreateCattleFeed";
+import SalesReports from "./Appnavviews/MilkSankalan/SalesReports";
+// import Milkcollection from "./Appnavviews/Milkcollection/Milkcollection";
+// import MilkSankalan from "./Appnavviews/MilkSankalan/MilkSankalan";
+// import CompleteMilkColl from "./Appnavviews/Milkcollection/CompleteMilkColl";
 
 const Apphome = () => {
   const dispatch = useDispatch();
@@ -64,7 +75,20 @@ const Apphome = () => {
         <AppNavlinks isselected={isselected} setIsSelected={setIsSelected} />
       </div>
       <div className="apphome-nav-views w100 h90 d-flex center p10">
-        <AppNavviews index={isselected} />
+        {/* <AppNavviews index={isselected} /> */}
+        <Routes>
+          <Route path="collection" element={<Milkcollection />} />
+          <Route path="vehicle/collection" element={<MilkSankalan />} />
+          <Route path="complete/collection" element={<CompleteMilkColl />} />
+          <Route path="collection/reports" element={<SankalanReport />} />
+          <Route
+            path="vehicle/collection/reports"
+            element={<MilkCollectorsReports />}
+          />
+          <Route path="vehicle/sales" element={<CreateCattleFeed />} />
+          <Route path="vehicle/sales/report" element={<SalesReports />} />
+          <Route path="*" element={<Milkcollection />} />
+        </Routes>
       </div>
     </div>
   );

@@ -63,7 +63,6 @@ const GrocerySaleList = () => {
       try {
         const { data } = await axiosInstance.get("/sale/all?ItemGroupCode=3"); // Replace with your actual API URL
         if (data.success) {
-          // console.log(data);
           setSales(data.salesData); // Assuming 'sales' is the array returned by your backend
         }
       } catch (error) {

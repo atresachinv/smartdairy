@@ -1,27 +1,18 @@
-// eslint-disable-next-line no-unused-vars
 import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import OthersNavlinks from "./OthersNavlinks";
-import OthersNavViews from "./OthersNavViews";
+import { Route, Routes } from "react-router-dom";
+import OthersSaleList from "./OthersSaleList";
+import CreateOthers from "./CreateOthers";
 
 const OthersMaster = () => {
-  const dispatch = useDispatch();
   const [isselected, setIsSelected] = useState(
     parseInt(localStorage.getItem("selectedOthersSaleIndex")) || 0
   );
-
   // Update localStorage whenever isselected changes
   useEffect(() => {
     localStorage.setItem("selectedOthersSaleIndex", isselected);
   }, [isselected]);
-
-  // useEffect(() => {
-  //   localStorage.setItem("selectedCustIndex", isselected);
-  // }, [isselected]);
-
-  // useEffect(() => {
-  //   dispatch(getMaxCustNo());
-  // }, []);
 
   return (
     <div className="customer-master-container w100 h1 d-flex-col">
@@ -29,7 +20,12 @@ const OthersMaster = () => {
         <OthersNavlinks isselected={isselected} setIsSelected={setIsSelected} />
       </div>
       <div className="customer-views w100 h90 d-flex center">
-        <OthersNavViews index={isselected} />
+        {/* <OthersNavViews index={isselected} /> */}
+        <Routes>
+          <Route path="sale/list" element={<OthersSaleList />} />
+          <Route path="add/sale" element={<CreateOthers />} />
+          <Route path="*" element={<OthersSaleList />} />
+        </Routes>
       </div>
     </div>
   );

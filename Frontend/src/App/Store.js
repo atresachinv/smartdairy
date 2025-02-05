@@ -13,6 +13,7 @@ import bankReducer from "./Features/Mainapp/Masters/bankSlice";
 import profileReducer from "./Features/Customers/Profile/profileSlice";
 import mastersReducer from "./Features/Customers/Date/masterSlice";
 import purchaseReducer from "./Features/Purchase/purchaseSlice";
+import salesReducer from "./Features/Sales/salesSlice";
 import deductionReducer from "./Features/Deduction/deductionSlice";
 import paymentReducer from "./Features/Payments/paymentSlice";
 import dashboardReducer from "./Features/Customers/Dashboard/dashboardSlice";
@@ -48,6 +49,7 @@ export const store = configureStore({
     // master: masterdateReducer,
     masterdates: mastersReducer, // for master date list from db
     purchase: purchaseReducer,
+    sales: salesReducer,
     deduction: deductionReducer,
     payment: paymentReducer,
     dashboard: dashboardReducer,

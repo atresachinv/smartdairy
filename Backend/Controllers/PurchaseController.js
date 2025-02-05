@@ -576,7 +576,9 @@ exports.createPurchases = async (req, res) => {
     }
   });
 };
-// Get All purchase items controller
+// -------------------------------------------------------------------------------------->
+// Get All purchase items controller ---------------------------------------------------->
+// -------------------------------------------------------------------------------------->
 exports.getAllPurchases = async (req, res) => {
   const { date1, date2, fcode, ...dynamicFields } = req.query;
   const { dairy_id, center_id } = req.user; // Get dairy_id and center_id from the logged-in user
@@ -600,8 +602,8 @@ exports.getAllPurchases = async (req, res) => {
     queryParams.push(date1, date2);
   } else {
     // Default date range (last 10 days)
-    query += ` AND purchasedate >= DATE_SUB(CURDATE(), INTERVAL 10 DAY) AND purchasedate <= CURDATE()`;
-    countQuery += ` AND purchasedate >= DATE_SUB(CURDATE(), INTERVAL 10 DAY) AND purchasedate <= CURDATE()`;
+    query += ` AND DATE(purchasedate) = CURDATE()`;
+    countQuery += ` AND DATE(purchasedate) = CURDATE()`;
   }
 
   // Append filter for fcode (Supplier code)
@@ -624,6 +626,9 @@ exports.getAllPurchases = async (req, res) => {
       queryParams.push(value);
     }
   }
+
+  // Add sorting by purchaseid in descending order
+  query += ` ORDER BY purchaseid DESC`;
 
   pool.getConnection((err, connection) => {
     if (err) {
@@ -800,6 +805,75 @@ exports.deletePurchase = async (req, res) => {
         message: "Unexpected error occurred",
         error: error.message,
       });
+    }
+  });
+};
+
+// -------------------------------------------------------------------------------------->
+// Get All products sale rate ----------------------------------------------------------->
+// -------------------------------------------------------------------------------------->
+
+exports.getAllProductSaleRate = async (req, res) => {
+  const { groupCode } = req.query;
+  const dairy_id = req.user.dairy_id;
+  const center_id = req.user.center_id;
+
+  // Check if dairy_id exists
+  if (!dairy_id) {
+    return res.status(400).json({ message: "Unauthorized user!" });
+  }
+
+  pool.getConnection((err, connection) => {
+    if (err) {
+      console.error("Error getting MySQL connection: ", err);
+      return res.status(500).json({ message: "Database connection error" });
+    }
+
+    try {
+      // Query to get the latest sale rate for each unique itemcode
+      const getSaleRateQuery = `
+        SELECT  pm.purchaseid,  pm.itemcode,  pm.itemname,  pm.qty,  pm.salerate,  pm.purchasedate
+        FROM 
+          PurchaseMaster AS pm
+        INNER JOIN (
+          SELECT 
+            itemcode, 
+            MAX(purchasedate) AS max_purchasedate
+          FROM 
+            PurchaseMaster
+          WHERE dairy_id = 89 AND center_id = 0 AND itemgroupcode = 1
+          GROUP BY 
+            itemcode
+        ) AS latest_sales
+          ON pm.itemcode = latest_sales.itemcode  AND pm.purchasedate = latest_sales.max_purchasedate
+        WHERE  pm.dairy_id = 89 AND pm.center_id = 0 AND pm.itemgroupcode = 1
+        ORDER BY 
+          pm.itemcode;
+      `;
+
+      // Execute the query
+      connection.query(
+        getSaleRateQuery,
+        [dairy_id, center_id, groupCode],
+        (err, result) => {
+          connection.release(); // Ensure connection is released in the callback
+
+          if (err) {
+            console.error("Error executing query: ", err);
+            return res.status(500).json({ message: "Query execution error" });
+          }
+
+          if (result.length === 0) {
+            return res.status(404).json({ message: "No records found!" });
+          }
+
+          // Return the results
+          res.status(200).json({ saleRates: result });
+        }
+      );
+    } catch (error) {
+      console.error("Error processing request: ", error);
+      return res.status(500).json({ message: "Internal server error" });
     }
   });
 };

@@ -143,8 +143,7 @@ const CustomerList = () => {
       </div>
       <div className="customer-list-table w100 h1 d-flex-col hidescrollbar bg">
         <div className="customer-heading-title-scroller w100 h1 mh100 d-flex-col">
-          <div className="data-headings-div h10 d-flex center t-center sb">
-            <span className="f-info-text w5">Edit</span>
+          <div className="customer-data-headings-div  h10 d-flex center t-center sb">
             <span className="f-info-text w5">Code</span>
             <span className="f-info-text w25">Customer Name</span>
             <span className="f-info-text w10">Mobile</span>
@@ -170,13 +169,12 @@ const CustomerList = () => {
             filteredData.map((customer, index) => (
               <div
                 key={index}
-                className={`data-values-div w100 h10 d-flex center t-center sa ${
+                className={`customer-data-values-div w100 h10 d-flex center t-center sa ${
                   index % 2 === 0 ? "bg-light" : "bg-dark"
                 }`}
                 style={{
                   backgroundColor: index % 2 === 0 ? "#faefe3" : "#fff",
                 }}>
-                <span className="text w5">edit</span>
                 <span className="text w5">{customer.srno}</span>
                 <span className="text w25 t-start">{customer.cname}</span>
                 <span className="text w10">

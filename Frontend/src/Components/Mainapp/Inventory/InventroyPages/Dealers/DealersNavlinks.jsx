@@ -1,15 +1,15 @@
-// eslint-disable-next-line no-unused-vars
 import React from "react";
 import { IoPersonAdd, IoList } from "react-icons/io5";
+import { NavLink } from "react-router-dom";
 
 // eslint-disable-next-line react/prop-types
 const DealersNavlinks = ({ isselected, setIsSelected }) => {
   const CustNavbuttons = [
-    { name: "Dealers List", icon: <IoList className="icon" />, index: 0 },
+    { name: "Dealers List", icon: <IoList className="icon" />, path: "list" },
     {
       name: "Create Dealers",
       icon: <IoPersonAdd className="icon" />,
-      index: 1,
+      path: "add-dealer",
     },
   ];
   return (
@@ -17,17 +17,16 @@ const DealersNavlinks = ({ isselected, setIsSelected }) => {
       {CustNavbuttons.map((button, index) => (
         <li
           key={index}
-          className={`home-nav-item d-flex a-center ${
+          className={`home-nav-item w20 d-flex a-center ${
             isselected === index ? "selected" : ""
           }`}
           onClick={() => {
             setIsSelected(index);
-          }}
-        >
-          <a>
+          }}>
+          <NavLink to={button.path} className="sub-navlinks f-label-text">
             {button.icon}
             <span>{button.name}</span>
-          </a>
+          </NavLink>
         </li>
       ))}
     </>

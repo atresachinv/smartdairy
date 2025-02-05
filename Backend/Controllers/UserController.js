@@ -3,6 +3,8 @@ const bcrypt = require("bcryptjs");
 const dotenv = require("dotenv");
 const pool = require("../Configs/Database");
 const nodemailer = require("nodemailer");
+const crypto = require("crypto");
+
 dotenv.config({ path: "Backend/.env" });
 
 // .........................................
@@ -205,84 +207,11 @@ exports.userRegister = async (req, res) => {
   });
 };
 
-// .........................................
-// Login....................................
-// .........................................
+//---------------------------------------------------------------------------->
+// Login --------------------------------------------------------------------->
+//---------------------------------------------------------------------------->
 
-//v2
-exports.userLogin = async (req, res) => {
-  const { user_id, user_password } = req.body;
-
-  // Get a connection from the pool
-  pool.getConnection((err, connection) => {
-    if (err) {
-      console.error("Error getting MySQL connection: ", err);
-      return res.status(500).json({ message: "Database connection error" });
-    }
-    try {
-      const checkUser =
-        "SELECT username, isActive, designation, SocietyCode, pcode, center_id FROM users WHERE username = ? AND password = ? ";
-
-      connection.query(checkUser, [user_id, user_password], (err, result) => {
-        connection.release();
-
-        if (err) {
-          return res.status(500).json({ message: "Database query error" });
-        }
-
-        if (result.length === 0) {
-          return res
-            .status(401)
-            .json({ message: "Invalid User ID or password, try again!" });
-        }
-
-        const user = result[0];
-
-        // // Verify user password
-        // if (user_password !== user.password) {
-        //   return res
-        //     .status(401)
-        //     .json({ message: "Invalid User ID and password, try again!" });
-        // }
-
-        // Generate JWT token for authentication
-        const token = jwt.sign(
-          {
-            user_id: user.username,
-            user_code: user.pcode,
-            is_active: user.isActive,
-            user_role: user.designation,
-            dairy_id: user.SocietyCode,
-            center_id: user.center_id,
-          },
-          process.env.SECRET_KEY,
-          { expiresIn: "4hr" }
-        );
-
-        // Set token in cookie
-        res.cookie("token", token, {
-          httpOnly: true,
-          // secure: true,
-          sameSite: "strict",
-          // maxAge: 10 * 1000, // 10 min
-          maxAge: 4 * 60 * 60 * 1000, // 4hr
-        });
-
-        // Send success response
-        res.status(200).json({
-          message: "Login successful",
-          token,
-          user_role: user.designation,
-        });
-      });
-    } catch (error) {
-      connection.release(); // Ensure the connection is released in case of an error
-      console.error("Error processing request: ", error);
-      return res.status(500).json({ message: "Internal server error" });
-    }
-  });
-};
-
+// updated function with session token ------------------------>
 // exports.userLogin = async (req, res) => {
 //   const { user_id, user_password } = req.body;
 //
@@ -294,90 +223,80 @@ exports.userLogin = async (req, res) => {
 //
 //     try {
 //       const checkUser =
-//         "SELECT username, isActive, designation, SocietyCode, pcode, center_id, password, isLogedin FROM users WHERE username = ? AND password = ?";
+//         "SELECT username, isActive, designation, SocietyCode, pcode, center_id, session_token FROM users WHERE username = ? AND password = ?";
 //
-//       connection.query(
-//         checkUser,
-//         [user_id, user_password],
-//         async (err, result) => {
-//           if (err) {
+//       connection.query(checkUser, [user_id, user_password], (err, result) => {
+//         if (err) {
+//           connection.release();
+//           return res.status(500).json({ message: "Database query error" });
+//         }
+//
+//         if (result.length === 0) {
+//           connection.release();
+//           return res
+//             .status(401)
+//             .json({ message: "Invalid User ID or password, try again!" });
+//         }
+//
+//         const user = result[0];
+//
+//         // Check if user is already logged in
+//         if (user.session_token) {
+//           connection.release();
+//           return res.status(403).json({
+//             message:
+//               "You are already logged in from another device. Please logout first.",
+//           });
+//         }
+//
+//         // Generate a new session token
+//         const sessionToken = crypto.randomBytes(32).toString("hex");
+//
+//         // Generate JWT token for authentication
+//         const token = jwt.sign(
+//           {
+//             user_id: user.username,
+//             user_code: user.pcode,
+//             is_active: user.isActive,
+//             user_role: user.designation,
+//             dairy_id: user.SocietyCode,
+//             center_id: user.center_id,
+//           },
+//           process.env.SECRET_KEY,
+//           { expiresIn: "4hr" }
+//         );
+//
+//         // Update the user's session_token in the database
+//         const updateSession =
+//           "UPDATE users SET session_token = ? WHERE username = ?";
+//         connection.query(
+//           updateSession,
+//           [sessionToken, user.username],
+//           (err) => {
 //             connection.release();
-//             return res.status(500).json({ message: "Database query error" });
-//           }
-//
-//           if (result.length === 0) {
-//             connection.release();
-//             return res
-//               .status(401)
-//               .json({ message: "Invalid User ID or password, try again!" });
-//           }
-//
-//           const user = result[0];
-//
-//           // Check if user is already logged in
-//           if (user.isLogedin === 1) {
-//             connection.release();
-//             return res.status(403).json({
-//               message: "User is already logged in from another device.",
-//             });
-//           }
-//
-//           // // Verify user password using bcrypt
-//           // const isPasswordValid = await bcrypt.compare(
-//           //   user_password,
-//           //   user.password
-//           // );
-//
-//           // if (!isPasswordValid) {
-//           //   connection.release();
-//           //   return res
-//           //     .status(401)
-//           //     .json({ message: "Invalid User ID or password, try again!" });
-//           // }
-//
-//           // Generate JWT token for authentication
-//           const token = jwt.sign(
-//             {
-//               user_id: user.username,
-//               user_code: user.pcode,
-//               is_active: user.isActive,
-//               user_role: user.designation,
-//               dairy_id: user.SocietyCode,
-//               center_id: user.center_id,
-//             },
-//             process.env.SECRET_KEY,
-//             { expiresIn: "10m" }
-//           );
-//
-//           // Update is_logged_in to true
-//           const updateLoginStatus =
-//             "UPDATE users SET isLogedin = 1 WHERE username = ?";
-//
-//           connection.query(updateLoginStatus, [user_id], (updateErr) => {
-//             connection.release();
-//
-//             if (updateErr) {
+//             if (err) {
 //               return res
 //                 .status(500)
-//                 .json({ message: "Error updating login status" });
+//                 .json({ message: "Error updating session" });
 //             }
 //
 //             // Set token in cookie
 //             res.cookie("token", token, {
 //               httpOnly: true,
 //               sameSite: "strict",
-//               maxAge: 10 * 60 * 1000,
+//               // secure: true,
+//               maxAge: 4 * 60 * 60 * 1000, // 4hr
 //             });
 //
-//             // Send success response
 //             res.status(200).json({
 //               message: "Login successful",
 //               token,
 //               user_role: user.designation,
+//               sessionToken,
 //             });
-//           });
-//         }
-//       );
+//           }
+//         );
+//       });
 //     } catch (error) {
 //       connection.release();
 //       console.error("Error processing request: ", error);
@@ -385,6 +304,89 @@ exports.userLogin = async (req, res) => {
 //     }
 //   });
 // };
+// updated function with session token ------------------------>
+exports.userLogin = async (req, res) => {
+  const { user_id, user_password } = req.body;
+
+  pool.getConnection((err, connection) => {
+    if (err) {
+      console.error("Error getting MySQL connection: ", err);
+      return res.status(500).json({ message: "Database connection error" });
+    }
+
+    try {
+      const checkUser =
+        "SELECT username, isActive, designation, SocietyCode, pcode, center_id FROM users WHERE username = ? AND password = ?";
+
+      connection.query(checkUser, [user_id, user_password], (err, result) => {
+        if (err) {
+          connection.release();
+          return res.status(500).json({ message: "Database query error" });
+        }
+
+        if (result.length === 0) {
+          connection.release();
+          return res
+            .status(401)
+            .json({ message: "Invalid User ID or password!" });
+        }
+
+        const user = result[0];
+
+        // Generate a new session token
+        const sessionToken = crypto.randomBytes(32).toString("hex");
+
+        // Generate JWT token
+        const token = jwt.sign(
+          {
+            user_id: user.username,
+            user_code: user.pcode,
+            is_active: user.isActive,
+            user_role: user.designation,
+            dairy_id: user.SocietyCode,
+            center_id: user.center_id,
+          },
+          process.env.SECRET_KEY,
+          { expiresIn: "4h" }
+        );
+
+        // Invalidate any existing session before setting a new one
+        const updateSession =
+          "UPDATE users SET session_token = ? WHERE username = ?";
+        connection.query(
+          updateSession,
+          [sessionToken, user.username],
+          (err) => {
+            connection.release();
+            if (err) {
+              return res
+                .status(500)
+                .json({ message: "Error updating session" });
+            }
+
+            // Set token in cookie
+            res.cookie("token", token, {
+              httpOnly: true,
+              sameSite: "strict",
+              maxAge: 4 * 60 * 60 * 1000, // 4 hours
+            });
+
+            res.status(200).json({
+              message: "Login successful",
+              token,
+              user_role: user.designation,
+              sessionToken,
+            });
+          }
+        );
+      });
+    } catch (error) {
+      connection.release();
+      console.error("Error processing request: ", error);
+      return res.status(500).json({ message: "Internal server error" });
+    }
+  });
+};
 
 // .....................................................
 // User Designation ....................................
@@ -394,45 +396,89 @@ exports.userLogin = async (req, res) => {
 //Logout user......................................
 //.................................................
 
-//v2
 exports.userLogout = (req, res) => {
-  res.clearCookie("token", {
-    httpOnly: true,
-    secure: true,
-    sameSite: "strict",
-  });
+  if (!req.user) {
+    return res.status(400).json({ message: "User not found or not logged in" });
+  }
 
-  // Send a response indicating successful logout
-  res.status(200).json({ message: "Logout successful" });
+  const user_id = req.user.user_id;
+  pool.getConnection((err, connection) => {
+    if (err) {
+      return res.status(500).json({ message: "Database connection error" });
+    }
+    const logoutQuery =
+      "UPDATE users SET session_token = NULL WHERE username = ?";
+    connection.query(logoutQuery, [user_id], (err) => {
+      connection.release();
+      if (err) {
+        return res.status(500).json({ message: "Logout failed" });
+      }
+      // Clear JWT token in cookies
+      res.clearCookie("token", {
+        httpOnly: true,
+        secure: true,
+        sameSite: "strict",
+      });
+      res.status(200).json({ message: "Logout successful" });
+    });
+  });
 };
 
-// exports.userLogout = (req, res) => {
-//   const user_name = req.user.user_id;
-//   try {
-//     const updateLogoutStatus =
-//       "UPDATE users SET isLogedin = 0 WHERE username = ?";
-//
-//     pool.query(updateLogoutStatus, [user_name], (err) => {
-//       if (err) {
-//         return res
-//           .status(500)
-//           .json({ message: "Error updating logout status" });
-//       }
-//
-//       // Clear the token cookie
-//       res.clearCookie("token");
-//
-//       res.status(200).json({ message: "Logout successful" });
-//     });
-//   } catch (error) {
-//     console.error("Error during logout: ", error);
-//     res.status(401).json({ message: "Invalid or expired token" });
-//   }
-// };
+//---------------------------------------------------------------------------->
+//Logout user------------------------------------------------------------------>
+//---------------------------------------------------------------------------->
 
-//.................................................
-//User Information ................................
-//.................................................
+exports.verifySession = (req, res) => {
+  const { sessionToken } = req.body;
+
+  if (!sessionToken) {
+    return res.status(401).json({ message: "Session token required!" });
+  }
+
+  if (!req.user || !req.user.user_id) {
+    return res.status(400).json({ message: "User ID is required!" });
+  }
+
+  const user_id = req.user.user_id;
+
+  pool.getConnection((err, connection) => {
+    if (err) {
+      console.error("Database connection error:", err);
+      return res.status(500).json({ message: "Database connection error" });
+    }
+
+    const query = "SELECT session_token FROM users WHERE username = ?";
+
+    connection.query(query, [user_id], (err, result) => {
+      connection.release();
+
+      if (err) {
+        console.error("Database query error:", err);
+        return res.status(500).json({ message: "Database query error" });
+      }
+
+      if (result.length === 0) {
+        return res.status(401).json({
+          message: "User not found. Please log in again.",
+          valid: false,
+        });
+      }
+
+      if (result[0].session_token !== sessionToken) {
+        return res.status(401).json({
+          message: "Session expired. Please log in again.",
+          valid: false,
+        });
+      }
+
+      res.status(200).json({ valid: true });
+    });
+  });
+};
+
+//------------------------------------------------------------------------------>
+//User Information ------------------------------------------------------------->
+//------------------------------------------------------------------------------>
 
 exports.getUserProfile = async (req, res) => {
   pool.getConnection((err, connection) => {

@@ -1,98 +1,13 @@
 const pool = require("../Configs/Database");
 
-// Create Sale with Dynamic Columns
-// exports.createSale = async (req, res) => {
-//   const { BillNo, BillDate, ...otherFields } = req.body;
-
-//   // Validate required fields
-//   if (!BillNo || !BillDate) {
-//     return res.status(400).json({
-//       success: false,
-//       message: "BillNo and BillDate are required fields.",
-//     });
-//   }
-
-//   // Validate DATETIME format (YYYY-MM-DD HH:mm:ss)
-//   const datetimeRegex = /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/;
-//   if (!datetimeRegex.test(BillDate)) {
-//     return res.status(400).json({
-//       success: false,
-//       message: "Invalid BillDate format. Expected format: YYYY-MM-DD HH:mm:ss",
-//     });
-//   }
-
-//   pool.getConnection((err, connection) => {
-//     if (err) {
-//       console.error("Error getting MySQL connection: ", err);
-//       return res.status(500).json({ message: "Database connection error" });
-//     }
-
-//     try {
-//       // Step 1: Get the total row count from salesmaster
-//       connection.query(
-//         "SELECT MAX(saleid) AS totalRows FROM salesmaster",
-//         (err, countResult) => {
-//           if (err) {
-//             connection.release();
-//             console.error("Error counting rows: ", err);
-//             return res
-//               .status(500)
-//               .json({ message: "Error fetching row count" });
-//           }
-
-//           const newSaleId = countResult[0].totalRows + 1; // Generate new saleid
-
-//           // Step 2: Build the INSERT query dynamically
-//           let insertQuery = "INSERT INTO salesmaster (saleid, BillNo, BillDate";
-//           const insertValues = [newSaleId, BillNo, BillDate];
-
-//           for (const [key, value] of Object.entries(otherFields)) {
-//             insertQuery += `, ${key}`;
-//             insertValues.push(value);
-//           }
-
-//           insertQuery += ") VALUES (?";
-//           insertQuery += ", ?".repeat(insertValues.length - 1) + ")";
-
-//           // Step 3: Execute the INSERT query
-//           connection.query(insertQuery, insertValues, (err, result) => {
-//             connection.release();
-
-//             if (err) {
-//               console.error("Error inserting sale record: ", err);
-//               return res
-//                 .status(500)
-//                 .json({ message: "Error creating sale record" });
-//             }
-
-//             res.status(201).json({
-//               success: true,
-//               message: "Sale record created successfully",
-//               saleid: newSaleId,
-//             });
-//           });
-//         }
-//       );
-//     } catch (error) {
-//       connection.release();
-//       console.error("Unexpected error: ", error);
-//       return res.status(500).json({
-//         success: false,
-//         message: "Unexpected error occurred",
-//         error: error.message,
-//       });
-//     }
-//   });
-// };
-
 //-------------------------------------------------------------------------->
 // Create Sale with Dynamic Columns (Multiple Rows) ------------------------>
 //-------------------------------------------------------------------------->
 
-exports.createSales = async (req, res) => {
-  const salesData = req.body; // Expecting an array of sales objects
+exports.createSales = (req, res) => {
+  const salesData = req.body;
+  const { dairy_id, center_id, user_id } = req.user;
 
-  // Validate input
   if (!Array.isArray(salesData) || salesData.length === 0) {
     return res.status(400).json({
       success: false,
@@ -100,98 +15,80 @@ exports.createSales = async (req, res) => {
     });
   }
 
-  for (const sale of salesData) {
-    const { BillNo, BillDate } = sale;
-    if (!BillNo || !BillDate) {
-      return res.status(400).json({
-        success: false,
-        message: "Each sale must have BillNo and BillDate.",
-      });
-    }
-
-    // Validate DATETIME format (YYYY-MM-DD HH:mm:ss)
-    const datetimeRegex = /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/;
-    if (!datetimeRegex.test(BillDate)) {
-      return res.status(400).json({
-        success: false,
-        message:
-          "Invalid BillDate format. Expected format: YYYY-MM-DD HH:mm:ss",
-      });
-    }
-  }
-
   pool.getConnection((err, connection) => {
     if (err) {
-      console.error("Error getting MySQL connection: ", err);
-      return res.status(500).json({ message: "Database connection error" });
+      console.error("Error getting MySQL connection:", err);
+      return res
+        .status(500)
+        .json({ success: false, message: "Database connection error" });
     }
 
-    try {
-      // Step 1: Get the total row count from salesmaster
-      connection.query(
-        "SELECT MAX(saleid) AS totalRows FROM salesmaster",
-        (err, countResult) => {
-          if (err) {
+    // Step 1: Get the max BillNo for the company and center
+    connection.query(
+      "SELECT MAX(BillNo) AS maxBillNo FROM salesmaster WHERE companyid = ? AND center_id = ?",
+      [dairy_id, center_id],
+      (err, countResult) => {
+        if (err) {
+          connection.release();
+          console.error("Error fetching max BillNo:", err);
+          return res
+            .status(500)
+            .json({ success: false, message: "Error fetching max BillNo" });
+        }
+
+        let newBillNo = countResult[0].maxBillNo
+          ? countResult[0].maxBillNo + 1
+          : 1; // Increment once
+
+        // Step 2: Build the bulk INSERT query dynamically
+        let insertQuery =
+          "INSERT INTO salesmaster (BillNo, BillDate, companyid, center_id, createdby";
+        const insertValues = [];
+        const valuePlaceholders = [];
+
+        for (const sale of salesData) {
+          const { BillDate, ...otherFields } = sale;
+          if (!BillDate) {
             connection.release();
-            console.error("Error counting rows: ", err);
+            return res.status(400).json({
+              success: false,
+              message: "Each sale must have a BillDate.",
+            });
+          }
+
+          const rowValues = [newBillNo, BillDate, dairy_id, center_id, user_id];
+          for (const key of Object.keys(otherFields)) {
+            if (!insertQuery.includes(key)) {
+              insertQuery += `, ${key}`;
+            }
+            rowValues.push(otherFields[key]);
+          }
+
+          insertValues.push(...rowValues);
+          valuePlaceholders.push(`(${rowValues.map(() => "?").join(", ")})`);
+        }
+
+        insertQuery += `) VALUES ${valuePlaceholders.join(", ")}`;
+
+        // Step 3: Execute the bulk INSERT query
+        connection.query(insertQuery, insertValues, (err, result) => {
+          connection.release();
+
+          if (err) {
+            console.error("Error inserting sale records:", err);
             return res
               .status(500)
-              .json({ message: "Error fetching row count" });
+              .json({ success: false, message: "Error creating sale records" });
           }
-
-          let newSaleId = countResult[0].totalRows || 0; // Start saleid from the current max
-
-          // Step 2: Build the bulk INSERT query dynamically
-          let insertQuery = "INSERT INTO salesmaster (saleid, BillNo, BillDate";
-          const insertValues = [];
-          const valuePlaceholders = [];
-
-          for (const sale of salesData) {
-            newSaleId++; // Increment saleid for each sale
-            const { BillNo, BillDate, ...otherFields } = sale;
-            const rowValues = [newSaleId, BillNo, BillDate];
-
-            for (const key of Object.keys(otherFields)) {
-              if (!insertQuery.includes(key)) {
-                insertQuery += `, ${key}`;
-              }
-              rowValues.push(otherFields[key]);
-            }
-
-            insertValues.push(...rowValues);
-            valuePlaceholders.push(`(${rowValues.map(() => "?").join(", ")})`);
-          }
-
-          insertQuery += `) VALUES ${valuePlaceholders.join(", ")}`;
-
-          // Step 3: Execute the bulk INSERT query
-          connection.query(insertQuery, insertValues, (err, result) => {
-            connection.release();
-
-            if (err) {
-              console.error("Error inserting sale records: ", err);
-              return res
-                .status(500)
-                .json({ message: "Error creating sale records" });
-            }
-
-            res.status(201).json({
-              success: true,
-              message: "Sale records created successfully",
-              insertedRows: result.affectedRows,
-            });
+          console.log(result.affectedRows);
+          res.status(201).json({
+            success: true,
+            message: "Sale records created successfully",
+            insertedRows: result.affectedRows,
           });
-        }
-      );
-    } catch (error) {
-      connection.release();
-      console.error("Unexpected error: ", error);
-      return res.status(500).json({
-        success: false,
-        message: "Unexpected error occurred",
-        error: error.message,
-      });
-    }
+        });
+      }
+    );
   });
 };
 
@@ -199,40 +96,9 @@ exports.createSales = async (req, res) => {
 //getting all sales -------------------------------------------------------->
 //-------------------------------------------------------------------------->
 
-// exports.getAllSales = async (req, res) => {
-//   const query = `SELECT * FROM salesmaster`;
-
-//   pool.getConnection((err, connection) => {
-//     if (err) {
-//       console.error("Error getting MySQL connection: ", err);
-//       return res.status(500).json({ message: "Database connection error" });
-//     }
-
-//     connection.query(query, (err, result) => {
-//       connection.release();
-
-//       if (err) {
-//         console.error("Error executing query: ", err);
-//         return res.status(500).json({ message: "Error fetching sales data" });
-//       }
-
-//       if (result.length === 0) {
-//         return res.status(404).json({ message: "No sales data found" });
-//       }
-
-//       res.status(200).json({
-//         success: true,
-//         total: result.length,
-//         salesData: result,
-//       });
-//     });
-//   });
-// };
-
-
-
 exports.getPaginatedSales = async (req, res) => {
   const { date1, date2, fcode, ...dynamicFields } = req.query;
+  const dairy_id = req.user.dairy_id;
 
   let query = `
     SELECT * 
@@ -251,8 +117,8 @@ exports.getPaginatedSales = async (req, res) => {
     countQuery += ` AND BillDate BETWEEN ? AND ?`;
     queryParams.push(date1, date2);
   } else {
-    query += ` AND BillDate >= DATE_SUB(CURDATE(), INTERVAL 10 DAY) AND BillDate <= CURDATE()`;
-    countQuery += ` AND BillDate >= DATE_SUB(CURDATE(), INTERVAL 10 DAY) AND BillDate <= CURDATE()`;
+    query += ` AND BillDate = CURDATE()`;
+    countQuery += ` AND BillDate = CURDATE()`;
   }
 
   // Append filter for fcode
@@ -260,6 +126,12 @@ exports.getPaginatedSales = async (req, res) => {
     query += ` AND CustCode = ?`;
     countQuery += ` AND CustCode = ?`;
     queryParams.push(fcode);
+  }
+
+  if (dairy_id) {
+    query += ` AND companyid = ?`; // Assuming companyid column exists in salesmaster
+    countQuery += ` AND companyid = ?`;
+    queryParams.push(dairy_id);
   }
 
   // Append dynamic fields
@@ -368,21 +240,25 @@ exports.getSale = async (req, res) => {
 };
 
 //-------------------------------------------------------------------------->
-//delete sale through its saleid ------------------------------------------->
+// Delete sale through its saleid or billNo ------------------------------------------->
 //-------------------------------------------------------------------------->
-exports.deleteSale = async (req, res) => {
-  const { saleid } = req.body; // Extract saleid from the request body
 
-  console.log(saleid);
-  // Validate the required field
-  if (!saleid) {
+exports.deleteSale = async (req, res) => {
+  const { saleid, billNo } = req.body;
+  const dairy_id = req.user.dairy_id;
+
+  // Validate that at least one identifier is provided
+  if (!saleid && !billNo) {
     return res.status(400).json({
       success: false,
-      message: "saleid is required to delete a sale record.",
+      message: "Either saleid or billNo is required to delete a sale record.",
     });
   }
 
-  const query = `DELETE FROM salesmaster WHERE saleid = ?`;
+  const query = `
+    DELETE FROM salesmaster 
+    WHERE (saleid = ? OR billNo = ?) 
+    AND companyid = ?`;
 
   pool.getConnection((err, connection) => {
     if (err) {
@@ -390,25 +266,32 @@ exports.deleteSale = async (req, res) => {
       return res.status(500).json({ message: "Database connection error" });
     }
 
-    connection.query(query, [saleid], (err, result) => {
-      connection.release();
+    connection.query(
+      query,
+      [saleid || null, billNo || null, dairy_id],
+      (err, result) => {
+        connection.release();
 
-      if (err) {
-        console.error("Error executing query: ", err);
-        return res
-          .status(500)
-          .json({ message: "Error deleting sale record from the database" });
+        if (err) {
+          console.error("Error executing query: ", err);
+          return res
+            .status(500)
+            .json({ message: "Error deleting sale record from the database" });
+        }
+
+        if (result.affectedRows === 0) {
+          return res.status(404).json({
+            message:
+              "Sale record not found or does not belong to your company.",
+          });
+        }
+
+        res.status(200).json({
+          success: true,
+          message: "Sale record deleted successfully",
+        });
       }
-
-      if (result.affectedRows === 0) {
-        return res.status(404).json({ message: "Sale record not found." });
-      }
-
-      res.status(200).json({
-        success: true,
-        message: "Sale record deleted successfully",
-      });
-    });
+    );
   });
 };
 

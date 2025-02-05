@@ -1,13 +1,10 @@
-// eslint-disable-next-line no-unused-vars
 import React, { useEffect, useState } from "react";
-// import "../../../../../Styles/Mainapp/Masters/CustomerMaster.css";
-import { useDispatch } from "react-redux";
-// import { getMaxCustNo } from "../../../../../App/Features/Customers/customerSlice";
+import { Routes, Route } from "react-router-dom";
 import CattleFeedNavlinks from "./GroceryNavlinks";
-import CattleFeedNavViews from "./GroceryNavViews";
+import CreateGrocery from "./CreateGrocery";
+import GrocerySaleList from "./GrocerySaleList";
 
 const GroceryMaster = () => {
-  const dispatch = useDispatch();
   const [isselected, setIsSelected] = useState(
     parseInt(localStorage.getItem("selectedGrocerySaleIndex")) || 0
   );
@@ -16,14 +13,6 @@ const GroceryMaster = () => {
   useEffect(() => {
     localStorage.setItem("selectedGrocerySaleIndex", isselected);
   }, [isselected]);
-
-  // useEffect(() => {
-  //   localStorage.setItem("selectedCustIndex", isselected);
-  // }, [isselected]);
-
-  // useEffect(() => {
-  //   dispatch(getMaxCustNo());
-  // }, []);
 
   return (
     <div className="customer-master-container w100 h1 d-flex-col">
@@ -34,7 +23,12 @@ const GroceryMaster = () => {
         />
       </div>
       <div className="customer-views w100 h90 d-flex center">
-        <CattleFeedNavViews index={isselected} />
+        {/* <CattleFeedNavViews index={isselected} /> */}
+        <Routes>
+          <Route path="sale/list" element={<GrocerySaleList />} />
+          <Route path="add/sale" element={<CreateGrocery />} />
+          <Route path="*" element={<GrocerySaleList />} />
+        </Routes>
       </div>
     </div>
   );

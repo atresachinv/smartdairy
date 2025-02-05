@@ -9,7 +9,7 @@ const Header = ({ handleSidebar, logout }) => {
   const dispatch = useDispatch();
 
   const toDate = useSelector((state) => state.date.toDate);
-  
+
   const dairyname = useSelector(
     (state) =>
       state.dairy.dairyData.SocietyName || state.dairy.dairyData.center_name
@@ -21,12 +21,12 @@ const Header = ({ handleSidebar, logout }) => {
 
   return (
     <>
-      <div className="menu-header w10 d-flex a-center ">
+      <div className="menu-header d-flex a-center">
         <BsJustify className="menu-icon w100 c1" onClick={handleSidebar} />
       </div>
-      <div className="dairy-name w90 d-flex a-center sb">
-        <span className="title w80 px10">{dairyname}</span>
-        <span className="label-text w20 d-flex j-center">{toDate}</span>
+      <div className="dairy-name-container w100 d-flex-col sb">
+        <span className="title w100">{dairyname}</span>
+        <span className="label-text w100 ">{toDate}</span>
       </div>
     </>
   );

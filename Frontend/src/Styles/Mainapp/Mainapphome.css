@@ -5,10 +5,14 @@
   z-index: 9;
   background-color: #fff;
 }
-
+.icon {
+  font-size: clamp(16px, 2vw, 20px);
+}
 .menu-icon {
+  font-size: clamp(20px, 2vw, 24px);
   display: none;
 }
+
 .sidebar-container {
   width: 20%;
   /* background: var(--main-bg-color); */
@@ -19,21 +23,22 @@
     rgba(76, 201, 240, 1) 96%
   );
 }
-
-.sidebar-list-item {
-  cursor: pointer;
+.submenu-arrow {
+  color: #fff;
 }
 
-
-.main-nav-text{
+.main-nav-text {
+  text-decoration: none;
   font-size: clamp(14px, 3vw, 16px);
 }
 
 .submenu .submenu-item {
-  padding-left: 40px;
+  text-decoration: none;
+  color: #fff;
+  cursor: pointer;
+  padding-left: 25px;
   font-size: clamp(14px, 3vw, 16px);
 }
-
 
 .sidenav-btns {
   cursor: pointer;
@@ -51,6 +56,7 @@
     width: 0;
   }
 }
+
 @media screen and (max-width: 768px) {
   .main-home-container .nav-main-view-container {
     width: 100%;
@@ -68,9 +74,15 @@
     background: var(--main-bg-color);
     transition: all 0.2s ease;
   }
+  .menu-header {
+    width: auto;
+  }
 
   .close-sidebar {
     display: none;
+  }
+  .dairy-name-container {
+    margin-left: 10px;
   }
 }
 
@@ -100,8 +112,9 @@
   /* nav header */
 
   .menu-header {
-    width: 10%;
+    width: auto;
   }
+
   .dairy-name {
     width: 90%;
   }
