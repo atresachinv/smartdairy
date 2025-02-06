@@ -17,6 +17,7 @@ const CreateGrocery = () => {
   const [rctno, setRctno] = useState(localStorage.getItem("receiptno") || 1);
   const customerslist = useSelector((state) => state.customer.customerlist);
   const [userid, setUserid] = useState("");
+
   useEffect(() => {
     const fetchAllItems = async () => {
       try {
@@ -189,8 +190,7 @@ const CreateGrocery = () => {
                 disabled={!cname}
                 value={selectitemcode}
                 className="data"
-                onChange={(e) => setSelectitemcode(parseInt(e.target.value))}
-              >
+                onChange={(e) => setSelectitemcode(parseInt(e.target.value))}>
                 <option value="0">Select Item</option>
                 {itemList.map((item, i) => (
                   <option key={i} value={item.ItemCode}>
@@ -247,8 +247,7 @@ const CreateGrocery = () => {
           <button
             className="w-btn"
             onClick={handleSubmit}
-            disabled={cartItem.length == 0}
-          >
+            disabled={cartItem.length == 0}>
             Save
           </button>
 

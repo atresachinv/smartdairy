@@ -16,6 +16,7 @@ import SankalanReport from "./Appnavviews/MilkSankalan/SankalanReport";
 import MilkCollectorsReports from "./Appnavviews/Milkcollection/MilkCollectorsReports";
 import CreateCattleFeed from "../Sales/CattleFeed/CreateCattleFeed";
 import SalesReports from "./Appnavviews/MilkSankalan/SalesReports";
+import AdminSalesReports from "./Appnavviews/MilkSankalan/AdminSalesReports";
 // import Milkcollection from "./Appnavviews/Milkcollection/Milkcollection";
 // import MilkSankalan from "./Appnavviews/MilkSankalan/MilkSankalan";
 // import CompleteMilkColl from "./Appnavviews/Milkcollection/CompleteMilkColl";
@@ -87,6 +88,7 @@ const Apphome = () => {
           />
           <Route path="vehicle/sales" element={<CreateCattleFeed />} />
           <Route path="vehicle/sales/report" element={<SalesReports />} />
+          <Route path="admin/sales/report" element={<AdminSalesReports />} />
           <Route path="*" element={<Milkcollection />} />
         </Routes>
       </div>

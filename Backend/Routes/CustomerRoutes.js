@@ -15,6 +15,7 @@ const {
   dealerList,
   deleteCustomer,
   updateDealer,
+  getMaxDealNo,
 } = require("../Controllers/CustomerController");
 
 const router = express.Router();
@@ -37,6 +38,7 @@ router.route("/customer/used/ratechartno").post(verifyToken, uniqueRchartList);
 // router.route("/app/milk-report").post(custMilkReport);
 
 // dev Pramod ------------------->
+router.route("/dealer/maxdealno").post(verifyToken, getMaxDealNo);
 router.route("/create/dealer").post(verifyToken, createDealer);
 router.route("/dealer").post(verifyToken, dealerList);
 router.route("/delete/customer").post(verifyToken, deleteCustomer);

@@ -1,12 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import axiosInstance from "../../../../../App/axiosInstance";
-import { getMaxCustNo } from "../../../../../App/Features/Customers/customerSlice";
 import "../../../../../Styles/Mainapp/Inventory/InventoryPages/Dealer.css";
 
 const CreateDealers = () => {
-  const dispatch = useDispatch();
-  const custno = useSelector((state) => state.customer.maxCustNo);
+  const [custno, setCustno] = useState();
 
   const [formData, setFormData] = useState({
     cust_no: custno,
@@ -21,12 +18,20 @@ const CreateDealers = () => {
     bankIFSC: "",
     ctype: 2, // default value
   });
-
   const [errors, setErrors] = useState({});
 
+  //get max dealer no
+  const getMaxDealer = async () => {
+    try {
+      const { data } = await axiosInstance.post("/dealer/maxdealno");
+      setCustno(data.cust_no);
+    } catch (error) {
+      console.error("Error fetching items:", error);
+    }
+  };
   useEffect(() => {
-    dispatch(getMaxCustNo());
-  }, [dispatch]);
+    getMaxDealer();
+  }, []);
 
   useEffect(() => {
     if (custno) {
@@ -34,11 +39,13 @@ const CreateDealers = () => {
     }
   }, [custno]);
 
+  //handling i/pfield onchange
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
+  //validation
   const validateForm = () => {
     const newErrors = {};
     Object.keys(formData).forEach((field) => {
@@ -49,15 +56,18 @@ const CreateDealers = () => {
     return newErrors;
   };
 
+  //handle submit
   const handleSubmit = async (e) => {
     e.preventDefault();
     const newErrors = validateForm();
     setErrors(newErrors);
+    // console.log(newErrors);
     if (Object.keys(newErrors).length === 0) {
+      // console.log("out try");
       try {
         const response = await axiosInstance.post("/create/dealer", formData);
-        alert(response.data.message);
-        dispatch(getMaxCustNo());
+        toast.success(response.data.message);
+        getMaxDealer();
         setFormData({
           cust_no: custno,
           marathi_name: "",
@@ -73,11 +83,12 @@ const CreateDealers = () => {
         });
       } catch (error) {
         console.error("Error creating dealer: ", error);
-        alert("There was an error creating the dealer.");
+        toast.error("There was server error creating the dealer.");
       }
     }
   };
 
+  //handle enter key press
   const handleKeyDown = (e, fieldName) => {
     if (e.key === "Enter") {
       e.preventDefault();
@@ -91,6 +102,7 @@ const CreateDealers = () => {
     }
   };
 
+  //clear form data
   const handleClear = () => {
     setFormData({
       cust_no: custno,
@@ -109,11 +121,11 @@ const CreateDealers = () => {
   };
 
   return (
-    <div className="create-dealer-container w100 d-flex j-center h1 p10">
-      <div className="create-dealer-inner-div w65 h70 bg p10 w100">
+    <div className="d-flex h1 py15 dealer">
+      <div className="bg p10 w100">
         <span className="heading">Create Dealer </span>
-        <form onSubmit={handleSubmit} className="my10">
-          <div className="row d-flex">
+        <form onSubmit={handleSubmit}>
+          <div className="row d-flex my10">
             <div className="col">
               <label className="info-text px10">
                 Dealer No: <span className="req">*</span>
@@ -143,6 +155,7 @@ const CreateDealers = () => {
                 onChange={handleInputChange}
                 onKeyDown={(e) => handleKeyDown(e, e.target.name)}
                 placeholder="मराठी नाव "
+                onFocus={(e) => e.target.select()}
               />
             </div>
             <div className="col">
@@ -155,6 +168,7 @@ const CreateDealers = () => {
                 value={formData.cust_name}
                 className={`data ${errors.cust_name ? "input-error" : ""}`}
                 onChange={handleInputChange}
+                onFocus={(e) => e.target.select()}
                 onKeyDown={(e) => handleKeyDown(e, e.target.name)}
                 placeholder="English Name "
               />
@@ -167,10 +181,11 @@ const CreateDealers = () => {
                 type="number"
                 name="mobile"
                 value={formData.mobile}
+                onFocus={(e) => e.target.select()}
                 className={`data ${errors.mobile ? "input-error" : ""}`}
                 onChange={handleInputChange}
                 onKeyDown={(e) => handleKeyDown(e, e.target.name)}
-                placeholder="98XXXXXXXX"
+                placeholder="98********"
               />
             </div>
           </div>
@@ -186,6 +201,7 @@ const CreateDealers = () => {
                 className={`data ${errors.district ? "input-error" : ""}`}
                 onChange={handleInputChange}
                 onKeyDown={(e) => handleKeyDown(e, e.target.name)}
+                onFocus={(e) => e.target.select()}
                 placeholder="Pune"
               />
             </div>
@@ -197,6 +213,7 @@ const CreateDealers = () => {
                 type="text"
                 name="city"
                 value={formData.city}
+                onFocus={(e) => e.target.select()}
                 className={`data ${errors.city ? "input-error" : ""}`}
                 onChange={handleInputChange}
                 onKeyDown={(e) => handleKeyDown(e, e.target.name)}
@@ -211,6 +228,7 @@ const CreateDealers = () => {
                 type="number"
                 name="pincode"
                 value={formData.pincode}
+                onFocus={(e) => e.target.select()}
                 className={`data ${errors.pincode ? "input-error" : ""}`}
                 onChange={handleInputChange}
                 onKeyDown={(e) => handleKeyDown(e, e.target.name)}
@@ -227,6 +245,7 @@ const CreateDealers = () => {
                 type="text"
                 name="bankName"
                 value={formData.bankName}
+                onFocus={(e) => e.target.select()}
                 className={`data ${errors.bankName ? "input-error" : ""}`}
                 onChange={handleInputChange}
                 onKeyDown={(e) => handleKeyDown(e, e.target.name)}
@@ -241,6 +260,7 @@ const CreateDealers = () => {
                 type="number"
                 name="bank_ac"
                 value={formData.bank_ac}
+                onFocus={(e) => e.target.select()}
                 className={`data ${errors.bank_ac ? "input-error" : ""}`}
                 onChange={handleInputChange}
                 onKeyDown={(e) => handleKeyDown(e, e.target.name)}
@@ -258,17 +278,22 @@ const CreateDealers = () => {
                 onKeyDown={(e) => handleKeyDown(e, e.target.name)}
                 className={`data ${errors.bankIFSC ? "input-error" : ""}`}
                 onChange={handleInputChange}
+                onFocus={(e) => e.target.select()}
                 placeholder="SBIN0001234"
               />
             </div>
           </div>
-          <div className="w100 d-flex j-end my10">
-            <button className="w-btn mx10" type="button" onClick={handleClear}>
-              Clear
-            </button>
-            <button className="w-btn" type="submit">
-              Submit
-            </button>
+          <div className="row d-flex j-end my10">
+            <div className="col">
+              <button className="btn" type="submit">
+                Submit
+              </button>
+            </div>
+            <div className="col">
+              <button className="btn" type="button" onClick={handleClear}>
+                Clear
+              </button>
+            </div>
           </div>
         </form>
       </div>

@@ -8,6 +8,8 @@ import axiosInstance from "../../../../../App/axiosInstance";
 import "./Product.css";
 import { MdDeleteOutline } from "react-icons/md";
 import { FaRegEdit } from "react-icons/fa";
+import { toast } from "react-toastify";
+import Swal from "sweetalert2";
 
 const ProductsList = () => {
   const [productList, setProductList] = useState([]);
@@ -32,7 +34,7 @@ const ProductsList = () => {
     try {
       const res = await axiosInstance.put("/item/update", updateItem);
       if (res?.data?.success) {
-        alert(res?.data?.message);
+        toast.success(res?.data?.message);
         setProductList((prevCust) => {
           return prevCust.map((item) => {
             if (item.ItemCode === editSale.ItemCode) {
@@ -87,19 +89,30 @@ const ProductsList = () => {
         setLoading(false);
       } catch (error) {
         console.error("Error fetching product list: ", error);
-        alert("There was an error fetching the product list.");
+        toast.error("There was an error fetching the product list.");
         setLoading(false);
       }
     };
     fetchProductList();
   }, [filter]);
 
+  //handle delete
   const handleDelete = async (ItemCode) => {
-    if (confirm("Are you sure you want to Delete?")) {
+    const result = await Swal.fire({
+      title: "Confirm Deletion?",
+      text: "Are you sure you want to delete this Product?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+    });
+
+    if (result.isConfirmed) {
       try {
         // console.log("saleid", id);
         const res = await axiosInstance.post("/item/delete", { ItemCode }); // Replace with your actual API URL
-        alert(res?.data?.message);
+        toast.success(res?.data?.message);
 
         productList((prevSales) =>
           prevSales.filter((product) => product.ItemCode !== ItemCode)

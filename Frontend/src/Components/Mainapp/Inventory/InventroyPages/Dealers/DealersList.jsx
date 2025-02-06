@@ -6,18 +6,22 @@ import { FaDownload } from "react-icons/fa6";
 import axiosInstance from "../../../../../App/axiosInstance";
 import { MdDeleteOutline } from "react-icons/md";
 import { FaRegEdit } from "react-icons/fa";
+import { toast } from "react-toastify";
+import Swal from "sweetalert2";
 
 const DealersList = () => {
   const [dealerList, setDealerList] = useState([]);
 
-  const [editSale, setEditSale] = useState(null); // State to hold the sale being edited
-  const [isModalOpen, setIsModalOpen] = useState(false); // State to control modal visibility
+  const [editSale, setEditSale] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
+  //open to edit item
   const handleEditClick = (id) => {
     setEditSale(id);
     setIsModalOpen(true);
   };
 
+  //update item
   const handleSaveChanges = async () => {
     const updateCust = {
       id: editSale.id,
@@ -32,7 +36,7 @@ const DealersList = () => {
     try {
       const res = await axiosInstance.patch("/update/dealer", updateCust);
       if (res?.data?.success) {
-        alert("Cust updated successfully");
+        toast.success("Dealers updated successfully");
         setDealerList((prevCust) => {
           return prevCust.map((item) => {
             if (item.id === editSale.id) {
@@ -44,13 +48,15 @@ const DealersList = () => {
         setIsModalOpen(false);
       }
     } catch (error) {
-      console.error("Error updating cust:", error);
+      toast.error("Dealers updated Error to server");
+      // console.error("Error updating cust:", error);
     }
   };
 
+  //download excel file
   const downloadExcel = () => {
     if (dealerList.length === 0) {
-      alert("No data available to download.");
+      toast.error("No data available to download.");
       return;
     }
 
@@ -78,6 +84,7 @@ const DealersList = () => {
     XLSX.writeFile(workbook, "Dealers_List.xlsx");
   };
 
+  //fetch Dealer list through API
   useEffect(() => {
     const fetchDealerList = async () => {
       try {
@@ -87,49 +94,72 @@ const DealersList = () => {
         customers.sort((a, b) => new Date(b.createdon) - new Date(a.createdon));
         setDealerList(customers);
       } catch (error) {
-        console.error("Error fetching dealer list: ", error);
-        alert("There was an error fetching the dealer list.");
+        // console.error("Error fetching dealer list: ", error);
+        toast.error("There was an error fetching the dealer list.");
       }
     };
     fetchDealerList();
   }, []);
 
+  //handle delete with api
   const handleDelete = async (cid) => {
-    if (confirm("Are you sure you want to Delete?")) {
+    const result = await Swal.fire({
+      title: "Confirm Deletion?",
+      text: "Are you sure you want to delete this Dealer?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+    });
+
+    if (result.isConfirmed) {
       try {
         // console.log("saleid", id);
         const res = await axiosInstance.post("/delete/customer", { cid }); // Replace with your actual API URL
-        alert(res?.data?.message);
+        toast.success(res?.data?.message);
 
         setDealerList((prevSales) =>
           prevSales.filter((sale) => sale.cid !== cid)
         );
       } catch (error) {
-        console.error("Error deleting sale item:", error);
+        // console.error("Error deleting dealer:", error);
+        toast.error("Error deleting  dealer to server");
+      }
+    }
+  };
+
+  // Handle Enter key press to move to the next field
+  const handleKeyPress = (e, nextField) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      if (nextField) {
+        nextField.focus();
       }
     }
   };
 
   return (
-    <div className="dealer-list-container-div w100 h1 d-flex-col p10">
-      <div className="download-pdf-excel-container w100 h10 d-flex sb">
-        <span className="heading p10">Dealers List</span>
+    <div className="customer-list-container-div w100 h1 d-flex-col p10">
+      <div className="download-print-pdf-excel-container w100 h10 d-flex j-end">
         <button className="btn" onClick={downloadExcel}>
-          <span className="f-label-text px10">Excel</span>
+          <span className="f-label-text px10">Download Excel</span>
           <FaDownload />
         </button>
       </div>
-      <div className="dealer-list-table w100 h1 d-flex-col hidescrollbar bg">
-        <div className="dealer-heading-title-scroller w100 h1 mh100 d-flex-col">
+      <div className="customer-list-table w100 h1 d-flex-col hidescrollbar bg">
+        <span className="heading p10">Dealers List</span>
+        <div className="customer-heading-title-scroller w100 h1 mh100 d-flex-col">
           <div className="data-headings-div h10 d-flex center forDWidth t-center sb">
-            <span className="f-info-text w5">No.</span>
+            <span className="f-info-text w5">SrNo</span>
             <span className="f-info-text w5">Code</span>
-            <span className="f-info-text w25">Name</span>
+            <span className="f-info-text w25">Customer Name</span>
             <span className="f-info-text w10">Mobile</span>
             <span className="f-info-text w10">City</span>
             <span className="f-info-text w10">District</span>
+            {/* <span className="f-info-text w10">PinCode</span> */}
             <span className="f-info-text w15">Bank Name</span>
-            <span className="f-info-text w15">A/C No.</span>
+            <span className="f-info-text w15">A/C No</span>
             <span className="f-info-text w10">IFSC</span>
             <span className="f-info-text w10">Actions</span>
           </div>
@@ -150,6 +180,7 @@ const DealersList = () => {
                 <span className="text w10">{customer.Phone}</span>
                 <span className="text w10">{customer.City}</span>
                 <span className="text w10">{customer.dist}</span>
+                {/* <span className="text w10">{customer.cust_pincode}</span> */}
                 <span className="text w15">{customer.cust_bankname}</span>
                 <span className="text w15">{customer.cust_accno}</span>
                 <span className="text w10">{customer.cust_ifsc}</span>
@@ -169,7 +200,7 @@ const DealersList = () => {
               </div>
             ))
           ) : (
-            <div className="box d-flex center">No customer found</div>
+            <div>No customer found</div>
           )}
         </div>
       </div>
@@ -178,12 +209,16 @@ const DealersList = () => {
           <div className="modal-content">
             <h2>Update Dealer Details</h2>
             <label>
-              Customer Name:
+              Dealer Name:
               <input
                 type="text"
                 value={editSale?.cname}
                 onChange={(e) =>
                   setEditSale({ ...editSale, cname: e.target.value })
+                }
+                onFocus={(e) => e.target.select()}
+                onKeyDown={(e) =>
+                  handleKeyPress(e, document.getElementById("phono"))
                 }
               />
             </label>{" "}
@@ -191,9 +226,14 @@ const DealersList = () => {
               Phone:
               <input
                 type="number"
+                id="phono"
                 value={editSale?.Phone}
+                onFocus={(e) => e.target.select()}
                 onChange={(e) =>
                   setEditSale({ ...editSale, Phone: e.target.value })
+                }
+                onKeyDown={(e) =>
+                  handleKeyPress(e, document.getElementById("city"))
                 }
               />
             </label>
@@ -202,9 +242,14 @@ const DealersList = () => {
                 City:
                 <input
                   type="text"
+                  id="city"
                   value={editSale?.City}
+                  onFocus={(e) => e.target.select()}
                   onChange={(e) =>
                     setEditSale({ ...editSale, City: e.target.value })
+                  }
+                  onKeyDown={(e) =>
+                    handleKeyPress(e, document.getElementById("dist"))
                   }
                 />
               </label>
@@ -212,7 +257,12 @@ const DealersList = () => {
                 District:
                 <input
                   type="text"
+                  id="dist"
+                  onFocus={(e) => e.target.select()}
                   value={editSale?.dist}
+                  onKeyDown={(e) =>
+                    handleKeyPress(e, document.getElementById("ifsc"))
+                  }
                   onChange={(e) =>
                     setEditSale({ ...editSale, dist: e.target.value })
                   }
@@ -223,7 +273,12 @@ const DealersList = () => {
               Bank IFSC:
               <input
                 type="text"
+                id="ifsc"
                 value={editSale?.cust_ifsc}
+                onFocus={(e) => e.target.select()}
+                onKeyDown={(e) =>
+                  handleKeyPress(e, document.getElementById("acno"))
+                }
                 onChange={(e) =>
                   setEditSale({ ...editSale, cust_ifsc: e.target.value })
                 }
@@ -232,8 +287,10 @@ const DealersList = () => {
             <label>
               A/C No:
               <input
+                id="acno"
                 type="number"
                 value={editSale?.cust_accno}
+                onFocus={(e) => e.target.select()}
                 onChange={(e) =>
                   setEditSale({ ...editSale, cust_accno: e.target.value })
                 }

@@ -359,3 +359,135 @@ exports.updateSale = async (req, res) => {
     });
   });
 };
+
+//-------------------------------------------------------------------------->
+// fetch vehicle sales ----------------------------------------------------->
+//-------------------------------------------------------------------------->
+
+exports.fetchVehicleSales = (req, res) => {
+  const { fromdate, todate } = req.query;
+  console.log(fromdate, todate);
+  const { dairy_id, center_id, user_id } = req.user;
+
+  if (!fromdate || !todate) {
+    return res.status(400).json({
+      message: "Date required to fetch data!.",
+    });
+  }
+
+  pool.getConnection((err, connection) => {
+    if (err) {
+      console.error("Error getting MySQL connection: ", err);
+      return res.status(500).json({
+        success: false,
+        message: "Database connection error",
+      });
+    }
+
+    try {
+      const getSalesQuery =
+        "SELECT BillDate, BillNo, ReceiptNo, CustCode, cust_name,ItemCode, ItemName, Qty, rate, Amount, cgst, sgst, cn FROM salesmaster WHERE companyid = ? AND center_id = ? AND createdby = ? AND BillDate BETWEEN ? AND ? ";
+
+      connection.query(
+        getSalesQuery,
+        [dairy_id, center_id, user_id, fromdate, todate],
+        (err, result) => {
+          connection.release();
+
+          if (err) {
+            console.error("Error deleting purchase record: ", err);
+            return res.status(500).json({
+              success: false,
+              message: "Error deleting purchase record",
+            });
+          }
+
+          if (result.affectedRows === 0) {
+            return res.status(404).json({
+              success: false,
+              message: "No sales record found with the given criteria.",
+            });
+          }
+
+          res.status(200).json({
+            vehicleSales: result,
+          });
+        }
+      );
+    } catch (error) {
+      connection.release();
+      console.error("Unexpected error: ", error);
+      return res.status(500).json({
+        success: false,
+        message: "Unexpected error occurred",
+        error: error.message,
+      });
+    }
+  });
+};
+
+//-------------------------------------------------------------------------->
+// fetch All sales for (admin) --------------------------------------------->
+//-------------------------------------------------------------------------->
+
+exports.fetchAllSales = (req, res) => {
+  const { fromdate, todate } = req.query;
+  console.log(fromdate, todate);
+  const { dairy_id, center_id} = req.user;
+
+  if (!fromdate || !todate) {
+    return res.status(400).json({
+      message: "Date required to fetch data!.",
+    });
+  }
+
+  pool.getConnection((err, connection) => {
+    if (err) {
+      console.error("Error getting MySQL connection: ", err);
+      return res.status(500).json({
+        success: false,
+        message: "Database connection error",
+      });
+    }
+
+    try {
+      const getSalesQuery =
+        "SELECT BillDate, BillNo, ReceiptNo, CustCode, cust_name, ItemCode, ItemName, Qty, rate, Amount, cgst, sgst, cn ,createdby FROM salesmaster WHERE companyid = ? AND center_id = ? AND BillDate BETWEEN ? AND ? ";
+
+      connection.query(
+        getSalesQuery,
+        [dairy_id, center_id, fromdate, todate],
+        (err, result) => {
+          connection.release();
+
+          if (err) {
+            console.error("Error deleting purchase record: ", err);
+            return res.status(500).json({
+              success: false,
+              message: "Error deleting purchase record",
+            });
+          }
+
+          if (result.affectedRows === 0) {
+            return res.status(404).json({
+              success: false,
+              message: "No sales record found with the given criteria.",
+            });
+          }
+          // console.log(result);
+          res.status(200).json({
+            allSales: result,
+          });
+        }
+      );
+    } catch (error) {
+      connection.release();
+      console.error("Unexpected error: ", error);
+      return res.status(500).json({
+        success: false,
+        message: "Unexpected error occurred",
+        error: error.message,
+      });
+    }
+  });
+};

@@ -817,6 +817,7 @@ exports.getAllProductSaleRate = async (req, res) => {
   const { groupCode } = req.query;
   const dairy_id = req.user.dairy_id;
   const center_id = req.user.center_id;
+  const user_role = req.user.user_role;
 
   // Check if dairy_id exists
   if (!dairy_id) {
@@ -830,50 +831,72 @@ exports.getAllProductSaleRate = async (req, res) => {
     }
 
     try {
-      // Query to get the latest sale rate for each unique itemcode
-      const getSaleRateQuery = `
-        SELECT  pm.purchaseid,  pm.itemcode,  pm.itemname,  pm.qty,  pm.salerate,  pm.purchasedate
-        FROM 
-          PurchaseMaster AS pm
-        INNER JOIN (
-          SELECT 
-            itemcode, 
-            MAX(purchasedate) AS max_purchasedate
-          FROM 
-            PurchaseMaster
-          WHERE dairy_id = 89 AND center_id = 0 AND itemgroupcode = 1
-          GROUP BY 
-            itemcode
-        ) AS latest_sales
-          ON pm.itemcode = latest_sales.itemcode  AND pm.purchasedate = latest_sales.max_purchasedate
-        WHERE  pm.dairy_id = 89 AND pm.center_id = 0 AND pm.itemgroupcode = 1
-        ORDER BY 
-          pm.itemcode;
-      `;
+      let getSaleRateQuery;
+      let queryParams;
+
+      if (user_role === "mobilecollector") {
+        // Query for mobilecollector
+        getSaleRateQuery = `
+          SELECT pm.purchaseid, pm.itemcode, pm.itemname, pm.qty, pm.salerate, pm.purchasedate
+          FROM PurchaseMaster AS pm
+          INNER JOIN (
+            SELECT itemcode, MAX(purchasedate) AS max_purchasedate
+            FROM PurchaseMaster
+            WHERE dairy_id = ? AND center_id = ?
+            GROUP BY itemcode
+          ) AS latest_sales
+          ON pm.itemcode = latest_sales.itemcode AND pm.purchasedate = latest_sales.max_purchasedate
+          WHERE pm.dairy_id = ? AND pm.center_id = ?
+          ORDER BY pm.itemcode;
+        `;
+
+        queryParams = [dairy_id, center_id, dairy_id, center_id];
+      } else {
+        // Query for other roles
+        getSaleRateQuery = `
+          SELECT pm.purchaseid, pm.itemcode, pm.itemname, pm.qty, pm.salerate, pm.purchasedate
+          FROM PurchaseMaster AS pm
+          INNER JOIN (
+            SELECT itemcode, MAX(purchasedate) AS max_purchasedate
+            FROM PurchaseMaster
+            WHERE dairy_id = ? AND center_id = ? AND itemgroupcode = ?
+            GROUP BY itemcode
+          ) AS latest_sales
+          ON pm.itemcode = latest_sales.itemcode AND pm.purchasedate = latest_sales.max_purchasedate
+          WHERE pm.dairy_id = ? AND pm.center_id = ? AND pm.itemgroupcode = ?
+          ORDER BY pm.itemcode;
+        `;
+
+        queryParams = [
+          dairy_id,
+          center_id,
+          groupCode,
+          dairy_id,
+          center_id,
+          groupCode,
+        ];
+      }
 
       // Execute the query
-      connection.query(
-        getSaleRateQuery,
-        [dairy_id, center_id, groupCode],
-        (err, result) => {
-          connection.release(); // Ensure connection is released in the callback
+      connection.query(getSaleRateQuery, queryParams, (err, result) => {
+        connection.release(); // Release the connection after query execution
 
-          if (err) {
-            console.error("Error executing query: ", err);
-            return res.status(500).json({ message: "Query execution error" });
-          }
-
-          if (result.length === 0) {
-            return res.status(404).json({ message: "No records found!" });
-          }
-
-          // Return the results
-          res.status(200).json({ saleRates: result });
+        if (err) {
+          console.error("Error executing query: ", err);
+          return res.status(500).json({ message: "Query execution error" });
         }
-      );
+
+        if (result.length === 0) {
+          return res.status(404).json({ message: "No records found!" });
+        }
+
+        // Return the results
+        res.status(200).json({ saleRates: result });
+      });
     } catch (error) {
       console.error("Error processing request: ", error);
       return res.status(500).json({ message: "Internal server error" });
     }
   });
 };
+

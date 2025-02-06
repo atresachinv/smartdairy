@@ -1,15 +1,16 @@
 import React, { useEffect, useState } from "react";
+// import agra from "../../../../../assets/agra.ttf";
 import { useDispatch, useSelector } from "react-redux";
 import { FaFilePdf } from "react-icons/fa6";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
 import * as XLSX from "xlsx";
-import { mobileMilkCollReport } from "../../../../../App/Features/Mainapp/Milk/MilkCollectionSlice";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 import { RiFileExcel2Fill } from "react-icons/ri";
 import Spinner from "../../../../Home/Spinner/Spinner";
-import "../../../../../Styles/Mainapp/Apphome/Appnavview/Milkcollection.css";
+import "../../../../../Styles/Mainapp/Apphome/Appnavview/Reports.css";
+import { getvehicleSale } from "../../../../../App/Features/Sales/salesSlice";
 
 const SalesReports = () => {
   const dispatch = useDispatch();
@@ -21,21 +22,24 @@ const SalesReports = () => {
     (state) =>
       state.dairy.dairyData.SocietyName || state.dairy.dairyData.center_name
   );
+  const centerid = useSelector(
+    (state) =>
+      state.dairy.dairyData.center_id || state.dairy.dairyData.center_id
+  );
   // const tDate = useSelector((state) => state.date.toDate);
   const mobileMilkReport = useSelector(
     (state) => state.milkCollection.mobileColl
   );
-  const status = useSelector((state) => state.milkCollection.milkstatus);
-
-  //local states
-  const [period, setPeriod] = useState("2");
-  const [filteredData, setFilteredData] = useState([]);
+  const AllSales = useSelector((state) => state.sales.vehiclesales);
+  const salesStatus = useSelector((state) => state.sales.salesstatus);
 
   const initialValues = {
-    date: localStorage.getItem("today") || tDate,
+    fromdate: tDate || "",
+    todate: tDate || "",
   };
 
   const [values, setValues] = useState(initialValues);
+  console.log(values.date);
 
   const handleInputs = (e) => {
     const { name, value } = e.target;
@@ -53,52 +57,86 @@ const SalesReports = () => {
     setFilteredData(mobileMilkReport);
   }, []);
 
-  const calculateTotalLiters = (data) => {
-    return data.reduce((total, item) => total + parseFloat(item.Litres), 0);
+  const calculateTotalAmount = (data) => {
+    return data.reduce((total, item) => total + parseFloat(item.Amount), 0);
   };
 
-  const records = filteredData.length;
-  const totalLiters = calculateTotalLiters(filteredData);
+  const calculateTotalQty = (data) => {
+    return data.reduce((sum, item) => sum + parseInt(item.Qty), 0);
+  };
 
-  // Function to download Excel file
+  const Qty = calculateTotalQty(AllSales);
+  const totalAmount = calculateTotalAmount(AllSales);
+  // -------------------------------------------------------------------->
+  // Function to download Excel file ------------------------------------>
   const downloadExcel = () => {
-    if (filteredData.length === 0) {
+    if (AllSales.length === 0) {
       toast.error("No data available to export.");
       return;
     }
 
+    // Function to format date as dd/mm/yyyy
+    const formatDate = (date) => {
+      if (!date) return "";
+      const d = new Date(date);
+      return `${String(d.getDate()).padStart(2, "0")}/${String(
+        d.getMonth() + 1
+      ).padStart(2, "0")}/${d.getFullYear()}`;
+    };
+
     // Prepare data for Excel (excluding automatic headers)
-    const excelData = filteredData.map((collection) => [
-      collection.rno,
-      collection.cname,
-      collection.Litres,
-      collection.SampleNo,
+    const excelData = AllSales.map((sales) => [
+      formatDate(sales.BillDate),
+      sales.BillNo,
+      sales.CustCode,
+      sales.cust_name,
+      sales.ItemCode,
+      sales.ItemName,
+      sales.Qty,
+      sales.rate,
+      sales.Amount,
+      sales.cgst || 0,
+      sales.sgst || 0,
+      sales.cn || 0,
     ]);
 
     // Add headings manually
     const worksheet = XLSX.utils.aoa_to_sheet([
-      ["Code", "Customer Name", "Liters", "Sample No.", "FAT", "SNF"],
+      [
+        "Bill Date",
+        "Bill No.",
+        "Code",
+        "Name",
+        "Product Code",
+        "Product",
+        "Qty",
+        "Rate",
+        "Amount",
+        "cgst %",
+        "sgst %",
+        "cn",
+      ],
       ...excelData,
-      [],
-      ["Total Liters", "=", totalLiters.toFixed(2)],
     ]);
 
-    // Get current date and time for the file name
+    // Get current date for the file name
     const now = new Date();
     const formattedDate = `${now.getFullYear()}-${String(
       now.getMonth() + 1
     ).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
 
-    const fileName = `Mobile_Milk_Collection_${formattedDate}.xlsx`;
+    const fileName = `Vehicle_Sales_Report_${formattedDate}.xlsx`;
 
     // Create a workbook and export it
     const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Report");
+    XLSX.utils.book_append_sheet(workbook, worksheet, "sheet1");
     XLSX.writeFile(workbook, fileName);
   };
 
+  // -------------------------------------------------------------------->
+  // Function to download PDF file ------------------------------------>
   const downloadPDF = () => {
-    if (filteredData.length === 0) {
+    if (AllSales.length === 0) {
       toast.error("No data available to export.");
       return;
     }
@@ -110,54 +148,63 @@ const SalesReports = () => {
     const pageWidth = doc.internal.pageSize.getWidth();
 
     // Dairy name, report name, date, and shift
-    const dairyName = dairyname; // Replace with your actual dairy name
+    const dairyName = dairyname; // Replace with actual dairy name
     const reportName = "Mobile Milk Collection Report";
     const Dates = values.date;
     const milkcollector = collectorname;
 
-    // Shift based on period (0: morning, 1: evening, 2: all day)
-    const shift =
-      period === 0 ? "Morning" : period === 1 ? "Evening" : "All Day";
-
     // Add title and metadata to the PDF
     doc.setFontSize(14);
-    doc.text(reportName, pageWidth / 2, 10, { align: "center" }); // Dairy name
+    doc.text(reportName, pageWidth / 2, 10, { align: "center" }); // Report name
 
     doc.setFontSize(12);
-
-    doc.text(dairyName, pageWidth / 2, 16, {
-      align: "center",
-    });
-
-    doc.setFontSize(12);
-    doc.text(milkcollector, pageWidth / 2, 24, {
-      align: "center",
-    });
-
+    doc.text(dairyName, pageWidth / 2, 16, { align: "center" }); // Dairy name
+    if (collectorname) {
+      doc.setFontSize(12);
+      doc.text(milkcollector, pageWidth / 2, 24, { align: "center" }); // Collector name
+    }
     doc.setFontSize(10);
-    doc.text(Dates, 15, 24, {
-      align: "left",
-    });
+    doc.text(`Date: ${Dates}`, 15, 24, { align: "left" }); // Date on left side
+
+    // Function to format date as dd/mm/yyyy
+    const formatDate = (date) => {
+      if (!date) return "";
+      const d = new Date(date);
+      return `${String(d.getDate()).padStart(2, "0")}/${String(
+        d.getMonth() + 1
+      ).padStart(2, "0")}/${d.getFullYear()}`;
+    };
 
     // Prepare data for the table
-    const tableData = filteredData.map((collection) => [
-      collection.rno,
-      collection.ME === 0 ? "M" : "E",
-      collection.cname,
-      collection.Litres.toFixed(2),
-      collection.SampleNo,
+    const tableData = AllSales.map((sales) => [
+      formatDate(sales.BillDate),
+      sales.BillNo,
+      sales.CustCode,
+      sales.cust_name,
+      sales.ItemCode,
+      sales.ItemName,
+      sales.Qty,
+      sales.rate,
+      sales.Amount,
+      sales.cgst,
+      sales.sgst,
+      sales.cn,
     ]);
 
     // Table headers
     const tableHeaders = [
+      "Bill Date",
+      "Bill No.",
       "Code",
-      "ME",
-      "Customer Name",
-      "Liters",
-      "Sample No.",
-      "Update Liters",
-      "FAT",
-      "SNF",
+      "Name",
+      "Product Code",
+      "Product",
+      "Qty",
+      "Rate",
+      "Amount",
+      "cgst %",
+      "sgst %",
+      "cn",
     ];
 
     // Add table to the PDF
@@ -165,20 +212,27 @@ const SalesReports = () => {
     doc.autoTable({
       head: [tableHeaders],
       body: tableData,
-      startY: 28, // Table starts after the header
-      styles: { fontSize: 10 }, // Font size for table
+      startY: 30,
+      styles: { fontSize: 10 },
     });
 
-    // Calculate totals and add a summary row
-    const totalLiters = filteredData.reduce(
-      (sum, item) => sum + item.Litres,
+    // Calculate totals
+    const totalAmount = AllSales.reduce(
+      (sum, item) => sum + Number(item.Amount),
       0
     );
+    const totalQty = AllSales.reduce((sum, item) => sum + Number(item.Qty), 0);
+
+    // Add total summary below the table
+    const finalY = doc.lastAutoTable.finalY + 10;
+    doc.setFontSize(11);
     doc.text(
-      `Total Sample: ${records}, Total Liters: ${totalLiters.toFixed(2)}`,
+      `Total Quantity: ${totalQty}, Total Amount: ${totalAmount.toFixed(2)}`,
       pageWidth / 2,
-      doc.lastAutoTable.finalY + 10,
-      { align: "center" }
+      finalY,
+      {
+        align: "center",
+      }
     );
 
     // Get current date for the file name
@@ -187,29 +241,28 @@ const SalesReports = () => {
       now.getMonth() + 1
     ).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
 
-    const fileName = `Mobile_Milk_Collection_${formattedDate}.pdf`;
+    const fileName = `Vehicle_Sales_Report_${formattedDate}.pdf`;
 
     // Save the PDF
     doc.save(fileName);
   };
 
-  const handleMilkColletorData = (e) => {
+  // handle show sales reports ------------------------------------------------->
+  const handleVehicleSales = (e) => {
     e.preventDefault();
-    dispatch(mobileMilkCollReport({ date: values.date }));
+    dispatch(
+      getvehicleSale({ fromdate: values.fromdate, todate: values.todate })
+    );
   };
 
-  useEffect(() => {
-    dispatch(mobileMilkCollReport({ date: values.date }));
-  }, [dispatch, values.date]);
+  // useEffect(() => {
+  //   dispatch(getvehicleSale(values.date));
+  // }, [dispatch, values.date]);
 
- 
   return (
     <div className="mobile-milk-collection-report w100 h1 d-flex-col center sa">
-      <div className="page-title-button-div w70 h10 d-flex a-center sb">
-        <label className="heading w60">
-          {/* {t("milkcollection:m-milk-coll-report")} */}
-          Sales Report
-        </label>
+      <div className="page-title-button-div w90 h10 d-flex a-center sb">
+        <label className="heading w60">Sales Report</label>
         <button className="btn" onClick={downloadPDF}>
           <span className="f-heading px10">PDF</span>
           <FaFilePdf className="d-icons" />
@@ -222,87 +275,84 @@ const SalesReports = () => {
         </button>
       </div>
       <form
-        onSubmit={handleMilkColletorData}
-        className="fetch-sankalan-div w70 h10 d-flex a-center j-start">
-        {/* <div className="input-date-div w65 d-flex a-center sb"> */}
-        <label htmlFor="date" className="label-text w10 t-center">
+        onSubmit={handleVehicleSales}
+        className="fetch-sankalan-div w90 h10 d-flex a-center j-start my5">
+        <label
+          htmlFor="fromdate"
+          className="label-text start-date-text w10 t-center">
           {t("milkcollection:m-s-date")}
         </label>
         <input
           className="w20 data"
           type="date"
-          name="date"
-          id="date"
-          value={values.date || ""}
+          name="fromdate"
+          id="fromdate"
+          value={values.fromdate || ""}
+          onChange={handleInputs}
+          max={values.todate}
+        />
+        <label htmlFor="todate" className="label-text px10 t-center">
+          To
+        </label>
+        <input
+          className="w20 data"
+          type="date"
+          name="todate"
+          id="todate"
+          min={values.fromdate}
+          max={tDate}
+          value={values.todate || ""}
           onChange={handleInputs}
         />
-        {/* <button className="heading btn ">
-            {t("milkcollection:m-d-show")}
-          </button> */}
-        {/* </div> */}
-        {/* <div className="input-date-div w40 d-flex a-center">
-          <label htmlFor="period" className="label-text w40 t-center">
-            {t("milkcollection:m-s-shift")}
-          </label>
-          <select
-            className="w60 data"
-            id="period"
-            value={period}
-            onChange={(e) => setPeriod(e.target.value)}>
-            <option value="2">All</option>
-            <option value="0">Morning</option>
-            <option value="1">Evening</option>
-          </select>
-        </div> */}
+        <button type="submit" className="heading btn mx10">
+          {t("milkcollection:m-d-show")}
+        </button>
       </form>
-      <div className="milk-collection-info-div w70 h70 d-flex-col sa bg">
-        <div className="collection-info-heading w100 h10 d-flex a-center t-center sa bg1">
-          <span className="f-label-text w10">
-            {t("milkcollection:m-cust-code")}
-          </span>
-          <span className="f-label-text w40">
-            {t("milkcollection:m-cust-name")}
-          </span>
-          <span className="f-label-text w10">{t("c-liters")}</span>
-          <span className="f-label-text w20">
-            {" "}
-            {t("milkcollection:m-sample-no")}
-          </span>
+      <div className="milk-sales-data-div w100 d-flex-col h90 mh90 hidescrollbar bg">
+        <div className="sales-info-heading w100 h10 d-flex a-center t-center sa bg7">
+          <span className="f-label-text w10">Sr.no</span>
+          <span className="f-label-text w10">Re. No.</span>
+          <span className="f-label-text w10">Code</span>
+          <span className="f-label-text w30">Customer Name</span>
+          <span className="f-label-text w30">Product</span>
+          <span className="f-label-text w10">Qty</span>
+          <span className="f-label-text w10">Rate</span>
+          <span className="f-label-text w10">Amount</span>
         </div>
-        <div className="milk-collection-data-div w100 d-flex-col h90 mh90 hidescrollbar">
-          {status === "loading" ? (
-            <div className="w100 h80 d-flex center">
-              <Spinner />
+        {salesStatus === "loading" ? (
+          <div className="w100 h80 d-flex center">
+            <Spinner />
+          </div>
+        ) : AllSales.length > 0 ? (
+          AllSales.map((sales, index) => (
+            <div
+              key={index}
+              className={`sales-info-data w100 h10 d-flex a-center t-center sa ${
+                index % 2 === 0 ? "bg-light" : "bg-dark"
+              }`}
+              style={{
+                backgroundColor: index % 2 === 0 ? "#faefe3" : "#fff",
+              }}>
+              <span className="label-text w10">{index + 1}</span>
+              <span className="label-text w10">{sales.ReceiptNo}</span>
+              <span className="label-text w10">{sales.CustCode}</span>
+              <span className="label-text w30">{sales.cust_name}</span>
+              <span className="label-text w30">{sales.ItemName}</span>
+              <span className="label-text w10">{sales.Qty}</span>
+              <span className="label-text w10">{sales.rate}</span>
+              <span className="label-text w10">{sales.Amount}</span>
             </div>
-          ) : filteredData.length > 0 ? (
-            filteredData.map((collection, index) => (
-              <div
-                key={index}
-                className={`collection-info-heading w100 h10 d-flex a-center t-center sa ${
-                  index % 2 === 0 ? "bg-light" : "bg-dark"
-                }`}
-                style={{
-                  backgroundColor: index % 2 === 0 ? "#faefe3" : "#fff",
-                }}>
-                <span className="text w10">{collection.rno}</span>
-                <span className="text w40 t-center">{collection.cname}</span>
-                <span className="text w10">{collection.Litres}</span>
-                <span className="text w20">{collection.SampleNo}</span>
-              </div>
-            ))
-          ) : (
-            <div className="w100 h1 d-flex center">
-              <span className="label-text">{t("c-no-data-avai")}</span>
-            </div>
-          )}
-        </div>
+          ))
+        ) : (
+          <div className="w100 h1 d-flex center">
+            <span className="label-text">{t("c-no-data-avai")}</span>
+          </div>
+        )}
       </div>
       <div className="mobile-milk-btns w100 h10 d-flex a-center j-center sa">
+        <span className="heading py10">total Qunty: {Qty}</span>
         <span className="heading py10">
-          {t("milkcollection:m-count")} : {records}
-        </span>
-        <span className="heading py10">
-          {t("milkcollection:m-t-liters")} : {totalLiters.toFixed(2)}
+          Total Amount : {totalAmount.toFixed(2)}
         </span>
       </div>
     </div>

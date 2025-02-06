@@ -11,6 +11,7 @@ import "../../../../Styles/Mainapp/Sales/Sales.css";
 const CreateCattleFeed = () => {
   const dispatch = useDispatch();
   const { t } = useTranslation(["milkcollection", "common"]);
+  const tDate = useSelector((state) => state.date.toDate);
   const salesRates = useSelector((state) => state.sales.salesRates);
   const customerslist = useSelector((state) => state.customer.customerlist);
   const productlist = useSelector((state) => state.inventory.allProducts || []);
@@ -24,12 +25,13 @@ const CreateCattleFeed = () => {
   const [selectitemcode, setSelectitemcode] = useState(0);
   const [userid, setUserid] = useState("");
   const [amt, setAmt] = useState("");
-  const [rctno, setRctno] = useState(localStorage.getItem("receiptno") || 1);
+  const [rctno, setRctno] = useState("");
   const [filteredItems, setFilteredItems] = useState([]); //p--
   const [purchaseData, setPurchaseData] = useState([]); //p--
   const [userRole, setUserRole] = useState(null);
 
   useEffect(() => {
+    setRctno(localStorage.getItem("receiptno"));
     const myrole = localStorage.getItem("userRole");
     setUserRole(myrole);
   }, []);
@@ -82,7 +84,7 @@ const CreateCattleFeed = () => {
       toast.error("please select product!");
       return;
     }
-    if (selectitemcode > 0 && qty > 0 && rate > 0) {
+    if (selectitemcode > 0 && qty > 0 ) {
       const selectedItem = productlist.find(
         (item) => item.ItemCode === selectitemcode
       );
@@ -93,6 +95,7 @@ const CreateCattleFeed = () => {
         BillDate: date + " 00:00:00",
         Qty: qty,
         CustCode: fcode,
+        cust_name: cname,
         ItemGroupCode: 1,
         Rate: rate,
         Amount: qty * rate,
@@ -141,8 +144,6 @@ const CreateCattleFeed = () => {
           setRctno(parseInt(rctno) + 1);
           setSelectitemcode(0);
           alert(res.data.message);
-          const timestamp = Date.now();
-          setBillNo(`9${timestamp}`);
           localStorage.setItem("receiptno", parseInt(rctno) + 1);
         }
       } catch (error) {
@@ -246,7 +247,7 @@ const CreateCattleFeed = () => {
                 id="date"
                 value={date}
                 onChange={(e) => setDate(e.target.value)}
-                max={date}
+                max={tDate}
               />
             </div>
             <div className="col w30 d-flex a-center">
@@ -310,19 +311,35 @@ const CreateCattleFeed = () => {
               <label htmlFor="items" className="info-text w100">
                 Select Product:
               </label>
-              <select
-                disabled={!cname}
-                id="items"
-                value={selectitemcode}
-                className="data w100"
-                onChange={(e) => setSelectitemcode(parseInt(e.target.value))}>
-                <option value="0">-- select product --</option>
-                {filteredItems.map((item, i) => (
-                  <option key={i} value={item.ItemCode}>
-                    {item.ItemName}
-                  </option>
-                ))}
-              </select>
+              {userRole !== "mobilecollector" ? (
+                <select
+                  disabled={!cname}
+                  id="items"
+                  value={selectitemcode}
+                  className="data w100"
+                  onChange={(e) => setSelectitemcode(parseInt(e.target.value))}>
+                  <option value="0">-- select product --</option>
+                  {filteredItems.map((item, i) => (
+                    <option key={i} value={item.ItemCode}>
+                      {item.ItemName}
+                    </option>
+                  ))}
+                </select>
+              ) : (
+                <select
+                  disabled={!cname}
+                  id="items"
+                  value={selectitemcode}
+                  className="data w100"
+                  onChange={(e) => setSelectitemcode(parseInt(e.target.value))}>
+                  <option value="0">-- select product --</option>
+                  {filteredItems.map((item, i) => (
+                    <option key={i} value={item.ItemCode}>
+                      {item.ItemName}
+                    </option>
+                  ))}
+                </select>
+              )}
             </div>
             <div className="col w20">
               <label htmlFor="qty" className="info-text w100">

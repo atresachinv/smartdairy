@@ -1,7 +1,9 @@
 const pool = require("../Configs/Database");
 
+//get all items
 exports.getAllItems = async (req, res) => {
-  const { ...dynamicFields } = req.query;
+  const { ...dynamicFields } = req.query; // Capture dynamic fields from query parameters
+  const { dairy_id: companyid } = req.user; // Get the company id from the user's session or request
 
   pool.getConnection((err, connection) => {
     if (err) {
@@ -10,8 +12,8 @@ exports.getAllItems = async (req, res) => {
     }
 
     try {
-      let query = `SELECT * FROM itemmaster WHERE 1 = 1`; // Base query
-      const queryParams = [];
+      let query = `SELECT * FROM itemmaster WHERE companyid = ?`; // Base query with companyid condition
+      const queryParams = [companyid]; // Add companyid to the query parameters
 
       // Append dynamic filters
       for (const [field, value] of Object.entries(dynamicFields)) {

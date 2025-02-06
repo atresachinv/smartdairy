@@ -27,4 +27,32 @@
     min-height: 400px;
     margin-bottom: 10px;
   }
+
+  /* sales reports */
+  .mobile-milk-collection-report .fetch-sankalan-div {
+    width: 100%;
+  }
+  .mobile-milk-collection-report .fetch-sankalan-div .start-date-text {
+    display: none;
+  }
+  .mobile-milk-collection-report .fetch-sankalan-div input {
+    width: 35%;
+  }
+  .mobile-milk-collection-report .fetch-sankalan-div label {
+    padding: 5px;
+  }
+  .milk-sales-info-div {
+    width: 100%;
+    overflow-x: auto;
+  }
+  .sales-info-heading {
+    min-width: 800px;
+    position: sticky;
+    top: 0;
+    background-color: #17acc0;
+    padding: 5px 0;
+  }
+  .sales-info-data {
+    min-width: 800px;
+  }
 }

@@ -4,7 +4,6 @@ import Spinner from "../../../Home/Spinner/Spinner";
 import { useSelector } from "react-redux";
 import axiosInstance from "../../../../App/axiosInstance";
 import { MdDeleteOutline } from "react-icons/md";
-// import "../../../../Styles/Mainapp/Sale/sale.css";
 import Swal from "sweetalert2";
 import { IoClose } from "react-icons/io5";
 import { FaRegEdit } from "react-icons/fa";

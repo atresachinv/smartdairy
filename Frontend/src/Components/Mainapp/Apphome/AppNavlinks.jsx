@@ -29,7 +29,7 @@ const AppNavlinks = ({ isselected, setIsSelected }) => {
       name: `${t("m-milkcoll")}`,
       icon: <BsDatabaseAdd className="icon" />,
       index: 1,
-      role: ["super_admin", "admin", "milkcollector", "mobilecollector"],
+      role: ["super_admin", "milkcollector", "mobilecollector"],
       path: "vehicle/collection",
     },
     {
@@ -44,7 +44,7 @@ const AppNavlinks = ({ isselected, setIsSelected }) => {
       icon: <BsFileTextFill className="icon" />,
       index: 3,
       path: "collection/reports",
-      role: ["super_admin", "admin", "milkcollector", "mobilecollector"],
+      role: ["super_admin", "milkcollector", "mobilecollector"],
     },
     {
       name: `${t("m-reports")}`,
@@ -58,14 +58,21 @@ const AppNavlinks = ({ isselected, setIsSelected }) => {
       icon: <BsFileTextFill className="icon" />,
       index: 5,
       path: "vehicle/sales",
-      role: ["super_admin", "admin", "milkcollector", "mobilecollector"],
+      role: ["super_admin", "milkcollector", "mobilecollector"],
     },
     {
       name: `sales Report`,
       icon: <BsFileTextFill className="icon" />,
       index: 6,
       path: "vehicle/sales/report",
-      role: ["super_admin", "admin", "milkcollector", "mobilecollector"],
+      role: ["super_admin", "milkcollector", "mobilecollector"],
+    },
+    {
+      name: `sales Report`,
+      icon: <BsFileTextFill className="icon" />,
+      index: 7,
+      path: "admin/sales/report",
+      role: ["super_admin", "admin"],
     },
   ];
 
@@ -93,18 +100,12 @@ const AppNavlinks = ({ isselected, setIsSelected }) => {
         <li
           key={index}
           className={`home-nav-item d-flex a-center ${
-            isselected === index ? "selected" : ""
+            isselected === button.path ? "selected" : ""
           }`}
           onClick={() => {
-            setIsSelected(button.index);
+            setIsSelected(button.path);
           }}>
-          <NavLink
-            to={button.path}
-            className={({ isActive }) =>
-              isActive
-                ? "sub-navlinks f-label-text"
-                : "sub-navlinks f-label-text"
-            }>
+          <NavLink to={button.path} className={"sub-navlinks f-label-text"}>
             <span>{button.icon}</span>
             {button.name}
           </NavLink>
