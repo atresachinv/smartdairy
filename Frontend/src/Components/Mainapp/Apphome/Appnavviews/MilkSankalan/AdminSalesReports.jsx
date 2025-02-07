@@ -24,30 +24,22 @@ const AdminSalesReports = () => {
   const dairy_name = useSelector((state) => state.dairy.dairyData.SocietyName);
   // State selectors
   const tDate = useSelector((state) => state.date.toDate);
-  const status = useSelector((state) => state.milkCollection.allmilkcollstatus);
   // -------------------------------------------------------------------------------------------->
   const AllSales = useSelector((state) => state.sales.allSales);
   const salesStatus = useSelector((state) => state.sales.allstatus);
-  console.log("salessssss", AllSales, salesStatus);
   // -------------------------------------------------------------------------------------------->
-  const milkData = useSelector(
-    (state) => state.milkCollection.allMilkCollector || []
-  );
   const centerList = useSelector(
     (state) => state.center.centersList.centersDetails || []
   );
 
   const Emplist = useSelector((state) => state.emp.emplist || []);
-  console.log(Emplist);
 
   // Local states ----------------------------------------------------------->
   const [errors, setErrors] = useState({});
   const [selectedCenterId, setSelectedCenterId] = useState("0");
   const [selectedEmp, setSelectedEmp] = useState("");
-  const [filteredMilkData, setFilteredMilkData] = useState([]);
   const [filteredSaleData, setFilteredSaleData] = useState([]);
   const [selectedCenterName, setSelectedCenterName] = useState("");
-  const [selectedEmpName, setSelectedEmpName] = useState("");
   const initialValues = {
     fromdate: tDate || "",
     todate: tDate || "",
@@ -67,14 +59,9 @@ const AdminSalesReports = () => {
   const totalAmount = calculateTotalAmount(AllSales);
   //--------------------------------------------------------------------------------------->
   useEffect(() => {
-    setFilteredMilkData(milkData);
     dispatch(listEmployee());
     dispatch(mobileMilkCollReport());
   }, [dispatch]);
-
-  useEffect(() => {
-    setFilteredMilkData(milkData);
-  }, [milkData]);
 
   useEffect(() => {
     if (selectedEmp) {

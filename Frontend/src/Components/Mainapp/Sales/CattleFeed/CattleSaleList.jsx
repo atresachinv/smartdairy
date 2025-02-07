@@ -7,6 +7,8 @@ import { MdDeleteOutline } from "react-icons/md";
 import Swal from "sweetalert2";
 import { IoClose } from "react-icons/io5";
 import { FaRegEdit } from "react-icons/fa";
+import { toast } from "react-toastify";
+import "../../../../Styles/Mainapp/Sales/Sales.css";
 
 const CattleSaleList = () => {
   const { customerlist, loading } = useSelector((state) => state.customer);
@@ -15,10 +17,10 @@ const CattleSaleList = () => {
   const [fcode, setFcode] = useState("");
   const [sales, setSales] = useState([]);
   const [itemList, setItemList] = useState([]);
-  const [editSale, setEditSale] = useState(null); // State to hold the sale being edited
+  const [editSale, setEditSale] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [filteredSalesList, setFilteredSalesList] = useState(sales);
   const [isInvoiceOpen, setIsInvoiceOpen] = useState(false);
+  const [filteredSalesList, setFilteredSalesList] = useState(sales);
   const [viewItems, setViewItems] = useState([]);
   //download Excel sheet
   const downloadExcel = () => {
@@ -148,6 +150,7 @@ const CattleSaleList = () => {
       }
     }
   };
+
   //its to delete  invoice based on billno
   const handleDeleteItem = async (saleid) => {
     const result = await Swal.fire({
@@ -260,7 +263,8 @@ const CattleSaleList = () => {
   }, {});
   const groupedSalesArray = Object.values(groupedSales);
 
-  //for searching Name /code to get the sale list
+  //for searching Name or code to get the sale list------------------------------------>
+
   useEffect(() => {
     if (fcode) {
       const filteredItems = sales.filter((item) => {
@@ -286,13 +290,13 @@ const CattleSaleList = () => {
     // console.log(filterList);
     setIsInvoiceOpen(true);
   };
-  
+
   return (
     <div className="customer-list-container-div w100 h1 d-flex-col p10">
       <div className="download-print-pdf-excel-container w100 h20 d-flex-col sb">
         <div className="sales-dates-container w60 h50 d-flex a-center sb">
-          <div className="w35 d-flex a-center sb">
-            <label htmlFor="" className="info-text w30">
+          <div className="date-input-div w35 d-flex a-center sb">
+            <label htmlFor="" className="label-text w30">
               From :
             </label>
             <input
@@ -303,8 +307,8 @@ const CattleSaleList = () => {
               max={date2}
             />
           </div>
-          <div className="w35 d-flex a-center sb">
-            <label htmlFor="" className="info-text w30">
+          <div className="date-input-div w35 d-flex a-center sb">
+            <label htmlFor="" className="label-text w30">
               To :
             </label>
             <input
@@ -319,14 +323,14 @@ const CattleSaleList = () => {
             Show
           </button>
         </div>
-        <div className="w100 h50 d-flex a-center my5">
-          <div className="w45 d-flex a-center sb">
-            <label htmlFor="" className="info-text w30">
-              Search Customer :
+        <div className="find-customer-container w100 h50 d-flex a-center my5">
+          <div className="customer-search-div w45 d-flex a-center sb">
+            <label htmlFor="" className="label-text w30">
+              Search:
             </label>
             <input
               type="text"
-              className="data w60"
+              className="data w70"
               name="code"
               onFocus={(e) => e.target.select()}
               value={fcode}
@@ -338,21 +342,21 @@ const CattleSaleList = () => {
             />
           </div>
           <button className="w-btn mx10" onClick={downloadExcel}>
-            Export Excel
+            Excel
           </button>
         </div>
       </div>
-      <div className="customer-list-table w100 h1 d-flex-col hidescrollbar bg">
+      <div className="sales-list-table w100 h1 d-flex-col hidescrollbar bg">
         <span className="heading p10">Cattle Feed List</span>
-        <div className="customer-heading-title-scroller w100 h1 mh100 d-flex-col hidescrollbar">
-          <div className="data-headings-div sale-data-headings-div h10 d-flex center t-center sb">
+        <div className="sales-heading-title-scroller w100 h1 mh100 d-flex-col hidescrollbar">
+          <div className="sale-data-headings-div h10 d-flex center t-center sb sticky-top t-heading-bg">
             <span className="f-info-text w5">Sr.No</span>
-            <span className="f-info-text w5">Date</span>
-            <span className="f-info-text w5">Rec. No</span>
-            <span className="f-info-text w5">Cust Code</span>
-            <span className="f-info-text w25">Cust Name</span>
-            <span className="f-info-text w5">Amount</span>
-            <span className="f-info-text w5">Actions</span>
+            <span className="f-info-text w10">Date</span>
+            <span className="f-info-text w10">Rec. No</span>
+            <span className="f-info-text w10">Cust Code</span>
+            <span className="f-info-text w30">Cust Name</span>
+            <span className="f-info-text w10">Amount</span>
+            <span className="f-info-text w15">Actions</span>
           </div>
           {/* Show Spinner if loading, otherwise show the feed list */}
           {loading ? (
@@ -361,24 +365,24 @@ const CattleSaleList = () => {
             groupedSalesArray.map((sale, index) => (
               <div
                 key={index}
-                className={`data-values-div sale-data-values-div w100 h10 d-flex center t-center sa ${
+                className={`sale-data-values-div w100 h10 d-flex center t-center sa ${
                   index % 2 === 0 ? "bg-light" : "bg-dark"
                 }`}
                 style={{
                   backgroundColor: index % 2 === 0 ? "#faefe3" : "#fff",
                 }}>
                 <span className="text w5">{index + 1}</span>
-                <span className="text w5">
+                <span className="text w10">
                   {formatDateToDDMMYYYY(sale.BillDate)}
                 </span>
-                <span className="text w5 ">{sale.ReceiptNo}</span>
-                <span className="text w5">{sale.CustCode}</span>
-                <span className="text w25">
+                <span className="text w10">{sale.ReceiptNo}</span>
+                <span className="text w10">{sale.CustCode}</span>
+                <span className="text w30 t-start">
                   {handleFindCustName(sale.CustCode)}
                 </span>
 
-                <span className="text w5">{sale.TotalAmount}</span>
-                <span className="text w5 d-flex j-center a-center">
+                <span className="text w10 t-end">{sale.TotalAmount}</span>
+                <span className="text w15 d-flex j-center a-center sa">
                   <button
                     className="px5"
                     onClick={() => handleView(sale?.BillNo)}>
@@ -387,7 +391,7 @@ const CattleSaleList = () => {
                   <MdDeleteOutline
                     onClick={() => handleDelete(sale?.BillNo)}
                     size={15}
-                    className="table-icon "
+                    className="table-icon"
                     style={{ color: "red" }}
                   />
                 </span>
@@ -479,6 +483,56 @@ const CattleSaleList = () => {
                     </tbody>
                   </table>
                 </div>
+              </div>
+            </div>
+          </div>
+        )}
+        {/* its used for edit item */}
+        {isModalOpen && (
+          <div className="modal">
+            <div className="modal-content">
+              <h2>Update Sale Item</h2>
+              <label>
+                Receipt No:
+                <input
+                  type="number"
+                  value={editSale?.ReceiptNo}
+                  onChange={(e) =>
+                    setEditSale({ ...editSale, ReceiptNo: e.target.value })
+                  }
+                />
+              </label>
+              <label>
+                Qty:
+                <input
+                  type="number"
+                  value={editSale?.Qty}
+                  onChange={(e) =>
+                    setEditSale({ ...editSale, Qty: e.target.value })
+                  }
+                />
+              </label>
+              <label>
+                Rate:
+                <input
+                  type="number"
+                  value={editSale?.Rate}
+                  onChange={(e) =>
+                    setEditSale({ ...editSale, Rate: e.target.value })
+                  }
+                />
+              </label>
+              <label>
+                Amount:
+                <input
+                  type="number"
+                  value={handleAmountCalculation()}
+                  disabled
+                />
+              </label>
+              <div>
+                <button onClick={handleSaveChanges}>Save</button>
+                <button onClick={() => setIsModalOpen(false)}>Cancel</button>
               </div>
             </div>
           </div>

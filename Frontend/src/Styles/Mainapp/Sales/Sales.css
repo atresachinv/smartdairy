@@ -19,9 +19,50 @@
     overflow-x: auto;
     padding: 0;
   }
-
   .sales-list-outer-container .sales-list-conatainer {
     min-width: 500px;
     overflow-x: auto;
+  }
+
+  /* sale list css */
+  .customer-list-container-div {
+    padding: 0;
+    min-height: auto;
+  }
+  .download-print-pdf-excel-container {
+    min-height: fit-content;
+  }
+  .download-print-pdf-excel-container .sales-dates-container {
+    width: 100%;
+    min-height: fit-content;
+  }
+  .sales-dates-container .date-input-div {
+    flex-direction: column;
+    width: 35%;
+  }
+  .date-input-div label,
+  .date-input-div input {
+    width: 100%;
+  }
+  .find-customer-container .customer-search-div {
+    width: 85%;
+  }
+  .customer-search-div label {
+    width: 20%;
+    padding: 0;
+  }
+  .customer-search-div button {
+    margin: 0;
+  }
+  .sales-heading-title-scroller {
+    overflow-x: auto;
+  }
+
+  .sale-data-headings-div {
+    min-width: 900px;
+    padding: 5px 0;
+  }
+  .sale-data-values-div {
+    min-width: 900px;
   }
 }

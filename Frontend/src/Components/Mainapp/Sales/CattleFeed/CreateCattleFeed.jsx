@@ -2,11 +2,17 @@ import React, { useEffect, useState } from "react";
 import axiosInstance from "../../../../App/axiosInstance";
 import { MdDeleteOutline } from "react-icons/md";
 import { useDispatch, useSelector } from "react-redux";
+import * as XLSX from "xlsx";
+import { jsPDF } from "jspdf";
+import "jspdf-autotable";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
+import Swal from "sweetalert2";
 import { getAllProducts } from "../../../../App/Features/Mainapp/Inventory/inventorySlice";
 import { getProductSaleRates } from "../../../../App/Features/Sales/salesSlice";
+import Invoice from "../Invoice";
 import "../../../../Styles/Mainapp/Sales/Sales.css";
+import { toWords } from "number-to-words";
 
 const CreateCattleFeed = () => {
   const dispatch = useDispatch();
@@ -19,16 +25,17 @@ const CreateCattleFeed = () => {
   const [cname, setCname] = useState("");
   const [fcode, setFcode] = useState("");
   const [date, setDate] = useState("");
-  const [itemList, setItemList] = useState([]);
   const [qty, setQty] = useState(1);
   const [rate, setRate] = useState(0);
   const [selectitemcode, setSelectitemcode] = useState(0);
   const [userid, setUserid] = useState("");
   const [amt, setAmt] = useState("");
   const [rctno, setRctno] = useState("");
+  const [groupItems, setGroupItems] = useState([]);
   const [filteredItems, setFilteredItems] = useState([]); //p--
   const [purchaseData, setPurchaseData] = useState([]); //p--
   const [userRole, setUserRole] = useState(null);
+  const dairyInfo = useSelector((state) => state.dairy.dairyData.SocietyName);
 
   useEffect(() => {
     setRctno(localStorage.getItem("receiptno"));
@@ -81,42 +88,56 @@ const CreateCattleFeed = () => {
 
   const handleAddToCart = () => {
     if (!selectitemcode) {
-      toast.error("please select product!");
+      toast.error("Please select a product!");
       return;
     }
-    if (selectitemcode > 0 && qty > 0 ) {
-      const selectedItem = productlist.find(
-        (item) => item.ItemCode === selectitemcode
-      );
+
+    const selectedItem = productlist.find(
+      (item) => item.ItemCode === selectitemcode
+    );
+
+    if (!selectedItem) {
+      toast.error("Invalid product selected!");
+      return;
+    }
+
+    if (Number(selectitemcode) > 0 && Number(qty) > 0) {
       const newCartItem = {
         ReceiptNo: rctno,
-        ItemCode: selectedItem?.ItemCode,
-        ItemName: selectedItem?.ItemName,
-        BillDate: date + " 00:00:00",
-        Qty: qty,
+        ItemCode: selectedItem.ItemCode,
+        ItemName: selectedItem.ItemName,
+        BillDate: `${date} 00:00:00`,
+        Qty: Number(qty),
         CustCode: fcode,
         cust_name: cname,
         ItemGroupCode: 1,
-        Rate: rate,
-        Amount: qty * rate,
+        Rate: Number(rate),
+        Amount: Number(qty) * Number(rate),
       };
 
-      // Update the cart items and log the updated array
-      setCartItem((prev) => {
-        const updatedCart = [...prev, newCartItem];
-        return updatedCart;
-      });
+      setCartItem((prev) => [...prev, newCartItem]);
 
-      // Reset the input values
+      // Reset fields
       setQty(1);
       setRate("");
-      setAmt("");
-      setSelectitemcode(""); // Reset amount to 0 after clearing rate and quantity
+      setAmt(0); // Set amount to 0 instead of an empty string
+      setSelectitemcode("");
     }
   };
 
-  const handleDeleteItem = (id) => {
-    if (confirm("Are you sure you want to Delete?")) {
+  //handle delete
+  const handleDeleteItem = async (ItemCode) => {
+    const result = await Swal.fire({
+      title: "Confirm Deletion?",
+      text: "Are you sure you want to delete this Product?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+    });
+
+    if (result.isConfirmed) {
       const updatedCart = cartItem.filter((item, index) => index !== id);
       setCartItem(updatedCart);
     }
@@ -143,7 +164,7 @@ const CreateCattleFeed = () => {
           setAmt(0);
           setRctno(parseInt(rctno) + 1);
           setSelectitemcode(0);
-          alert(res.data.message);
+          toast.success(res.data.message);
           localStorage.setItem("receiptno", parseInt(rctno) + 1);
         }
       } catch (error) {
@@ -166,44 +187,298 @@ const CreateCattleFeed = () => {
     }
   }, [cname, customerslist]);
 
+  // Function to handle printing the invoice --------------------------------------->
   const handlePrint = () => {
-    if (cartItem.length === 0) {
-      toast.error("You don't have Item's to Print , please add products!");
-      return;
-    }
-    const printWindow = window.open("", "_blank");
-    const printContent = document.getElementById("print-section").innerHTML;
-    console.log(printContent);
+    handleSubmit();
+    if (cartItem.length > 0) {
+      const printWindow = window.open("", "_blank");
+      const printContent = document.getElementById("print-section").innerHTML;
 
-    if (printWindow) {
-      printWindow.document.write(
+      if (printWindow) {
+        printWindow.document.write(
+          `
+        <html>
+          <head>
+            <title>Print</title>
+            <style>
+              @page {
+                size: A4 landscape;
+                margin: 5mm;
+              }
+              body {
+                font-family: Arial, sans-serif;
+                font-size: 12px;
+                margin: 0;
+                padding: 0;
+              }
+              #print-section {
+                display: flex;
+                justify-content: space-between;
+                width: 100%;
+                height:100%;
+                padding: 10mm;
+                box-sizing: border-box;
+                flex-wrap: wrap;
+              }
+              .invoice { 
+                width: 46%;
+                border: 1px solid black;
+                height:100%;
+                padding: 1mm;
+                box-sizing: border-box;
+               display: flex;
+              flex-direction: column;
+              }
+              .invoice-header {
+                text-align: center;
+                font-size: 16px;
+                font-weight: bold;
+                margin-bottom: 0;
+              }
+                 .invoice-sub-header {
+                text-align: center;
+                font-size: 14px;
+                font-weight: bold;
+                margin-bottom: 10px;
+                margin-right: 90px;
+
+              }
+              .invoice-info {
+                display: flex;
+                margin:0 10px;
+                justify-content: space-between;
+                margin-bottom: 10px;
+              }
+
+              .invoice-outstanding-container{
+                width: 100%;
+                display: flex; 
+                justify-content: end;
+                margin-bottom:10px;
+              }
+              .outstanding-conatiner{
+                width: 120px;
+                height : 50px;
+                text-align: center;
+                border: 1px solid black;
+              }
+     
+
+              .invoice-table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-bottom: 10px;
+              }
+              .invoice-table th, .invoice-table td {
+              font-size: 12px;
+                border: 1px solid black;
+                padding: 5px;
+                text-align: center;
+                word-wrap: break-word;
+              }
+              
+            
+              .signature-box {
+                display: flex;
+                justify-content: space-between;
+                margin-top: auto;
+                font-weight: bold;
+              }
+              .signature-box span {
+                width: 45%;
+                text-align: center;
+                border-top: 1px solid black;
+                padding-top: 10px;
+              }
+                .footer{
+                margin-top:10px;
+                display:flex;
+                justify-content:center;
+                }
+            </style>
+          </head>
+          <body>
+            <div id="print-section">${printContent}</div>
+          </body>
+        </html>
         `
-    <html>
-      <head>
-        <title>Print</title>
-        <style>
-          #print-section { width: 100%; display: flex; flex-direction: row; justify-content: space-between; gap: 1cm; padding: 1cm; }
-          .invoice { width: 48%; border: 1px solid black; padding: 1cm; box-sizing: border-box; }
-          .invoice-table { width: 100%; border-collapse: collapse; }
-          .invoice-table th, .invoice-table td { border: 1px solid black; padding: 5px; text-align: left; word-wrap: break-word; }
-          body { font-size: 12px; }
-        </style>
-      </head>
-      <body>
-        <div id="print-section">${printContent}</div>
-      </body>
-    </html>
-    `
-      );
-      printWindow.document.close();
-      printWindow.focus();
-      printWindow.print();
-    } else {
-      alert("Failed to open print window. Check pop-up settings.");
+        );
+        printWindow.document.close();
+        printWindow.focus();
+        printWindow.print();
+      } else {
+        toast.error("Failed to open print window. Check pop-up settings.");
+      }
     }
   };
 
-  //use set rate in rate field
+  // Function to handle download pdf the invoice --------------------------------------->
+  const exportToPDF = () => {
+    if (cartItem.length === 0) {
+      toast.error("No data available to export.");
+      return;
+    }
+
+    const convertToWords = (num) => {
+      const [integerPart, decimalPart] = num.toString().split(".");
+      const integerWords = toWords(integerPart);
+      const decimalWords = decimalPart ? " point " + toWords(decimalPart) : "";
+      return `Rupees ${integerWords}${decimalWords} only`;
+    };
+    const doc = new jsPDF();
+
+    // Define columns and rows
+    const columns = ["Sr No", "Items", "Qty", "Rate", "Amount"];
+    const rows = cartItem.map((item, index) => [
+      index + 1,
+      handleFindItemName(item.ItemCode),
+      item.Qty,
+      item.Rate,
+      item.Amount,
+    ]);
+
+    const totalAmount = cartItem.reduce((acc, item) => acc + item.Amount, 0);
+
+    // Page width for centering text
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const pageHeight = doc.internal.pageSize.getHeight();
+
+    // Define the margin and the height of the box
+    const margin = 10;
+    const boxHeight = pageHeight - 20; // Adjust as needed
+
+    // Add border for the entire content
+    doc.rect(margin, margin, pageWidth - 2 * margin, boxHeight);
+
+    // Add dairy name with border inside the box
+    const dairyName = dairyInfo;
+    doc.setFontSize(16);
+    doc.setFont("helvetica", "bold");
+    const dairyTextWidth = doc.getTextWidth(dairyName);
+    doc.text(dairyName, (pageWidth - dairyTextWidth) / 2, margin + 15);
+
+    // Add "Sale-Info" heading with border
+    doc.setFontSize(14);
+    const invoiceInfo = doc.getTextWidth("Sale-Info");
+    doc.text("Sale-Info", (pageWidth - invoiceInfo) / 2, margin + 25);
+
+    //
+
+    // Add Bill No and Date (aligned) with border
+    doc.setFontSize(12);
+    doc.setFont("helvetica", "normal");
+    const billNoText = `Bill No.: ${rctno || ""}`;
+    const dateText = `Date: ${date || ""}`;
+    doc.text(billNoText, margin + 5, margin + 40);
+    doc.text(
+      dateText,
+      pageWidth - doc.getTextWidth(dateText) - 15,
+      margin + 40
+    );
+
+    // Add Customer Code and Customer Name (aligned) with border
+    const CustCode = `Cust No.: ${fcode || ""}`;
+    const CustName = `Cust. Name: ${cname || ""}`;
+    doc.text(CustCode, margin + 5, margin + 50);
+    doc.text(
+      CustName,
+      pageWidth - doc.getTextWidth(CustName) - 15,
+      margin + 50
+    );
+
+    // Add table for items with borders and centered text
+    doc.autoTable({
+      head: [columns],
+      body: rows,
+      startY: margin + 60,
+      margin: { top: 10 },
+      styles: {
+        cellPadding: 2,
+        fontSize: 11,
+        halign: "center", // Horizontal alignment for cells (centered)
+        valign: "middle", // Vertical alignment for cells (centered)
+        lineWidth: 0.08, // Line width for the borders
+        lineColor: [0, 0, 0], // Black border color
+      },
+      headStyles: {
+        fontSize: 12,
+        fontStyle: "bold",
+        fillColor: [225, 225, 225], // Light gray background for the header
+        textColor: [0, 0, 0], // Black text color for header
+      },
+      tableLineColor: [0, 0, 0], // Table border color (black)
+      tableLineWidth: 0.1, // Border width
+    });
+    // Add total amount with border
+    doc.setFontSize(12);
+    const totalAmountTextStr = `${convertToWords(totalAmount)}`;
+    const totalAmountLabel = `Total Amount: ${totalAmount}`;
+
+    const totalAmountTextWidth = doc.getTextWidth(totalAmountTextStr);
+    const totalAmountLabelWidth = doc.getTextWidth(totalAmountLabel);
+
+    // Add borders for total amount text
+    doc.text(totalAmountTextStr, margin + 5, doc.lastAutoTable.finalY + 10);
+    doc.text(
+      totalAmountLabel,
+      pageWidth - totalAmountLabelWidth - 15,
+      doc.lastAutoTable.finalY + 10
+    );
+
+    // Footer (Signatures) with borders
+    doc.text(
+      "Signature of the consignee",
+      margin + 5,
+      doc.lastAutoTable.finalY + 40
+    );
+    doc.text(
+      "Signature of the consignor",
+      pageWidth - doc.getTextWidth("Signature of the consignor") - 15,
+      doc.lastAutoTable.finalY + 40
+    );
+    doc.setFontSize(10);
+    doc.setFont("helvetica", "normal");
+
+    const Info = doc.getTextWidth("Goods received as per the above details.");
+    doc.text(
+      "Goods received as per the above details.",
+      (pageWidth - Info) / 2,
+      doc.lastAutoTable.finalY + 50
+    );
+
+    //table outstanding
+    // Define columns and rows
+    const columns1 = ["Current Outstanding"];
+    const rows1 = [[`${0}`]];
+    const columnWidths = [40];
+    doc.autoTable({
+      head: [columns1],
+      body: rows1,
+      startY: margin + 5,
+      columnStyles: {
+        0: { cellWidth: columnWidths[0] }, // Setting width for the first column (Current Outstanding)
+      },
+      styles: {
+        cellPadding: 2,
+        fontSize: 10,
+        halign: "center", // Horizontal alignment for cells (centered)
+        valign: "middle", // Vertical alignment for cells (centered)
+        lineWidth: 0.08, // Line width for the borders
+        lineColor: [0, 0, 0], // Black border color
+      },
+      headStyles: {
+        fontSize: 10,
+        fillColor: [225, 225, 225], // Light gray background for the header
+        textColor: [0, 0, 0], // Black text color for header
+      },
+      tableLineColor: [0, 0, 0], // Table border color (black)
+    });
+
+    // Save the PDF
+    doc.save("Invoice.pdf");
+  };
+
+  //use set rate in rate field ----------------------------------------------------->
   useEffect(() => {
     if (purchaseData.length > 0) {
       const sortedPurchaseData = [...purchaseData].sort(
@@ -216,25 +491,64 @@ const CreateCattleFeed = () => {
     }
   }, [selectitemcode]);
 
-  // Filter out items that are already in the cart
-
+  // Filter out items that are already in the cart --------------------------------->
+  const handleItemstoShow = () => {
+    if (userRole !== "mobilecollector") {
+      const items = productlist.filter((item) => item.ItemGroupCode === 1);
+      setGroupItems(items);
+      const itemsNotInCart = groupItems.filter(
+        (item) => !cartItem.some((cart) => cart.ItemCode === item.ItemCode)
+      );
+      setFilteredItems(itemsNotInCart);
+    } else {
+      const itemsNotInCart = productlist.filter(
+        (item) => !cartItem.some((cart) => cart.ItemCode === item.ItemCode)
+      );
+      setFilteredItems(itemsNotInCart);
+    }
+  };
   useEffect(() => {
-    const itemsNotInCart = productlist.filter(
-      (item) => !cartItem.some((cart) => cart.ItemCode === item.ItemCode)
-    );
-    setFilteredItems(itemsNotInCart);
-  }, [itemList, cartItem]);
+    handleItemstoShow();
+  }, [productlist]);
 
-  // Select all the text when input is focused
+  //   useEffect(() => {
+  //     const items = productlist.filter((item) => item.ItemGroupCode === 1);
+  //     setGroupItems(items);
+  //   }, [productlist, cartItem]);
+  //
+  //   useEffect(() => {
+  //     const itemsNotInCart = groupItems.filter(
+  //       (item) => !cartItem.some((cart) => cart.ItemCode === item.ItemCode)
+  //     );
+  //     setFilteredItems(itemsNotInCart);
+  //   }, [groupItems]);
+
+  // Select all the text when input is focused ------------------------------------->
   const handleFocus = (e) => {
     e.target.select();
   };
 
+  // Handle Enter key press to move to the next field ---------------------------------->
+  const handleKeyPress = (e, nextField) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      if (nextField) {
+        nextField.focus();
+      }
+    }
+  };
+
+  // Function to find item name based on item code --------------------------------->
+  const handleFindItemName = (id) => {
+    const selectedItem = productlist.find((item) => item.ItemCode === id);
+    return selectedItem.ItemName;
+  };
+
   return (
-    <div className="add-sale-container w100 h1 d-flex sa">
-      <div className="create-sales-outer-container w50 h90 d-flex-col p10 bg">
-        <span className="heading p10">Create Cattle Feed</span>
-        <div className="create-sales-form-container w100 h1 d-flex-col ">
+    <div className="add-sale-container w100 h1 d-flex-col sa">
+      <span className="heading p10">Cattle Feeds</span>
+      <div className="create-sales-inner-container w100 h1 d-flex sb p10">
+        <form className="create-sales-form-container w50 h1 bg p10">
           <div className="sales-details w100 h20 d-flex a-center sb ">
             <div className="col w50 d-flex a-center ">
               <label htmlFor="date" className="info-text w100">
@@ -262,6 +576,9 @@ const CreateCattleFeed = () => {
                 value={rctno}
                 className="data w100"
                 onChange={(e) => setRctno(e.target.value.replace(/\D/, ""))}
+                onKeyDown={(e) =>
+                  handleKeyPress(e, document.getElementById("code"))
+                }
                 min="0"
               />
             </div>
@@ -276,9 +593,13 @@ const CreateCattleFeed = () => {
                 name="code"
                 id="code"
                 className="data w100"
+                onFocus={handleFocus}
                 value={fcode}
                 onChange={(e) => setFcode(e.target.value)}
                 min="0"
+                onKeyDown={(e) =>
+                  handleKeyPress(e, document.getElementById("items"))
+                }
               />
             </div>
             <div className="col w80">
@@ -294,6 +615,9 @@ const CreateCattleFeed = () => {
                 value={cname}
                 onChange={(e) => setCname(e.target.value)}
                 onFocus={handleFocus}
+                onKeyDown={(e) =>
+                  handleKeyPress(e, document.getElementById("items"))
+                }
               />
               <datalist id="farmer-list">
                 {customerslist
@@ -317,7 +641,10 @@ const CreateCattleFeed = () => {
                   id="items"
                   value={selectitemcode}
                   className="data w100"
-                  onChange={(e) => setSelectitemcode(parseInt(e.target.value))}>
+                  onChange={(e) => setSelectitemcode(parseInt(e.target.value))}
+                  onKeyDown={(e) =>
+                    handleKeyPress(e, document.getElementById("qty"))
+                  }>
                   <option value="0">-- select product --</option>
                   {filteredItems.map((item, i) => (
                     <option key={i} value={item.ItemCode}>
@@ -331,7 +658,10 @@ const CreateCattleFeed = () => {
                   id="items"
                   value={selectitemcode}
                   className="data w100"
-                  onChange={(e) => setSelectitemcode(parseInt(e.target.value))}>
+                  onChange={(e) => setSelectitemcode(parseInt(e.target.value))}
+                  onKeyDown={(e) =>
+                    handleKeyPress(e, document.getElementById("addtocart"))
+                  }>
                   <option value="0">-- select product --</option>
                   {filteredItems.map((item, i) => (
                     <option key={i} value={item.ItemCode}>
@@ -355,6 +685,9 @@ const CreateCattleFeed = () => {
                 name="qty"
                 min="1"
                 onChange={(e) => setQty(Math.max(1, parseInt(e.target.value)))}
+                onKeyDown={(e) =>
+                  handleKeyPress(e, document.getElementById("rate"))
+                }
               />
             </div>
           </div>
@@ -376,6 +709,9 @@ const CreateCattleFeed = () => {
                   }
                   min="0"
                   disabled={!selectitemcode}
+                  onKeyDown={(e) =>
+                    handleKeyPress(e, document.getElementById("addtocart"))
+                  }
                 />
               </div>
               <div className="col w30">
@@ -397,156 +733,133 @@ const CreateCattleFeed = () => {
           )}
 
           <div className="sales-btn-container w100 h20 d-flex j-end my10">
-            <button className="w-btn m10" onClick={handelClear}>
-              Clear
-            </button>
-            <button className="btn m10" onClick={handleAddToCart}>
+            <button
+              type="button"
+              className="btn m10"
+              id="addtocart"
+              onClick={handleAddToCart}>
               Add to Cart
             </button>
           </div>
-        </div>
-      </div>
-      <div className="sales-list-outer-container w45 h1 d-flex-col bg">
-        <div className="title-and-button-container w100 d-flex a-center sb">
-          <span className="heading w30 p10">Item List</span>
-          {userRole === "mobilecollector" ? (
-            <div className="w70 d-flex a-center j-end ">
-              <div className="w100 d-flex j-end ">
-                <button className="w-btn">PDF</button>
+        </form>
+
+        <div className="sales-list-outer-container w45 h1 d-flex-col bg">
+          <div className="title-and-button-container w100 d-flex a-center sb">
+            <span className="heading w30 p10">Item List</span>
+            {userRole === "mobilecollector" ? (
+              <div className="w70 d-flex a-center j-end ">
+                <div className="w100 d-flex j-end ">
+                  <button type="button" className="w-btn">
+                    PDF
+                  </button>
+                </div>
               </div>
-            </div>
-          ) : (
-            <div className="w70 d-flex j-end">
-              <button className="w-btn mx10">PDF</button>
-              <button className="w-btn" onClick={handlePrint}>
-                Print
-              </button>
-            </div>
-          )}
-        </div>
-        <div className="sales-list-conatainer w100 h1 d-flex-col">
-          <div className="sales-headings-row w100 h10 d-flex sb a-center t-center sticky-top t-heading-bg">
-            <span className="f-label-text w10">No.</span>
-            <span className="f-label-text w40">Name</span>
-            <span className="f-label-text w10">Qty</span>
-            <span className="f-label-text w10">Rate</span>
-            <span className="f-label-text w10">Amount</span>
-            {userRole !== "mobilecollector" ? (
-              <span className="f-label-text w20 t-center">Action</span>
             ) : (
-              <span></span>
+              <div className="w70 d-flex j-end">
+                <button
+                  type="button"
+                  className="w-btn mx10"
+                  onClick={exportToPDF}>
+                  PDF
+                </button>
+                <button type="button" className="w-btn" onClick={handlePrint}>
+                  Print
+                </button>
+              </div>
             )}
           </div>
-          {cartItem.length > 0 ? (
-            <>
-              {cartItem.map((item, i) => (
-                <div
-                  key={i}
-                  className="sales-headings-row w100 h10 d-flex a-center sb">
-                  <span className="label-text w10 t-center">{i + 1}</span>
-                  <span className="label-text w40 t-start">
-                    {item.ItemName}
-                  </span>
-                  <span className="label-text w10 t-center">{item.Qty}</span>
-                  <span className="label-text w10 t-end">{item.Rate}</span>
-                  <span className="label-text w10 t-end">{item.Amount}</span>
-                  {userRole !== "mobilecollector" ? (
-                    <span className="label-text w20 t-center">
-                      <MdDeleteOutline
-                        size={20}
-                        className="table-icon"
-                        style={{ color: "red" }}
-                        onClick={() => handleDeleteItem(i)}
-                      />
+          <div className="sales-list-conatainer w100 h1 d-flex-col">
+            <div className="sales-headings-row w100 h10 d-flex sb a-center t-center sticky-top t-heading-bg">
+              <span className="f-label-text w10">No.</span>
+              <span className="f-label-text w40">Name</span>
+              <span className="f-label-text w10">Qty</span>
+              <span className="f-label-text w10">Rate</span>
+              <span className="f-label-text w10">Amount</span>
+              {userRole !== "mobilecollector" ? (
+                <span className="f-label-text w20 t-center">Action</span>
+              ) : (
+                <span></span>
+              )}
+            </div>
+            {cartItem.length > 0 ? (
+              <>
+                {cartItem.map((item, i) => (
+                  <div
+                    key={i}
+                    className="sales-headings-row w100 h10 d-flex a-center sb">
+                    <span className="label-text w10 t-center">{i + 1}</span>
+                    <span className="label-text w40 t-start">
+                      {item.ItemName}
                     </span>
-                  ) : (
-                    <span></span>
-                  )}
+                    <span className="label-text w10 t-center">{item.Qty}</span>
+                    <span className="label-text w10 t-end">{item.Rate}</span>
+                    <span className="label-text w10 t-end">{item.Amount}</span>
+                    {userRole !== "mobilecollector" ? (
+                      <span className="label-text w20 t-center">
+                        <MdDeleteOutline
+                          size={20}
+                          className="table-icon"
+                          style={{ color: "red" }}
+                          onClick={() => handleDeleteItem(i)}
+                        />
+                      </span>
+                    ) : (
+                      <span></span>
+                    )}
+                  </div>
+                ))}
+                <div className="sales-total-headings-row w100 h10 d-flex a-center sb">
+                  <span className=" w10"></span>
+                  <span className=" w40"></span>
+                  <span className=" w10"></span>
+                  <span className="label-text w10">Total :</span>
+                  <span className="label-text w10 t-end">
+                    {cartItem.reduce((acc, item) => acc + item.Amount, 0)}
+                  </span>
+                  <span className=" w20"></span>
                 </div>
-              ))}
-              <div className="sales-total-headings-row w100 h10 d-flex a-center sb">
-                <span className=" w10"></span>
-                <span className=" w40"></span>
-                <span className=" w10"></span>
-                <span className="label-text w10">Total :</span>
-                <span className="label-text w10 t-end">
-                  {cartItem.reduce((acc, item) => acc + item.Amount, 0)}
-                </span>
-                <span className=" w20"></span>
+              </>
+            ) : (
+              <div className="box d-flex center">
+                <span className="label-text">{t("common:c-no-data-avai")}</span>
               </div>
-            </>
-          ) : (
-            <div className="box d-flex center">
-              <span className="label-text">{t("common:c-no-data-avai")}</span>
-            </div>
-          )}
-        </div>
-        <div className="sales-button-container w100 h10 d-flex j-end">
-          <button
-            className="w-btn mx10"
-            onClick={handleSubmit}
-            disabled={cartItem.length == 0}>
-            Save
-          </button>
-        </div>
-
-        <div className="modal-content w100">
-          <div id="print-section" style={{ display: "none" }}>
-            <div className="invoice">
-              <h2 className="invoice-header">हरि ओम दूध संकलन केंद्र</h2>
-              <table className="invoice-table">
-                <thead>
-                  <tr>
-                    <th>SrNo</th>
-                    <th>तारीख</th>
-                    <th>नरे</th>
-                    <th>रेट</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>1</td>
-                    <td>20/01/2025</td>
-                    <td>10</td>
-                    <td>50</td>
-                  </tr>
-                  <tr>
-                    <td colSpan="3">
-                      <b>कुल रक्कम:</b>
-                    </td>
-                    <td>500</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-            <div className="invoice">
-              <h2 className="invoice-header">हरि ओम दूध संकलन केंद्र</h2>
-              <table className="invoice-table">
-                <thead>
-                  <tr>
-                    <th>SrNo</th>
-                    <th>तारीख</th>
-                    <th>नरे</th>
-                    <th>रेट</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>1</td>
-                    <td>20/01/2025</td>
-                    <td>15</td>
-                    <td>75</td>
-                  </tr>
-                  <tr>
-                    <td colSpan="3">
-                      <b>कुल रक्कम:</b>
-                    </td>
-                    <td>1125</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
+            )}
           </div>
+
+          <div className="sales-button-container w100 h10 d-flex a-center j-end">
+            <button className="w-btn m10" onClick={handelClear}>
+              Clear
+            </button>
+            <button
+              className="w-btn mx10"
+              onClick={handleSubmit}
+              disabled={cartItem.length == 0}>
+              Save
+            </button>
+          </div>
+        </div>
+        <div id="print-section" style={{ display: "none" }}>
+          {/* <!-- First Invoice --> */}
+          <Invoice
+            cartItem={cartItem}
+            handleFindItemName={handleFindItemName}
+            cname={cname}
+            fcode={fcode}
+            rctno={rctno}
+            date={date}
+            dairyInfo={dairyInfo}
+          />
+
+          {/* <!-- Second Invoice (same as the first) --> */}
+          <Invoice
+            cartItem={cartItem}
+            handleFindItemName={handleFindItemName}
+            cname={cname}
+            fcode={fcode}
+            rctno={rctno}
+            date={date}
+            dairyInfo={dairyInfo}
+          />
         </div>
       </div>
     </div>

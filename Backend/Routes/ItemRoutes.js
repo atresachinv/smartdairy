@@ -22,7 +22,7 @@ router.route("/grpitem/all").get(verifyToken, getAllGrpItems);
 router.route("/item/:id").get(verifyToken, getItemById);
 router.route("/item/new").post(verifyToken, createItem);
 router.route("/item/update").put(verifyToken, updateItem);
-router.route("/item/delete").delete(verifyToken, deleteItem);
+router.route("/item/delete").post(verifyToken, deleteItem);
 
 //itemgroupmaster routes
 router.route("/grpitem/new").post(createMasterGrpItem);

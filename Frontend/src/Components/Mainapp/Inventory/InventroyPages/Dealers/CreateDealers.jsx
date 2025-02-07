@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axiosInstance from "../../../../../App/axiosInstance";
+import { toast } from "react-toastify";
+import "./Dealer.css";
 import "../../../../../Styles/Mainapp/Inventory/InventoryPages/Dealer.css";
 
 const CreateDealers = () => {
@@ -121,10 +123,12 @@ const CreateDealers = () => {
   };
 
   return (
-    <div className="d-flex h1 py15 dealer">
-      <div className="bg p10 w100">
-        <span className="heading">Create Dealer </span>
-        <form onSubmit={handleSubmit}>
+    <div className="create-dealer-container w100 h1 d-flex-col p10 ">
+      <span className="heading">Create Dealer </span>
+      <div className="create-dealer-inner-container w100 h1 d-flex-col center">
+        <form
+          onSubmit={handleSubmit}
+          className="create-dealer-form-container w50 h70 d-flex-col p10 bg">
           <div className="row d-flex my10">
             <div className="col">
               <label className="info-text px10">
@@ -283,17 +287,13 @@ const CreateDealers = () => {
               />
             </div>
           </div>
-          <div className="row d-flex j-end my10">
-            <div className="col">
-              <button className="btn" type="submit">
-                Submit
-              </button>
-            </div>
-            <div className="col">
-              <button className="btn" type="button" onClick={handleClear}>
-                Clear
-              </button>
-            </div>
+          <div className="button-container d-flex a-center j-end my10">
+            <button className="btn" type="button" onClick={handleClear}>
+              Clear
+            </button>
+            <button className="btn mx10" type="submit">
+              Submit
+            </button>
           </div>
         </form>
       </div>

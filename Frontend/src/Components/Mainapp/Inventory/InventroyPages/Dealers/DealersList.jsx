@@ -64,7 +64,7 @@ const DealersList = () => {
     const formattedData = dealerList.map((customer, index) => ({
       "Sr No": index + 1,
       Code: customer.srno,
-      "Customer Name": customer.cname,
+      "Dealer Name": customer.cname,
       Mobile: customer.mobile || customer.Phone,
       City: customer.City,
       District: customer.dist,
@@ -141,16 +141,16 @@ const DealersList = () => {
 
   return (
     <div className="customer-list-container-div w100 h1 d-flex-col p10">
-      <div className="download-print-pdf-excel-container w100 h10 d-flex j-end">
-        <button className="btn" onClick={downloadExcel}>
+      <div className="download-print-pdf-excel-container w100 h10 d-flex j-end sb">
+        <span className="heading px10">Dealers List</span>
+        <button className="btn my5" onClick={downloadExcel}>
           <span className="f-label-text px10">Download Excel</span>
           <FaDownload />
         </button>
       </div>
-      <div className="customer-list-table w100 h1 d-flex-col hidescrollbar bg">
-        <span className="heading p10">Dealers List</span>
-        <div className="customer-heading-title-scroller w100 h1 mh100 d-flex-col">
-          <div className="data-headings-div h10 d-flex center forDWidth t-center sb">
+      <div className="customer-list-table w100 h1 d-flex-col bg">
+        <div className="customer-heading-title-scroller w100 h1 mh100  hidescrollbar d-flex-col sticky-top">
+          <div className="data-headings-div h10 d-flex center forDWidth t-center sb bg7">
             <span className="f-info-text w5">SrNo</span>
             <span className="f-info-text w5">Code</span>
             <span className="f-info-text w25">Customer Name</span>

@@ -1896,7 +1896,7 @@ exports.updateDealer = async (req, res) => {
           cust_ifsc = ?, 
           dist = ?, 
           cust_accno = ?
-        WHERE  orgid = ? AND center_id = ? AND id = ?
+        WHERE  orgid = ? AND centerid = ? AND id = ?
       `;
 
       connection.query(

@@ -32,7 +32,7 @@ const SalesReports = () => {
   );
   const AllSales = useSelector((state) => state.sales.vehiclesales);
   const salesStatus = useSelector((state) => state.sales.salesstatus);
-
+  const [filteredData, setFilteredData] = useState([]);
   const initialValues = {
     fromdate: tDate || "",
     todate: tDate || "",

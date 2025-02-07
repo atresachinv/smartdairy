@@ -1,3 +1,47 @@
 .forWidth {
   min-width: 1056px !important;
 }
+
+@media screen and (max-width: 426px) {
+  .download-print-pdf-excel-container {
+    min-height: fit-content;
+    flex-direction: column;
+  }
+  .download-print-pdf-excel-container .prod-page-title {
+    width: 100%;
+  }
+  .group-code-and-button-div {
+    min-height: fit-content;
+    padding: 10px 0;
+  }
+  .group-code-and-button-div .ItemGroupCode {
+    width: 60%;
+  }
+
+  .product-heading-title-scroller {
+    overflow-x: auto;
+  }
+  .sales-data-headings-div {
+    min-width: 600px;
+    padding: 5px 0;
+  }
+
+  .sales-data-values-div {
+    min-width: 600px;
+  }
+  .create-dealer-container {
+    min-height: auto;
+  }
+  .create-dealer-container .create-dealer-inner-container,
+  .create-dealer-container .create-dealer-form-container {
+    width: 100%;
+    min-height: fit-content;
+    padding: 0;
+  }
+  .create-dealer-form-container .row{
+    margin: 0;
+  }
+  .create-dealer-form-container .button-container {
+    flex-direction: row;
+  }
+}

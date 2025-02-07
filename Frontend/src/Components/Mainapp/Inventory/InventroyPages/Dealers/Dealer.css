@@ -8,10 +8,19 @@
 }
 
 @media screen and (max-width: 426px) {
-  .dealer {
+  .create-dealer-container {
+    min-height: auto;
+  }
+  .create-dealer-container .create-dealer-inner-container,
+  .create-dealer-container .create-dealer-form-container {
     width: 100%;
-    padding: 10px;
-    margin: 15px;
-    height: 100%;
+    min-height: fit-content;
+    padding: 0;
+  }
+  .create-dealer-form-container .row{
+    margin: 0;
+  }
+  .create-dealer-form-container .button-container {
+    flex-direction: row;
   }
 }

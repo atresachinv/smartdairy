@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Routes, Route } from "react-router-dom";
 import CattleFeedNavlinks from "./CattleFeedNavlinks";
-import CattleFeedNavViews from "./CattleFeedNavViews";
 import CattleSaleList from "./CattleSaleList";
 import CreateCattleFeed from "./CreateCattleFeed";
 

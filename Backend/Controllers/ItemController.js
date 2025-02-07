@@ -203,7 +203,7 @@ exports.createItem = async (req, res) => {
   const { ItemName, ItemGroupCode, ...otherFields } = req.body;
 
   // Validate required fields dynamically
-  if (!ItemName || !ItemGroupCode || !companyid) {
+  if (!ItemName || !ItemGroupCode) {
     return res.status(400).json({
       success: false,
       message: "Missing required fields: ItemName, ItemGroupCode, or companyid",

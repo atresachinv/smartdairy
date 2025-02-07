@@ -217,7 +217,7 @@ const Mainappnavlinks = ({ setselected, handleSidebar }) => {
         {
           name: "Others",
           icon: <BsGridFill className="icon" />,
-          path: "sales/other",
+          path: "sales/other-items",
           role: ["admin", "super_admin", "manager"],
         },
       ],

@@ -16,14 +16,16 @@ const ProductsList = () => {
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState("");
 
-  const [editSale, setEditSale] = useState(null); // State to hold the sale being edited
-  const [isModalOpen, setIsModalOpen] = useState(false); // State to control modal visibility
+  const [editSale, setEditSale] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
+  //open modal to edit product
   const handleEditClick = (id) => {
     setEditSale(id);
     setIsModalOpen(true);
   };
 
+  //handle update product
   const handleSaveChanges = async () => {
     const updateItem = {
       ItemCode: editSale.ItemCode,
@@ -46,10 +48,12 @@ const ProductsList = () => {
         setIsModalOpen(false);
       }
     } catch (error) {
-      console.error("Error updating cust:", error);
+      toast.error("error in update product to server");
+      // console.error("Error updating cust:", error);
     }
   };
 
+  //handle download excel
   const downloadExcel = () => {
     // Filter products based on the selected ItemGroupCode
     const filteredProducts = filter
@@ -72,10 +76,11 @@ const ProductsList = () => {
     XLSX.writeFile(wb, "Products_List.xlsx");
   };
 
+  //onchange event for filter
   const handleFilterChange = (e) => {
     setFilter(e.target.value);
   };
-
+  //gettingi all products
   useEffect(() => {
     const fetchProductList = async () => {
       try {
@@ -88,7 +93,7 @@ const ProductsList = () => {
         setProductList(products);
         setLoading(false);
       } catch (error) {
-        console.error("Error fetching product list: ", error);
+        // console.error("Error fetching product list: ", error);
         toast.error("There was an error fetching the product list.");
         setLoading(false);
       }
@@ -114,7 +119,7 @@ const ProductsList = () => {
         const res = await axiosInstance.post("/item/delete", { ItemCode }); // Replace with your actual API URL
         toast.success(res?.data?.message);
 
-        productList((prevSales) =>
+        setProductList((prevSales) =>
           prevSales.filter((product) => product.ItemCode !== ItemCode)
         );
       } catch (error) {
@@ -126,11 +131,11 @@ const ProductsList = () => {
   return (
     <div className="product-list-container w100 h1 d-flex-col p10">
       <div className="download-print-pdf-excel-container w100 h10 d-flex sb">
-        <span className="heading p10">Products List</span>
-        <div className="group-code-and-button-div w70 d-flex sb my5">
+        <span className="w30 prod-page-title heading px10">Products List</span>
+        <div className="group-code-and-button-div w100 h1 d-flex sb">
           <select
             name="ItemGroupCode"
-            className="data w40 form-field"
+            className="ItemGroupCode data w30 form-field"
             onChange={handleFilterChange}
             value={filter}>
             <option value="">Select Group Name</option>
@@ -145,19 +150,19 @@ const ProductsList = () => {
               </option>
             ))}
           </select>
-          <button className="w20 btn" onClick={downloadExcel}>
+          <button className="btn" onClick={downloadExcel}>
             <span className="f-label-text px10">Download</span>
             <FaDownload />
           </button>
         </div>
       </div>
 
-      <div className="product-list-table w100 h90  d-flex-col hidescrollbar bg">
-        <div className="product-heading-title-scroller w100 h1 mh100 d-flex-col">
-          <div className="data-headings-div p10 d-flex center sa">
+      <div className="product-list-table w100 h90 d-flex-col bg">
+        <div className="product-heading-title-scroller w100 h1 mh100 hidescrollbar d-flex-col br6">
+          <div className="sales-data-headings-div p10 d-flex center sticky-top bg7 sa">
             <span className="f-info-text w5">Sr.No.</span>
             <span className="f-info-text w10">Code</span>
-            <span className="f-info-text w15">Item Name</span>
+            <span className="f-info-text w25">Item Name</span>
             <span className="f-info-text w20">Description</span>
             <span className="f-info-text w10">Action</span>
           </div>
@@ -167,26 +172,30 @@ const ProductsList = () => {
             productList.map((product, index) => (
               <div
                 key={index}
-                className={`data-values-div w100 p10 d-flex center t-center sa ${
+                className={`sales-data-values-div w100 p10 d-flex center t-center sa ${
                   index % 2 === 0 ? "bg-light" : "bg-dark"
                 }`}
                 style={{
                   backgroundColor: index % 2 === 0 ? "#faefe3" : "#fff",
                 }}>
-                <span className="text w5">{index + 1}</span>
-                <span className="text w10">{product.ItemCode}</span>
-                <span className="text w15 t-start">{product.ItemName}</span>
-                <span className="text w20">{product.ItemDesc}</span>
-                <span className="text w10">
+                <span className="info-text w5">{index + 1}</span>
+                <span className="info-text w10">{product.ItemCode}</span>
+                <span className="info-text w25 t-start">
+                  {product.ItemName}
+                </span>
+                <span className="info-text w20 t-start">
+                  {product.ItemDesc}
+                </span>
+                <span className="info-text w10 d-flex sa">
                   <FaRegEdit
-                    size={15}
+                    size={18}
                     className="table-icon"
                     onClick={() => handleEditClick(product)}
                   />
                   <MdDeleteOutline
                     onClick={() => handleDelete(product.ItemCode)}
-                    size={15}
-                    className="table-icon "
+                    size={20}
+                    className="table-icon"
                     style={{ color: "red" }}
                   />
                 </span>

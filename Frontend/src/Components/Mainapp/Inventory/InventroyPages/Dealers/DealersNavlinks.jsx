@@ -17,7 +17,7 @@ const DealersNavlinks = ({ isselected, setIsSelected }) => {
       {CustNavbuttons.map((button, index) => (
         <li
           key={index}
-          className={`home-nav-item w20 d-flex a-center ${
+          className={`home-nav-item  d-flex a-center ${
             isselected === index ? "selected" : ""
           }`}
           onClick={() => {

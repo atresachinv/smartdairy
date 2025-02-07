@@ -245,6 +245,7 @@ exports.getSale = async (req, res) => {
 
 exports.deleteSale = async (req, res) => {
   const { saleid, billNo } = req.body;
+
   const dairy_id = req.user.dairy_id;
 
   // Validate that at least one identifier is provided
@@ -258,7 +259,7 @@ exports.deleteSale = async (req, res) => {
   const query = `
     DELETE FROM salesmaster 
     WHERE (saleid = ? OR billNo = ?) 
-    AND companyid = ?`;
+    AND companyid = ? `;
 
   pool.getConnection((err, connection) => {
     if (err) {
@@ -300,8 +301,8 @@ exports.deleteSale = async (req, res) => {
 //-------------------------------------------------------------------------->
 exports.updateSale = async (req, res) => {
   const { saleid, ...updateFields } = req.body;
+  const dairy_id = req.user.dairy_id;
 
-  // Ensure the saleid is provided
   if (!saleid) {
     return res.status(400).json({
       success: false,
@@ -309,7 +310,6 @@ exports.updateSale = async (req, res) => {
     });
   }
 
-  // Ensure at least one field to update is provided
   if (Object.keys(updateFields).length === 0) {
     return res.status(400).json({
       success: false,
@@ -317,7 +317,6 @@ exports.updateSale = async (req, res) => {
     });
   }
 
-  // Construct dynamic query
   let updateQuery = "UPDATE salesmaster SET ";
   const updateValues = [];
 
@@ -329,8 +328,8 @@ exports.updateSale = async (req, res) => {
 
   // Remove trailing comma
   updateQuery = updateQuery.slice(0, -2);
-  updateQuery += " WHERE saleid = ?";
-  updateValues.push(saleid); // Add saleid for WHERE clause
+  updateQuery += " WHERE saleid = ? AND companyid = ?";
+  updateValues.push(saleid, dairy_id);
 
   pool.getConnection((err, connection) => {
     if (err) {
@@ -433,7 +432,7 @@ exports.fetchVehicleSales = (req, res) => {
 exports.fetchAllSales = (req, res) => {
   const { fromdate, todate } = req.query;
   console.log(fromdate, todate);
-  const { dairy_id, center_id} = req.user;
+  const { dairy_id, center_id } = req.user;
 
   if (!fromdate || !todate) {
     return res.status(400).json({
