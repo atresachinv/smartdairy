@@ -1,10 +1,11 @@
-// eslint-disable-next-line no-unused-vars
 import React, { useEffect, useState } from "react";
 import { MdDeleteOutline } from "react-icons/md";
 import axiosInstance from "../../../../App/axiosInstance";
 import "../../../../Styles/Mainapp/Purchase/Purchase.css";
 import { toast } from "react-toastify";
 import { useTranslation } from "react-i18next";
+import Swal from "sweetalert2";
+import "../../../../Styles/Mainapp/Purchase/Purchase.css";
 const Create = () => {
   const { t } = useTranslation(["milkcollection", "common"]);
   const [cartItem, setCartItem] = useState([]);
@@ -158,8 +159,18 @@ const Create = () => {
   }, [rctno]);
 
   // Delete an item from the cart
-  const handleDeleteItem = (id) => {
-    if (confirm("Are you sure you want to Delete?")) {
+  const handleDeleteItem = async (id) => {
+    const result = await Swal.fire({
+      title: "Confirm Deletion?",
+      text: "Are you sure you want to delete this Product?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+    });
+
+    if (result.isConfirmed) {
       const updatedCart = cartItem.filter((item, index) => index !== id);
       setCartItem(updatedCart);
     }
@@ -198,6 +209,9 @@ const Create = () => {
       toast.error("Please add items to the cart.");
     }
   };
+  const handleFocus = (e) => {
+    e.target.select();
+  };
 
   // Handle Enter key press to move to the next field
   const handleKeyPress = (e, nextField) => {
@@ -211,7 +225,7 @@ const Create = () => {
 
   return (
     <div className="purchase-cattle-feed-container w100 h1 d-flex-col p10">
-      <span className="heading">Create Cattle Feed</span>
+      <span className="heading">Add Cattle Feed</span>
       <div className="purchase-cattle-feed-inner-container w100 h1 d-flex sb">
         <form className="purchase-cattle-feed-form-container w50 h1 bg p10">
           <div className="purchase-input-row w100 h15 d-flex  a-center sb">
@@ -237,6 +251,7 @@ const Create = () => {
                 id="rctno"
                 name="number"
                 value={rctno}
+                onFocus={handleFocus}
                 className={`data ${errors.rctno ? "input-error" : ""}`}
                 onChange={(e) => setRctno(e.target.value.replace(/\D/, ""))}
                 min="0"
@@ -314,6 +329,7 @@ const Create = () => {
                 className={`data ${errors.qty ? "input-error" : ""}`}
                 name="qty"
                 min="1"
+                onFocus={handleFocus}
                 onChange={(e) => setQty(Math.max(1, parseInt(e.target.value)))}
                 onKeyDown={(e) =>
                   handleKeyPress(e, document.getElementById("rate"))
@@ -330,6 +346,7 @@ const Create = () => {
                 name="rate"
                 className={`data ${errors.rate ? "input-error" : ""}`}
                 value={rate}
+                onFocus={handleFocus}
                 onChange={(e) =>
                   setRate(Math.max(0, parseFloat(e.target.value)))
                 }
@@ -345,7 +362,8 @@ const Create = () => {
               <input
                 id="sellrate"
                 type="number"
-                name="rate"
+                name="salerate"
+                onFocus={handleFocus}
                 className={`data ${errors.sellrate ? "input-error" : ""}`}
                 value={sellrate}
                 onChange={(e) => setSellrate(e.target.value)}
@@ -367,84 +385,14 @@ const Create = () => {
             </div>
           </div>
           <div className="button-container w100 h10 d-flex j-end my5">
-            <button className="w-btn" onClick={handelClear}>
-              Clear
-            </button>
-            <button className="w-btn mx10" onClick={handleAddToCart}>
+            <button className="btn mx10" onClick={handleAddToCart}>
               Add to Cart
             </button>
           </div>
         </form>
 
-        {/* <div className="for-table mx15 px10 w100">
-          <div className="modal-content w100  ">
-            <div className="header">
-              <label className="heading">Items List</label>
-            </div>
-
-            <div className="sales-table-container w100">
-              <table className="sales-table w100 ">
-                <thead className="bg2">
-                  <tr>
-                    <th className="f-lable-text">SrNo</th>
-                    <th className="f-lable-text">Item Name</th>
-                    <th className="f-lable-text">Rate</th>
-                    <th className="f-lable-text">Qty</th>
-                    <th className="f-lable-text">Amount</th>
-                    <th className="f-lable-text">Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {cartItem.map((item, i) => (
-                    <tr key={i}>
-                      <td>{i + 1}</td>
-                      <td>{item.itemname}</td>
-                      <td>{item.rate}</td>
-                      <td>{item.qty}</td>
-                      <td>{item.amount}</td>
-                      <td>
-                        <MdDeleteOutline
-                          size={20}
-                          className="table-icon"
-                          style={{ color: "red" }}
-                          onClick={() => handleDeleteItem(i)}
-                        />
-                      </td>
-                    </tr>
-                  ))}
-                  <tr>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td>
-                      <b>Total</b>
-                    </td>
-                    <td>
-                      {cartItem.reduce((acc, item) => acc + item.amount, 0)}
-                    </td>
-                    <td></td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-
-            <div className="w100 d-flex  my10">
-              <button className="w-btn" onClick={handleSubmit}>
-                save
-              </button>
-            </div>
-          </div>
-        </div> */}
         <div className="sales-list-outer-container w45 h1 d-flex-col bg">
-          <div className="title-and-button-container w100 d-flex a-center sb">
-            <span className="heading w30 p10">Item List</span>
-            <div className="w70 d-flex j-end">
-              <button className="w-btn mx10">PDF</button>
-              {/* <button className="w-btn" onClick={handlePrint}>
-                      Print
-                    </button> */}
-            </div>
-          </div>
+          <span className="heading w30 p10">Item List</span>
           <div className="sales-list-conatainer w100 h1 d-flex-col">
             <div className="sales-headings-row w100 h10 d-flex sb a-center t-center sticky-top t-heading-bg">
               <span className="f-label-text w10">No.</span>

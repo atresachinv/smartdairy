@@ -22,6 +22,8 @@ const GrocerySaleList = () => {
   const [isInvoiceOpen, setIsInvoiceOpen] = useState(false);
   const [filteredSalesList, setFilteredSalesList] = useState(sales);
   const [viewItems, setViewItems] = useState([]);
+  const [loadings, SetLoadings] = useState(false);
+  const [sortOrder, setSortOrder] = useState("desc");
   //download Excel sheet ------------------------------------------------->
   const downloadExcel = () => {
     const exportData = sales.map((sale) => ({
@@ -85,7 +87,7 @@ const GrocerySaleList = () => {
     SetDate1(getPreviousDate(0));
     SetDate2(getTodaysDate());
   }, []);
-  
+
   //get today day
   const getTodaysDate = () => {
     const today = new Date();
@@ -100,6 +102,7 @@ const GrocerySaleList = () => {
 
   // get sale to backend on date range
   const handleShowbutton = async () => {
+    SetLoadings(true);
     const getItem = {
       date1,
       date2,
@@ -113,8 +116,10 @@ const GrocerySaleList = () => {
       if (data?.success) {
         setSales(data.salesData);
       }
+      SetLoadings(false);
     } catch (error) {
       console.error("Error fetching items:", error);
+      SetLoadings(false);
     }
   };
 
@@ -253,16 +258,33 @@ const GrocerySaleList = () => {
     }
   };
 
-  // Grouping by billNo
-  const groupedSales = filteredSalesList.reduce((acc, sale) => {
-    const key = sale.BillNo; // Grouping by billNo
-    if (!acc[key]) {
-      acc[key] = { ...sale, TotalAmount: 0 };
-    }
-    acc[key].TotalAmount += sale.Amount;
-    return acc;
-  }, {});
-  const groupedSalesArray = Object.values(groupedSales);
+  // ----------------------------------------------------------------------------->
+  // Function to group sales by BillNo ------------------------------------------->
+  const groupSales = () => {
+    const groupedSales = filteredSalesList.reduce((acc, sale) => {
+      const key = sale.BillNo;
+      if (!acc[key]) {
+        acc[key] = { ...sale, TotalAmount: 0 };
+      }
+      acc[key].TotalAmount += sale.Amount;
+      return acc;
+    }, {});
+
+    // Convert object to array and sort based on the selected order
+    return Object.values(groupedSales).sort((a, b) =>
+      sortOrder === "asc"
+        ? new Date(a.BillDate) - new Date(b.BillDate)
+        : new Date(b.BillDate) - new Date(a.BillDate)
+    );
+  };
+
+  // ---------------------------------------------------------------------------->
+  // Toggle sorting order ------------------------------------------------------->
+  const toggleSortOrder = () => {
+    setSortOrder((prevOrder) => (prevOrder === "asc" ? "desc" : "asc"));
+  };
+
+  const groupedSalesArray = groupSales();
 
   //for searching Name or code to get the sale list------------------------------------>
 
@@ -347,12 +369,24 @@ const GrocerySaleList = () => {
           </button>
         </div>
       </div>
-      <div className="sales-list-table w100 h1 d-flex-col hidescrollbar bg">
+      <div className="sales-list-table w100 h80 d-flex-col bg">
         <span className="heading p10">Cattle Feed List</span>
         <div className="sales-heading-title-scroller w100 h1 mh100 d-flex-col hidescrollbar">
           <div className="sale-data-headings-div h10 d-flex center t-center sb sticky-top t-heading-bg">
             <span className="f-info-text w5">Sr.No</span>
-            <span className="f-info-text w10">Date</span>
+            <span className="f-info-text w10">
+              Date{" "}
+              <span
+                className="px10 f-color-icon"
+                type="button"
+                onClick={toggleSortOrder}>
+                {sortOrder === "asc" ? (
+                  <TbSortAscending2 />
+                ) : (
+                  <TbSortDescending2 />
+                )}
+              </span>
+            </span>
             <span className="f-info-text w10">Rec. No</span>
             <span className="f-info-text w10">Cust Code</span>
             <span className="f-info-text w30">Cust Name</span>
@@ -532,8 +566,8 @@ const GrocerySaleList = () => {
                 />
               </label>
               <div>
-                <button onClick={handleSaveChanges}>Save</button>
                 <button onClick={() => setIsModalOpen(false)}>Cancel</button>
+                <button onClick={handleSaveChanges}>Save</button>
               </div>
             </div>
           </div>

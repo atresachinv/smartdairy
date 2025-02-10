@@ -5,10 +5,16 @@ import { NavLink } from "react-router-dom";
 
 const MedicinesNavlinks = ({ isselected, setIsSelected }) => {
   const CustNavbuttons = [
-    { name: "Sale List", icon: <IoList className="icon" />, path: "sale/list" },
     {
-      name: "Create Sale",
+      name: "Sale List",
+      icon: <IoList className="icon" />,
+      index: 1,
+      path: "sale/list",
+    },
+    {
+      name: "Add Sale",
       icon: <IoPersonAdd className="icon" />,
+      index: 2,
       path: "add/sale",
     },
   ];

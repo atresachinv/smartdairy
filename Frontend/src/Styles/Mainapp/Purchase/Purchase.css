@@ -168,21 +168,21 @@
   transition: background-color 0.2s;
 }
 
-.modal .modal-content button:first-child {
+.modal .modal-content button:last-child {
   background-color: #007bff;
   color: white;
 }
 
-.modal .modal-content button:first-child:hover {
+.modal .modal-content button:last-child:hover {
   background-color: #0056b3;
 }
 
-.modal .modal-content button:last-child {
+.modal .modal-content button:first-child {
   background-color: #f8f9fa;
   color: #333;
 }
 
-.modal .modal-content button:last-child:hover {
+.modal .modal-content button:first-child:hover {
   background-color: #e2e6ea;
 }
 
@@ -228,4 +228,27 @@
 }
 .form {
   padding: 10px;
+}
+
+@media screen and (max-width: 426px) {
+  /* Add purchase css */
+  .purchase-cattle-feed-container {
+    min-height: auto;
+  }
+  .purchase-cattle-feed-container .purchase-cattle-feed-inner-container {
+    flex-direction: column;
+    min-height: auto;
+  }
+  .purchase-cattle-feed-inner-container .purchase-input-row {
+    margin-bottom: 10px;
+  }
+  .purchase-cattle-feed-inner-container .purchase-cattle-feed-form-container {
+    width: 100%;
+    margin-bottom: 20px;
+  }
+  .purchase-cattle-feed-inner-container .sales-list-outer-container {
+    width: 100%;
+    min-height: 80%;
+    overflow-x: auto;
+  }
 }

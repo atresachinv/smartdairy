@@ -1,13 +1,13 @@
-// eslint-disable-next-line no-unused-vars
 import React from "react";
 import { IoPersonAdd, IoList } from "react-icons/io5";
+
 
 // eslint-disable-next-line react/prop-types
 const CattleFeedPurNavlinks = ({ isselected, setIsSelected }) => {
   const CustNavbuttons = [
     { name: "Purchase List", icon: <IoList className="icon" />, index: 0 },
     {
-      name: "Create Purchase",
+      name: "Add CattleFeed",
       icon: <IoPersonAdd className="icon" />,
       index: 1,
     },

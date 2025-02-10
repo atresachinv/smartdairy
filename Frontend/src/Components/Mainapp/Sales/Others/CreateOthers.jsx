@@ -75,11 +75,14 @@ const CreateOthers = () => {
         setRate(salesrate.salerate);
         setAmt(salesrate.salerate * qty);
       }
-      if (rate) {
-        setAmt(rate * qty);
-      }
     }
-  }, [selectitemcode, qty, rate]);
+  }, [selectitemcode, qty]);
+
+  useEffect(() => {
+    if (rate) {
+      setAmt(rate * qty);
+    }
+  }, [qty, rate]);
 
   const getTodaysDate = () => {
     const today = new Date();

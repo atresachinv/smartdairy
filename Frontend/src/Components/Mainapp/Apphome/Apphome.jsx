@@ -17,9 +17,6 @@ import MilkCollectorsReports from "./Appnavviews/Milkcollection/MilkCollectorsRe
 import CreateCattleFeed from "../Sales/CattleFeed/CreateCattleFeed";
 import SalesReports from "./Appnavviews/MilkSankalan/SalesReports";
 import AdminSalesReports from "./Appnavviews/MilkSankalan/AdminSalesReports";
-// import Milkcollection from "./Appnavviews/Milkcollection/Milkcollection";
-// import MilkSankalan from "./Appnavviews/MilkSankalan/MilkSankalan";
-// import CompleteMilkColl from "./Appnavviews/Milkcollection/CompleteMilkColl";
 
 const Apphome = () => {
   const dispatch = useDispatch();

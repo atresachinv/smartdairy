@@ -1,11 +1,13 @@
-// eslint-disable-next-line no-unused-vars
 import React, { useEffect, useState } from "react";
 import { MdDeleteOutline } from "react-icons/md";
 import axiosInstance from "../../../../App/axiosInstance";
 import "../../../../Styles/Mainapp/Purchase/Purchase.css";
 import { toast } from "react-toastify";
+import { useTranslation } from "react-i18next";
+import Swal from "sweetalert2";
+import "../../../../Styles/Mainapp/Purchase/Purchase.css";
 const Create = () => {
-  // State variables for cart, customer info, date, etc.
+  const { t } = useTranslation(["milkcollection", "common"]);
   const [cartItem, setCartItem] = useState([]);
   const [cname, setCname] = useState("");
   const [fcode, setFcode] = useState("");
@@ -157,8 +159,18 @@ const Create = () => {
   }, [rctno]);
 
   // Delete an item from the cart
-  const handleDeleteItem = (id) => {
-    if (confirm("Are you sure you want to Delete?")) {
+  const handleDeleteItem = async (id) => {
+    const result = await Swal.fire({
+      title: "Confirm Deletion?",
+      text: "Are you sure you want to delete this Product?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+    });
+
+    if (result.isConfirmed) {
       const updatedCart = cartItem.filter((item, index) => index !== id);
       setCartItem(updatedCart);
     }
@@ -197,6 +209,9 @@ const Create = () => {
       toast.error("Please add items to the cart.");
     }
   };
+  const handleFocus = (e) => {
+    e.target.select();
+  };
 
   // Handle Enter key press to move to the next field
   const handleKeyPress = (e, nextField) => {
@@ -209,227 +224,233 @@ const Create = () => {
   };
 
   return (
-    <div className="sale-add  w100">
-      <div className="form w100 bg">
-        <span className="heading">Create Medicines</span>
-        <div className="row">
-          <div className="col">
-            <label className="info-text px10">Date:</label>
-            <input
-              type="date"
-              id="date"
-              className={`data ${errors.date ? "input-error" : ""}`}
-              name="date"
-              value={date}
-              onChange={(e) => setDate(e.target.value)}
-              max={date}
-              onKeyDown={(e) =>
-                handleKeyPress(e, document.getElementById("rctno"))
-              }
-            />
+    <div className="purchase-cattle-feed-container w100 h1 d-flex-col p10">
+      <span className="heading">Add Medicines</span>
+      <div className="purchase-cattle-feed-inner-container w100 h1 d-flex sb">
+        <form className="purchase-cattle-feed-form-container w50 h1 bg p10">
+          <div className="purchase-input-row w100 h15 d-flex  a-center sb">
+            <div className="purchase-input-col w45 d-flex-col sb">
+              <label className="info-text px10">Date :</label>
+              <input
+                type="date"
+                id="date"
+                className={`data ${errors.date ? "input-error" : ""}`}
+                name="date"
+                value={date}
+                onChange={(e) => setDate(e.target.value)}
+                max={date}
+                onKeyDown={(e) =>
+                  handleKeyPress(e, document.getElementById("rctno"))
+                }
+              />
+            </div>
+            <div className="purchase-input-col w45 d-flex-col sb">
+              <label className="info-text px10">Receipt No:</label>
+              <input
+                type="number"
+                id="rctno"
+                name="number"
+                value={rctno}
+                onFocus={handleFocus}
+                className={`data ${errors.rctno ? "input-error" : ""}`}
+                onChange={(e) => setRctno(e.target.value.replace(/\D/, ""))}
+                min="0"
+                onKeyDown={(e) =>
+                  handleKeyPress(e, document.getElementById("fcode"))
+                }
+              />
+            </div>
           </div>
-          <div className="col">
-            <label className="info-text px10">Receipt No:</label>
-            <input
-              type="number"
-              id="rctno"
-              name="number"
-              value={rctno}
-              className={`data ${errors.rctno ? "input-error" : ""}`}
-              onChange={(e) => setRctno(e.target.value.replace(/\D/, ""))}
-              min="0"
-              onKeyDown={(e) =>
-                handleKeyPress(e, document.getElementById("fcode"))
-              }
-            />
-          </div>
-        </div>
-        <div className="row">
-          <div className="col">
-            <label className="info-text px10">Dealer Code:</label>
-            <input
-              type="number"
-              id="fcode"
-              name="code"
-              className={`data ${errors.fcode ? "input-error" : ""}`}
-              value={fcode}
-              onChange={(e) => setFcode(e.target.value.replace(/\D/, ""))}
-              min="0"
-              onKeyDown={(e) =>
-                handleKeyPress(e, document.getElementById("cname"))
-              }
-            />
-          </div>
-          <div className="col">
-            <label className="info-text px10">Dealer Name:</label>
-            <select
-              id="cname"
-              value={cname}
-              className={`data ${errors.cname ? "input-error" : ""}`}
-              onChange={(e) => setCname(e.target.value)}
-              onKeyDown={(e) =>
-                handleKeyPress(e, document.getElementById("selectitemcode"))
-              }
-            >
-              <option value="">Select Dealer</option>
-              {dealerList.map((item, i) => (
-                <option key={i} value={item.cname}>
-                  {item.cname}
-                </option>
-              ))}
-            </select>
-          </div>
-        </div>
-
-        <div className="row">
-          <div className="col">
-            <label className="info-text px10">Select Items:</label>
-
-            <select
-              id="selectitemcode"
-              disabled={!cname}
-              value={selectitemcode}
-              className={`data ${errors.selectitemcode ? "input-error" : ""}`}
-              onChange={(e) => setSelectitemcode(parseInt(e.target.value))}
-              onKeyDown={(e) =>
-                handleKeyPress(e, document.getElementById("qty"))
-              }
-            >
-              <option value="0">Select Item</option>
-              {itemList.length > 0 &&
-                itemList.map((item, i) => (
-                  <option key={i} value={item.ItemCode}>
-                    {item.ItemName}
+          <div className="purchase-input-row w100 h15 d-flex  a-center sb">
+            <div className="purchase-input-col w45 d-flex-col sb">
+              <label className="info-text px10">Dealer Code:</label>
+              <input
+                type="number"
+                id="fcode"
+                name="code"
+                className={`data ${errors.fcode ? "input-error" : ""}`}
+                value={fcode}
+                onChange={(e) => setFcode(e.target.value.replace(/\D/, ""))}
+                min="0"
+                onKeyDown={(e) =>
+                  handleKeyPress(e, document.getElementById("cname"))
+                }
+              />
+            </div>
+            <div className="purchase-input-col w45 d-flex-col sb">
+              <label className="info-text px10">Dealer Name:</label>
+              <select
+                id="cname"
+                value={cname}
+                className={`data ${errors.cname ? "input-error" : ""}`}
+                onChange={(e) => setCname(e.target.value)}
+                onKeyDown={(e) =>
+                  handleKeyPress(e, document.getElementById("selectitemcode"))
+                }>
+                <option value="">Select Dealer</option>
+                {dealerList.map((item, i) => (
+                  <option key={i} value={item.cname}>
+                    {item.cname}
                   </option>
                 ))}
-            </select>
-          </div>
-          <div className="col">
-            <label className="info-text px10">QTY:</label>
-            <input
-              id="qty"
-              disabled={!selectitemcode}
-              type="number"
-              value={qty}
-              className={`data ${errors.qty ? "input-error" : ""}`}
-              name="qty"
-              min="1"
-              onChange={(e) => setQty(Math.max(1, parseInt(e.target.value)))}
-              onKeyDown={(e) =>
-                handleKeyPress(e, document.getElementById("rate"))
-              }
-            />
-          </div>
-        </div>
-        <div className="row">
-          <div className="col">
-            <label className="info-text px10">Purchase Rate:</label>
-            <input
-              id="rate"
-              type="number"
-              name="rate"
-              className={`data ${errors.rate ? "input-error" : ""}`}
-              value={rate}
-              onChange={(e) => setRate(Math.max(0, parseFloat(e.target.value)))}
-              min="0"
-              disabled={!selectitemcode}
-              onKeyDown={(e) =>
-                handleKeyPress(e, document.getElementById("sellrate"))
-              }
-            />
-          </div>
-          <div className="col">
-            <label className="info-text px10">Sale Rate:</label>
-            <input
-              id="sellrate"
-              type="number"
-              name="rate"
-              className={`data ${errors.sellrate ? "input-error" : ""}`}
-              value={sellrate}
-              onChange={(e) => setSellrate(e.target.value)}
-              disabled={!selectitemcode}
-            />
-          </div>
-        </div>
-        <div className="row w100  d-flex a-center">
-          <div className="col">
-            <label className="info-text px10">Amount:</label>
-            <input
-              id="amt"
-              type="number"
-              className={`data ${errors.amt ? "input-error" : ""}`}
-              name="amount"
-              value={amt}
-              readOnly
-            />
-          </div>
-        </div>
-        <div className=" d-flex sa my10">
-          <button className="w-btn" onClick={handleAddToCart}>
-            Add to Cart
-          </button>
-
-          <button className="w-btn" onClick={handelClear}>
-            Clear
-          </button>
-        </div>
-      </div>
-
-      <div className="for-table mx15 px10 w100">
-        <div className="modal-content w100  ">
-          <div className="header">
-            <h2>Items List</h2>
+              </select>
+            </div>
           </div>
 
-          <div className="sales-table-container w100">
-            <table className="sales-table w100 ">
-              <thead className="bg2">
-                <tr>
-                  <th>SrNo</th>
-                  <th>Item Name</th>
-                  <th>Rate</th>
-                  <th>Qty</th>
-                  <th>Amount</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
+          <div className="purchase-input-row w100 h15 d-flex a-center sb">
+            <div className="purchase-input-col w45 d-flex-col sb">
+              <label className="info-text px10">Select Items:</label>
+
+              <select
+                id="selectitemcode"
+                disabled={!cname}
+                value={selectitemcode}
+                className={`data ${errors.selectitemcode ? "input-error" : ""}`}
+                onChange={(e) => setSelectitemcode(parseInt(e.target.value))}
+                onKeyDown={(e) =>
+                  handleKeyPress(e, document.getElementById("qty"))
+                }>
+                <option value="0">Select Item</option>
+                {itemList.length > 0 &&
+                  itemList.map((item, i) => (
+                    <option key={i} value={item.ItemCode}>
+                      {item.ItemName}
+                    </option>
+                  ))}
+              </select>
+            </div>
+            <div className="purchase-input-col w45 d-flex-col sb">
+              <label className="info-text px10">QTY:</label>
+              <input
+                id="qty"
+                disabled={!selectitemcode}
+                type="number"
+                value={qty}
+                className={`data ${errors.qty ? "input-error" : ""}`}
+                name="qty"
+                min="1"
+                onFocus={handleFocus}
+                onChange={(e) => setQty(Math.max(1, parseInt(e.target.value)))}
+                onKeyDown={(e) =>
+                  handleKeyPress(e, document.getElementById("rate"))
+                }
+              />
+            </div>
+          </div>
+          <div className="purchase-input-row w100 h15 d-flex a-center sb">
+            <div className="purchase-input-col w45 d-flex-col sb">
+              <label className="info-text px10">Purchase Rate:</label>
+              <input
+                id="rate"
+                type="number"
+                name="rate"
+                className={`data ${errors.rate ? "input-error" : ""}`}
+                value={rate}
+                onFocus={handleFocus}
+                onChange={(e) =>
+                  setRate(Math.max(0, parseFloat(e.target.value)))
+                }
+                min="0"
+                disabled={!selectitemcode}
+                onKeyDown={(e) =>
+                  handleKeyPress(e, document.getElementById("sellrate"))
+                }
+              />
+            </div>
+            <div className="purchase-input-col w45 d-flex-col sb">
+              <label className="info-text px10">Sale Rate:</label>
+              <input
+                id="sellrate"
+                type="number"
+                name="salerate"
+                onFocus={handleFocus}
+                className={`data ${errors.sellrate ? "input-error" : ""}`}
+                value={sellrate}
+                onChange={(e) => setSellrate(e.target.value)}
+                disabled={!selectitemcode}
+              />
+            </div>
+          </div>
+          <div className="purchase-input-row w100 h15 d-flex  a-center sb">
+            <div className="purchase-input-col w45 d-flex-col">
+              <label className="info-text px10">Amount:</label>
+              <input
+                id="amt"
+                type="number"
+                className={`data ${errors.amt ? "input-error" : ""}`}
+                name="amount"
+                value={amt}
+                readOnly
+              />
+            </div>
+          </div>
+          <div className="button-container w100 h10 d-flex j-end my5">
+            <button className="btn mx10" onClick={handleAddToCart}>
+              Add to Cart
+            </button>
+          </div>
+        </form>
+
+        <div className="sales-list-outer-container w45 h1 d-flex-col bg">
+          <span className="heading w30 p10">Item List</span>
+          <div className="sales-list-conatainer w100 h1 d-flex-col">
+            <div className="sales-headings-row w100 h10 d-flex sb a-center t-center sticky-top t-heading-bg">
+              <span className="f-label-text w10">No.</span>
+              <span className="f-label-text w40">Name</span>
+              <span className="f-label-text w10">Qty</span>
+              <span className="f-label-text w10">Rate</span>
+              <span className="f-label-text w10">Amount</span>
+              <span className="f-label-text w20 t-center">Action</span>
+            </div>
+            {cartItem.length > 0 ? (
+              <>
                 {cartItem.map((item, i) => (
-                  <tr key={i}>
-                    <td>{i + 1}</td>
-                    <td>{item.itemname}</td>
-                    <td>{item.rate}</td>
-                    <td>{item.qty}</td>
-                    <td>{item.amount}</td>
-                    <td>
+                  <div
+                    key={i}
+                    className="sales-headings-row w100 h10 d-flex a-center sb">
+                    <span className="label-text w10 t-center">{i + 1}</span>
+                    <span className="label-text w40 t-start">
+                      {item.itemname}
+                    </span>
+                    <span className="label-text w10 t-center">{item.qty}</span>
+                    <span className="label-text w10 t-end">{item.rate}</span>
+                    <span className="label-text w10 t-end">{item.amount}</span>
+                    <span className="label-text w20 t-center">
                       <MdDeleteOutline
                         size={20}
                         className="table-icon"
                         style={{ color: "red" }}
                         onClick={() => handleDeleteItem(i)}
                       />
-                    </td>
-                  </tr>
+                    </span>
+                  </div>
                 ))}
-                <tr>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td>
-                    <b>Total</b>
-                  </td>
-                  <td>
+                <div className="sales-total-headings-row w100 h10 d-flex a-center sb">
+                  <span className=" w10"></span>
+                  <span className=" w40"></span>
+                  <span className=" w10"></span>
+                  <span className="label-text w10">Total :</span>
+                  <span className="label-text w10 t-end">
                     {cartItem.reduce((acc, item) => acc + item.amount, 0)}
-                  </td>
-                  <td></td>
-                </tr>
-              </tbody>
-            </table>
+                  </span>
+                  <span className=" w20"></span>
+                </div>
+              </>
+            ) : (
+              <div className="box d-flex center">
+                <span className="label-text">{t("common:c-no-data-avai")}</span>
+              </div>
+            )}
           </div>
-
-          <div className="w100 d-flex  my10">
-            <button className="w-btn" onClick={handleSubmit}>
-              save
+          <div className="sales-button-container w100 h10 d-flex a-center j-end">
+            <button className="w-btn m10" onClick={handelClear}>
+              Clear
+            </button>
+            <button
+              className="w-btn mx10"
+              onClick={handleSubmit}
+              disabled={cartItem.length == 0}>
+              Save
             </button>
           </div>
         </div>

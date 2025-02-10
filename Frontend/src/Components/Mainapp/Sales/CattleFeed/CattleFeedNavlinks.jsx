@@ -6,7 +6,7 @@ const CattleFeedNavlinks = ({ isselected, setIsSelected }) => {
   const CustNavbuttons = [
     { name: "Sale List", icon: <IoList className="icon" />, path: "sale/list" },
     {
-      name: "Create Sale",
+      name: "Add Sale",
       icon: <IoPersonAdd className="icon" />,
       path: "add/feeds",
     },

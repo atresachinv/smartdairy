@@ -7,7 +7,7 @@ const GroceryNavlinks = ({ isselected, setIsSelected }) => {
   const CustNavbuttons = [
     { name: "Purchase List", icon: <IoList className="icon" />, index: 0 },
     {
-      name: "Create Purchase",
+      name: "Add Grocery",
       icon: <IoPersonAdd className="icon" />,
       index: 1,
     },

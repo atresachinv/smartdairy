@@ -8,11 +8,17 @@ import {
 } from "react-icons/fa";
 import "../../../../../Styles/Mainapp/Payments/MilkTransfer.css";
 import { useDispatch, useSelector } from "react-redux";
+import {
+  getMilkToTransfer,
+  transferTOCustomer,
+} from "../../../../../App/Features/Payments/paymentSlice";
 
 const CustomerMilkTransfer = () => {
   const dispatch = useDispatch();
   const { t } = useTranslation(["common", "milkcollection"]);
   const tDate = useSelector((state) => state.date.toDate);
+  const MilkData = useSelector((state) => state.payment.customerMilkData);
+  const milkStatus = useSelector((state) => state.payment.getMilkstatus);
   const [customerList, setCustomerList] = useState([]);
   const [custList, setCustList] = useState({});
   const [changedDate, setChangedDate] = useState("");
@@ -31,27 +37,12 @@ const CustomerMilkTransfer = () => {
 
   const [values, setValues] = useState(initialValues);
   console.log("form values", values);
+  console.log("milk data", MilkData);
 
   const handleInputs = (e) => {
     const { name, value } = e.target;
 
     if (name === "date") {
-      setChangedDate(value);
-      if (value > tDate) {
-        // Set an error for the date field
-        setErrors((prevErrors) => ({
-          ...prevErrors,
-        }));
-
-        return; // Prevent updating the state if the date is invalid
-      } else {
-        // Clear the error if the date is valid
-        setErrors((prevErrors) => {
-          const { date, ...rest } = prevErrors;
-          return rest; // Remove date error if valid
-        });
-      }
-
       // Update the values state
       setValues((prevValues) => ({
         ...prevValues,
@@ -124,11 +115,11 @@ const CustomerMilkTransfer = () => {
     const fieldsToValidate = [
       "code",
       "cname",
-      "liters",
-      "fat",
-      "snf",
-      "rate",
-      "amt",
+      "updatecode",
+      "updatecname",
+      "acccode",
+      "formDate",
+      "toDate",
     ];
 
     const validationErrors = {};
@@ -142,7 +133,7 @@ const CustomerMilkTransfer = () => {
     setErrors(validationErrors);
     return validationErrors;
   };
-  console.log(customerList);
+  // console.log(customerList);
 
   // Effect to load customer list from local storage
   useEffect(() => {
@@ -222,6 +213,17 @@ const CustomerMilkTransfer = () => {
 
   const fetchCustomerMilkRecords = (e) => {
     e.preventDefault();
+    if (!values.code || !values.cname || !values.formDate || !values.toDate) {
+      toast.error("Please Fill All Fields!");
+      return;
+    }
+    dispatch(
+      getMilkToTransfer({
+        code: values.code,
+        formDate: values.formDate,
+        toDate: values.toDate,
+      })
+    );
     // Validate fields before submission
     const validationErrors = validateFields();
     if (Object.keys(validationErrors).length > 0) {
@@ -232,6 +234,18 @@ const CustomerMilkTransfer = () => {
 
   const UpdateCustomerMilkRecords = (e) => {
     e.preventDefault();
+    if (!values.updatecode || !values.updatecname || !values.acccode) {
+      toast.error("Please Fill All Fields!");
+      return;
+    }
+    dispatch(
+      transferTOCustomer({
+        code: values.code,
+        cname: values.cname,
+        formDate: values.formDate,
+        toDate: values.toDate,
+      })
+    );
     // Validate fields before submission
     const validationErrors = validateFields();
     if (Object.keys(validationErrors).length > 0) {
@@ -293,7 +307,7 @@ const CustomerMilkTransfer = () => {
                 className="data w30 mx10"
                 type="date"
                 value={values.formDate || ""}
-                name="code"
+                name="formDate"
                 placeholder="code"
                 onChange={handleInputs}
                 max={tDate}

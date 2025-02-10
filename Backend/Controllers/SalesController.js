@@ -121,12 +121,7 @@ exports.getPaginatedSales = async (req, res) => {
     countQuery += ` AND BillDate = CURDATE()`;
   }
 
-  // Append filter for fcode
-  if (fcode) {
-    query += ` AND CustCode = ?`;
-    countQuery += ` AND CustCode = ?`;
-    queryParams.push(fcode);
-  }
+ 
 
   if (dairy_id) {
     query += ` AND companyid = ?`; // Assuming companyid column exists in salesmaster
@@ -142,6 +137,8 @@ exports.getPaginatedSales = async (req, res) => {
       queryParams.push(value);
     }
   }
+
+  query += ` ORDER BY BillDate DESC`;
 
   pool.getConnection((err, connection) => {
     if (err) {

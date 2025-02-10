@@ -24,6 +24,7 @@ import MilkRateMaster from "./Masters/MasterPages/RatechartMaster/MilkRateMaster
 import CustomerReports from "./Reports/CustomerReports/CustomerReports";
 import MilkcollectionReports from "./Reports/MilkReports/MilkcollectionReports";
 import PaymentReports from "./Reports/PaymentsReports/PaymentReports";
+import Stocks from "./Inventory/InventroyPages/Stocks/Stocks";
 import PurchaseMaster from "./Purchase/CattleFeed/PurchaseMaster";
 import PurchaseGroceryMaster from "./Purchase/Grocery/PurchaseGroceryMaster";
 import PurchaseMedicinesMaster from "./Purchase/Medicines/PurchaseMedicinesMaster";
@@ -46,6 +47,7 @@ import Products from "./Inventory/InventroyPages/Products/Products";
 import { checkCurrentSession } from "../../App/Features/Users/authSlice";
 import { toast } from "react-toastify";
 import "../../Styles/Mainapp/Mainapphome.css";
+import Returns from "./Inventory/InventroyPages/Returns/Returns";
 
 const Mainapp = () => {
   const dispatch = useDispatch();
@@ -135,11 +137,8 @@ const Mainapp = () => {
             {/* inventory routes */}
             <Route path="inventory/dealer/*" element={<Dealers />} />
             <Route path="inventory/product/*" element={<Products />} />
-            <Route path="inventory/product/stock/*" element={<Dealers />} />
-            <Route path="inventory/expired/products/*" element={<Dealers />} />
-            <Route path="inventory/customer/returns/*" element={<Dealers />} />
-            <Route path="inventory/dealer/returns/*" element={<Dealers />} />
-            <Route path="inventory/update/sale-rates/*" element={<Dealers />} />
+            <Route path="inventory/product/stock/*" element={<Stocks />} />
+            <Route path="inventory/returns/*" element={<Returns />} />
             {/* accounts routes */}
             <Route path="accounts" element={<Accounts />} />
             {/* master routes */}

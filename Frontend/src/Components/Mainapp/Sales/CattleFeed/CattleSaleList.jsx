@@ -8,6 +8,7 @@ import Swal from "sweetalert2";
 import { IoClose } from "react-icons/io5";
 import { FaRegEdit } from "react-icons/fa";
 import { toast } from "react-toastify";
+import { TbSortAscending2, TbSortDescending2 } from "react-icons/tb";
 import "../../../../Styles/Mainapp/Sales/Sales.css";
 
 const CattleSaleList = () => {
@@ -22,6 +23,8 @@ const CattleSaleList = () => {
   const [isInvoiceOpen, setIsInvoiceOpen] = useState(false);
   const [filteredSalesList, setFilteredSalesList] = useState(sales);
   const [viewItems, setViewItems] = useState([]);
+  const [loadings, SetLoadings] = useState(false);
+  const [sortOrder, setSortOrder] = useState("desc");
   //download Excel sheet
   const downloadExcel = () => {
     const exportData = sales.map((sale) => ({
@@ -99,6 +102,7 @@ const CattleSaleList = () => {
 
   // get sale to backend on date range
   const handleShowbutton = async () => {
+    SetLoadings(true);
     const getItem = {
       date1,
       date2,
@@ -112,8 +116,10 @@ const CattleSaleList = () => {
       if (data?.success) {
         setSales(data.salesData);
       }
+      SetLoadings(false);
     } catch (error) {
       console.error("Error fetching items:", error);
+      SetLoadings(false);
     }
   };
 
@@ -210,58 +216,85 @@ const CattleSaleList = () => {
     return `${day}/${month}/${year}`;
   };
 
-  // update invoice and its item
+  // update invoice and its item ----------------------------------------------------->
   const handleSaveChanges = async () => {
-    const updatedAmount = parseFloat(editSale.Qty) * parseFloat(editSale.Rate);
+    const result = await Swal.fire({
+      title: "Confirm Update?",
+      text: "Are you sure you want to Update this?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, Update it!",
+    });
 
-    const updateItem = {
-      saleid: editSale.saleid,
-      ReceiptNo: editSale.ReceiptNo,
-      Rate: editSale.Rate,
-      Qty: editSale.Qty,
-      Amount: updatedAmount,
-    };
-    // console.log(updateItem);
-    // console.log("Updatiing sales");
-    try {
-      const res = await axiosInstance.put("/sale/update", updateItem);
-      if (res?.data?.success) {
-        toast.success("Sale updated successfully");
+    if (result.isConfirmed) {
+      const updatedAmount =
+        parseFloat(editSale.Qty) * parseFloat(editSale.Rate);
 
-        setSales((prevSales) => {
-          return prevSales.map((sale) => {
-            if (sale.saleid === editSale.saleid) {
-              return { ...sale, ...editSale, Amount: updatedAmount };
-            }
-            return sale;
+      const updateItem = {
+        saleid: editSale.saleid,
+        ReceiptNo: editSale.ReceiptNo,
+        Rate: editSale.Rate,
+        Qty: editSale.Qty,
+        Amount: updatedAmount,
+      };
+      try {
+        const res = await axiosInstance.put("/sale/update", updateItem);
+        if (res?.data?.success) {
+          toast.success("Sale updated successfully");
+
+          setSales((prevSales) => {
+            return prevSales.map((sale) => {
+              if (sale.saleid === editSale.saleid) {
+                return { ...sale, ...editSale, Amount: updatedAmount };
+              }
+              return sale;
+            });
           });
-        });
-        setViewItems((prevSales) => {
-          return prevSales.map((sale) => {
-            if (sale.saleid === editSale.saleid) {
-              return { ...sale, ...editSale, Amount: updatedAmount };
-            }
-            return sale;
+          setViewItems((prevSales) => {
+            return prevSales.map((sale) => {
+              if (sale.saleid === editSale.saleid) {
+                return { ...sale, ...editSale, Amount: updatedAmount };
+              }
+              return sale;
+            });
           });
-        });
-        setIsModalOpen(false);
+          setIsModalOpen(false);
+        }
+      } catch (error) {
+        toast.error("Server Error to update sale");
       }
-    } catch (error) {
-      toast.error("Server Error to update sale");
-      // console.error("Error updating sale:", error);
     }
   };
 
-  // Grouping by billNo
-  const groupedSales = filteredSalesList.reduce((acc, sale) => {
-    const key = sale.BillNo; // Grouping by billNo
-    if (!acc[key]) {
-      acc[key] = { ...sale, TotalAmount: 0 };
-    }
-    acc[key].TotalAmount += sale.Amount;
-    return acc;
-  }, {});
-  const groupedSalesArray = Object.values(groupedSales);
+  // ----------------------------------------------------------------------------->
+  // Function to group sales by BillNo ------------------------------------------->
+  const groupSales = () => {
+    const groupedSales = filteredSalesList.reduce((acc, sale) => {
+      const key = sale.BillNo;
+      if (!acc[key]) {
+        acc[key] = { ...sale, TotalAmount: 0 };
+      }
+      acc[key].TotalAmount += sale.Amount;
+      return acc;
+    }, {});
+
+    // Convert object to array and sort based on the selected order
+    return Object.values(groupedSales).sort((a, b) =>
+      sortOrder === "asc"
+        ? new Date(a.BillDate) - new Date(b.BillDate)
+        : new Date(b.BillDate) - new Date(a.BillDate)
+    );
+  };
+
+  // ---------------------------------------------------------------------------->
+  // Toggle sorting order ------------------------------------------------------->
+  const toggleSortOrder = () => {
+    setSortOrder((prevOrder) => (prevOrder === "asc" ? "desc" : "asc"));
+  };
+
+  const groupedSalesArray = groupSales();
 
   //for searching Name or code to get the sale list------------------------------------>
 
@@ -346,19 +379,30 @@ const CattleSaleList = () => {
           </button>
         </div>
       </div>
-      <div className="sales-list-table w100 h1 d-flex-col hidescrollbar bg">
+      <div className="sales-list-table w100 h80 d-flex-col bg">
         <span className="heading p10">Cattle Feed List</span>
         <div className="sales-heading-title-scroller w100 h1 mh100 d-flex-col hidescrollbar">
-          <div className="sale-data-headings-div h10 d-flex center t-center sb sticky-top t-heading-bg">
+          <div className="sale-data-headings-div py10 d-flex center t-center sb sticky-top t-heading-bg">
             <span className="f-info-text w5">Sr.No</span>
-            <span className="f-info-text w10">Date</span>
+            <span className="f-info-text w15 t-center d-flex a-center ">
+              Date{" "}
+              <span
+                className="px10 f-color-icon"
+                type="button"
+                onClick={toggleSortOrder}>
+                {sortOrder === "asc" ? (
+                  <TbSortAscending2 />
+                ) : (
+                  <TbSortDescending2 />
+                )}
+              </span>
+            </span>
             <span className="f-info-text w10">Rec. No</span>
             <span className="f-info-text w10">Cust Code</span>
             <span className="f-info-text w30">Cust Name</span>
             <span className="f-info-text w10">Amount</span>
             <span className="f-info-text w15">Actions</span>
           </div>
-          {/* Show Spinner if loading, otherwise show the feed list */}
           {loading ? (
             <Spinner />
           ) : groupedSalesArray.length > 0 ? (
@@ -530,9 +574,9 @@ const CattleSaleList = () => {
                   disabled
                 />
               </label>
-              <div>
-                <button onClick={handleSaveChanges}>Save</button>
+              <div className="button-container w100 d-flex a-center">
                 <button onClick={() => setIsModalOpen(false)}>Cancel</button>
+                <button onClick={handleSaveChanges}>Save</button>
               </div>
             </div>
           </div>

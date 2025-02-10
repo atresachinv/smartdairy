@@ -3,22 +3,24 @@ import * as XLSX from "xlsx";
 import { MdDeleteOutline } from "react-icons/md";
 import axiosInstance from "../../../../App/axiosInstance";
 import { toast } from "react-toastify";
+import Spinner from "../../../Home/Spinner/Spinner";
 import "../purchase.css";
 import { IoClose } from "react-icons/io5";
 import Swal from "sweetalert2";
+import { TbSortAscending2, TbSortDescending2 } from "react-icons/tb";
 
 const List = () => {
   const [purchaseList, setPurchaseList] = useState([]);
   const [dealerList, setDealerList] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [filteredList, setFilteredList] = useState(purchaseList); // Store filtered items
-
   const [fcode, setFcode] = useState("");
-
   const [date1, SetDate1] = useState("");
   const [date2, SetDate2] = useState("");
-
+  const [loading, SetLoading] = useState(false);
+  const [sortOrder, setSortOrder] = useState("desc");
   const [updatelist, setUpdateList] = useState([]);
+  console.log(filteredList);
 
   // Fetch dealer list from API
   useEffect(() => {
@@ -145,20 +147,36 @@ const List = () => {
     XLSX.writeFile(workbook, `PurchaseData_${date1}_to_${date2}.xlsx`);
   };
 
-  // Group purchase by bill number
-  const groupedPurchase = (filteredList || []).reduce((acc, item) => {
-    const key = item.billno;
-    if (!acc[key]) {
-      acc[key] = { ...item, TotalAmount: 0 };
-    }
-    acc[key].TotalAmount += item.amount;
-    return acc;
-  }, {});
+  // ----------------------------------------------------------------------------->
+  // Function to group and sort purchases ---------------------------------------->
 
-  const groupedPurchaseArray = Object.values(groupedPurchase);
+  const groupPurchases = () => {
+    const groupedPurchase = (filteredList || []).reduce((acc, item) => {
+      const key = item.billno;
+      if (!acc[key]) {
+        acc[key] = { ...item, TotalAmount: 0 };
+      }
+      acc[key].TotalAmount += item.amount;
+      return acc;
+    }, {});
 
+    // Convert object to array and sort by purchasedate
+    return Object.values(groupedPurchase).sort((a, b) =>
+      sortOrder === "asc"
+        ? new Date(a.purchasedate) - new Date(b.purchasedate)
+        : new Date(b.purchasedate) - new Date(a.purchasedate)
+    );
+  };
+
+  // Toggle sorting order
+  const toggleSortOrder = () => {
+    setSortOrder((prevOrder) => (prevOrder === "asc" ? "desc" : "asc"));
+  };
+
+  const groupedPurchaseArray = groupPurchases();
   // Function to fetch purchase data based on date and dealer code filt
   const handleShowbutton = async () => {
+    SetLoading(true);
     const getItem = {
       date1,
       date2,
@@ -176,11 +194,14 @@ const List = () => {
       } else {
         setPurchaseList([]);
       }
+      SetLoading(false);
     } catch (error) {
       toast.error("Error fetching Purchase items");
       setPurchaseList([]);
+      SetLoading(false);
     }
   };
+
   const formatDateToDDMMYYYY = (dateStr) => {
     const date = new Date(dateStr); // Parse the ISO string
     const day = String(date.getDate()).padStart(2, "0"); // Ensures two digits for day
@@ -230,103 +251,60 @@ const List = () => {
 
   // Function to handle the update action (e.g., saving the changes to the server)
   const handleUpdate = async () => {
-    try {
-      // Sending updated data to the backend
-      const res = await axiosInstance.put("/purchase/update", {
-        purchases: updatelist.map((item) => ({
-          purchaseid: item.purchaseid,
-          rate: item.rate,
-          salerate: item.salerate,
-          qty: item.qty,
-          amount: item.amount,
-        })),
-      });
+    const result = await Swal.fire({
+      title: "Confirm Update?",
+      text: "Are you sure you want to Update this?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, Update it!",
+    });
 
-      // Check if the update was successful
-      if (res?.data?.success) {
-        toast.success("Purchase data updated successfully!");
+    if (result.isConfirmed) {
+      try {
+        // Sending updated data to the backend
+        const res = await axiosInstance.put("/purchase/update", {
+          purchases: updatelist.map((item) => ({
+            purchaseid: item.purchaseid,
+            rate: item.rate,
+            salerate: item.salerate,
+            qty: item.qty,
+            amount: item.amount,
+          })),
+        });
 
-        // Optionally, update the frontend state with the new data
-        setPurchaseList((prevList) =>
-          prevList.map((item) => {
-            const updatedItem = updatelist.find(
-              (updated) => updated.purchaseid === item.purchaseid
-            );
-            return updatedItem ? { ...item, ...updatedItem } : item;
-          })
-        );
+        // Check if the update was successful
+        if (res?.data?.success) {
+          toast.success("Purchase data updated successfully!");
 
-        setIsModalOpen(false); // Close the modal after successful update
-      } else {
+          // Optionally, update the frontend state with the new data
+          setPurchaseList((prevList) =>
+            prevList.map((item) => {
+              const updatedItem = updatelist.find(
+                (updated) => updated.purchaseid === item.purchaseid
+              );
+              return updatedItem ? { ...item, ...updatedItem } : item;
+            })
+          );
+
+          setIsModalOpen(false); // Close the modal after successful update
+        } else {
+          toast.error("Error updating purchase data.");
+        }
+      } catch (error) {
         toast.error("Error updating purchase data.");
+        console.error(error);
       }
-    } catch (error) {
-      toast.error("Error updating purchase data.");
-      console.error(error);
     }
+  };
+
+  const handleFocus = (e) => {
+    e.target.select();
   };
 
   return (
     <div className="customer-list-container-div w100 h1 d-flex-col p10">
-      {/* <div
-        className="download-print-pdf-excel-container w100 h10 d-flex j-end"
-        style={{ display: "contents" }}>
-        <div className="w100 d-flex sa my5 f-wrap">
-          <div className="my10">
-            <label htmlFor="" className="info-text px10">
-              Date:
-            </label>
-            <input
-              type="date"
-              className="data"
-              value={date1}
-              onChange={(e) => SetDate1(e.target.value)}
-              max={date2}
-            />
-          </div>
-          <div className="my10">
-            <label className="info-text px10" htmlFor="">
-              To Date:
-            </label>
-            <input
-              type="date"
-              name="date"
-              className="data"
-              value={date2}
-              onChange={(e) => SetDate2(e.target.value)}
-              min={date1}
-            />
-          </div>
-          <div className="my10">
-            <button className="w-btn" onClick={handleShowbutton}>
-              Show
-            </button>
-          </div>
-        </div>
-        <div className="w100 d-flex sa my5">
-          <div>
-            <label htmlFor="" className="info-text px10">
-              Dealer Code/Name
-            </label>
-            <input
-              type="text"
-              className="data"
-              name="code"
-              onFocus={(e) => e.target.select()}
-              value={fcode}
-              onChange={(e) =>
-                setFcode(e.target.value.replace(/[^a-zA-Z0-9 ]/g, ""))
-              }
-              min="0"
-              title="Enter code or name to search details"
-            />
-          </div>
-
-          <button className="w-btn" onClick={downloadExcel}>
-            Export Excel
-          </button>
-        </div>
-      </div> */}
       <div className="download-print-pdf-excel-container w100 h20 d-flex-col sb">
         <div className="sales-dates-container w60 h50 d-flex a-center sb">
           <div className="date-input-div w35 d-flex a-center sb">
@@ -385,49 +363,71 @@ const List = () => {
         <div className="customer-heading-title-scroller w100 h1 mh100 hidescrollbar d-flex-col">
           <div className="data-headings-div h10 d-flex center forDWidth t-center bg7 sb">
             <span className="f-info-text w5">SrNo</span>
-            <span className="f-info-text w5">Date</span>
+            <span className="f-info-text w10">
+              Date{" "}
+              <span
+                className="px10 f-color-icon"
+                type="button"
+                onClick={toggleSortOrder}>
+                {sortOrder === "asc" ? (
+                  <TbSortAscending2 />
+                ) : (
+                  <TbSortDescending2 />
+                )}
+              </span>
+            </span>
             <span className="f-info-text w5">Rec. No</span>
             <span className="f-info-text w10">Dealer Code</span>
             <span className="f-info-text w15">Dealer Name</span>
             <span className="f-info-text w10">Total Amount</span>
             <span className="f-info-text w10">Actions</span>
           </div>
-          {groupedPurchaseArray.length > 0 ? (
-            groupedPurchaseArray.map((item, index) => (
-              <div
-                key={index}
-                className={`data-values-div w100 h10 d-flex forDWidth center t-center sa ${
-                  index % 2 === 0 ? "bg-light" : "bg-dark"
-                }`}
-                style={{
-                  backgroundColor: index % 2 === 0 ? "#faefe3" : "#fff",
-                }}>
-                <span className="text w5">{index + 1}</span>
-                <span className="text w5">
-                  {formatDateToDDMMYYYY(item.purchasedate)}
-                </span>
-                <span className="text w5">{item.receiptno}</span>
-                <span className="text w10">{item.dealerCode}</span>
-                <span className="text w15">{item.dealerName || "Unknown"}</span>
-                <span className="text w10">{item.TotalAmount}</span>
-                <span className="text w10 d-flex j-center a-center">
-                  <button
-                    style={{ cursor: "pointer" }}
-                    className="px5 "
-                    onClick={() => handleEditClick(item.billno)}>
-                    View
-                  </button>
-                  <MdDeleteOutline
-                    onClick={() => handleDelete(item.billno)}
-                    size={17}
-                    className="table-icon"
-                    style={{ color: "red" }}
-                  />
-                </span>
-              </div>
-            ))
+          {loading ? (
+            <div className="box d-flex center">
+              <Spinner />
+            </div>
           ) : (
-            <div>No purchases found</div>
+            <>
+              {groupedPurchaseArray.length > 0 ? (
+                groupedPurchaseArray.map((item, index) => (
+                  <div
+                    key={index}
+                    className={`data-values-div w100 h10 d-flex forDWidth center t-center sa ${
+                      index % 2 === 0 ? "bg-light" : "bg-dark"
+                    }`}
+                    style={{
+                      backgroundColor: index % 2 === 0 ? "#faefe3" : "#fff",
+                    }}>
+                    <span className="text w5">{index + 1}</span>
+                    <span className="text w10">
+                      {formatDateToDDMMYYYY(item.purchasedate)}
+                    </span>
+                    <span className="text w5">{item.receiptno}</span>
+                    <span className="text w10">{item.dealerCode}</span>
+                    <span className="text w15">
+                      {item.dealerName || "Unknown"}
+                    </span>
+                    <span className="text w10">{item.TotalAmount}</span>
+                    <span className="text w10 d-flex j-center a-center">
+                      <button
+                        style={{ cursor: "pointer" }}
+                        className="px5 "
+                        onClick={() => handleEditClick(item.billno)}>
+                        View
+                      </button>
+                      <MdDeleteOutline
+                        onClick={() => handleDelete(item.billno)}
+                        size={17}
+                        className="table-icon"
+                        style={{ color: "red" }}
+                      />
+                    </span>
+                  </div>
+                ))
+              ) : (
+                <div className="box d-flex center">No purchases found</div>
+              )}
+            </>
           )}
         </div>
       </div>
@@ -501,6 +501,7 @@ const List = () => {
                             name="rate"
                             type="number"
                             value={item.rate}
+                            onFocus={handleFocus}
                             onChange={(e) =>
                               handleItemChange(i, "rate", e.target.value)
                             }
@@ -511,6 +512,7 @@ const List = () => {
                             name="sale"
                             type="number"
                             value={item.salerate}
+                            onFocus={handleFocus}
                             onChange={(e) =>
                               handleItemChange(i, "salerate", e.target.value)
                             }
@@ -521,6 +523,7 @@ const List = () => {
                             name="qty"
                             type="number"
                             value={item.qty}
+                            onFocus={handleFocus}
                             onChange={(e) =>
                               handleItemChange(i, "qty", e.target.value)
                             }

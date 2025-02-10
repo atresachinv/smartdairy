@@ -9,6 +9,8 @@ const {
   copyMilkCollection,
   deleteMilkCollection,
   transferMilkCollectionToShift,
+  fetchAllMilkColl,
+  transferMilkToCustomer,
 } = require("../Controllers/PaymentController");
 
 const router = express.Router();
@@ -35,5 +37,11 @@ router
 router
   .route("/milk/correction/delete-milk")
   .post(verifyToken, deleteMilkCollection);
+router
+  .route("/customer/milkdata/to-transfer")
+  .get(verifyToken, fetchAllMilkColl);
+router
+  .route("/transfer/milk-to/customer")
+  .patch(verifyToken, transferMilkToCustomer);
 
 module.exports = router;

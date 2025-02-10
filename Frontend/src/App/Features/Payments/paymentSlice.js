@@ -3,7 +3,10 @@ import axiosInstance from "../../axiosInstance";
 
 const initialState = {
   payment: {},
+  customerMilkData: [],
   status: "idle",
+  getMilkstatus: "idle",
+  transtatus: "idle",
   copyCollstatus: "idle",
   deleteCollstatus: "idle",
   transferCollshiftstatus: "idle",
@@ -80,6 +83,28 @@ export const transferTOMorning = createAsyncThunk(
         }
       );
       return response.data;
+    } catch (error) {
+      const errorMessage = error.response
+        ? error.response.data
+        : "Failed to update milk records!.";
+      return rejectWithValue(errorMessage);
+    }
+  }
+);
+
+// Milk data to Transfer Customer To Customer ---------->
+export const getMilkToTransfer = createAsyncThunk(
+  "payment/getMilkToTransfer",
+  async ({ code, fromDate, toDate }, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.get("/milkdata/to-transfer", {
+        params: {
+          code,
+          fromDate,
+          toDate,
+        },
+      });
+      return response.data.customerMilkData;
     } catch (error) {
       const errorMessage = error.response
         ? error.response.data
@@ -253,16 +278,28 @@ const paymentSlice = createSlice({
       .addCase(transferTOMorning.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.payload;
-      }) //------------------------------------------->
-      .addCase(transferTOCustomer.pending, (state) => {
-        state.status = "loading";
+      }) //get milkdata transfer ----------------------------------------->
+      .addCase(getMilkToTransfer.pending, (state) => {
+        state.getMilkstatus = "loading";
         state.error = null;
       })
-      .addCase(transferTOCustomer.fulfilled, (state, action) => {
-        state.status = "succeeded";
+      .addCase(getMilkToTransfer.fulfilled, (state, action) => {
+        state.getMilkstatus = "succeeded";
+        state.customerMilkData = action.payload;
+      })
+      .addCase(getMilkToTransfer.rejected, (state, action) => {
+        state.getMilkstatus = "failed";
+        state.error = action.payload;
+      }) //transfer to customer ------------------------------------------>
+      .addCase(transferTOCustomer.pending, (state) => {
+        state.transtatus = "loading";
+        state.error = null;
+      })
+      .addCase(transferTOCustomer.fulfilled, (state) => {
+        state.transtatus = "succeeded";
       })
       .addCase(transferTOCustomer.rejected, (state, action) => {
-        state.status = "failed";
+        state.transtatus = "failed";
         state.error = action.payload;
       }) // transfer to date ------------------------------------------->
       .addCase(transferTODate.pending, (state) => {

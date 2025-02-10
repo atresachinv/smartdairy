@@ -7,7 +7,7 @@ const MedicinesNavlinks = ({ isselected, setIsSelected }) => {
   const CustNavbuttons = [
     { name: "Purchase List", icon: <IoList className="icon" />, index: 0 },
     {
-      name: "Create Purchase",
+      name: "Add Medicines",
       icon: <IoPersonAdd className="icon" />,
       index: 1,
     },

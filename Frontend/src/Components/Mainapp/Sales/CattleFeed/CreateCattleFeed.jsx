@@ -35,6 +35,7 @@ const CreateCattleFeed = () => {
   const [filteredItems, setFilteredItems] = useState([]); //p--
   const [purchaseData, setPurchaseData] = useState([]); //p--
   const [userRole, setUserRole] = useState(null);
+  const [manualRateChange, setManualRateChange] = useState(false);
   const dairyInfo = useSelector((state) => state.dairy.dairyData.SocietyName);
 
   useEffect(() => {
@@ -75,11 +76,14 @@ const CreateCattleFeed = () => {
         setRate(salesrate.salerate);
         setAmt(salesrate.salerate * qty);
       }
-      if (rate) {
-        setAmt(rate * qty);
-      }
     }
-  }, [selectitemcode, qty, rate]);
+  }, [selectitemcode, qty]);
+
+  useEffect(() => {
+    if (rate) {
+      setAmt(rate * qty);
+    }
+  }, [ qty, rate]);
 
   const getTodaysDate = () => {
     const today = new Date();
@@ -507,6 +511,7 @@ const CreateCattleFeed = () => {
       setFilteredItems(itemsNotInCart);
     }
   };
+
   useEffect(() => {
     handleItemstoShow();
   }, [productlist]);
@@ -702,7 +707,7 @@ const CreateCattleFeed = () => {
                   name="rate"
                   id="rate"
                   className="data w70"
-                  value={rate}
+                  value={rate || ""}
                   onFocus={handleFocus}
                   onChange={(e) =>
                     setRate(Math.max(0, parseFloat(e.target.value)))

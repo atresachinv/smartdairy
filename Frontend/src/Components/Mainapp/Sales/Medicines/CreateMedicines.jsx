@@ -65,21 +65,25 @@ const CreateMedicines = () => {
   }, [fcode, customerslist]);
 
   // ----------------------------------------------------------------------------->
-  // find rate and amount for perticular item ----------------------------------->
-  useEffect(() => {
-    if (selectitemcode) {
-      const salesrate = salesRates.find(
-        (rate) => rate.itemcode.toString() === selectitemcode.toString()
-      );
-      if (salesrate) {
-        setRate(salesrate.salerate);
-        setAmt(salesrate.salerate * qty);
+    // find rate and amount for perticular item ----------------------------------->
+    useEffect(() => {
+      if (selectitemcode) {
+        const salesrate = salesRates.find(
+          (rate) => rate.itemcode.toString() === selectitemcode.toString()
+        );
+        if (salesrate) {
+          setRate(salesrate.salerate);
+          setAmt(salesrate.salerate * qty);
+        }
       }
+    }, [selectitemcode, qty]);
+  
+    useEffect(() => {
       if (rate) {
         setAmt(rate * qty);
       }
-    }
-  }, [selectitemcode, qty, rate]);
+    }, [ qty, rate]);
+  
 
   const getTodaysDate = () => {
     const today = new Date();
