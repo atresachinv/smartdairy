@@ -275,64 +275,61 @@ exports.deleteSelectedMilkRecord = async (req, res) => {
 // ----------------------------------------------------------------------------------->
 
 exports.getMilkTrasferToCustomer = async (req, res) => {
-  const { record } = req.body;
+   const { code, fromdate, todate } = req.query;
+   console.log(req.query);
 
-  // Validate request body
-  if (!record) {
-    return res.status(400).json({ message: "record are required!" });
-  }
+   if (!code || !fromdate || !todate) {
+     return res.status(400).json({ message: "Required data is missing!" });
+   }
 
-  pool.getConnection((err, connection) => {
-    if (err) {
-      console.error("Error getting MySQL connection: ", err);
-      return res.status(500).json({ message: "Database connection error" });
-    }
+   const dairy_id = req.user?.dairy_id;
+   const center_id = req.user?.center_id;
 
-    try {
-      const dairy_id = req.user.dairy_id;
-      const center_id = req.user.center_id;
+   if (!dairy_id) {
+     return res.status(400).json({ message: "Dairy ID not found!" });
+   }
 
-      if (!dairy_id) {
-        connection.release();
-        return res.status(400).json({ message: "Dairy ID not found!" });
-      }
+   const dairy_table = `dailymilkentry_${dairy_id}`;
+   const selectRecordQuery = `
+    SELECT id, Litres, fat, snf, rate, Amt, ME
+    FROM ${dairy_table}
+    WHERE companyid = ? AND center_id = ? 
+      AND ReceiptDate BETWEEN ? AND ? 
+      AND rno = ?
+  `;
 
-      // const currentDate =
-      const dairy_table = `dailymilkentry_${dairy_id}`;
+   pool.getConnection((err, connection) => {
+     if (err) {
+       console.error("Error getting MySQL connection: ", err);
+       return res.status(500).json({ message: "Database connection error" });
+     }
 
-      const updateRecordQuery = `
-        SELECT  Litres, Amt, fat , snf, rate
-        FROM ${dairy_table}
-        WHERE companyid = ? AND center_id = ? AND rno = ? ReceiptDate BETWEEN ? AND ? 
-      `;
-      connection.query(
-        updateRecordQuery,
-        [dairy_id, center_id, code, fromDate, ToDate],
-        (err, result) => {
-          connection.release();
-          if (err) {
-            console.error("Error executing query: ", err);
-            return res.status(500).json({ message: "Query execution error" });
-          }
+     connection.query(
+       selectRecordQuery,
+       [dairy_id, center_id, fromdate, todate, code],
+       (err, result) => {
+         connection.release(); // Always release the connection
 
-          if (result.length === 0) {
-            return res.status(404).json({ message: "No records found!" });
-          }
+         if (err) {
+           console.error("Error executing query: ", err);
+           return res.status(500).json({ message: "Query execution error" });
+         }
 
-          // Return the results
-          res.status(200).json({ customerMilkdata: result });
-        }
-      );
-    } catch (error) {
-      console.error("Error processing request: ", error);
-      return res.status(500).json({ message: "Internal server error" });
-    }
-  });
+         if (result.length === 0) {
+           return res.status(404).json({ message: "No records found!" });
+         }
+
+         console.log(result);
+         return res.status(200).json({ customerMilkData: result });
+       }
+     );
+   });
 };
 
 // ----------------------------------------------------------------------------------->
 // TRANSFER MILK COLLECTION CUSTOMER TO CUSTOMER ------------------------------------->
 // ----------------------------------------------------------------------------------->
+
 
 exports.milkTrasferToCustomer = async (req, res) => {
   const { record } = req.body;
@@ -351,7 +348,6 @@ exports.milkTrasferToCustomer = async (req, res) => {
     try {
       const dairy_id = req.user.dairy_id;
       const user_role = req.user.user_role;
-      const center_id = req.user.center_id;
 
       if (!dairy_id) {
         connection.release();
@@ -364,8 +360,7 @@ exports.milkTrasferToCustomer = async (req, res) => {
       const updateRecordQuery = `
         UPDATE  AccCode , cname , rno UpdatedBy, updatedOn
         FROM ${dairy_table}
-        WHERE ReceiptDate BETWEEN ? AND ? AND rno = ?
-
+        WHERE id = ? AND rno = ?
       `;
       connection.query(
         updateRecordQuery,
@@ -927,112 +922,5 @@ exports.transferMilkCollToDate = async (req, res) => {
   });
 };
 
-// ----------------------------------------------------------------------------------->
-// SHOW ALL MILK COLLECTION TO TRANSFER OF CUSTOMER ---------------------------------->
-// ----------------------------------------------------------------------------------->
-
-exports.fetchAllMilkColl = async (req, res) => {
-  const { code, fromdate, todate } = req.query;
-
-  if (!code || !fromdate || !todate) {
-    return res.status(400).json({ message: "Required data is missing!" });
-  }
-
-  const dairy_id = req.user?.dairy_id;
-  const center_id = req.user?.center_id;
-
-  if (!dairy_id) {
-    return res.status(400).json({ message: "Dairy ID not found!" });
-  }
-
-  const selectRecordQuery = `
-    SELECT id, Litres, fat, snf, rate, Amt, ME
-    FROM ${dairy_table}
-    WHERE companyid = ? AND center_id = ? 
-      AND ReceiptDate BETWEEN ? AND ? 
-      AND rno = ?
-  `;
-
-  try {
-    const connection = await pool.promise().getConnection();
-    const [result] = await connection.query(selectRecordQuery, [
-      dairy_id,
-      center_id,
-      fromdate,
-      todate,
-      code,
-    ]);
-    connection.release();
-
-    if (result.length === 0) {
-      return res.status(404).json({ message: "No records found!" });
-    }
-
-    return res.status(200).json({ customerMilkData: result });
-  } catch (error) {
-    console.error("Error fetching milk collection data: ", error);
-    return res.status(500).json({ message: "Internal server error" });
-  }
-};
 
 
-// ----------------------------------------------------------------------------------->
-// TRANSFER MILK COLLECTION TO CUSTOMER ---------------------------------------------->
-// ----------------------------------------------------------------------------------->
-
-exports.transferMilkToCustomer = async (req, res) => {
-  const { updatecode, updatecname, acccode } = req.body;
-
-  // Validate request body
-  if (!code || !fromdate || !todate) {
-    return res.status(400).json({ message: "Required data is missing!" });
-  }
-
-  pool.getConnection((err, connection) => {
-    if (err) {
-      console.error("Error getting MySQL connection: ", err);
-      return res.status(500).json({ message: "Database connection error" });
-    }
-    try {
-      const dairy_id = req.user.dairy_id;
-      const center_id = req.user.center_id;
-
-      if (!dairy_id) {
-        connection.release();
-        return res.status(400).json({ message: "Dairy ID not found!" });
-      }
-
-      // Step 1: Select records based on currentdate, time (ME), and customers (rno)
-      const selectRecordQuery = `
-        UPDATE ${dairy_table} SET rno = ?  , cname = ? , AccCode = ?
-        WHERE id = ?
-      `;
-
-      connection.query(
-        selectRecordQuery,
-        [updatecode, updatecname, acccode],
-        (err, result) => {
-          if (err) {
-            console.error("Error selecting records: ", err);
-            connection.release();
-            return res.status(500).json({ message: "Error selecting records" });
-          }
-
-          if (result.length === 0) {
-            connection.release();
-            return res.status(404).json({ message: "No records found!" });
-          }
-
-          return res.status(200).json({
-            message: "Records transfered successfully!",
-            affectedRows: result.affectedRows,
-          });
-        }
-      );
-    } catch (error) {
-      console.error("Error processing request: ", error);
-      connection.release();
-      return res.status(500).json({ message: "Internal server error" });
-    }
-  });
-};

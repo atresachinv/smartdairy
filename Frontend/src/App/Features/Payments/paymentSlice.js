@@ -97,13 +97,16 @@ export const getMilkToTransfer = createAsyncThunk(
   "payment/getMilkToTransfer",
   async ({ code, fromDate, toDate }, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.get("/milkdata/to-transfer", {
-        params: {
-          code,
-          fromDate,
-          toDate,
-        },
-      });
+      const response = await axiosInstance.get(
+        "/customer/milkdata/to-transfer",
+        {
+          params: {
+            code,
+            fromDate,
+            toDate,
+          },
+        }
+      );
       return response.data.customerMilkData;
     } catch (error) {
       const errorMessage = error.response

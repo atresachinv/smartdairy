@@ -8,6 +8,7 @@ import Swal from "sweetalert2";
 import { IoClose } from "react-icons/io5";
 import { FaRegEdit } from "react-icons/fa";
 import { toast } from "react-toastify";
+import { TbSortAscending2, TbSortDescending2 } from "react-icons/tb";
 import "../../../../Styles/Mainapp/Sales/Sales.css";
 
 const OthersSaleList = () => {

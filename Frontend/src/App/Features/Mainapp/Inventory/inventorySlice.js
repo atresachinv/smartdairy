@@ -3,7 +3,7 @@ import axiosInstance from "../../../axiosInstance";
 
 const initialState = {
   customerlist: [],
-  allProducts: "",
+  allProducts: [],
   usedRCNO: [],
   status: "idle",
   excelstatus: "idle",

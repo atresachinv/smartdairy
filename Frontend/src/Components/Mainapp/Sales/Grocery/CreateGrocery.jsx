@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axiosInstance from "../../../../App/axiosInstance";
 import { MdDeleteOutline } from "react-icons/md";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch, useSelector, shallowEqual } from "react-redux";
 import * as XLSX from "xlsx";
 import { jsPDF } from "jspdf";
 import "jspdf-autotable";
@@ -20,7 +20,10 @@ const CreateGrocery = () => {
   const tDate = useSelector((state) => state.date.toDate);
   const salesRates = useSelector((state) => state.sales.salesRates);
   const customerslist = useSelector((state) => state.customer.customerlist);
-  const productlist = useSelector((state) => state.inventory.allProducts || []);
+  const productlist = useSelector(
+    (state) => state.inventory.allProducts,
+    shallowEqual
+  );
   const [cartItem, setCartItem] = useState([]);
   const [cname, setCname] = useState("");
   const [fcode, setFcode] = useState("");
@@ -64,26 +67,25 @@ const CreateGrocery = () => {
     }
   }, [fcode, customerslist]);
 
- // ----------------------------------------------------------------------------->
-   // find rate and amount for perticular item ----------------------------------->
-   useEffect(() => {
-     if (selectitemcode) {
-       const salesrate = salesRates.find(
-         (rate) => rate.itemcode.toString() === selectitemcode.toString()
-       );
-       if (salesrate) {
-         setRate(salesrate.salerate);
-         setAmt(salesrate.salerate * qty);
-       }
-     }
-   }, [selectitemcode, qty]);
- 
-   useEffect(() => {
-     if (rate) {
-       setAmt(rate * qty);
-     }
-   }, [ qty, rate]);
- 
+  // ----------------------------------------------------------------------------->
+  // find rate and amount for perticular item ----------------------------------->
+  useEffect(() => {
+    if (selectitemcode) {
+      const salesrate = salesRates.find(
+        (rate) => rate.itemcode.toString() === selectitemcode.toString()
+      );
+      if (salesrate) {
+        setRate(salesrate.salerate);
+        setAmt(salesrate.salerate * qty);
+      }
+    }
+  }, [selectitemcode, qty]);
+
+  useEffect(() => {
+    if (rate) {
+      setAmt(rate * qty);
+    }
+  }, [qty, rate]);
 
   const getTodaysDate = () => {
     const today = new Date();
@@ -511,6 +513,7 @@ const CreateGrocery = () => {
       setFilteredItems(itemsNotInCart);
     }
   };
+
   useEffect(() => {
     handleItemstoShow();
   }, [productlist]);
@@ -549,9 +552,9 @@ const CreateGrocery = () => {
   };
 
   return (
-    <div className="add-sale-container w100 h1 d-flex-col sa">
-      <span className="heading p10">Cattle Feeds</span>
-      <div className="create-sales-inner-container w100 h1 d-flex sb p10">
+    <div className="add-cattlefeed-sale-container w100 h1 d-flex-col sa">
+      <span className="heading p10">Add Grocery : </span>
+      <div className="create-cattlefeed-sales-inner-container w100 h1 d-flex sb p10">
         <form className="create-sales-form-container w50 h1 bg p10">
           <div className="sales-details w100 h20 d-flex a-center sb ">
             <div className="col w50 d-flex a-center ">
@@ -747,7 +750,7 @@ const CreateGrocery = () => {
           </div>
         </form>
 
-        <div className="sales-list-outer-container w45 h1 d-flex-col bg">
+        <div className="cattlefeed-sales-list-outer-container w45 h1 d-flex-col bg">
           <div className="title-and-button-container w100 d-flex a-center sb">
             <span className="heading w30 p10">Item List</span>
             {userRole === "mobilecollector" ? (

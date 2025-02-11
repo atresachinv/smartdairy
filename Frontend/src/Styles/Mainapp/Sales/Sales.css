@@ -1,29 +1,32 @@
 @media screen and (max-width: 426px) {
-  .add-sale-container {
+  .add-cattlefeed-sale-container {
     min-height: auto;
+    flex-direction: column;
+    padding: 10px;
+  }
+  .add-cattlefeed-sale-container .create-cattlefeed-sales-inner-container {
+    width: 100%;
+    min-height: fit-content;
     flex-direction: column;
     padding: 0;
   }
-  .add-sale-container .create-sales-outer-container {
+  .create-cattlefeed-sales-inner-container .create-sales-form-container {
     width: 100%;
-    min-height: fit-content;
-    padding: 0;
   }
   .create-sales-form-container .sales-details {
     margin: 0;
   }
-  .add-sale-container .sales-list-outer-container {
+  .add-cattlefeed-sale-container .cattlefeed-sales-list-outer-container {
     min-height: 100%;
     width: 100%;
     margin-top: 10px;
     overflow-x: auto;
     padding: 0;
   }
-  .sales-list-outer-container .sales-list-conatainer {
+  .cattlefeed-sales-list-outer-container .sales-list-conatainer {
     min-width: 500px;
     overflow-x: auto;
   }
-
   /* sale list css */
   .customer-list-container-div {
     padding: 0;

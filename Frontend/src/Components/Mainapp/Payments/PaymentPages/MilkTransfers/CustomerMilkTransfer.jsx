@@ -189,7 +189,6 @@ const CustomerMilkTransfer = () => {
       setValues((prev) => ({
         ...prev,
         cname: customer.cname,
-        acccode: customer.cid,
       }));
     } else {
       setValues((prev) => ({ ...prev, cname: "" })); // Clear cname if not found
@@ -204,7 +203,42 @@ const CustomerMilkTransfer = () => {
       }, 500);
       return () => clearTimeout(handler);
     }
-  }, [values.code, dispatch]);
+  }, [values.code, dispatch]); 
+
+  //-------------------------------------------------------------------------------->
+  // find customer by code for to  --------------------------------------------------------->
+
+  const findToCustomerByCode = (code) => {
+    if (!code) {
+      setValues((prev) => ({ ...prev, cname: "" }));
+      return;
+    }
+    // Ensure the code is a string for comparison
+    const customer = customerList.find(
+      (customer) => customer.srno.toString() === code
+    );
+
+    if (customer) {
+      setValues((prev) => ({
+        ...prev,
+        updatecname: customer.cname,
+        acccode: customer.cid,
+      }));
+    } else {
+      setValues((prev) => ({ ...prev, cname: "" })); // Clear cname if not found
+    }
+  };
+
+  // Effect to search for customer when code changes for to --------------------------------->
+  useEffect(() => {
+    if (values.updatecode.trim().length > 0) {
+      const handler = setTimeout(() => {
+        findToCustomerByCode(values.updatecode.trim());
+      }, 500);
+      return () => clearTimeout(handler);
+    }
+  }, [values.updatecode, dispatch]);
+  //------------------------------------------------------------------------------------>
 
   // Select all the text when input is focused
   const handleFocus = (e) => {
@@ -213,14 +247,16 @@ const CustomerMilkTransfer = () => {
 
   const fetchCustomerMilkRecords = (e) => {
     e.preventDefault();
+    console.log("hello");
     if (!values.code || !values.cname || !values.formDate || !values.toDate) {
       toast.error("Please Fill All Fields!");
       return;
     }
+    console.log("hello");
     dispatch(
       getMilkToTransfer({
         code: values.code,
-        formDate: values.formDate,
+        fromDate: values.formDate,
         toDate: values.toDate,
       })
     );
@@ -261,7 +297,7 @@ const CustomerMilkTransfer = () => {
       </span>
       <div className="view-milk-collection-container w100 h90 d-flex-col sb">
         <div className="customer-details-container w100 h20 d-flex sb">
-          <from
+          <form
             onSubmit={fetchCustomerMilkRecords}
             className="from-cutsomer-details w45 h1 d-flex-col">
             <div className="from-customer-details-container w100 h50 d-flex a-center sb">
@@ -325,11 +361,11 @@ const CustomerMilkTransfer = () => {
                 min={values.formDate}
                 onChange={handleInputs}
               />
-              <button type="button" className="w-btn">
+              <button type="submit" className="w-btn">
                 SHOW
               </button>
             </div>
-          </from>
+          </form>
           <div className="cutsomer-details w45 h1 d-flex-col ">
             <div className="to-customer-details-container w100 h50 d-flex a-center sb">
               <label htmlFor="updatecode" className="label-text ">

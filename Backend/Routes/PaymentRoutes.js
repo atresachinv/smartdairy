@@ -4,13 +4,12 @@ const {
   updateSelectedRecord,
   milkTransferToMorning,
   milkTransferToEvening,
+  getMilkTrasferToCustomer,
   milkTrasferToCustomer,
   deleteSelectedMilkRecord,
   copyMilkCollection,
   deleteMilkCollection,
   transferMilkCollectionToShift,
-  fetchAllMilkColl,
-  transferMilkToCustomer,
 } = require("../Controllers/PaymentController");
 
 const router = express.Router();
@@ -22,8 +21,8 @@ router
   .route("/transfer/milk-time/morning")
   .patch(verifyToken, milkTransferToMorning);
 router
-  .route("/transfer/milk-to/customer")
-  .patch(verifyToken, milkTrasferToCustomer);
+  .route("/customer/milkdata/to-transfer")
+  .patch(verifyToken, getMilkTrasferToCustomer);
 router
   .route("/transfer/milk-to/date")
   .patch(verifyToken, milkTrasferToCustomer);
@@ -37,11 +36,5 @@ router
 router
   .route("/milk/correction/delete-milk")
   .post(verifyToken, deleteMilkCollection);
-router
-  .route("/customer/milkdata/to-transfer")
-  .get(verifyToken, fetchAllMilkColl);
-router
-  .route("/transfer/milk-to/customer")
-  .patch(verifyToken, transferMilkToCustomer);
 
 module.exports = router;
