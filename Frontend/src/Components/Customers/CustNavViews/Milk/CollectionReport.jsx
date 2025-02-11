@@ -178,7 +178,7 @@ import Spinner from "../../../Home/Spinner/Spinner";
 import { BsCalendar3 } from "react-icons/bs";
 import { useTranslation } from "react-i18next";
 import "../../../../Styles/Customer/CustNavViews/Milk/Milk.css";
-// import { generateMaster } from "../../../../App/Features/Customers/Date/masterdateSlice";
+import { generateMaster } from "../../../../App/Features/Customers/Date/masterdateSlice";
 
 const CollectionReport = () => {
   const dispatch = useDispatch();

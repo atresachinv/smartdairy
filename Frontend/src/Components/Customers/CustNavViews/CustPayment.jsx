@@ -13,6 +13,7 @@ import {
   getDeductionInfo,
   resetDeduction,
 } from "../../../App/Features/Deduction/deductionSlice";
+import { generateMaster } from "../../../App/Features/Customers/Date/masterdateSlice";
 
 const CustPayment = () => {
   const { t } = useTranslation("common");
