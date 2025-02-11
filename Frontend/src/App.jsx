@@ -138,7 +138,7 @@ function App() {
             element={
               <ProtectedRoute allowedRoles={["super_admin", "customer"]} />
             }>
-            <Route path="/customer/home" element={<Customers />} />
+            <Route path="/customer/dashboard/*" element={<Customers />} />
           </Route>
           {/* Unauthorized Page */}
           <Route path="/unauthorized" element={<Unauthorized />} />

@@ -6,10 +6,13 @@ import {
   FaArrowCircleUp,
   FaArrowCircleDown,
 } from "react-icons/fa";
+import { toast } from "react-toastify";
 import "../../../../../Styles/Mainapp/Payments/MilkTransfer.css";
 import { useDispatch, useSelector } from "react-redux";
+import Spinner from "../../../../Home/Spinner/Spinner";
 import {
   getMilkToTransfer,
+  getTransferedMilk,
   transferTOCustomer,
 } from "../../../../../App/Features/Payments/paymentSlice";
 
@@ -18,7 +21,11 @@ const CustomerMilkTransfer = () => {
   const { t } = useTranslation(["common", "milkcollection"]);
   const tDate = useSelector((state) => state.date.toDate);
   const MilkData = useSelector((state) => state.payment.customerMilkData);
+  const transferedMilk = useSelector(
+    (state) => state.payment.transferedMilkData || []
+  );
   const milkStatus = useSelector((state) => state.payment.getMilkstatus);
+  const tranStatus = useSelector((state) => state.payment.transferedMilkstatus);
   const [customerList, setCustomerList] = useState([]);
   const [custList, setCustList] = useState({});
   const [changedDate, setChangedDate] = useState("");
@@ -203,14 +210,14 @@ const CustomerMilkTransfer = () => {
       }, 500);
       return () => clearTimeout(handler);
     }
-  }, [values.code, dispatch]); 
+  }, [values.code, dispatch]);
 
   //-------------------------------------------------------------------------------->
   // find customer by code for to  --------------------------------------------------------->
 
   const findToCustomerByCode = (code) => {
     if (!code) {
-      setValues((prev) => ({ ...prev, cname: "" }));
+      setValues((prev) => ({ ...prev, updatecname: "" }));
       return;
     }
     // Ensure the code is a string for comparison
@@ -225,7 +232,7 @@ const CustomerMilkTransfer = () => {
         acccode: customer.cid,
       }));
     } else {
-      setValues((prev) => ({ ...prev, cname: "" })); // Clear cname if not found
+      setValues((prev) => ({ ...prev, updatecname: "" })); // Clear cname if not found
     }
   };
 
@@ -247,12 +254,16 @@ const CustomerMilkTransfer = () => {
 
   const fetchCustomerMilkRecords = (e) => {
     e.preventDefault();
-    console.log("hello");
     if (!values.code || !values.cname || !values.formDate || !values.toDate) {
       toast.error("Please Fill All Fields!");
       return;
     }
-    console.log("hello");
+    // Validate fields before submission
+    const validationErrors = validateFields();
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      return;
+    }
     dispatch(
       getMilkToTransfer({
         code: values.code,
@@ -260,12 +271,6 @@ const CustomerMilkTransfer = () => {
         toDate: values.toDate,
       })
     );
-    // Validate fields before submission
-    const validationErrors = validateFields();
-    if (Object.keys(validationErrors).length > 0) {
-      setErrors(validationErrors);
-      return;
-    }
   };
 
   const UpdateCustomerMilkRecords = (e) => {
@@ -274,19 +279,32 @@ const CustomerMilkTransfer = () => {
       toast.error("Please Fill All Fields!");
       return;
     }
-    dispatch(
-      transferTOCustomer({
-        code: values.code,
-        cname: values.cname,
-        formDate: values.formDate,
-        toDate: values.toDate,
-      })
-    );
     // Validate fields before submission
     const validationErrors = validateFields();
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
       return;
+    }
+
+    try {
+      dispatch(
+        transferTOCustomer({
+          code: values.code,
+          cname: values.cname,
+          formDate: values.formDate,
+          toDate: values.toDate,
+        })
+      );
+      dispatch(
+        getTransferedMilk({
+          code: values.updatecode,
+          fromDate: values.formDate,
+          toDate: values.toDate,
+        })
+      );
+      toast.success(`Milk Collection Transfer to ${values.updatecname}`);
+    } catch (error) {
+      toast.error("Failed to transfer milk collection!");
     }
   };
 
@@ -361,8 +379,11 @@ const CustomerMilkTransfer = () => {
                 min={values.formDate}
                 onChange={handleInputs}
               />
-              <button type="submit" className="w-btn">
-                SHOW
+              <button
+                type="submit"
+                className="btn"
+                disabled={milkStatus === "loading"}>
+                {milkStatus === "loading" ? "SHOW..." : "SHOW"}
               </button>
             </div>
           </form>
@@ -394,9 +415,9 @@ const CustomerMilkTransfer = () => {
         </div>
         <div className="milk-collection-data-container w100 h80 d-flex se">
           <div className="morning-milk-collection-data w45 h1 mh100 hidescrollbar d-flex-col bg">
-            <div className="collection-heading-container w100 h10 d-flex a-center bg7 sticky-top sa">
-              <span className="f-info-text w10">Edit</span>
-              <span className="f-info-text w20">Date</span>
+            <div className="collection-heading-container w100 p10 d-flex a-center bg7 sticky-top sa">
+              <span className="f-info-text w5">M/E</span>
+              <span className="f-info-text w20">Date </span>
               <span className="f-info-text w10">Liters</span>
               <span className="f-info-text w10">Fat</span>
               <span className="f-info-text w10">Deg</span>
@@ -404,90 +425,35 @@ const CustomerMilkTransfer = () => {
               <span className="f-info-text w10">Rate</span>
               <span className="f-info-text w15">Amount</span>
             </div>
-            {/* {morningData.length > 0 ? (
-                    morningData.map((milk, index) => (
-                      <div
-                        key={index}
-                        className={`collection-data-container w100 h10 d-flex a-center t-center sb`}
-                        style={{
-                          backgroundColor:
-                            selectedMorningItems.includes(milk.id) ||
-                            editmrgIndex === index
-                              ? "#f7bb79"
-                              : index % 2 === 0
-                              ? "#faefe3"
-                              : "#fff",
-                        }}
-                        onClick={() => handleSelectItem("morning", milk.id)}>
-                        <span className="text w10 t-center d-flex a-center sa">
-                          {editmrgIndex === index ? (
-                            <FaSave
-                              className="color-icon"
-                              onClick={() => handleSaveData(milk)}
-                            />
-                          ) : (
-                            <FaEdit
-                              className="color-icon"
-                              onClick={() => handleEditMrgClick(index, milk)}
-                            />
-                          )}
-                        </span>
-                        <span className="text w20 t-start">
-                          {milk.ReceiptDate.slice(0, 10)}
-                        </span>
-                        {editmrgIndex === index ? (
-                          <>
-                            <span className="text w10 d-flex center">
-                              <input
-                                className="data w100 t-center"
-                                type="text"
-                                value={editedData.liters}
-                                onChange={(e) =>
-                                  handleEditedDataChange("liters", e.target.value)
-                                }
-                              />
-                            </span>
-                            <span className="text w10">
-                              <input
-                                className="data w100 d-flex center t-center"
-                                type="text"
-                                value={editedData.fat}
-                                onChange={(e) =>
-                                  handleEditedDataChange("fat", e.target.value)
-                                }
-                              />
-                            </span>
-                            <span className="text w10">{milk.degree || 0}</span>
-                            <span className="text w10">
-                              <input
-                                className="data w100 h1 d-flex center t-center"
-                                type="text"
-                                value={editedData.snf}
-                                onChange={(e) =>
-                                  handleEditedDataChange("snf", e.target.value)
-                                }
-                              />
-                            </span>
-                            <span className="text w10">{editedData.rate}</span>
-                            <span className="text w15">{editedData.amt}</span>
-                          </>
-                        ) : (
-                          <>
-                            <span className="text w10">{milk.Litres}</span>
-                            <span className="text w10">{milk.fat}</span>
-                            <span className="text w10">{milk.degree || 0}</span>
-                            <span className="text w10">{milk.snf}</span>
-                            <span className="text w10">{milk.rate}</span>
-                            <span className="text w15">{milk.Amt}</span>
-                          </>
-                        )}
-                      </div>
-                    ))
-                  ) : (
-                    <div className="no-records w100 h1 d-flex center">
-                      <span className="label-text">{t("common:c-no-data-avai")}</span>
-                    </div>
-                  )} */}
+            {milkStatus === "loading" ? (
+              <div className="box d-flex center">
+                <Spinner />
+              </div>
+            ) : MilkData.length > 0 ? (
+              MilkData.map((milk, index) => (
+                <div
+                  key={index}
+                  className={`collection-data-container w100 h10 d-flex a-center t-center sb`}
+                  style={{
+                    backgroundColor: index % 2 === 0 ? "#faefe3" : "#fff",
+                  }}>
+                  <span className="text w5">{milk.ME === 0 ? "M" : "E"}</span>
+                  <span className="text w20 t-start">
+                    {milk.ReceiptDate.slice(0, 10) || ""}
+                  </span>
+                  <span className="text w10">{milk.Litres}</span>
+                  <span className="text w10">{milk.fat}</span>
+                  <span className="text w10">{milk.digree || 0}</span>
+                  <span className="text w10">{milk.snf}</span>
+                  <span className="text w10">{milk.rate}</span>
+                  <span className="text w15">{milk.Amt}</span>
+                </div>
+              ))
+            ) : (
+              <div className="no-records w100 h1 d-flex center">
+                <span className="label-text">{t("common:c-no-data-avai")}</span>
+              </div>
+            )}
           </div>
           <div className="transfer-logos-container w5 h1 d-flex-col center">
             <FaArrowCircleRight
@@ -512,101 +478,35 @@ const CustomerMilkTransfer = () => {
               <span className="f-info-text w10">Rate</span>
               <span className="f-info-text w15">Amount</span>
             </div>
-            {/* {eveningData.length > 0 ? (
-                    eveningData.map((milk, index) => (
-                      <div
-                        key={index}
-                        className={`collection-data-container w100 h10 d-flex a-center t-center sb ${
-                          index % 2 === 0 ? "bg-light" : "bg-dark"
-                        }`}
-                        style={{
-                          backgroundColor:
-                            selectedEveningItems.includes(milk.id) ||
-                            editeveIndex === index
-                              ? "#f7bb79"
-                              : index % 2 === 0
-                              ? "#faefe3"
-                              : "#fff",
-                        }}
-                        onClick={() => handleSelectItem("evening", milk.id)}>
-                        <span className="text w10 t-center d-flex a-center sa">
-                          {editeveIndex === index ? (
-                            <FaSave
-                              className="color-icon"
-                              onClick={(e) => {
-                                e.stopPropagation(); // Prevent row click event
-                                handleSaveData(milk);
-                              }}
-                            />
-                          ) : (
-                            <FaEdit
-                              className="color-icon"
-                              onClick={(e) => {
-                                e.stopPropagation(); // Prevent row click event
-                                handleEditEveClick(index, milk);
-                              }}
-                            />
-                          )}
-                        </span>
-                        <span className="text w20 t-start">
-                          {milk.ReceiptDate.slice(0, 10)}
-                        </span>
-                        {editeveIndex === index ? (
-                          <>
-                            <span className="text w10 d-flex center">
-                              <input
-                                className="data w100 t-center"
-                                type="text"
-                                value={editedData.liters}
-                                onClick={(e) => e.stopPropagation()} // Prevent row click event
-                                onChange={(e) =>
-                                  handleEditedDataChange("liters", e.target.value)
-                                }
-                              />
-                            </span>
-                            <span className="text w10">
-                              <input
-                                className="data w100 d-flex center t-center"
-                                type="text"
-                                value={editedData.fat}
-                                onClick={(e) => e.stopPropagation()} // Prevent row click event
-                                onChange={(e) =>
-                                  handleEditedDataChange("fat", e.target.value)
-                                }
-                              />
-                            </span>
-                            <span className="text w10">{milk.degree || 0}</span>
-                            <span className="text w10">
-                              <input
-                                className="data w100 h1 d-flex center t-center"
-                                type="text"
-                                value={editedData.snf}
-                                onClick={(e) => e.stopPropagation()} // Prevent row click event
-                                onChange={(e) =>
-                                  handleEditedDataChange("snf", e.target.value)
-                                }
-                              />
-                            </span>
-                            <span className="text w10">{editedData.rate}</span>
-                            <span className="text w15">{editedData.amt}</span>
-                          </>
-                        ) : (
-                          <>
-                            <span className="text w10">{milk.Litres}</span>
-                            <span className="text w10">{milk.fat}</span>
-                            <span className="text w10">{milk.degree || 0}</span>
-                            <span className="text w10">{milk.snf}</span>
-                            <span className="text w10">{milk.rate}</span>
-                            <span className="text w15">{milk.Amt}</span>
-                          </>
-                        )}
-                      </div>
-                    ))
-                  ) : (
-                    <div className="no-records w100 h1 d-flex center">
-                      <span className="label-text">{t("common:c-no-data-avai")}</span>
-                    </div>
-                  )} */}
+            {tranStatus === "loading" ? (
+              <div className="box d-flex center">
+                <Spinner />
+              </div>
+            ) : transferedMilk.length > 0 ? (
+              transferedMilk.map((milk, index) => (
+                <div
+                  key={index}
+                  className={`collection-data-container w100 h10 d-flex a-center t-center sb`}
+                  style={{
+                    backgroundColor: index % 2 === 0 ? "#faefe3" : "#fff",
+                  }}>
+                  <span className="text w5">{milk.ME === 0 ? "M" : "E"}</span>
+                  <span className="text w20 t-start">
+                    {milk.ReceiptDate.slice(0, 10) || ""}
+                  </span>
+                  <span className="text w10">{milk.Litres}</span>
+                  <span className="text w10">{milk.fat}</span>
+                  <span className="text w10">{milk.digree || 0}</span>
+                  <span className="text w10">{milk.snf}</span>
+                  <span className="text w10">{milk.rate}</span>
+                  <span className="text w15">{milk.Amt}</span>
+                </div>
+              ))
+            ) : (
+              <div className="no-records w100 h1 d-flex center">
+                <span className="label-text">{t("common:c-no-data-avai")}</span>
+              </div>
+            )}
           </div>
         </div>
       </div>

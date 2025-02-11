@@ -4,8 +4,10 @@ import axiosInstance from "../../axiosInstance";
 const initialState = {
   payment: {},
   customerMilkData: [],
+  transferedMilkData: [],
   status: "idle",
   getMilkstatus: "idle",
+  transferedMilkstatus: "idle",
   transtatus: "idle",
   copyCollstatus: "idle",
   deleteCollstatus: "idle",
@@ -99,6 +101,31 @@ export const getMilkToTransfer = createAsyncThunk(
     try {
       const response = await axiosInstance.get(
         "/customer/milkdata/to-transfer",
+        {
+          params: {
+            code,
+            fromDate,
+            toDate,
+          },
+        }
+      );
+      return response.data.customerMilkData;
+    } catch (error) {
+      const errorMessage = error.response
+        ? error.response.data
+        : "Failed to update milk records!.";
+      return rejectWithValue(errorMessage);
+    }
+  }
+);
+
+// Milk data to Transfer Customer To Customer ---------->
+export const getTransferedMilk = createAsyncThunk(
+  "payment/getTransferedMilk",
+  async ({ code, fromDate, toDate }, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.get(
+        "/customer/transfered/milkdata",
         {
           params: {
             code,
@@ -292,6 +319,18 @@ const paymentSlice = createSlice({
       })
       .addCase(getMilkToTransfer.rejected, (state, action) => {
         state.getMilkstatus = "failed";
+        state.error = action.payload;
+      }) //get transfered milkdata----------------------------------------->
+      .addCase(getTransferedMilk.pending, (state) => {
+        state.transferedMilkstatus = "loading";
+        state.error = null;
+      })
+      .addCase(getTransferedMilk.fulfilled, (state, action) => {
+        state.transferedMilkstatus = "succeeded";
+        state.transferedMilkData = action.payload;
+      })
+      .addCase(getTransferedMilk.rejected, (state, action) => {
+        state.transferedMilkstatus = "failed";
         state.error = action.payload;
       }) //transfer to customer ------------------------------------------>
       .addCase(transferTOCustomer.pending, (state) => {

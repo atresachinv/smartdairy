@@ -276,10 +276,10 @@ exports.deleteSelectedMilkRecord = async (req, res) => {
 
 exports.getMilkTrasferToCustomer = async (req, res) => {
   try {
-    const { fromdate, todate, code } = req.query;
+    const { code, fromDate, toDate } = req.query;
     console.log("Received Query Params:", req.query);
 
-    const { dairy_id } = req.user;
+    const { dairy_id, center_id } = req.user;
     if (!dairy_id) {
       return res.status(400).json({ message: "Dairy ID not found!" });
     }
@@ -294,15 +294,15 @@ exports.getMilkTrasferToCustomer = async (req, res) => {
       }
 
       const selectRecordQuery = `
-        SELECT id, Litres, fat, snf, rate, Amt, ME
+        SELECT id, rno, ReceiptDate, Litres, fat, snf, rate, Amt, ME
         FROM ${dairy_table}
-        WHERE ReceiptDate BETWEEN ? AND ? 
+        WHERE center_id = ? AND ReceiptDate BETWEEN ? AND ? 
         AND rno = ?
         `;
 
       connection.query(
         selectRecordQuery,
-        [fromdate, todate, code],
+        [center_id, fromDate, toDate, code],
         (err, result) => {
           connection.release();
           if (err) {
@@ -315,10 +315,74 @@ exports.getMilkTrasferToCustomer = async (req, res) => {
           console.log("Result Length:", result.length);
 
           if (result.length === 0) {
-            return res.status(200).json({ message: "No records found!" });
+            return res.status(200).json({
+              message: "No records found!",
+              customerMilkData: result || [],
+            });
           }
 
-          return res.status(200).json({ customerMilkData: result });
+          return res.status(200).json({ customerMilkData: result || [] });
+        }
+      );
+    });
+  } catch (error) {
+    console.error("Error processing request:", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+// ----------------------------------------------------------------------------------->
+// Retrive TRANSFERED MILK COLLECTION TO CUSTOMER ------------------------------------>
+// ----------------------------------------------------------------------------------->
+
+exports.getTrasferedMilk = async (req, res) => {
+  try {
+    const { code, fromDate, toDate } = req.query;
+    console.log("Received Query Params:", req.query);
+
+    const { dairy_id, center_id } = req.user;
+    if (!dairy_id) {
+      return res.status(400).json({ message: "Dairy ID not found!" });
+    }
+
+    const dairy_table = `dailymilkentry_${dairy_id}`;
+    console.log("Querying Table:", dairy_table);
+
+    pool.getConnection((err, connection) => {
+      if (err) {
+        console.error("Error getting MySQL connection:", err);
+        return res.status(500).json({ message: "Database connection error" });
+      }
+
+      const selectRecordQuery = `
+        SELECT id, rno, ReceiptDate, Litres, fat, snf, rate, Amt, ME
+        FROM ${dairy_table}
+        WHERE center_id = ? AND ReceiptDate BETWEEN ? AND ? 
+        AND rno = ?
+        `;
+
+      connection.query(
+        selectRecordQuery,
+        [center_id, fromDate, toDate, code],
+        (err, result) => {
+          connection.release();
+          if (err) {
+            console.error("Error executing query:", err);
+            return res
+              .status(500)
+              .json({ message: "Query execution error", error: err.message });
+          }
+
+          console.log("Result Length:", result.length);
+
+          if (result.length === 0) {
+            return res.status(200).json({
+              message: "No records found!",
+              customerMilkData: result || [],
+            });
+          }
+
+          return res.status(200).json({ customerMilkData: result || [] });
         }
       );
     });

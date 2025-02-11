@@ -10,6 +10,7 @@ const {
   copyMilkCollection,
   deleteMilkCollection,
   transferMilkCollectionToShift,
+  getTrasferedMilk,
 } = require("../Controllers/PaymentController");
 
 const router = express.Router();
@@ -23,6 +24,9 @@ router
 router
   .route("/customer/milkdata/to-transfer")
   .get(verifyToken, getMilkTrasferToCustomer);
+router
+  .route("/customer/transfered/milkdata")
+  .get(verifyToken, getTrasferedMilk);
 router
   .route("/transfer/milk-to/customer")
   .patch(verifyToken, milkTrasferToCustomer);
