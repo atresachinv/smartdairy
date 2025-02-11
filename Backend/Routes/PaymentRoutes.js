@@ -22,9 +22,9 @@ router
   .patch(verifyToken, milkTransferToMorning);
 router
   .route("/customer/milkdata/to-transfer")
-  .patch(verifyToken, getMilkTrasferToCustomer);
+  .get(verifyToken, getMilkTrasferToCustomer);
 router
-  .route("/transfer/milk-to/date")
+  .route("/transfer/milk-to/customer")
   .patch(verifyToken, milkTrasferToCustomer);
 router
   .route("/delete/milk-record")

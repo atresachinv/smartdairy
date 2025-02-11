@@ -41,15 +41,19 @@
     width: 100%;
   }
 }
+
 @media screen and (max-width: 426px) {
   .dairy-main-container {
-    padding: 5px;
+    padding: 10px;
+    min-height: auto;
+  }
+  .dairy-main-container .heading-text {
+    text-align: start;
   }
   .dairy-main-container .dairy-information-div {
     width: 100%;
-    height: 80%;
+    min-height: fit-content;
   }
-  
 }
 
 /* --------------------------------------------------------- */

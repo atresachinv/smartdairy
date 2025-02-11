@@ -7,6 +7,7 @@ import {
 } from "../../../../../App/Features/Customers/customerSlice";
 import * as XLSX from "xlsx";
 import { toast } from "react-toastify";
+import { FaFileExcel } from "react-icons/fa";
 import {
   updateCustomer,
   uploadCustomerExcel,
@@ -27,7 +28,7 @@ const CreateCustomer = () => {
   const status = useSelector((state) => state.customer.status);
   const excelstatus = useSelector((state) => state.customer.excelstatus);
   const ratechartlist = useSelector((state) => state.ratechart.ratechartList);
-
+  const [fileName, setFileName] = useState("");
   const fileInputRef = useRef(null); // for excel file input
   const [excelData, setExcelData] = useState(null); // selected excel file data
   const [formData, setFormData] = useState({
@@ -387,7 +388,7 @@ const CreateCustomer = () => {
       "Farmer_Id",
       "City",
       "Tehsil",
-      "Ditrict",
+      "District",
       "Pincode",
       "Bank_Name",
       "Bank_AccNo",
@@ -418,16 +419,23 @@ const CreateCustomer = () => {
   const handleExcelChange = (e) => {
     const file = e.target.files[0];
     if (file) {
+      setFileName(file.name); // Set file name after selection
       const reader = new FileReader();
       reader.onload = (event) => {
         const binaryStr = event.target.result;
         const workbook = XLSX.read(binaryStr, { type: "binary" });
         const sheetName = workbook.SheetNames[0];
         const data = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName]);
-        setExcelData(data); // Set processed data
-        console.log(data);
+        setExcelData(data);
       };
       reader.readAsArrayBuffer(file);
+    }
+  };
+
+  const handleClear = () => {
+    setFileName("");
+    if (fileInputRef.current) {
+      fileInputRef.current.value = ""; // Reset file input
     }
   };
 
@@ -731,9 +739,11 @@ const CreateCustomer = () => {
                 aria-label="Select Ratechart">
                 <option value="">-- select --</option>
                 {ratechartlist && ratechartlist.length > 0 ? (
-                  ratechartlist.map((chart, i) => (
-                    <option key={i} value={chart.rctypename}>
-                      {chart.rctypename}
+                  [
+                    ...new Set(ratechartlist.map((chart) => chart.rctypename)),
+                  ].map((rctypename, i) => (
+                    <option key={i} value={rctypename}>
+                      {rctypename}
                     </option>
                   ))
                 ) : (
@@ -958,16 +968,31 @@ const CreateCustomer = () => {
             </button>
           </div>
           <div className="excel-format-container w100 h50 d-flex a-center sb">
-            <label htmlFor="selectExcel" className="label-text">
-              Select Excel
-            </label>
-            <button
-              id="selectExcel"
-              className="choose-excel-btn"
-              type="button"
-              onClick={handleButtonClick}>
-              Choose File
-            </button>
+            {!fileName ? (
+              <>
+                <label htmlFor="selectExcel" className="label-text">
+                  Select Excel
+                </label>
+                <button
+                  id="selectExcel"
+                  className="choose-excel-btn"
+                  type="button"
+                  onClick={handleButtonClick}>
+                  Choose File
+                </button>
+              </>
+            ) : (
+              <div className="selected-file d-flex a-center">
+                <FaFileExcel
+                  className="file-icon"
+                  style={{ color: "green", fontSize: "20px" }}
+                />
+                <span className="file-name px10">{fileName}</span>
+                <span onClick={handleClear} className="btn">
+                  X
+                </span>
+              </div>
+            )}
             <input
               ref={fileInputRef}
               type="file"

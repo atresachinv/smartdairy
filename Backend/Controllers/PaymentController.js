@@ -275,61 +275,62 @@ exports.deleteSelectedMilkRecord = async (req, res) => {
 // ----------------------------------------------------------------------------------->
 
 exports.getMilkTrasferToCustomer = async (req, res) => {
-   const { code, fromdate, todate } = req.query;
-   console.log(req.query);
+  try {
+    const { fromdate, todate, code } = req.query;
+    console.log("Received Query Params:", req.query);
 
-   if (!code || !fromdate || !todate) {
-     return res.status(400).json({ message: "Required data is missing!" });
-   }
+    const { dairy_id } = req.user;
+    if (!dairy_id) {
+      return res.status(400).json({ message: "Dairy ID not found!" });
+    }
 
-   const dairy_id = req.user?.dairy_id;
-   const center_id = req.user?.center_id;
+    const dairy_table = `dailymilkentry_${dairy_id}`;
+    console.log("Querying Table:", dairy_table);
 
-   if (!dairy_id) {
-     return res.status(400).json({ message: "Dairy ID not found!" });
-   }
+    pool.getConnection((err, connection) => {
+      if (err) {
+        console.error("Error getting MySQL connection:", err);
+        return res.status(500).json({ message: "Database connection error" });
+      }
 
-   const dairy_table = `dailymilkentry_${dairy_id}`;
-   const selectRecordQuery = `
-    SELECT id, Litres, fat, snf, rate, Amt, ME
-    FROM ${dairy_table}
-    WHERE companyid = ? AND center_id = ? 
-      AND ReceiptDate BETWEEN ? AND ? 
-      AND rno = ?
-  `;
+      const selectRecordQuery = `
+        SELECT id, Litres, fat, snf, rate, Amt, ME
+        FROM ${dairy_table}
+        WHERE ReceiptDate BETWEEN ? AND ? 
+        AND rno = ?
+        `;
 
-   pool.getConnection((err, connection) => {
-     if (err) {
-       console.error("Error getting MySQL connection: ", err);
-       return res.status(500).json({ message: "Database connection error" });
-     }
+      connection.query(
+        selectRecordQuery,
+        [fromdate, todate, code],
+        (err, result) => {
+          connection.release();
+          if (err) {
+            console.error("Error executing query:", err);
+            return res
+              .status(500)
+              .json({ message: "Query execution error", error: err.message });
+          }
 
-     connection.query(
-       selectRecordQuery,
-       [dairy_id, center_id, fromdate, todate, code],
-       (err, result) => {
-         connection.release(); // Always release the connection
+          console.log("Result Length:", result.length);
 
-         if (err) {
-           console.error("Error executing query: ", err);
-           return res.status(500).json({ message: "Query execution error" });
-         }
+          if (result.length === 0) {
+            return res.status(200).json({ message: "No records found!" });
+          }
 
-         if (result.length === 0) {
-           return res.status(404).json({ message: "No records found!" });
-         }
-
-         console.log(result);
-         return res.status(200).json({ customerMilkData: result });
-       }
-     );
-   });
+          return res.status(200).json({ customerMilkData: result });
+        }
+      );
+    });
+  } catch (error) {
+    console.error("Error processing request:", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
 };
 
 // ----------------------------------------------------------------------------------->
 // TRANSFER MILK COLLECTION CUSTOMER TO CUSTOMER ------------------------------------->
 // ----------------------------------------------------------------------------------->
-
 
 exports.milkTrasferToCustomer = async (req, res) => {
   const { record } = req.body;
@@ -921,6 +922,3 @@ exports.transferMilkCollToDate = async (req, res) => {
     }
   });
 };
-
-
-

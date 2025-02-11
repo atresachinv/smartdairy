@@ -131,9 +131,9 @@ const UpdateRatechart = ({ isSet, ratechart }) => {
           time: isSet.time,
         })
       );
-      toast.success("Ratechart updated successfully!");
       dispatch(fetchMaxRcCode());
       dispatch(listRateCharts());
+      toast.success("Ratechart updated successfully!");
     }
   };
 

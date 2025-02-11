@@ -4,12 +4,10 @@ import axiosInstance from "../../axiosInstance"; // Adjust the path as necessary
 // Initial state
 const initialState = {
   status: "idle",
-  updateDDstatus: "idle",
+  dairyinfostatus: "idle",
   error: null,
   userData: null,
   dairyData: {},
-  loading: false,
-  success: false,
 };
 
 // Async thunk for user registration
@@ -96,15 +94,14 @@ const registerSlice = createSlice({
       })
       // Handle dairy update actions
       .addCase(updateDairyDetails.pending, (state) => {
-        state.updateDDstatus = "loading";
+        state.dairyinfostatus = "loading";
       })
       .addCase(updateDairyDetails.fulfilled, (state, action) => {
-        state.updateDDstatus = false;
-        state.success = "succeeded"; // Mark the update as successful
+        state.dairyinfostatus = "succeeded"; // Mark the update as successful
         state.dairyData = { ...state.dairyData, ...action.payload };
       })
       .addCase(updateDairyDetails.rejected, (state, action) => {
-        state.updateDDstatus = "failed";
+        state.dairyinfostatus = "failed";
         state.error = action.payload; // Capture the error
       });
   },

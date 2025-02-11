@@ -7,10 +7,11 @@ const crypto = require("crypto");
 
 dotenv.config({ path: "Backend/.env" });
 
-// .........................................
-// Register.................................
-// .........................................
-// don't delete working function
+//---------------------------------------------------------------------------->
+// Register ------------------------------------------------------------------>
+//---------------------------------------------------------------------------->
+
+//v2 function
 // exports.userRegister = async (req, res) => {
 //   const {
 //     dairy_name,
@@ -66,27 +67,54 @@ dotenv.config({ path: "Backend/.env" });
 //             console.error("Error inserting into societymaster: ", err);
 //             return res.status(500).json({ message: "Database query error" });
 //           }
-//           const designation = "Admin";
-//           const isAdmin = "1";
-//           // Query to insert into users
-//           const createuser = `INSERT INTO users (username, password, designation, isAdmin, SocietyCode ) VALUES (?,?,?,?,?)`;
+//
+//           // Query to insert into centermaster
+//           const createcenter = `INSERT INTO centermaster (center_id, center_name, marathi_name, mobile, city, pincode, orgid, prefix) VALUES (?,?,?,?,?,?,?)`;
 //
 //           connection.query(
-//             createuser,
-//             [user_name, user_password, designation, isAdmin, newSocietCode],
+//             createcenter,
+//             [
+//               0,
+//               dairy_name,
+//               dairy_name,
+//               user_phone,
+//               user_city,
+//               user_pincode,
+//               newSocietCode,
+//               prefix,
+//             ],
 //             (err, result) => {
-//               connection.release();
 //               if (err) {
-//                 console.error("Error inserting into users: ", err);
+//                 connection.release();
+//                 console.error("Error inserting into centermaster: ", err);
 //                 return res
 //                   .status(500)
 //                   .json({ message: "Database query error" });
 //               }
 //
-//               // Success response
-//               res
-//                 .status(200)
-//                 .json({ message: "User registered successfully!" });
+//               const designation = "Admin";
+//               const isAdmin = "1";
+//               // Query to insert into users
+//               const createuser = `INSERT INTO users (username, password, designation, isAdmin, SocietyCode) VALUES (?,?,?,?,?)`;
+//
+//               connection.query(
+//                 createuser,
+//                 [user_name, user_password, designation, isAdmin, newSocietCode],
+//                 (err, result) => {
+//                   connection.release();
+//                   if (err) {
+//                     console.error("Error inserting into users: ", err);
+//                     return res
+//                       .status(500)
+//                       .json({ message: "Database query error" });
+//                   }
+//
+//                   // Success response
+//                   res
+//                     .status(200)
+//                     .json({ message: "User registered successfully!" });
+//                 }
+//               );
 //             }
 //           );
 //         }
@@ -95,7 +123,7 @@ dotenv.config({ path: "Backend/.env" });
 //   });
 // };
 
-//v2 function
+//v3 function to create dailymilkentry table ----------------------------------->
 exports.userRegister = async (req, res) => {
   const {
     dairy_name,
@@ -116,7 +144,7 @@ exports.userRegister = async (req, res) => {
       return res.status(500).json({ message: "Database connection error" });
     }
 
-    // Query to get the maximum SocietCode
+    // Query to get the maximum SocietyCode
     const getMaxSocietCode = `SELECT MAX(SocietyCode) AS maxCode FROM societymaster`;
 
     connection.query(getMaxSocietCode, (err, result) => {
@@ -126,8 +154,9 @@ exports.userRegister = async (req, res) => {
         return res.status(500).json({ message: "Database query error" });
       }
 
-      // Increment SocietCode by 1
+      // Increment SocietyCode by 1
       const newSocietCode = result[0].maxCode ? result[0].maxCode + 1 : 1;
+      const tableName = `dailymilkentry_${newSocietCode}`;
 
       // Query to insert into societymaster
       const createdairy = `INSERT INTO societymaster (SocietyCode, SocietyName, PhoneNo, city, PinCode, prefix, terms, startdate, enddate) VALUES (?,?,?,?,?,?,?,?,?)`;
@@ -153,7 +182,7 @@ exports.userRegister = async (req, res) => {
           }
 
           // Query to insert into centermaster
-          const createcenter = `INSERT INTO centermaster (center_id, center_name, marathi_name, mobile, city, pincode, orgid, prefix) VALUES (?,?,?,?,?,?,?)`;
+          const createcenter = `INSERT INTO centermaster (center_id, center_name, marathi_name, mobile, city, pincode, orgid, prefix) VALUES (?,?,?,?,?,?,?,?)`;
 
           connection.query(
             createcenter,
@@ -178,6 +207,7 @@ exports.userRegister = async (req, res) => {
 
               const designation = "Admin";
               const isAdmin = "1";
+
               // Query to insert into users
               const createuser = `INSERT INTO users (username, password, designation, isAdmin, SocietyCode) VALUES (?,?,?,?,?)`;
 
@@ -185,18 +215,54 @@ exports.userRegister = async (req, res) => {
                 createuser,
                 [user_name, user_password, designation, isAdmin, newSocietCode],
                 (err, result) => {
-                  connection.release();
                   if (err) {
+                    connection.release();
                     console.error("Error inserting into users: ", err);
                     return res
                       .status(500)
                       .json({ message: "Database query error" });
                   }
 
-                  // Success response
-                  res
-                    .status(200)
-                    .json({ message: "User registered successfully!" });
+                  // Query to create dynamic table
+                  const createMilkEntryTable = `
+                    CREATE TABLE IF NOT EXISTS ${tableName} (
+                      id INT AUTO_INCREMENT PRIMARY KEY,
+                      center_id INT DEFAULT 0,
+                      userid VARCHAR(120),
+                      ReceiptDate DATE,
+                      rno INT,
+                      cname VARCHAR(120),
+                      AccCode INT,
+                      fat DECIMAL(5,2) DEFAULT 0.00,
+                      snf DECIMAL(5,2) DEFAULT 0.00,
+                      Digree DECIMAL(5,2) DEFAULT 0.00,
+                      Litres DECIMAL(8,2) DEFAULT 0.00,
+                      rate DECIMAL(8,2) DEFAULT 0.00,
+                      Amt DECIMAL(10,2) DEFAULT 0.00,
+                      ME INT,
+                      CB INT,
+                      SampleNo INT,
+                      GLCode INT,
+                      BillNo INT,
+                      BillDate DATE
+                    )`;
+
+                  connection.query(createMilkEntryTable, (err, result) => {
+                    connection.release();
+                    if (err) {
+                      console.error("Error creating milk entry table: ", err);
+                      return res
+                        .status(500)
+                        .json({ message: "Database query error" });
+                    }
+
+                    // Success response
+                    res.status(200).json({
+                      message:
+                        "User registered and table created successfully!",
+                      tableName: tableName,
+                    });
+                  });
                 }
               );
             }
@@ -304,6 +370,7 @@ exports.userRegister = async (req, res) => {
 //     }
 //   });
 // };
+
 // updated function with session token ------------------------>
 exports.userLogin = async (req, res) => {
   const { user_id, user_password } = req.body;
@@ -388,13 +455,13 @@ exports.userLogin = async (req, res) => {
   });
 };
 
-// .....................................................
-// User Designation ....................................
-// .....................................................
+//---------------------------------------------------------------------------->
+// User Designation ---------------------------------------------------------->
+//---------------------------------------------------------------------------->
 
-//.................................................
-//Logout user......................................
-//.................................................
+//---------------------------------------------------------------------------->
+//Logout user----------------------------------------------------------------->
+//---------------------------------------------------------------------------->
 
 exports.userLogout = (req, res) => {
   if (!req.user) {
@@ -425,7 +492,7 @@ exports.userLogout = (req, res) => {
 };
 
 //---------------------------------------------------------------------------->
-//Logout user------------------------------------------------------------------>
+// verify user Session ------------------------------------------------------->
 //---------------------------------------------------------------------------->
 
 exports.verifySession = (req, res) => {
@@ -521,9 +588,9 @@ exports.getUserProfile = async (req, res) => {
   });
 };
 
-//.................................................
-//Forget Password .................................
-//.................................................
+//------------------------------------------------------------------------------>
+//Forget Password -------------------------------------------------------------->
+//------------------------------------------------------------------------------>
 
 exports.getEmail = async (req, res) => {
   const { user_id } = req.body;

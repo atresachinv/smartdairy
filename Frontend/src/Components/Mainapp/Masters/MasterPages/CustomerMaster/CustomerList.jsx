@@ -39,7 +39,7 @@ const CustomerList = () => {
       customer.cust_accno || "", // A/C No
       customer.cust_ifsc || "", // IFSC
       customer.caste || "", // Caste
-      customer.gender === 0 ? "Female" : customer.gender === 1 ? "Male" : "-", // Gender
+      customer.gender === 0 ? "Male" : customer.gender === 1 ? "Female" : "-", // Gender
       customer.age || "-", // Age
       customer.createdon ? customer.createdon.slice(0, 10) : "-", // MemberNo
       customer.createddate || "-", // Mem. Date
@@ -188,7 +188,7 @@ const CustomerList = () => {
                 <span className="text w10">{customer.cust_ifsc}</span>
                 <span className="text w15">{customer.caste}</span>
                 <span className="text w10">
-                  {customer.gender === 0 ? "Female" : "Male"}
+                  {customer.gender === 1 ? "Female" : "Male"}
                 </span>
                 <span className="text w5">-</span> {/* Placeholder for age */}
                 <span className="text w10">{customer.rno}</span>

@@ -117,26 +117,26 @@ exports.updatedetails = async (req, res) => {
     PinCode,
   } = req.body;
 
+  // Get dairy_id from the verified token (already decoded in middleware)
+  const dairy_id = req.user.dairy_id;
+
+  if (!dairy_id) {
+    connection.release(); // Release connection
+    return res.status(400).json({ message: "Dairy ID not found!" });
+  }
+  
+  // SQL query to update dairy information
+  const updateDairyDetails = `
+    UPDATE societymaster 
+    SET SocietyName = ?, PhoneNo = ?, city = ?, PinCode = ?, 
+        AuditClass = ?, RegNo = ?, RegDate = ?, email = ?, tel = ?, dist = ?, gstno = ?, marathiName =?
+    WHERE SocietyCode = ?`;
+
   pool.getConnection((err, connection) => {
     if (err) {
       console.error("Error getting MySQL connection: ", err);
       return res.status(500).json({ message: "Database connection error" });
     }
-
-    // Get dairy_id from the verified token (already decoded in middleware)
-    const dairy_id = req.user.dairy_id;
-
-    if (!dairy_id) {
-      connection.release(); // Release connection
-      return res.status(400).json({ message: "Dairy ID not found!" });
-    }
-
-    // SQL query to update dairy information
-    const updateDairyDetails = `
-      UPDATE societymaster 
-      SET SocietyName = ?, PhoneNo = ?, city = ?, PinCode = ?, 
-          AuditClass = ?, RegNo = ?, RegDate = ?, email = ?, tel = ?, dist = ?, gstno = ?, marathiName =?
-      WHERE SocietyCode = ?`;
 
     // Execute the query
     connection.query(
@@ -168,9 +168,6 @@ exports.updatedetails = async (req, res) => {
         if (result.affectedRows === 0) {
           return res.status(404).json({ message: "Dairy not found!" });
         }
-        // Invalidate the cache for this dairy_id
-        const cacheKey = `dairyInfo_${dairy_id}_${center_id}`;
-        cache.del(cacheKey);
 
         // Successfully updated
         res
@@ -449,7 +446,6 @@ exports.getCenterDetails = async (req, res) => {
 // ..............................................................
 // display All centers (LIST) details ...........................
 // ..............................................................
-
 
 //v2
 exports.getAllcenters = async (req, res) => {

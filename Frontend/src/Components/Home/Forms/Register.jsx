@@ -79,41 +79,57 @@ const Register = ({ switchToLogin }) => {
       case "dairy_name":
         if (!/^[a-zA-Z0-9\s]+$/.test(value)) {
           error.dairy_name = "Invalid dairy name.";
+        } else {
+          delete errors[name];
         }
         break;
       case "user_name":
         if (!/^[a-zA-Z\s]+$/.test(value)) {
           error.user_name = "Invalid username.";
+        } else {
+          delete errors[name];
         }
         break;
       case "user_phone":
         if (!/^\d{10}$/.test(value)) {
           error.user_phone = "Invalid phone number.";
+        } else {
+          delete errors[name];
         }
         break;
       case "user_city":
         if (!/^[a-zA-Z\s]+$/.test(value)) {
           error.user_city = "Invalid city name.";
+        } else {
+          delete errors[name];
         }
         break;
       case "user_pincode":
         if (!/^\d{6}$/.test(value)) {
           error.user_pincode = "Invalid pincode.";
+        } else {
+          delete errors[name];
         }
         break;
       case "user_password":
         if (value.length < 5) {
           error.user_password = "Password must be at least 5 characters.";
+        } else {
+          delete errors[name];
         }
         break;
       case "confirm_password":
         if (value !== values.user_password) {
           error.confirm_password = "Passwords do not match.";
+        } else {
+          delete errors[name];
         }
         break;
       case "terms":
         if (!value) {
           error.terms = "You must accept the terms.";
+        } else {
+          delete errors[name];
         }
         break;
       default:
@@ -136,11 +152,14 @@ const Register = ({ switchToLogin }) => {
     ];
     const errors = {};
 
+    const validationErrors = {};
     fieldsToValidate.forEach((field) => {
       const fieldError = validateField(field, values[field]);
-      Object.assign(errors, fieldError);
+      if (Object.keys(fieldError).length > 0) {
+        validationErrors[field] = fieldError[field];
+      }
     });
-
+    setErrors(validationErrors);
     return errors;
   };
 
@@ -148,8 +167,12 @@ const Register = ({ switchToLogin }) => {
   const handleRegister = async (e) => {
     e.preventDefault(); // Prevent default form submission
 
+    // Validate fields before submission
     const validationErrors = validateFields();
-    setErrors(validationErrors);
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      return;
+    }
 
     if (Object.keys(validationErrors).length === 0) {
       const requestData = {
@@ -221,7 +244,6 @@ const Register = ({ switchToLogin }) => {
         </div>
 
         <div className="data-outer w100 d-flex sb">
-
           <div className="data-div-2">
             <label className="text">
               Enter Username <span className="req">*</span>

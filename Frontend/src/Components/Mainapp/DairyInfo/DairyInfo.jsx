@@ -11,10 +11,7 @@ import "../../../Styles/Mainapp/Dairy/Dairy.css";
 const DairyInfo = () => {
   const dispatch = useDispatch();
   const dairyInfo = useSelector((state) => state.dairy.dairyData);
-  const status = useSelector((state) => state.dairy.updateDDstatus);
-  const loading = useSelector((state) => state.register.loading);
-  const error = useSelector((state) => state.register.error);
-  const success = useSelector((state) => state.register.success);
+  const status = useSelector((state) => state.register.dairyinfostatus);
   const [errors, setErrors] = useState({});
 
   const [formData, setFormData] = useState({
@@ -115,24 +112,22 @@ const DairyInfo = () => {
       default:
         break;
     }
-    return error;
+    return errors;
   };
 
   const validateFields = () => {
     const fieldsToValidate = [
-      "marathi_name",
-      "center_name",
-      "auditclass",
-      "city",
-      "tehsil",
-      "district",
-      "pincode",
-      "gstno",
+      "marathiName",
+      "SocietyName",
+      "City",
+      "tel",
+      "dist",
+      "PinCode",
     ];
 
     const validationErrors = {};
     fieldsToValidate.forEach((field) => {
-      const fieldError = validateField(field, values[field]);
+      const fieldError = validateField(field, formData[field]);
       if (Object.keys(fieldError).length > 0) {
         validationErrors[field] = fieldError[field];
       }
@@ -144,34 +139,26 @@ const DairyInfo = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-
     const validationErrors = validateFields();
-    if (Object.keys(validationErrors).length) {
+
+    if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
       return;
     }
-
-    dispatch(updateDairyDetails(formData)); // Dispatch the update action
+    try {
+      dispatch(updateDairyDetails(formData));
+      toast.success("Dairy information updated successfully!");
+    } catch {
+      toast.error(`Failed to update dairy information`);
+    }
   };
 
-  useEffect(() => {
-    if (success) {
-      toast.success("Dairy information updated successfully!");
-      dispatch(resetUpdateState()); // Reset state after success
-    }
-    if (error) {
-      toast.error(`Error: ${error}`);
-      dispatch(resetUpdateState()); // Reset state after error handling
-    }
-    dispatch(fetchDairyInfo());
-  }, [success, error, dispatch]);
-
   return (
-    <div className="dairy-main-container w100 h1 d-flex center">
+    <div className="dairy-main-container w100 h1 d-flex-col center sb">
+      <span className="heading-text w100 heading t-center py10">Dairy Information</span>
       <form
         className="dairy-information-div w50 h90 d-flex-col bg p10"
         onSubmit={handleSubmit}>
-        <span className="heading ">Dairy Information</span>
         <div className="dairy-name-div w100 h15 d-flex-col sa">
           <span className="info-text w100 ">Marathi Name : </span>
           <input
@@ -318,8 +305,11 @@ const DairyInfo = () => {
           </div>
         </div>
         <div className="button-container d-flex w100 h10 my10 center">
-          <button className="btn w50 h1" type="submit" disabled={loading}>
-            {loading ? "Updating..." : "Update Dairy Info"}
+          <button
+            className="btn w50 h1"
+            type="submit"
+            disabled={status === "loading"}>
+            {status === "loading" ? "Updating..." : "Update Dairy Info"}
           </button>
         </div>
       </form>
