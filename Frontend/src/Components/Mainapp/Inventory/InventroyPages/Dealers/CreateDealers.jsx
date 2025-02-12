@@ -128,7 +128,8 @@ const CreateDealers = () => {
       <div className="create-dealer-inner-container w100 h1 d-flex-col center">
         <form
           onSubmit={handleSubmit}
-          className="create-dealer-form-container w50 h70 d-flex-col p10 bg">
+          className="create-dealer-form-container w70 h80 d-flex-col p10 bg"
+        >
           <div className="row d-flex my10">
             <div className="col">
               <label className="info-text px10">
