@@ -14,7 +14,7 @@ import Swal from "sweetalert2";
 const ProductsList = () => {
   const [productList, setProductList] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [filter, setFilter] = useState("");
+  const [filter, setFilter] = useState("1");
 
   const [editSale, setEditSale] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -27,34 +27,49 @@ const ProductsList = () => {
 
   //handle update product
   const handleSaveChanges = async () => {
-    const updateItem = {
-      ItemCode: editSale.ItemCode,
-      ItemName: editSale.ItemName,
-      ItemDesc: editSale.ItemDesc,
-    };
+    const result = await Swal.fire({
+      title: "Confirm Updation?",
+      text: "Are you sure you want to Update this Product?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, Update it!",
+    });
+    if (result.isConfirmed) {
+      const updateItem = {
+        ItemCode: editSale.ItemCode,
+        ItemName: editSale.ItemName,
+        ItemDesc: editSale.ItemDesc,
+      };
 
-    try {
-      const res = await axiosInstance.put("/item/update", updateItem);
-      if (res?.data?.success) {
-        toast.success(res?.data?.message);
-        setProductList((prevCust) => {
-          return prevCust.map((item) => {
-            if (item.ItemCode === editSale.ItemCode) {
-              return { ...item, ...editSale };
-            }
-            return item;
+      try {
+        const res = await axiosInstance.put("/item/update", updateItem);
+        if (res?.data?.success) {
+          toast.success(res?.data?.message);
+          setProductList((prevCust) => {
+            return prevCust.map((item) => {
+              if (item.ItemCode === editSale.ItemCode) {
+                return { ...item, ...editSale };
+              }
+              return item;
+            });
           });
-        });
-        setIsModalOpen(false);
+          setIsModalOpen(false);
+        }
+      } catch (error) {
+        toast.error("error in update product to server");
+        // console.error("Error updating cust:", error);
       }
-    } catch (error) {
-      toast.error("error in update product to server");
-      // console.error("Error updating cust:", error);
     }
   };
 
   //handle download excel
   const downloadExcel = () => {
+    if (productList.length === 0) {
+      toast.error("No Products to Download");
+      return;
+    }
     // Filter products based on the selected ItemGroupCode
     const filteredProducts = filter
       ? productList.filter(
@@ -80,7 +95,7 @@ const ProductsList = () => {
   const handleFilterChange = (e) => {
     setFilter(e.target.value);
   };
-  //gettingi all products
+  //getting all products
   useEffect(() => {
     const fetchProductList = async () => {
       try {
@@ -94,7 +109,8 @@ const ProductsList = () => {
         setLoading(false);
       } catch (error) {
         // console.error("Error fetching product list: ", error);
-        toast.error("There was an error fetching the product list.");
+        // toast.error("Error fetching Product list.");
+        setProductList([]);
         setLoading(false);
       }
     };
@@ -116,11 +132,11 @@ const ProductsList = () => {
     if (result.isConfirmed) {
       try {
         // console.log("saleid", id);
-        const res = await axiosInstance.post("/item/delete", { ItemCode }); // Replace with your actual API URL
+        const res = await axiosInstance.post("/item/delete", { ItemCode });
         toast.success(res?.data?.message);
 
-        setProductList((prevSales) =>
-          prevSales.filter((product) => product.ItemCode !== ItemCode)
+        setProductList((item) =>
+          item.filter((product) => product.ItemCode !== ItemCode)
         );
       } catch (error) {
         console.error("Error deleting sale item:", error);
@@ -133,23 +149,28 @@ const ProductsList = () => {
       <div className="download-print-pdf-excel-container w100 h10 d-flex sb">
         <span className="w30 prod-page-title heading px10">Products List</span>
         <div className="group-code-and-button-div w100 h1 d-flex sb">
-          <select
-            name="ItemGroupCode"
-            className="ItemGroupCode data w30 form-field"
-            onChange={handleFilterChange}
-            value={filter}>
-            <option value="">Select Group Name</option>
-            {[
-              { value: 1, label: "Cattle Feed" },
-              { value: 2, label: "Medicines" },
-              { value: 3, label: "Grocery" },
-              { value: 4, label: "Other" },
-            ].map((item) => (
-              <option key={item.value} value={item.value}>
-                {item.label}
-              </option>
-            ))}
-          </select>
+          <div>
+            <label htmlFor="seletgrop" className="mx5">
+              Select Item Group:
+            </label>
+            <select
+              name="ItemGroupCode"
+              className="data form-field"
+              onChange={handleFilterChange}
+              value={filter}
+            >
+              <option value={1}>Cattle Feed</option>
+              {[
+                { value: 2, label: "Medicines" },
+                { value: 3, label: "Grocery" },
+                { value: 4, label: "Other" },
+              ].map((item) => (
+                <option key={item.value} value={item.value}>
+                  {item.label}
+                </option>
+              ))}
+            </select>
+          </div>
           <button className="btn" onClick={downloadExcel}>
             <span className="f-label-text px10">Download</span>
             <FaDownload />
@@ -177,7 +198,8 @@ const ProductsList = () => {
                 }`}
                 style={{
                   backgroundColor: index % 2 === 0 ? "#faefe3" : "#fff",
-                }}>
+                }}
+              >
                 <span className="info-text w5">{index + 1}</span>
                 <span className="info-text w10">{product.ItemCode}</span>
                 <span className="info-text w25 t-start">
