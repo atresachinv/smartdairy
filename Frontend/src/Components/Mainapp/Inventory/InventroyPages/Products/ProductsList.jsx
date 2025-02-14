@@ -67,7 +67,7 @@ const ProductsList = () => {
   //handle download excel
   const downloadExcel = () => {
     if (productList.length === 0) {
-      toast.error("No Products to Download");
+      toast.warn("No Products to Download");
       return;
     }
     // Filter products based on the selected ItemGroupCode

@@ -251,4 +251,14 @@
     min-height: 80%;
     overflow-x: auto;
   }
+  .modal .modal-content {
+    padding: 0px;
+  }
+  .deal-info {
+    padding: 10px 10px;
+  }
+  .deal-info-name {
+    padding: 0px 10px;
+    margin: 0px;
+  }
 }

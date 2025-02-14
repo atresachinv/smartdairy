@@ -17,7 +17,9 @@ const Create = () => {
   const [rate, setRate] = useState(0);
   const [selectitemcode, setSelectitemcode] = useState(0);
   const [amt, setAmt] = useState(0);
-  const [rctno, setRctno] = useState(localStorage.getItem("receiptpurno") || 1);
+  const [rctno, setRctno] = useState(
+    localStorage.getItem("receiptpurno3") || 1
+  );
   const [dealerList, setDealerList] = useState([]);
   const [billNo, setBillNo] = useState("9112");
   const [sellrate, setSellrate] = useState(0);
@@ -132,6 +134,7 @@ const Create = () => {
           rate: rate,
           amount: qty * rate,
           salerate: parseInt(sellrate),
+          cn: 0,
         };
 
         // Update the cart items
@@ -197,7 +200,7 @@ const Create = () => {
           handelClear();
           setRctno(parseInt(rctno) + 1);
           toast.success(res.data.message);
-          localStorage.setItem("receiptpurno", parseInt(rctno) + 1);
+          localStorage.setItem("receiptpurno3", parseInt(rctno) + 1);
         }
       } catch (error) {
         console.error("Error Submitting items:", error);
@@ -209,6 +212,8 @@ const Create = () => {
       toast.error("Please add items to the cart.");
     }
   };
+
+  // Select all the text when input is focused
   const handleFocus = (e) => {
     e.target.select();
   };
@@ -222,6 +227,16 @@ const Create = () => {
       }
     }
   };
+
+  // Filter out items that are already in the cart
+  const [filteredItems, setFilteredItems] = useState([]);
+
+  useEffect(() => {
+    const itemsNotInCart = itemList.filter(
+      (item) => !cartItem.some((cart) => cart.itemcode === item.ItemCode)
+    );
+    setFilteredItems(itemsNotInCart);
+  }, [itemList, cartItem]);
 
   return (
     <div className="purchase-cattle-feed-container w100 h1 d-flex-col p10">
@@ -286,7 +301,8 @@ const Create = () => {
                 onChange={(e) => setCname(e.target.value)}
                 onKeyDown={(e) =>
                   handleKeyPress(e, document.getElementById("selectitemcode"))
-                }>
+                }
+              >
                 <option value="">Select Dealer</option>
                 {dealerList.map((item, i) => (
                   <option key={i} value={item.cname}>
@@ -309,10 +325,11 @@ const Create = () => {
                 onChange={(e) => setSelectitemcode(parseInt(e.target.value))}
                 onKeyDown={(e) =>
                   handleKeyPress(e, document.getElementById("qty"))
-                }>
+                }
+              >
                 <option value="0">Select Item</option>
                 {itemList.length > 0 &&
-                  itemList.map((item, i) => (
+                  filteredItems.map((item, i) => (
                     <option key={i} value={item.ItemCode}>
                       {item.ItemName}
                     </option>
@@ -407,7 +424,8 @@ const Create = () => {
                 {cartItem.map((item, i) => (
                   <div
                     key={i}
-                    className="sales-headings-row w100 h10 d-flex a-center sb">
+                    className="sales-headings-row w100 h10 d-flex a-center sb"
+                  >
                     <span className="label-text w10 t-center">{i + 1}</span>
                     <span className="label-text w40 t-start">
                       {item.itemname}
@@ -449,7 +467,8 @@ const Create = () => {
             <button
               className="w-btn mx10"
               onClick={handleSubmit}
-              disabled={cartItem.length == 0}>
+              disabled={cartItem.length == 0}
+            >
               Save
             </button>
           </div>

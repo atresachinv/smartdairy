@@ -56,7 +56,7 @@ const DealersList = () => {
   //download excel file
   const downloadExcel = () => {
     if (dealerList.length === 0) {
-      toast.error("No data available to download.");
+      toast.warn("No data available to download.");
       return;
     }
 
