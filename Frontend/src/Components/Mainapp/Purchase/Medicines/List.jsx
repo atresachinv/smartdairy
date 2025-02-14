@@ -11,7 +11,6 @@ import { TbSortAscending2, TbSortDescending2 } from "react-icons/tb";
 
 const List = () => {
   const [purchaseList, setPurchaseList] = useState([]);
-  const [dealerList, setDealerList] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [filteredList, setFilteredList] = useState(purchaseList); // Store filtered items
   const [fcode, setFcode] = useState("");
@@ -20,22 +19,7 @@ const List = () => {
   const [loading, SetLoading] = useState(false);
   const [sortOrder, setSortOrder] = useState("desc");
   const [updatelist, setUpdateList] = useState([]);
-  console.log(filteredList);
-
-  // Fetch dealer list from API
-  useEffect(() => {
-    const fetchDealerList = async () => {
-      try {
-        const response = await axiosInstance.post("/dealer");
-        let customers = response?.data?.customerList || [];
-        customers.sort((a, b) => new Date(b.createdon) - new Date(a.createdon));
-        setDealerList(customers);
-      } catch (error) {
-        toast.error("Failed to fetch dealer list. Please try again.");
-      }
-    };
-    fetchDealerList();
-  }, []);
+  // console.log(filteredList);
 
   // Handle view button click for purchase list
   const handleEditClick = (id) => {
@@ -50,7 +34,7 @@ const List = () => {
     const fetchPurchaseList = async () => {
       try {
         const response = await axiosInstance.get(
-          "/purchase/all?itemgroupcode=1"
+          "/purchase/all?itemgroupcode=2"
         );
         let purchase = response?.data?.purchaseData || [];
         purchase.sort(
@@ -81,19 +65,19 @@ const List = () => {
       try {
         // Delete the item using axios
         const res = await axiosInstance.delete(`/purchase/delete/${id}`);
-        // toast.success(res?.data?.message);
+        if (res.data?.success) {
+          // Remove the deleted item from the list
+          setPurchaseList((prevItems) =>
+            prevItems.filter((item) => item.billno !== id)
+          );
 
-        // Remove the deleted item from the list
-        setPurchaseList((prevItems) =>
-          prevItems.filter((item) => item.billno !== id)
-        );
-
-        // Show success message
-        Swal.fire({
-          title: "Deleted!",
-          text: "Item deleted successfully.",
-          icon: "success",
-        });
+          // Show success message
+          Swal.fire({
+            title: "Deleted!",
+            text: "Item deleted successfully.",
+            icon: "success",
+          });
+        }
       } catch (error) {
         // Handle error in deletion
         toast.error("Error deleting purchase item.");
@@ -121,7 +105,7 @@ const List = () => {
 
   // Function to download dealer list as an Excel file
   const downloadExcel = () => {
-    if (dealerList.length === 0) {
+    if (purchaseList.length === 0) {
       toast.warn("No data available to download.");
       return;
     }
@@ -185,7 +169,7 @@ const List = () => {
     try {
       const queryParams = new URLSearchParams(getItem).toString();
       const { data } = await axiosInstance.get(
-        `/purchase/all?ItemGroupCode=1&${queryParams}`
+        `/purchase/all?ItemGroupCode=2&${queryParams}`
       );
       // console.log(data);
       if (data?.success) {
@@ -305,7 +289,7 @@ const List = () => {
 
   return (
     <div className="customer-list-container-div w100 h1 d-flex-col p10">
-      <div className="download-print-pdf-excel-container w100 h20 d-flex-col sb">
+      <div className="download-print-pdf-excel-container w100 h30 d-flex-col sb">
         <div className="sales-dates-container w60 h50 d-flex a-center sb">
           <div className="date-input-div w35 d-flex a-center sb">
             <label htmlFor="" className="label-text w30">
@@ -368,7 +352,8 @@ const List = () => {
               <span
                 className="px10 f-color-icon"
                 type="button"
-                onClick={toggleSortOrder}>
+                onClick={toggleSortOrder}
+              >
                 {sortOrder === "asc" ? (
                   <TbSortAscending2 />
                 ) : (
@@ -397,7 +382,8 @@ const List = () => {
                     }`}
                     style={{
                       backgroundColor: index % 2 === 0 ? "#faefe3" : "#fff",
-                    }}>
+                    }}
+                  >
                     <span className="text w5">{index + 1}</span>
                     <span className="text w10">
                       {formatDateToDDMMYYYY(item.purchasedate)}
@@ -412,7 +398,8 @@ const List = () => {
                       <button
                         style={{ cursor: "pointer" }}
                         className="px5 "
-                        onClick={() => handleEditClick(item.billno)}>
+                        onClick={() => handleEditClick(item.billno)}
+                      >
                         View
                       </button>
                       <MdDeleteOutline
@@ -434,7 +421,7 @@ const List = () => {
       {isModalOpen && updatelist.length > 0 && (
         <div className="pramod modal">
           <div className="modal-content">
-            <div className="d-flex sb">
+            <div className="d-flex sb deal-info">
               <label className="heading">Purchase Bill Details</label>
               <IoClose
                 style={{
@@ -448,7 +435,7 @@ const List = () => {
               />
             </div>
             <hr />
-            <div className=" d-flex sb mx15 px15">
+            <div className=" d-flex sb mx15 px15 deal-info-name">
               <label className="label-text">
                 Rect. No :{" "}
                 <span className="info-text">
@@ -464,7 +451,7 @@ const List = () => {
                 </label>
               </div>
             </div>
-            <div className=" d-flex sb mx15 px15">
+            <div className=" d-flex sb mx15 px15 deal-info-name">
               <label className="lable-text">
                 Dealer code :{" "}
                 <span className="info-text">

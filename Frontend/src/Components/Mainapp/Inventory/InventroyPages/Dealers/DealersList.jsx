@@ -56,7 +56,7 @@ const DealersList = () => {
   //download excel file
   const downloadExcel = () => {
     if (dealerList.length === 0) {
-      toast.error("No data available to download.");
+      toast.warn("No data available to download.");
       return;
     }
 
@@ -173,7 +173,8 @@ const DealersList = () => {
                 }`}
                 style={{
                   backgroundColor: index % 2 === 0 ? "#faefe3" : "#fff",
-                }}>
+                }}
+              >
                 <span className="text w5">{index + 1}</span>
                 <span className="text w5">{customer.srno}</span>
                 <span className="text w25 t-start">{customer.cname}</span>
@@ -297,8 +298,8 @@ const DealersList = () => {
               />
             </label>
             <div>
-              <button onClick={handleSaveChanges}>Update</button>
               <button onClick={() => setIsModalOpen(false)}>Cancel</button>
+              <button onClick={handleSaveChanges}>Update</button>
             </div>
           </div>
         </div>

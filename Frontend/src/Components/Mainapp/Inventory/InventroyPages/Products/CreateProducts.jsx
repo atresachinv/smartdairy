@@ -13,30 +13,21 @@ const CreateProducts = () => {
     Manufacturer: "",
   });
 
-  const [errors, setErrors] = useState({});
-
+  //hanlde on change data
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
-  const validateForm = () => {
-    const newErrors = {};
-    Object.keys(formData).forEach((field) => {
-      if (!formData[field]) {
-        newErrors[field] = "This field is required";
-      }
-    });
-    return newErrors;
-  };
-
+  //handle submit to create product
   const handleSubmit = async (e) => {
     e.preventDefault();
+    console.log(formData);
     if (
-      formData.ItemName ||
-      formData.marname ||
-      formData.ItemGroupCode ||
-      formData.UnitCode
+      !formData.ItemName ||
+      !formData.marname ||
+      !formData.ItemGroupCode ||
+      !formData.UnitCode
     ) {
       toast.error("Please fill all required filled to save new Product!");
       return;
@@ -49,24 +40,25 @@ const CreateProducts = () => {
     ) {
       try {
         console.log("Product Data Submitted: ", formData);
-        const res = await axiosInstance.post("/item/new", formData); // Replace with your actual API URL
-
-        setFormData({
-          ItemName: "",
-          marname: "",
-          ItemGroupCode: "",
-          UnitCode: "",
-          ItemDesc: "",
-          Manufacturer: "",
-        });
-        toast.success("Product created successfully!");
+        const res = await axiosInstance.post("/item/new", formData);
+        if (res?.data?.success) {
+          toast.success("Product Created Successfully!");
+          setFormData({
+            ItemName: "",
+            marname: "",
+            ItemGroupCode: "",
+            UnitCode: "",
+            ItemDesc: "",
+            Manufacturer: "",
+          });
+        }
       } catch (error) {
         // console.error("Error creating product: ", error);
         toast.error("There was an error server creating the product.");
       }
     }
   };
-
+  //handle to down on enter key
   const handleKeyDown = (e, fieldName) => {
     if (e.key === "Enter") {
       e.preventDefault();
@@ -80,6 +72,7 @@ const CreateProducts = () => {
     }
   };
 
+  //handle to clear
   const handleClear = () => {
     setFormData({
       ItemName: "",
@@ -89,7 +82,6 @@ const CreateProducts = () => {
       ItemDesc: "",
       Manufacturer: "",
     });
-    setErrors({});
   };
 
   return (
@@ -98,7 +90,8 @@ const CreateProducts = () => {
       <div className="create-dealer-inner-container w100 h1 d-flex-col center">
         <form
           onSubmit={handleSubmit}
-          className="create-dealer-form-container w50 h70 d-flex-col p10 bg">
+          className="create-dealer-form-container w50 h70 d-flex-col p10 bg"
+        >
           <div className="row d-flex my10">
             <div className="col">
               <label className="info-text px10">
@@ -109,12 +102,11 @@ const CreateProducts = () => {
                 name="ItemName"
                 value={formData.ItemName}
                 onFocus={(e) => e.target.select()}
-                className={`data form-field ${
-                  errors.ItemName ? "input-error" : ""
-                }`}
+                className={`data form-field `}
                 onChange={handleInputChange}
                 onKeyDown={(e) => handleKeyDown(e, "ItemName")}
                 placeholder="Item Name"
+                required
               />
             </div>
             <div className="col">
@@ -126,12 +118,11 @@ const CreateProducts = () => {
                 name="marname"
                 onFocus={(e) => e.target.select()}
                 value={formData.marname}
-                className={`data form-field ${
-                  errors.marname ? "input-error" : ""
-                }`}
+                className={`data form-field `}
                 onChange={handleInputChange}
                 onKeyDown={(e) => handleKeyDown(e, "marname")}
                 placeholder="Item Marathi Name"
+                required
               />
             </div>
           </div>
@@ -143,11 +134,11 @@ const CreateProducts = () => {
               <select
                 name="ItemGroupCode"
                 value={formData.ItemGroupCode}
-                className={`data form-field ${
-                  errors.ItemGroupCode ? "input-error" : ""
-                }`}
+                className={`data form-field `}
                 onChange={handleInputChange}
-                onKeyDown={(e) => handleKeyDown(e, "ItemGroupCode")}>
+                onKeyDown={(e) => handleKeyDown(e, "ItemGroupCode")}
+                required
+              >
                 <option value="">Item Group Name</option>
                 {[
                   { value: 1, label: "Cattle Feed" },
@@ -168,11 +159,11 @@ const CreateProducts = () => {
               <select
                 name="UnitCode"
                 value={formData.UnitCode}
-                className={`data form-field ${
-                  errors.UnitCode ? "input-error" : ""
-                }`}
+                className={`data form-field `}
                 onChange={handleInputChange}
-                onKeyDown={(e) => handleKeyDown(e, "UnitCode")}>
+                onKeyDown={(e) => handleKeyDown(e, "UnitCode")}
+                required
+              >
                 <option value="">Select Unit</option>
                 {[
                   { value: "KG", label: "KG" },
