@@ -69,6 +69,7 @@ const CattleSaleList = () => {
   // Fetch sales data from backend (API endpoint)
   useEffect(() => {
     const fetchSales = async () => {
+      SetLoadings(true);
       try {
         const { data } = await axiosInstance.get(
           "/sale/all?ItemGroupCode=1&cn=0"
@@ -77,7 +78,9 @@ const CattleSaleList = () => {
           // console.log(data);
           setSales(data.salesData); // Assuming 'sales' is the array returned by your backend
         }
+        SetLoadings(false);
       } catch (error) {
+        SetLoadings(false);
         console.error("Error fetching sales:", error);
       }
     };
@@ -406,7 +409,7 @@ const CattleSaleList = () => {
             <span className="f-info-text w10">Amount</span>
             <span className="f-info-text w15">Actions</span>
           </div>
-          {loading ? (
+          {loadings ? (
             <Spinner />
           ) : groupedSalesArray.length > 0 ? (
             groupedSalesArray.map((sale, index) => (
