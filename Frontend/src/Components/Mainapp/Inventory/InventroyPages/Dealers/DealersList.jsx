@@ -23,33 +23,44 @@ const DealersList = () => {
 
   //update item
   const handleSaveChanges = async () => {
-    const updateCust = {
-      id: editSale.id,
-      cname: editSale.cname,
-      Phone: editSale.Phone,
-      City: editSale.City,
-      cust_ifsc: editSale.cust_ifsc,
-      dist: editSale.dist,
-      cust_accno: editSale.cust_accno,
-    };
-    // console.log(updateCust);
-    try {
-      const res = await axiosInstance.patch("/update/dealer", updateCust);
-      if (res?.data?.success) {
-        toast.success("Dealers updated successfully");
-        setDealerList((prevCust) => {
-          return prevCust.map((item) => {
-            if (item.id === editSale.id) {
-              return { ...item, ...editSale };
-            }
-            return item;
+    const result = await Swal.fire({
+      title: "Confirm Updation?",
+      text: "Are you sure you want to Update this Dealer?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, Update it!",
+    });
+    if (result.isConfirmed) {
+      const updateCust = {
+        id: editSale.id,
+        cname: editSale.cname,
+        Phone: editSale.Phone,
+        City: editSale.City,
+        cust_ifsc: editSale.cust_ifsc,
+        dist: editSale.dist,
+        cust_accno: editSale.cust_accno,
+      };
+      // console.log(updateCust);
+      try {
+        const res = await axiosInstance.patch("/update/dealer", updateCust);
+        if (res?.data?.success) {
+          toast.success("Dealers updated successfully");
+          setDealerList((prevCust) => {
+            return prevCust.map((item) => {
+              if (item.id === editSale.id) {
+                return { ...item, ...editSale };
+              }
+              return item;
+            });
           });
-        });
-        setIsModalOpen(false);
+          setIsModalOpen(false);
+        }
+      } catch (error) {
+        toast.error("Dealers updated Error to server");
+        // console.error("Error updating cust:", error);
       }
-    } catch (error) {
-      toast.error("Dealers updated Error to server");
-      // console.error("Error updating cust:", error);
     }
   };
 
@@ -153,7 +164,7 @@ const DealersList = () => {
           <div className="data-headings-div h10 d-flex center forDWidth t-center sb bg7">
             <span className="f-info-text w5">SrNo</span>
             <span className="f-info-text w5">Code</span>
-            <span className="f-info-text w25">Customer Name</span>
+            <span className="f-info-text w25">Dealer Name</span>
             <span className="f-info-text w10">Mobile</span>
             <span className="f-info-text w10">City</span>
             <span className="f-info-text w10">District</span>

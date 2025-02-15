@@ -52,7 +52,9 @@ const CreateDealers = () => {
     const newErrors = {};
     Object.keys(formData).forEach((field) => {
       if (!formData[field] && field !== "prefix") {
-        newErrors[field] = "This field is required";
+        if (field === "marathi_name" || field === "cust_name") {
+          newErrors[field] = "This field is required";
+        }
       }
     });
     return newErrors;
@@ -179,9 +181,7 @@ const CreateDealers = () => {
               />
             </div>
             <div className="col">
-              <label className="info-text px10">
-                Mobile No: <span className="req">*</span>
-              </label>
+              <label className="info-text px10">Mobile No:</label>
               <input
                 type="number"
                 name="mobile"
@@ -196,24 +196,7 @@ const CreateDealers = () => {
           </div>
           <div className="row d-flex">
             <div className="col">
-              <label className="info-text px10">
-                District:<span className="req">*</span>
-              </label>
-              <input
-                type="text"
-                name="district"
-                value={formData.district}
-                className={`data ${errors.district ? "input-error" : ""}`}
-                onChange={handleInputChange}
-                onKeyDown={(e) => handleKeyDown(e, e.target.name)}
-                onFocus={(e) => e.target.select()}
-                placeholder="Pune"
-              />
-            </div>
-            <div className="col">
-              <label className="info-text px10">
-                City:<span className="req">*</span>
-              </label>
+              <label className="info-text px10">City:</label>
               <input
                 type="text"
                 name="city"
@@ -226,9 +209,20 @@ const CreateDealers = () => {
               />
             </div>
             <div className="col">
-              <label className="info-text px10">
-                PinCode:<span className="req">*</span>
-              </label>
+              <label className="info-text px10">District:</label>
+              <input
+                type="text"
+                name="district"
+                value={formData.district}
+                className={`data ${errors.district ? "input-error" : ""}`}
+                onChange={handleInputChange}
+                onKeyDown={(e) => handleKeyDown(e, e.target.name)}
+                onFocus={(e) => e.target.select()}
+                placeholder="Pune"
+              />
+            </div>
+            <div className="col">
+              <label className="info-text px10">PinCode:</label>
               <input
                 type="number"
                 name="pincode"
@@ -243,9 +237,7 @@ const CreateDealers = () => {
           </div>
           <div className="row d-flex">
             <div className="col">
-              <label className="info-text px10">
-                Bank Name:<span className="req">*</span>
-              </label>
+              <label className="info-text px10">Bank Name:</label>
               <input
                 type="text"
                 name="bankName"
@@ -258,9 +250,7 @@ const CreateDealers = () => {
               />
             </div>
             <div className="col">
-              <label className="info-text px10">
-                Bank No:<span className="req">*</span>
-              </label>
+              <label className="info-text px10">Bank No:</label>
               <input
                 type="number"
                 name="bank_ac"
@@ -273,9 +263,7 @@ const CreateDealers = () => {
               />
             </div>
             <div className="col">
-              <label className="info-text px10">
-                IFSC Code:<span className="req">*</span>
-              </label>
+              <label className="info-text px10">IFSC Code:</label>
               <input
                 type="text"
                 name="bankIFSC"
