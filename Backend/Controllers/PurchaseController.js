@@ -886,11 +886,11 @@ exports.getAllProductSaleRate = async (req, res) => {
           INNER JOIN (
             SELECT itemcode, MAX(purchasedate) AS max_purchasedate
             FROM PurchaseMaster
-            WHERE dairy_id = ? AND center_id = ?
+            WHERE dairy_id = ? AND center_id = ? AND cn=0
             GROUP BY itemcode
           ) AS latest_sales
           ON pm.itemcode = latest_sales.itemcode AND pm.purchasedate = latest_sales.max_purchasedate
-          WHERE pm.dairy_id = ? AND pm.center_id = ?
+          WHERE pm.dairy_id = ? AND pm.center_id = ? AND cn=0
           ORDER BY pm.itemcode;
         `;
 
@@ -903,11 +903,11 @@ exports.getAllProductSaleRate = async (req, res) => {
           INNER JOIN (
             SELECT itemcode, MAX(purchasedate) AS max_purchasedate
             FROM PurchaseMaster
-            WHERE dairy_id = ? AND center_id = ? AND itemgroupcode = ?
+            WHERE dairy_id = ? AND center_id = ? AND itemgroupcode = ? AND cn=0
             GROUP BY itemcode
           ) AS latest_sales
           ON pm.itemcode = latest_sales.itemcode AND pm.purchasedate = latest_sales.max_purchasedate
-          WHERE pm.dairy_id = ? AND pm.center_id = ? AND pm.itemgroupcode = ?
+          WHERE pm.dairy_id = ? AND pm.center_id = ? AND pm.itemgroupcode = ? AND pm.cn=0
           ORDER BY pm.itemcode;
         `;
 

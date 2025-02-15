@@ -412,7 +412,8 @@ const Mainappnavlinks = ({ setselected, handleSidebar }) => {
         <li key={uuidv4()} className="main-navs py5">
           <div
             className="nav-link w90 d-flex a-center"
-            onClick={() => handleMainClick(button)}>
+            onClick={() => handleMainClick(button)}
+          >
             <div className="nav-main w80 d-flex a-center">
               {button.icon}
               <NavLink className="main-nav-text px5 f-heading" to={button.path}>
@@ -436,7 +437,8 @@ const Mainappnavlinks = ({ setselected, handleSidebar }) => {
                   key={submenu.index}
                   className="submenu-item w90 d-flex a-center"
                   to={submenu.path}
-                  onClick={() => handleSubmenuClick(submenu)}>
+                  onClick={() => handleSubmenuClick(submenu)}
+                >
                   {submenu.icon}
                   <span className="submenu-text px10">{submenu.name}</span>
                 </NavLink>

@@ -31,37 +31,40 @@ const CreateGrocery = () => {
   const [qty, setQty] = useState(1);
   const [rate, setRate] = useState(0);
   const [selectitemcode, setSelectitemcode] = useState(0);
-  const [userid, setUserid] = useState("");
   const [amt, setAmt] = useState("");
-  const [rctno, setRctno] = useState("");
+  const [rctno, setRctno] = useState(localStorage.getItem("receiptno3") || 1);
   const [groupItems, setGroupItems] = useState([]);
   const [filteredItems, setFilteredItems] = useState([]); //p--
-  const [purchaseData, setPurchaseData] = useState([]); //p--
   const [userRole, setUserRole] = useState(null);
-  const dairyInfo = useSelector((state) => state.dairy.dairyData.SocietyName);
+  const dairyInfo = useSelector(
+    (state) =>
+      state.dairy.dairyData.SocietyName || state.dairy.dairyData.center_name
+  );
 
+  //set user role
   useEffect(() => {
-    setRctno(localStorage.getItem("receiptno"));
     const myrole = localStorage.getItem("userRole");
     setUserRole(myrole);
   }, []);
 
+  //get all products and sale rate
   useEffect(() => {
     dispatch(getAllProducts());
     dispatch(getProductSaleRates(3));
   }, []);
 
+  // set today date
   useEffect(() => {
     setDate(getTodaysDate());
   }, []);
 
+  //set cname on based fcode
   useEffect(() => {
     if (customerslist.length > 0) {
       const customer = customerslist.find(
         (customer) => customer.srno === parseInt(fcode)
       );
       setCname(customer?.cname || "");
-      setUserid(customer?.rno || "");
     } else {
       setCname("");
     }
@@ -81,6 +84,7 @@ const CreateGrocery = () => {
     }
   }, [selectitemcode, qty]);
 
+  //set amount
   useEffect(() => {
     if (rate) {
       setAmt(rate * qty);
@@ -119,6 +123,7 @@ const CreateGrocery = () => {
         ItemGroupCode: 3,
         Rate: Number(rate),
         Amount: Number(qty) * Number(rate),
+        cn: 0,
       };
 
       setCartItem((prev) => [...prev, newCartItem]);
@@ -144,11 +149,12 @@ const CreateGrocery = () => {
     });
 
     if (result.isConfirmed) {
-      const updatedCart = cartItem.filter((item, index) => index !== id);
+      const updatedCart = cartItem.filter((item, index) => index !== ItemCode);
       setCartItem(updatedCart);
     }
   };
 
+  //reset the field
   const handelClear = () => {
     setFcode("");
     setCartItem([]);
@@ -158,23 +164,19 @@ const CreateGrocery = () => {
     setSelectitemcode(0);
   };
 
+  //handle to save server
   const handleSubmit = async () => {
     if (cartItem.length > 0) {
       try {
         const res = await axiosInstance.post("/sale/create", cartItem);
         if (res?.data?.success) {
-          setFcode("");
-          setCartItem([]);
-          setQty(1);
-          setRate(0);
-          setAmt(0);
+          handelClear();
           setRctno(parseInt(rctno) + 1);
-          setSelectitemcode(0);
           toast.success(res.data.message);
-          localStorage.setItem("receiptno", parseInt(rctno) + 1);
+          localStorage.setItem("receiptno3", parseInt(rctno) + 1);
         }
       } catch (error) {
-        console.error("Error Submitting items:", error);
+        toast.error("Error Submitting to server ");
       }
     }
   };
@@ -315,16 +317,18 @@ const CreateGrocery = () => {
       } else {
         toast.error("Failed to open print window. Check pop-up settings.");
       }
+    } else {
+      toast.warn("No data to print.");
     }
   };
 
   // Function to handle download pdf the invoice --------------------------------------->
   const exportToPDF = () => {
     if (cartItem.length === 0) {
-      toast.error("No data available to export.");
+      toast.warn("No data available to export.");
       return;
     }
-
+    handleSubmit();
     const convertToWords = (num) => {
       const [integerPart, decimalPart] = num.toString().split(".");
       const integerWords = toWords(integerPart);
@@ -484,19 +488,6 @@ const CreateGrocery = () => {
     doc.save("Invoice.pdf");
   };
 
-  //use set rate in rate field ----------------------------------------------------->
-  useEffect(() => {
-    if (purchaseData.length > 0) {
-      const sortedPurchaseData = [...purchaseData].sort(
-        (a, b) => new Date(b.purchaseid) - new Date(a.purchaseid)
-      );
-      const rateItem = sortedPurchaseData.find(
-        (item) => item.itemcode === selectitemcode
-      );
-      setRate(rateItem?.salerate ?? "");
-    }
-  }, [selectitemcode]);
-
   // Filter out items that are already in the cart --------------------------------->
   const handleItemstoShow = () => {
     if (userRole !== "mobilecollector") {
@@ -516,19 +507,7 @@ const CreateGrocery = () => {
 
   useEffect(() => {
     handleItemstoShow();
-  }, [productlist]);
-
-  //   useEffect(() => {
-  //     const items = productlist.filter((item) => item.ItemGroupCode === 1);
-  //     setGroupItems(items);
-  //   }, [productlist, cartItem]);
-  //
-  //   useEffect(() => {
-  //     const itemsNotInCart = groupItems.filter(
-  //       (item) => !cartItem.some((cart) => cart.ItemCode === item.ItemCode)
-  //     );
-  //     setFilteredItems(itemsNotInCart);
-  //   }, [groupItems]);
+  }, [productlist, cartItem]);
 
   // Select all the text when input is focused ------------------------------------->
   const handleFocus = (e) => {
@@ -651,7 +630,8 @@ const CreateGrocery = () => {
                   onChange={(e) => setSelectitemcode(parseInt(e.target.value))}
                   onKeyDown={(e) =>
                     handleKeyPress(e, document.getElementById("qty"))
-                  }>
+                  }
+                >
                   <option value="0">-- select product --</option>
                   {filteredItems.map((item, i) => (
                     <option key={i} value={item.ItemCode}>
@@ -668,7 +648,8 @@ const CreateGrocery = () => {
                   onChange={(e) => setSelectitemcode(parseInt(e.target.value))}
                   onKeyDown={(e) =>
                     handleKeyPress(e, document.getElementById("addtocart"))
-                  }>
+                  }
+                >
                   <option value="0">-- select product --</option>
                   {filteredItems.map((item, i) => (
                     <option key={i} value={item.ItemCode}>
@@ -744,7 +725,8 @@ const CreateGrocery = () => {
               type="button"
               className="btn m10"
               id="addtocart"
-              onClick={handleAddToCart}>
+              onClick={handleAddToCart}
+            >
               Add to Cart
             </button>
           </div>
@@ -766,7 +748,8 @@ const CreateGrocery = () => {
                 <button
                   type="button"
                   className="w-btn mx10"
-                  onClick={exportToPDF}>
+                  onClick={exportToPDF}
+                >
                   PDF
                 </button>
                 <button type="button" className="w-btn" onClick={handlePrint}>
@@ -777,8 +760,8 @@ const CreateGrocery = () => {
           </div>
           <div className="sales-list-conatainer w100 h1 d-flex-col">
             <div className="sales-headings-row w100 h10 d-flex sb a-center t-center sticky-top t-heading-bg">
-              <span className="f-label-text w10">No.</span>
-              <span className="f-label-text w40">Name</span>
+              <span className="f-label-text w5">No.</span>
+              <span className="f-label-text w35">Name</span>
               <span className="f-label-text w10">Qty</span>
               <span className="f-label-text w10">Rate</span>
               <span className="f-label-text w10">Amount</span>
@@ -793,9 +776,10 @@ const CreateGrocery = () => {
                 {cartItem.map((item, i) => (
                   <div
                     key={i}
-                    className="sales-headings-row w100 h10 d-flex a-center sb">
-                    <span className="label-text w10 t-center">{i + 1}</span>
-                    <span className="label-text w40 t-start">
+                    className="sales-headings-row w100 h10 d-flex a-center sb"
+                  >
+                    <span className="label-text w5 t-center">{i + 1}</span>
+                    <span className="label-text w35 t-start">
                       {item.ItemName}
                     </span>
                     <span className="label-text w10 t-center">{item.Qty}</span>
@@ -816,8 +800,8 @@ const CreateGrocery = () => {
                   </div>
                 ))}
                 <div className="sales-total-headings-row w100 h10 d-flex a-center sb">
-                  <span className=" w10"></span>
-                  <span className=" w40"></span>
+                  <span className=" w5"></span>
+                  <span className=" w35"></span>
                   <span className=" w10"></span>
                   <span className="label-text w10">Total :</span>
                   <span className="label-text w10 t-end">
@@ -840,7 +824,8 @@ const CreateGrocery = () => {
             <button
               className="w-btn mx10"
               onClick={handleSubmit}
-              disabled={cartItem.length == 0}>
+              disabled={cartItem.length == 0}
+            >
               Save
             </button>
           </div>
