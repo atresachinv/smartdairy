@@ -99,6 +99,7 @@ exports.createSales = (req, res) => {
 exports.getPaginatedSales = async (req, res) => {
   const { date1, date2, fcode, ...dynamicFields } = req.query;
   const dairy_id = req.user.dairy_id;
+  const center_id = req.user.center_id;
 
   let query = `
     SELECT * 
@@ -121,12 +122,10 @@ exports.getPaginatedSales = async (req, res) => {
     countQuery += ` AND BillDate = CURDATE()`;
   }
 
- 
-
   if (dairy_id) {
-    query += ` AND companyid = ?`; // Assuming companyid column exists in salesmaster
-    countQuery += ` AND companyid = ?`;
-    queryParams.push(dairy_id);
+    query += ` AND companyid = ? AND center_id=?`; // Assuming companyid column exists in salesmaster
+    countQuery += ` AND companyid = ?  AND center_id=?`;
+    queryParams.push(dairy_id, center_id);
   }
 
   // Append dynamic fields
