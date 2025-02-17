@@ -11,7 +11,7 @@ import Swal from "sweetalert2";
 
 const DealersList = () => {
   const [dealerList, setDealerList] = useState([]);
-
+  const [loading, setLoading] = useState(false);
   const [editSale, setEditSale] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -23,33 +23,44 @@ const DealersList = () => {
 
   //update item
   const handleSaveChanges = async () => {
-    const updateCust = {
-      id: editSale.id,
-      cname: editSale.cname,
-      Phone: editSale.Phone,
-      City: editSale.City,
-      cust_ifsc: editSale.cust_ifsc,
-      dist: editSale.dist,
-      cust_accno: editSale.cust_accno,
-    };
-    // console.log(updateCust);
-    try {
-      const res = await axiosInstance.patch("/update/dealer", updateCust);
-      if (res?.data?.success) {
-        toast.success("Dealers updated successfully");
-        setDealerList((prevCust) => {
-          return prevCust.map((item) => {
-            if (item.id === editSale.id) {
-              return { ...item, ...editSale };
-            }
-            return item;
+    const result = await Swal.fire({
+      title: "Confirm Updation?",
+      text: "Are you sure you want to Update this Dealer?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, Update it!",
+    });
+    if (result.isConfirmed) {
+      const updateCust = {
+        id: editSale.id,
+        cname: editSale.cname,
+        Phone: editSale.Phone,
+        City: editSale.City,
+        cust_ifsc: editSale.cust_ifsc,
+        dist: editSale.dist,
+        cust_accno: editSale.cust_accno,
+      };
+      // console.log(updateCust);
+      try {
+        const res = await axiosInstance.patch("/update/dealer", updateCust);
+        if (res?.data?.success) {
+          toast.success("Dealers updated successfully");
+          setDealerList((prevCust) => {
+            return prevCust.map((item) => {
+              if (item.id === editSale.id) {
+                return { ...item, ...editSale };
+              }
+              return item;
+            });
           });
-        });
-        setIsModalOpen(false);
+          setIsModalOpen(false);
+        }
+      } catch (error) {
+        toast.error("Dealers updated Error to server");
+        // console.error("Error updating cust:", error);
       }
-    } catch (error) {
-      toast.error("Dealers updated Error to server");
-      // console.error("Error updating cust:", error);
     }
   };
 
@@ -87,13 +98,16 @@ const DealersList = () => {
   //fetch Dealer list through API
   useEffect(() => {
     const fetchDealerList = async () => {
+      setLoading(true);
       try {
         const response = await axiosInstance.post("/dealer");
         let customers = response?.data?.customerList || [];
         // Sort customers by createdon in descending order (newest first)
         customers.sort((a, b) => new Date(b.createdon) - new Date(a.createdon));
         setDealerList(customers);
+        setLoading(false);
       } catch (error) {
+        setLoading(false);
         // console.error("Error fetching dealer list: ", error);
         toast.error("There was an error fetching the dealer list.");
       }
@@ -153,7 +167,7 @@ const DealersList = () => {
           <div className="data-headings-div h10 d-flex center forDWidth t-center sb bg7">
             <span className="f-info-text w5">SrNo</span>
             <span className="f-info-text w5">Code</span>
-            <span className="f-info-text w25">Customer Name</span>
+            <span className="f-info-text w25">Dealer Name</span>
             <span className="f-info-text w10">Mobile</span>
             <span className="f-info-text w10">City</span>
             <span className="f-info-text w10">District</span>
@@ -164,7 +178,9 @@ const DealersList = () => {
             <span className="f-info-text w10">Actions</span>
           </div>
           {/* Show Spinner if loading, otherwise show the customer list */}
-          {dealerList.length > 0 ? (
+          {loading ? (
+            <Spinner />
+          ) : dealerList.length > 0 ? (
             dealerList.map((customer, index) => (
               <div
                 key={index}
@@ -201,7 +217,7 @@ const DealersList = () => {
               </div>
             ))
           ) : (
-            <div>No customer found</div>
+            <div className="d-flex h1 center">No Dealer found</div>
           )}
         </div>
       </div>

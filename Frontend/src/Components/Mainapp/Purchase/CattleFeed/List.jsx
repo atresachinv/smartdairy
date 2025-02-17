@@ -31,16 +31,19 @@ const List = () => {
   // Fetch purchase list from API
   useEffect(() => {
     const fetchPurchaseList = async () => {
+      SetLoading(true);
       try {
         const response = await axiosInstance.get(
-          "/purchase/all?itemgroupcode=1"
+          "/purchase/all?itemgroupcode=1&cn=0"
         );
         let purchase = response?.data?.purchaseData || [];
         purchase.sort(
           (a, b) => new Date(b.purchasedate) - new Date(a.purchasedate)
         );
         setPurchaseList(purchase);
+        SetLoading(false);
       } catch (error) {
+        SetLoading(false);
         toast.error("Error fetching purchase list.");
       }
     };
@@ -169,7 +172,7 @@ const List = () => {
     try {
       const queryParams = new URLSearchParams(getItem).toString();
       const { data } = await axiosInstance.get(
-        `/purchase/all?ItemGroupCode=1&${queryParams}`
+        `/purchase/all?ItemGroupCode=1&cn=0&${queryParams}`
       );
       // console.log(data);
       if (data?.success) {

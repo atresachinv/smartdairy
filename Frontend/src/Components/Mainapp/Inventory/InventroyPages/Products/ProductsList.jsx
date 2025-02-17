@@ -98,6 +98,7 @@ const ProductsList = () => {
   //getting all products
   useEffect(() => {
     const fetchProductList = async () => {
+      setLoading(true);
       try {
         const response = await axiosInstance.get("/item/all", {
           params: { ItemGroupCode: filter },

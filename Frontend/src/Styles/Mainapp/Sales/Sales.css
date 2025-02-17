@@ -24,7 +24,7 @@
     padding: 0;
   }
   .cattlefeed-sales-list-outer-container .sales-list-conatainer {
-    min-width: 500px;
+    /* min-width: 500px; */
     overflow-x: auto;
   }
   /* sale list css */
@@ -67,5 +67,14 @@
   }
   .sale-data-values-div {
     min-width: 900px;
+  }
+  .sale .modal-content {
+    padding: 10px !important;
+  }
+  .invoiceModel {
+    padding: 15px 0px !important;
+  }
+  .invoiceModelInfo {
+    padding: 0px 10px !important;
   }
 }

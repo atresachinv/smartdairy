@@ -39,11 +39,11 @@ const GrocerySaleList = () => {
       Amt: sale.Amount,
       cgst: sale.cgst || 0,
       sgst: sale.sgst || 0,
-      cn: 0,
+      cn: sale.cn || 0,
     }));
 
     if (!Array.isArray(exportData) || exportData.length === 0) {
-      alert("No data available to export.");
+      toast.error("No data available to export.");
       return;
     }
 
@@ -69,13 +69,16 @@ const GrocerySaleList = () => {
   // Fetch sales data from backend (API endpoint) ------------------------->
   useEffect(() => {
     const fetchSales = async () => {
+      SetLoadings(true);
       try {
         const { data } = await axiosInstance.get("/sale/all?ItemGroupCode=3"); // Replace with your actual API URL
         if (data.success) {
           // console.log(data);
           setSales(data.salesData); // Assuming 'sales' is the array returned by your backend
         }
+        SetLoadings(false);
       } catch (error) {
+        SetLoadings(false);
         console.error("Error fetching sales:", error);
       }
     };
@@ -112,7 +115,7 @@ const GrocerySaleList = () => {
     try {
       const queryParams = new URLSearchParams(getItem).toString();
       const { data } = await axiosInstance.get(
-        `/sale/all?ItemGroupCode=3&${queryParams}`
+        `/sale/all?ItemGroupCode=3&cn=0&${queryParams}`
       );
       if (data?.success) {
         setSales(data.salesData);
@@ -317,7 +320,7 @@ const GrocerySaleList = () => {
 
   return (
     <div className="customer-list-container-div w100 h1 d-flex-col p10">
-      <div className="download-print-pdf-excel-container w100 h20 d-flex-col sb">
+      <div className="download-print-pdf-excel-container w100 h30 d-flex-col sb">
         <div className="sales-dates-container w60 h50 d-flex a-center sb">
           <div className="date-input-div w35 d-flex a-center sb">
             <label htmlFor="" className="label-text w30">
@@ -371,7 +374,7 @@ const GrocerySaleList = () => {
         </div>
       </div>
       <div className="sales-list-table w100 h80 d-flex-col bg">
-        <span className="heading p10">Cattle Feed List</span>
+        <span className="heading p10">Grocery List</span>
         <div className="sales-heading-title-scroller w100 h1 mh100 d-flex-col hidescrollbar">
           <div className="sale-data-headings-div h10 d-flex center t-center sb sticky-top t-heading-bg">
             <span className="f-info-text w5">Sr.No</span>
@@ -380,7 +383,8 @@ const GrocerySaleList = () => {
               <span
                 className="px10 f-color-icon"
                 type="button"
-                onClick={toggleSortOrder}>
+                onClick={toggleSortOrder}
+              >
                 {sortOrder === "asc" ? (
                   <TbSortAscending2 />
                 ) : (
@@ -395,7 +399,7 @@ const GrocerySaleList = () => {
             <span className="f-info-text w15">Actions</span>
           </div>
           {/* Show Spinner if loading, otherwise show the feed list */}
-          {loading ? (
+          {loadings ? (
             <Spinner />
           ) : groupedSalesArray.length > 0 ? (
             groupedSalesArray.map((sale, index) => (
@@ -406,7 +410,8 @@ const GrocerySaleList = () => {
                 }`}
                 style={{
                   backgroundColor: index % 2 === 0 ? "#faefe3" : "#fff",
-                }}>
+                }}
+              >
                 <span className="text w5">{index + 1}</span>
                 <span className="text w10">
                   {formatDateToDDMMYYYY(sale.BillDate)}
@@ -421,7 +426,8 @@ const GrocerySaleList = () => {
                 <span className="text w15 d-flex j-center a-center sa">
                   <button
                     className="px5"
-                    onClick={() => handleView(sale?.BillNo)}>
+                    onClick={() => handleView(sale?.BillNo)}
+                  >
                     View
                   </button>
                   <MdDeleteOutline
@@ -440,7 +446,7 @@ const GrocerySaleList = () => {
         {/* show invoice */}
         {isInvoiceOpen && viewItems.length > 0 && (
           <div className="pramod modal">
-            <div className="modal-content">
+            <div className="modal-content invoiceModel">
               <div className="d-flex sb">
                 <h2>Sale Bill Details</h2>
                 <IoClose
@@ -450,13 +456,13 @@ const GrocerySaleList = () => {
                 />
               </div>
               <hr />
-              <div className=" d-flex sb mx15 px15">
+              <div className=" d-flex sb mx15 px15  invoiceModelInfo">
                 <h4>Rect. No : {viewItems[0]?.ReceiptNo || ""}</h4>
                 <div className="10">
                   Date :{formatDateToDDMMYYYY(viewItems[0]?.BillDate)}
                 </div>
               </div>
-              <div className=" d-flex sb mx15 px15">
+              <div className=" d-flex sb mx15 px15 invoiceModelInfo">
                 <h4>Customer code : {viewItems[0]?.CustCode || ""}</h4>
                 <h4 className="mx15">
                   {handleFindCustName(viewItems[0]?.CustCode) || ""}
@@ -525,7 +531,7 @@ const GrocerySaleList = () => {
         )}
         {/* its used for edit item */}
         {isModalOpen && (
-          <div className="modal">
+          <div className="modal sale">
             <div className="modal-content">
               <h2>Update Sale Item</h2>
               <label>
@@ -533,6 +539,7 @@ const GrocerySaleList = () => {
                 <input
                   type="number"
                   value={editSale?.ReceiptNo}
+                  onFocus={(e) => e.target.select()}
                   onChange={(e) =>
                     setEditSale({ ...editSale, ReceiptNo: e.target.value })
                   }
@@ -543,6 +550,7 @@ const GrocerySaleList = () => {
                 <input
                   type="number"
                   value={editSale?.Qty}
+                  onFocus={(e) => e.target.select()}
                   onChange={(e) =>
                     setEditSale({ ...editSale, Qty: e.target.value })
                   }
@@ -553,6 +561,7 @@ const GrocerySaleList = () => {
                 <input
                   type="number"
                   value={editSale?.Rate}
+                  onFocus={(e) => e.target.select()}
                   onChange={(e) =>
                     setEditSale({ ...editSale, Rate: e.target.value })
                   }
