@@ -1,8 +1,10 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Route, Routes } from "react-router-dom";
 import ReturnsNavlinks from "./ReturnsNavlinks";
-import DealerReturns from "./DealerReturns";
-import CustomerReturns from "./CustomerReturns";
+import List from "./DealerReturns/List";
+import CreateDealer from "./DealerReturns/Create";
+import CreateCustomer from "./CustomerReturns/Create";
+import CustList from "./CustomerReturns/List";
 
 const Returns = () => {
   const [isselected, setIsSelected] = useState(
@@ -21,8 +23,11 @@ const Returns = () => {
       </div>
       <div className="product-return-nav-views w100 h90 d-flex center p10">
         <Routes>
-          <Route path="dealer/returns" element={<DealerReturns />} />
-          <Route path="customer/returns" element={<CustomerReturns />} />
+          <Route path="/" element={<CreateDealer />} />
+          <Route path="add-deal-return" element={<CreateDealer />} />
+          <Route path="add-cust-return" element={<CreateCustomer />} />
+          <Route path="deal-return-list" element={<List />} />
+          <Route path="cust-return-list" element={<CustList />} />
         </Routes>
       </div>
     </div>
