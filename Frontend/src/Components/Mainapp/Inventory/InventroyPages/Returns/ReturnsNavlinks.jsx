@@ -3,6 +3,8 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { NavLink } from "react-router-dom";
 import { BsSignTurnRight, BsSignTurnSlightRight } from "react-icons/bs";
+import { FaListUl } from "react-icons/fa";
+import { IoBagAddSharp } from "react-icons/io5";
 
 const ReturnsNavlinks = ({ isselected, setIsSelected }) => {
   const { t } = useTranslation(["milkcollection"]);
@@ -15,8 +17,8 @@ const ReturnsNavlinks = ({ isselected, setIsSelected }) => {
       index: 0,
       path: "add-deal-return",
       submenus: [
-        { name: "Add", path: "add-deal-return" },
-        { name: "List", path: "deal-return-list" },
+        { name: "Add", path: "add-deal-return", icon: <IoBagAddSharp /> },
+        { name: "List", path: "deal-return-list", icon: <FaListUl /> },
       ],
     },
     {
@@ -25,8 +27,8 @@ const ReturnsNavlinks = ({ isselected, setIsSelected }) => {
       index: 1,
       path: "add-cust-return",
       submenus: [
-        { name: "Add", path: "add-cust-return" },
-        { name: "List", path: "cust-return-list" },
+        { name: "Add", path: "add-cust-return", icon: <IoBagAddSharp /> },
+        { name: "List", path: "cust-return-list", icon: <FaListUl /> },
       ],
     },
   ];
@@ -53,6 +55,7 @@ const ReturnsNavlinks = ({ isselected, setIsSelected }) => {
               {button.submenus.map((submenu, subIndex) => (
                 <li key={subIndex}>
                   <NavLink to={submenu.path} className="dropdown-item">
+                    <span className="px10">{submenu.icon}</span>
                     {submenu.name}
                   </NavLink>
                 </li>
