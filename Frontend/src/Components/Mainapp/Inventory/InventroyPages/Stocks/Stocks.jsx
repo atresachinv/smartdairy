@@ -1,9 +1,11 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Route, Routes } from "react-router-dom";
 import StocksNavlinks from "./StocksNavlinks";
-import StartingStocks from "./StartingStocks";
 import ExpiredProducts from "./ExpiredProducts";
-import UpdateSaleRate from "./UpdateSaleRate";
+import UpdateSaleRate from "./SellRate/UpdateSaleRate";
+import "../../../../../Styles/Mainapp/Inventory/InventoryPages/Stock.css";
+import CreateStock from "./StartingStock/CreateStock";
+import StockList from "./StartingStock/StockList";
 
 const Stocks = () => {
   const [isselected, setIsSelected] = useState(
@@ -19,10 +21,11 @@ const Stocks = () => {
       </div>
       <div className="stock-nav-views w100 h90 d-flex center p10">
         <Routes>
-          <Route path="starting/stock" element={<StartingStocks />} />
+          <Route path="add-stock" element={<CreateStock />} />
+          <Route path="list" element={<StockList />} />
           <Route path="expired/product" element={<ExpiredProducts />} />
           <Route path="update/sale/rate" element={<UpdateSaleRate />} />
-          <Route path="*" element={<StartingStocks />} />
+          <Route path="*" element={<CreateStock />} />
         </Routes>
       </div>
     </div>
