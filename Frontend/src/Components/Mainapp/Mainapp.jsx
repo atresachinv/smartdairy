@@ -1,3 +1,5 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable no-unused-vars */
 import React, { useEffect, useState } from "react";
 import Sidebar from "./Sidebar";
 import Header from "./Header";
@@ -48,6 +50,7 @@ import { checkCurrentSession } from "../../App/Features/Users/authSlice";
 import { toast } from "react-toastify";
 import "../../Styles/Mainapp/Mainapphome.css";
 import Returns from "./Inventory/InventroyPages/Returns/Returns";
+import SanghsalesMaster from "./MilkSales/SanghsalesPages/SanghsalesMaster";
 
 const Mainapp = () => {
   const dispatch = useDispatch();
@@ -134,6 +137,7 @@ const Mainapp = () => {
             <Route path="dashboard" element={<Dashboard />} />
             {/* milk route */}
             <Route path="milk/*" element={<Apphome />} />
+            <Route path="milk/sangha/*" element={<SanghsalesMaster />} />
             {/* inventory routes */}
             <Route path="inventory/dealer/*" element={<Dealers />} />
             <Route path="inventory/product/*" element={<Products />} />

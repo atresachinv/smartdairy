@@ -1,3 +1,5 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable no-unused-vars */
 import React, { useEffect, useState } from "react";
 import axiosInstance from "../../../../App/axiosInstance";
 import { MdDeleteOutline } from "react-icons/md";
@@ -787,8 +789,8 @@ const CreateCattleFeed = () => {
                     key={i}
                     className="sales-headings-row w100 h10 d-flex a-center sb"
                   >
-                    <span className="label-text w5 t-center">{i + 1}</span>
-                    <span className="label-text w35 t-start">
+                    <span className="label-text w10 t-center">{i + 1}</span>
+                    <span className="label-text w40 t-start">
                       {item.ItemName}
                     </span>
                     <span className="label-text w10 t-center">{item.Qty}</span>
@@ -827,10 +829,11 @@ const CreateCattleFeed = () => {
           </div>
 
           <div className="sales-button-container w100 h10 d-flex a-center j-end">
-            <button className="w-btn m10" onClick={handelClear}>
+            <button type="button" className="w-btn m10" onClick={handelClear}>
               Clear
             </button>
             <button
+              type="button"
               className="w-btn mx10"
               onClick={handleSubmit}
               disabled={cartItem.length == 0}
