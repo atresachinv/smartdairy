@@ -4,6 +4,7 @@ const pool = require("../Configs/Database");
 dotenv.config({ path: "Backend/.env" });
 const NodeCache = require("node-cache");
 const cache = new NodeCache({});
+const axios = require("axios");
 
 // ................................................
 // Create New Dairy User...........................
@@ -124,7 +125,7 @@ exports.updatedetails = async (req, res) => {
     connection.release(); // Release connection
     return res.status(400).json({ message: "Dairy ID not found!" });
   }
-  
+
   // SQL query to update dairy information
   const updateDairyDetails = `
     UPDATE societymaster 
@@ -609,5 +610,33 @@ exports.clearCache = (req, res) => {
   } catch (error) {
     console.error("Error clearing cache: ", error);
     return res.status(500).json({ message: "Error clearing cache" });
+  }
+};
+
+//--------------------------------------------------------------------------------------------------------->
+// Whats app  message send--------------------------------------------------------------------------------->
+//--------------------------------------------------------------------------------------------------------->
+
+exports.sendMessage = async (req, res) => {
+  try {
+    const response = await axios.post(
+      "https://partnersv1.pinbot.ai/v3/560504630471076/messages",
+      req.body,
+      {
+        headers: {
+          apikey: "0a4a47a3-d03c-11ef-bb5a-02c8a5e042bd",
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    res.json(response.data);
+  } catch (error) {
+    console.error(
+      "Error Details:",
+      error.response ? error.response.data : error.message
+    );
+    res
+      .status(500)
+      .json({ error: error.response ? error.response.data : error.message });
   }
 };

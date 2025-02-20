@@ -18,6 +18,7 @@ const {
   getSelectedRateChart,
   updateSelectedRateChart,
   saveUpdatedRC,
+  sendMessage,
 } = require("../Controllers/DairyController");
 const router = express.Router();
 
@@ -31,6 +32,7 @@ router.route("/create/center").post(verifyToken, createCenter);
 router.route("/update/centerdetails").post(verifyToken, updateCenterInfo);
 router.route("/center/details").post(verifyToken, getCenterDetails);
 router.route("/all/centerdetails").post(verifyToken, getAllcenters);
+router.route("/send-message").post(verifyToken, sendMessage); //send whats app message 
 
 
 module.exports = router;

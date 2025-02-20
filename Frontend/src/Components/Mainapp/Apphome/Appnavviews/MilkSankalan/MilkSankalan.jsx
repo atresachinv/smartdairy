@@ -1,3 +1,5 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable no-unused-vars */
 import React, { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -8,11 +10,16 @@ import { toast } from "react-toastify";
 import { listCustomer } from "../../../../../App/Features/Customers/customerSlice";
 import { useTranslation } from "react-i18next";
 import "../../../../../Styles/Mainapp/Apphome/Appnavview/Milkcollection.css";
+import axiosInstance from "../../../../../App/axiosInstance";
 
 const MilkSankalan = () => {
   const dispatch = useDispatch();
   const { t } = useTranslation(["common", "milkcollection"]);
   const tDate = useSelector((state) => state.date.toDate);
+  const dairyname = useSelector(
+    (state) =>
+      state.dairy.dairyData.SocietyName || state.dairy.dairyData.center_name
+  );
   const { customerlist, loading } = useSelector((state) => state.customer);
   const PrevLiters = useSelector((state) => state.milkCollection.PrevLiters);
   const [collCount, setCollCount] = useState(
@@ -36,6 +43,7 @@ const MilkSankalan = () => {
     cname: "",
     sample: "",
     acccode: "",
+    mobile: "",
   };
 
   const [values, setValues] = useState(initialValues);
@@ -111,6 +119,7 @@ const MilkSankalan = () => {
         ...prev,
         cname: customer.cname.toString(),
         acccode: customer.cid,
+        mobile: customer.mobile,
         rateChartNo: customer.rateChartNo,
       }));
     } else {
@@ -235,6 +244,41 @@ const MilkSankalan = () => {
     return validationErrors;
   };
 
+  const sendMessage = async () => {
+    const requestBody = {
+      messaging_product: "whatsapp",
+      recipient_type: "individual",
+      to: "919822180270",
+      type: "template",
+      template: {
+        name: "gadi_milk_collection_sms",
+        language: { code: "en" },
+        components: [
+          {
+            type: "body",
+            parameters: [
+              { type: "text", text: dairyname },
+              { type: "text", text: values.cname },
+              { type: "text", text: tDate },
+              { type: "text", text: values.liters },
+              { type: "text", text: values.sample },
+              { type: "text", text: dairyname },
+              { type: "text", text: "8600698843" },
+            ],
+          },
+        ],
+      },
+    };
+    try {
+      const response = await axiosInstance.post("/send-message", requestBody);
+      toast.success("Whatsapp message send successfully...");
+      console.log("Response:", response.data);
+    } catch (error) {
+      toast.error("Error in whatsapp message sending...");
+      console.error("Error sending message:", error);
+    }
+  };
+
   const handleMobileCollection = async (e) => {
     if (e) e.preventDefault();
     // Validate fields before submission
@@ -251,6 +295,7 @@ const MilkSankalan = () => {
       toast.success("Milk Collection Saved Successfully!");
       setCollCount(collCount + 1);
       setLiterCount(literCount + parseFloat(values.liters));
+      sendMessage();
       codeInputRef.current.focus(); // Focus on the code input
     } catch (error) {
       toast.error("Failed to save Milk Collection, try again!");
@@ -268,7 +313,8 @@ const MilkSankalan = () => {
       <span className="heading w100 h10 t-center py10">{heading}</span>
       <form
         onSubmit={handleMobileCollection}
-        className="mobile-milk-coll-form w60 h70 d-flex-col sa bg p10">
+        className="mobile-milk-coll-form w60 h70 d-flex-col sa bg p10"
+      >
         <div className="show-milk-data-container w100 h10 d-flex a-center px10">
           <div className="form-date w50 d-flex a-center">
             <label htmlFor="date" className="label-text w60">
@@ -317,7 +363,8 @@ const MilkSankalan = () => {
               className="data w50"
               name="animal"
               id="animal"
-              onChange={handleInputs}>
+              onChange={handleInputs}
+            >
               <option value="0">{t("c-cow")}</option>
               <option value="1">{t("c-buffalo")}</option>
             </select>
@@ -338,6 +385,7 @@ const MilkSankalan = () => {
               name="code"
               value={values.code}
               onChange={handleInputs}
+              // eslint-disable-next-line no-undef
               onKeyDown={(e) => handleKeyDown(e, litersRef)}
               ref={codeInputRef}
             />
@@ -376,6 +424,7 @@ const MilkSankalan = () => {
               onChange={handleInputs}
               value={values.liters}
               disabled={!values.code}
+              // eslint-disable-next-line no-undef
               onKeyDown={(e) => handleKeyDown(e, sampleRef)}
               ref={litersRef}
             />

@@ -1,3 +1,5 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable no-unused-vars */
 import React, { useEffect, useState } from "react";
 import axiosInstance from "../../../../App/axiosInstance";
 import { MdDeleteOutline } from "react-icons/md";
@@ -145,7 +147,7 @@ const CreateCattleFeed = () => {
     });
 
     if (result.isConfirmed) {
-      const updatedCart = cartItem.filter((item, index) => index !== id);
+      const updatedCart = cartItem.filter((item, index) => index !== ItemCode);
       setCartItem(updatedCart);
     }
   };
@@ -652,7 +654,8 @@ const CreateCattleFeed = () => {
                   onChange={(e) => setSelectitemcode(parseInt(e.target.value))}
                   onKeyDown={(e) =>
                     handleKeyPress(e, document.getElementById("qty"))
-                  }>
+                  }
+                >
                   <option value="0">-- select product --</option>
                   {filteredItems.map((item, i) => (
                     <option key={i} value={item.ItemCode}>
@@ -669,7 +672,8 @@ const CreateCattleFeed = () => {
                   onChange={(e) => setSelectitemcode(parseInt(e.target.value))}
                   onKeyDown={(e) =>
                     handleKeyPress(e, document.getElementById("addtocart"))
-                  }>
+                  }
+                >
                   <option value="0">-- select product --</option>
                   {filteredItems.map((item, i) => (
                     <option key={i} value={item.ItemCode}>
@@ -745,7 +749,8 @@ const CreateCattleFeed = () => {
               type="button"
               className="btn m10"
               id="addtocart"
-              onClick={handleAddToCart}>
+              onClick={handleAddToCart}
+            >
               Add to Cart
             </button>
           </div>
@@ -767,7 +772,8 @@ const CreateCattleFeed = () => {
                 <button
                   type="button"
                   className="w-btn mx10"
-                  onClick={exportToPDF}>
+                  onClick={exportToPDF}
+                >
                   PDF
                 </button>
                 <button type="button" className="w-btn" onClick={handlePrint}>
@@ -794,7 +800,8 @@ const CreateCattleFeed = () => {
                 {cartItem.map((item, i) => (
                   <div
                     key={i}
-                    className="sales-headings-row w100 h10 d-flex a-center sb">
+                    className="sales-headings-row w100 h10 d-flex a-center sb"
+                  >
                     <span className="label-text w10 t-center">{i + 1}</span>
                     <span className="label-text w40 t-start">
                       {item.ItemName}
@@ -835,13 +842,15 @@ const CreateCattleFeed = () => {
           </div>
 
           <div className="sales-button-container w100 h10 d-flex a-center j-end">
-            <button className="w-btn m10" onClick={handelClear}>
+            <button type="button" className="w-btn m10" onClick={handelClear}>
               Clear
             </button>
             <button
+              type="button"
               className="w-btn mx10"
               onClick={handleSubmit}
-              disabled={cartItem.length == 0}>
+              disabled={cartItem.length == 0}
+            >
               Save
             </button>
           </div>

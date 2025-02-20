@@ -1,3 +1,5 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable no-unused-vars */
 import React, { useEffect, useState } from "react";
 import { Route, Routes } from "react-router-dom";
 import AppNavviews from "./AppNavviews";
@@ -17,6 +19,8 @@ import MilkCollectorsReports from "./Appnavviews/Milkcollection/MilkCollectorsRe
 import CreateCattleFeed from "../Sales/CattleFeed/CreateCattleFeed";
 import SalesReports from "./Appnavviews/MilkSankalan/SalesReports";
 import AdminSalesReports from "./Appnavviews/MilkSankalan/AdminSalesReports";
+import Milksales from "./Appnavviews/MilksalesPages/Milksales";
+import MilksalesReport from "./Appnavviews/MilksalesPages/MilksalesReport";
 
 const Apphome = () => {
   const dispatch = useDispatch();
@@ -86,6 +90,8 @@ const Apphome = () => {
           <Route path="vehicle/sales" element={<CreateCattleFeed />} />
           <Route path="vehicle/sales/report" element={<SalesReports />} />
           <Route path="admin/sales/report" element={<AdminSalesReports />} />
+          <Route path="retail/milk-sales" element={<Milksales />} />
+          <Route path="retail/sale-report" element={<MilksalesReport />} />
           <Route path="*" element={<Milkcollection />} />
         </Routes>
       </div>
