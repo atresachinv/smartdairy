@@ -101,13 +101,14 @@ exports.getAllProducts = async (req, res) => {
 exports.createItem = async (req, res) => {
   // Extract companyid (from dairy_id), centerid, and user_role from req.user
   const { dairy_id: companyid, center_id } = req.user;
-  const { ItemName, ItemGroupCode, ...otherFields } = req.body;
+  const { ItemCode, ItemName, ItemGroupCode, ...otherFields } = req.body;
 
   // Validate required fields dynamically
-  if (!ItemName || !ItemGroupCode || !companyid) {
+  if (!ItemCode || !ItemName || !ItemGroupCode || !companyid) {
     return res.status(400).json({
       success: false,
-      message: "Missing required fields: ItemName, ItemGroupCode, or companyid",
+      message:
+        "Missing required fields: ItemCode, ItemName, ItemGroupCode, or companyid",
     });
   }
 
@@ -132,61 +133,43 @@ exports.createItem = async (req, res) => {
         }
 
         const insertItemMaster = () => {
-          // Fetch max ItemCode from itemmaster
-          connection.query(
-            "SELECT MAX(ItemCode) AS totalRows FROM itemmaster WHERE companyid = ? AND center_id = ?",
-            [companyid, center_id],
-            (err, countResult) => {
-              if (err) {
-                connection.release();
-                console.error("Error fetching row count: ", err);
-                return res.status(500).json({
-                  success: false,
-                  message: "Error fetching row count",
-                });
-              }
+          // Build the INSERT query dynamically
+          let insertQuery =
+            "INSERT INTO itemmaster (ItemCode, ItemName, ItemGroupCode, companyid, center_id";
+          const insertValues = [
+            ItemCode, // Use the ItemCode from frontend
+            ItemName,
+            ItemGroupCode,
+            companyid,
+            center_id,
+          ];
 
-              const newItemId = (countResult[0]?.totalRows || 0) + 1; // Generate new ItemCode
+          for (const [key, value] of Object.entries(otherFields)) {
+            insertQuery += `, ${key}`;
+            insertValues.push(value);
+          }
 
-              // Build the INSERT query dynamically
-              let insertQuery =
-                "INSERT INTO itemmaster (ItemCode, ItemName, ItemGroupCode, companyid,center_id";
-              const insertValues = [
-                newItemId,
-                ItemName,
-                ItemGroupCode,
-                companyid,
-                center_id,
-              ];
+          insertQuery += ") VALUES (?";
+          insertQuery += ", ?".repeat(insertValues.length - 1) + ")";
 
-              for (const [key, value] of Object.entries(otherFields)) {
-                insertQuery += `, ${key}`;
-                insertValues.push(value);
-              }
+          // Execute the INSERT query
+          connection.query(insertQuery, insertValues, (err, result) => {
+            connection.release();
 
-              insertQuery += ") VALUES (?";
-              insertQuery += ", ?".repeat(insertValues.length - 1) + ")";
-
-              // Execute the INSERT query
-              connection.query(insertQuery, insertValues, (err, result) => {
-                connection.release();
-
-                if (err) {
-                  console.error("Error inserting item record: ", err);
-                  return res.status(500).json({
-                    success: false,
-                    message: "Error creating item record",
-                  });
-                }
-
-                return res.status(201).json({
-                  success: true,
-                  message: "Item record created successfully",
-                  itemid: newItemId,
-                });
+            if (err) {
+              console.error("Error inserting item record: ", err);
+              return res.status(500).json({
+                success: false,
+                message: "Error creating item record",
               });
             }
-          );
+
+            return res.status(201).json({
+              success: true,
+              message: "Item record created successfully",
+              itemid: ItemCode, // Returning the ItemCode used
+            });
+          });
         };
 
         if (groupResult.length === 0) {
@@ -478,5 +461,53 @@ exports.createMasterGrpItem = async (req, res) => {
         error: error.message,
       });
     }
+  });
+};
+
+//get max Itemcode on based companyid (from dairy_id) and center_id
+exports.getMaxItemCode = async (req, res) => {
+  // Extract companyid (from dairy_id) and center_id from req.user
+  const { dairy_id: companyid, center_id } = req.user;
+
+  // Validate required fields
+  if (!companyid || !center_id) {
+    return res.status(400).json({
+      success: false,
+      message: "Missing required fields: companyid or center_id",
+    });
+  }
+
+  // Establish database connection
+  pool.getConnection((err, connection) => {
+    if (err) {
+      console.error("Error getting MySQL connection: ", err);
+      return res
+        .status(500)
+        .json({ success: false, message: "Database connection error" });
+    }
+
+    // Fetch max ItemCode from itemmaster
+    connection.query(
+      "SELECT MAX(ItemCode) AS maxItemCode FROM itemmaster WHERE companyid = ? AND center_id = ?",
+      [companyid, center_id],
+      (err, result) => {
+        connection.release();
+
+        if (err) {
+          console.error("Error fetching max ItemCode: ", err);
+          return res.status(500).json({
+            success: false,
+            message: "Error fetching max ItemCode",
+          });
+        }
+
+        const maxItemCode = result[0]?.maxItemCode || 0;
+
+        return res.status(200).json({
+          success: true,
+          maxItemCode: maxItemCode,
+        });
+      }
+    );
   });
 };

@@ -241,8 +241,8 @@ const StockList = () => {
       </div>
       {isModalOpen && (
         <div className="pramod modal">
-          <div className="modal-content">
-            <h2>Update Product Details</h2>
+          <div className="modal-content forMin">
+            <h2>Stock Product Details</h2>
             <label>
               Item Name: {editSale?.ItemCode}&nbsp;{editSale?.ItemName}
             </label>

@@ -222,23 +222,10 @@ const DealersList = () => {
         </div>
       </div>
       {isModalOpen && (
-        <div className="pramod modal">
-          <div className="modal-content">
+        <div className="pramod modal ">
+          <div className="modal-content minSize">
             <h2>Update Dealer Details</h2>
-            <label>
-              Dealer Name:
-              <input
-                type="text"
-                value={editSale?.cname}
-                onChange={(e) =>
-                  setEditSale({ ...editSale, cname: e.target.value })
-                }
-                onFocus={(e) => e.target.select()}
-                onKeyDown={(e) =>
-                  handleKeyPress(e, document.getElementById("phono"))
-                }
-              />
-            </label>{" "}
+
             <label>
               Phone:
               <input

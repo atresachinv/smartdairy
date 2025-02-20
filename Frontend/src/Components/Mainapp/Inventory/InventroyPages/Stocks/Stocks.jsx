@@ -8,6 +8,7 @@ import CreateStock from "./StartingStock/CreateStock";
 import StockList from "./StartingStock/StockList";
 import ListDeliveryStock from "./DeliveryStock/ListDeliveryStock";
 import AddDeliveryStock from "./DeliveryStock/AddDeliveryStock";
+import AddDeliveryReturns from "./DeliveryStock/AddDeliveryReturns";
 
 const Stocks = () => {
   const [userRole, setUserRole] = useState(null);
@@ -39,7 +40,7 @@ const Stocks = () => {
           <Route path="update/sale/rate" element={<UpdateSaleRate />} />
           <Route path="delivery/add-stock" element={<AddDeliveryStock />} />
           <Route path="delivery/list" element={<ListDeliveryStock />} />
-          <Route path="delivery/returns" element={<ListDeliveryStock />} />
+          <Route path="delivery/returns" element={<AddDeliveryReturns />} />
           <Route path="*" element={<CreateStock />} />
         </Routes>
       </div>

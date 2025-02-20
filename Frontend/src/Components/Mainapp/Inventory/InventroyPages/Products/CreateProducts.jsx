@@ -1,10 +1,11 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import axiosInstance from "../../../../../App/axiosInstance";
 import { toast } from "react-toastify";
 import "./Product.css";
 
 const CreateProducts = () => {
   const [formData, setFormData] = useState({
+    ItemCode: "",
     ItemName: "",
     marname: "",
     ItemGroupCode: "",
@@ -44,6 +45,7 @@ const CreateProducts = () => {
         if (res?.data?.success) {
           toast.success("Product Created Successfully!");
           setFormData({
+            ItemCode: formData.ItemCode + 1,
             ItemName: "",
             marname: "",
             ItemGroupCode: "",
@@ -84,15 +86,51 @@ const CreateProducts = () => {
     });
   };
 
+  //get max Itemcode
+  useEffect(() => {
+    const fetchMaxItemCode = async () => {
+      try {
+        const res = await axiosInstance.get("/item/maxcode");
+
+        if (res.data.success) {
+          setFormData({
+            ...formData,
+            ItemCode: parseInt(res.data.maxItemCode) + 1,
+          });
+        }
+      } catch (error) {
+        console.error("Failed to fetch max item code:", error);
+      }
+    };
+
+    fetchMaxItemCode();
+  }, []);
+
   return (
     <div className="create-dealer-container w100 h1 d-flex-col p10 ">
       <span className="heading">Create Product</span>
       <div className="create-dealer-inner-container w100 h1 d-flex-col center">
         <form
           onSubmit={handleSubmit}
-          className="create-dealer-form-container w50 h70 d-flex-col p10 bg"
+          className="create-dealer-form-container w50 h90 d-flex-col p10 bg"
         >
           <div className="row d-flex my10">
+            <div className="col">
+              <label className="info-text px10">
+                Item Code: <span className="req">*</span>
+              </label>
+              <input
+                type="number"
+                name="ItemCode"
+                value={formData.ItemCode}
+                onFocus={(e) => e.target.select()}
+                className={`data form-field  `}
+                onChange={handleInputChange}
+                onKeyDown={(e) => handleKeyDown(e, "ItemCode")}
+                placeholder="Item Code"
+                required
+              />
+            </div>
             <div className="col">
               <label className="info-text px10">
                 Item Name: <span className="req">*</span>
@@ -109,6 +147,8 @@ const CreateProducts = () => {
                 required
               />
             </div>
+          </div>
+          <div className="row d-flex my10">
             <div className="col">
               <label className="info-text px10">
                 Item Marathi Name: <span className="req">*</span>
@@ -125,8 +165,6 @@ const CreateProducts = () => {
                 required
               />
             </div>
-          </div>
-          <div className="row d-flex my10">
             <div className="col">
               <label className="info-text px10">
                 Item Group Name: <span className="req">*</span>
@@ -139,7 +177,7 @@ const CreateProducts = () => {
                 onKeyDown={(e) => handleKeyDown(e, "ItemGroupCode")}
                 required
               >
-                <option value="">Item Group Name</option>
+                <option value="">------ Select ------- </option>
                 {[
                   { value: 1, label: "Cattle Feed" },
                   { value: 2, label: "Medicines" },
@@ -152,6 +190,8 @@ const CreateProducts = () => {
                 ))}
               </select>
             </div>
+          </div>
+          <div className="row d-flex my10">
             <div className="col">
               <label className="info-text px10">
                 Unit Code: <span className="req">*</span>
@@ -164,7 +204,7 @@ const CreateProducts = () => {
                 onKeyDown={(e) => handleKeyDown(e, "UnitCode")}
                 required
               >
-                <option value="">Select Unit</option>
+                <option value="">-----Select Unit-----</option>
                 {[
                   { value: "KG", label: "KG" },
                   { value: "QTY", label: "QTY" },
@@ -176,8 +216,6 @@ const CreateProducts = () => {
                 ))}
               </select>
             </div>
-          </div>
-          <div className="row d-flex my10">
             <div className="col">
               <label className="info-text px10">Item Description:</label>
               <input
@@ -191,6 +229,8 @@ const CreateProducts = () => {
                 placeholder="Item Description"
               />
             </div>
+          </div>
+          <div className="row d-flex my10">
             <div className="col">
               <label className="info-text px10">Manufacturer:</label>
               <input

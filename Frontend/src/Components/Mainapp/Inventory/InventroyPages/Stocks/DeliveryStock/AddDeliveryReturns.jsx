@@ -1,15 +1,7 @@
-/* eslint-disable no-undef */
-import { useEffect, useState } from "react";
-import axiosInstance from "../../../../../../App/axiosInstance";
-import { MdDeleteOutline } from "react-icons/md";
+import React from "react";
 import { toast } from "react-toastify";
-import Swal from "sweetalert2";
-import { getAllProducts } from "../../../../../../App/Features/Mainapp/Inventory/inventorySlice";
-import { shallowEqual, useDispatch, useSelector } from "react-redux";
-import { useTranslation } from "react-i18next";
-import { listEmployee } from "../../../../../../App/Features/Mainapp/Masters/empMasterSlice";
 
-const AddDeliveryStock = () => {
+const AddDeliveryReturns = () => {
   const dispatch = useDispatch();
   const { t } = useTranslation(["milkcollection", "common"]);
   const tDate = useSelector((state) => state.date.toDate);
@@ -746,4 +738,5 @@ const AddDeliveryStock = () => {
     </div>
   );
 };
-export default AddDeliveryStock;
+
+export default AddDeliveryReturns;

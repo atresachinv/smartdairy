@@ -7,47 +7,51 @@ import * as XLSX from "xlsx";
 import { MdDeleteOutline } from "react-icons/md";
 import Spinner from "../../../../../Home/Spinner/Spinner";
 import { IoClose } from "react-icons/io5";
+import { useDispatch, useSelector } from "react-redux";
+import { listEmployee } from "../../../../../../App/Features/Mainapp/Masters/empMasterSlice";
 
 const ListDeliveryStock = () => {
-  const [stockList, setStockList] = useState([]);
+  const [deliveryList, setDeliveryList] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [filteredList, setFilteredList] = useState(stockList); // Store filtered items
+  const [filteredList, setFilteredList] = useState(deliveryList); // Store filtered items
   const [fcode, setFcode] = useState("");
   const [date1, SetDate1] = useState("");
   const [date2, SetDate2] = useState("");
   const [loading, SetLoading] = useState(false);
   const [sortOrder, setSortOrder] = useState("desc");
   const [updatelist, setUpdateList] = useState([]);
-  // console.log(filteredList);
+  const dispatch = useDispatch();
+  const { emplist } = useSelector((state) => state.emp);
 
   // Handle view button click for purchase list
   const handleEditClick = (id) => {
-    const filterList = stockList.filter((item) => item.billno === id) || [];
+    const filterList = deliveryList.filter((item) => item.billno === id) || [];
     setUpdateList(filterList);
     // console.log(filterList);
     setIsModalOpen(true);
   };
 
+  //get all
+  useEffect(() => {
+    dispatch(listEmployee());
+  }, []);
+
   // Fetch purchase list from API
   useEffect(() => {
-    const fetchPurchaseList = async () => {
+    const fetchDeliveryList = async () => {
       SetLoading(true);
       try {
-        const response = await axiosInstance.get(
-          "/purchase/all?itemgroupcode=2&cn=0"
-        );
-        let purchase = response?.data?.purchaseData || [];
-        purchase.sort(
-          (a, b) => new Date(b.purchasedate) - new Date(a.purchasedate)
-        );
-        setPurchaseList(purchase);
+        const response = await axiosInstance.get("/all/deliverystock?cn=0");
+        let list = response?.data?.data || [];
+        list.sort((a, b) => new Date(b.saledate) - new Date(a.saledate));
+        setDeliveryList(list);
         SetLoading(false);
       } catch (error) {
         SetLoading(false);
         toast.error("Error fetching purchase list.");
       }
     };
-    fetchPurchaseList();
+    fetchDeliveryList();
   }, []);
 
   // Function to delete a purchase item
@@ -69,7 +73,7 @@ const ListDeliveryStock = () => {
         const res = await axiosInstance.delete(`/purchase/delete/${id}`);
         if (res.data?.success) {
           // Remove the deleted item from the list
-          setPurchaseList((prevItems) =>
+          setDeliveryList((prevItems) =>
             prevItems.filter((item) => item.billno !== id)
           );
 
@@ -107,12 +111,12 @@ const ListDeliveryStock = () => {
 
   // Function to download dealer list as an Excel file
   const downloadExcel = () => {
-    if (purchaseList.length === 0) {
+    if (deliveryList.length === 0) {
       toast.warn("No data available to download.");
       return;
     }
 
-    const formattedData = purchaseList.map((item) => ({
+    const formattedData = deliveryList.map((item) => ({
       PurchaseDate: formatDateToDDMMYYYY(item.purchasedate),
       InvoiceIdBillNo: item.receiptno,
       SupplierCode: item.dealerCode,
@@ -142,15 +146,15 @@ const ListDeliveryStock = () => {
       if (!acc[key]) {
         acc[key] = { ...item, TotalAmount: 0 };
       }
-      acc[key].TotalAmount += item.amount;
+      acc[key].TotalAmount += item.amt;
       return acc;
     }, {});
 
-    // Convert object to array and sort by purchasedate
+    // Convert object to array and sort by saledate
     return Object.values(groupedPurchase).sort((a, b) =>
       sortOrder === "asc"
-        ? new Date(a.purchasedate) - new Date(b.purchasedate)
-        : new Date(b.purchasedate) - new Date(a.purchasedate)
+        ? new Date(a.saledate) - new Date(b.saledate)
+        : new Date(b.saledate) - new Date(a.saledate)
     );
   };
 
@@ -175,15 +179,15 @@ const ListDeliveryStock = () => {
       );
       // console.log(data);
       if (data?.success) {
-        setPurchaseList(data.purchaseData || []);
+        setDeliveryList(data.purchaseData || []);
         setFcode("");
       } else {
-        setPurchaseList([]);
+        setDeliveryList([]);
       }
       SetLoading(false);
     } catch (error) {
       toast.error("Error fetching Purchase items");
-      setPurchaseList([]);
+      setDeliveryList([]);
       SetLoading(false);
     }
   };
@@ -199,17 +203,17 @@ const ListDeliveryStock = () => {
   //for searching Name /code to get the purchase list ------------------------------------------->
   useEffect(() => {
     if (fcode) {
-      const filteredItems = purchaseList.filter(
+      const filteredItems = deliveryList.filter(
         (item) =>
-          item.dealerCode.toString().includes(fcode) ||
+          item.emp_id.toString().includes(fcode) ||
           item.dealerName.toLowerCase().includes(fcode.toLowerCase()) ||
           item.receiptno.toString().includes(fcode.toLowerCase())
       );
       setFilteredList(filteredItems);
     } else {
-      setFilteredList(purchaseList);
+      setFilteredList(deliveryList);
     }
-  }, [fcode, purchaseList]);
+  }, [fcode, deliveryList]);
 
   // Function to handle changes in the  input field
   const handleItemChange = (index, field, value) => {
@@ -265,7 +269,7 @@ const ListDeliveryStock = () => {
           toast.success("Purchase data updated successfully!");
 
           // Optionally, update the frontend state with the new data
-          setPurchaseList((prevList) =>
+          setDeliveryList((prevList) =>
             prevList.map((item) => {
               const updatedItem = updatelist.find(
                 (updated) => updated.purchaseid === item.purchaseid
@@ -287,6 +291,14 @@ const ListDeliveryStock = () => {
 
   const handleFocus = (e) => {
     e.target.select();
+  };
+
+  //find name
+  const findEmpName = (emp_id) => {
+    if (emplist) {
+      const emp = emplist.find((item) => parseInt(item.emp_id) == emp_id);
+      return emp?.emp_name || "";
+    } else return "";
   };
 
   return (
@@ -364,9 +376,8 @@ const ListDeliveryStock = () => {
               </span>
             </span>
             <span className="f-info-text w5">Rec. No</span>
-            <span className="f-info-text w10">Dealer Code</span>
-            <span className="f-info-text w15">Dealer Name</span>
-            <span className="f-info-text w10">Total Amount</span>
+            <span className="f-info-text w10">Emp Code</span>
+            <span className="f-info-text w15">Emp Name</span>
             <span className="f-info-text w10">Actions</span>
           </div>
           {loading ? (
@@ -388,14 +399,13 @@ const ListDeliveryStock = () => {
                   >
                     <span className="text w5">{index + 1}</span>
                     <span className="text w10">
-                      {formatDateToDDMMYYYY(item.purchasedate)}
+                      {formatDateToDDMMYYYY(item.saledate)}
                     </span>
-                    <span className="text w5">{item.receiptno}</span>
-                    <span className="text w10">{item.dealerCode}</span>
+                    <span className="text w5">{item.rctno}</span>
+                    <span className="text w10">{item.to_user}</span>
                     <span className="text w15">
-                      {item.dealerName || "Unknown"}
+                      {findEmpName(item.to_user)}
                     </span>
-                    <span className="text w10">{item.TotalAmount}</span>
                     <span className="text w10 d-flex j-center a-center">
                       <button
                         style={{ cursor: "pointer" }}
@@ -424,7 +434,7 @@ const ListDeliveryStock = () => {
         <div className="pramod modal">
           <div className="modal-content">
             <div className="d-flex sb deal-info">
-              <label className="heading">Purchase Bill Details</label>
+              <label className="heading"> Bill Details</label>
               <IoClose
                 style={{
                   cursor: "pointer",
@@ -440,30 +450,28 @@ const ListDeliveryStock = () => {
             <div className=" d-flex sb mx15 px15 deal-info-name">
               <label className="label-text">
                 Rect. No :{" "}
-                <span className="info-text">
-                  {updatelist[0]?.receiptno || ""}
-                </span>
+                <span className="info-text">{updatelist[0]?.rctno || ""}</span>
               </label>
               <div className="10">
                 <label className="label-text">
                   Date :{" "}
                   <span className="info-text">
-                    {formatDateToDDMMYYYY(updatelist[0]?.purchasedate)}
+                    {formatDateToDDMMYYYY(updatelist[0]?.saledate)}
                   </span>
                 </label>
               </div>
             </div>
             <div className=" d-flex sb mx15 px15 deal-info-name">
               <label className="lable-text">
-                Dealer code :{" "}
+                Emp code :{" "}
                 <span className="info-text">
-                  {updatelist[0]?.dealerCode || ""}
+                  {updatelist[0]?.to_user || ""}
                 </span>
               </label>
               <label className="label-text">
-                Dealer Name :{" "}
+                Emp Name :{" "}
                 <span className="info-text">
-                  {updatelist[0]?.dealerName || ""}
+                  {findEmpName(updatelist[0]?.to_user) || ""}
                 </span>
               </label>
             </div>
@@ -474,64 +482,36 @@ const ListDeliveryStock = () => {
                     <tr>
                       <th className="f-info-text">SrNo</th>
                       <th className="f-info-text">Item Name</th>
-                      <th className="f-info-text">Rate</th>
-                      <th className="f-info-text">Sale Rate</th>
                       <th className="f-info-text">Qty</th>
-                      <th className="f-info-text">Amount</th>
                     </tr>
                   </thead>
                   <tbody>
                     {updatelist.map((item, i) => (
                       <tr key={i}>
                         <td>{i + 1}</td>
-                        <td>{item.itemname}</td>
-                        <td className="w15">
-                          <input
-                            name="rate"
-                            type="number"
-                            value={item.rate}
-                            onFocus={handleFocus}
-                            onChange={(e) =>
-                              handleItemChange(i, "rate", e.target.value)
-                            }
-                          />
-                        </td>
-                        <td className="w15">
-                          <input
-                            name="sale"
-                            type="number"
-                            value={item.salerate}
-                            onFocus={handleFocus}
-                            onChange={(e) =>
-                              handleItemChange(i, "salerate", e.target.value)
-                            }
-                          />
-                        </td>
+                        <td>{item.ItemName}</td>
+
                         <td className="w15">
                           <input
                             name="qty"
                             type="number"
-                            value={item.qty}
+                            value={item.Qty}
                             onFocus={handleFocus}
                             onChange={(e) =>
                               handleItemChange(i, "qty", e.target.value)
                             }
                           />
                         </td>
-                        <td>{item.rate * item.qty}</td>
                       </tr>
                     ))}
                     <tr>
-                      <td></td>
-                      <td></td>
-                      <td></td>
                       <td></td>
                       <td>
                         <b>Total</b>
                       </td>
                       <td>
                         {(updatelist || []).reduce(
-                          (acc, item) => acc + (item.amount || 0),
+                          (acc, item) => acc + (item.Qty || 0),
                           0
                         )}
                       </td>
@@ -540,7 +520,7 @@ const ListDeliveryStock = () => {
                 </table>
               </div>
             </div>
-            <div className="d-flex my15 j-end">
+            <div className="d-flex my5 j-end">
               <button className="btn" onClick={handleUpdate}>
                 Update
               </button>

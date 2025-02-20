@@ -24,9 +24,7 @@ const CreateCustomer = () => {
   const [qty, setQty] = useState(1);
   const [rate, setRate] = useState(0);
   const [itemList, setItemList] = useState([]);
-  const [userid, setUserid] = useState("");
   const customerslist = useSelector((state) => state.customer.customerlist);
-  const [billNo, setBillNo] = useState("9112");
   const dairyInfo = useSelector((state) => state.dairy.dairyData.SocietyName);
   const [filteredProducts, setFilterProducts] = useState([]);
 
@@ -55,16 +53,27 @@ const CreateCustomer = () => {
       );
       if (customer) {
         setCname(customer.cname || "");
-        setUserid(customer.rno || "");
       } else {
         setCname("");
-        setUserid("");
       }
     } else {
       setCname("");
-      setUserid("");
     }
   }, [fcode, customerslist]);
+
+  // Set customer code (fcode) based on cname
+  useEffect(() => {
+    if (cname && customerslist.length > 0) {
+      const custname = customerslist.find((item) => item.cname === cname);
+      if (custname) {
+        setFcode(custname.srno ?? "");
+      } else {
+        setFcode("");
+      }
+    } else {
+      setFcode("");
+    }
+  }, [cname, customerslist]);
 
   // Function to get the current date
   const getTodaysDate = () => {
@@ -82,15 +91,6 @@ const CreateCustomer = () => {
     setAmt(rate * qty);
   }, [rate, qty]);
 
-  // Generate a new bill number using the current timestamp
-  useEffect(() => {
-    const generateBillNo = () => {
-      const timestamp = Date.now();
-      setBillNo(`9${timestamp}`);
-    };
-    generateBillNo();
-  }, []);
-
   // Add item to the cart
   const handleAddToCart = () => {
     if (selectitemcode > 0 && qty > 0 && rate > 0) {
@@ -99,8 +99,7 @@ const CreateCustomer = () => {
       );
       const newCartItem = {
         ReceiptNo: rctno, // Receipt No
-        userid: userid,
-        BillNo: billNo,
+
         ItemCode: selectedItem?.ItemCode,
         BillDate: date + " 00:00:00",
         Qty: qty,
@@ -158,8 +157,6 @@ const CreateCustomer = () => {
           setRctno(parseInt(rctno) + 1);
           setSelectitemcode(0);
           toast.success(res.data.message);
-          const timestamp = Date.now();
-          setBillNo(`9${timestamp}`);
           localStorage.setItem("custretreceiptno", parseInt(rctno) + 1);
         }
       } catch (error) {

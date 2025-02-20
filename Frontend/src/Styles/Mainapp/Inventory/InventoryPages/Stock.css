@@ -29,7 +29,7 @@
 
 @media screen and (max-width: 426px) {
   .dropdown-menu {
-    left: 10px;
+   
     min-width: 110px;
   }
 }

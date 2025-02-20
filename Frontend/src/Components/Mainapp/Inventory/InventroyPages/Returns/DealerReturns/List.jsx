@@ -259,7 +259,7 @@ const List = () => {
       <div className="customer-list-table w100 h1 d-flex-col hidescrollbar bg">
         <span className="heading p10">Dealer Returns Report</span>
         <div className="customer-heading-title-scroller w100 h1 mh100 d-flex-col">
-          <div className="data-headings-div sale-data-headings-div h10 d-flex center t-center sb">
+          <div className="data-headings-div sale-data-headings-div h10 d-flex center t-center sb bg7">
             <span className="f-info-text w5">Sr.No</span>
             <span className="f-info-text w5">Date</span>
             <span className="f-info-text w5">Rec. No</span>
