@@ -1,0 +1,15 @@
+.notification-container .notification-counter {
+  min-width: 18px;
+  min-height: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  z-index: 50;
+  top: 5px;
+  left: auto;
+  right: 15px;
+  color: #fff;
+  background-color: #6051eb;
+  border-radius: 10px;
+}

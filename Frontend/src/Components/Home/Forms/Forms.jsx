@@ -30,33 +30,31 @@ const Forms = () => {
   };
 
   return (
-    <>
-      <div className="auth-container w100 h1 d-flex-col center">
-        <div className="app-logo-div w100 h10 d-flex center">
-          <img
-            className="applogo"
-            src={logo}
-            alt="smartdairylogo"
-            loading="lazy"
-          />
-        </div>
-        <div className="forms-container-div w100 h90 d-flex-col center">
-          {currentForm === "login" && (
-            <Login
-              switchToRegister={switchToRegister}
-              switchToOptSend={switchToOptSend}
-            />
-          )}
-          {currentForm === "register" && (
-            <Register switchToLogin={switchToLogin} />
-          )}
-          {currentForm === "SendOtp" && <SendOtp switchVerify={switchVerify} />}
-          {currentForm === "VerifyOtp" && (
-            <VerifyOtp switchToUpdatePassword={switchToUpdatePassword} />
-          )}
-        </div>
+    <div className="auth-container w100 h1 d-flex-col center">
+      <div className="app-logo-div w100 h10 d-flex center">
+        <img
+          className="applogo"
+          src={logo}
+          alt="smartdairylogo"
+          loading="lazy"
+        />
       </div>
-    </>
+      <div className="forms-container-div w100 h90 d-flex-col center">
+        {currentForm === "login" && (
+          <Login
+            switchToRegister={switchToRegister}
+            switchToOptSend={switchToOptSend}
+          />
+        )}
+        {currentForm === "register" && (
+          <Register switchToLogin={switchToLogin} />
+        )}
+        {currentForm === "SendOtp" && <SendOtp switchVerify={switchVerify} />}
+        {currentForm === "VerifyOtp" && (
+          <VerifyOtp switchToUpdatePassword={switchToUpdatePassword} />
+        )}
+      </div>
+    </div>
   );
 };
 

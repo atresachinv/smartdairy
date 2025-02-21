@@ -28,6 +28,8 @@ import registerReducer from "./Features/Dairy/registerSlice";
 import userDataReducer from "./Features/Mainapp/Profile/ProfileSlice";
 // Inventory
 import inventoryReducer from "./Features/Mainapp/Inventory/inventorySlice";
+// super-admin
+import accessReducer from "./Features/Admin/SuperAdmin/accessSlice"; //super-admin
 
 export const store = configureStore({
   reducer: {
@@ -60,5 +62,6 @@ export const store = configureStore({
     milkCollection: milkcolleReducer,
     // Inventory
     inventory: inventoryReducer,
+    access: accessReducer,
   },
 });
