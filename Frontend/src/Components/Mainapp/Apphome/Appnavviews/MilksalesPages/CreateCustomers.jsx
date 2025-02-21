@@ -8,13 +8,17 @@ import { createRetailCustomer } from "../../../../../App/Features/Mainapp/Milksa
 
 const CreateCustomers = ({ clsebtn }) => {
   const dispatch = useDispatch();
+
   const [errors, setErrors] = useState({});
+  const [custno, setCustno] = useState(() => {
+    return localStorage.getItem("custno") || 2;
+  });
 
   const initialValues = {
-    code: "",
+    code: custno || "",
     cname: "",
     mobile: "",
-    advance: "",
+    advance: 0,
   };
 
   const [values, setValues] = useState(initialValues);
@@ -26,24 +30,32 @@ const CreateCustomers = ({ clsebtn }) => {
       case "code":
         if (!/^\d+$/.test(value.toString())) {
           error[name] = "Invalid Customer code.";
+        } else {
+          delete errors[name];
         }
         break;
 
       case "cname":
         if (!/^[a-zA-Z\s]+$/.test(value)) {
           error[name] = "Invalid Customer Name.";
+        } else {
+          delete errors[name];
         }
         break;
 
       case "mobile":
         if (!/^\d{10}$/.test(value.toString())) {
           error[name] = "Invalid Mobile Number (10 digits required).";
+        } else {
+          delete errors[name];
         }
         break;
 
       case "advance":
         if (value && isNaN(value)) {
           error[name] = "Advance must be a number.";
+        } else {
+          delete errors[name];
         }
         break;
 
@@ -55,11 +67,12 @@ const CreateCustomers = ({ clsebtn }) => {
   };
 
   const validateFields = () => {
-    let validationErrors = {};
-    Object.keys(values).forEach((field) => {
+    const fieldsToValidate = ["code", "cname", "mobile", "advance"];
+    const validationErrors = {};
+    fieldsToValidate.forEach((field) => {
       const fieldError = validateField(field, values[field]);
       if (Object.keys(fieldError).length > 0) {
-        validationErrors = { ...validationErrors, ...fieldError };
+        validationErrors[field] = fieldError[field];
       }
     });
 
@@ -71,6 +84,7 @@ const CreateCustomers = ({ clsebtn }) => {
     const { name, value } = e.target;
     setValues({ ...values, [name]: value });
 
+    // Validate field and update errors state
     const fieldError = validateField(name, value);
     setErrors((prevErrors) => ({
       ...prevErrors,
@@ -91,6 +105,7 @@ const CreateCustomers = ({ clsebtn }) => {
 
     dispatch(createRetailCustomer(values));
     setValues(initialValues);
+    localStorage.setItem("custno", custno + 1);
     toast.success("Customer Created Successfully!");
     clsebtn(false);
   };
@@ -125,7 +140,8 @@ const CreateCustomers = ({ clsebtn }) => {
               type="number"
               name="code"
               id="code"
-              className="data"
+              className={`data  ${errors.code ? "input-error" : ""}`}
+              value={custno || ""}
               onChange={handleInputs}
               onKeyDown={(e) =>
                 handleKeyPress(e, document.getElementById("code"))
@@ -138,7 +154,7 @@ const CreateCustomers = ({ clsebtn }) => {
               type="text"
               name="cname"
               id="cname"
-              className="data"
+              className={`data  ${errors.cname ? "input-error" : ""}`}
               required
               onChange={handleInputs}
               onKeyDown={(e) =>
@@ -154,7 +170,7 @@ const CreateCustomers = ({ clsebtn }) => {
               type="number"
               name="mobile"
               id="mobile"
-              className="data"
+              className={`data  ${errors.mobile ? "input-error" : ""}`}
               required
               onChange={handleInputs}
               onKeyDown={(e) =>
@@ -168,7 +184,7 @@ const CreateCustomers = ({ clsebtn }) => {
               type="number"
               name="advance"
               id="advance"
-              className="data"
+              className={`data  ${errors.advance ? "input-error" : ""}`}
               onChange={handleInputs}
               onKeyDown={(e) =>
                 handleKeyPress(e, document.getElementById("advance"))

@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { toast } from "react-toastify";
-import { createAccess } from "../../../../App/Features/Admin/SuperAdmin/accessSlice";
+import { createAccess } from "../../App/Features/Admin/SuperAdmin/accessSlice";
 
-const DairyAccess = () => {
+const CreateAccess = () => {
   const dispatch = useDispatch();
   const initialValues = {
     access_name: "",
@@ -72,4 +72,4 @@ const DairyAccess = () => {
   );
 };
 
-export default DairyAccess;
+export default CreateAccess;
