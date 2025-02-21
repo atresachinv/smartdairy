@@ -2165,7 +2165,6 @@ exports.completedMilkReport = async (req, res) => {
 
 exports.createRetailCustomer = async (req, res) => {
   const { code, cname, mobile, advance } = req.body;
-  console.log(code, cname, mobile, advance);
 
   pool.getConnection((err, connection) => {
     if (err) {
@@ -2227,7 +2226,7 @@ exports.createRetailCustomer = async (req, res) => {
 //-------------------------------------------------------------------------------------------------->
 
 exports.RetailMilkCollection = async (req, res) => {
-  const { code, cname, liters, time } = req.body;
+  const { code, cname, time, liters, rate, amt, paidamt, paymode } = req.body;
 
   pool.getConnection((err, connection) => {
     if (err) {
@@ -2251,14 +2250,27 @@ exports.RetailMilkCollection = async (req, res) => {
       // Prepare the SQL query
       const milkcollection = `
       INSERT INTO retail_milk_sales 
-      (dairy_id, center_id, code , cust_name , liters , rate , amt , saleby , saledate , saletime)
-        VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      (dairy_id, center_id, code , cust_name , liters , rate , amt , paidamt, paymode, saleby , saledate , saletime )
+        VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       `;
 
       // Execute the query
       connection.query(
         milkcollection,
-        [dairy_id, center_id, code, cname, user, liters, currentDate, time],
+        [
+          dairy_id,
+          center_id,
+          code,
+          cname,
+          liters,
+          rate,
+          amt,
+          paidamt,
+          paymode,
+          user,
+          currentDate,
+          time,
+        ],
         (err, result) => {
           connection.release();
 

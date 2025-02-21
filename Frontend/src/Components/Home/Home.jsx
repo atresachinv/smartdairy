@@ -3,6 +3,7 @@ import Navigation from "./Navigation";
 import Forms from "./Forms/Forms";
 import { MdSignalWifiConnectedNoInternet0 } from "react-icons/md";
 import "../../Styles/Home/Home.css";
+import cow_man_img from "../../assets/cow-man-milk.jpg";
 import FlashScreen from "./FlashScreen";
 
 const Home = () => {
@@ -52,19 +53,20 @@ const Home = () => {
           <FlashScreen />
         </div>
       ) : (
-        <>
-          <div className="nav-bar w100 ">
+        <div className="wh100 d-flex-col">
+          <div className="nav-bar w100">
             <Navigation />
           </div>
-          <div className="home-container w100  d-flex center">
+          <div className="home-form-container w100 90 d-flex center">
             <div className="img-info-container w50 h1 d-flex-col">
-              <div className="img-container box"></div>
+              {/* <div className="img-container box"></div> */}
+              <img src={cow_man_img} alt="cow-man-img" />
             </div>
             <div className="login-register-container w50 h1 d-flex center">
               <Forms />
             </div>
           </div>
-        </>
+        </div>
       )}
     </>
   );

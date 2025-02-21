@@ -4,13 +4,28 @@ import axiosInstance from "../../../axiosInstance";
 // Define the initial state
 const initialState = {
   dairyData: {},
+  allDairyData: [],
+  allDstatus: "idle",
   status: "idle",
   error: null,
 };
 
 // Async thunk for fetching dairy info
+export const fetchAllDairyInfo = createAsyncThunk(
+  "dairyInfo/fetchAllDairyInfo",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.post("/all/dairies");
+      return response.data.alldairyInfo;
+    } catch (error) {
+      return rejectWithValue(error.response.data.message || error.message);
+    }
+  }
+);
+
+// Async thunk for fetching dairy info
 export const fetchDairyInfo = createAsyncThunk(
-  "dairyInfo/get",
+  "dairyInfo/fetchDairyInfo",
   async (_, { rejectWithValue }) => {
     try {
       const response = await axiosInstance.post("/dairyinfo");
@@ -28,7 +43,18 @@ const dairySlice = createSlice({
     // Optionally define any reducers here
   },
   extraReducers: (builder) => {
-    builder
+    builder // fetch all dairy list ------------------------------------------------------------->
+      .addCase(fetchAllDairyInfo.pending, (state) => {
+        state.allDstatus = "loading";
+      })
+      .addCase(fetchAllDairyInfo.fulfilled, (state, action) => {
+        state.allDstatus = "succeeded";
+        state.allDairyData = action.payload;
+      })
+      .addCase(fetchAllDairyInfo.rejected, (state, action) => {
+        state.allDstatus = "failed";
+        state.error = action.payload;
+      }) // fetch login dairy info -------------------------------------------------------------->
       .addCase(fetchDairyInfo.pending, (state) => {
         state.status = "loading";
       })

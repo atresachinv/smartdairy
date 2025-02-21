@@ -151,16 +151,16 @@ const CustomerList = () => {
             <span className="f-info-text w25">Customer Name</span>
             <span className="f-info-text w10">Mobile</span>
             <span className="f-info-text w15">Addhar No</span>
-            <span className="f-info-text w10">City</span>
-            <span className="f-info-text w10">Tehsil</span>
-            <span className="f-info-text w10">District</span>
+            <span className="f-info-text w15">City</span>
+            <span className="f-info-text w15">Tehsil</span>
+            <span className="f-info-text w15">District</span>
             <span className="f-info-text w15">A/C No</span>
-            <span className="f-info-text w10">IFSC</span>
+            <span className="f-info-text w15">IFSC</span>
             <span className="f-info-text w15">Caste</span>
             <span className="f-info-text w10">Gender</span>
             <span className="f-info-text w5">Age</span>
             <span className="f-info-text w10">MemberNo</span>
-            <span className="f-info-text w10">Mem. Date</span>
+            <span className="f-info-text w15">Mem. Date</span>
             <span className="f-info-text w15">Ratechart</span>
             <span className="f-info-text w5">MilkType</span>
             <span className="f-info-text w5">Active</span>
@@ -177,25 +177,26 @@ const CustomerList = () => {
                 }`}
                 style={{
                   backgroundColor: index % 2 === 0 ? "#faefe3" : "#fff",
-                }}>
+                }}
+              >
                 <span className="text w5">{customer.srno}</span>
                 <span className="text w25 t-start">{customer.cname}</span>
                 <span className="text w10">
                   {customer.mobile || customer.Phone}
                 </span>
                 <span className="text w15">{customer.cust_addhar}</span>
-                <span className="text w10">{customer.City}</span>
-                <span className="text w10">{customer.tal}</span>
-                <span className="text w10">{customer.dist}</span>
-                <span className="text w15">{customer.cust_accno}</span>
-                <span className="text w10">{customer.cust_ifsc}</span>
-                <span className="text w15">{customer.caste}</span>
-                <span className="text w10">
+                <span className="text w15 t-start">{customer.City}</span>
+                <span className="text w15 t-start">{customer.tal}</span>
+                <span className="text w15 t-start">{customer.dist}</span>
+                <span className="text w15  t-end">{customer.cust_accno}</span>
+                <span className="text w15  ">{customer.cust_ifsc}</span>
+                <span className="text w15 t-start">{customer.caste}</span>
+                <span className="text w10 t-start">
                   {customer.gender === 1 ? "Female" : "Male"}
                 </span>
                 <span className="text w5">-</span> {/* Placeholder for age */}
-                <span className="text w10">{customer.rno}</span>
-                <span className="text w10">
+                <span className="text w10 t-start">{customer.rno}</span>
+                <span className="text w15 t-end">
                   {new Date(customer.createdon).toLocaleDateString("en-GB", {
                     day: "2-digit",
                     month: "2-digit",
@@ -203,7 +204,7 @@ const CustomerList = () => {
                   })}
                 </span>
                 <span className="text w15">{customer.rcName}</span>
-                <span className="text w5">
+                <span className="text w5 t-start">
                   {customer.milktype === 1 ? "Cow" : "Buffalo"}
                 </span>
                 <span className="text w5">

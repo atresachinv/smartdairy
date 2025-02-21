@@ -2,6 +2,16 @@
   width: 100%;
   background-color: var(--main-bg-color);
 }
+/* .navbar .logo img {
+  width: 70%;
+  height: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+} */
 .logo-text {
   color: #fff;
 }

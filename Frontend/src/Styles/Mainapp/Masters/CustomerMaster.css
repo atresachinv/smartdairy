@@ -58,12 +58,11 @@
 
 /* Customer List Scrollable css */
 
-/* ------------------------------------------ */
-/* RESPONSIVE CSS --------------------------- */
-/* ------------------------------------------ */
+/* ------------------------------------------------------------------------------------> */
+/* RESPONSIVE CSS ---------------------------------------------------------------------> */
+/* ------------------------------------------------------------------------------------> */
 
 /* Customer List Scrollable Responsive css */
-
 
 /* Create Customer Responsive Css */
 @media screen and (max-width: 769px) {
@@ -174,8 +173,13 @@
   .Bank-details-div .ifsc-details-div {
     width: 50%;
   }
-
-  .button-container{
+  .button-container {
     margin-bottom: 10px;
+  }
+  /* <<<<<<<<<<<<<<<<<------------------ customer list css -------------------->>>>>>>>>>>>>>>> */
+  .download-print-pdf-excel-container input,
+  .download-print-pdf-excel-container button {
+    width: 100%;
+    margin-bottom: 5px;
   }
 }

@@ -24,7 +24,7 @@ import { GrNotes, GrOrganization } from "react-icons/gr";
 import { NavLink } from "react-router-dom";
 import "../../Styles/Mainapp/Mainapphome.css";
 
-const Mainappnavlinks = () => {
+const Mainappnavlinks = ({setselected, handleSidebar }) => {
   const [activeMenu, setActiveMenu] = useState(null);
   const [userRole, setUserRole] = useState(null);
 
@@ -372,28 +372,28 @@ const Mainappnavlinks = () => {
       name: "Settings",
       icon: <BsGearFill className="icon" />,
       index: 11,
-      role: ["super_admin", "admin", "manager"],
+      role: ["super_admin", "admin"],
       submenus: [
         {
           name: "Dairy Settings",
           icon: <BsBuildingFillGear className="icon" />,
           index: 11.1,
           path: "settings/dairy",
-          role: ["super_admin", "admin", "manager"],
+          role: ["super_admin", "admin"],
         },
         {
           name: "Inventory Settings",
           icon: <BsHouseGearFill className="icon" />,
           index: 11.2,
           path: "settings/inventory",
-          role: ["super_admin", "admin", "manager"],
+          role: ["super_admin", "admin"],
         },
         {
           name: "Machine Settings",
           icon: <FaGears className="icon" />,
           index: 11.3,
           path: "settings/machine",
-          role: ["super_admin", "admin", "manager"],
+          role: ["super_admin", "admin"],
         },
       ],
     },
@@ -431,15 +431,15 @@ const Mainappnavlinks = () => {
     if (button.submenus) {
       setActiveMenu(activeMenu === button.index ? null : button.index);
     } else {
-      // setselected(button.index);
-      // handleSidebar();
+      setselected(button.index);
+      handleSidebar();
       setActiveMenu(null);
     }
   };
 
   const handleSubmenuClick = (submenu) => {
-    // setselected(submenu.index);
-    // handleSidebar();
+    setselected(submenu.index);
+    handleSidebar();
     setActiveMenu(null);
   };
 

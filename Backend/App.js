@@ -34,8 +34,10 @@ const products = require("./Routes/ItemRoutes");
 const stocks = require("./Routes/StockRoutes");
 const stockitem = require("./Routes/ItemStockRoutes");
 const deliverstock = require("./Routes/DeliveryStockRoutes");
+const admin = require("./Routes/AdminRoutes");
 //Common api starting
 
+app.use("/smartdairy/api", admin);
 app.use("/smartdairy/api", user);
 app.use("/smartdairy/api", dairy);
 app.use("/smartdairy/api", milk);
