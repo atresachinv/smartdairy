@@ -1,8 +1,7 @@
-import React, { useEffect, useState } from "react";
+import  { useEffect, useState } from "react";
 import axiosInstance from "../../../../App/axiosInstance";
 import { MdDeleteOutline } from "react-icons/md";
 import { useDispatch, useSelector, shallowEqual } from "react-redux";
-import * as XLSX from "xlsx";
 import { jsPDF } from "jspdf";
 import "jspdf-autotable";
 import { useTranslation } from "react-i18next";
@@ -40,6 +39,7 @@ const CreateGrocery = () => {
     (state) =>
       state.dairy.dairyData.SocietyName || state.dairy.dairyData.center_name
   );
+  let printer = 2;
 
   //set user role
   useEffect(() => {
@@ -111,7 +111,7 @@ const CreateGrocery = () => {
       return;
     }
 
-    if (Number(selectitemcode) > 0 && Number(qty) > 0) {
+    if (Number(selectitemcode) > 0 && Number(qty) > 0 && Number(rate) > 0) {
       const newCartItem = {
         ReceiptNo: rctno,
         ItemCode: selectedItem.ItemCode,
@@ -133,6 +133,8 @@ const CreateGrocery = () => {
       setRate("");
       setAmt(0); // Set amount to 0 instead of an empty string
       setSelectitemcode("");
+    } else {
+      toast.error("All fields are required");
     }
   };
 
@@ -198,13 +200,14 @@ const CreateGrocery = () => {
   // Function to handle printing the invoice --------------------------------------->
   const handlePrint = () => {
     handleSubmit();
-    if (cartItem.length > 0) {
-      const printWindow = window.open("", "_blank");
-      const printContent = document.getElementById("print-section").innerHTML;
+    if (parseInt(printer) === 1) {
+      if (cartItem.length > 0) {
+        const printWindow = window.open("", "_blank");
+        const printContent = document.getElementById("print-section").innerHTML;
 
-      if (printWindow) {
-        printWindow.document.write(
-          `
+        if (printWindow) {
+          printWindow.document.write(
+            `
         <html>
           <head>
             <title>Print</title>
@@ -310,15 +313,109 @@ const CreateGrocery = () => {
           </body>
         </html>
         `
-        );
-        printWindow.document.close();
-        printWindow.focus();
-        printWindow.print();
+          );
+          printWindow.document.close();
+          printWindow.focus();
+          printWindow.print();
+        } else {
+          toast.error("Failed to open print window. Check pop-up settings.");
+        }
       } else {
-        toast.error("Failed to open print window. Check pop-up settings.");
+        toast.warn("No data to print.");
+      }
+    } else if (parseInt(printer) === 2) {
+      if (cartItem.length > 0) {
+        const printWindow = window.open("", "_blank");
+        const printContent =
+          document.getElementById("print-section1").innerHTML;
+        if (printWindow) {
+          printWindow.document.write(`
+<html>
+  <head>
+    <title>Print</title>
+    <style>
+      @page {
+        size: auto;
+        margin: 0;
+        width: 58mm;
+        min-height: 85mm;
+      }
+      body {
+        font-family: Arial, sans-serif;
+        font-size: 10px;
+        margin: 0;
+        padding: 0;
+        width: 58mm;
+        min-height: 85mm;
+
+      }
+      #print-section {
+        width: 58mm;
+        padding: 0.5mm;
+        box-sizing: border-box;
+        text-align: center;
+      }
+        .invoice{
+        margin-bottom:20px;
+        }
+      .invoice-header {
+        font-size: 14px;
+        font-weight: bold;
+        margin-bottom: 5px;
+      }
+      .invoice-info {
+      display: flex;
+        text-align: left;
+        margin-bottom: 5px;
+        justify-content: space-between;
+            padding: 0px 5px;
+      }
+      .invoice-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 10px;
+      }
+      .invoice-table th, .invoice-table td {
+        border-bottom: 1px dashed black;
+        padding: 2px;
+        text-align: center;
+      }
+       
+      .footer {
+        margin-top: 20px;
+        text-align: center;
+        font-size: 10px;
+        padding-bottom: 20px;
+      }
+      .outstanding-conatiner{
+        display:none;
+        }
+        .forColCut{
+        display: flex;
+    flex-direction: column;
+    }
+    .for58 {
+    margin-bottom: 5px;
+    }
+    .signature-box{
+    display:none;
+    }
+    </style>
+  </head>
+  <body>
+    <div id="print-section">${printContent}</div>
+  </body>
+</html>
+`);
+          printWindow.document.close();
+          printWindow.focus();
+          printWindow.print();
+        }
+      } else {
+        toast.warn("No data to print.");
       }
     } else {
-      toast.warn("No data to print.");
+      toast.error("Please select the Printer");
     }
   };
 
@@ -851,6 +948,20 @@ const CreateGrocery = () => {
             rctno={rctno}
             date={date}
             dairyInfo={dairyInfo}
+          />
+        </div>
+        <div
+          id="print-section1"
+          style={{ display: "none", width: "58mm", padding: "2mm" }}
+        >
+          <Invoice
+            cartItem={cartItem}
+            handleFindItemName={handleFindItemName}
+            cname={cname}
+            dairyInfo={dairyInfo}
+            fcode={fcode}
+            rctno={rctno}
+            date={date}
           />
         </div>
       </div>

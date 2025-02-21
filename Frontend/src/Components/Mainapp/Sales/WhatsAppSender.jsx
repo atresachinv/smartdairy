@@ -1,6 +1,15 @@
 import axiosInstance from "../../../App/axiosInstance";
 
-export const sendMessage = async ({ to, dName, cName }) => {
+export const sendMessage = async ({
+  to,
+  dName,
+  cName,
+  date,
+  rctNo,
+  amount,
+  products,
+  mono,
+}) => {
   const requestBody = {
     messaging_product: "whatsapp",
     recipient_type: "individual",
@@ -15,11 +24,11 @@ export const sendMessage = async ({ to, dName, cName }) => {
           parameters: [
             { type: "text", text: dName },
             { type: "text", text: cName },
-            { type: "text", text: "1/23/2025" },
-            { type: "text", text: "002" },
-            { type: "text", text: "1000" },
-            { type: "text", text: "deatails of product" },
-            { type: "text", text: "9112904855" },
+            { type: "text", text: date },
+            { type: "text", text: rctNo },
+            { type: "text", text: amount },
+            { type: "text", text: products },
+            { type: "text", text: mono },
           ],
         },
       ],
@@ -27,6 +36,7 @@ export const sendMessage = async ({ to, dName, cName }) => {
   };
 
   try {
+    console.log(requestBody);
     const response = await axiosInstance.post("/send-message", requestBody); // ✅ Remove JSON.stringify()
     console.log("Response:", response.data);
   } catch (error) {

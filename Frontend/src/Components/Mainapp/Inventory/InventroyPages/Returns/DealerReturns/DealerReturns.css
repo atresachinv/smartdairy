@@ -7,4 +7,11 @@
     margin: 10px;
     height: 100% !important;
   }
+  .deal-info {
+    padding: 10px 10px;
+  }
+  .deal-info-name {
+    padding: 0px 10px;
+    margin: 0px;
+  }
 }

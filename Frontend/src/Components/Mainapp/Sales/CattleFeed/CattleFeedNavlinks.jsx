@@ -14,14 +14,23 @@ const CattleFeedNavlinks = ({ isselected, setIsSelected }) => {
   return (
     <>
       {CustNavbuttons.map((button, index) => (
-        <li key={index} className="home-nav-item d-flex a-center">
+        <li
+          key={index}
+          className={`home-nav-item d-flex a-center ${
+            isselected === index ? "selected" : ""
+          }`}
+        >
           <NavLink
             to={button.path}
+            onClick={() => {
+              setIsSelected(index);
+            }}
             className={({ isActive }) =>
               isActive
                 ? "sub-navlinks f-label-text selected"
                 : "sub-navlinks f-label-text"
-            }>
+            }
+          >
             {button.icon}
             <span>{button.name}</span>
           </NavLink>

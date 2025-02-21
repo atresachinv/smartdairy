@@ -7,7 +7,6 @@ import Swal from "sweetalert2";
 import { getAllProducts } from "../../../../../../App/Features/Mainapp/Inventory/inventorySlice";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { useTranslation } from "react-i18next";
-import Invoice from "../../../../Sales/Invoice";
 import { listEmployee } from "../../../../../../App/Features/Mainapp/Masters/empMasterSlice";
 
 const AddDeliveryStock = () => {
@@ -83,6 +82,7 @@ const AddDeliveryStock = () => {
 
     if (Number(selectitemcode) > 0 && Number(qty) > 0) {
       const newCartItem = {
+        rctno: parseInt(rctno),
         ItemCode: selectedItem.ItemCode,
         ItemName: selectedItem.ItemName,
         saledate: `${date} 00:00:00`,

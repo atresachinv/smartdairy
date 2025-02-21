@@ -7,6 +7,7 @@ import { toWords } from "number-to-words";
 import { MdDeleteOutline } from "react-icons/md";
 import { getAllProducts } from "../../../../../../App/Features/Mainapp/Inventory/inventorySlice";
 import { listEmployee } from "../../../../../../App/Features/Mainapp/Masters/empMasterSlice";
+import Swal from "sweetalert2";
 
 const DeliveryReturns = () => {
   const dispatch = useDispatch();
@@ -24,7 +25,7 @@ const DeliveryReturns = () => {
   const [qty, setQty] = useState(1);
   const [selectitemcode, setSelectitemcode] = useState(0);
   const [rctno, setRctno] = useState(
-    localStorage.getItem("deliveryStock") || 1
+    localStorage.getItem("deliveryReturnStock") || 1
   );
   const [filteredItems, setFilteredItems] = useState([]); //p--
   const dairyInfo = useSelector(
@@ -87,7 +88,7 @@ const DeliveryReturns = () => {
         Qty: Number(qty),
         to_user: fcode,
         itemgroupcode: selectedItem.ItemGroupCode,
-        cn: 0,
+        cn: 1,
       };
 
       setCartItem((prev) => [...prev, newCartItem]);
@@ -135,7 +136,7 @@ const DeliveryReturns = () => {
         if (res?.data?.success) {
           setRctno(parseInt(rctno) + 1);
           toast.success(res.data.message);
-          localStorage.setItem("deliveryStock", parseInt(rctno) + 1);
+          localStorage.setItem("deliveryReturnStock", parseInt(rctno) + 1);
         }
         handelClear();
       } catch (error) {
@@ -160,131 +161,129 @@ const DeliveryReturns = () => {
   }, [cname, emplist]);
 
   // Function to handle printing the invoice --------------------------------------->
-//   const handlePrint = () => {
-//     handleSubmit();
-//     if (cartItem.length > 0) {
-//       const printWindow = window.open("", "_blank");
-//       const printContent = document.getElementById("print-section").innerHTML;
+  //   const handlePrint = () => {
+  //     handleSubmit();
+  //     if (cartItem.length > 0) {
+  //       const printWindow = window.open("", "_blank");
+  //       const printContent = document.getElementById("print-section").innerHTML;
 
-//       if (printWindow) {
-//         printWindow.document.write(
-//           `
-//         <html>
-//           <head>
-//             <title>Print</title>
-//             <style>
-//               @page {
-//                 size: A4 landscape;
-//                 margin: 5mm;
-//               }
-//               body {
-//                 font-family: Arial, sans-serif;
-//                 font-size: 12px;
-//                 margin: 0;
-//                 padding: 0;
-//               }
-//               #print-section {
-//                 display: flex;
-//                 justify-content: space-between;
-//                 width: 100%;
-//                 height:100%;
-//                 padding: 10mm;
-//                 box-sizing: border-box;
-//                 flex-wrap: wrap;
-//               }
-//               .invoice { 
-//                 width: 46%;
-//                 border: 1px solid black;
-//                 height:100%;
-//                 padding: 1mm;
-//                 box-sizing: border-box;
-//                display: flex;
-//               flex-direction: column;
-//               }
-//               .invoice-header {
-//                 text-align: center;
-//                 font-size: 16px;
-//                 font-weight: bold;
-//                 margin-bottom: 0;
-//               }
-//                  .invoice-sub-header {
-//                 text-align: center;
-//                 font-size: 14px;
-//                 font-weight: bold;
-//                 margin-bottom: 10px;
-//                 margin-right: 90px;
+  //       if (printWindow) {
+  //         printWindow.document.write(
+  //           `
+  //         <html>
+  //           <head>
+  //             <title>Print</title>
+  //             <style>
+  //               @page {
+  //                 size: A4 landscape;
+  //                 margin: 5mm;
+  //               }
+  //               body {
+  //                 font-family: Arial, sans-serif;
+  //                 font-size: 12px;
+  //                 margin: 0;
+  //                 padding: 0;
+  //               }
+  //               #print-section {
+  //                 display: flex;
+  //                 justify-content: space-between;
+  //                 width: 100%;
+  //                 height:100%;
+  //                 padding: 10mm;
+  //                 box-sizing: border-box;
+  //                 flex-wrap: wrap;
+  //               }
+  //               .invoice {
+  //                 width: 46%;
+  //                 border: 1px solid black;
+  //                 height:100%;
+  //                 padding: 1mm;
+  //                 box-sizing: border-box;
+  //                display: flex;
+  //               flex-direction: column;
+  //               }
+  //               .invoice-header {
+  //                 text-align: center;
+  //                 font-size: 16px;
+  //                 font-weight: bold;
+  //                 margin-bottom: 0;
+  //               }
+  //                  .invoice-sub-header {
+  //                 text-align: center;
+  //                 font-size: 14px;
+  //                 font-weight: bold;
+  //                 margin-bottom: 10px;
+  //                 margin-right: 90px;
 
-//               }
-//               .invoice-info {
-//                 display: flex;
-//                 margin:0 10px;
-//                 justify-content: space-between;
-//                 margin-bottom: 10px;
-//               }
+  //               }
+  //               .invoice-info {
+  //                 display: flex;
+  //                 margin:0 10px;
+  //                 justify-content: space-between;
+  //                 margin-bottom: 10px;
+  //               }
 
-//               .invoice-outstanding-container{
-//                 width: 100%;
-//                 display: flex; 
-//                 justify-content: end;
-//                 margin-bottom:10px;
-//               }
-//               .outstanding-conatiner{
-//                 width: 120px;
-//                 height : 50px;
-//                 text-align: center;
-//                 border: 1px solid black;
-//               }
-     
+  //               .invoice-outstanding-container{
+  //                 width: 100%;
+  //                 display: flex;
+  //                 justify-content: end;
+  //                 margin-bottom:10px;
+  //               }
+  //               .outstanding-conatiner{
+  //                 width: 120px;
+  //                 height : 50px;
+  //                 text-align: center;
+  //                 border: 1px solid black;
+  //               }
 
-//               .invoice-table {
-//                 width: 100%;
-//                 border-collapse: collapse;
-//                 margin-bottom: 10px;
-//               }
-//               .invoice-table th, .invoice-table td {
-//               font-size: 12px;
-//                 border: 1px solid black;
-//                 padding: 5px;
-//                 text-align: center;
-//                 word-wrap: break-word;
-//               }
-              
-            
-//               .signature-box {
-//                 display: flex;
-//                 justify-content: space-between;
-//                 margin-top: auto;
-//                 font-weight: bold;
-//               }
-//               .signature-box span {
-//                 width: 45%;
-//                 text-align: center;
-//                 border-top: 1px solid black;
-//                 padding-top: 10px;
-//               }
-//                 .footer{
-//                 margin-top:10px;
-//                 display:flex;
-//                 justify-content:center;
-//                 }
-//             </style>
-//           </head>
-//           <body>
-//             <div id="print-section">${printContent}</div>
-//           </body>
-//         </html>
-//         `
-//         );
-//         printWindow.document.close();
-//         printWindow.focus();
-//         printWindow.print();
-//       } else {
-//         toast.error("Failed to open print window. Check pop-up settings.");
-//       }
-//     } else {
-//       toast.warn("No data to print.");
-//     }
-//   };
+  //               .invoice-table {
+  //                 width: 100%;
+  //                 border-collapse: collapse;
+  //                 margin-bottom: 10px;
+  //               }
+  //               .invoice-table th, .invoice-table td {
+  //               font-size: 12px;
+  //                 border: 1px solid black;
+  //                 padding: 5px;
+  //                 text-align: center;
+  //                 word-wrap: break-word;
+  //               }
+
+  //               .signature-box {
+  //                 display: flex;
+  //                 justify-content: space-between;
+  //                 margin-top: auto;
+  //                 font-weight: bold;
+  //               }
+  //               .signature-box span {
+  //                 width: 45%;
+  //                 text-align: center;
+  //                 border-top: 1px solid black;
+  //                 padding-top: 10px;
+  //               }
+  //                 .footer{
+  //                 margin-top:10px;
+  //                 display:flex;
+  //                 justify-content:center;
+  //                 }
+  //             </style>
+  //           </head>
+  //           <body>
+  //             <div id="print-section">${printContent}</div>
+  //           </body>
+  //         </html>
+  //         `
+  //         );
+  //         printWindow.document.close();
+  //         printWindow.focus();
+  //         printWindow.print();
+  //       } else {
+  //         toast.error("Failed to open print window. Check pop-up settings.");
+  //       }
+  //     } else {
+  //       toast.warn("No data to print.");
+  //     }
+  //   };
 
   // Function to handle download pdf the invoice --------------------------------------->
   const exportToPDF = () => {
@@ -479,7 +478,7 @@ const DeliveryReturns = () => {
 
   return (
     <div className="add-cattlefeed-sale-container w100 h1 d-flex-col sa">
-      <span className="heading p10">Add Delivery Stock </span>
+      <span className="heading p10">Add Return Delivery Stock </span>
       <div className="create-cattlefeed-sales-inner-container w100 h1 d-flex sb p10">
         <form className="create-sales-form-container w50 h1 bg p10">
           <div className="sales-details w100 h20 d-flex a-center sb ">

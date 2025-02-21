@@ -7,6 +7,7 @@ import { MdOutlineAddTask } from "react-icons/md";
 import "../../../../../Styles/Mainapp/Inventory/InventoryPages/Stock.css";
 import { IoBagAddSharp } from "react-icons/io5";
 import { FaListUl } from "react-icons/fa";
+import { BsSignTurnSlightRight } from "react-icons/bs";
 
 // eslint-disable-next-line react/prop-types
 const StocksNavlinks = ({ isselected, setIsSelected, userRole }) => {
@@ -51,7 +52,12 @@ const StocksNavlinks = ({ isselected, setIsSelected, userRole }) => {
       submenus: [
         { name: "Add", path: "delivery/add-stock", icon: <IoBagAddSharp /> },
         { name: "List", path: "delivery/list", icon: <FaListUl /> },
-        { name: "List", path: "delivery/returns", icon: <FaListUl /> },
+        {
+          name: "Add return",
+          path: "delivery/returns",
+          icon: <BsSignTurnSlightRight />,
+        },
+        { name: "Return List", path: "delivery/return-list", icon: <FaListUl /> },
       ],
       role: ["super_admin", "admin", "salesman"],
     },

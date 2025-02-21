@@ -259,7 +259,7 @@ const List = () => {
       <div className="customer-list-table w100 h1 d-flex-col hidescrollbar bg">
         <span className="heading p10">Dealer Returns Report</span>
         <div className="customer-heading-title-scroller w100 h1 mh100 d-flex-col">
-          <div className="data-headings-div sale-data-headings-div h10 d-flex center t-center sb">
+          <div className="data-headings-div sale-data-headings-div h10 d-flex center t-center sb bg7">
             <span className="f-info-text w5">Sr.No</span>
             <span className="f-info-text w5">Date</span>
             <span className="f-info-text w5">Rec. No</span>
@@ -320,22 +320,22 @@ const List = () => {
       {isInvoiceOpen && viewItems.length > 0 && (
         <div className="pramod modal">
           <div className="modal-content">
-            <div className="d-flex sb">
-              <h2>Purchase Bill Details</h2>
+            <div className="d-flex sb deal-info">
+              <h2> Invoice Details</h2>
               <IoClose
                 style={{ cursor: "pointer" }}
-                size={25}
+                className="icon"
                 onClick={() => setIsInvoiceOpen(false)}
               />
             </div>
             <hr />
-            <div className=" d-flex sb mx15 px15">
+            <div className=" d-flex sb mx15 px15 deal-info-name">
               <h4>Rect. No : {viewItems[0]?.receiptno || ""}</h4>
               <div className="10">
                 Date :{formatDateToDDMMYYYY(viewItems[0]?.purchasedate)}
               </div>
             </div>
-            <div className=" d-flex sb mx15 px15">
+            <div className=" d-flex sb mx15 px15 deal-info-name">
               <h4>Dealer code : {viewItems[0]?.dealerCode || ""}</h4>
               <h4 className="mx15">{viewItems[0]?.dealerName || ""}</h4>
             </div>

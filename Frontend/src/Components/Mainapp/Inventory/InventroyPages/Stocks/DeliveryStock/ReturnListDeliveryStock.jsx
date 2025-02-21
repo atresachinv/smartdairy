@@ -10,7 +10,7 @@ import { IoClose } from "react-icons/io5";
 import { useDispatch, useSelector } from "react-redux";
 import { listEmployee } from "../../../../../../App/Features/Mainapp/Masters/empMasterSlice";
 
-const ListDeliveryStock = () => {
+const ReturnListDeliveryStock = () => {
   const [deliveryList, setDeliveryList] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [filteredList, setFilteredList] = useState(deliveryList); // Store filtered items
@@ -41,7 +41,7 @@ const ListDeliveryStock = () => {
     const fetchDeliveryList = async () => {
       SetLoading(true);
       try {
-        const response = await axiosInstance.get("/all/deliverystock?cn=0");
+        const response = await axiosInstance.get("/all/deliverystock?cn=1");
         let list = response?.data?.data || [];
         list.sort((a, b) => new Date(b.saledate) - new Date(a.saledate));
         setDeliveryList(list);
@@ -175,7 +175,7 @@ const ListDeliveryStock = () => {
     try {
       const queryParams = new URLSearchParams(getItem).toString();
       const { data } = await axiosInstance.get(
-        `/all/deliverystock?cn=0&${queryParams}`
+        `/all/deliverystock?cn=1&${queryParams}`
       );
       // console.log(data);
       if (data?.success) {
@@ -344,7 +344,7 @@ const ListDeliveryStock = () => {
         </div>
       </div>
       <div className="customer-list-table w100 h1 d-flex-col  bg">
-        <span className="heading p10">Delivery Stock Report</span>
+        <span className="heading p10">Return Delivery Stock Report</span>
         <div className="customer-heading-title-scroller w100 h1 mh100 hidescrollbar d-flex-col">
           <div className="data-headings-div h10 d-flex center forDWidth t-center bg7 sb">
             <span className="f-info-text w5">SrNo</span>
@@ -519,4 +519,4 @@ const ListDeliveryStock = () => {
   );
 };
 
-export default ListDeliveryStock;
+export default ReturnListDeliveryStock;

@@ -231,7 +231,7 @@ const ProductsList = () => {
       </div>
       {isModalOpen && (
         <div className="pramod modal">
-          <div className="modal-content">
+          <div className="modal-content forMin">
             <h2>Update Product Details</h2>
             <label>
               Item Name:

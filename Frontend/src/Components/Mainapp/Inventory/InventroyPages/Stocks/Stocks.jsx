@@ -8,6 +8,8 @@ import CreateStock from "./StartingStock/CreateStock";
 import StockList from "./StartingStock/StockList";
 import ListDeliveryStock from "./DeliveryStock/ListDeliveryStock";
 import AddDeliveryStock from "./DeliveryStock/AddDeliveryStock";
+import DeliveryReturns from "./DeliveryStock/DeliveryReturns";
+import ReturnListDeliveryStock from "./DeliveryStock/ReturnListDeliveryStock";
 
 const Stocks = () => {
   const [userRole, setUserRole] = useState(null);
@@ -17,7 +19,7 @@ const Stocks = () => {
     setUserRole(myrole);
   }, []);
   const [isselected, setIsSelected] = useState(
-    parseInt(localStorage.getItem("productReturns")) || 0
+    parseInt(localStorage.getItem("productReturns")) || "starting/stock"
   );
   useEffect(() => {
     localStorage.setItem("productReturns", isselected);
@@ -39,7 +41,11 @@ const Stocks = () => {
           <Route path="update/sale/rate" element={<UpdateSaleRate />} />
           <Route path="delivery/add-stock" element={<AddDeliveryStock />} />
           <Route path="delivery/list" element={<ListDeliveryStock />} />
-          <Route path="delivery/returns" element={<ListDeliveryStock />} />
+          <Route path="delivery/returns" element={<DeliveryReturns />} />
+          <Route
+            path="delivery/return-list"
+            element={<ReturnListDeliveryStock />}
+          />
           <Route path="*" element={<CreateStock />} />
         </Routes>
       </div>

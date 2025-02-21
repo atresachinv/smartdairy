@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable no-unused-vars */
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import axiosInstance from "../../../../App/axiosInstance";
 import { MdDeleteOutline } from "react-icons/md";
 import { useDispatch, useSelector, shallowEqual } from "react-redux";
@@ -15,6 +15,7 @@ import { getProductSaleRates } from "../../../../App/Features/Sales/salesSlice";
 import Invoice from "../Invoice";
 import "../../../../Styles/Mainapp/Sales/Sales.css";
 import { toWords } from "number-to-words";
+import { sendMessage } from "../WhatsAppSender";
 
 const CreateCattleFeed = () => {
   const dispatch = useDispatch();
@@ -40,9 +41,12 @@ const CreateCattleFeed = () => {
   const [userRole, setUserRole] = useState(null);
   const dairyInfo = useSelector(
     (state) =>
-      state.dairy.dairyData.SocietyName || state.dairy.dairyData.center_name
+      state.dairy.dairyData.marathi_name ||
+      state.dairy.dairyData.SocietyName ||
+      state.dairy.dairyData.center_name
   );
-
+  const dairymono = useSelector((state) => state.dairy.dairyData.mobile);
+  let printer = 2;
   //set user role
   useEffect(() => {
     const myrole = localStorage.getItem("userRole");
@@ -112,7 +116,7 @@ const CreateCattleFeed = () => {
       return;
     }
 
-    if (Number(selectitemcode) > 0 && Number(qty) > 0) {
+    if (Number(selectitemcode) > 0 && Number(qty) > 0 && Number(rate) > 0) {
       const newCartItem = {
         ReceiptNo: rctno,
         ItemCode: selectedItem.ItemCode,
@@ -134,6 +138,8 @@ const CreateCattleFeed = () => {
       setRate("");
       setAmt(0); // Set amount to 0 instead of an empty string
       setSelectitemcode("");
+    } else {
+      toast.error("All fields are required");
     }
   };
 
@@ -170,6 +176,38 @@ const CreateCattleFeed = () => {
       try {
         const res = await axiosInstance.post("/sale/create", cartItem);
         if (res?.data?.success) {
+          const result = await Swal.fire({
+            title: "Message Confirmation ?",
+            text: "Are you sure send whatsapp message?",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Yes, send it!",
+          });
+
+          if (result.isConfirmed) {
+            const customer = customerslist.find(
+              (customer) => customer.srno === parseInt(fcode)
+            );
+            let product = "";
+            for (let i = 0; i < cartItem.length; i++) {
+              product += `${i + 1}. ${cartItem[i].ItemName} - ${
+                cartItem[i].Qty
+              } - ${cartItem[i].Rate}  ${i < cartItem.length - 1 ? ", " : ""}`;
+            }
+            sendMessage({
+              to: customer.Phone,
+              dName: dairyInfo,
+              cName: customer.cname,
+              date: date,
+              rctNo: rctno,
+              amount: cartItem.reduce((acc, item) => acc + item.Amount, 0),
+              products: product,
+              mono: dairymono,
+            });
+          }
+
           handelClear();
           setRctno(parseInt(rctno) + 1);
           toast.success(res.data.message);
@@ -198,13 +236,14 @@ const CreateCattleFeed = () => {
   // Function to handle printing the invoice --------------------------------------->
   const handlePrint = () => {
     handleSubmit();
-    if (cartItem.length > 0) {
-      const printWindow = window.open("", "_blank");
-      const printContent = document.getElementById("print-section").innerHTML;
+    if (parseInt(printer) === 1) {
+      if (cartItem.length > 0) {
+        const printWindow = window.open("", "_blank");
+        const printContent = document.getElementById("print-section").innerHTML;
 
-      if (printWindow) {
-        printWindow.document.write(
-          `
+        if (printWindow) {
+          printWindow.document.write(
+            `
         <html>
           <head>
             <title>Print</title>
@@ -310,15 +349,109 @@ const CreateCattleFeed = () => {
           </body>
         </html>
         `
-        );
-        printWindow.document.close();
-        printWindow.focus();
-        printWindow.print();
+          );
+          printWindow.document.close();
+          printWindow.focus();
+          printWindow.print();
+        } else {
+          toast.error("Failed to open print window. Check pop-up settings.");
+        }
       } else {
-        toast.error("Failed to open print window. Check pop-up settings.");
+        toast.warn("No data to print.");
+      }
+    } else if (parseInt(printer) === 2) {
+      if (cartItem.length > 0) {
+        const printWindow = window.open("", "_blank");
+        const printContent =
+          document.getElementById("print-section1").innerHTML;
+        if (printWindow) {
+          printWindow.document.write(`
+<html>
+  <head>
+    <title>Print</title>
+    <style>
+      @page {
+        size: auto;
+        margin: 0;
+        width: 58mm;
+        min-height: 85mm;
+      }
+      body {
+        font-family: Arial, sans-serif;
+        font-size: 10px;
+        margin: 0;
+        padding: 0;
+        width: 58mm;
+        min-height: 85mm;
+
+      }
+      #print-section {
+        width: 58mm;
+        padding: 0.5mm;
+        box-sizing: border-box;
+        text-align: center;
+      }
+        .invoice{
+        margin-bottom:20px;
+        }
+      .invoice-header {
+        font-size: 14px;
+        font-weight: bold;
+        margin-bottom: 5px;
+      }
+      .invoice-info {
+      display: flex;
+        text-align: left;
+        margin-bottom: 5px;
+        justify-content: space-between;
+            padding: 0px 5px;
+      }
+      .invoice-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 10px;
+      }
+      .invoice-table th, .invoice-table td {
+        border-bottom: 1px dashed black;
+        padding: 2px;
+        text-align: center;
+      }
+       
+      .footer {
+        margin-top: 20px;
+        text-align: center;
+        font-size: 10px;
+        padding-bottom: 20px;
+      }
+      .outstanding-conatiner{
+        display:none;
+        }
+        .forColCut{
+        display: flex;
+    flex-direction: column;
+    }
+    .for58 {
+    margin-bottom: 5px;
+    }
+    .signature-box{
+    display:none;
+    }
+    </style>
+  </head>
+  <body>
+    <div id="print-section">${printContent}</div>
+  </body>
+</html>
+`);
+          printWindow.document.close();
+          printWindow.focus();
+          printWindow.print();
+        }
+      } else {
+        toast.warn("No data to print.");
       }
     } else {
-      toast.warn("No data to print.");
+      toast.error("Please select the Printer");
     }
   };
 
@@ -487,7 +620,7 @@ const CreateCattleFeed = () => {
     // Save the PDF
     doc.save("Invoice.pdf");
   };
- 
+
   // useEffect(() => {
   //   if (purchaseData.length > 0) {
   //     const sortedPurchaseData = [...purchaseData].sort(
@@ -863,6 +996,20 @@ const CreateCattleFeed = () => {
             rctno={rctno}
             date={date}
             dairyInfo={dairyInfo}
+          />
+        </div>
+        <div
+          id="print-section1"
+          style={{ display: "none", width: "58mm", padding: "2mm" }}
+        >
+          <Invoice
+            cartItem={cartItem}
+            handleFindItemName={handleFindItemName}
+            cname={cname}
+            dairyInfo={dairyInfo}
+            fcode={fcode}
+            rctno={rctno}
+            date={date}
           />
         </div>
       </div>
