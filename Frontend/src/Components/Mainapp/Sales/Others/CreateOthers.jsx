@@ -40,6 +40,7 @@ const CreateOthers = () => {
   const [groupItems, setGroupItems] = useState([]);
   const [filteredItems, setFilteredItems] = useState([]); //p--
   const [userRole, setUserRole] = useState(null);
+  let printer = 2;
 
   //set user role
   useEffect(() => {
@@ -111,7 +112,7 @@ const CreateOthers = () => {
       return;
     }
 
-    if (Number(selectitemcode) > 0 && Number(qty) > 0) {
+    if (Number(selectitemcode) > 0 && Number(qty) > 0 && Number(rate) > 0) {
       const newCartItem = {
         ReceiptNo: rctno,
         ItemCode: selectedItem.ItemCode,
@@ -133,6 +134,8 @@ const CreateOthers = () => {
       setRate("");
       setAmt(0); // Set amount to 0 instead of an empty string
       setSelectitemcode("");
+    } else {
+      toast.error("All fields are required");
     }
   };
 
@@ -198,127 +201,222 @@ const CreateOthers = () => {
   // Function to handle printing the invoice --------------------------------------->
   const handlePrint = () => {
     handleSubmit();
-    if (cartItem.length > 0) {
-      const printWindow = window.open("", "_blank");
-      const printContent = document.getElementById("print-section").innerHTML;
+    if (parseInt(printer) === 1) {
+      if (cartItem.length > 0) {
+        const printWindow = window.open("", "_blank");
+        const printContent = document.getElementById("print-section").innerHTML;
 
-      if (printWindow) {
-        printWindow.document.write(
-          `
-        <html>
-          <head>
-            <title>Print</title>
-            <style>
-              @page {
-                size: A4 landscape;
-                margin: 5mm;
-              }
-              body {
-                font-family: Arial, sans-serif;
-                font-size: 12px;
-                margin: 0;
-                padding: 0;
-              }
-              #print-section {
+        if (printWindow) {
+          printWindow.document.write(
+            `
+         <html>
+           <head>
+             <title>Print</title>
+             <style>
+               @page {
+                 size: A4 landscape;
+                 margin: 5mm;
+               }
+               body {
+                 font-family: Arial, sans-serif;
+                 font-size: 12px;
+                 margin: 0;
+                 padding: 0;
+               }
+               #print-section {
+                 display: flex;
+                 justify-content: space-between;
+                 width: 100%;
+                 height:100%;
+                 padding: 10mm;
+                 box-sizing: border-box;
+                 flex-wrap: wrap;
+               }
+               .invoice { 
+                 width: 46%;
+                 border: 1px solid black;
+                 height:100%;
+                 padding: 1mm;
+                 box-sizing: border-box;
                 display: flex;
-                justify-content: space-between;
-                width: 100%;
-                height:100%;
-                padding: 10mm;
-                box-sizing: border-box;
-                flex-wrap: wrap;
-              }
-              .invoice { 
-                width: 46%;
-                border: 1px solid black;
-                height:100%;
-                padding: 1mm;
-                box-sizing: border-box;
-               display: flex;
-              flex-direction: column;
-              }
-              .invoice-header {
-                text-align: center;
-                font-size: 16px;
-                font-weight: bold;
-                margin-bottom: 0;
-              }
-                 .invoice-sub-header {
-                text-align: center;
-                font-size: 14px;
-                font-weight: bold;
-                margin-bottom: 10px;
-                margin-right: 90px;
-
-              }
-              .invoice-info {
-                display: flex;
-                margin:0 10px;
-                justify-content: space-between;
-                margin-bottom: 10px;
-              }
-
-              .invoice-outstanding-container{
-                width: 100%;
-                display: flex; 
-                justify-content: end;
-                margin-bottom:10px;
-              }
-              .outstanding-conatiner{
-                width: 120px;
-                height : 50px;
-                text-align: center;
-                border: 1px solid black;
-              }
-     
-
-              .invoice-table {
-                width: 100%;
-                border-collapse: collapse;
-                margin-bottom: 10px;
-              }
-              .invoice-table th, .invoice-table td {
-              font-size: 12px;
-                border: 1px solid black;
-                padding: 5px;
-                text-align: center;
-                word-wrap: break-word;
-              }
-              
-            
-              .signature-box {
-                display: flex;
-                justify-content: space-between;
-                margin-top: auto;
-                font-weight: bold;
-              }
-              .signature-box span {
-                width: 45%;
-                text-align: center;
-                border-top: 1px solid black;
-                padding-top: 10px;
-              }
-                .footer{
-                margin-top:10px;
-                display:flex;
-                justify-content:center;
-                }
-            </style>
-          </head>
-          <body>
-            <div id="print-section">${printContent}</div>
-          </body>
-        </html>
-        `
-        );
-        printWindow.document.close();
-        printWindow.focus();
-        printWindow.print();
+               flex-direction: column;
+               }
+               .invoice-header {
+                 text-align: center;
+                 font-size: 16px;
+                 font-weight: bold;
+                 margin-bottom: 0;
+               }
+                  .invoice-sub-header {
+                 text-align: center;
+                 font-size: 14px;
+                 font-weight: bold;
+                 margin-bottom: 10px;
+                 margin-right: 90px;
+ 
+               }
+               .invoice-info {
+                 display: flex;
+                 margin:0 10px;
+                 justify-content: space-between;
+                 margin-bottom: 10px;
+               }
+ 
+               .invoice-outstanding-container{
+                 width: 100%;
+                 display: flex; 
+                 justify-content: end;
+                 margin-bottom:10px;
+               }
+               .outstanding-conatiner{
+                 width: 120px;
+                 height : 50px;
+                 text-align: center;
+                 border: 1px solid black;
+               }
+      
+ 
+               .invoice-table {
+                 width: 100%;
+                 border-collapse: collapse;
+                 margin-bottom: 10px;
+               }
+               .invoice-table th, .invoice-table td {
+               font-size: 12px;
+                 border: 1px solid black;
+                 padding: 5px;
+                 text-align: center;
+                 word-wrap: break-word;
+               }
+               
+             
+               .signature-box {
+                 display: flex;
+                 justify-content: space-between;
+                 margin-top: auto;
+                 font-weight: bold;
+               }
+               .signature-box span {
+                 width: 45%;
+                 text-align: center;
+                 border-top: 1px solid black;
+                 padding-top: 10px;
+               }
+                 .footer{
+                 margin-top:10px;
+                 display:flex;
+                 justify-content:center;
+                 }
+             </style>
+           </head>
+           <body>
+             <div id="print-section">${printContent}</div>
+           </body>
+         </html>
+         `
+          );
+          printWindow.document.close();
+          printWindow.focus();
+          printWindow.print();
+        } else {
+          toast.error("Failed to open print window. Check pop-up settings.");
+        }
       } else {
-        toast.error("Failed to open print window. Check pop-up settings.");
+        toast.warn("No data to print.");
+      }
+    } else if (parseInt(printer) === 2) {
+      if (cartItem.length > 0) {
+        const printWindow = window.open("", "_blank");
+        const printContent =
+          document.getElementById("print-section1").innerHTML;
+        if (printWindow) {
+          printWindow.document.write(`
+ <html>
+   <head>
+     <title>Print</title>
+     <style>
+       @page {
+         size: auto;
+         margin: 0;
+         width: 58mm;
+         min-height: 85mm;
+       }
+       body {
+         font-family: Arial, sans-serif;
+         font-size: 10px;
+         margin: 0;
+         padding: 0;
+         width: 58mm;
+         min-height: 85mm;
+ 
+       }
+       #print-section {
+         width: 58mm;
+         padding: 0.5mm;
+         box-sizing: border-box;
+         text-align: center;
+       }
+         .invoice{
+         margin-bottom:20px;
+         }
+       .invoice-header {
+         font-size: 14px;
+         font-weight: bold;
+         margin-bottom: 5px;
+       }
+       .invoice-info {
+       display: flex;
+         text-align: left;
+         margin-bottom: 5px;
+         justify-content: space-between;
+             padding: 0px 5px;
+       }
+       .invoice-table {
+         width: 100%;
+         border-collapse: collapse;
+         font-size: 10px;
+       }
+       .invoice-table th, .invoice-table td {
+         border-bottom: 1px dashed black;
+         padding: 2px;
+         text-align: center;
+       }
+        
+       .footer {
+         margin-top: 20px;
+         text-align: center;
+         font-size: 10px;
+         padding-bottom: 20px;
+       }
+       .outstanding-conatiner{
+         display:none;
+         }
+         .forColCut{
+         display: flex;
+     flex-direction: column;
+     }
+     .for58 {
+     margin-bottom: 5px;
+     }
+     .signature-box{
+     display:none;
+     }
+     </style>
+   </head>
+   <body>
+     <div id="print-section">${printContent}</div>
+   </body>
+ </html>
+ `);
+          printWindow.document.close();
+          printWindow.focus();
+          printWindow.print();
+        }
+      } else {
+        toast.warn("No data to print.");
       }
     } else {
-      toast.warn("No data to print.");
+      toast.error("Please select the Printer");
     }
   };
 
@@ -850,6 +948,20 @@ const CreateOthers = () => {
             rctno={rctno}
             date={date}
             dairyInfo={dairyInfo}
+          />
+        </div>
+        <div
+          id="print-section1"
+          style={{ display: "none", width: "58mm", padding: "2mm" }}
+        >
+          <Invoice
+            cartItem={cartItem}
+            handleFindItemName={handleFindItemName}
+            cname={cname}
+            dairyInfo={dairyInfo}
+            fcode={fcode}
+            rctno={rctno}
+            date={date}
           />
         </div>
       </div>

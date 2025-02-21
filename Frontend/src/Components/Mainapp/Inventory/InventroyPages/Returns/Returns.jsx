@@ -8,7 +8,7 @@ import CustList from "./CustomerReturns/List";
 
 const Returns = () => {
   const [isselected, setIsSelected] = useState(
-    parseInt(localStorage.getItem("productReturns")) || 0
+    parseInt(localStorage.getItem("productReturns")) || "add-deal-return"
   );
   useEffect(() => {
     localStorage.setItem("productReturns", isselected);

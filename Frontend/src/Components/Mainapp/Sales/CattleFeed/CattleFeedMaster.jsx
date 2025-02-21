@@ -1,18 +1,11 @@
-import React, { useEffect, useState } from "react";
+import { useState } from "react";
 import { Routes, Route } from "react-router-dom";
 import CattleFeedNavlinks from "./CattleFeedNavlinks";
 import CattleSaleList from "./CattleSaleList";
 import CreateCattleFeed from "./CreateCattleFeed";
 
 const CattleFeedMaster = () => {
-  const [isselected, setIsSelected] = useState(
-    parseInt(localStorage.getItem("selectedCattleFeedSaleIndex")) || 0
-  );
-
-  // Update localStorage whenever isselected changes
-  useEffect(() => {
-    localStorage.setItem("selectedCattleFeedSaleIndex", isselected);
-  }, [isselected]);
+  const [isselected, setIsSelected] = useState(0);
 
   return (
     <div className="cattle-feed-master-container w100 h1 d-flex-col">

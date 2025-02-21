@@ -287,7 +287,7 @@ const UpdateSaleRate = () => {
       </div>
       {isModalOpen && (
         <div className="pramod modal">
-          <div className="modal-content">
+          <div className="modal-content forMin">
             <h2 className="my10">Update Product Details</h2>
             <b>
               <div className="d-flex w100 sb">

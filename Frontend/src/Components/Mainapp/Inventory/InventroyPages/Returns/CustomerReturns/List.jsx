@@ -372,8 +372,8 @@ const CustList = () => {
         {isInvoiceOpen && viewItems.length > 0 && (
           <div className="pramod modal">
             <div className="modal-content">
-              <div className="d-flex sb">
-                <h2>Sale Bill Details</h2>
+              <div className="d-flex sb deal-info">
+                <h2>Invoice Details</h2>
                 <IoClose
                   style={{ cursor: "pointer" }}
                   size={25}
@@ -381,13 +381,13 @@ const CustList = () => {
                 />
               </div>
               <hr />
-              <div className=" d-flex sb mx15 px15">
+              <div className=" d-flex sb mx15 px15  deal-info-name">
                 <h4>Rect. No : {viewItems[0]?.ReceiptNo || ""}</h4>
                 <div className="10">
                   Date :{formatDateToDDMMYYYY(viewItems[0]?.BillDate)}
                 </div>
               </div>
-              <div className=" d-flex sb mx15 px15">
+              <div className=" d-flex sb mx15 px15 deal-info-name">
                 <h4>Customer code : {viewItems[0]?.CustCode || ""}</h4>
                 <h4 className="mx15">
                   {handleFindCustName(viewItems[0]?.CustCode) || ""}

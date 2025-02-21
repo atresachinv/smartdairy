@@ -21,11 +21,14 @@ const ProductsNavlinks = ({ isselected, setIsSelected }) => {
           className={`home-nav-item d-flex a-center ${
             isselected === index ? "selected" : ""
           }`}
-          onClick={() => {
-            setIsSelected(index);
-          }}
         >
-          <NavLink to={button.path} className="sub-navlinks f-label-text">
+          <NavLink
+            to={button.path}
+            onClick={() => {
+              setIsSelected(index);
+            }}
+            className="sub-navlinks f-label-text"
+          >
             {button.icon}
             <span>{button.name}</span>
           </NavLink>

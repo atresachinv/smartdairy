@@ -51,12 +51,13 @@ const StocksNavlinks = ({ isselected, setIsSelected, userRole }) => {
       path: "delivery/add-stock",
       submenus: [
         { name: "Add", path: "delivery/add-stock", icon: <IoBagAddSharp /> },
+        { name: "List", path: "delivery/list", icon: <FaListUl /> },
         {
           name: "Add return",
           path: "delivery/returns",
           icon: <BsSignTurnSlightRight />,
         },
-        { name: "List", path: "delivery/list", icon: <FaListUl /> },
+        { name: "Return List", path: "delivery/return-list", icon: <FaListUl /> },
       ],
       role: ["super_admin", "admin", "salesman"],
     },

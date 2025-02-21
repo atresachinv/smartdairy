@@ -5,9 +5,7 @@ import CreateProducts from "./CreateProducts";
 import ProductsList from "./ProductsList";
 
 const Products = () => {
-  const [isselected, setIsSelected] = useState(
-    parseInt(localStorage.getItem("selectedDealersIndex")) || 0
-  );
+  const [isselected, setIsSelected] = useState(0);
 
   // Update localStorage whenever isselected changes
   useEffect(() => {
