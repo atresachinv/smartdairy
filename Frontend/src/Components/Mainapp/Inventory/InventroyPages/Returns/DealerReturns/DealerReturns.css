@@ -3,9 +3,9 @@
     flex-direction: column;
   }
   .custCol {
-    width: 100% !important;
+    width: 100%;
     margin: 10px;
-    height: 100% !important;
+    height: 100%;
   }
   .deal-info {
     padding: 10px 10px;

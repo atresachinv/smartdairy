@@ -259,6 +259,8 @@ exports.createCenter = async (req, res) => {
 
     const designation = "Admin";
     const isAdmin = "1";
+    const insertRegNo = reg_no && reg_no !== "" ? parseInt(reg_no, 10) : null;
+    const insertRegDate = reg_date && reg_date !== "" ? reg_date : null;
 
     // SQL query to create the user associated with the center
     const createUserQuery = `
@@ -273,8 +275,8 @@ exports.createCenter = async (req, res) => {
         center_id,
         center_name,
         marathi_name,
-        reg_no,
-        reg_date,
+        insertRegNo,
+        insertRegDate,
         mobile,
         email,
         city,
@@ -456,13 +458,13 @@ exports.getAllcenters = async (req, res) => {
     return res.status(400).json({ message: "Unauthorized User!" });
   }
 
-  // Check if the data is cached
-  const cacheKey = `centers_${dairy_id}`;
-  const cachedData = cache.get(cacheKey);
+  // // Check if the data is cached
+  // const cacheKey = `centers_${dairy_id}`;
+  // const cachedData = cache.get(cacheKey);
 
-  if (cachedData) {
-    return res.status(200).json({ centersDetails: cachedData });
-  }
+  // if (cachedData) {
+  //   return res.status(200).json({ centersDetails: cachedData });
+  // }
 
   pool.getConnection((err, connection) => {
     if (err) {
@@ -485,7 +487,7 @@ exports.getAllcenters = async (req, res) => {
         }
 
         // Store the result in cache
-        cache.set(cacheKey, result);
+        // cache.set(cacheKey, result);
         res.status(200).json({ centersDetails: result });
       });
     } catch (error) {

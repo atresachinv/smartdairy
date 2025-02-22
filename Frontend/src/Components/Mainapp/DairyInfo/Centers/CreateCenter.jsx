@@ -36,8 +36,7 @@ const CreateCenter = () => {
   //
   //     generatePrefix();
   //   }, []);
-
-  const [formData, setFormData] = useState({
+  const initialValues = {
     marathi_name: "",
     center_name: "",
     reg_no: "",
@@ -51,9 +50,11 @@ const CreateCenter = () => {
     district: "",
     pincode: "",
     password: "",
+    confirm_pass: "",
     date: date,
     prefix: prefixString,
-  });
+  };
+  const [formData, setFormData] = useState(initialValues);
 
   useEffect(() => {
     const generatePrefix = () => {
@@ -184,7 +185,6 @@ const CreateCenter = () => {
     const fieldsToValidate = [
       "marathi_name",
       "center_name",
-      "auditclass",
       "city",
       "tehsil",
       "district",
@@ -195,7 +195,7 @@ const CreateCenter = () => {
 
     const validationErrors = {};
     fieldsToValidate.forEach((field) => {
-      const fieldError = validateField(field, values[field]);
+      const fieldError = validateField(field, formData[field]);
       if (Object.keys(fieldError).length > 0) {
         validationErrors[field] = fieldError[field];
       }
@@ -205,7 +205,7 @@ const CreateCenter = () => {
     return validationErrors;
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
     const validationErrors = validateFields();
     if (Object.keys(validationErrors).length) {
@@ -214,9 +214,10 @@ const CreateCenter = () => {
     }
 
     try {
-      await dispatch(createCenter(formData));
+      dispatch(createCenter(formData));
       dispatch(maxCenterId(dairy_id)); // Refresh max center ID
       dispatch(centersLists()); // Refresh list of centers
+      setFormData(initialValues);
       toast.success("Center created successfully!");
     } catch (error) {
       toast.error("Failed to create center. Please try again.");
@@ -227,7 +228,8 @@ const CreateCenter = () => {
     <div className="center-main-container w100 h1 d-flex center">
       <form
         className="center-information-div w50 h1 d-flex-col sa bg p10"
-        onSubmit={handleSubmit}>
+        onSubmit={handleSubmit}
+      >
         <span className="heading h10">Create New Dairy Center</span>
         {/* Form Fields */}
         <div className="center-name-div w100 h15 d-flex-col sa">
@@ -243,6 +245,7 @@ const CreateCenter = () => {
             name="marathi_name"
             id="marathi_name"
             placeholder="सेंटरचे नाव"
+            value={formData.marathi_name}
             onChange={handleChange}
             required
           />
@@ -260,6 +263,7 @@ const CreateCenter = () => {
             name="center_name"
             id="center_name"
             placeholder="Center Name"
+            value={formData.center_name}
             onChange={handleChange}
             required
           />
@@ -290,6 +294,7 @@ const CreateCenter = () => {
               type="text"
               name="auditclass"
               id="auditclass"
+              value={formData.auditclass}
               onChange={handleChange}
             />
           </div>
@@ -305,6 +310,7 @@ const CreateCenter = () => {
               type="number"
               name="reg_no"
               id="reg_no"
+              value={formData.reg_no}
               onChange={handleChange}
             />
           </div>
@@ -320,6 +326,7 @@ const CreateCenter = () => {
               type="date"
               name="reg_date"
               id="reg_date"
+              value={formData.reg_date}
               onChange={handleChange}
             />
           </div>
@@ -337,6 +344,7 @@ const CreateCenter = () => {
               type="text"
               name="mobile"
               id="mobile"
+              value={formData.mobile}
               onChange={handleChange}
             />
           </div>
@@ -352,6 +360,7 @@ const CreateCenter = () => {
               type="email"
               name="email"
               id="email"
+              value={formData.email}
               onChange={handleChange}
             />
           </div>
@@ -369,6 +378,7 @@ const CreateCenter = () => {
               type="text"
               name="city"
               id="city"
+              value={formData.city}
               onChange={handleChange}
             />
           </div>
@@ -384,6 +394,7 @@ const CreateCenter = () => {
               type="text"
               name="tehsil"
               id="tehsil"
+              value={formData.tehsil}
               onChange={handleChange}
             />
           </div>
@@ -399,6 +410,7 @@ const CreateCenter = () => {
               type="text"
               name="district"
               id="district"
+              value={formData.district}
               onChange={handleChange}
             />
           </div>
@@ -414,6 +426,7 @@ const CreateCenter = () => {
               type="text"
               name="pincode"
               id="pincode"
+              value={formData.pincode}
               onChange={handleChange}
             />
           </div>
@@ -426,11 +439,13 @@ const CreateCenter = () => {
                 className="pass w90"
                 type={showPassword ? "text" : "password"}
                 name="password"
+                value={formData.password}
                 onChange={handleChange}
               />
               <span
                 className="eye-icon w10 d-flex a-center"
-                onClick={() => setShowPassword(!showPassword)}>
+                onClick={() => setShowPassword(!showPassword)}
+              >
                 {showPassword ? (
                   <IoMdEyeOff className="pss-eye" />
                 ) : (
@@ -446,6 +461,7 @@ const CreateCenter = () => {
                 className="pass w90"
                 type={showPassword ? "text" : "password"}
                 name="confirm_pass"
+                value={formData.confirm_pass}
                 onChange={handleChange}
               />
               <span
@@ -518,7 +534,8 @@ const CreateCenter = () => {
         <button
           type="submit"
           className="btn my5"
-          disabled={status === "loading"}>
+          disabled={status === "loading"}
+        >
           {status === "loading" ? "creating..." : "CREATE"}
         </button>
       </form>
