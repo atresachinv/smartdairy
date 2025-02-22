@@ -18,8 +18,12 @@ const MilkSankalan = () => {
   const tDate = useSelector((state) => state.date.toDate);
   const dairyname = useSelector(
     (state) =>
-      state.dairy.dairyData.SocietyName || state.dairy.dairyData.center_name
+      state.dairy.dairyData.SocietyName || state.dairy.dairyData.center_name // for sms
   );
+  const dairyphone = useSelector(
+    (state) => state.dairy.dairyData.PhoneNo || state.dairy.dairyData.mobile // for sms
+  );
+  const sankalak = useSelector((state) => state.userinfo.profile.emp_name); // for sms
   const { customerlist, loading } = useSelector((state) => state.customer);
   const PrevLiters = useSelector((state) => state.milkCollection.PrevLiters);
   const [collCount, setCollCount] = useState(
@@ -34,6 +38,7 @@ const MilkSankalan = () => {
   const codeInputRef = useRef(null); // Ref for code input
   const litersRef = useRef(null);
   const sampleRef = useRef(null);
+
   const initialValues = {
     date: localStorage.getItem("today") || tDate,
     code: "",
@@ -231,7 +236,6 @@ const MilkSankalan = () => {
 
   const validateFields = () => {
     const fieldsToValidate = ["code", "cname", "liters", "sample"];
-
     const validationErrors = {};
     fieldsToValidate.forEach((field) => {
       const fieldError = validateField(field, values[field]);
@@ -244,11 +248,14 @@ const MilkSankalan = () => {
     return validationErrors;
   };
 
+  // ------------------------------------------------------------------------------------->
+  // Send Milk Collection Whatsapp Message ------------------------------------------------>
+
   const sendMessage = async () => {
     const requestBody = {
       messaging_product: "whatsapp",
       recipient_type: "individual",
-      to: "919822180270",
+      to: `91${values.mobile}`,
       type: "template",
       template: {
         name: "gadi_milk_collection_sms",
@@ -262,8 +269,8 @@ const MilkSankalan = () => {
               { type: "text", text: tDate },
               { type: "text", text: values.liters },
               { type: "text", text: values.sample },
-              { type: "text", text: dairyname },
-              { type: "text", text: "8600698843" },
+              { type: "text", text: sankalak },
+              { type: "text", text: dairyphone },
             ],
           },
         ],
@@ -278,6 +285,8 @@ const MilkSankalan = () => {
       console.error("Error sending message:", error);
     }
   };
+
+  // ------------------------------------------------------------------------------------->
 
   const handleMobileCollection = async (e) => {
     if (e) e.preventDefault();

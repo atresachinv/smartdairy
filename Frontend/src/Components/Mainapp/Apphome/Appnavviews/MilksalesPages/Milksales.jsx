@@ -1,6 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-/* eslint-disable react/prop-types */
-/* eslint-disable no-unused-vars */
 import React, { useEffect, useRef, useState } from "react";
 import { BsGearFill } from "react-icons/bs";
 import { useDispatch, useSelector } from "react-redux";
@@ -8,6 +5,7 @@ import { toast } from "react-toastify";
 import { useTranslation } from "react-i18next";
 import { IoPersonAddSharp } from "react-icons/io5";
 import CreateCustomers from "./CreateCustomers";
+import { saveMilkEntry } from "../../../../../App/Features/Mainapp/Milksales/milkSalesSlice";
 
 const Milksales = ({ switchToSettings }) => {
   const dispatch = useDispatch();
@@ -36,7 +34,7 @@ const Milksales = ({ switchToSettings }) => {
     liters: "",
     rate: "",
     amt: "",
-    paymode: "",
+    paymode: 0,
     paidamt: "",
   };
 
@@ -46,42 +44,6 @@ const Milksales = ({ switchToSettings }) => {
     const { name, value } = e.target;
     setChangedDate(value);
     setValues({ ...values, [name]: value });
-  };
-
-  // used for decimal input correction
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-
-    // Validate and allow only numeric input with an optional single decimal point
-    if (value === "" || /^[0-9]*\.?[0-9]*$/.test(value)) {
-      setValues((prev) => ({
-        ...prev,
-        [name]: value,
-      }));
-
-      // Clear previous errors if the input is valid
-      setErrors((prevErrors) => {
-        const { [name]: removedError, ...rest } = prevErrors;
-        return rest; // Remove the specific error for this field
-      });
-    } else {
-      // Set an error for invalid input
-      setErrors((prevErrors) => ({
-        ...prevErrors,
-        [name]:
-          "Invalid input. Only numbers and one decimal point are allowed.",
-      }));
-      return; // Stop further processing if input is invalid
-    }
-
-    // Normalize the value only when it's a valid integer and greater than 9
-    if (/^\d+$/.test(value) && value.length > 1) {
-      const normalizedValue = (parseInt(value, 10) / 10).toFixed(1);
-      setValues((prev) => ({
-        ...prev,
-        [name]: normalizedValue,
-      }));
-    }
   };
 
   // morning evening ----------------------------------------------------------->
@@ -104,6 +66,7 @@ const Milksales = ({ switchToSettings }) => {
         ...prev,
         rate: 40,
         amt: amount.toFixed(2),
+        paidamt: amount.toFixed(2),
       }));
     } catch (error) {
       console.error("Error in milk amount calculation :", error);
@@ -123,7 +86,7 @@ const Milksales = ({ switchToSettings }) => {
 
   // Effect to search for customer when code changes ---------------------------->
   useEffect(() => {
-    if (values.code.trim().length > 0) {
+    if (values.code.length > 0) {
       const handler = setTimeout(() => {
         // Ensure `code` has valid content before making API calls
         findCustomerByCode(values.code.trim());
@@ -182,6 +145,7 @@ const Milksales = ({ switchToSettings }) => {
   const handleMilksales = async (e) => {
     e.preventDefault();
     try {
+      dispatch(saveMilkEntry(values));
       toast.success(`Milk Collection of ${values.cname} saved successfully!`);
       setValues(initialValues);
       codeInputRef.current.focus();
@@ -213,13 +177,11 @@ const Milksales = ({ switchToSettings }) => {
               name="date"
               id="date"
               onChange={handleInputs}
-              // onChange={(e) => setChangedDate(e.target.value)}
               value={values.date || ""}
               max={tDate}
             />
           </div>
           <div className="setting-btn-switch w20 j-center d-flex">
-            {/* <span className="text">Morning</span> */}
             <button
               type="button"
               onClick={handleTime}
@@ -228,7 +190,6 @@ const Milksales = ({ switchToSettings }) => {
             >
               {time ? `${t("common:c-mrg")}` : `${t("common:c-eve")}`}
             </button>
-            {/* <span className="text">Evening</span> */}
           </div>
           <IoPersonAddSharp
             className="color-icon w10"
@@ -244,27 +205,26 @@ const Milksales = ({ switchToSettings }) => {
         <div className="user-details w100 h20 d-flex">
           <div className="form-div w50 px10">
             <label htmlFor="code" className="info-text">
-              {t("m-cust-code")} <span className="req">*</span>{" "}
+              {t("m-cust-code")}
             </label>
             <input
               className={`data ${errors.code ? "input-error" : ""}`}
               type="number"
-              required
               placeholder="0000"
               name="code"
               id="code"
               value={values.code}
               onChange={handleInputs}
+              ref={codeInputRef}
             />
           </div>
           <div className="form-div w50 px10">
             <label htmlFor="cname" className="info-text">
-              {t("m-cust-name")} <span className="req">*</span>{" "}
+              Customer name
             </label>
             <input
               className={`data ${errors.cname ? "input-error" : ""}`}
               type="text"
-              required
               placeholder={`${t("m-cust-name")}`}
               name="cname"
               id="cname"
@@ -274,8 +234,6 @@ const Milksales = ({ switchToSettings }) => {
           </div>
         </div>
         <div className="milk-details-div w100 h70 d-flex">
-          {/* <span className="label-text">Milk Details : </span> */}
-          {/* <div className="milk-details w100 h90 d-flex"> */}
           <div className="milk-info w50 h1 d-flex-col">
             <div className="form-div px10">
               <label htmlFor="liters" className="info-text">
@@ -297,25 +255,6 @@ const Milksales = ({ switchToSettings }) => {
                 ref={litersRef}
               />
             </div>
-            {/* <div className="form-div  px10">
-              <label htmlFor="fat" className="info-text">
-                {t("common:c-fat")} <span className="req">*</span>{" "}
-              </label>
-              <input
-                className={`data ${errors.fat ? "input-error" : ""}`}
-                type="number"
-                required
-                placeholder="0.0"
-                name="fat"
-                id="fat"
-                step="any"
-                onChange={handleInputChange}
-                value={values.fat}
-                disabled={!values.liters || !values.code}
-                onKeyDown={(e) => handleKeyDown(e, snfRef)}
-                ref={fatRef}
-              />
-            </div> */}
             <div className="form-div px10">
               <label htmlFor="paymode" className="info-text">
                 Select Payment Mode
@@ -324,25 +263,20 @@ const Milksales = ({ switchToSettings }) => {
                 className="data"
                 name="paymode"
                 id="paymode"
+                value={values.paymode}
                 onKeyDown={(e) =>
                   handleKeyPress(e, document.getElementById("paidamt"))
                 }
                 onChange={handleInputs}
               >
-                <option name="paymode" value="0">
-                  Credit
-                </option>
-                <option name="paymode" value="1">
-                  Cash
-                </option>
-                <option name="paymode" value="2">
-                  Online
-                </option>
+                <option value="0">Credit</option>
+                <option value="1">Cash</option>
+                <option value="2">Online</option>
               </select>
             </div>
             <div className="form-div px10">
               <label htmlFor="paidamt" className="info-text">
-                paid {t("common:c-amt")} <span className="req">*</span>{" "}
+                paid {t("common:c-amt")}
               </label>
               <input
                 className={`data ${errors.amt ? "input-error" : ""}`}
@@ -352,6 +286,8 @@ const Milksales = ({ switchToSettings }) => {
                 name="paidamt"
                 id="paidamt"
                 step="any"
+                value={values.paidamt || ""}
+                onChange={handleInputs}
                 onFocus={handleFocus}
                 onKeyDown={(e) =>
                   handleKeyPress(e, document.getElementById("submitbtn"))
@@ -359,42 +295,8 @@ const Milksales = ({ switchToSettings }) => {
                 ref={paidamtRef}
               />
             </div>
-            {/* <div className="form-div px10">
-              <label htmlFor="snf" className="info-text">
-                {t("common:c-snf")} <span className="req">*</span>{" "}
-              </label>
-              <input
-                className={`data ${errors.snf ? "input-error" : ""}`}
-                type="number"
-                required
-                placeholder="00.0"
-                name="snf"
-                id="snf"
-                step="any"
-                onChange={handleInputChange}
-                value={values.snf}
-                disabled={!values.fat || !values.liters || !values.code}
-                ref={snfRef}
-              />
-            </div> */}
           </div>
           <div className="milk-info w50 h1 d-flex-col">
-            {/* <div className="form-div px10">
-              <label htmlFor="degree" className="info-text">
-                {t("common:c-deg")} <span className="req">*</span>{" "}
-              </label>
-              <input
-                className={`data ${errors.degree ? "input-error" : ""}`}
-                type="number"
-                required
-                disabled
-                placeholder="00.0"
-                name="degree"
-                id="degree"
-                value={values.degree}
-                onChange={handleInputs}
-              />
-            </div> */}
             <div className="form-div px10">
               <label htmlFor="rate" className="info-text">
                 {t("common:c-rate")} <span className="req">*</span>{" "}
@@ -428,7 +330,6 @@ const Milksales = ({ switchToSettings }) => {
               />
             </div>
           </div>
-          {/* </div> */}
         </div>
         <div className="form-btns w100 h10 d-flex a-center j-end">
           <button

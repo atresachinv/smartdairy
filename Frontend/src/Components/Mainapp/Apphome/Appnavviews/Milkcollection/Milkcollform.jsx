@@ -484,22 +484,23 @@ const MilkColleform = ({ switchToSettings }) => {
       to: `91${values.mobile}`,
       type: "template",
       template: {
-        name: "milk_collection",
+        name: "milk_collection_marathi",
         language: { code: "en" },
         components: [
           {
             type: "body",
             parameters: [
-              { type: "text", text: values.cname },
-              { type: "text", text: tDate },
               { type: "text", text: dairyname },
+              { type: "text", text: values.cname },
               { type: "text", text: values.code },
               { type: "text", text: values.liters },
               { type: "text", text: values.fat },
               { type: "text", text: values.snf },
               { type: "text", text: values.rate },
               { type: "text", text: values.amt },
+              { type: "text", text: "" },
               { type: "text", text: dairyphone },
+              { type: "text", text: tDate },
             ],
           },
         ],

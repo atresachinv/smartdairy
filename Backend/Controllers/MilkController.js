@@ -1342,65 +1342,6 @@ exports.fetchPrevLiters = async (req, res) => {
 // (Update) fetch Mobile Milk Collection .................
 //.........................................................
 
-// exports.fetchMobileMilkCollection = async (req, res) => {
-//   pool.getConnection((err, connection) => {
-//     if (err) {
-//       console.error("Error getting MySQL connection: ", err);
-//       return res.status(500).json({ message: "Database connection error" });
-//     }
-//
-//     try {
-//       const dairy_id = req.user.dairy_id;
-//       const center_id = req.user.center_id;
-//
-//       // Check if dairy_id, user_role, and center_id are available
-//       if (!dairy_id) {
-//         connection.release();
-//         return res.status(400).json({ message: "Missing required fields" });
-//       }
-//
-//       // Get the current date in YYYY-MM-DD format
-//       const currentDate = new Date().toISOString().split("T")[0];
-//
-//       // Get the current hour to determine AM or PM
-//       const currentHour = new Date().getHours();
-//       const time = currentHour < 12 ? 0 : 1;
-//
-//       const dairy_table = `dailymilkentry_${dairy_id}`;
-//
-//       const milkcollReport = `
-//         SELECT Litres, cname, rno, SampleNo
-//         FROM ${dairy_table}
-//         WHERE ReceiptDate = ? AND companyid = ? AND center_id = ?  AND ME = ? AND Driver = "1"
-//       `;
-//
-//       // Execute the query
-//       connection.query(
-//         milkcollReport,
-//         [currentDate, dairy_id, center_id, time],
-//         (err, result) => {
-//           connection.release();
-//
-//           if (err) {
-//             console.error("Error executing query: ", err);
-//             return res.status(500).json({ message: "Query execution error" });
-//           }
-//
-//           if (result.length === 0) {
-//             return res.status(200).json({ mobileMilk: [] }); // Return empty array instead of 404
-//           }
-//
-//           res.status(200).json({ mobileMilkcoll: result });
-//         }
-//       );
-//     } catch (error) {
-//       connection.release();
-//       console.error("Error processing request: ", error);
-//       return res.status(500).json({ message: "Internal server error" });
-//     }
-//   });
-// };
-
 exports.fetchMobileMilkCollection = async (req, res) => {
   pool.getConnection((err, connection) => {
     if (err) {
@@ -2226,7 +2167,7 @@ exports.createRetailCustomer = async (req, res) => {
 //-------------------------------------------------------------------------------------------------->
 
 exports.RetailMilkCollection = async (req, res) => {
-  const { code, cname, time, liters, rate, amt, paidamt, paymode } = req.body;
+  const { code, cname, liters, rate, amt, paidamt, paymode } = req.body;
 
   pool.getConnection((err, connection) => {
     if (err) {
@@ -2246,12 +2187,16 @@ exports.RetailMilkCollection = async (req, res) => {
 
       // Get the current date in YYYY-MM-DD format
       const currentDate = new Date().toISOString().split("T")[0];
-
+      const insertCode = code && code !== "" ? parseInt(code, 0) : 0;
+      const insertLiters = parseFloat(liters) || 0;
+      // Get the current hour to determine AM or PM
+      const currentHour = new Date().getHours();
+      const time = currentHour < 12 ? 0 : 1;
       // Prepare the SQL query
       const milkcollection = `
       INSERT INTO retail_milk_sales 
       (dairy_id, center_id, code , cust_name , liters , rate , amt , paidamt, paymode, saleby , saledate , saletime )
-        VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       `;
 
       // Execute the query
@@ -2260,9 +2205,9 @@ exports.RetailMilkCollection = async (req, res) => {
         [
           dairy_id,
           center_id,
-          code,
+          insertCode,
           cname,
-          liters,
+          insertLiters,
           rate,
           amt,
           paidamt,
@@ -2278,6 +2223,8 @@ exports.RetailMilkCollection = async (req, res) => {
             console.error("Error executing query: ", err);
             return res.status(500).json({ message: "Query execution error" });
           }
+          console.log(result.affectedRows);
+
           res.status(200).json({ message: "Milk entry saved successfully!" });
         }
       );
