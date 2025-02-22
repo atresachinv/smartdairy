@@ -1,6 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-/* eslint-disable react/prop-types */
-/* eslint-disable no-unused-vars */
 import React, { useEffect, useRef, useState } from "react";
 import { BsGearFill } from "react-icons/bs";
 import { useDispatch, useSelector } from "react-redux";

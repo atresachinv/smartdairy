@@ -52,7 +52,7 @@ const CreateOthers = () => {
   useEffect(() => {
     dispatch(getAllProducts());
     dispatch(getProductSaleRates(4));
-  }, []);
+  }, [dispatch]);
 
   // set today date
   useEffect(() => {

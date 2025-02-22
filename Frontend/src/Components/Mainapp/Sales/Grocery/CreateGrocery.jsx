@@ -51,7 +51,7 @@ const CreateGrocery = () => {
   useEffect(() => {
     dispatch(getAllProducts());
     dispatch(getProductSaleRates(3));
-  }, []);
+  }, [dispatch]);
 
   // set today date
   useEffect(() => {

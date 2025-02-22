@@ -52,7 +52,7 @@ const CreateMedicines = () => {
   useEffect(() => {
     dispatch(getAllProducts());
     dispatch(getProductSaleRates(2));
-  }, []);
+  }, [dispatch]);
 
   // set today date
   useEffect(() => {

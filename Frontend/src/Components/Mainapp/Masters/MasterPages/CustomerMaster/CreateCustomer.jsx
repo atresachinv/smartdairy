@@ -1,14 +1,17 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  createCustomer,
-  getMaxCustNo,
-  listCustomer,
-} from "../../../../../App/Features/Customers/customerSlice";
+// import {
+//   createCustomer,
+//   getMaxCustNo,
+//   listCustomer,
+// } from "../../../../../App/Features/Customers/customerSlice";
 import * as XLSX from "xlsx";
 import { toast } from "react-toastify";
 import { FaFileExcel } from "react-icons/fa";
 import {
+  createCustomer,
+  getMaxCustNo,
+  listCustomer,
   updateCustomer,
   uploadCustomerExcel,
 } from "../../../../../App/Features/Mainapp/Masters/custMasterSlice";
@@ -353,6 +356,7 @@ const CreateCustomer = () => {
       if (isEditing) {
         // Update existing customer in DB
         dispatch(updateCustomer(formData));
+        dispatch(listCustomer());
         toast.success("Customer updated successfully!");
       } else {
         // Create new customer
@@ -457,7 +461,8 @@ const CreateCustomer = () => {
       onSubmit={handleSubmit}
       className={`cust-details-setting-div w100 h1 d-flex sa ${
         isEditing ? "edit-bg" : "bg"
-      }`}>
+      }`}
+    >
       <div className="customer-details-container w60 h1 d-flex-col">
         <div className="tilte-container w100 d-flex a-center sb p10">
           <span className="heading ">
@@ -471,7 +476,8 @@ const CreateCustomer = () => {
               type="button"
               onClick={handleIsActive}
               className={`toggle-button ${isActive ? "on" : "off"}`}
-              aria-pressed={isActive}>
+              aria-pressed={isActive}
+            >
               {isActive ? "Yes" : "No"}
             </button>
           </div>
@@ -499,7 +505,8 @@ const CreateCustomer = () => {
               <button
                 type="button"
                 onClick={handleIsMember}
-                className={`toggle-button ${isMember ? "on" : "off"}`}>
+                className={`toggle-button ${isMember ? "on" : "off"}`}
+              >
                 {isMember ? "Yes" : "No"}
               </button>
             </div>
@@ -736,7 +743,8 @@ const CreateCustomer = () => {
                 className={`data w100 ${errors.rctype ? "input-error" : ""}`}
                 onChange={handleInputChange}
                 value={formData.rctype || ""}
-                aria-label="Select Ratechart">
+                aria-label="Select Ratechart"
+              >
                 <option value="">-- select --</option>
                 {ratechartlist && ratechartlist.length > 0 ? (
                   [
@@ -935,21 +943,24 @@ const CreateCustomer = () => {
           <button
             className="w-btn mx10"
             type="submit"
-            onClick={handleEditClick}>
+            onClick={handleEditClick}
+          >
             {isEditing ? "CREATE" : "EDIT"}
           </button>
           {isEditing ? (
             <button
               className="w-btn"
               type="submit"
-              disabled={status === "loading"}>
+              disabled={status === "loading"}
+            >
               {status === "loading" ? "Updating..." : "UPDATE "}
             </button>
           ) : (
             <button
               className="w-btn"
               type="submit"
-              disabled={status === "loading"}>
+              disabled={status === "loading"}
+            >
               {status === "loading" ? "Creating..." : "CREATE "}
             </button>
           )}
@@ -963,7 +974,8 @@ const CreateCustomer = () => {
               type="button"
               className="w-btn"
               id="d-excel"
-              onClick={downloadEmptyExcel}>
+              onClick={downloadEmptyExcel}
+            >
               Format
             </button>
           </div>
@@ -977,7 +989,8 @@ const CreateCustomer = () => {
                   id="selectExcel"
                   className="choose-excel-btn"
                   type="button"
-                  onClick={handleButtonClick}>
+                  onClick={handleButtonClick}
+                >
                   Choose File
                 </button>
               </>
@@ -1004,7 +1017,8 @@ const CreateCustomer = () => {
               className="w-btn "
               type="submit"
               onClick={handleExcelUpload}
-              disabled={excelstatus === "loading"}>
+              disabled={excelstatus === "loading"}
+            >
               {excelstatus === "loading" ? "Uploading..." : "Upload"}
             </button>
           </div>

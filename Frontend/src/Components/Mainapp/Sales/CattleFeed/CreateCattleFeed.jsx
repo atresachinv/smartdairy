@@ -45,7 +45,9 @@ const CreateCattleFeed = () => {
       state.dairy.dairyData.SocietyName ||
       state.dairy.dairyData.center_name
   );
-  const dairymono = useSelector((state) => state.dairy.dairyData.mobile);
+  const dairymono = useSelector(
+    (state) => state.dairy.dairyData.PhoneNo || state.dairy.dairyData.mobile
+  );
   let printer = 2;
   //set user role
   useEffect(() => {
@@ -57,7 +59,7 @@ const CreateCattleFeed = () => {
   useEffect(() => {
     dispatch(getAllProducts());
     dispatch(getProductSaleRates(1));
-  }, []);
+  }, [dispatch]);
 
   // set today date
   useEffect(() => {
