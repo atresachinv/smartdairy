@@ -13,10 +13,11 @@ import { getProductSaleRates } from "../../../../App/Features/Sales/salesSlice";
 import Invoice from "../Invoice";
 import "../../../../Styles/Mainapp/Sales/Sales.css";
 import { toWords } from "number-to-words";
+import { sendMessage } from "../WhatsAppSender";
 
 const CreateMedicines = () => {
   const dispatch = useDispatch();
-  const { t } = useTranslation(["milkcollection", "common"]);
+  const { t } = useTranslation(["common", "milkcollection"]);
   const tDate = useSelector((state) => state.date.toDate);
   const salesRates = useSelector((state) => state.sales.salesRates);
   const customerslist = useSelector((state) => state.customer.customerlist);
@@ -39,6 +40,9 @@ const CreateMedicines = () => {
   const dairyInfo = useSelector(
     (state) =>
       state.dairy.dairyData.SocietyName || state.dairy.dairyData.center_name
+  );
+  const dairymono = useSelector(
+    (state) => state.dairy.dairyData.PhoneNo || state.dairy.dairyData.mobile
   );
   let printer = 2;
 
@@ -173,6 +177,40 @@ const CreateMedicines = () => {
       try {
         const res = await axiosInstance.post("/sale/create", cartItem);
         if (res?.data?.success) {
+          const result = await Swal.fire({
+            title: "Message Confirmation ?",
+            text: "Are you sure send whatsapp message?",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Yes, send it!",
+          });
+
+          if (result.isConfirmed) {
+            const customer = customerslist.find(
+              (customer) => customer.srno === parseInt(fcode)
+            );
+            let product = "";
+            for (let i = 0; i < cartItem.length; i++) {
+              product += `[${i + 1}. ${cartItem[i].ItemName} (${
+                cartItem[i].Qty
+              } X ${cartItem[i].Rate}=${cartItem[i].Amount})]${
+                i < cartItem.length - 1 ? ", " : ""
+              }`;
+            }
+            let cName = `${customer.srno}-${customer.cname}`;
+            sendMessage({
+              to: customer.Phone,
+              dName: dairyInfo,
+              cName: cName,
+              date: formatDateToDDMMYYYY(date),
+              rctNo: rctno,
+              amount: cartItem.reduce((acc, item) => acc + item.Amount, 0),
+              products: product,
+              mono: dairymono,
+            });
+          }
           handelClear();
           setRctno(parseInt(rctno) + 1);
           toast.success(res.data.message);
@@ -630,9 +668,17 @@ const CreateMedicines = () => {
     return selectedItem.ItemName;
   };
 
+  const formatDateToDDMMYYYY = (dateStr) => {
+    const date = new Date(dateStr);
+    const day = String(date.getDate()).padStart(2, "0");
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
+  };
+
   return (
     <div className="add-cattlefeed-sale-container w100 h1 d-flex-col sa">
-      <span className="heading p10">Add Medicines : </span>
+      <span className="heading p10">{t("c-medicine")} </span>
       <div className="create-cattlefeed-sales-inner-container w100 h1 d-flex sb p10">
         <form className="create-sales-form-container w50 h1 bg p10">
           <div className="sales-details w100 h20 d-flex a-center sb ">
@@ -652,7 +698,7 @@ const CreateMedicines = () => {
             </div>
             <div className="col w30 d-flex a-center">
               <label htmlFor="recieptno" className="info-text w100">
-                Receipt No :
+                {t("c-repno")}
               </label>
               <input
                 type="number"
@@ -672,7 +718,7 @@ const CreateMedicines = () => {
           <div className="sale-details w100 h20 d-flex a-center sb ">
             <div className="col w20 ">
               <label htmlFor="code" className="info-text w100">
-                Code:
+                {t("milkcollection:m-cust-code")}:
               </label>
               <input
                 type="number"
@@ -690,7 +736,7 @@ const CreateMedicines = () => {
             </div>
             <div className="col w80">
               <label htmlFor="custname" className="info-text w100">
-                Customer Name:
+                {t("milkcollection:m-cust-name")}:
               </label>
               <input
                 type="text"
@@ -719,7 +765,7 @@ const CreateMedicines = () => {
           <div className="sales-details w100 h20 d-flex a-center sb ">
             <div className="col w80">
               <label htmlFor="items" className="info-text w100">
-                Select Product:
+                {t("c-medimedi-select")}:
               </label>
               {userRole !== "mobilecollector" ? (
                 <select
@@ -732,7 +778,7 @@ const CreateMedicines = () => {
                     handleKeyPress(e, document.getElementById("qty"))
                   }
                 >
-                  <option value="0">-- select product --</option>
+                  <option value="0">-- {t("c-medimedi-select")} --</option>
                   {filteredItems.map((item, i) => (
                     <option key={i} value={item.ItemCode}>
                       {item.ItemName}
@@ -750,7 +796,7 @@ const CreateMedicines = () => {
                     handleKeyPress(e, document.getElementById("addtocart"))
                   }
                 >
-                  <option value="0">-- select product --</option>
+                  <option value="0">-- {t("c-medimedi-select")} --</option>
                   {filteredItems.map((item, i) => (
                     <option key={i} value={item.ItemCode}>
                       {item.ItemName}
@@ -761,7 +807,7 @@ const CreateMedicines = () => {
             </div>
             <div className="col w20">
               <label htmlFor="qty" className="info-text w100">
-                QTY:
+                {t("c-qty")}:
               </label>
               <input
                 disabled={!selectitemcode}
@@ -783,7 +829,7 @@ const CreateMedicines = () => {
             <div className="sales-details w100 h20 d-flex ">
               <div className="col w30 ">
                 <label htmlFor="rate" className="info-text w100">
-                  Rate:
+                  {t("c-rate")}:
                 </label>
                 <input
                   type="number"
@@ -804,7 +850,7 @@ const CreateMedicines = () => {
               </div>
               <div className="col w30">
                 <label htmlFor="amt" className="info-text w100">
-                  Amount:
+                  {t("c-amt")}:
                 </label>
                 <input
                   type="number"
@@ -834,7 +880,7 @@ const CreateMedicines = () => {
 
         <div className="cattlefeed-sales-list-outer-container w45 h1 d-flex-col bg">
           <div className="title-and-button-container w100 d-flex a-center sb">
-            <span className="heading w30 p10">Item List</span>
+            <span className="heading w30 p10">{t("c-item-list")}</span>
             {userRole === "mobilecollector" ? (
               <div className="w70 d-flex a-center j-end ">
                 <div className="w100 d-flex j-end ">
@@ -860,11 +906,11 @@ const CreateMedicines = () => {
           </div>
           <div className="sales-list-conatainer w100 h1 d-flex-col">
             <div className="sales-headings-row w100 h10 d-flex sb a-center t-center sticky-top t-heading-bg">
-              <span className="f-label-text w5">No.</span>
-              <span className="f-label-text w35">Name</span>
-              <span className="f-label-text w10">Qty</span>
-              <span className="f-label-text w10">Rate</span>
-              <span className="f-label-text w10">Amount</span>
+              <span className="f-label-text w5">{t("c-no")}</span>
+              <span className="f-label-text w35">{t("c-name")}</span>
+              <span className="f-label-text w10">{t("c-qty")}</span>
+              <span className="f-label-text w10">{t("c-rate")}</span>
+              <span className="f-label-text w10">{t("c-amt")}</span>
               {userRole !== "mobilecollector" ? (
                 <span className="f-label-text w20 t-center">Action</span>
               ) : (
@@ -903,7 +949,7 @@ const CreateMedicines = () => {
                   <span className=" w5"></span>
                   <span className=" w35"></span>
                   <span className=" w10"></span>
-                  <span className="label-text w10">Total :</span>
+                  <span className="label-text w10">{t("c-total")} :</span>
                   <span className="label-text w10 t-end">
                     {cartItem.reduce((acc, item) => acc + item.Amount, 0)}
                   </span>
@@ -926,7 +972,7 @@ const CreateMedicines = () => {
               onClick={handleSubmit}
               disabled={cartItem.length == 0}
             >
-              Save
+              {t("milkcollection:m-btn-save")}
             </button>
           </div>
         </div>

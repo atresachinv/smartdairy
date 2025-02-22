@@ -36,6 +36,7 @@
   "c-amt": "Amount",
   "c-liters": "Liters",
   "c-billno": "Bill No.",
+  "c-repno": "Receipt No.",
   "c-qty": "Qty",
   "c-prod": "Product",
   "c-total": "Total",
@@ -54,5 +55,17 @@
   "c-coll-report": "Collection Report",
   "c-sales-details": "Purchase Details",
   "c-mrg-coll": "Morning Milk Collection",
-  "c-eve-coll": "Evening Milk Collection"
+  "c-eve-coll": "Evening Milk Collection",
+  "c-prod-select": "Select Product",
+  "c-groce-select": "Select Product",
+  "c-medimedi-select": "Select Product",
+  "c-cattlefeed": "Cattle Feed",
+  "c-grocery": "Grocery",
+  "c-medicine": "Medicine",
+  "c-other": "Other",
+  "c-add-to-cart": "Add to Cart",
+  "c-item-list": "Item List",
+  "c-print": "Print",
+  "c-no": "No.",
+  "c-name": "Name"
 }

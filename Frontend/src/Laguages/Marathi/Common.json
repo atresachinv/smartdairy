@@ -37,6 +37,7 @@
   "c-amt": "रक्कम ",
   "c-liters": "लीटर",
   "c-billno": "बिल नं.",
+  "c-repno": "पावती नं.",
   "c-qty": "नग",
   "c-prod": "उत्पादन",
   "c-total": "एकूण ",
@@ -55,5 +56,17 @@
   "c-coll-report": "संकलन माहिती",
   "c-sales-details": "खाद्य खरेदी माहिती",
   "c-mrg-coll": "सकाळ दूध संकलन",
-  "c-eve-coll": "सायंकाळ दूध संकलन"
+  "c-eve-coll": "सायंकाळ दूध संकलन",
+  "c-prod-select": "खाद्य निवडा",
+  "c-groce-select": "वस्तु निवडा", 
+  "c-medimedi-select": "औषध निवडा", 
+  "c-cattlefeed": "गुरांचे खाद्य",
+  "c-grocery": "किराणा दुकान",
+  "c-medicine": "औषधे",
+  "c-other": "इतर",
+  "c-add-to-cart": "Add to Cart",
+  "c-item-list": "बिल यादी",
+  "c-print": "प्रिंट",
+  "c-no": "नं.",
+  "c-name": "नाव"
 }
