@@ -23,11 +23,12 @@ import {
 import { GrNotes, GrOrganization } from "react-icons/gr";
 import { NavLink } from "react-router-dom";
 import "../../Styles/Mainapp/Mainapphome.css";
+import { useSelector } from "react-redux";
 
-const Mainappnavlinks = ({setselected, handleSidebar }) => {
+const Mainappnavlinks = ({ setselected, handleSidebar }) => {
   const [activeMenu, setActiveMenu] = useState(null);
   const [userRole, setUserRole] = useState(null);
-
+  const center_id = useSelector((state) => state.dairy.dairyData.center_id);
   useEffect(() => {
     const myrole = localStorage.getItem("userRole");
     setUserRole(myrole);
@@ -252,13 +253,17 @@ const Mainappnavlinks = ({setselected, handleSidebar }) => {
       index: 8,
       role: ["super_admin", "admin", "manager"],
       submenus: [
-        {
-          name: "Center Reports",
-          icon: <FaFileLines className="icon" />,
-          index: 8.1,
-          path: "reports/center",
-          role: ["admin", "super_admin", "manager"],
-        },
+        ...(center_id === 0
+          ? [
+              {
+                name: "Center Reports",
+                icon: <BsGridFill className="icon" />,
+                index: 8.1,
+                path: "reports/center",
+                role: ["admin", "super_admin", "manager"],
+              },
+            ]
+          : []),
         {
           name: "Milk Reports",
           icon: <FaFileContract className="icon" />,
@@ -359,13 +364,17 @@ const Mainappnavlinks = ({setselected, handleSidebar }) => {
           path: "dairy/initial-info",
           role: ["admin", "super_admin", "manager"],
         },
-        {
-          name: "Create New Center",
-          icon: <BsGridFill className="icon" />,
-          index: 10.3,
-          path: "dairy/create/center",
-          role: ["admin", "super_admin", "manager"],
-        },
+        ...(center_id === 0
+          ? [
+              {
+                name: "Create New Center",
+                icon: <BsGridFill className="icon" />,
+                index: 10.3,
+                path: "dairy/create/center",
+                role: ["admin", "super_admin", "manager"],
+              },
+            ]
+          : []),
       ],
     },
     {

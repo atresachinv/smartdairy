@@ -435,9 +435,9 @@ exports.milkCollection = async (req, res) => {
   });
 };
 
-//.........................................................
-// Save Milk Collection (single entry)...................................
-//.........................................................
+//------------------------------------------------------------------------------------------------------------------->
+// currently working Save Milk Collection (single entry) ------------------------------------------------------------>
+//------------------------------------------------------------------------------------------------------------------->
 
 exports.milkCollectionOneEntry = async (req, res) => {
   const {
@@ -454,7 +454,6 @@ exports.milkCollectionOneEntry = async (req, res) => {
     cname,
     acccode,
   } = req.body;
-
   pool.getConnection((err, connection) => {
     if (err) {
       console.error("Error getting MySQL connection: ", err);

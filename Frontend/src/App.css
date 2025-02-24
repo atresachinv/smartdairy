@@ -459,6 +459,9 @@
 .bg7 {
   background-color: #17acc0;
 }
+.bg-fff {
+  background-color: #fff;
+}
 
 .bg {
   background-color: #ecfafd;

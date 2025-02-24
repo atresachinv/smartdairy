@@ -252,13 +252,13 @@ const MilkRateMaster = () => {
   };
 
   // Function to handle row click
-  const handleRowClick = async (ratechart) => {
+  const handleRowClick = (ratechart) => {
     // If the clicked rate chart is already selected, deselect it
     if (selectedRateChart === ratechart) {
       setSelectedRateChart(null);
     } else {
       setSelectedRateChart(ratechart);
-      await dispatch(
+      dispatch(
         fetchRateChart({
           cb: ratechart.cb,
           rccode: ratechart.rccode,
@@ -286,7 +286,7 @@ const MilkRateMaster = () => {
     }
     const ratechartDate = selectedRateChart.rcdate.slice(0, 10);
     try {
-      const response = await dispatch(
+      const response = dispatch(
         deleteRatechart({
           cb: selectedRateChart.cb,
           rccode: selectedRateChart.rccode,
@@ -338,7 +338,6 @@ const MilkRateMaster = () => {
     }
   };
 
-
   return (
     <>
       <div className="rate-chart-master-container w100 h1 d-flex sb">
@@ -376,7 +375,8 @@ const MilkRateMaster = () => {
                   height: "20px",
                   backgroundColor: "#4caf50",
                   transition: "width 0.5s",
-                }}></div>
+                }}
+              ></div>
               <span>{progress}%</span>
             </div>
           )}
@@ -385,7 +385,7 @@ const MilkRateMaster = () => {
               Selected Rate Chart from Excel :{" "}
             </span>
             <div className="rate-chart-col-title w100 d-flex a-center t-center sa py10 bg1">
-              <span className="f-info-text w5">No.</span>
+              {/* <span className="f-info-text w5">No.</span> */}
               <span className="f-info-text w15">FAT</span>
               <span className="f-info-text w10">SNF</span>
               <span className="f-info-text w15">Rate</span>
@@ -400,8 +400,9 @@ const MilkRateMaster = () => {
                     }`}
                     style={{
                       backgroundColor: index % 2 === 0 ? "#faefe3" : "#fff",
-                    }}>
-                    <span className="info-text w5">{index + 1}</span>
+                    }}
+                  >
+                    {/* <span className="info-text w5">{index + 1}</span> */}
                     <span className="info-text w15">
                       {item.fat !== undefined ? item.fat.toFixed(1) : "N/A"}
                     </span>
@@ -443,7 +444,8 @@ const MilkRateMaster = () => {
                         ? "#faefe3"
                         : "#fff",
                     cursor: "pointer",
-                  }}>
+                  }}
+                >
                   <span className="info-text w10">{ratechart.rccode}</span>
                   <span className="info-text w20">
                     {new Date(ratechart.rcdate).toLocaleDateString("en-GB", {
@@ -474,21 +476,24 @@ const MilkRateMaster = () => {
               type="submit"
               className="btn mx10"
               // disabled={status === "loading"}
-              onClick={deleteSelectedRateChart}>
+              onClick={deleteSelectedRateChart}
+            >
               Delete
             </button>
             <button
               type="submit"
               className="btn mx10"
               disabled={status === "loading"}
-              onClick={downloadRateChart}>
+              onClick={downloadRateChart}
+            >
               Download
             </button>
             <button
               type="submit"
               className="btn mx10"
               disabled={status === "loading"}
-              onClick={ShowRatechart}>
+              onClick={ShowRatechart}
+            >
               Show
             </button>
           </div>

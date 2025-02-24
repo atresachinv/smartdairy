@@ -2,6 +2,7 @@ import React from "react";
 import SaveRateChart from "./SaveRateChart";
 import UpdateRatechart from "./UpdateRatechart";
 import ApplyRatechart from "./ApplyRatechart";
+import AddType from "./AddType";
 
 const RateChartNavViews = ({ index, isSet, ratechart }) => {
   switch (index) {
@@ -13,6 +14,9 @@ const RateChartNavViews = ({ index, isSet, ratechart }) => {
       break;
     case 2:
       return <ApplyRatechart isSet={isSet} ratechart={ratechart} />;
+      break;
+    case 3:
+      return <AddType isSet={isSet} ratechart={ratechart} />;
       break;
 
     default:
