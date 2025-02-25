@@ -24,7 +24,10 @@ import { getAllMilkCollReport } from "../../../App/Features/Mainapp/Milk/MilkCol
 import { generateMaster } from "../../../App/Features/Customers/Date/masterdateSlice";
 import { listCustomer } from "../../../App/Features/Customers/customerSlice";
 import Spinner from "../../Home/Spinner/Spinner";
-import { getCenterMilkData } from "../../../App/Features/Mainapp/Dashboard/dashboardSlice";
+import {
+  getCenterCustCount,
+  getCenterMilkData,
+} from "../../../App/Features/Mainapp/Dashboard/dashboardSlice";
 import { centersLists } from "../../../App/Features/Dairy/Center/centerSlice";
 import "../../../Styles/Mainapp/Dashbaord/Dashboard.css";
 
@@ -40,6 +43,9 @@ const Dashboard = () => {
   );
   const centerLiterAmt = useSelector(
     (state) => state.admindashboard.centerMilk // center wise liter and amount
+  );
+  const customerCounts = useSelector(
+    (state) => state.admindashboard.custCount // center wise liter and amount
   );
   const status = useSelector((state) => state.milkCollection.allmilkstatus);
   const customerslist = useSelector((state) => state.customer.customerlist); //save customer list
@@ -139,66 +145,23 @@ const Dashboard = () => {
 
   useEffect(() => {
     dispatch(centersLists());
-  }, [dispatch]);
+    dispatch(getCenterCustCount());
+  }, []);
 
   // Merged center data
   const centersmergedData = centerLiterAmt.map((literEntry) => {
     const center = centerList.find(
       (c) => c.center_id.toString() === literEntry.center_id.toString()
     );
+    const customerCount = customerCounts.find(
+      (cust) => cust.centerid.toString() === literEntry.center_id.toString()
+    );
     return {
       ...literEntry,
       center_name: center ? center.center_name : "Unknown",
+      total_customers: customerCount ? customerCount.total_customers : 0,
     };
   });
-  console.log("merged", centersmergedData);
-  // ------------------------------------------------------------------------------------------->
-  // simple line chart ------------------------------------------------------------------------->
-  // ------------------------------------------------------------------------------------------->
-  const data = [
-    {
-      name: "Page A",
-      uv: 4000,
-      pv: 2400,
-      amt: 2400,
-    },
-    {
-      name: "Page B",
-      uv: 3000,
-      pv: 1398,
-      amt: 2210,
-    },
-    {
-      name: "Page C",
-      uv: 2000,
-      pv: 9800,
-      amt: 2290,
-    },
-    {
-      name: "Page D",
-      uv: 2780,
-      pv: 3908,
-      amt: 2000,
-    },
-    {
-      name: "Page E",
-      uv: 1890,
-      pv: 4800,
-      amt: 2181,
-    },
-    {
-      name: "Page F",
-      uv: 2390,
-      pv: 3800,
-      amt: 2500,
-    },
-    {
-      name: "Page G",
-      uv: 3490,
-      pv: 4300,
-      amt: 2100,
-    },
-  ];
 
   // ------------------------------------------------------------------------------------------->
   // Pie chart Data to show center wise Milk Collection ---------------------------------------->
@@ -245,93 +208,6 @@ const Dashboard = () => {
         <h3 className="subtitle">Dashbord</h3>
       </div>
       <div className="dashboard-scrll-container w100 h1 mh100 hidescrollbar ">
-        {/* <div className="Milk-sale-details-container w100 h1 mh100 hidescrollbar sb p10">
-          <span className="heading">Analytics : </span>
-          <div className="liter-sales-details-container w100 h70 d-flex-col my10 br6 bg-fff sb p10">
-            <span className="w100 label-text px10">Liters & Amount </span>
-            <div className="liter-sales-details-inner-container w100 h90 d-flex sb p10">
-              <div className="liter-sales-card w80 h1 d-flex-col sb p10 ">
-                <ResponsiveContainer width="100%" height="100%">
-                  <LineChart
-                    width={500}
-                    height={600}
-                    data={chartData}
-                    margin={{
-                      top: 5,
-                      right: 30,
-                      left: 20,
-                      bottom: 5,
-                    }}
-                  >
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="date" />
-                    <YAxis />
-                    <Tooltip />
-                    <Legend />
-                    <Line
-                      type="monotone"
-                      dataKey="totalLitres"
-                      stroke="#8884d8"
-                      activeDot={{ r: 8 }}
-                    />
-                    <Line type="monotone" dataKey="totalAmt" stroke="#82ca9d" />
-                  </LineChart>
-                </ResponsiveContainer>
-              </div>
-              <div className="liter-sell-details w20 h1 d-flex-col a-center sb p10 bg5">
-                <div className="details-card w80 h30 d-flex-col t-center">
-                  <span className="heading">{totalAmt}</span>
-                  <span className="info-text">Total Amount</span>
-                </div>
-                <div className="details-card w80 h30 d-flex-col t-center">
-                  <span className="heading">{totalLitres}</span>
-                  <span className="info-text">Total Liters</span>
-                </div>
-                <div className="details-card w80 h30 d-flex-col t-center">
-                  <button type="button" disabled className="btn">
-                    Show Report
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div className="liter-sales-details-container w100 h70 d-flex-col my10 br6 bg-fff sb p10">
-            <span className="w100 label-text px10">
-              Center Milk Collection :
-            </span>
-            <div className="liter-sales-details-inner-container w100 h70 d-flex sb p10">
-              <div className="liter-sales-card w80 h1 d-flex-col sb p10 ">
-                <ResponsiveContainer width="100%" height="100%">
-                  <PieChart width={500} height={500}>
-                    <Pie
-                      data={piechartdata}
-                      cx="50%"
-                      cy="50%"
-                      labelLine={false}
-                      label={renderCustomizedLabel}
-                      outerRadius={80}
-                      fill="#8884d8"
-                      dataKey="value"
-                    >
-                      {data.map((entry, index) => (
-                        <Cell
-                          key={`cell-${index}`}
-                          fill={COLORS[index % COLORS.length]}
-                        />
-                      ))}
-                    </Pie>
-                  </PieChart>
-                </ResponsiveContainer>
-              </div>
-              <div className="liter-sell-details w20 h1 d-flex-col a-center sb p10 bg5">
-                <div className="details-card w80 h30 d-flex-col center t-center">
-                  <div className="w25 h40 colour-box br"></div>
-                  <span className="info-text">center name</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div> */}
         <div className="Milk-sale-details-container w100 h1 hidescrollbar">
           <form className="selection-container w100 h10 d-flex a-center j-start">
             <div className="select-data-text w50 h1 d-flex a-center p10">
@@ -533,15 +409,17 @@ const Dashboard = () => {
                           </span>
                         </div>
                         <div className="card-title w100 h25 d-flex sb">
-                          <span className="w30 info-text">Center Name : </span>
-                          <span className="w70 info-text t-start">
+                          {/* <span className="w30 info-text">Center Name : </span> */}
+                          <span className="w100 label-text t-start">
                             {center.center_name}
                           </span>
                         </div>
                         <div className="card-other-outer-details w100 h50 d-flex sa">
                           <div className="card-other-details w30 h1 d-flex-col a-center sa bg5">
                             <span className="info-text">Customers</span>
-                            <span className="label-text">0</span>
+                            <span className="label-text">
+                              {center.total_customers}
+                            </span>
                           </div>
                           <div className="card-other-details w30 h1 d-flex-col a-center sa bg5">
                             <span className="info-text">Liters</span>
@@ -582,7 +460,7 @@ const Dashboard = () => {
                         fill="#8884d8"
                         dataKey="total_litres"
                       >
-                        {data.map((entry, index) => (
+                        {centerLiterAmt.map((entry, index) => (
                           <Cell
                             key={`cell-${index}`}
                             fill={COLORS[index % COLORS.length]}
@@ -606,7 +484,7 @@ const Dashboard = () => {
                         fill="#8884d8"
                         dataKey="total_amount"
                       >
-                        {data.map((entry, index) => (
+                        {centerLiterAmt.map((entry, index) => (
                           <Cell
                             key={`cell-${index}`}
                             fill={COLORS[index % COLORS.length]}

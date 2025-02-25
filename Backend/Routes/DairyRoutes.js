@@ -20,6 +20,7 @@ const {
   saveUpdatedRC,
   sendMessage,
   getCenterWiseMilkData,
+  getCenterCustomerCount,
 } = require("../Controllers/DairyController");
 const router = express.Router();
 
@@ -38,5 +39,8 @@ router.route("/send-message").post(verifyToken, sendMessage); //send whats app m
 router
   .route("/dashboard/centers-data")
   .post(verifyToken, getCenterWiseMilkData);
+router
+  .route("/dashboard/centers/customer-count")
+  .post(verifyToken, getCenterCustomerCount);
 
 module.exports = router;

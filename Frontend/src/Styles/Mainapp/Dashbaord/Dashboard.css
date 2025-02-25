@@ -52,11 +52,18 @@
 
   .selection-container .select-data-text {
     width: 100%;
+    min-height: fit-content;
+    flex-direction: column;
   }
   .selection-container .priod-container {
     width: 100%;
   }
-
+  .selection-container .select-data-text .info-text {
+    width: 100%;
+  }
+  .selection-container .select-data-text .label-text {
+    width: 100%;
+  }
   .dashboard-cards {
     height: 40%;
     margin-top: 10px;
@@ -69,9 +76,6 @@
     height: 50px;
     margin-bottom: 10px;
   }
-  /* .main-dashboard-container .dashboard-scrll-container {
-    height: auto;
-  } */
   .dashboard-scrll-container .selection-container {
     width: 100%;
     min-height: fit-content;
@@ -160,7 +164,7 @@
     min-height: fit-content;
     display: flex;
   }
-  .liter-sell-details .details-card .colour-box{
+  .liter-sell-details .details-card .colour-box {
     width: 20px;
     height: 20px;
   }

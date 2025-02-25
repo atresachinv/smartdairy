@@ -14,7 +14,7 @@ const axios = require("axios");
 //Dairy info ......................................
 //.................................................
 
-//v3 center_id added in data 
+//v3 center_id added in data
 exports.dairyInfo = async (req, res) => {
   // Extract user details from the request
   const dairy_id = req.user.dairy_id;
@@ -686,6 +686,44 @@ exports.getCenterWiseMilkData = (req, res) => {
       }
 
       res.status(200).json({ centerData: result });
+    });
+  });
+};
+
+// Center wise customer count ---------------------------------------------------------------------------->
+
+exports.getCenterCustomerCount = (req, res) => {
+  const dairy_id = req.user.dairy_id;
+  if (!dairy_id) {
+    connection.release();
+    return res.status(400).json({ message: "Dairy ID not found!" });
+  }
+
+  pool.getConnection((err, connection) => {
+    if (err) {
+      console.error("Error getting MySQL connection: ", err);
+      return res.status(500).json({ message: "Database connection error" });
+    }
+
+    const getCustCount = `
+      SELECT centerid, COUNT(*) AS total_customers
+      FROM customer WHERE orgid = ?
+      GROUP BY centerid;
+  `;
+
+    connection.query(getCustCount, [dairy_id], (err, result) => {
+      connection.release(); // Always release the connection back to the pool
+
+      if (err) {
+        console.error("Error executing query: ", err);
+        return res.status(500).json({ message: "Query execution error" });
+      }
+      if (result.length === 0) {
+        return res
+          .status(404)
+          .json({ message: "No Customers Available for this Dairy." });
+      }
+      res.status(200).json({ custCounts: result });
     });
   });
 };
