@@ -50,7 +50,7 @@ const AppNavlinks = ({ isselected, setIsSelected }) => {
       role: ["super_admin", "milkcollector", "mobilecollector"],
     },
     {
-      name: `${t("m-reports")}`,
+      name: `${t("m-milk-coll-report")}`,
       icon: <BsFileTextFill className="icon" />,
       index: 4,
       path: "vehicle/collection/reports",
@@ -71,14 +71,14 @@ const AppNavlinks = ({ isselected, setIsSelected }) => {
       role: ["super_admin", "milkcollector", "mobilecollector"],
     },
     {
-      name: `Sales Report`,
+      name: `${t("m-sale-report")}`,
       icon: <BsFileTextFill className="icon" />,
       index: 7,
       path: "admin/sales/report",
       role: ["super_admin", "admin"],
     },
     {
-      name: `Milk Sales`,
+      name: `${t("m-milk-sale")}`,
       icon: <BsFileTextFill className="icon" />,
       index: 8,
       path: "#",
