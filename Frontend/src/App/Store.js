@@ -17,6 +17,7 @@ import salesReducer from "./Features/Sales/salesSlice";
 import deductionReducer from "./Features/Deduction/deductionSlice";
 import paymentReducer from "./Features/Payments/paymentSlice";
 import dashboardReducer from "./Features/Customers/Dashboard/dashboardSlice";
+import admindashReducer from "./Features/Mainapp/Dashboard/dashboardSlice";
 import manualMasterReducer from "./Features/Customers/Date/masterdateSlice";
 //Milk Collection
 import custInfoReducer from "./Features/Mainapp/Dairyinfo/milkCollectionSlice";
@@ -55,6 +56,7 @@ export const store = configureStore({
     deduction: deductionReducer,
     payment: paymentReducer,
     dashboard: dashboardReducer,
+    admindashboard: admindashReducer,
     manualMasters: manualMasterReducer,
     //Milk Collection
     custinfo: custInfoReducer,

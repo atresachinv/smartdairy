@@ -14,7 +14,7 @@ const axios = require("axios");
 //Dairy info ......................................
 //.................................................
 
-//v2
+//v3 center_id added in data 
 exports.dairyInfo = async (req, res) => {
   // Extract user details from the request
   const dairy_id = req.user.dairy_id;
@@ -51,7 +51,7 @@ exports.dairyInfo = async (req, res) => {
       if (center_id === 0) {
         // Query for main dairy
         getDairyInfo = `
-          SELECT SocietyCode, SocietyName, PhoneNo, city, PinCode, AuditClass, RegNo, RegDate, 
+          SELECT SocietyCode, center_id, SocietyName, PhoneNo, city, PinCode, AuditClass, RegNo, RegDate, 
                  email, prefix, startDate, enddate, tel, dist, gstno, marathiName
           FROM societymaster
           WHERE SocietyCode = ?
@@ -59,7 +59,7 @@ exports.dairyInfo = async (req, res) => {
       } else {
         // Query for dairy center
         getDairyInfo = `
-          SELECT center_name, marathi_name, reg_no, reg_date, mobile, email, city, 
+          SELECT center_id, center_name, marathi_name, reg_no, reg_date, mobile, email, city, 
                  tehsil, district, pincode, auditclass, orgid, prefix
           FROM centermaster
           WHERE orgid = ? AND center_id = ?
@@ -641,4 +641,51 @@ exports.sendMessage = async (req, res) => {
       .status(500)
       .json({ error: error.response ? error.response.data : error.message });
   }
+};
+
+//--------------------------------------------------------------------------------------------------------->
+// Dashboard Information  --------------------------------------------------------------------------------->
+//--------------------------------------------------------------------------------------------------------->
+
+// Center wise milk Collection ---------------------------------------------------------------------------->
+
+exports.getCenterWiseMilkData = (req, res) => {
+  const { fromDate, toDate } = req.body;
+  const dairy_id = req.user.dairy_id;
+  if (!dairy_id) {
+    connection.release();
+    return res.status(400).json({ message: "Dairy ID not found!" });
+  }
+
+  pool.getConnection((err, connection) => {
+    if (err) {
+      console.error("Error getting MySQL connection: ", err);
+      return res.status(500).json({ message: "Database connection error" });
+    }
+    const dairy_table = `dailymilkentry_${dairy_id}`;
+    const getLiterAmt = `
+    SELECT center_id, 
+       SUM(litres) AS total_litres, 
+       SUM(amt) AS total_amount
+    FROM ${dairy_table}
+    WHERE ReceiptDate BETWEEN ? AND ?
+    GROUP BY center_id;
+  `;
+
+    connection.query(getLiterAmt, [fromDate, toDate], (err, result) => {
+      connection.release(); // Always release the connection back to the pool
+
+      if (err) {
+        console.error("Error executing query: ", err);
+        return res.status(500).json({ message: "Query execution error" });
+      }
+      if (result.length === 0) {
+        return res
+          .status(404)
+          .json({ message: "Rate not found for the provided parameters." });
+      }
+
+      res.status(200).json({ centerData: result });
+    });
+  });
 };

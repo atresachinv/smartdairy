@@ -175,9 +175,9 @@ exports.saveRateChart = async (req, res) => {
         await connection.commit();
         connection.release();
 
-        // Clear the cache for rate charts of this dairy_id and center_id
-        const cacheKey = `ratecharts_${dairy_id}_${center_id}`;
-        cache.del(cacheKey);
+        // // Clear the cache for rate charts of this dairy_id and center_id
+        // const cacheKey = `ratecharts_${dairy_id}_${center_id}`;
+        // cache.del(cacheKey);
 
         res.status(200).json({
           message: "Ratechart saved successfully!",

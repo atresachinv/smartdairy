@@ -208,8 +208,8 @@ const MilkColleform = ({ switchToSettings }) => {
       } else {
         setValues((prev) => ({
           ...prev,
-          rate: "N/A",
-          amt: "N/A",
+          rate: 0,
+          amt: 0,
           degree: 0,
         }));
       }
@@ -498,7 +498,7 @@ const MilkColleform = ({ switchToSettings }) => {
               { type: "text", text: values.snf },
               { type: "text", text: values.rate },
               { type: "text", text: values.amt },
-              { type: "text", text: "" },
+              { type: "text", text: "--" },
               { type: "text", text: dairyphone },
               { type: "text", text: tDate },
             ],
@@ -535,8 +535,8 @@ const MilkColleform = ({ switchToSettings }) => {
       return;
     }
     try {
-      const allEntries = JSON.parse(localStorage.getItem("milkentries")) || [];
       dispatch(saveMilkOneEntry(values));
+      const allEntries = JSON.parse(localStorage.getItem("milkentries")) || [];
       const existingEntries =
         JSON.parse(localStorage.getItem("milkentries")) || [];
 
@@ -554,7 +554,7 @@ const MilkColleform = ({ switchToSettings }) => {
       //   prevList.filter((customer) => customer.srno.toString() !== values.code)
       // );
       removeCustomer();
-      sendMessage();
+      // sendMessage();
       codeInputRef.current.focus();
     } catch (error) {
       console.error("Error sending milk entries to backend:", error);

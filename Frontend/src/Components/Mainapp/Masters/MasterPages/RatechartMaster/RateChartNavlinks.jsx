@@ -25,6 +25,12 @@ const RateChartNavlinks = ({ isselected, setIsSelected }) => {
       index: 2,
       path: "apply",
     },
+    {
+      name: "Add Type",
+      icon: <BsSaveFill className="icon" />,
+      index: 2,
+      path: "apply",
+    },
   ];
   return (
     <>
@@ -37,9 +43,9 @@ const RateChartNavlinks = ({ isselected, setIsSelected }) => {
           onClick={() => {
             setIsSelected(button.index);
           }}>
-          <NavLink to={button.path} className="sub-navlinks f-label-text">
+          <NavLink to={button.path} className="sub-navlinks f-label-text d-flex a-center">
             {button.icon}
-            <span>{button.name}</span>
+            <span className="info-text">{button.name}</span>
           </NavLink>
         </li>
       ))}
