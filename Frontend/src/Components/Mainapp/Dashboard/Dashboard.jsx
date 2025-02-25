@@ -29,7 +29,11 @@ import {
   getCenterMilkData,
 } from "../../../App/Features/Mainapp/Dashboard/dashboardSlice";
 import { centersLists } from "../../../App/Features/Dairy/Center/centerSlice";
+<<<<<<< HEAD
 import "../../../Styles/Mainapp/Dashbaord/Dashboard.css";
+=======
+import { getCenterSetting } from "../../../App/Features/Mainapp/Settings/dairySettingSlice";
+>>>>>>> b2bb2dd (setting can done)
 
 const Dashboard = () => {
   const { t } = useTranslation("common");
@@ -145,8 +149,13 @@ const Dashboard = () => {
 
   useEffect(() => {
     dispatch(centersLists());
+<<<<<<< HEAD
     dispatch(getCenterCustCount());
   }, []);
+=======
+    dispatch(getCenterSetting());
+  }, [dispatch]);
+>>>>>>> b2bb2dd (setting can done)
 
   // Merged center data
   const centersmergedData = centerLiterAmt.map((literEntry) => {

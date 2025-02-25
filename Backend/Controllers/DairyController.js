@@ -690,6 +690,7 @@ exports.getCenterWiseMilkData = (req, res) => {
   });
 };
 
+<<<<<<< HEAD
 // Center wise customer count ---------------------------------------------------------------------------->
 
 exports.getCenterCustomerCount = (req, res) => {
@@ -698,10 +699,16 @@ exports.getCenterCustomerCount = (req, res) => {
     connection.release();
     return res.status(400).json({ message: "Dairy ID not found!" });
   }
+=======
+// center wise setting
+exports.getCenterSetting = (req, res) => {
+  const dairy_id = req.user.dairy_id;
+>>>>>>> b2bb2dd (setting can done)
 
   pool.getConnection((err, connection) => {
     if (err) {
       console.error("Error getting MySQL connection: ", err);
+<<<<<<< HEAD
       return res.status(500).json({ message: "Database connection error" });
     }
 
@@ -727,3 +734,172 @@ exports.getCenterCustomerCount = (req, res) => {
     });
   });
 };
+=======
+      return res
+        .status(500)
+        .json({ success: false, message: "Database connection error" });
+    }
+
+    const query = `
+      SELECT * 
+      FROM setting_Master 
+      WHERE dairy_id = ?  
+    `;
+
+    connection.query(query, [dairy_id], (err, results) => {
+      connection.release(); // Release the connection back to the pool
+
+      if (err) {
+        console.error("Error executing query: ", err);
+        return res
+          .status(500)
+          .json({ success: false, message: "Error fetching settings" });
+      }
+
+      if (results.length === 0) {
+        return res
+          .status(200)
+          .json({ success: true, data: [], message: "Settings not found" });
+      }
+
+      return res.status(200).json({ success: true, data: results });
+    });
+  });
+};
+// center wise setting
+exports.getOneCenterSetting = (req, res) => {
+  const dairy_id = req.user.dairy_id;
+  const center_id = req.user.center_id;
+
+  pool.getConnection((err, connection) => {
+    if (err) {
+      console.error("Error getting MySQL connection: ", err);
+      return res
+        .status(500)
+        .json({ success: false, message: "Database connection error" });
+    }
+
+    const query = `
+      SELECT * 
+      FROM setting_Master 
+      WHERE dairy_id = ?  and center_id=?
+    `;
+
+    connection.query(query, [dairy_id, center_id], (err, results) => {
+      connection.release(); // Release the connection back to the pool
+
+      if (err) {
+        console.error("Error executing query: ", err);
+        return res
+          .status(500)
+          .json({ success: false, message: "Error fetching settings" });
+      }
+
+      if (results.length === 0) {
+        return res
+          .status(200)
+          .json({ success: true, data: [], message: "Settings not found" });
+      }
+      return res.status(200).json({ success: true, data: results });
+    });
+  });
+};
+
+// center wise setting create or update
+exports.updateCenterSetting = (req, res) => {
+  const dairy_id = req.user.dairy_id;
+  const { id, center_id, ...updateData } = req.body;
+
+  pool.getConnection((err, connection) => {
+    if (err) {
+      console.error("Error getting MySQL connection: ", err);
+      return res
+        .status(500)
+        .json({ success: false, message: "Database connection error" });
+    }
+
+    if (id) {
+      // Directly update without checking existence
+      let setClause = [];
+      let values = [];
+
+      Object.keys(updateData).forEach((key) => {
+        if (key !== "id" && key !== "center_id") {
+          setClause.push(`${key} = ?`);
+          values.push(updateData[key]);
+        }
+      });
+
+      if (setClause.length === 0) {
+        connection.release();
+        return res.status(400).json({
+          success: false,
+          message: "No valid fields provided for update",
+        });
+      }
+
+      const updateQuery = `
+        UPDATE setting_Master 
+        SET ${setClause.join(", ")}, updatedBy=?, updatedDate=?
+        WHERE dairy_id = ? AND center_id = ? AND id = ?
+      `;
+
+      values.push(req.user.user_id, new Date(), dairy_id, center_id, id);
+
+      connection.query(updateQuery, values, (err, results) => {
+        connection.release();
+
+        if (err) {
+          console.error("Error executing update query: ", err);
+          return res
+            .status(500)
+            .json({ success: false, message: "Error updating settings" });
+        }
+
+        return res.status(200).json({
+          success: true,
+          message:
+            results.affectedRows > 0
+              ? "Settings updated successfully"
+              : "No changes made",
+          updatedData: updateData,
+        });
+      });
+    } else {
+      // Insert new record if `id` is not provided
+      const insertData = {
+        dairy_id,
+        center_id,
+        ...updateData,
+        updatedBy: req.user.user_id,
+        updatedDate: new Date(),
+      };
+      const insertQuery = `
+        INSERT INTO setting_Master (${Object.keys(insertData).join(", ")})
+        VALUES (${Object.keys(insertData)
+          .map(() => "?")
+          .join(", ")})
+      `;
+
+      const insertValues = Object.values(insertData);
+
+      connection.query(insertQuery, insertValues, (err, results) => {
+        connection.release();
+
+        if (err) {
+          console.error("Error executing insert query: ", err);
+          return res
+            .status(500)
+            .json({ success: false, message: "Error inserting settings" });
+        }
+
+        return res.status(200).json({
+          success: true,
+          message: "Settings inserted successfully",
+          insertedData: results,
+        });
+      });
+    }
+  });
+};
+>>>>>>> b2bb2dd (setting can done)
