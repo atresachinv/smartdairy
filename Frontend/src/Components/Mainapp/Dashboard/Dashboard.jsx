@@ -27,6 +27,7 @@ import Spinner from "../../Home/Spinner/Spinner";
 import "../../../Styles/Mainapp/Dashbaord/Dashboard.css";
 import { getCenterMilkData } from "../../../App/Features/Mainapp/Dashboard/dashboardSlice";
 import { centersLists } from "../../../App/Features/Dairy/Center/centerSlice";
+import { getCenterSetting } from "../../../App/Features/Mainapp/Settings/dairySettingSlice";
 
 const Dashboard = () => {
   const { t } = useTranslation("common");
@@ -139,6 +140,7 @@ const Dashboard = () => {
 
   useEffect(() => {
     dispatch(centersLists());
+    dispatch(getCenterSetting());
   }, [dispatch]);
 
   // Merged center data
