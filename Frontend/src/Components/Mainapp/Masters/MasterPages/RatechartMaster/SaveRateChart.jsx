@@ -157,75 +157,58 @@ const SaveRateChart = ({ rate }) => {
   //     toast.error("Failed to save ratechart, Please try again!");
   //   }
   // };
-  
-  const handleSubmit = async (e) => {
-    e.preventDefault();
 
-    if (!ratechart) {
-      toast.error("Ratechart not Available!");
-      return;
-    }
+ const handleSubmit = async (e) => {
+   e.preventDefault();
 
-    // Validate fields before submission
-    const validationErrors = validateFields();
-    if (Object.keys(validationErrors).length) {
-      setErrors(validationErrors);
-      return;
-    }
+   if (!ratechart) {
+     toast.error("Ratechart not Available!");
+     return;
+   }
 
-    // Ensure numerical fields are numbers
-    const numericRccode = parseInt(formData.rccode, 10);
-    const numericTime = parseInt(formData.time, 10);
+   // Validate fields before submission
+   const validationErrors = validateFields();
+   if (Object.keys(validationErrors).length) {
+     setErrors(validationErrors);
+     return;
+   }
 
-    if (isNaN(numericRccode) || isNaN(numericTime)) {
-      setLocalError("RCCODE and Time must be valid numbers.");
-      return;
-    }
+   try {
+     // Dispatch and wait for response
+     const result = await dispatch(
+       saveRateChart({
+         rccode: parseInt(formData.rccode, 10),
+         rctype: formData.rctype,
+         rcdate: formData.rcdate,
+         time: parseInt(formData.time, 10),
+         animal: formData.animalType,
+         ratechart,
+       })
+     ).unwrap(); // Ensure it returns success/failure properly
 
-    if (
-      !formData.rcdate ||
-      new Date(formData.rcdate).toString() === "Invalid Date"
-    ) {
-      toast.error("Please provide a valid date.");
-      return;
-    }
+     // Show success message
+     toast.success("✅ Ratechart applied successfully!");
 
-    if (!Array.isArray(ratechart) || ratechart.length === 0) {
-      toast.error("Ratechart cannot be empty.");
-      return;
-    }
+     // Fetch updated data
+     dispatch(fetchMaxRcCode());
+     dispatch(listRateCharts());
 
-    try {
-      // Wait for the Redux action to complete
-      await dispatch(
-        saveRateChart({
-          rccode: numericRccode,
-          rctype: formData.rctype,
-          rcdate: formData.rcdate,
-          time: numericTime,
-          animal: formData.animalType,
-          ratechart: ratechart,
-        })
-      ).unwrap(); 
+     // Reset form
+     setFormData({
+       rccode: maxRcCode,
+       rctype: "",
+       time: "",
+       animalType: "",
+       rcdate: "",
+     });
 
-      toast.success("Ratechart saved successfully!");
+     setRate([]);
+   } catch (error) {
+     // Show error message only if the request fails
+     toast.error(`Failed to save ratechart: ${error || "Unknown error"}`);
+   }
+ };
 
-      dispatch(fetchMaxRcCode());
-      dispatch(listRateCharts());
-
-      setFormData({
-        rccode: maxRcCode,
-        rctype: "",
-        time: "",
-        animalType: "",
-        rcdate: "",
-      });
-
-      setRate([]);
-    } catch (error) {
-      toast.error("Failed to save ratechart, Please try again!");
-    }
-  };
 
 
   return (

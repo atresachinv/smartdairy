@@ -28,8 +28,8 @@ const RateChartNavlinks = ({ isselected, setIsSelected }) => {
     {
       name: "Add Type",
       icon: <BsSaveFill className="icon" />,
-      index: 2,
-      path: "apply",
+      index: 3,
+      path: "add/new-type",
     },
   ];
   return (

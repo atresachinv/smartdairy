@@ -366,7 +366,7 @@ const MilkRateMaster = () => {
             </div>
           )}
           {/* Progress Bar */}
-          {status === "loading" && (
+          {/* {status === "loading" && (
             <div className="progress-bar-container w100 my10">
               <div
                 className="progress-bar"
@@ -379,7 +379,7 @@ const MilkRateMaster = () => {
               ></div>
               <span>{progress}%</span>
             </div>
-          )}
+          )} */}
           <div className="rate-chart-container w100 h90 d-flex-col bg">
             <span className="heading p10">
               Selected Rate Chart from Excel :{" "}

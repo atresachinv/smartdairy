@@ -24,9 +24,9 @@ import { getAllMilkCollReport } from "../../../App/Features/Mainapp/Milk/MilkCol
 import { generateMaster } from "../../../App/Features/Customers/Date/masterdateSlice";
 import { listCustomer } from "../../../App/Features/Customers/customerSlice";
 import Spinner from "../../Home/Spinner/Spinner";
-import "../../../Styles/Mainapp/Dashbaord/Dashboard.css";
 import { getCenterMilkData } from "../../../App/Features/Mainapp/Dashboard/dashboardSlice";
 import { centersLists } from "../../../App/Features/Dairy/Center/centerSlice";
+import "../../../Styles/Mainapp/Dashbaord/Dashboard.css";
 
 const Dashboard = () => {
   const { t } = useTranslation("common");
@@ -513,10 +513,10 @@ const Dashboard = () => {
               </Suspense>
             </div>
           </div>
-        </div>{" "}
+        </div>
         {center_id === 0 ? (
           <>
-            <div className="Milk-sale-details-container w100 h1 p10 bg5">
+            <div className="center-sale-details-container w100 h1 d-flex-col p10 bg5">
               <h3 className="heading">Center Information : </h3>
               <div className="center-sales-details-container w100 h1 d-flex f-wrap sb p10">
                 {centersmergedData.length > 0 ? (
@@ -527,30 +527,30 @@ const Dashboard = () => {
                         className="center-sales-card w45 h30 d-flex-col sb bg p10"
                       >
                         <div className="card-title w100 h25 d-flex sb">
-                          <span className="w30 label-text">Center No : </span>
-                          <span className="w70 label-text t-start">
+                          <span className="w30 info-text">Center No : </span>
+                          <span className="w70 info-text t-start">
                             {center.center_id}
                           </span>
                         </div>
                         <div className="card-title w100 h25 d-flex sb">
-                          <span className="w30 label-text">Center Name : </span>
-                          <span className="w70 label-text t-start">
+                          <span className="w30 info-text">Center Name : </span>
+                          <span className="w70 info-text t-start">
                             {center.center_name}
                           </span>
                         </div>
                         <div className="card-other-outer-details w100 h50 d-flex sa">
                           <div className="card-other-details w30 h1 d-flex-col a-center sa bg5">
-                            <span className="label-text">Customers</span>
+                            <span className="info-text">Customers</span>
                             <span className="label-text">0</span>
                           </div>
                           <div className="card-other-details w30 h1 d-flex-col a-center sa bg5">
-                            <span className="label-text">Liters</span>
+                            <span className="info-text">Liters</span>
                             <span className="label-text">
                               {center.total_litres} ltr.
                             </span>
                           </div>
                           <div className="card-other-details w30 h1 d-flex-col a-center sa bg5">
-                            <span className="label-text">Sales</span>
+                            <span className="info-text">Sales</span>
                             <span className="label-text">
                               {center.total_amount} rs.
                             </span>
@@ -621,13 +621,14 @@ const Dashboard = () => {
                   {centersmergedData.map((center, index) => (
                     <div className="details-card w100 h50 d-flex-col center t-center">
                       <div
-                        className="w25 h30 colour-box br"
+                        className="w25 h30 colour-box br6"
                         style={{
                           backgroundColor: COLORS[index % COLORS.length],
                         }}
                       ></div>
-                      <span className="info-text">
-                        Center No. : {center.center_id}
+                      <span className="text">
+                        Center No. :{" "}
+                        <span className="label-text">{center.center_id}</span>
                       </span>
                     </div>
                   ))}
