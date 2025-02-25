@@ -30,10 +30,17 @@ import {
 } from "../../../App/Features/Mainapp/Dashboard/dashboardSlice";
 import { centersLists } from "../../../App/Features/Dairy/Center/centerSlice";
 <<<<<<< HEAD
+<<<<<<< HEAD
 import "../../../Styles/Mainapp/Dashbaord/Dashboard.css";
 =======
 import { getCenterSetting } from "../../../App/Features/Mainapp/Settings/dairySettingSlice";
 >>>>>>> b2bb2dd (setting can done)
+=======
+import { getCenterSetting } from "../../../App/Features/Mainapp/Settings/dairySettingSlice";
+=======
+import "../../../Styles/Mainapp/Dashbaord/Dashboard.css";
+>>>>>>> 5bbda2edb697ed748cbaf2919dcf0fb2e05d7379
+>>>>>>> 434e666 (Local changes before merging)
 
 const Dashboard = () => {
   const { t } = useTranslation("common");
@@ -150,12 +157,21 @@ const Dashboard = () => {
   useEffect(() => {
     dispatch(centersLists());
 <<<<<<< HEAD
+<<<<<<< HEAD
     dispatch(getCenterCustCount());
   }, []);
 =======
     dispatch(getCenterSetting());
   }, [dispatch]);
 >>>>>>> b2bb2dd (setting can done)
+=======
+    dispatch(getCenterSetting());
+  }, [dispatch]);
+=======
+    dispatch(getCenterCustCount());
+  }, []);
+>>>>>>> 5bbda2edb697ed748cbaf2919dcf0fb2e05d7379
+>>>>>>> 434e666 (Local changes before merging)
 
   // Merged center data
   const centersmergedData = centerLiterAmt.map((literEntry) => {

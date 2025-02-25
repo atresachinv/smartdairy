@@ -689,6 +689,7 @@ exports.getCenterWiseMilkData = (req, res) => {
     });
   });
 };
+<<<<<<< HEAD
 
 <<<<<<< HEAD
 // Center wise customer count ---------------------------------------------------------------------------->
@@ -903,3 +904,5 @@ exports.updateCenterSetting = (req, res) => {
   });
 };
 >>>>>>> b2bb2dd (setting can done)
+=======
+>>>>>>> 434e666 (Local changes before merging)
