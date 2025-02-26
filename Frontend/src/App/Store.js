@@ -31,6 +31,7 @@ import userDataReducer from "./Features/Mainapp/Profile/ProfileSlice";
 import inventoryReducer from "./Features/Mainapp/Inventory/inventorySlice";
 // super-admin
 import accessReducer from "./Features/Admin/SuperAdmin/accessSlice"; //super-admin
+import settingsReducer from "./Features/Mainapp/Settings/dairySettingSlice"; //super-admin
 
 export const store = configureStore({
   reducer: {
@@ -65,5 +66,6 @@ export const store = configureStore({
     // Inventory
     inventory: inventoryReducer,
     access: accessReducer,
+    dairySetting: settingsReducer,
   },
 });
