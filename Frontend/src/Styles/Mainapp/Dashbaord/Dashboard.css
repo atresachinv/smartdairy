@@ -149,7 +149,7 @@
   }
   .liter-sales-details-inner-container .liter-sales-card {
     width: 100%;
-    min-height: fit-content;
+    height: 250px;
     margin-bottom: 10px;
   }
   .liter-sales-details-inner-container .liter-sell-details {

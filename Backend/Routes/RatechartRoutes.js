@@ -10,11 +10,13 @@ const {
   updateSelectedRateChart,
   saveUpdatedRC,
   deleteSelectedRatechart,
+  maxRCTypeNo,
 } = require("../Controllers/RatechartController");
 
 const router = express.Router();
 // rate chart
 router.route("/ratechart/maxrccode").post(verifyToken, maxRateChartNo);
+router.route("/ratechart/maxrctype").post(verifyToken, maxRCTypeNo);
 router.route("/upload/ratechart").post(verifyToken, saveRateChart);
 router.route("/ratechart/list").post(verifyToken, listRatecharts);
 router.route("/delete/ratechart").post(verifyToken, deleteSelectedRatechart);

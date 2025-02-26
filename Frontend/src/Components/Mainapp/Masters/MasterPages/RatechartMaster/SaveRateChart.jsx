@@ -158,71 +158,73 @@ const SaveRateChart = ({ rate }) => {
   //   }
   // };
 
- const handleSubmit = async (e) => {
-   e.preventDefault();
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-   if (!ratechart) {
-     toast.error("Ratechart not Available!");
-     return;
-   }
+    if (!ratechart) {
+      toast.error("Ratechart not Available!");
+      return;
+    }
 
-   // Validate fields before submission
-   const validationErrors = validateFields();
-   if (Object.keys(validationErrors).length) {
-     setErrors(validationErrors);
-     return;
-   }
+    // Validate fields before submission
+    const validationErrors = validateFields();
+    if (Object.keys(validationErrors).length) {
+      setErrors(validationErrors);
+      return;
+    }
 
-   try {
-     // Dispatch and wait for response
-     const result = await dispatch(
-       saveRateChart({
-         rccode: parseInt(formData.rccode, 10),
-         rctype: formData.rctype,
-         rcdate: formData.rcdate,
-         time: parseInt(formData.time, 10),
-         animal: formData.animalType,
-         ratechart,
-       })
-     ).unwrap(); // Ensure it returns success/failure properly
+    try {
+      // Dispatch and wait for response
+      const result = await dispatch(
+        saveRateChart({
+          rccode: parseInt(formData.rccode, 10),
+          rctype: formData.rctype,
+          rcdate: formData.rcdate,
+          time: parseInt(formData.time, 10),
+          animal: formData.animalType,
+          ratechart,
+        })
+      ).unwrap(); // Ensure it returns success/failure properly
+      // Show success message
+      if (result.status === 200) {
+        toast.success(result.message);
 
-     // Show success message
-     toast.success("✅ Ratechart applied successfully!");
+        // Fetch updated data
+        dispatch(fetchMaxRcCode());
+        dispatch(listRateCharts());
 
-     // Fetch updated data
-     dispatch(fetchMaxRcCode());
-     dispatch(listRateCharts());
+        // Reset form
+        setFormData({
+          rccode: maxRcCode,
+          rctype: "",
+          time: "",
+          animalType: "",
+          rcdate: "",
+        });
 
-     // Reset form
-     setFormData({
-       rccode: maxRcCode,
-       rctype: "",
-       time: "",
-       animalType: "",
-       rcdate: "",
-     });
-
-     setRate([]);
-   } catch (error) {
-     // Show error message only if the request fails
-     toast.error(`Failed to save ratechart: ${error || "Unknown error"}`);
-   }
- };
-
-
+        setRate([]);
+      } else {
+        toast.error(result.message);
+      }
+    } catch (error) {
+      // Show error message only if the request fails
+      toast.error(`Failed to save ratechart: ${error || "Unknown error"}`);
+    }
+  };
 
   return (
     <>
       <form
         className="rate-chart-setting-div w100 h1 d-flex-col sa my10"
-        onSubmit={handleSubmit}>
+        onSubmit={handleSubmit}
+      >
         <span className="heading">Save Selected Ratechart</span>
         {status === "loading" ? (
           <div className="loading-ToastContainer w100 h25 d-flex center">
             <Spinner />
           </div>
         ) : (
-          <div className="save-ratechart-contaner w100 h60 d-flex-col sb">
+          <div className="save-ratechart-contaner w100 h60 d-flex-col">
             <div className="select-time-animal-type w100 h30 d-flex sb">
               <div className="select-time w25 h1 a-center d-flex ">
                 <label htmlFor="rccode" className="info-text w100">
@@ -239,8 +241,8 @@ const SaveRateChart = ({ rate }) => {
                 />
               </div>
               <div className="select-animal-type w70 h1 a-center d-flex">
-                <label htmlFor="rctype" className="info-text w50">
-                  Ratechart Type :
+                <label htmlFor="rctype" className="info-text w30">
+                  Type :
                 </label>
                 <input
                   className={`data w100 ${errors.rctype ? "input-error" : ""}`}
@@ -252,7 +254,7 @@ const SaveRateChart = ({ rate }) => {
                 />
               </div>
             </div>
-            <div className="select-time-animal-type w100 h30 d-flex sb">
+            {/* <div className="select-time-animal-type w100 h30 d-flex sb">
               <div className="select-animal-type w50 h1 a-center d-flex">
                 <label htmlFor="time" className="info-text w30">
                   Time:
@@ -263,7 +265,8 @@ const SaveRateChart = ({ rate }) => {
                   id="time"
                   required
                   value={formData.time}
-                  onChange={handleInput}>
+                  onChange={handleInput}
+                >
                   <option className="info-text" value="2">
                     Both
                   </option>
@@ -285,7 +288,8 @@ const SaveRateChart = ({ rate }) => {
                   id="animalType"
                   required
                   value={formData.animalType}
-                  onChange={handleInput}>
+                  onChange={handleInput}
+                >
                   <option className="info-text" value="0">
                     Cow
                   </option>
@@ -297,8 +301,8 @@ const SaveRateChart = ({ rate }) => {
                   </option>
                 </select>
               </div>
-            </div>
-            <div className="select-time-animal-type w100 h30 d-flex sb">
+            </div> */}
+            <div className="select-time-animal-type w100 my10 d-flex a-center sb">
               <label htmlFor="rcdate" className="info-text w50">
                 Ratechart date :{" "}
               </label>
@@ -317,7 +321,8 @@ const SaveRateChart = ({ rate }) => {
           <button
             type="submit"
             className="btn mx10"
-            disabled={status === "loading"}>
+            disabled={status === "loading"}
+          >
             {status === "loading" ? "Saving..." : "Save Ratechart"}
           </button>
         </div>

@@ -11,6 +11,7 @@ import {
   fetchRateChart,
   setData,
   deleteRatechart,
+  fetchMaxRctype,
 } from "../../../../../App/Features/Mainapp/Masters/rateChartSlice";
 import { toast } from "react-toastify";
 import "../../../../../Styles/Mainapp/Masters/MilkRateMaster.css";
@@ -41,6 +42,7 @@ const MilkRateMaster = () => {
 
   useEffect(() => {
     dispatch(fetchMaxRcCode());
+    dispatch(fetchMaxRctype());
     dispatch(listRateCharts());
   }, [dispatch]);
 
@@ -430,7 +432,7 @@ const MilkRateMaster = () => {
               <span className="f-info-text w15">Animal</span>
               <span className="f-info-text w25">Type</span>
             </div>
-            <div className="rate-chart-div w100 h90 mh90 d-flex-col hidescrollbar">
+            {/* <div className="rate-chart-div w100 h90 mh90 d-flex-col hidescrollbar">
               {ratechartlist.map((ratechart, index) => (
                 <div
                   onClick={() => handleRowClick(ratechart)}
@@ -469,6 +471,51 @@ const MilkRateMaster = () => {
                   <span className="info-text w25">{ratechart.rctypename}</span>
                 </div>
               ))}
+            </div> */}
+            <div className="rate-chart-div w100 h90 mh90 d-flex-col hidescrollbar">
+              {ratechartlist
+                .slice() // Create a shallow copy to avoid mutating original state
+                .sort((a, b) => a.rccode - b.rccode) // Sort numerically
+                .map((ratechart, index) => (
+                  <div
+                    onClick={() => handleRowClick(ratechart)}
+                    key={index}
+                    className="rate-chart-row-value w100 d-flex a-center t-center py10 sa"
+                    style={{
+                      backgroundColor:
+                        selectedRateChart === ratechart
+                          ? "#d1e7dd"
+                          : index % 2 === 0
+                          ? "#faefe3"
+                          : "#fff",
+                      cursor: "pointer",
+                    }}
+                  >
+                    <span className="info-text w10">{ratechart.rccode}</span>
+                    <span className="info-text w20">
+                      {new Date(ratechart.rcdate).toLocaleDateString("en-GB", {
+                        year: "2-digit",
+                        month: "2-digit",
+                        day: "2-digit",
+                      })}
+                    </span>
+                    <span className="info-text w15">
+                      {ratechart.time === 0
+                        ? "Mrg"
+                        : ratechart.time === 1
+                        ? "Eve"
+                        : ratechart.time === 2
+                        ? "Both"
+                        : ""}
+                    </span>
+                    <span className="info-text w15">
+                      {ratechart.cb === 0 ? "Cow" : "Buffalo"}
+                    </span>
+                    <span className="info-text w25">
+                      {ratechart.rctypename}
+                    </span>
+                  </div>
+                ))}
             </div>
           </div>
           <div className="button-div w100 h10 d-flex j-end">

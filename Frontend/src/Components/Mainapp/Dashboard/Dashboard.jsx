@@ -106,6 +106,8 @@ const Dashboard = () => {
             toDate: selectedDate.end,
           })
         );
+        dispatch(centersLists());
+        dispatch(getCenterCustCount());
       }
     } else if (fDate && tDate) {
       // If no date is selected, use fDate and tDate from Redux store
@@ -143,10 +145,10 @@ const Dashboard = () => {
 
   // to show centerwise data ------------------------------------------------------------------->
 
-  useEffect(() => {
-    dispatch(centersLists());
-    dispatch(getCenterCustCount());
-  }, []);
+  // useEffect(() => {
+  //   dispatch(centersLists());
+  //   dispatch(getCenterCustCount());
+  // }, []);
 
   // Merged center data
   const centersmergedData = centerLiterAmt.map((literEntry) => {
@@ -403,7 +405,7 @@ const Dashboard = () => {
                         className="center-sales-card w45 h30 d-flex-col sb bg p10"
                       >
                         <div className="card-title w100 h25 d-flex sb">
-                          <span className="w30 info-text">Center No : </span>
+                          <span className="w30 text">Center No : </span>
                           <span className="w70 info-text t-start">
                             {center.center_id}
                           </span>
@@ -416,19 +418,19 @@ const Dashboard = () => {
                         </div>
                         <div className="card-other-outer-details w100 h50 d-flex sa">
                           <div className="card-other-details w30 h1 d-flex-col a-center sa bg5">
-                            <span className="info-text">Customers</span>
+                            <span className="text">Customers</span>
                             <span className="label-text">
                               {center.total_customers}
                             </span>
                           </div>
                           <div className="card-other-details w30 h1 d-flex-col a-center sa bg5">
-                            <span className="info-text">Liters</span>
+                            <span className="text">Liters</span>
                             <span className="label-text">
                               {center.total_litres} ltr.
                             </span>
                           </div>
                           <div className="card-other-details w30 h1 d-flex-col a-center sa bg5">
-                            <span className="info-text">Sales</span>
+                            <span className="text">Sales</span>
                             <span className="label-text">
                               {center.total_amount} rs.
                             </span>

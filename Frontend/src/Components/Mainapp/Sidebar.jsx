@@ -10,8 +10,10 @@ import { useDispatch, useSelector } from "react-redux";
 import { logoutUser } from "../../App/Features/Users/authSlice";
 import { toast } from "react-toastify";
 import axiosInstance from "../../App/axiosInstance";
+import { useTranslation } from "react-i18next";
 
 const Sidebar = ({ setselected, handleSidebar }) => {
+  const { t } = useTranslation(["common"]);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -59,8 +61,9 @@ const Sidebar = ({ setselected, handleSidebar }) => {
         </ul>
         <div
           className="logout-btn-div w100 d-flex p10 my10"
-          onClick={handleLogout}>
-          <span className="f-heading mx10">LOGOUT</span>
+          onClick={handleLogout}
+        >
+          <span className="f-heading mx10">{t("c-logout")}</span>
           <BiLogOutCircle className="logout-icon" />
         </div>
       </aside>

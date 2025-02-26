@@ -11,21 +11,39 @@ import {
   BsCaretDownFill,
   BsBuildingFillGear,
   BsHouseGearFill,
+  BsFillCollectionFill,
 } from "react-icons/bs";
-import { FaUserCircle } from "react-icons/fa";
+import {
+  FaUserTie,
+  FaUserCircle,
+  FaAlignJustify,
+  FaFileAlt,
+} from "react-icons/fa";
 import {
   FaGears,
   FaFileLines,
   FaFileContract,
   FaFileInvoice,
   FaFileInvoiceDollar,
+  FaSitemap,
 } from "react-icons/fa6";
+import { TbTruckReturn } from "react-icons/tb";
+import { IoAnalyticsOutline } from "react-icons/io5";
+import { MdAddchart, MdGroupAdd, MdDomainAdd } from "react-icons/md";
 import { GrNotes, GrOrganization } from "react-icons/gr";
 import { NavLink } from "react-router-dom";
 import "../../Styles/Mainapp/Mainapphome.css";
 import { useSelector } from "react-redux";
+import { useTranslation } from "react-i18next";
 
 const Mainappnavlinks = ({ setselected, handleSidebar }) => {
+  const { t } = useTranslation([
+    "common",
+    "milkcollection",
+    "msales",
+    "inventory",
+    "master",
+  ]);
   const [activeMenu, setActiveMenu] = useState(null);
   const [userRole, setUserRole] = useState(null);
   const center_id = useSelector((state) => state.dairy.dairyData.center_id);
@@ -36,14 +54,14 @@ const Mainappnavlinks = ({ setselected, handleSidebar }) => {
 
   const mainnavbuttons = [
     {
-      name: "Dashboard",
+      name: `${t("nv-dash")}`,
       icon: <BsGridFill className="icon" />,
       index: 0,
       path: "dashboard",
       role: ["admin", "super_admin", "manager"],
     },
     {
-      name: "Milk Collection",
+      name: `${t("nv-milk-purchase")}`,
       icon: <TbMilk className="icon" />,
       path: "milk",
       index: 1,
@@ -56,7 +74,7 @@ const Mainappnavlinks = ({ setselected, handleSidebar }) => {
       ],
     },
     {
-      name: "Milk Sales",
+      name: `${t("nv-milk-sales")}`,
       icon: <TbMilk className="icon" />,
       index: 2,
       role: [
@@ -68,7 +86,7 @@ const Mainappnavlinks = ({ setselected, handleSidebar }) => {
       ],
       submenus: [
         {
-          name: "Sangha Sales",
+          name: `${t("msales:m-s-sales")}`,
           icon: <BsGridFill className="icon" />,
           path: "milk/sangha",
           index: 2.1,
@@ -77,28 +95,42 @@ const Mainappnavlinks = ({ setselected, handleSidebar }) => {
       ],
     },
     {
-      name: "Inventory",
+      name: `${t("nv-inventory")}`,
       icon: <BsHouseFill className="icon" />,
       index: 3,
       role: ["admin", "super_admin", "manager", "salesman"],
       submenus: [
         {
-          name: "Dealer Master",
-          icon: <BsGridFill className="icon" />,
+          name: `${t("inventory:in-nv-dealar-master")}`,
+          icon: <FaUserTie className="icon" />,
           index: 3.1,
           path: "inventory/dealer",
           role: ["admin", "manager", "salesman"],
         },
         {
-          name: "Product List",
-          icon: <BsGridFill className="icon" />,
+          name: `${t("inventory:in-nv-prod-master")}`,
+          icon: <FaSitemap className="icon" />,
           path: "inventory/product",
           index: 3.2,
           role: ["admin", "manager", "salesman"],
         },
         {
-          name: "Stock",
-          icon: <BsGridFill className="icon" />,
+          name: `${t("inventory:in-nv-prod-purch")}`,
+          icon: <MdAddchart className="icon" />,
+          path: "inventory/product",
+          index: 3.2,
+          role: ["admin", "manager", "salesman"],
+        },
+        {
+          name: `${t("inventory:in-nv-prod-sale")}`,
+          icon: <IoAnalyticsOutline className="icon" />,
+          path: "inventory/product",
+          index: 3.2,
+          role: ["admin", "manager", "salesman"],
+        },
+        {
+          name: `${t("inventory:in-nv-init-stock")}`,
+          icon: <FaAlignJustify className="icon" />,
           path: "inventory/product/stock",
           index: 3.3,
           role: [
@@ -110,8 +142,8 @@ const Mainappnavlinks = ({ setselected, handleSidebar }) => {
           ],
         },
         {
-          name: "Returns",
-          icon: <BsGridFill className="icon" />,
+          name: `${t("inventory:in-nv-returns")}`,
+          icon: <TbTruckReturn className="icon" />,
           path: "inventory/returns",
           index: 3.4,
           role: ["admin", "manager", "salesman"],
@@ -119,28 +151,28 @@ const Mainappnavlinks = ({ setselected, handleSidebar }) => {
       ],
     },
     {
-      name: "Accounts",
+      name: `${t("nv-acc")}`,
       icon: <GrNotes className="icon" />,
       index: 4,
       path: "accounts",
       role: ["admin", "super_admin", "manager", "salesman"],
     },
     {
-      name: "Masters",
-      icon: <TbMilk className="icon" />,
+      name: `${t("nv-master")}`,
+      icon: <BsFillCollectionFill className="icon" />,
       index: 5,
       role: ["super_admin", "admin", "manager"],
       submenus: [
         {
-          name: "Main Ledger",
-          icon: <BsGridFill className="icon" />,
+          name: `${t("master:m-nv-mledger")}`,
+          icon: <FaFileInvoice className="icon" />,
           index: 5.1,
           path: "master/main-ledger",
           role: ["admin", "super_admin", "manager"],
         },
         {
-          name: "Sub Ledger",
-          icon: <BsGridFill className="icon" />,
+          name: `${t("master:m-nv-sledger")}`,
+          icon: <FaFileAlt className="icon" />,
           index: 5.2,
           path: "master/sub-ledger",
           role: ["admin", "super_admin", "manager"],
@@ -153,15 +185,15 @@ const Mainappnavlinks = ({ setselected, handleSidebar }) => {
           role: ["admin", "super_admin", "manager"],
         },
         {
-          name: "Employee Master",
-          icon: <BsGridFill className="icon" />,
+          name: `${t("master:m-nv-empmaster")}`,
+          icon: <MdGroupAdd className="icon" />,
           index: 5.4,
           path: "master/employee",
           role: ["admin", "super_admin", "manager"],
         },
         {
-          name: "Bank Master",
-          icon: <BsGridFill className="icon" />,
+          name: `${t("master:m-nv-bankmaster")}`,
+          icon: <MdDomainAdd className="icon" />,
           index: 5.5,
           path: "master/bank",
           role: ["admin", "super_admin", "manager"],
@@ -248,7 +280,7 @@ const Mainappnavlinks = ({ setselected, handleSidebar }) => {
       ],
     },
     {
-      name: "Reports",
+      name: `${t("nv-reports")}`,
       icon: <TbMilk className="icon" />,
       index: 8,
       role: ["super_admin", "admin", "manager"],
@@ -309,7 +341,7 @@ const Mainappnavlinks = ({ setselected, handleSidebar }) => {
       ],
     },
     {
-      name: "Payments",
+      name: `${t("nv-pay")}`,
       icon: <TbMilk className="icon" />,
       index: 9,
       role: ["super_admin", "admin", "manager"],
@@ -345,7 +377,7 @@ const Mainappnavlinks = ({ setselected, handleSidebar }) => {
       ],
     },
     {
-      name: "Dairy",
+      name: `${t("nv-dairy-info")}`,
       icon: <BsCoin className="icon" />,
       index: 10,
       role: ["admin", "super_admin", "manager"],
@@ -378,7 +410,7 @@ const Mainappnavlinks = ({ setselected, handleSidebar }) => {
       ],
     },
     {
-      name: "Settings",
+      name: `${t("nv-settings")}`,
       icon: <BsGearFill className="icon" />,
       index: 11,
       role: ["super_admin", "admin"],
@@ -407,7 +439,7 @@ const Mainappnavlinks = ({ setselected, handleSidebar }) => {
       ],
     },
     {
-      name: "My Profile",
+      name: `${t("nv-profile")}`,
       icon: <FaUserCircle className="icon" />,
       index: 12,
       path: "profile-info",

@@ -1,6 +1,14 @@
 {
   "nv-dash": "Dashboard",
   "nv-milk-coll": "Milk Collection",
+  "nv-milk-purchase": "Milk Purchase",
+  "nv-milk-sales": "Milk Sales",
+  "nv-inventory": "Inventory",
+  "nv-acc": "Accounts",
+  "nv-master": "Masters",
+  "nv-reports": "Reports",
+  "nv-dairy-info": "Dairy Information",
+  "nv-settings": "Settings",
   "nv-pay": "Payment",
   "nv-cattel-feed": "Cattel feeds",
   "nv-deduction": "Deduction",
@@ -18,6 +26,7 @@
   "c-select-master": "Select Payment Period",
   "c-no-data-avai": "No Data Available",
 
+  "c-logout": "Logout",
   "c-date": "Date",
   "c-m/e": "M/E",
   "c-m": "M",

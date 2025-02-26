@@ -1,35 +1,35 @@
 import React from "react";
 import { BsSaveFill } from "react-icons/bs";
 import { VscSave } from "react-icons/vsc";
-import { CiSaveUp1 } from "react-icons/ci";
+import { IoIosSave } from "react-icons/io";
 import { GrUpdate } from "react-icons/gr";
 import { NavLink } from "react-router-dom";
 
 const RateChartNavlinks = ({ isselected, setIsSelected }) => {
   const ratechartnavlinks = [
     {
+      name: "Add Type",
+      icon: <IoIosSave className="icon" />,
+      index: 0,
+      path: "add/new-type",
+    },
+    {
       name: "Save",
       icon: <VscSave className="icon" />,
-      index: 0,
+      index: 1,
       path: "save",
     },
     {
       name: "Update",
       icon: <GrUpdate className="icon" />,
-      index: 1,
+      index: 2,
       path: "update-save",
     },
     {
       name: "Apply",
       icon: <BsSaveFill className="icon" />,
-      index: 2,
-      path: "apply",
-    },
-    {
-      name: "Add Type",
-      icon: <BsSaveFill className="icon" />,
       index: 3,
-      path: "add/new-type",
+      path: "apply",
     },
   ];
   return (

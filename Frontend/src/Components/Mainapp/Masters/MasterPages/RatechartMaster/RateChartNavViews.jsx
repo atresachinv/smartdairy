@@ -7,16 +7,16 @@ import AddType from "./AddType";
 const RateChartNavViews = ({ index, isSet, ratechart }) => {
   switch (index) {
     case 0:
-      return <SaveRateChart />;
+      return <AddType isSet={isSet} ratechart={ratechart} />;
       break;
     case 1:
-      return <UpdateRatechart isSet={isSet} ratechart={ratechart} />;
+      return <SaveRateChart />;
       break;
     case 2:
-      return <ApplyRatechart isSet={isSet} ratechart={ratechart} />;
+      return <UpdateRatechart isSet={isSet} ratechart={ratechart} />;
       break;
     case 3:
-      return <AddType isSet={isSet} ratechart={ratechart} />;
+      return <ApplyRatechart isSet={isSet} ratechart={ratechart} />;
       break;
 
     default:
