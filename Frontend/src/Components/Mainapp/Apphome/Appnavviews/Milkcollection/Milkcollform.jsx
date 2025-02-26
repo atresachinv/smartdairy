@@ -59,7 +59,17 @@ const MilkColleform = ({ switchToSettings }) => {
   };
 
   const [values, setValues] = useState(initialValues);
+  const centerSetting = useSelector(
+    (state) => state.dairySetting.centerSetting
+  );
+  const [settings, setSettings] = useState({});
 
+  //set setting
+  useEffect(() => {
+    if (centerSetting?.length > 0) {
+      setSettings(centerSetting[0]);
+    }
+  }, [centerSetting]);
   const handleInputs = (e) => {
     const { name, value } = e.target;
 
@@ -554,7 +564,14 @@ const MilkColleform = ({ switchToSettings }) => {
       //   prevList.filter((customer) => customer.srno.toString() !== values.code)
       // );
       removeCustomer();
-      // sendMessage();
+      if (
+        settings?.whsms !== undefined &&
+        settings?.millcoll !== undefined &&
+        settings.whsms === 1 &&
+        settings.millcoll === 1
+      ) {
+        sendMessage();
+      }
       codeInputRef.current.focus();
     } catch (error) {
       console.error("Error sending milk entries to backend:", error);

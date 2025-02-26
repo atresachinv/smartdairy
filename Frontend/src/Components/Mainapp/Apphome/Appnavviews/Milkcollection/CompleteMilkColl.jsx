@@ -33,7 +33,13 @@ const CompleteMilkColl = () => {
   const smapleRef = useRef(null);
   const fatRef = useRef(null);
   const snfRef = useRef(null);
-
+  const dairyname = useSelector(
+    (state) =>
+      state.dairy.dairyData.SocietyName || state.dairy.dairyData.center_name
+  );
+  const dairyphone = useSelector(
+    (state) => state.dairy.dairyData.PhoneNo || state.dairy.dairyData.mobile
+  );
   useEffect(() => {
     dispatch(listEmployee());
     dispatch(fetchMobileColl());
@@ -58,7 +64,17 @@ const CompleteMilkColl = () => {
   };
 
   const [values, setValues] = useState(initialValues);
+  const centerSetting = useSelector(
+    (state) => state.dairySetting.centerSetting
+  );
+  const [settings, setSettings] = useState({});
 
+  //set setting
+  useEffect(() => {
+    if (centerSetting?.length > 0) {
+      setSettings(centerSetting[0]);
+    }
+  }, [centerSetting]);
   const validateField = (name, value) => {
     let error = {};
 
@@ -414,32 +430,74 @@ const CompleteMilkColl = () => {
 
   //Handling Collection Notification
 
-  const sendNotifications = () => {
-    const title = "Milk Collection Receipt";
-    const body = {
-      name: values.cname,
-      date: values.date,
-      fat: values.fat,
-      snf: values.snf,
-      liters: values.liters,
-      rate: values.rate,
-      amount: values.amt,
+  // const sendNotifications = () => {
+  //   const title = "Milk Collection Receipt";
+  //   const body = {
+  //     name: values.cname,
+  //     date: values.date,
+  //     fat: values.fat,
+  //     snf: values.snf,
+  //     liters: values.liters,
+  //     rate: values.rate,
+  //     amount: values.amt,
+  //   };
+
+  //   // Ensure token is available before dispatching
+  //   if (!token) {
+  //     console.error("Device token is missing");
+  //     return;
+  //   }
+
+  //   // Dispatch with a single payload object
+  //   dispatch(
+  //     sendNewNotification({
+  //       title, // Notification title
+  //       body, // Notification body details
+  //       deviceToken: token, // Device token for the notification
+  //     })
+  //   );
+  // };
+
+  // ------------------------------------------------------------------------------------->
+  // Send Milk Collection Whatsapp Message ------------------------------------------------>
+
+  const sendMessage = async () => {
+    const requestBody = {
+      messaging_product: "whatsapp",
+      recipient_type: "individual",
+      to: `91${values.mobile}`,
+      type: "template",
+      template: {
+        name: "milk_collection_marathi",
+        language: { code: "en" },
+        components: [
+          {
+            type: "body",
+            parameters: [
+              { type: "text", text: dairyname },
+              { type: "text", text: values.cname },
+              { type: "text", text: values.code },
+              { type: "text", text: values.liters },
+              { type: "text", text: values.fat },
+              { type: "text", text: values.snf },
+              { type: "text", text: values.rate },
+              { type: "text", text: values.amt },
+              { type: "text", text: "--" },
+              { type: "text", text: dairyphone },
+              { type: "text", text: values.date },
+            ],
+          },
+        ],
+      },
     };
-
-    // Ensure token is available before dispatching
-    if (!token) {
-      console.error("Device token is missing");
-      return;
+    try {
+      const response = await axiosInstance.post("/send-message", requestBody);
+      toast.success("Whatsapp message send successfully...");
+      console.log("Response:", response.data);
+    } catch (error) {
+      toast.error("Error in whatsapp message sending...");
+      console.error("Error sending message:", error);
     }
-
-    // Dispatch with a single payload object
-    dispatch(
-      sendNewNotification({
-        title, // Notification title
-        body, // Notification body details
-        deviceToken: token, // Device token for the notification
-      })
-    );
   };
 
   const handleCollection = async (e) => {
@@ -457,6 +515,14 @@ const CompleteMilkColl = () => {
       setErrors({}); // Reset errors
       // await sendNotifications();
       toast.success(`Milk Collection saved successfully!`);
+      if (
+        settings?.whsms !== undefined &&
+        settings?.cmillcoll !== undefined &&
+        settings.whsms === 1 &&
+        settings.cmillcoll === 1
+      ) {
+        sendMessage();
+      }
       smapleRef.current.focus();
     } catch (error) {
       console.error("Error sending milk entries to backend:", error);
@@ -506,7 +572,8 @@ const CompleteMilkColl = () => {
       </span>
       <form
         onSubmit={handleCollection}
-        className="complete-mobile-milk-coll w60 h90 d-flex-col center bg p10">
+        className="complete-mobile-milk-coll w60 h90 d-flex-col center bg p10"
+      >
         <div className="form-date-div w100 h10 d-flex a-center j-start px10 my10 sb">
           <div className="select-mobile-collector-div w40 d-flex a-center sb">
             <label htmlFor="date" className="info-text w30">
@@ -530,7 +597,8 @@ const CompleteMilkColl = () => {
               type="button"
               onClick={handleTime}
               className={`sakalan-time text ${time ? "on" : "off"}`}
-              aria-pressed={time}>
+              aria-pressed={time}
+            >
               {time ? `${t("common:c-mrg")}` : `${t("common:c-eve")}`}
             </button>
           </div>
@@ -540,7 +608,8 @@ const CompleteMilkColl = () => {
               id="milk-collector"
               name="userid"
               value={selectedEmp}
-              onChange={(e) => setSelectedEmp(e.target.value)}>
+              onChange={(e) => setSelectedEmp(e.target.value)}
+            >
               <option value="">-{t("m-select-coll")}-</option>
               {milkCollectors.map((emp, i) => (
                 <option key={i} value={emp.emp_mobile}>
@@ -711,7 +780,8 @@ const CompleteMilkColl = () => {
             type="button"
             className="w-btn  label-text mx10"
             onClick={downloadExcel}
-            disabled={status === "loading"}>
+            disabled={status === "loading"}
+          >
             {status === "loading" ? "Generating..." : "Excel"}
           </button>
           <button className="w-btn  label-text" type="reset">

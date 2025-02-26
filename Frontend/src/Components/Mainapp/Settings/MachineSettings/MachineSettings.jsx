@@ -22,6 +22,7 @@ const MachineSettings = () => {
     pType: 0,
     millcoll: false,
     vMillcoll: false,
+    cmillcoll: false,
   });
 
   // Fetch settings when component mounts
@@ -40,6 +41,7 @@ const MachineSettings = () => {
         pType: centerSetting[0].pType || 0,
         millcoll: centerSetting[0].millcoll === 1,
         vMillcoll: centerSetting[0].vMillcoll === 1,
+        cmillcoll: centerSetting[0].cmillcoll === 1,
       });
     }
   }, [centerSetting]);
@@ -73,6 +75,7 @@ const MachineSettings = () => {
         pType: settings.pType,
         millcoll: settings.millcoll ? 1 : 0,
         vMillcoll: settings.vMillcoll ? 1 : 0,
+        cmillcoll: settings.cmillcoll ? 1 : 0,
       };
 
       await dispatch(updateDairySettings(data));
@@ -104,7 +107,6 @@ const MachineSettings = () => {
               ))}
             </div>
           </div>
-
           {/* Sale WhatsApp Message */}
           <div className="w90 d-flex j-center p10 settings-page-main-item">
             <div className="w60 d-flex px10">Sale WhatsApp Message</div>
@@ -129,7 +131,6 @@ const MachineSettings = () => {
               </div>
             </div>
           </div>
-
           {/* Vehicle Sale WhatsApp Message */}
           <div className="w90 d-flex j-center px10 settings-page-main-item">
             <div className="w60 d-flex px10">Vehicle Sale WhatsApp Message</div>
@@ -154,7 +155,6 @@ const MachineSettings = () => {
               </div>
             </div>
           </div>
-
           {/* Milk Collection WhatsApp Message */}
           <div className="w90 d-flex j-center p10 settings-page-main-item">
             <div className="w60 d-flex px10">
@@ -181,7 +181,6 @@ const MachineSettings = () => {
               </div>
             </div>
           </div>
-
           {/* Vehicle Milk Collection WhatsApp Message */}
           <div className="w90 d-flex j-center px10 settings-page-main-item">
             <div className="w60 d-flex px10">
@@ -203,6 +202,32 @@ const MachineSettings = () => {
                   name="vMillcoll"
                   checked={!settings.vMillcoll}
                   onChange={() => handleChange("vMillcoll", false)}
+                />
+                <label className="info-text px10">No</label>
+              </div>
+            </div>
+          </div>
+          {/* Complete Milk Collection WhatsApp Message */}
+          <div className="w90 d-flex j-center p10 settings-page-main-item">
+            <div className="w60 d-flex px10">
+              Complete Milk Collection WhatsApp Message
+            </div>
+            <div className="w40 d-flex">
+              <div>
+                <input
+                  type="radio"
+                  name="cmillcoll"
+                  checked={settings.cmillcoll}
+                  onChange={() => handleChange("cmillcoll", true)}
+                />
+                <label className="info-text px10">Yes</label>
+              </div>
+              <div className="px5">
+                <input
+                  type="radio"
+                  name="cmillcoll"
+                  checked={!settings.cmillcoll}
+                  onChange={() => handleChange("cmillcoll", false)}
                 />
                 <label className="info-text px10">No</label>
               </div>

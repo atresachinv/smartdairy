@@ -52,6 +52,17 @@ const MilkSankalan = () => {
   };
 
   const [values, setValues] = useState(initialValues);
+  const centerSetting = useSelector(
+    (state) => state.dairySetting.centerSetting
+  );
+  const [settings, setSettings] = useState({});
+
+  //set setting
+  useEffect(() => {
+    if (centerSetting?.length > 0) {
+      setSettings(centerSetting[0]);
+    }
+  }, [centerSetting]);
 
   useEffect(() => {
     localStorage.setItem("collCount", collCount);
@@ -269,7 +280,7 @@ const MilkSankalan = () => {
               { type: "text", text: tDate },
               { type: "text", text: values.liters },
               { type: "text", text: values.sample },
-              { type: "text", text: sankalak },
+              { type: "text", text: sankalak || "--" },
               { type: "text", text: dairyphone },
             ],
           },
@@ -304,7 +315,14 @@ const MilkSankalan = () => {
       toast.success("Milk Collection Saved Successfully!");
       setCollCount(collCount + 1);
       setLiterCount(literCount + parseFloat(values.liters));
-      sendMessage();
+      if (
+        settings?.whsms !== undefined &&
+        settings?.vMillcoll !== undefined &&
+        settings.whsms === 1 &&
+        settings.vMillcoll === 1
+      ) {
+        sendMessage();
+      }
       codeInputRef.current.focus(); // Focus on the code input
     } catch (error) {
       toast.error("Failed to save Milk Collection, try again!");
