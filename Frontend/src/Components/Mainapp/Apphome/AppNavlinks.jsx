@@ -124,9 +124,9 @@ const AppNavlinks = ({ isselected, setIsSelected }) => {
         <li
           key={index}
           className={`home-nav-item d-flex a-center ${
-            isselected === button.path ? "selected" : ""
+            isselected === button.index ? "selected" : ""
           }`}
-          onClick={() => setIsSelected(button.path)}
+          onClick={() => setIsSelected(button.index)}
           onMouseEnter={() => button.submenus && setDropdownVisible(true)}
           onMouseLeave={() => button.submenus && setDropdownVisible(false)}
         >

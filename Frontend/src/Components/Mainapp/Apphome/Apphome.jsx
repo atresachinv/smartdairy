@@ -29,14 +29,7 @@ const Apphome = () => {
   const yearStart = useSelector((state) => state.date.yearStart);
   const yearEnd = useSelector((state) => state.date.yearEnd);
 
-  const [isselected, setIsSelected] = useState(
-    parseInt(localStorage.getItem("MilkCollTabIndex")) || 0
-  );
-
-  // Update localStorage whenever isselected changes
-  useEffect(() => {
-    localStorage.setItem("MilkCollTabIndex", isselected);
-  }, [isselected]);
+  const [isselected, setIsSelected] = useState(0);
 
   //Store Milk Collection Ratechart to localstorage
   useEffect(() => {
