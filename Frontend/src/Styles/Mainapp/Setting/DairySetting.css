@@ -40,3 +40,18 @@
   display: flex;
   justify-content: space-around;
 }
+
+/*--------Mobile Screen CSS-------*/
+
+@media screen and (max-width: 426px) {
+  .dairy-settings-page-main-item {
+    width: 90% !important;
+  }
+  .settings-page-main-item {
+    width: 100% !important;
+    padding: 5px 0px !important;
+  }
+  .settings-page-printer-item {
+    padding: 0px 0px !important;
+  }
+}

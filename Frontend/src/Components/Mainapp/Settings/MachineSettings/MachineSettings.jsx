@@ -5,6 +5,7 @@ import {
 } from "../../../../App/Features/Mainapp/Settings/dairySettingSlice";
 import Swal from "sweetalert2";
 import { useDispatch, useSelector } from "react-redux";
+import "../../../../Styles/Mainapp/Setting/DairySetting.css";
 
 const MachineSettings = () => {
   const dispatch = useDispatch();
@@ -85,25 +86,27 @@ const MachineSettings = () => {
       <div className="h1 w100 d-flex j-center ">
         <div className="mx5 my5 w90 d-flex-col bg center p10">
           {/* Printer Selection */}
-          <div className="w90 d-flex j-center px10">
+          <div className="w90 d-flex j-center px10 settings-page-main-item">
             <div className="w60 d-flex px10">Select Printer</div>
             <div className="w40 d-flex">
               {["A4", "58mm", "80mm"].map((label, index) => (
-                <div key={index} className="px5">
+                <div key={index} className="px5 settings-page-printer-item">
                   <input
                     type="radio"
                     name="pType"
                     checked={settings.pType === index}
                     onChange={() => handleChange("pType", index)}
                   />
-                  <label className="info-text px10">{label}</label>
+                  <label className="info-text px10 settings-page-printer-item">
+                    {label}
+                  </label>
                 </div>
               ))}
             </div>
           </div>
 
           {/* Sale WhatsApp Message */}
-          <div className="w90 d-flex j-center p10">
+          <div className="w90 d-flex j-center p10 settings-page-main-item">
             <div className="w60 d-flex px10">Sale WhatsApp Message</div>
             <div className="w40 d-flex">
               <div>
@@ -128,7 +131,7 @@ const MachineSettings = () => {
           </div>
 
           {/* Vehicle Sale WhatsApp Message */}
-          <div className="w90 d-flex j-center px10">
+          <div className="w90 d-flex j-center px10 settings-page-main-item">
             <div className="w60 d-flex px10">Vehicle Sale WhatsApp Message</div>
             <div className="w40 d-flex">
               <div>
@@ -153,7 +156,7 @@ const MachineSettings = () => {
           </div>
 
           {/* Milk Collection WhatsApp Message */}
-          <div className="w90 d-flex j-center p10">
+          <div className="w90 d-flex j-center p10 settings-page-main-item">
             <div className="w60 d-flex px10">
               Milk Collection WhatsApp Message
             </div>
@@ -180,7 +183,7 @@ const MachineSettings = () => {
           </div>
 
           {/* Vehicle Milk Collection WhatsApp Message */}
-          <div className="w90 d-flex j-center px10">
+          <div className="w90 d-flex j-center px10 settings-page-main-item">
             <div className="w60 d-flex px10">
               Vehicle Milk Collection WhatsApp Message
             </div>

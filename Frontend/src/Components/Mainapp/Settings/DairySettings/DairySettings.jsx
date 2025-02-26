@@ -110,7 +110,10 @@ const DairySettings = () => {
             .sort((a, b) => a.center_id - b.center_id)
             .map((center) => (
               <>
-                <div key={center.center_id} className="w50 h10 d-flex px10 sa ">
+                <div
+                  key={center.center_id}
+                  className="w50 h10 d-flex px10 sa dairy-settings-page-main-item"
+                >
                   <div className="px10 w10 label-text">{center.center_id}</div>
                   <div className="w80">
                     <div className="label-text">
