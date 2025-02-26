@@ -44,7 +44,17 @@ const CreateMedicines = () => {
   const dairymono = useSelector(
     (state) => state.dairy.dairyData.PhoneNo || state.dairy.dairyData.mobile
   );
-  let printer = 2;
+  const centerSetting = useSelector(
+    (state) => state.dairySetting.centerSetting
+  );
+  const [settings, setSettings] = useState({});
+
+  //set setting
+  useEffect(() => {
+    if (centerSetting?.length > 0) {
+      setSettings(centerSetting[0]);
+    }
+  }, [centerSetting]);
 
   //set user role
   useEffect(() => {
@@ -177,17 +187,12 @@ const CreateMedicines = () => {
       try {
         const res = await axiosInstance.post("/sale/create", cartItem);
         if (res?.data?.success) {
-          const result = await Swal.fire({
-            title: "Message Confirmation ?",
-            text: "Are you sure send whatsapp message?",
-            icon: "warning",
-            showCancelButton: true,
-            confirmButtonColor: "#3085d6",
-            cancelButtonColor: "#d33",
-            confirmButtonText: "Yes, send it!",
-          });
-
-          if (result.isConfirmed) {
+          if (
+            settings?.whsms !== undefined &&
+            settings?.salesms !== undefined &&
+            settings.whsms === 1 &&
+            settings.salesms === 1
+          ) {
             const customer = customerslist.find(
               (customer) => customer.srno === parseInt(fcode)
             );
@@ -239,7 +244,12 @@ const CreateMedicines = () => {
   // Function to handle printing the invoice --------------------------------------->
   const handlePrint = () => {
     handleSubmit();
-    if (parseInt(printer) === 1) {
+    if (
+      settings?.pType !== undefined &&
+      settings?.printer !== undefined &&
+      settings.printer === 1 &&
+      settings.pType === 0
+    ) {
       if (cartItem.length > 0) {
         const printWindow = window.open("", "_blank");
         const printContent = document.getElementById("print-section").innerHTML;
@@ -362,7 +372,12 @@ const CreateMedicines = () => {
       } else {
         toast.warn("No data to print.");
       }
-    } else if (parseInt(printer) === 2) {
+    } else if (
+      settings?.pType !== undefined &&
+      settings?.printer !== undefined &&
+      settings.printer === 1 &&
+      settings.pType === 1
+    ) {
       if (cartItem.length > 0) {
         const printWindow = window.open("", "_blank");
         const printContent =
@@ -898,9 +913,13 @@ const CreateMedicines = () => {
                 >
                   PDF
                 </button>
-                <button type="button" className="w-btn" onClick={handlePrint}>
-                  Print
-                </button>
+                {settings?.printer !== undefined && settings.printer === 1 ? (
+                  <button type="button" className="w-btn" onClick={handlePrint}>
+                    {t("c-print")}
+                  </button>
+                ) : (
+                  <></>
+                )}
               </div>
             )}
           </div>
