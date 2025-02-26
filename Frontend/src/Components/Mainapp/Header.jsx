@@ -14,7 +14,7 @@ const Header = ({ handleSidebar, logout }) => {
 
   const dairyname = useSelector(
     (state) =>
-      state.dairy.dairyData.SocietyName || state.dairy.dairyData.center_name
+      state.dairy.dairyData.marathiName || state.dairy.dairyData.marathi_name
   );
 
   useEffect(() => {

@@ -28,6 +28,7 @@ import MilkcollectionReports from "./Reports/MilkReports/MilkcollectionReports";
 import PaymentReports from "./Reports/PaymentsReports/PaymentReports";
 import Stocks from "./Inventory/InventroyPages/Stocks/Stocks";
 import PurchaseMaster from "./Purchase/CattleFeed/PurchaseMaster";
+import PurchaseMasters from "./Purchase/PurchaseMaster";
 import PurchaseGroceryMaster from "./Purchase/Grocery/PurchaseGroceryMaster";
 import PurchaseMedicinesMaster from "./Purchase/Medicines/PurchaseMedicinesMaster";
 import OthersPurMaster from "./Purchase/Others/OthersPurMaster";
@@ -51,6 +52,7 @@ import { toast } from "react-toastify";
 import "../../Styles/Mainapp/Mainapphome.css";
 import Returns from "./Inventory/InventroyPages/Returns/Returns";
 import SanghsalesMaster from "./MilkSales/SanghsalesPages/SanghsalesMaster";
+import SalesMaster from "./Sales/SalesMaster";
 
 const Mainapp = () => {
   const dispatch = useDispatch();
@@ -124,7 +126,8 @@ const Mainapp = () => {
       <div
         className={`sidebar-container ${
           openSidebar ? "open-sidebar " : "close-sidebar"
-        }`}>
+        }`}
+      >
         <Sidebar setselected={setIsselected} handleSidebar={handleSidebar} />
       </div>
       <div className="nav-main-view-container w80 h1 d-flex-col">
@@ -137,11 +140,21 @@ const Mainapp = () => {
             {/* dashboard route */}
             <Route path="dashboard" element={<Dashboard />} />
             {/* milk route */}
-            <Route path="milk/*" element={<Apphome />} />
+            <Route path="milk/collection/*" element={<Apphome />} />
+            <Route
+              path="milk/customer/master/*"
+              element={<CustomersMaster />}
+            />
+            <Route path="milk/rate/master/*" element={<MilkRateMaster />} />
             <Route path="milk/sangha/*" element={<SanghsalesMaster />} />
             {/* inventory routes */}
             <Route path="inventory/dealer/*" element={<Dealers />} />
             <Route path="inventory/product/*" element={<Products />} />
+            <Route
+              path="inventory/product/purchase/*"
+              element={<PurchaseMasters />}
+            />
+            <Route path="inventory/product/sales/*" element={<SalesMaster />} />
             <Route path="inventory/product/stock/*" element={<Stocks />} />
             <Route path="inventory/returns/*" element={<Returns />} />
             {/* accounts routes */}
@@ -149,10 +162,10 @@ const Mainapp = () => {
             {/* master routes */}
             <Route path="master/main-ledger/*" element={<MainLedger />} />
             <Route path="master/sub-ledger/*" element={<SubLedger />} />
-            <Route path="master/customer/*" element={<CustomersMaster />} />
+            {/* <Route path="master/customer/*" element={<CustomersMaster />} /> */}
             <Route path="master/employee/*" element={<EmployeeMaster />} />
             <Route path="master/bank/*" element={<BankMaster />} />
-            <Route path="master/ratechart/*" element={<MilkRateMaster />} />
+            {/* <Route path="master/ratechart/*" element={<MilkRateMaster />} /> */}
             {/* purchase routes */}
             <Route path="purchase/cattlefeed/*" element={<PurchaseMaster />} />
             <Route

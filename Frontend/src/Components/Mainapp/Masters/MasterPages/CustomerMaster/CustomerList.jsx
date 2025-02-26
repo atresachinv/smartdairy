@@ -1,6 +1,3 @@
-/* eslint-disable react-hooks/rules-of-hooks */
-/* eslint-disable no-unused-vars */
-/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import * as XLSX from "xlsx";
@@ -12,7 +9,7 @@ import { listCustomer } from "../../../../../App/Features/Mainapp/Masters/custMa
 
 const CustomerList = () => {
   const dispatch = useDispatch();
-  const { t } = useTranslation(["common", "milkcollection"]);
+  const { t } = useTranslation(["master", "milkcollection", "common"]);
   const customerlist = useSelector((state) => state.customers.customerlist);
   const status = useSelector((state) => state.customers.cliststatus);
 
@@ -132,13 +129,13 @@ const CustomerList = () => {
       ) : (
         <div className="customer-list-container-div w100 h1 d-flex-col p10">
           <div className="download-print-pdf-excel-container w100 h10 d-flex a-center  sb">
-            <span className="heading p10">Customer List</span>
+            <span className="heading p10">{t("m-custlist")}</span>
             <input
               type="text"
               className="data w30"
               name=""
               id=""
-              placeholder="Search..."
+              placeholder={`${t("common:c-search")}`}
               value={searchTerm}
               onChange={handleSearch}
             />
@@ -152,23 +149,23 @@ const CustomerList = () => {
           <div className="customer-list-table w100 h1 d-flex-col hidescrollbar bg">
             <div className="customer-heading-title-scroller w100 h1 mh100 d-flex-col">
               <div className="customer-data-headings-div  h10 d-flex center t-center sb">
-                <span className="f-info-text w5">Code</span>
-                <span className="f-info-text w25">Customer Name</span>
-                <span className="f-info-text w10">Mobile</span>
-                <span className="f-info-text w15">Addhar No</span>
-                <span className="f-info-text w15">City</span>
-                <span className="f-info-text w15">Tehsil</span>
-                <span className="f-info-text w15">District</span>
-                <span className="f-info-text w15">A/C No</span>
-                <span className="f-info-text w15">IFSC</span>
-                <span className="f-info-text w15">Caste</span>
-                <span className="f-info-text w10">Gender</span>
-                <span className="f-info-text w5">Age</span>
-                <span className="f-info-text w10">MemberNo</span>
-                <span className="f-info-text w15">Mem. Date</span>
-                <span className="f-info-text w15">Ratechart</span>
-                <span className="f-info-text w5">MilkType</span>
-                <span className="f-info-text w5">Active</span>
+                <span className="f-info-text w5">{t("master:m-ccode")}</span>
+                <span className="f-info-text w25">{t("master:m-cname")}</span>
+                <span className="f-info-text w10">{t("master:m-mobile")}</span>
+                <span className="f-info-text w15">{t("master:m-addhar")}</span>
+                <span className="f-info-text w15">{t("master:m-city")}</span>
+                <span className="f-info-text w15">{t("master:m-tel")}</span>
+                <span className="f-info-text w15">{t("master:m-dist")}</span>
+                <span className="f-info-text w15">{t("master:m-accno")}</span>
+                <span className="f-info-text w15">{t("master:m-ifsc")}</span>
+                <span className="f-info-text w15">{t("master:m-caste")}</span>
+                <span className="f-info-text w10">{t("master:m-gender")}</span>
+                <span className="f-info-text w5">{t("master:m-age")}</span>
+                <span className="f-info-text w10">{t("master:m-mno")}</span>
+                <span className="f-info-text w15">{t("master:m-mdate")}</span>
+                <span className="f-info-text w15">{t("master:m-rtype")}</span>
+                <span className="f-info-text w5">{t("master:m-mtype")}</span>
+                <span className="f-info-text w5">{t("master:m-active")}</span>
               </div>
               {/* Show Spinner if loading, otherwise show the customer list */}
               {status === "loading" ? (

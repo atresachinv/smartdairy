@@ -324,7 +324,7 @@
   cursor: pointer;
 }
 .title {
-  font-size: clamp(14px, 3vw, 26px);
+  font-size: clamp(14px, 2vw, 24px);
   font-weight: 600;
   color: #f16868;
   cursor: pointer;

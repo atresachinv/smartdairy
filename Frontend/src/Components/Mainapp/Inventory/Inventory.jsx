@@ -74,20 +74,6 @@ const Inventory = () => {
             <span className="text w10">Rate</span>
             <span className="text w15">Amount</span>
           </div>
-          {/* <div className="report-data-container w100  d-flex-col">
-            <div className="content-values-div w100 h5 d-flex center t-center sa">
-              <span className="text w10">0</span>
-              <span className="text w5">0</span>
-              <span className="text w5">0</span>
-              <span className="text w10">0</span>
-              <span className="text w5">0</span>
-              <span className="text w5">0</span>
-              <span className="text w5">0</span>
-              <span className="text w10">0</span>
-              <span className="text w15">0</span>
-            </div>
-          </div> */}
-
           {reportData.records &&
             reportData.records.map((record, index) => (
               <div

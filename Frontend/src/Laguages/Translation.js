@@ -7,6 +7,7 @@ import collectionmr from "./Marathi/MilkCollection.json";
 import milksalesmr from "./Marathi/MilkSales.json";
 import inventorymr from "./Marathi/Inventory.json";
 import mastermr from "./Marathi/Masters.json";
+import puchasesalemr from "./Marathi/PurchaseSale.json";
 
 // English
 import enTranslation from "./English/English.json";
@@ -15,6 +16,7 @@ import collectioneg from "./English/MilkCollection.json";
 import milksaleseg from "./English/MilkSales.json";
 import inventoryeg from "./English/Inventory.json";
 import mastereg from "./English/Masters.json";
+import puchasesaleeg from "./English/PurchaseSale.json";
 
 i18n.use(initReactI18next).init({
   resources: {
@@ -25,6 +27,7 @@ i18n.use(initReactI18next).init({
       msales: milksalesmr,
       inventory: inventorymr,
       master: mastermr,
+      puchasesale: puchasesalemr,
     },
     en: {
       translation: enTranslation,
@@ -33,11 +36,19 @@ i18n.use(initReactI18next).init({
       msales: milksaleseg,
       inventory: inventoryeg,
       master: mastereg,
+      puchasesale: puchasesaleeg,
     },
   },
   lng: "mr", // Default language
   fallbackLng: "en", // Fallback to English if translation not found in Marathi
-  ns: ["common", "milkcollection", "msales", "inventory", "master"], // Defined namespaces
+  ns: [
+    "common",
+    "milkcollection",
+    "msales",
+    "inventory",
+    "master",
+    "puchasesale",
+  ], // Defined namespaces
   defaultNS: "translation", // Default namespace to use if none is specified
   interpolation: {
     escapeValue: false, // React already escapes values to prevent XSS
