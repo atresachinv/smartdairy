@@ -10,18 +10,7 @@ import CreateCustomer from "./CreateCustomer";
 
 const CustomersMaster = () => {
   const dispatch = useDispatch();
-  const [isselected, setIsSelected] = useState(
-    parseInt(localStorage.getItem("selectedCustIndex")) || 0
-  );
-
-  // Update localStorage whenever isselected changes
-  useEffect(() => {
-    localStorage.setItem("selectedCustIndex", isselected);
-  }, [isselected]);
-
-  // useEffect(() => {
-  //   localStorage.setItem("selectedCustIndex", isselected);
-  // }, [isselected]);
+  const [isselected, setIsSelected] = useState(0);
 
   useEffect(() => {
     dispatch(getMaxCustNo());
