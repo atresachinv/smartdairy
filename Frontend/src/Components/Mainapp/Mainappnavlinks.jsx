@@ -415,13 +415,18 @@ const Mainappnavlinks = ({ setselected, handleSidebar }) => {
       index: 11,
       role: ["super_admin", "admin"],
       submenus: [
-        {
-          name: "Dairy Settings",
-          icon: <BsBuildingFillGear className="icon" />,
-          index: 11.1,
-          path: "settings/dairy",
-          role: ["super_admin", "admin"],
-        },
+        ...(center_id === 0
+          ? [
+              {
+                name: "Dairy Settings",
+                icon: <BsBuildingFillGear className="icon" />,
+                index: 11.1,
+                path: "settings/dairy",
+                role: ["super_admin", "admin"],
+              },
+            ]
+          : []),
+
         {
           name: "Inventory Settings",
           icon: <BsHouseGearFill className="icon" />,

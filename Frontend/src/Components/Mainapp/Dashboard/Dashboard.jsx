@@ -30,6 +30,7 @@ import {
 } from "../../../App/Features/Mainapp/Dashboard/dashboardSlice";
 import { centersLists } from "../../../App/Features/Dairy/Center/centerSlice";
 import "../../../Styles/Mainapp/Dashbaord/Dashboard.css";
+import { getCenterSetting } from "../../../App/Features/Mainapp/Settings/dairySettingSlice";
 
 const Dashboard = () => {
   const { t } = useTranslation("common");
@@ -145,10 +146,9 @@ const Dashboard = () => {
 
   // to show centerwise data ------------------------------------------------------------------->
 
-  // useEffect(() => {
-  //   dispatch(centersLists());
-  //   dispatch(getCenterCustCount());
-  // }, []);
+  useEffect(() => {
+    dispatch(getCenterSetting());
+  }, [dispatch]);
 
   // Merged center data
   const centersmergedData = centerLiterAmt.map((literEntry) => {
