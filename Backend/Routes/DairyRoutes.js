@@ -12,22 +12,10 @@ const {
   getAllcenters,
   sendMessage,
   getCenterWiseMilkData,
-<<<<<<< HEAD
-<<<<<<< HEAD
   getCenterCustomerCount,
-=======
   getCenterSetting,
   updateCenterSetting,
   getOneCenterSetting,
->>>>>>> b2bb2dd (setting can done)
-=======
-  getCenterSetting,
-  updateCenterSetting,
-  getOneCenterSetting,
-=======
-  getCenterCustomerCount,
->>>>>>> 5bbda2edb697ed748cbaf2919dcf0fb2e05d7379
->>>>>>> 434e666 (Local changes before merging)
 } = require("../Controllers/DairyController");
 const router = express.Router();
 

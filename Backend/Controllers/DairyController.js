@@ -689,9 +689,7 @@ exports.getCenterWiseMilkData = (req, res) => {
     });
   });
 };
-<<<<<<< HEAD
 
-<<<<<<< HEAD
 // Center wise customer count ---------------------------------------------------------------------------->
 
 exports.getCenterCustomerCount = (req, res) => {
@@ -700,16 +698,10 @@ exports.getCenterCustomerCount = (req, res) => {
     connection.release();
     return res.status(400).json({ message: "Dairy ID not found!" });
   }
-=======
-// center wise setting
-exports.getCenterSetting = (req, res) => {
-  const dairy_id = req.user.dairy_id;
->>>>>>> b2bb2dd (setting can done)
 
   pool.getConnection((err, connection) => {
     if (err) {
       console.error("Error getting MySQL connection: ", err);
-<<<<<<< HEAD
       return res.status(500).json({ message: "Database connection error" });
     }
 
@@ -735,7 +727,14 @@ exports.getCenterSetting = (req, res) => {
     });
   });
 };
-=======
+
+// center wise setting
+exports.getCenterSetting = (req, res) => {
+  const dairy_id = req.user.dairy_id;
+
+  pool.getConnection((err, connection) => {
+    if (err) {
+      console.error("Error getting MySQL connection: ", err);
       return res
         .status(500)
         .json({ success: false, message: "Database connection error" });
@@ -903,6 +902,3 @@ exports.updateCenterSetting = (req, res) => {
     }
   });
 };
->>>>>>> b2bb2dd (setting can done)
-=======
->>>>>>> 434e666 (Local changes before merging)
