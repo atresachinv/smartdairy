@@ -67,11 +67,12 @@ const SanghsalesNavlinks = ({ isselected, setIsSelected }) => {
         <li
           key={index}
           className={`home-nav-item d-flex a-center ${
-            isselected === button.path ? "selected" : ""
+            isselected === button.index ? "selected" : ""
           }`}
           onClick={() => {
-            setIsSelected(button.path);
-          }}>
+            setIsSelected(button.index);
+          }}
+        >
           <NavLink to={button.path} className={"sub-navlinks f-label-text"}>
             <span>{button.icon}</span>
             {button.name}

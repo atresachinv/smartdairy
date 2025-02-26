@@ -7,18 +7,15 @@ import CreateSangh from "./CreateSangh";
 import Sanghsales from "./Sanghsales";
 import SanghReport from "./SanghReport";
 
-
 const SanghsalesMaster = () => {
   const dispatch = useDispatch();
   // Retrieve isselected from localStorage, defaulting to 0 if not set ------------------>
-  const [isselected, setIsselected] = useState(
-    parseInt(localStorage.getItem("selectedsaleNavIndex")) || 0
-  );
+  const [isselected, setIsselected] = useState(0);
 
-  // Update localStorage whenever isselected changes ------------------------------------>
-  useEffect(() => {
-    localStorage.setItem("selectedsaleNavIndex", isselected);
-  }, [isselected]);
+  // // Update localStorage whenever isselected changes ------------------------------------>
+  // useEffect(() => {
+  //   localStorage.setItem("selectedsaleNavIndex", isselected);
+  // }, [isselected]);
 
   return (
     <div className="app-home-container w100 h1">

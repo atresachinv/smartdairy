@@ -11,7 +11,7 @@ import Listother from "./Others/OthersSaleList";
 import SaleMasterNavlink from "./SaleMasterNavlink";
 
 const SalesMaster = () => {
-  const [isselected, setIsSelected] = useState(0);
+  const [isselected, setIsSelected] = useState(1);
 
   useEffect(() => {
     localStorage.setItem("selectedSalesMasterIndex", isselected);

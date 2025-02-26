@@ -11,7 +11,7 @@ import Listmedi from "./Medicines/List";
 import Listother from "./Others/List";
 
 const PurchaseMaster = () => {
-  const [isselected, setIsSelected] = useState(0);
+  const [isselected, setIsSelected] = useState(1);
 
   // Update localStorage whenever isselected changes
   useEffect(() => {
