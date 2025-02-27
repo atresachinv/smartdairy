@@ -7,7 +7,7 @@ import { useTranslation } from "react-i18next";
 import Swal from "sweetalert2";
 import "../../../../Styles/Mainapp/Purchase/Purchase.css";
 const Create = () => {
-  const { t } = useTranslation(["milkcollection", "common"]);
+  const { t } = useTranslation(["puchasesale", "milkcollection", "common"]);
   const [cartItem, setCartItem] = useState([]);
   const [cname, setCname] = useState("");
   const [fcode, setFcode] = useState("");
@@ -245,7 +245,7 @@ const Create = () => {
         <form className="purchase-cattle-feed-form-container w50 h1 bg p10">
           <div className="purchase-input-row w100 h15 d-flex  a-center sb">
             <div className="purchase-input-col w45 d-flex-col sb">
-              <label className="info-text px10">Date :</label>
+              <label className="info-text px10">{t("ps-date")} :</label>
               <input
                 type="date"
                 id="date"
@@ -260,7 +260,7 @@ const Create = () => {
               />
             </div>
             <div className="purchase-input-col w45 d-flex-col sb">
-              <label className="info-text px10">Receipt No:</label>
+              <label className="info-text px10">{t("ps-rect-no")}:</label>
               <input
                 type="number"
                 id="rctno"
@@ -278,7 +278,8 @@ const Create = () => {
           </div>
           <div className="purchase-input-row w100 h15 d-flex  a-center sb">
             <div className="purchase-input-col w45 d-flex-col sb">
-              <label className="info-text px10">Dealer Code:</label>
+              <label className="info-text px10">{t("ps-dealer-no")}:</label>
+
               <input
                 type="number"
                 id="fcode"
@@ -293,7 +294,8 @@ const Create = () => {
               />
             </div>
             <div className="purchase-input-col w45 d-flex-col sb">
-              <label className="info-text px10">Dealer Name:</label>
+              <label className="info-text px10">{t("ps-dealer-name")}:</label>
+
               <select
                 id="cname"
                 value={cname}
@@ -337,7 +339,8 @@ const Create = () => {
               </select>
             </div>
             <div className="purchase-input-col w45 d-flex-col sb">
-              <label className="info-text px10">QTY:</label>
+              <label className="info-text px10"> {t("ps-qty")}:</label>
+
               <input
                 id="qty"
                 disabled={!selectitemcode}
@@ -356,7 +359,8 @@ const Create = () => {
           </div>
           <div className="purchase-input-row w100 h15 d-flex a-center sb">
             <div className="purchase-input-col w45 d-flex-col sb">
-              <label className="info-text px10">Purchase Rate:</label>
+              <label className="info-text px10">{t("ps-rate")}:</label>
+
               <input
                 id="rate"
                 type="number"
@@ -375,7 +379,8 @@ const Create = () => {
               />
             </div>
             <div className="purchase-input-col w45 d-flex-col sb">
-              <label className="info-text px10">Sale Rate:</label>
+              <label className="info-text px10">{t("ps-sale-rate")}:</label>
+
               <input
                 id="sellrate"
                 type="number"
@@ -390,7 +395,7 @@ const Create = () => {
           </div>
           <div className="purchase-input-row w100 h15 d-flex  a-center sb">
             <div className="purchase-input-col w45 d-flex-col">
-              <label className="info-text px10">Amount:</label>
+              <label className="info-text px10">{t("ps-amt")}:</label>
               <input
                 id="amt"
                 type="number"
@@ -409,14 +414,15 @@ const Create = () => {
         </form>
 
         <div className="sales-list-outer-container w45 h1 d-flex-col bg">
-          <span className="heading w30 p10">Item List</span>
+          <span className="heading w50 p10">{t("ps-pur-list")}</span>
+
           <div className="sales-list-conatainer w100 h1 d-flex-col">
             <div className="sales-headings-row w100 h10 d-flex sb a-center t-center sticky-top t-heading-bg">
-              <span className="f-label-text w10">No.</span>
-              <span className="f-label-text w40">Name</span>
-              <span className="f-label-text w10">Qty</span>
-              <span className="f-label-text w10">Rate</span>
-              <span className="f-label-text w10">Amount</span>
+              <span className="f-label-text w10"> {t("ps-srNo")}</span>
+              <span className="f-label-text w40">{t("ps-itm-name")}</span>
+              <span className="f-label-text w10"> {t("ps-qty")}</span>
+              <span className="f-label-text w10"> {t("ps-rate")}</span>
+              <span className="f-label-text w10"> {t("ps-amt")}</span>
               <span className="f-label-text w20 t-center">Action</span>
             </div>
             {cartItem.length > 0 ? (
@@ -447,7 +453,7 @@ const Create = () => {
                   <span className=" w10"></span>
                   <span className=" w40"></span>
                   <span className=" w10"></span>
-                  <span className="label-text w10">Total :</span>
+                  <span className="label-text w10">{t("ps-ttl-amt")} :</span>
                   <span className="label-text w10 t-end">
                     {cartItem.reduce((acc, item) => acc + item.amount, 0)}
                   </span>
@@ -462,14 +468,14 @@ const Create = () => {
           </div>
           <div className="sales-button-container w100 h10 d-flex a-center j-end">
             <button className="w-btn m10" onClick={handelClear}>
-              Clear
+              {t("ps-clr")}
             </button>
             <button
               className="w-btn mx10"
               onClick={handleSubmit}
               disabled={cartItem.length == 0}
             >
-              Save
+              {t("ps-smt")}
             </button>
           </div>
         </div>

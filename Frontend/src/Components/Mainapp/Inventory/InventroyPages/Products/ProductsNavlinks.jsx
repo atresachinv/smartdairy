@@ -1,14 +1,20 @@
 // eslint-disable-next-line no-unused-vars
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { IoPersonAdd, IoList } from "react-icons/io5";
 import { NavLink } from "react-router-dom";
 
 // eslint-disable-next-line react/prop-types
 const ProductsNavlinks = ({ isselected, setIsSelected }) => {
+  const { t } = useTranslation(["puchasesale", "common"]);
   const CustNavbuttons = [
-    { name: "Product List", icon: <IoList className="icon" />, path: "list" },
     {
-      name: "Create Products",
+      name: `${t("ps-nv-pro-list")}`,
+      icon: <IoList className="icon" />,
+      path: "list",
+    },
+    {
+      name: `${t("ps-nv-pro-add")}`,
       icon: <IoPersonAdd className="icon" />,
       path: "add-product",
     },
