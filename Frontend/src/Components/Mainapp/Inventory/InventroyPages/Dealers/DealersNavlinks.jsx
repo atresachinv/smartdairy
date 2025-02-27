@@ -1,13 +1,19 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { IoPersonAdd, IoList } from "react-icons/io5";
 import { NavLink } from "react-router-dom";
 
 // eslint-disable-next-line react/prop-types
 const DealersNavlinks = ({ isselected, setIsSelected }) => {
+  const { t } = useTranslation(["puchasesale", "common"]);
   const CustNavbuttons = [
-    { name: "Dealers List", icon: <IoList className="icon" />, path: "list" },
     {
-      name: "Create Dealers",
+      name: `${t("ps-nv-dealer-list")}`,
+      icon: <IoList className="icon" />,
+      path: "list",
+    },
+    {
+      name: `${t("ps-nv-create-dealer")}`,
       icon: <IoPersonAdd className="icon" />,
       path: "add-dealer",
     },

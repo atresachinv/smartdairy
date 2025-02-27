@@ -2,8 +2,10 @@ import React, { useEffect, useState } from "react";
 import axiosInstance from "../../../../../App/axiosInstance";
 import { toast } from "react-toastify";
 import "./Product.css";
+import { useTranslation } from "react-i18next";
 
 const CreateProducts = () => {
+  const { t } = useTranslation(["puchasesale", "common"]);
   const [formData, setFormData] = useState({
     ItemCode: "",
     ItemName: "",
@@ -108,7 +110,7 @@ const CreateProducts = () => {
 
   return (
     <div className="create-dealer-container w100 h1 d-flex-col p10 ">
-      <span className="heading">Create Product</span>
+      <span className="heading">{t("ps-nv-pro-add")}</span>
       <div className="create-dealer-inner-container w100 h1 d-flex-col center">
         <form
           onSubmit={handleSubmit}
@@ -117,7 +119,8 @@ const CreateProducts = () => {
           <div className="row d-flex my10">
             <div className="col">
               <label className="info-text px10">
-                Item Code: <span className="req">*</span>
+                {t("ps-code")}
+                <span className="req">*</span>
               </label>
               <input
                 type="number"
@@ -133,7 +136,7 @@ const CreateProducts = () => {
             </div>
             <div className="col">
               <label className="info-text px10">
-                Item Name: <span className="req">*</span>
+                {t("ps-itm-name")} <span className="req">*</span>
               </label>
               <input
                 type="text"
@@ -151,7 +154,8 @@ const CreateProducts = () => {
           <div className="row d-flex my10">
             <div className="col">
               <label className="info-text px10">
-                Item Marathi Name: <span className="req">*</span>
+                {t("ps-mar-name")}
+                <span className="req">*</span>
               </label>
               <input
                 type="text"
@@ -167,7 +171,7 @@ const CreateProducts = () => {
             </div>
             <div className="col">
               <label className="info-text px10">
-                Item Group Name: <span className="req">*</span>
+                {t("ps-sel-grp")} <span className="req">*</span>
               </label>
               <select
                 name="ItemGroupCode"
@@ -179,10 +183,10 @@ const CreateProducts = () => {
               >
                 <option value="">------ Select ------- </option>
                 {[
-                  { value: 1, label: "Cattle Feed" },
-                  { value: 2, label: "Medicines" },
-                  { value: 3, label: "Grocery" },
-                  { value: 4, label: "Other" },
+                  { value: 1, label: `${t("ps-nv-cattlefeed")}` },
+                  { value: 2, label: `${t("ps-nv-medicines")}` },
+                  { value: 3, label: `${t("ps-nv-grocery")}` },
+                  { value: 4, label: `${t("ps-nv-other")}` },
                 ].map((item) => (
                   <option key={item.value} value={item.value}>
                     {item.label}
@@ -217,7 +221,7 @@ const CreateProducts = () => {
               </select>
             </div>
             <div className="col">
-              <label className="info-text px10">Item Description:</label>
+              <label className="info-text px10">{t("ps-desc")}</label>
               <input
                 type="text"
                 name="ItemDesc"
@@ -232,7 +236,7 @@ const CreateProducts = () => {
           </div>
           <div className="row d-flex my10">
             <div className="col">
-              <label className="info-text px10">Manufacturer:</label>
+              <label className="info-text px10">{t("ps-manuf")}</label>
               <input
                 type="text"
                 name="Manufacturer"
@@ -247,10 +251,10 @@ const CreateProducts = () => {
           </div>
           <div className="button-container d-flex a-center j-end my10">
             <button className="w-btn" type="button" onClick={handleClear}>
-              Clear
+              {t("ps-cancel")}
             </button>
             <button className="w-btn mx10" type="submit">
-              Submit
+              {t("ps-smt")}
             </button>
           </div>
         </form>

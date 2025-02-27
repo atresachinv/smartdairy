@@ -8,8 +8,10 @@ import { MdDeleteOutline } from "react-icons/md";
 import { FaRegEdit } from "react-icons/fa";
 import { toast } from "react-toastify";
 import Swal from "sweetalert2";
+import { useTranslation } from "react-i18next";
 
 const DealersList = () => {
+  const { t } = useTranslation(["puchasesale", "common"]);
   const [dealerList, setDealerList] = useState([]);
   const [loading, setLoading] = useState(false);
   const [editSale, setEditSale] = useState(null);
@@ -156,25 +158,25 @@ const DealersList = () => {
   return (
     <div className="customer-list-container-div w100 h1 d-flex-col p10">
       <div className="download-print-pdf-excel-container w100 h10 d-flex j-end sb">
-        <span className="heading px10">Dealers List</span>
+        <span className="heading px10"> {t("ps-nv-dealer-list")}</span>
         <button className="btn my5" onClick={downloadExcel}>
-          <span className="f-label-text px10">Download Excel</span>
+          <span className="f-label-text px10">{t("ps-down-excel")}</span>
           <FaDownload />
         </button>
       </div>
       <div className="customer-list-table w100 h1 d-flex-col bg">
         <div className="customer-heading-title-scroller w100 h1 mh100  hidescrollbar d-flex-col sticky-top">
           <div className="data-headings-div h10 d-flex center forDWidth t-center sb bg7">
-            <span className="f-info-text w5">SrNo</span>
-            <span className="f-info-text w5">Code</span>
-            <span className="f-info-text w25">Dealer Name</span>
-            <span className="f-info-text w10">Mobile</span>
-            <span className="f-info-text w10">City</span>
-            <span className="f-info-text w10">District</span>
+            <span className="f-info-text w5">{t("ps-srNo")}</span>
+            <span className="f-info-text w5">{t("ps-code")}</span>
+            <span className="f-info-text w25">{t("ps-dealer-name")}</span>
+            <span className="f-info-text w10">{t("ps-mono")}</span>
+            <span className="f-info-text w10">{t("ps-city")}</span>
+            <span className="f-info-text w10">{t("ps-dist")}</span>
             {/* <span className="f-info-text w10">PinCode</span> */}
-            <span className="f-info-text w15">Bank Name</span>
-            <span className="f-info-text w15">A/C No</span>
-            <span className="f-info-text w10">IFSC</span>
+            <span className="f-info-text w15">{t("ps-bank-name")}</span>
+            <span className="f-info-text w15">{t("ps-ac-no")}</span>
+            <span className="f-info-text w10">{t("ps-ifsc")}</span>
             <span className="f-info-text w10">Actions</span>
           </div>
           {/* Show Spinner if loading, otherwise show the customer list */}
@@ -224,10 +226,10 @@ const DealersList = () => {
       {isModalOpen && (
         <div className="pramod modal ">
           <div className="modal-content minSize">
-            <h2>Update Dealer Details</h2>
+            <h2>{t("ps-up-deal-detail")}</h2>
 
             <label>
-              Phone:
+              {t("ps-mono")}
               <input
                 type="number"
                 id="phono"
@@ -243,7 +245,7 @@ const DealersList = () => {
             </label>
             <div className="row d-flex my10">
               <label>
-                City:
+                {t("ps-city")}
                 <input
                   type="text"
                   id="city"
@@ -258,7 +260,7 @@ const DealersList = () => {
                 />
               </label>
               <label style={{ marginLeft: "10px" }}>
-                District:
+                {t("ps-dist")}
                 <input
                   type="text"
                   id="dist"
@@ -274,7 +276,7 @@ const DealersList = () => {
               </label>
             </div>
             <label>
-              Bank IFSC:
+              {t("ps-ifsc")}
               <input
                 type="text"
                 id="ifsc"
@@ -289,7 +291,7 @@ const DealersList = () => {
               />
             </label>
             <label>
-              A/C No:
+              {t("ps-ac-no")}
               <input
                 id="acno"
                 type="number"
@@ -301,8 +303,10 @@ const DealersList = () => {
               />
             </label>
             <div>
-              <button onClick={() => setIsModalOpen(false)}>Cancel</button>
-              <button onClick={handleSaveChanges}>Update</button>
+              <button onClick={() => setIsModalOpen(false)}>
+                {t("ps-cancel")}
+              </button>
+              <button onClick={handleSaveChanges}> {t("ps-update")}</button>
             </div>
           </div>
         </div>

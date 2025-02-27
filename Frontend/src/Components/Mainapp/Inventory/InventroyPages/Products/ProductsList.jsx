@@ -12,6 +12,7 @@ import { toast } from "react-toastify";
 import Swal from "sweetalert2";
 
 const ProductsList = () => {
+  const { t } = useTranslation(["puchasesale", "common"]);
   const [productList, setProductList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState("1");
@@ -148,11 +149,13 @@ const ProductsList = () => {
   return (
     <div className="product-list-container w100 h1 d-flex-col p10">
       <div className="download-print-pdf-excel-container w100 h10 d-flex sb">
-        <span className="w30 prod-page-title heading px10">Products List</span>
+        <span className="w30 prod-page-title heading px10">
+          {t("ps-nv-pro-list")}
+        </span>
         <div className="group-code-and-button-div w100 h1 d-flex sb">
           <div>
             <label htmlFor="seletgrop" className="mx5">
-              Select Item Group:
+              {t("ps-sel-grp")}
             </label>
             <select
               name="ItemGroupCode"
@@ -160,11 +163,11 @@ const ProductsList = () => {
               onChange={handleFilterChange}
               value={filter}
             >
-              <option value={1}>Cattle Feed</option>
+              <option value={1}> {t("ps-nv-cattlefeed")}</option>
               {[
-                { value: 2, label: "Medicines" },
-                { value: 3, label: "Grocery" },
-                { value: 4, label: "Other" },
+                { value: 2, label: `${t("ps-nv-medicines")}` },
+                { value: 3, label: `${t("ps-nv-grocery")}` },
+                { value: 4, label: `${t("ps-nv-other")}` },
               ].map((item) => (
                 <option key={item.value} value={item.value}>
                   {item.label}
@@ -173,7 +176,7 @@ const ProductsList = () => {
             </select>
           </div>
           <button className="btn" onClick={downloadExcel}>
-            <span className="f-label-text px10">Download</span>
+            <span className="f-label-text px10"> {t("ps-down-excel")}</span>
             <FaDownload />
           </button>
         </div>
@@ -182,10 +185,10 @@ const ProductsList = () => {
       <div className="product-list-table w100 h90 d-flex-col bg">
         <div className="product-heading-title-scroller w100 h1 mh100 hidescrollbar d-flex-col br6">
           <div className="sales-data-headings-div p10 d-flex center sticky-top bg7 sa">
-            <span className="f-info-text w5">Sr.No.</span>
-            <span className="f-info-text w10">Code</span>
-            <span className="f-info-text w25">Item Name</span>
-            <span className="f-info-text w20">Description</span>
+            <span className="f-info-text w5">{t("ps-srNo")}</span>
+            <span className="f-info-text w10">{t("ps-code")}</span>
+            <span className="f-info-text w25">{t("ps-itm-name")}</span>
+            <span className="f-info-text w20">{t("ps-desc")}</span>
             <span className="f-info-text w10">Action</span>
           </div>
           {loading ? (
@@ -232,9 +235,9 @@ const ProductsList = () => {
       {isModalOpen && (
         <div className="pramod modal">
           <div className="modal-content forMin">
-            <h2>Update Product Details</h2>
+            <h2>{t("ps-up-pro-det")}</h2>
             <label>
-              Item Name:
+              {t("ps-itm-name")}
               <input
                 type="text"
                 value={editSale?.ItemName}
@@ -244,7 +247,7 @@ const ProductsList = () => {
               />
             </label>{" "}
             <label>
-              Item Desc:
+              {t("ps-desc")}
               <input
                 type="text"
                 value={editSale?.ItemDesc}
@@ -254,8 +257,10 @@ const ProductsList = () => {
               />
             </label>
             <div>
-              <button onClick={() => setIsModalOpen(false)}>Cancel</button>
-              <button onClick={handleSaveChanges}>Update</button>
+              <button onClick={() => setIsModalOpen(false)}>
+                {t("ps-cancel")}
+              </button>
+              <button onClick={handleSaveChanges}> {t("ps-update")}</button>
             </div>
           </div>
         </div>
