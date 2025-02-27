@@ -28,13 +28,13 @@ const SalesMaster = () => {
         </div>
         <div className="customer-views w100 h90 d-flex center">
           <Routes>
-            <Route path="cattlefeed/list" element={<Listfeed />} />
+            <Route path="cattlefeed" element={<Listfeed />} />
             <Route path="cattlefeed/add-new" element={<Createfeed />} />
-            <Route path="grocery/list" element={<Listgro />} />
+            <Route path="grocery" element={<Listgro />} />
             <Route path="grocery/add-new" element={<Creategro />} />
-            <Route path="medicines/list" element={<Listmedi />} />
+            <Route path="medicines" element={<Listmedi />} />
             <Route path="medicines/add-new" element={<Createmedi />} />
-            <Route path="other-products/list" element={<Listother />} />
+            <Route path="other-products" element={<Listother />} />
             <Route path="other-products/add-new" element={<Createother />} />
             <Route path="*" element={<Listfeed />} />
           </Routes>
