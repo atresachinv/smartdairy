@@ -162,7 +162,8 @@ const Milksales = ({ switchToSettings }) => {
         className="milk-col-form w60 h90 d-flex-col bg p10"
       >
         <span className="heading w100 t-center py10">
-          {!time ? `${t("common:c-eve")}` : `${t("common:c-mrg")}`} Milk Sale
+          {!time ? `${t("common:c-eve")}` : `${t("common:c-mrg")}`}{" "}
+          {t("m-milk-sales")}
         </span>
         <div className="form-setting w100 h10 d-flex a-center sb ">
           <div className="w60 d-flex a-center px10">

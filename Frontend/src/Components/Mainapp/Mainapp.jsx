@@ -53,6 +53,14 @@ import "../../Styles/Mainapp/Mainapphome.css";
 import Returns from "./Inventory/InventroyPages/Returns/Returns";
 import SanghsalesMaster from "./MilkSales/SanghsalesPages/SanghsalesMaster";
 import SalesMaster from "./Sales/SalesMaster";
+import Milksales from "./Apphome/Appnavviews/MilksalesPages/Milksales";
+import MilksalesReport from "./Apphome/Appnavviews/MilksalesPages/MilksalesReport";
+import AdminSalesReports from "./Apphome/Appnavviews/MilkSankalan/AdminSalesReports";
+import SalesReports from "./Apphome/Appnavviews/MilkSankalan/SalesReports";
+import MilkCollectorsReports from "./Apphome/Appnavviews/Milkcollection/MilkCollectorsReports";
+import MilkEveCollform from "./Apphome/Appnavviews/Milkcollection/MilkEveCollform";
+import MilkColleform from "./Apphome/Appnavviews/Milkcollection/Milkcollform";
+import Milkcollection from "./Apphome/Appnavviews/Milkcollection/Milkcollection";
 
 const Mainapp = () => {
   const dispatch = useDispatch();
@@ -134,19 +142,36 @@ const Mainapp = () => {
         <div className="header-navs w100 h10 d-flex a-center sb px10 bg6">
           <Header handleSidebar={handleSidebar} />
         </div>
-        <div className="main-view-container w100 h90 d-flex">
+        <div className="main-view-container w100 h90 d-flex center">
           {/* <Mainappviews index={isselected} /> */}
           <Routes>
             {/* dashboard route */}
             <Route path="dashboard" element={<Dashboard />} />
-            {/* milk route */}
+            {/* milk purchase routes */}
             <Route path="milk/collection/*" element={<Apphome />} />
+            <Route path="milk/collection/:time" element={<Milkcollection />} />
+            <Route path="milk/collection/:time" element={<Milkcollection />} />
             <Route
               path="milk/customer/master/*"
               element={<CustomersMaster />}
             />
             <Route path="milk/rate/master/*" element={<MilkRateMaster />} />
+            <Route path="milk/payment/master/*" element={<Payments />} />
+            <Route
+              path="milk/vehicle/milk-report"
+              element={<MilkCollectorsReports />}
+            />
+            <Route
+              path="milk/vehicle/sales-report"
+              element={<AdminSalesReports />}
+            />
+            <Route
+              path="milk/retail/sales-report"
+              element={<MilksalesReport />}
+            />
+            {/* milk sales routes */}
             <Route path="milk/sangha/*" element={<SanghsalesMaster />} />
+            <Route path="milk/retail/sales" element={<Milksales />} />
             {/* inventory routes */}
             <Route path="inventory/dealer/*" element={<Dealers />} />
             <Route path="inventory/product/*" element={<Products />} />

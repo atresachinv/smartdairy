@@ -207,13 +207,13 @@ const Dashboard = () => {
   return (
     <div className="main-dashboard-container w100 h1 d-flex-col bg6">
       <div className="dashboard-title w100 d-flex p10 ">
-        <h3 className="subtitle">Dashbord</h3>
+        <h3 className="subtitle">{t("nv-dash")}</h3>
       </div>
       <div className="dashboard-scrll-container w100 h1 mh100 hidescrollbar ">
         <div className="Milk-sale-details-container w100 h1 hidescrollbar">
           <form className="selection-container w100 h10 d-flex a-center j-start">
             <div className="select-data-text w50 h1 d-flex a-center p10">
-              <span className="w30 info-text">Selected Data Period :</span>
+              <span className="w30 info-text">{t("c-select-period")} :</span>
               <span className="w50 label-text">
                 {selectedDate !== null ? (
                   <h2 className="label-text px10">
@@ -268,7 +268,7 @@ const Dashboard = () => {
                 onChange={handleSelectChange}
               >
                 <option className="label-text w100 d-flex">
-                  --Select Master--
+                  --{t("c-select-master")}--
                 </option>
                 {manualMaster.map((dates, index) => (
                   <option
@@ -281,7 +281,7 @@ const Dashboard = () => {
                       month: "short", // Abbreviated month format
                       year: "numeric",
                     })}
-                    To :
+                    {t("c-to")} :
                     {new Date(dates.end).toLocaleDateString("en-GB", {
                       day: "2-digit",
                       month: "short", // Abbreviated month format
@@ -296,26 +296,26 @@ const Dashboard = () => {
             <div className="card sb">
               <BsDatabaseAdd className="card-icon" />
               <div className="card-inner">
-                <h3 className="text">Milk Collection</h3>
+                <h3 className="text">{t("nv-milk-coll")}</h3>
                 <h3 className="heading">
                   {totalLitres.toFixed(1)}
-                  <span>ltr</span>
+                  <span>{t("c-ltr")}</span>
                 </h3>
               </div>
             </div>
             <div className="card sb">
               <BsPersonFill className="card-icon" />
               <div className="card-inner">
-                <h3 className="text">Customers</h3>
+                <h3 className="text">{t("c-customer")}</h3>
                 <h3 className="heading">{customerCount}</h3>
               </div>
             </div>
             <div className="card sb">
               <TfiStatsUp className="card-icon" />
               <div className="card-inner">
-                <h3 className="text">Sales</h3>
+                <h3 className="text">{t("c-purch-amt")}</h3>
                 <h3 className="heading">
-                  {totalAmt.toFixed(1) || 0} <span>Rs</span>
+                  {totalAmt.toFixed(1) || 0} <span>{t("c-rs")}</span>
                 </h3>
               </div>
             </div>
@@ -332,7 +332,7 @@ const Dashboard = () => {
           <div className="dashboard-data-charts w100 h50 d-flex a-center sa ">
             <div className="milk-collection-chart w40 h1 d-flex-col p10 bg">
               <div className="chart-title w100">
-                <span className="label-text">Liters</span>
+                <span className="label-text">{t("c-liter-chart")}</span>
               </div>
               <Suspense
                 fallback={
@@ -362,7 +362,7 @@ const Dashboard = () => {
             </div>
             <div className="milk-collection-chart w40 h1 d-flex-col p10 bg">
               <div className="chart-title w100">
-                <span className="label-text">Amount</span>
+                <span className="label-text">{t("c-amt-chart")}</span>
               </div>
               <Suspense
                 fallback={
@@ -395,7 +395,7 @@ const Dashboard = () => {
         {center_id === 0 ? (
           <>
             <div className="center-sale-details-container w100 h1 d-flex-col p10 bg5">
-              <h3 className="heading">Center Information : </h3>
+              <h3 className="heading">{t("c-center-info")} : </h3>
               <div className="center-sales-details-container w100 h1 d-flex f-wrap sb p10">
                 {centersmergedData.length > 0 ? (
                   centersmergedData.map((center, index) => (
@@ -405,7 +405,7 @@ const Dashboard = () => {
                         className="center-sales-card w45 h30 d-flex-col sb bg p10"
                       >
                         <div className="card-title w100 h25 d-flex sb">
-                          <span className="w30 text">Center No : </span>
+                          <span className="w30 text">{t("c-centerno")} : </span>
                           <span className="w70 info-text t-start">
                             {center.center_id}
                           </span>
@@ -418,21 +418,21 @@ const Dashboard = () => {
                         </div>
                         <div className="card-other-outer-details w100 h50 d-flex sa">
                           <div className="card-other-details w30 h1 d-flex-col a-center sa bg5">
-                            <span className="text">Customers</span>
+                            <span className="text">{t("c-customer")}</span>
                             <span className="label-text">
                               {center.total_customers}
                             </span>
                           </div>
                           <div className="card-other-details w30 h1 d-flex-col a-center sa bg5">
-                            <span className="text">Liters</span>
+                            <span className="text">{t("c-liters")}</span>
                             <span className="label-text">
-                              {center.total_litres} ltr.
+                              {center.total_litres} {t("c-ltr")}
                             </span>
                           </div>
                           <div className="card-other-details w30 h1 d-flex-col a-center sa bg5">
-                            <span className="text">Sales</span>
+                            <span className="text">{t("c-purch-amt")}</span>
                             <span className="label-text">
-                              {center.total_amount} rs.
+                              {center.total_amount} {t("c-rs")}
                             </span>
                           </div>
                         </div>
@@ -441,13 +441,13 @@ const Dashboard = () => {
                   ))
                 ) : (
                   <div className="box d-flex center">
-                    <span className="label-text">Data Not Found!</span>
+                    <span className="label-text">{t("c-no-data-avai")}</span>
                   </div>
                 )}
               </div>
             </div>
             <div className="liter-sales-details-inner-container w100 h70 d-flex-col sb p10">
-              <span className="heading">Analytics : </span>
+              <span className="heading">{t("c-anaylatics")} : </span>
               <div className="pie-chart-container w100 h1 d-flex a-center sb p10">
                 <div className="liter-sales-card w25 h90 d-flex-col sb bg-fff br6 p10 ">
                   <ResponsiveContainer width="100%" height="100%">
@@ -471,7 +471,9 @@ const Dashboard = () => {
                       </Pie>
                     </PieChart>
                   </ResponsiveContainer>
-                  <span className="label-text p10 bg6 br6">Liter chart :</span>
+                  <span className="label-text p10 bg6 br6">
+                    {t("c-liter-chart")} :
+                  </span>
                 </div>
                 <div className="liter-sales-card w25 h90 d-flex-col bg-fff br6 sb p10 ">
                   <ResponsiveContainer width="100%" height="100%">
@@ -495,7 +497,9 @@ const Dashboard = () => {
                       </Pie>
                     </PieChart>
                   </ResponsiveContainer>
-                  <span className="label-text p10 bg6 br6">Amount chart :</span>
+                  <span className="label-text p10 bg6 br6">
+                    {t("c-amt-chart")} :
+                  </span>
                 </div>
                 <div className="liter-sell-details w20 h1 d-flex-col a-center sb bg6 br6 p10 bg5">
                   {centersmergedData.map((center, index) => (
@@ -507,7 +511,7 @@ const Dashboard = () => {
                         }}
                       ></div>
                       <span className="text">
-                        Center No. :{" "}
+                        {t("c-centerno")} :{" "}
                         <span className="label-text">{center.center_id}</span>
                       </span>
                     </div>

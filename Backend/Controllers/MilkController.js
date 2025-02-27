@@ -443,7 +443,7 @@ exports.milkCollectionOneEntry = async (req, res) => {
   const {
     date,
     code,
-    time,
+    shift,
     animal,
     liters,
     fat,
@@ -486,7 +486,7 @@ exports.milkCollectionOneEntry = async (req, res) => {
           dairy_id,
           user_role,
           date,
-          time,
+          shift,
           animal,
           liters,
           fat,

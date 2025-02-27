@@ -2,13 +2,24 @@
   "m-nv-custmaster": "उत्पादक मास्टर",
   "m-nv-ratemaster": "दुध दर मास्टर",
 
-  "m-complete-coll": "संकलन पूर्ण करा",
+  "m-complete-coll": "गाडी संकलन पूर्ण करा",
   "m-milk-coll-report": "वाहतूक संकलन रिपोर्ट ",
-  "m-sale-report": "वाहतूक विक्री रिपोर्ट ",
+  "m-sale-report": "वाहतूक विक्री रिपोर्ट",
+  "m-sales-report": "विक्री रिपोर्ट",
+  "m-retail-ms-report": "किरकोळ दूध विक्री रिपोर्ट",
+
+  "m-payments": "दूध बिल पेमेंट",
+
   "m-coll-list": "दूध संकलन यादी",
+
   "m-milkcoll": "दूध संकलन",
+
+  "m-mrgcoll": "सकाळ संकलन",
+  "m-evecoll": "सायंकाळ संकलन",
+
   "m-milk-sale": "किरकोळ दूध विक्री",
   "m-sales": "विक्री",
+  "m-milk-sales": "दूध विक्री",
   "m-select-coll": "संकलक निवडा",
 
   "m-reports": "रिपोर्ट्स",

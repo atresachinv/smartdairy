@@ -22,40 +22,47 @@ const AppNavlinks = ({ isselected, setIsSelected }) => {
 
   const hnavlinks = [
     {
-      name: `${t("m-milkcoll")}`,
+      name: `${t("m-mrgcoll")}`,
       icon: <BsDatabaseAdd className="icon" />,
       index: 0,
       role: ["super_admin", "admin", "manager"],
-      path: "collection",
+      path: "collection/morning",
+    },
+    {
+      name: `${t("m-evecoll")}`,
+      icon: <BsDatabaseAdd className="icon" />,
+      index: 1,
+      role: ["super_admin", "admin", "manager"],
+      path: "collection/evening",
     },
     {
       name: `${t("m-milkcoll")}`,
       icon: <BsDatabaseAdd className="icon" />,
-      index: 1,
-      role: ["super_admin", "admin", "milkcollector", "mobilecollector"],
+      index: 2,
+      role: ["super_admin", "milkcollector", "mobilecollector"],
       path: "vehicle/collection",
     },
     {
       name: `${t("m-complete-coll")}`,
       icon: <BsFillFileEarmarkArrowUpFill className="icon" />,
-      index: 2,
+      index: 3,
       path: "complete/collection",
       role: ["super_admin", "admin", "manager"],
     },
     {
       name: `${t("m-reports")}`,
       icon: <BsFileTextFill className="icon" />,
-      index: 3,
+      index: 4,
       path: "collection/reports",
       role: ["super_admin", "milkcollector", "mobilecollector"],
     },
-    {
-      name: `${t("m-milk-coll-report")}`,
-      icon: <BsFileTextFill className="icon" />,
-      index: 4,
-      path: "vehicle/collection/reports",
-      role: ["super_admin", "admin", "manager"],
-    },
+    // {
+    //   name: `${t("m-milk-coll-report")}`,
+    //   icon: <BsFileTextFill className="icon" />,
+    //   index: 4,
+    //   path: "vehicle/collection/reports",
+    //   role: ["super_admin", "admin", "manager"],
+    // },
     {
       name: `${t("m-sales")}`,
       icon: <BsFileTextFill className="icon" />,
@@ -64,39 +71,39 @@ const AppNavlinks = ({ isselected, setIsSelected }) => {
       role: ["super_admin", "milkcollector", "mobilecollector"],
     },
     {
-      name: `Sales Report`,
+      name: `${t("m-sales-report")}`,
       icon: <BsFileTextFill className="icon" />,
       index: 6,
       path: "vehicle/sales/report",
       role: ["super_admin", "milkcollector", "mobilecollector"],
     },
-    {
-      name: `${t("m-sale-report")}`,
-      icon: <BsFileTextFill className="icon" />,
-      index: 7,
-      path: "admin/sales/report",
-      role: ["super_admin", "admin"],
-    },
+    // {
+    //   name: `${t("m-sale-report")}`,
+    //   icon: <BsFileTextFill className="icon" />,
+    //   index: 7,
+    //   path: "admin/sales/report",
+    //   role: ["super_admin", "admin"],
+    // },
     {
       name: `${t("m-milk-sale")}`,
       icon: <BsFileTextFill className="icon" />,
       index: 8,
-      path: "#",
+      path: "retail/milk-sales",
       role: ["super_admin", "admin"],
-      submenus: [
-        {
-          name: "Retail Sales",
-          icon: <BsFileTextFill className="icon" />,
-          path: "retail/milk-sales",
-          role: ["super_admin", "admin"],
-        },
-        {
-          name: "Sales Report",
-          icon: <BsFileTextFill className="icon" />,
-          path: "retail/sale-report",
-          role: ["super_admin", "admin"],
-        },
-      ],
+      // submenus: [
+      //   {
+      //     name: "Retail Sales",
+      //     icon: <BsFileTextFill className="icon" />,
+      //     path: "retail/milk-sales",
+      //     role: ["super_admin", "admin"],
+      //   },
+      //   {
+      //     name: "Sales Report",
+      //     icon: <BsFileTextFill className="icon" />,
+      //     path: "retail/sale-report",
+      //     role: ["super_admin", "admin"],
+      //   },
+      // ],
     },
   ];
 

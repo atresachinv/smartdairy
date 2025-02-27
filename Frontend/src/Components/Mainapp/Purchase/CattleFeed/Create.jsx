@@ -236,6 +236,7 @@ const Create = () => {
     );
     setFilteredItems(itemsNotInCart);
   }, [itemList, cartItem]);
+
   return (
     <div className="purchase-cattle-feed-container w100 h1 d-flex-col p10">
       <span className="heading">Add Cattle Feed</span>
@@ -314,7 +315,6 @@ const Create = () => {
           <div className="purchase-input-row w100 h15 d-flex a-center sb">
             <div className="purchase-input-col w45 d-flex-col sb">
               <label className="info-text px10">Select Items:</label>
-
               <select
                 id="selectitemcode"
                 disabled={!cname}

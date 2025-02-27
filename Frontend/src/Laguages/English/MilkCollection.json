@@ -2,13 +2,22 @@
   "m-nv-custmaster": "Customer Master",
   "m-nv-ratemaster": "Milk Rate Master",
 
+  "m-milkcoll": "Milk Collection",
+
+  "m-mrgcoll": "Morning Collection",
+  "m-evecoll": "Evening Collection",
+
   "m-complete-coll": "Complete Milk Collection",
+  "m-sale-report": "Vehicle Sales Report",
   "m-milk-coll-report": "Milk Collection Report",
+  "m-retail-ms-report": "Retail Milk Sale Report",
   "m-milk-sale": "Retail Milk Sale",
   "m-coll-list": "Milk Collection List",
   "m-select-coll": "Select Collector",
+  "m-payments": "Milk Payments",
   "m-sales": "Sales",
-
+  "m-milk-sales": "Milk Sales",
+  "m-sales-report": "Sales Report",
   "m-reports": "Reports",
   "m-count": "Sample Count",
   "m-t-liters": "Total Liters",

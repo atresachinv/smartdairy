@@ -5,13 +5,12 @@ import "../../../../../Styles/Mainapp/Apphome/Appnavview/collsetting.css";
 import { useDispatch, useSelector } from "react-redux";
 import { listCustomer } from "../../../../../App/Features/Customers/customerSlice";
 
-// Define constants for form types
 const form_type = {
   collection: "Coll",
   settings: "settings",
 };
 
-const CollectionSettingForm = () => {
+const MilkEveCollform = () => {
   const dispatch = useDispatch();
   const [currentForm, setCurrentForm] = useState(form_type.collection);
   const switchToColl = () => setCurrentForm(form_type.collection);
@@ -37,4 +36,4 @@ const CollectionSettingForm = () => {
   );
 };
 
-export default CollectionSettingForm;
+export default MilkEveCollform;

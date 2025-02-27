@@ -15,9 +15,11 @@ import { useTranslation } from "react-i18next";
 import { getRateCharts } from "../../../../../App/Features/Mainapp/Masters/rateChartSlice";
 import "../../../../../Styles/Mainapp/Apphome/Appnavview/Milkcollection.css";
 import axiosInstance from "../../../../../App/axiosInstance";
+import { useParams } from "react-router-dom";
 
 const MilkColleform = ({ switchToSettings }) => {
   const dispatch = useDispatch();
+  const { time } = useParams();
   const { t } = useTranslation(["milkcollection", "common"]);
   const dairyname = useSelector(
     (state) =>
@@ -28,11 +30,14 @@ const MilkColleform = ({ switchToSettings }) => {
   );
   const tDate = useSelector((state) => state.date.toDate);
   const token = useSelector((state) => state.notify.fcmToken);
-  // const milkColl = useSelector((state) => state.milkCollection.entries || []);
+  const centerSetting = useSelector(
+    (state) => state.dairySetting.centerSetting //center settings
+  );
+  const [settings, setSettings] = useState({}); //center settings
   const [customerList, setCustomerList] = useState([]);
   const [custList, setCustList] = useState({}); // to check remainning customer list
   const [milkRateChart, setMilkRatechart] = useState([]);
-  const [time, setTime] = useState(true);
+  // const [time, setTime] = useState(true);
   const [errors, setErrors] = useState({});
   const [changedDate, setChangedDate] = useState("");
   const [slotCount, setSlotCount] = useState(0); //To rerive local stored milk entries
@@ -40,11 +45,12 @@ const MilkColleform = ({ switchToSettings }) => {
   const litersRef = useRef(null);
   const fatRef = useRef(null);
   const snfRef = useRef(null);
+  const submitbtn = useRef(null);
 
   const initialValues = {
     date: changedDate || tDate,
     code: "",
-    time: 0,
+    shift: 0,
     animal: 0,
     liters: "",
     fat: "",
@@ -59,10 +65,16 @@ const MilkColleform = ({ switchToSettings }) => {
   };
 
   const [values, setValues] = useState(initialValues);
-  const centerSetting = useSelector(
-    (state) => state.dairySetting.centerSetting
-  );
-  const [settings, setSettings] = useState({});
+
+  // dynamic shift time set in time -------------------------------------------------------------->
+  useEffect(() => {
+    setValues((prevData) => ({
+      ...prevData,
+      shift: time === "morning" ? 0 : 1,
+    }));
+  }, [time]);
+
+  //center settings ------------------------------------------------------------------------------>
 
   //set setting
   useEffect(() => {
@@ -70,6 +82,7 @@ const MilkColleform = ({ switchToSettings }) => {
       setSettings(centerSetting[0]);
     }
   }, [centerSetting]);
+
   const handleInputs = (e) => {
     const { name, value } = e.target;
 
@@ -647,7 +660,7 @@ const MilkColleform = ({ switchToSettings }) => {
         className="milk-col-form w100 h1 d-flex-col bg p10"
       >
         <span className="heading w100 t-center py10">
-          {!time ? `${t("common:c-eve")}` : `${t("common:c-mrg")}`}{" "}
+          {values.shift === 0 ? `${t("common:c-mrg")}` : `${t("common:c-eve")}`}{" "}
           {t("m-milkcoll")}
         </span>
         <div className="form-setting w100 h10 d-flex a-center sb ">
@@ -663,22 +676,22 @@ const MilkColleform = ({ switchToSettings }) => {
               name="date"
               id="date"
               onChange={handleInputs}
-              // onChange={(e) => setChangedDate(e.target.value)}
               value={values.date || ""}
               max={tDate}
             />
           </div>
           <div className="setting-btn-switch w20 j-center d-flex">
-            {/* <span className="text">Morning</span> */}
             <button
               type="button"
-              onClick={handleTime}
-              className={`sakalan-time text ${time ? "on" : "off"}`}
+              className={`sakalan-time text ${
+                values.shift === 0 ? "on" : "off"
+              }`}
               aria-pressed={time}
             >
-              {time ? `${t("common:c-mrg")}` : `${t("common:c-eve")}`}
+              {values.shift === 0
+                ? `${t("common:c-mrg")}`
+                : `${t("common:c-eve")}`}
             </button>
-            {/* <span className="text">Evening</span> */}
           </div>
           <BsGearFill className="color-icon w10" onClick={switchToSettings} />
         </div>
@@ -697,6 +710,7 @@ const MilkColleform = ({ switchToSettings }) => {
               value={values.code}
               onChange={handleInputs}
               ref={codeInputRef}
+              onKeyDown={(e) => handleKeyDown(e, litersRef)}
             />
           </div>
           <div className="form-div w50 px10">
@@ -734,7 +748,7 @@ const MilkColleform = ({ switchToSettings }) => {
                 onChange={handleInputs}
                 disabled={!values.code}
                 value={values.liters}
-                // onKeyDown={(e) => handleKeyDown(e, fatRef)}
+                onKeyDown={(e) => handleKeyDown(e, fatRef)}
                 ref={litersRef}
               />
             </div>
@@ -753,7 +767,7 @@ const MilkColleform = ({ switchToSettings }) => {
                 onChange={handleInputChange}
                 value={values.fat}
                 disabled={!values.liters || !values.code}
-                // onKeyDown={(e) => handleKeyDown(e, snfRef)}
+                onKeyDown={(e) => handleKeyDown(e, snfRef)}
                 ref={fatRef}
               />
             </div>
@@ -772,6 +786,7 @@ const MilkColleform = ({ switchToSettings }) => {
                 onChange={handleInputChange}
                 value={values.snf}
                 disabled={!values.fat || !values.liters || !values.code}
+                onKeyDown={(e) => handleKeyDown(e, submitbtn)}
                 ref={snfRef}
               />
             </div>
@@ -834,7 +849,11 @@ const MilkColleform = ({ switchToSettings }) => {
           >
             {t("m-btn-cancel")}
           </button>
-          <button className="w-btn label-text mx10" type="submit">
+          <button
+            className="w-btn label-text mx10"
+            type="submit"
+            ref={submitbtn}
+          >
             {t("m-btn-save")}
           </button>
         </div>

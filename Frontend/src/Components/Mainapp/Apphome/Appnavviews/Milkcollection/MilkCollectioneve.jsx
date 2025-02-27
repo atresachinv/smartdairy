@@ -1,7 +1,7 @@
 import CollectionSettingForm from "./CollectionSettingForm";
 import Milkcollelist from "./Milkcollelist";
 import "../../../../../Styles/Mainapp/Apphome/Appnavview/Milkcollection.css";
-const Milkcollection = () => {
+const MilkCollectioneve = () => {
   return (
     <div className="milk-collection-container w100 h1 p10">
       <div className="milk-form-list-container w100 h1 d-flex sa">
@@ -16,4 +16,4 @@ const Milkcollection = () => {
   );
 };
 
-export default Milkcollection;
+export default MilkCollectioneve;

@@ -7,9 +7,31 @@
   "nv-acc": "अकाऊंट",
   "nv-master": "मास्टर्स",
   "nv-reports": "रिपोर्ट्स",
-  "nv-dairy-info": "डेरीची माहिती",
+
+  "center-report": "सेंटर रिपोर्ट्स",
+  "milk-report": "दुध संकलन रिपोर्ट्स",
+  "cust-report": "उत्पादक रिपोर्ट्स",
+  "emp-report": "सेवक रिपोर्ट्स",
+  "inventory-report": "इनवेन्टरी रिपोर्ट्स",
+  "sales-report": "विक्री रिपोर्ट्स",
+  "pay-report": "पेमेंट रिपोर्ट्स",
+
+  "nv-dairy-info": "संस्था माहिती",
+
+  "dairy-init-info": "संस्था आरंभीची माहिती",
+  "dairy-cre-center": "सेंटर मास्टर",
+
+  "milk-correction": "संकलन दुरुस्ती",
+  "milk-transfer": "संकलन ट्रान्स्फर",
+  "pay-deduction": "पेमेंट कपाती",
+  "gen-payments": "पेमेंट तयार करा",
+
+  "dairy-settings": "संस्था सेटिंग",
+  "inventory-settings": "इनवेन्टरी सेटिंग",
+  "machine-settings": "मशीन सेटिंग",
+
   "nv-settings": "सेटिंग",
-  "nv-pay": "पगार",
+  "nv-pay": "दूध बिल पेमेंट",
   "nv-cattel-feed": "पशुखाद्य",
   "nv-deduction": "कपाती",
   "nv-animal": "जनावरे",
@@ -24,12 +46,15 @@
   "c-page-title-cust": "उत्पादक माहिती",
   "c-page-title-dash": "माहिती पत्रक",
 
-  "c-select-master": "पेमेंट कालावधी निवडा ",
+  "c-select-master": "पेमेंट कालावधी निवडा",
+  "c-select-period": "कालावधी निवडा",
+
   "c-no-data-avai": "माहिती मिळाली नाही !",
 
   "c-logout": "बाहेर पडा",
   "c-search": "शोधा...",
   "c-date": "दिनांक",
+  "c-to": "ते",
   "c-m/e": "सत्र",
   "c-m": "स",
   "c-e": "साय",
@@ -46,10 +71,14 @@
   "c-rate": "दर",
   "c-amt": "रक्कम ",
   "c-liters": "लीटर",
+  "c-ltr": "ली.",
   "c-billno": "बिल नं.",
   "c-repno": "पावती नं.",
   "c-qty": "नग",
   "c-prod": "उत्पादन",
+  "c-customer": "उत्पादक",
+  "c-purch-amt": "खरेदी रक्कम",
+  "c-rs": "रु.",
   "c-total": "एकूण ",
   "c-avg-rate": "सरासरी दर",
   "c-avg-fat": "सरासरी फॅट",
@@ -78,5 +107,11 @@
   "c-item-list": "बिल यादी",
   "c-print": "प्रिंट",
   "c-no": "नं.",
-  "c-name": "नाव"
+  "c-name": "नाव",
+
+  "c-center-info": "सेंटरची माहिती",
+  "c-centerno": "सेंटर नं.",
+  "c-anaylatics": "विश्लेषण",
+  "c-liter-chart": "लीटर तक्ता",
+  "c-amt-chart": "खरेदी रक्कम तक्ता"
 }

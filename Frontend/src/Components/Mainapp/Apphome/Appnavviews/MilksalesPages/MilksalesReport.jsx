@@ -1,10 +1,11 @@
-/* eslint-disable no-unused-vars */
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 const MilksalesReport = () => {
+  const { t } = useTranslation(["common", "milkcollection"]);
   return (
     <div>
-      <span>MilksalesReport</span>
+      <span>{t("milkcollection:m-retail-ms-report")}</span>
     </div>
   );
 };

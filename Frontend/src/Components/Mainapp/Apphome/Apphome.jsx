@@ -69,10 +69,10 @@ const Apphome = () => {
       <div className="header-nav w100 h10 d-flex a-center">
         <AppNavlinks isselected={isselected} setIsSelected={setIsSelected} />
       </div>
-      <div className="apphome-nav-views w100 h90 d-flex center p10">
+      <div className="apphome-nav-views w100 h90 d-flex center">
         {/* <AppNavviews index={isselected} /> */}
         <Routes>
-          <Route path="collection" element={<Milkcollection />} />
+          <Route path="collection/:time" element={<Milkcollection />} />
           <Route path="vehicle/collection" element={<MilkSankalan />} />
           <Route path="complete/collection" element={<CompleteMilkColl />} />
           <Route path="collection/reports" element={<SankalanReport />} />
