@@ -4,8 +4,10 @@ import { FaRegEdit } from "react-icons/fa";
 import Swal from "sweetalert2";
 import { useEffect, useState } from "react";
 import axiosInstance from "../../../../../../App/axiosInstance";
+import { useTranslation } from "react-i18next";
 
 const UpdateSaleRate = () => {
+  const { t } = useTranslation(["puchasesale", "common"]);
   const [purchaseList, setPurchaseList] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [filteredList, setFilteredList] = useState(purchaseList); // Store filtered items
@@ -163,7 +165,7 @@ const UpdateSaleRate = () => {
         <div className="w100 d-flex sa my5 f-wrap">
           <div className="my10">
             <label htmlFor="" className="info-text px10">
-              Date:
+              {t("ps-from")} :
             </label>
             <input
               type="date"
@@ -175,7 +177,7 @@ const UpdateSaleRate = () => {
           </div>
           <div className="my10">
             <label className="info-text px10" htmlFor="">
-              To Date:
+              {t("ps-to")} :
             </label>
             <input
               type="date"
@@ -190,7 +192,7 @@ const UpdateSaleRate = () => {
         <div className="w100 d-flex sa f-wrap my5">
           <div className="my5">
             <label className="info-text px10" htmlFor="">
-              Item Group Name :
+              {t("ps-sel-grp")}:
             </label>
             <select
               name="ItemGroupCode"
@@ -213,7 +215,7 @@ const UpdateSaleRate = () => {
           </div>
           <div className="my5">
             <label className="info-text px10" htmlFor="">
-              Item Name :
+              {t("ps-itm-name")}:
             </label>
             <select
               name="ItemGroupCode"
@@ -242,13 +244,13 @@ const UpdateSaleRate = () => {
         <span className="heading p10">Product List</span>
         <div className="customer-heading-title-scroller w100 h1 mh100 d-flex-col ">
           <div className="data-headings-div formin h10 d-flex center  t-center sb bg7">
-            <span className="f-info-text w5">SrNo</span>
-            <span className="f-info-text w5">Date</span>
-            <span className="f-info-text w5">Rec. No</span>
-            <span className="f-info-text w20">Item Name</span>
-            <span className="f-info-text w5">Rate</span>
-            <span className="f-info-text w5">Sell Rate</span>
-            <span className="f-info-text w5">Qty</span>
+            <span className="f-info-text w5">{t("ps-srNo")}</span>
+            <span className="f-info-text w5"> {t("ps-date")}</span>
+            <span className="f-info-text w5"> {t("ps-rect-no")}</span>
+            <span className="f-info-text w20"> {t("ps-itm-name")}</span>
+            <span className="f-info-text w5">{t("ps-rate")}</span>
+            <span className="f-info-text w5">{t("ps-sale-rate")}</span>
+            <span className="f-info-text w5">{t("ps-qty")}</span>
             <span className="f-info-text w10">Actions</span>
           </div>
           {filteredList2.length > 0 ? (
@@ -281,7 +283,7 @@ const UpdateSaleRate = () => {
               </div>
             ))
           ) : (
-            <div className="w100 d-flex center h1">No purchases found</div>
+            <div className="w100 d-flex center h1"> {t("ps-no-pur-foun")}</div>
           )}
         </div>
       </div>
@@ -291,13 +293,22 @@ const UpdateSaleRate = () => {
             <h2 className="my10">Update Product Details</h2>
             <b>
               <div className="d-flex w100 sb">
-                <label>Name: {editSale?.itemname}</label>
-                <label> Rate: {editSale?.rate}</label>
-                <label> Qty: {editSale?.qty}</label>
+                <label>
+                  {" "}
+                  {t("ps-itm-name")}: {editSale?.itemname}
+                </label>
+                <label>
+                  {" "}
+                  {t("ps-rate")}: {editSale?.rate}
+                </label>
+                <label>
+                  {" "}
+                  {t("ps-qty")}: {editSale?.qty}
+                </label>
               </div>
             </b>
             <label>
-              Sale Rate:
+              {t("ps-sale-rate")}:
               <input
                 type="text"
                 value={editSale?.salerate}
@@ -308,8 +319,11 @@ const UpdateSaleRate = () => {
               />
             </label>
             <div>
-              <button onClick={() => setIsModalOpen(false)}>Cancel</button>
-              <button onClick={handleUpdate}>Update</button>
+              <button onClick={() => setIsModalOpen(false)}>
+                {" "}
+                {t("ps-cancel")}
+              </button>
+              <button onClick={handleUpdate}>{t("ps-update")}</button>
             </div>
           </div>
         </div>

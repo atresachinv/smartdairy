@@ -17,7 +17,7 @@ import { sendMessage } from "../WhatsAppSender";
 
 const CreateMedicines = () => {
   const dispatch = useDispatch();
-  const { t } = useTranslation(["common", "milkcollection"]);
+  const { t } = useTranslation(["common", "milkcollection", "puchasesale"]);
   const tDate = useSelector((state) => state.date.toDate);
   const salesRates = useSelector((state) => state.sales.salesRates);
   const customerslist = useSelector((state) => state.customer.customerlist);
@@ -984,7 +984,7 @@ const CreateMedicines = () => {
 
           <div className="sales-button-container w100 h10 d-flex a-center j-end">
             <button className="w-btn m10" onClick={handelClear}>
-              Clear
+              {t("puchasesale:ps-clr")}
             </button>
             <button
               className="w-btn mx10"

@@ -365,7 +365,7 @@ const List = () => {
         </div>
       </div>
       <div className="customer-list-table w100 h1 d-flex-col  bg">
-        <span className="heading p10">Other Item's Report</span>
+        <span className="heading p10"> {t("ps-cattle-other-rep")}</span>
         <div className="customer-heading-title-scroller w100 h1 mh100 hidescrollbar d-flex-col">
           <div className="data-headings-div h10 d-flex center forDWidth t-center bg7 sb">
             <span className="f-info-text w5"> {t("ps-srNo")}</span>

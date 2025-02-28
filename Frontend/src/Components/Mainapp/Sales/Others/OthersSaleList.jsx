@@ -330,7 +330,7 @@ const OthersSaleList = () => {
           <div className="d-flex sb w60 sales-dates-container-mobile-w100">
             <div className="date-input-div w35 d-flex a-center sb">
               <label htmlFor="" className="label-text w30">
-                From :
+                {t("ps-from")} :
               </label>
               <input
                 type="date"
@@ -342,7 +342,7 @@ const OthersSaleList = () => {
             </div>
             <div className="date-input-div w35 d-flex a-center sb">
               <label htmlFor="" className="label-text w30">
-                To :
+                {t("ps-to")} :
               </label>
               <input
                 type="date"
@@ -353,7 +353,7 @@ const OthersSaleList = () => {
               />
             </div>
             <button className="w-btn" onClick={handleShowbutton}>
-              Show
+              {t("ps-show")}
             </button>
           </div>
           <div className="d-flex h1 sb center w25 sales-dates-container-mobile-w100  p10 bg">
@@ -366,7 +366,7 @@ const OthersSaleList = () => {
               to="add-new"
             >
               <MdAddShoppingCart className="icon f-label" />
-              Add
+              {t("ps-new")}
             </NavLink>
           </div>
         </div>
@@ -383,24 +383,24 @@ const OthersSaleList = () => {
               }
               min="0"
               title="Enter code or name to search details"
-              placeholder="Search"
+              placeholder={`${t("ps-search")}`}
             />
           </div>
           <button
             className="w-btn mx10 sales-dates-container-mobile-btn"
             onClick={downloadExcel}
           >
-            Excel
+            {t("ps-down-excel")}
           </button>
         </div>
       </div>
       <div className="sales-list-table w100 h80 d-flex-col hidescrollbar bg">
-        <span className="heading p10">Other's List</span>
+        <span className="heading p10"> {t("ps-other-rep")}</span>
         <div className="sales-heading-title-scroller w100 h1 mh100 d-flex-col hidescrollbar">
           <div className="sale-data-headings-div h10 d-flex center t-center sb sticky-top t-heading-bg">
-            <span className="f-info-text w5">Sr.No</span>
+            <span className="f-info-text w5">{t("ps-srNo")}</span>
             <span className="f-info-text w10">
-              Date{" "}
+              {t("ps-date")}{" "}
               <span
                 className="px10 f-color-icon"
                 type="button"
@@ -413,10 +413,10 @@ const OthersSaleList = () => {
                 )}
               </span>
             </span>
-            <span className="f-info-text w10">Rec. No</span>
-            <span className="f-info-text w10">Cust Code</span>
-            <span className="f-info-text w30">Cust Name</span>
-            <span className="f-info-text w10">Amount</span>
+            <span className="f-info-text w10">{t("ps-rect-no")}</span>
+            <span className="f-info-text w10"> {t("ps-custCode")}</span>
+            <span className="f-info-text w30"> {t("ps-cutName")}</span>
+            <span className="f-info-text w10">{t("ps-amt")}</span>
             <span className="f-info-text w15">Actions</span>
           </div>
           {/* Show Spinner if loading, otherwise show the feed list */}
@@ -449,7 +449,7 @@ const OthersSaleList = () => {
                     className="px5"
                     onClick={() => handleView(sale?.BillNo)}
                   >
-                    View
+                    {t("ps-view")}
                   </button>
                   <MdDeleteOutline
                     onClick={() => handleDelete(sale?.BillNo)}
@@ -461,7 +461,7 @@ const OthersSaleList = () => {
               </div>
             ))
           ) : (
-            <div className="box d-flex center">No Items found</div>
+            <div className="box d-flex center"> {t("ps-sale-item")}</div>
           )}
         </div>
         {/* show invoice */}
@@ -469,7 +469,7 @@ const OthersSaleList = () => {
           <div className="pramod modal">
             <div className="modal-content invoiceModel">
               <div className="d-flex sb">
-                <h2>Sale Bill Details</h2>
+                <h2> {t("ps-sale-bill-det")}</h2>
                 <IoClose
                   style={{ cursor: "pointer" }}
                   size={25}
@@ -478,13 +478,18 @@ const OthersSaleList = () => {
               </div>
               <hr />
               <div className=" d-flex sb mx15 px15 invoiceModelInfo">
-                <h4>Rect. No : {viewItems[0]?.ReceiptNo || ""}</h4>
+                <h4>
+                  {t("ps-rect-no")} : {viewItems[0]?.ReceiptNo || ""}
+                </h4>
                 <div className="10">
-                  Date :{formatDateToDDMMYYYY(viewItems[0]?.BillDate)}
+                  {t("ps-date")} :{formatDateToDDMMYYYY(viewItems[0]?.BillDate)}
                 </div>
               </div>
               <div className=" d-flex sb mx15 px15 invoiceModelInfo">
-                <h4>Customer code : {viewItems[0]?.CustCode || ""}</h4>
+                <h4>
+                  {" "}
+                  {t("ps-custCode")} : {viewItems[0]?.CustCode || ""}
+                </h4>
                 <h4 className="mx15">
                   {handleFindCustName(viewItems[0]?.CustCode) || ""}
                 </h4>
@@ -494,11 +499,11 @@ const OthersSaleList = () => {
                   <table className="sales-table w100 ">
                     <thead className="bg1">
                       <tr>
-                        <th>SrNo</th>
-                        <th>Item Name</th>
-                        <th>Rate</th>
-                        <th>Qty</th>
-                        <th>Amount</th>
+                        <th>{t("ps-srNo")}</th>
+                        <th>{t("ps-itm-name")}</th>
+                        <th>{t("ps-rate")}</th>
+                        <th>{t("ps-qty")}</th>
+                        <th>{t("ps-amt")}</th>
                         <th>Action</th>
                       </tr>
                     </thead>
@@ -533,7 +538,7 @@ const OthersSaleList = () => {
                         <td></td>
                         <td></td>
                         <td>
-                          <b>Total</b>
+                          <b> {t("ps-ttl-amt")}</b>
                         </td>
                         <td>
                           {(viewItems || []).reduce(
@@ -554,9 +559,9 @@ const OthersSaleList = () => {
         {isModalOpen && (
           <div className="modal sale">
             <div className="modal-content">
-              <h2>Update Sale Item</h2>
+              <h2> {t("ps-up-sale-item")}</h2>
               <label>
-                Receipt No:
+                {t("ps-rect-no")} :
                 <input
                   type="number"
                   value={editSale?.ReceiptNo}
@@ -567,7 +572,7 @@ const OthersSaleList = () => {
                 />
               </label>
               <label>
-                Qty:
+                {t("ps-qty")}:
                 <input
                   type="number"
                   value={editSale?.Qty}
@@ -578,7 +583,7 @@ const OthersSaleList = () => {
                 />
               </label>
               <label>
-                Rate:
+                {t("ps-rate")}:
                 <input
                   type="number"
                   value={editSale?.Rate}
@@ -589,7 +594,7 @@ const OthersSaleList = () => {
                 />
               </label>
               <label>
-                Amount:
+                {t("ps-amt")}:
                 <input
                   type="number"
                   value={handleAmountCalculation()}
@@ -597,8 +602,11 @@ const OthersSaleList = () => {
                 />
               </label>
               <div>
-                <button onClick={() => setIsModalOpen(false)}>Cancel</button>
-                <button onClick={handleSaveChanges}>Save</button>
+                <button onClick={() => setIsModalOpen(false)}>
+                  {" "}
+                  {t("ps-cancel")}
+                </button>
+                <button onClick={handleSaveChanges}> {t("ps-update")}</button>
               </div>
             </div>
           </div>

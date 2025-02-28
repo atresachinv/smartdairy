@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import axiosInstance from "../../../../../../App/axiosInstance";
+import { useTranslation } from "react-i18next";
 
 // Function to get the current date
 const getTodaysDate = () => {
@@ -10,6 +11,7 @@ const getTodaysDate = () => {
 };
 
 const CreateStock = () => {
+  const { t } = useTranslation(["puchasesale", "common"]);
   const [itemList, setItemList] = useState([]);
   const [date, setDate] = useState(getTodaysDate());
   const [filteredList, setFilteredList] = useState([]);
@@ -157,7 +159,7 @@ const CreateStock = () => {
             <div className="d-flex sb w100">
               <div className="col w45">
                 <label className="info-text px10">
-                  Date: <span className="req">*</span>
+                  {t("ps-date")}: <span className="req">*</span>
                 </label>
                 <input
                   type="date"
@@ -172,7 +174,7 @@ const CreateStock = () => {
               </div>
               <div className="col w45">
                 <label className="info-text px10">
-                  Group Name: <span className="req">*</span>
+                  {t("ps-sel-grp")}: <span className="req">*</span>
                 </label>
                 <select
                   name="itemgroupcode"
@@ -183,7 +185,7 @@ const CreateStock = () => {
                   onChange={handleInputChange}
                   onKeyDown={(e) => handleKeyDown(e, "itemgroupcode")}
                 >
-                  <option value="">Select Group </option>
+                  <option value=""> {t("ps-sel-grp")} </option>
                   {[
                     { value: 1, label: "Cattle Feed" },
                     { value: 2, label: "Medicines" },
@@ -200,7 +202,7 @@ const CreateStock = () => {
             <div className="d-flex sb my10 w100">
               <div className="col  w45">
                 <label className="info-text  ">
-                  Item Name: <span className="req">*</span>
+                  {t("ps-itm-name")}: <span className="req">*</span>
                 </label>
                 <select
                   name="itemcode"
@@ -212,7 +214,7 @@ const CreateStock = () => {
                   onKeyDown={(e) => handleKeyDown(e, "itemcode")}
                   disabled={!formData.itemgroupcode}
                 >
-                  <option value="">Select Item Name</option>
+                  <option value=""> {t("ps-itm-name")}</option>
                   {filteredList &&
                     filteredList.map((item) => (
                       <option key={item.ItemCode} value={item.ItemCode}>
@@ -223,7 +225,7 @@ const CreateStock = () => {
               </div>
               <div className="col  w45">
                 <label className="info-text  ">
-                  Qty: <span className="req">*</span>
+                  {t("ps-qty")}: <span className="req">*</span>
                 </label>
                 <input
                   name="qty"
@@ -243,7 +245,7 @@ const CreateStock = () => {
             <div className=" d-flex sb my10 w100">
               <div className="col w45">
                 <label className="info-text px10">
-                  Rate: <span className="req">*</span>
+                  {t("ps-rate")}: <span className="req">*</span>
                 </label>
                 <input
                   name="rate"
@@ -261,7 +263,7 @@ const CreateStock = () => {
               </div>
               <div className="col w45">
                 <label className="info-text px10">
-                  Sell Rate: <span className="req">*</span>
+                  {t("ps-sale-rate")}: <span className="req">*</span>
                 </label>
                 <input
                   name="salerate"
@@ -279,10 +281,10 @@ const CreateStock = () => {
             </div>
             <div className=" d-flex j-end my10 wrap">
               <button className="btn" type="button" onClick={handleClear}>
-                Clear
+                {t("ps-clr")}
               </button>
               <button className="btn mx10" type="submit">
-                Submit
+                {t("ps-smt")}
               </button>
             </div>
           </form>
