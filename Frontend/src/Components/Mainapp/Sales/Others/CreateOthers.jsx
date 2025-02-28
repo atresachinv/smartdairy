@@ -17,7 +17,7 @@ import { sendMessage } from "../WhatsAppSender";
 
 const CreateOthers = () => {
   const dispatch = useDispatch();
-  const { t } = useTranslation(["common", "milkcollection"]);
+  const { t } = useTranslation(["common", "milkcollection", "puchasesale"]);
   const tDate = useSelector((state) => state.date.toDate);
   const salesRates = useSelector((state) => state.sales.salesRates);
   const customerslist = useSelector((state) => state.customer.customerlist);
@@ -48,7 +48,7 @@ const CreateOthers = () => {
     (state) => state.dairySetting.centerSetting
   );
   const [settings, setSettings] = useState({});
-  
+
   //set setting
   useEffect(() => {
     if (centerSetting?.length > 0) {
@@ -981,7 +981,7 @@ const CreateOthers = () => {
 
           <div className="sales-button-container w100 h10 d-flex a-center j-end">
             <button className="w-btn m10" onClick={handelClear}>
-              Clear
+              {t("puchasesale:ps-clr")}
             </button>
             <button
               className="w-btn mx10"

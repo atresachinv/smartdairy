@@ -162,7 +162,7 @@ const StockList = () => {
           <div className="d-flex sb w60 sales-dates-container-mobile-w100">
             <div>
               <label htmlFor="seletgrop" className="mx5">
-                Select Item Group:
+                {t("ps-sel-grp")}:
               </label>
               <select
                 name="ItemGroupCode"
@@ -201,7 +201,7 @@ const StockList = () => {
               to="add-stock"
             >
               <MdAddShoppingCart className="icon f-label" />
-              Add
+              {t("ps-new")}
             </NavLink>
           </div>
         </div>
@@ -211,13 +211,13 @@ const StockList = () => {
         <span className="heading p10">Stock Report</span>
         <div className="product-heading-title-scroller w100 h1 mh100 d-flex-col">
           <div className="data-headings-div h10 d-flex forWidth center t-center sa bg7">
-            <span className="f-info-text w5">Sr.No.</span>
-            <span className="f-info-text w5">Item Code</span>
-            <span className="f-info-text w15">Item Name</span>
-            <span className="f-info-text w5">Qty</span>
-            <span className="f-info-text w5">Rate</span>
-            <span className="f-info-text w5">Sale Rate</span>
-            <span className="f-info-text w5">Amount</span>
+            <span className="f-info-text w5"> {t("ps-srNo")}</span>
+            <span className="f-info-text w5">{t("ps-code")}</span>
+            <span className="f-info-text w15">{t("ps-itm-name")}</span>
+            <span className="f-info-text w5">{t("ps-qty")}</span>
+            <span className="f-info-text w5">{t("ps-rate")}</span>
+            <span className="f-info-text w5">{t("ps-sale-rate")}</span>
+            <span className="f-info-text w5">{t("ps-amt")}</span>
             <span className="f-info-text w5">Action</span>
           </div>
           {loading ? (
@@ -265,10 +265,10 @@ const StockList = () => {
           <div className="modal-content forMin">
             <h2>Stock Product Details</h2>
             <label>
-              Item Name: {editSale?.ItemCode}&nbsp;{editSale?.ItemName}
+              {t("ps-itm-name")}: {editSale?.ItemCode}&nbsp;{editSale?.ItemName}
             </label>
             <label>
-              Item Rate:
+              {t("ps-rate")}:
               <input
                 type="text"
                 value={editSale?.ItemRate}
@@ -279,7 +279,7 @@ const StockList = () => {
               />
             </label>
             <label>
-              Item Qty:
+              {t("ps-qty")}:
               <input
                 type="text"
                 value={editSale?.ItemQty}
@@ -290,7 +290,7 @@ const StockList = () => {
               />
             </label>{" "}
             <label>
-              Sale Rate:
+              {t("ps-sale-rate")}:
               <input
                 type="text"
                 value={editSale?.SaleRate}
@@ -301,8 +301,11 @@ const StockList = () => {
               />
             </label>
             <div>
-              <button onClick={() => setIsModalOpen(false)}>Cancel</button>
-              <button onClick={handleSaveChanges}>Update</button>
+              <button onClick={() => setIsModalOpen(false)}>
+                {" "}
+                {t("ps-cancel")}
+              </button>
+              <button onClick={handleSaveChanges}> {t("ps-update")}</button>
             </div>
           </div>
         </div>
