@@ -25,10 +25,10 @@ const StocksNavlinks = ({ isselected, setIsSelected, userRole }) => {
       index: 0,
       path: "starting/stock",
       role: ["super_admin", "admin"],
-      submenus: [
-        { name: "Add", path: "add-stock", icon: <IoBagAddSharp /> },
-        { name: "List", path: "list", icon: <FaListUl /> },
-      ],
+      // submenus: [
+      //   { name: "Add", path: "add-stock", icon: <IoBagAddSharp /> },
+      //   { name: "List", path: "list", icon: <FaListUl /> },
+      // ],
     },
     {
       name: `Expired Product`,
@@ -44,23 +44,23 @@ const StocksNavlinks = ({ isselected, setIsSelected, userRole }) => {
       path: "update/sale/rate",
       role: ["super_admin", "admin"],
     },
-    {
-      name: `Delivery Stock`,
-      icon: <MdOutlineAddTask className="icon" />,
-      index: 3,
-      path: "delivery/add-stock",
-      submenus: [
-        { name: "Add", path: "delivery/add-stock", icon: <IoBagAddSharp /> },
-        { name: "List", path: "delivery/list", icon: <FaListUl /> },
-        {
-          name: "Add return",
-          path: "delivery/returns",
-          icon: <BsSignTurnSlightRight />,
-        },
-        { name: "Return List", path: "delivery/return-list", icon: <FaListUl /> },
-      ],
-      role: ["super_admin", "admin", "salesman"],
-    },
+    // {
+    //   name: `Delivery Stock`,
+    //   icon: <MdOutlineAddTask className="icon" />,
+    //   index: 3,
+    //   path: "delivery/add-stock",
+    //   submenus: [
+    //     { name: "Add", path: "delivery/add-stock", icon: <IoBagAddSharp /> },
+    //     { name: "List", path: "delivery/list", icon: <FaListUl /> },
+    //     {
+    //       name: "Add return",
+    //       path: "delivery/returns",
+    //       icon: <BsSignTurnSlightRight />,
+    //     },
+    //     { name: "Return List", path: "delivery/return-list", icon: <FaListUl /> },
+    //   ],
+    //   role: ["super_admin", "admin", "salesman"],
+    // },
   ];
 
   // Filter links based on userRole
@@ -77,15 +77,15 @@ const StocksNavlinks = ({ isselected, setIsSelected, userRole }) => {
             isselected === button.path ? "selected" : ""
           }`}
           onClick={() => setIsSelected(button.path)}
-          onMouseEnter={() => button.submenus && toggleDropdown(index, true)}
-          onMouseLeave={() => button.submenus && toggleDropdown(index, false)}
+          // onMouseEnter={() => button.submenus && toggleDropdown(index, true)}
+          // onMouseLeave={() => button.submenus && toggleDropdown(index, false)}
         >
           <NavLink to={button.path} className="sub-navlinks f-label-text">
             <span>{button.icon}</span>
             {button.name}
           </NavLink>
 
-          {button.submenus && dropdownVisible[index] && (
+          {/* {button.submenus && dropdownVisible[index] && (
             <ul className="dropdown-menu">
               {button.submenus.map((submenu, subIndex) => (
                 <li key={subIndex}>
@@ -96,7 +96,7 @@ const StocksNavlinks = ({ isselected, setIsSelected, userRole }) => {
                 </li>
               ))}
             </ul>
-          )}
+          )} */}
         </li>
       ))}
     </>

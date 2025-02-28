@@ -356,7 +356,7 @@ const OthersSaleList = () => {
               Show
             </button>
           </div>
-          <div className="d-flex h1 sb center w25 sales-dates-container-mobile-w100  ">
+          <div className="d-flex h1 sb center w25 sales-dates-container-mobile-w100  p10 bg">
             <label htmlFor="" className="label-text px5 ">
               {t("ps-nv-add-other")}
             </label>

@@ -18,12 +18,8 @@ const Stocks = () => {
     const myrole = localStorage.getItem("userRole");
     setUserRole(myrole);
   }, []);
-  const [isselected, setIsSelected] = useState(
-    parseInt(localStorage.getItem("productReturns")) || "starting/stock"
-  );
-  useEffect(() => {
-    localStorage.setItem("productReturns", isselected);
-  }, [isselected]);
+  const [isselected, setIsSelected] = useState("starting/stock");
+
   return (
     <div className="stock-container w100 h1">
       <div className="header-nav w100 h10 d-flex a-center nav-bg">
@@ -39,14 +35,14 @@ const Stocks = () => {
           <Route path="list" element={<StockList />} />
           <Route path="expired/product" element={<ExpiredProducts />} />
           <Route path="update/sale/rate" element={<UpdateSaleRate />} />
-          <Route path="delivery/add-stock" element={<AddDeliveryStock />} />
+          {/* <Route path="delivery/add-stock" element={<AddDeliveryStock />} />
           <Route path="delivery/list" element={<ListDeliveryStock />} />
           <Route path="delivery/returns" element={<DeliveryReturns />} />
           <Route
             path="delivery/return-list"
             element={<ReturnListDeliveryStock />}
-          />
-          <Route path="*" element={<CreateStock />} />
+          /> */}
+          <Route path="*" element={<StockList />} />
         </Routes>
       </div>
     </div>

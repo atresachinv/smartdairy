@@ -4,13 +4,16 @@ import { useEffect, useState } from "react";
 import axiosInstance from "../../../../../../App/axiosInstance";
 import { toast } from "react-toastify";
 import * as XLSX from "xlsx";
-import { MdDeleteOutline } from "react-icons/md";
+import { MdAddShoppingCart, MdDeleteOutline } from "react-icons/md";
 import Spinner from "../../../../../Home/Spinner/Spinner";
 import { IoClose } from "react-icons/io5";
 import { useDispatch, useSelector } from "react-redux";
 import { listEmployee } from "../../../../../../App/Features/Mainapp/Masters/empMasterSlice";
+import { NavLink } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 const ListDeliveryStock = () => {
+  const { t } = useTranslation(["puchasesale", "common"]);
   const [deliveryList, setDeliveryList] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [filteredList, setFilteredList] = useState(deliveryList); // Store filtered items
@@ -291,43 +294,55 @@ const ListDeliveryStock = () => {
   return (
     <div className="customer-list-container-div w100 h1 d-flex-col p10">
       <div className="download-print-pdf-excel-container w100 h30 d-flex-col sb">
-        <div className="sales-dates-container w60 h50 d-flex a-center sb">
-          <div className="date-input-div w35 d-flex a-center sb">
-            <label htmlFor="" className="label-text w30">
-              From :
-            </label>
-            <input
-              type="date"
-              className="data w70"
-              value={date1}
-              onChange={(e) => SetDate1(e.target.value)}
-              max={date2}
-            />
+        <div className="sales-dates-container w100 h50 d-flex a-center sb sales-dates-container-mobile">
+          <div className="d-flex sb w60 sales-dates-container-mobile-w100">
+            <div className="date-input-div   d-flex a-center sb">
+              <label htmlFor="" className="label-text w30">
+                {t("ps-from")} :
+              </label>
+              <input
+                type="date"
+                className="data w70"
+                value={date1}
+                onChange={(e) => SetDate1(e.target.value)}
+                max={date2}
+              />
+            </div>
+            <div className="date-input-div d-flex a-center sb">
+              <label htmlFor="" className="label-text w30">
+                {t("ps-to")} :
+              </label>
+              <input
+                type="date"
+                className="data w70"
+                value={date2}
+                onChange={(e) => SetDate2(e.target.value)}
+                min={date1}
+              />
+            </div>
+            <button className="w-btn " onClick={handleShowbutton}>
+              {t("ps-show")}
+            </button>
           </div>
-          <div className="date-input-div w35 d-flex a-center sb">
-            <label htmlFor="" className="label-text w30">
-              To :
+          <div className="d-flex h1 sb center w25 sales-dates-container-mobile-w100  p10 bg">
+            <label htmlFor="" className="label-text ">
+              Add sale
             </label>
-            <input
-              type="date"
-              className="data w70"
-              value={date2}
-              onChange={(e) => SetDate2(e.target.value)}
-              min={date1}
-            />
+            <NavLink
+              className="w-btn d-flex "
+              style={{ textDecoration: "none" }}
+              to="add-stock"
+            >
+              <MdAddShoppingCart className="icon f-label" />
+              {t("ps-new")}
+            </NavLink>
           </div>
-          <button className="w-btn" onClick={handleShowbutton}>
-            Show
-          </button>
         </div>
         <div className="find-customer-container w100 h50 d-flex a-center my5">
-          <div className="customer-search-div w45 d-flex a-center sb">
-            <label htmlFor="" className="label-text w30">
-              Search:
-            </label>
+          <div className="customer-search-div  d-flex a-center sb">
             <input
               type="text"
-              className="data w70"
+              className="data w100"
               name="code"
               onFocus={(e) => e.target.select()}
               value={fcode}
@@ -336,10 +351,14 @@ const ListDeliveryStock = () => {
               }
               min="0"
               title="Enter code or name to search details"
+              placeholder={`${t("ps-search")}`}
             />
           </div>
-          <button className="w-btn mx10" onClick={downloadExcel}>
-            Excel
+          <button
+            className="w-btn mx10 sales-dates-container-mobile-btn"
+            onClick={downloadExcel}
+          >
+            {t("ps-down-excel")}
           </button>
         </div>
       </div>
