@@ -2162,11 +2162,58 @@ exports.createRetailCustomer = async (req, res) => {
 };
 
 //-------------------------------------------------------------------------------------------------->
+// create retail customer  ------------------------------------------------------------------------->
+//-------------------------------------------------------------------------------------------------->
+
+exports.getRetailCustomer = async (req, res) => {
+  pool.getConnection((err, connection) => {
+    if (err) {
+      console.error("Error getting MySQL connection: ", err);
+      return res.status(500).json({ message: "Database connection error" });
+    }
+
+    const dairy_id = req.user.dairy_id;
+    const center_id = req.user.center_id;
+
+    if (!dairy_id) {
+      connection.release();
+      return res.status(400).json({ message: "Dairy ID not found!" });
+    }
+
+    // SQL query to fetch retail customers
+    const query = `
+      SELECT code, cust_name, mobile, advance 
+      FROM retailsales_customers 
+      WHERE dairy_id = ? AND center_id = ?
+    `;
+
+    connection.query(query, [dairy_id, center_id], (err, result) => {
+      connection.release(); // Ensure connection is released
+
+      if (err) {
+        console.error("Error executing query: ", err);
+        return res.status(500).json({ message: "Query execution error" });
+      }
+
+      if (result.length === 0) {
+        return res.status(404).json({ message: "No retail customers found!" });
+      }
+
+      res.status(200).json({
+        retailcust: result,
+        message: "Retail customers retrieved successfully!",
+      });
+    });
+  });
+};
+
+
+//-------------------------------------------------------------------------------------------------->
 // Retail milk sales ------------------------------------------------------------------------------->
 //-------------------------------------------------------------------------------------------------->
 
 exports.RetailMilkCollection = async (req, res) => {
-  const { code, cname, liters, rate, amt, paidamt, paymode } = req.body;
+  const { code, cname, liters, rate, amt, paidamt, rem_adv, paymode } = req.body;
 
   pool.getConnection((err, connection) => {
     if (err) {
@@ -2194,8 +2241,8 @@ exports.RetailMilkCollection = async (req, res) => {
       // Prepare the SQL query
       const milkcollection = `
       INSERT INTO retail_milk_sales 
-      (dairy_id, center_id, code , cust_name , liters , rate , amt , paidamt, paymode, saleby , saledate , saletime )
-        VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      (dairy_id, center_id, code , cust_name , liters , rate , amt , paidamt, rem_advance, paymode, saleby , saledate , saletime )
+        VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       `;
 
       // Execute the query
@@ -2209,7 +2256,8 @@ exports.RetailMilkCollection = async (req, res) => {
           insertLiters,
           rate,
           amt,
-          paidamt,
+          paidamt || 0.0,
+          rem_adv,
           paymode,
           user,
           currentDate,
@@ -2222,7 +2270,6 @@ exports.RetailMilkCollection = async (req, res) => {
             console.error("Error executing query: ", err);
             return res.status(500).json({ message: "Query execution error" });
           }
-          console.log(result.affectedRows);
 
           res.status(200).json({ message: "Milk entry saved successfully!" });
         }
@@ -2295,8 +2342,15 @@ exports.retailMilkReports = async (req, res) => {
 // Retail milk report centerwise ------------------------------------------------------------------->
 //-------------------------------------------------------------------------------------------------->
 
+//v2
 exports.centerReMilkReports = async (req, res) => {
   const { fromdate, todate } = req.query;
+
+  if (!fromdate || !todate) {
+    return res
+      .status(400)
+      .json({ message: "Both fromdate and todate are required!" });
+  }
 
   pool.getConnection((err, connection) => {
     if (err) {
@@ -2306,43 +2360,45 @@ exports.centerReMilkReports = async (req, res) => {
 
     try {
       const dairy_id = req.user.dairy_id;
+      const center_id = req.user.center_id;
 
       if (!dairy_id) {
         connection.release();
         return res.status(400).json({ message: "Dairy ID not found!" });
       }
 
-      // Get the current date in YYYY-MM-DD format
-      const currentDate = new Date().toISOString().split("T")[0];
+      // Construct the SQL query
+      let milkcollection;
+      let queryParams = [dairy_id, fromdate, todate];
 
-      // Get the current hour to determine AM or PM
-      const currentHour = new Date().getHours();
-      const time = currentHour < 12 ? 0 : 1;
-
-      // Prepare the SQL query
-      const milkcollection = `
-      SELECT center_id ,  code , liters , rate , amt , saletime , saleby
-      FROM retail_milk_sales
-        WHERE dairy_id = ? AND saledate BETWEEN ? AND ?
-      `;
+      if (center_id && center_id !== "0") {
+        milkcollection = `
+          SELECT center_id, code, cust_name, liters, rate, amt, paidamt, paymode, saletime, saleby
+          FROM retail_milk_sales
+          WHERE dairy_id = ? AND center_id = ? AND saledate BETWEEN ? AND ?
+        `;
+        queryParams.splice(1, 0, center_id); // Insert center_id in the second position
+      } else {
+        milkcollection = `
+          SELECT center_id, code,cust_name, liters, rate, amt, paidamt, paymode, saletime, saleby
+          FROM retail_milk_sales
+          WHERE dairy_id = ? AND saledate BETWEEN ? AND ?
+        `;
+      }
 
       // Execute the query
-      connection.query(
-        milkcollection,
-        [dairy_id, fromdate, todate],
-        (err, result) => {
-          connection.release();
+      connection.query(milkcollection, queryParams, (err, result) => {
+        connection.release();
 
-          if (err) {
-            console.error("Error executing query: ", err);
-            return res.status(500).json({ message: "Query execution error" });
-          }
-          res.status(200).json({
-            message: "Milk entry saved successfully!",
-            retailCenterSales: result,
-          });
+        if (err) {
+          console.error("Error executing query: ", err);
+          return res.status(500).json({ message: "Query execution error" });
         }
-      );
+        res.status(200).json({
+          message: "Milk collection data retrieved successfully!",
+          retailCenterSales: result,
+        });
+      });
     } catch (error) {
       connection.release();
       console.error("Error processing request: ", error);

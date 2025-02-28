@@ -6,13 +6,15 @@ import { useTranslation } from "react-i18next";
 import { IoPersonAddSharp } from "react-icons/io5";
 import CreateCustomers from "./CreateCustomers";
 import { saveMilkEntry } from "../../../../../App/Features/Mainapp/Milksales/milkSalesSlice";
+import "../../../../../Styles/Mainapp/Apphome/Appnavview/MilkSales.css";
 
 const Milksales = ({ switchToSettings }) => {
   const dispatch = useDispatch();
   const { t } = useTranslation(["milkcollection", "common"]);
 
   const tDate = useSelector((state) => state.date.toDate);
-  const token = useSelector((state) => state.notify.fcmToken);
+  const retailCustomers = useSelector((state) => state.milksales.customers);
+  // const token = useSelector((state) => state.notify.fcmToken);
   const [customerList, setCustomerList] = useState([]);
   const [custList, setCustList] = useState({});
   const [milkRateChart, setMilkRatechart] = useState([]);
@@ -20,6 +22,9 @@ const Milksales = ({ switchToSettings }) => {
   const [errors, setErrors] = useState({});
   const [changedDate, setChangedDate] = useState(tDate);
   const [isModalOpen, setModalOpen] = useState(false);
+  const [filteredCustomers, setFilteredCustomers] = useState([]);
+  const [showDropdown, setShowDropdown] = useState(false);
+  // Refs ----------------------------------------->
   const codeInputRef = useRef(null);
   const litersRef = useRef(null);
   const paymodeRef = useRef(null);
@@ -35,7 +40,9 @@ const Milksales = ({ switchToSettings }) => {
     rate: "",
     amt: "",
     paymode: 0,
-    paidamt: "",
+    paidamt: 0,
+    advance: 0,
+    rem_adv: 0,
   };
 
   const [values, setValues] = useState(initialValues);
@@ -67,7 +74,13 @@ const Milksales = ({ switchToSettings }) => {
         rate: 40,
         amt: amount.toFixed(2),
         paidamt: amount.toFixed(2),
-      }));
+      })); 
+      if (values.paymode === 0 && values.advance > 0 ) {
+        setValues((prev) => ({
+          ...prev,
+          rem_adv: values.advance - Number(values.amt || 0),
+        }));
+      }
     } catch (error) {
       console.error("Error in milk amount calculation :", error);
     }
@@ -104,16 +117,15 @@ const Milksales = ({ switchToSettings }) => {
       return;
     }
     // Ensure the code is a string for comparison
-    const customer = customerList.find(
-      (customer) => customer.srno.toString() === code
+    const customer = retailCustomers.find(
+      (customer) => customer.code.toString() === code
     );
 
     if (customer) {
       setValues((prev) => ({
         ...prev,
-        cname: customer.cname,
-        acccode: customer.cid,
-        rcName: customer.rcName,
+        cname: customer.cust_name,
+        advance: customer.advance,
       }));
     } else {
       setValues((prev) => ({ ...prev, cname: "" })); // Clear cname if not found
@@ -140,12 +152,34 @@ const Milksales = ({ switchToSettings }) => {
     }
   };
 
+  // handle customer name change -------------------------------------------------------->
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setValues({ ...values, [name]: value });
+
+    if (value.length > 0) {
+      const filtered = retailCustomers.filter((customer) =>
+        customer.cust_name.toLowerCase().includes(value.toLowerCase())
+      );
+      setFilteredCustomers(filtered);
+      setShowDropdown(true);
+    } else {
+      setShowDropdown(false);
+    }
+  };
+
+  const handleSelectCustomer = (cust_name) => {
+    setValues({ ...values, cname: cust_name });
+    setShowDropdown(false);
+  };
+
   //Handling Milk Sales --------------------------------------------------------->
 
   const handleMilksales = async (e) => {
     e.preventDefault();
     try {
-      dispatch(saveMilkEntry(values));
+      console.log(values);
+      // dispatch(saveMilkEntry(values));
       toast.success(`Milk Collection of ${values.cname} saved successfully!`);
       setValues(initialValues);
       codeInputRef.current.focus();
@@ -219,7 +253,7 @@ const Milksales = ({ switchToSettings }) => {
               ref={codeInputRef}
             />
           </div>
-          <div className="form-div w50 px10">
+          {/* <div className="form-div w50 px10">
             <label htmlFor="cname" className="info-text">
               Customer name
             </label>
@@ -232,6 +266,34 @@ const Milksales = ({ switchToSettings }) => {
               value={values.cname || ""}
               onChange={handleInputs}
             />
+          </div> */}
+          <div className="form-div w50 px10" style={{ position: "relative" }}>
+            <label htmlFor="cname" className="info-text">
+              Customer name
+            </label>
+            <input
+              className={`data ${
+                values.cname && filteredCustomers.length > 0
+                  ? "dropdown-active"
+                  : ""
+              }`}
+              type="text"
+              placeholder="Enter customer name"
+              name="cname"
+              id="cname"
+              value={values.cname || ""}
+              onChange={handleInputChange}
+              onFocus={() => values.cname && setShowDropdown(true)}
+              // autoComplete="off"
+              list="customer-list"
+            />
+
+            {/* Autocomplete Dropdown */}
+            <datalist id="customer-list">
+              {retailCustomers.map((customer) => (
+                <option key={customer.code} value={customer.cust_name} />
+              ))}
+            </datalist>
           </div>
         </div>
         <div className="milk-details-div w100 h70 d-flex">
@@ -282,7 +344,6 @@ const Milksales = ({ switchToSettings }) => {
               <input
                 className={`data ${errors.amt ? "input-error" : ""}`}
                 type="number"
-                required
                 placeholder="00.0"
                 name="paidamt"
                 id="paidamt"

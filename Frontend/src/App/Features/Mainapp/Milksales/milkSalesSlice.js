@@ -4,8 +4,10 @@ import axiosInstance from "../../../axiosInstance";
 const initialState = {
   records: [],
   centerrecords: [],
+  customers: [],
   createCuststatus: "idle",
   savestatus: "idle",
+  custstatus: "idle",
   getsalestatus: "idle",
   centersalestatus: "idle",
   error: null,
@@ -68,7 +70,7 @@ export const getCenterMilkReport = createAsyncThunk(
   "milkSales/getCenterMilkReport",
   async (values, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.post("/retail/center/sale-report", {
+      const response = await axiosInstance.get("/retail/center/sale-report", {
         params: values,
       });
       return response.data.retailCenterSales;
@@ -76,6 +78,21 @@ export const getCenterMilkReport = createAsyncThunk(
       const errorMessage = error.response
         ? error.response.data
         : "Failed to store milk collection.";
+      return rejectWithValue(errorMessage);
+    }
+  }
+);
+
+export const getretailCustomer = createAsyncThunk(
+  "milkSales/getretailCustomer",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.get("/get/retail-customer");
+      return response.data.retailcust;
+    } catch (error) {
+      const errorMessage = error.response
+        ? error.response.data
+        : "Failed to get retail customers.";
       return rejectWithValue(errorMessage);
     }
   }
@@ -131,6 +148,18 @@ const milkSalesSlice = createSlice({
       })
       .addCase(getCenterMilkReport.rejected, (state, action) => {
         state.centersalestatus = "failed";
+        state.error = action.payload;
+      }) // get retail customers ---------------------------------------------------------------------------------------->
+      .addCase(getretailCustomer.pending, (state) => {
+        state.custstatus = "loading";
+        state.error = null;
+      })
+      .addCase(getretailCustomer.fulfilled, (state, action) => {
+        state.custstatus = "succeeded";
+        state.customers = action.payload;
+      })
+      .addCase(getretailCustomer.rejected, (state, action) => {
+        state.custstatus = "failed";
         state.error = action.payload;
       });
   },

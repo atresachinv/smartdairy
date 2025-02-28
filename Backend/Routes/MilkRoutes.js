@@ -21,6 +21,7 @@ const {
   createRetailCustomer,
   retailMilkReports,
   centerReMilkReports,
+  getRetailCustomer,
 } = require("../Controllers/MilkController");
 const verifyToken = require("../Middlewares/VerifyToken");
 
@@ -56,6 +57,7 @@ router
   .get(verifyToken, completedMilkReport);
 //Retail milk sales-------------------------------------------------------------------------------------------------------->
 router.route("/create/retail-customer").post(verifyToken, createRetailCustomer);
+router.route("/get/retail-customer").get(verifyToken, getRetailCustomer);
 router.route("/retail/save/collection").post(verifyToken, RetailMilkCollection);
 router.route("/retail/sale-report").get(verifyToken, retailMilkReports);
 router

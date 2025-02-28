@@ -21,6 +21,7 @@ import SalesReports from "./Appnavviews/MilkSankalan/SalesReports";
 import AdminSalesReports from "./Appnavviews/MilkSankalan/AdminSalesReports";
 import Milksales from "./Appnavviews/MilksalesPages/Milksales";
 import MilksalesReport from "./Appnavviews/MilksalesPages/MilksalesReport";
+import { getretailCustomer } from "../../../App/Features/Mainapp/Milksales/milkSalesSlice";
 
 const Apphome = () => {
   const dispatch = useDispatch();
@@ -59,10 +60,11 @@ const Apphome = () => {
     dispatch(getRateCharts());
     dispatch(getProfileInfo());
     dispatch(generateMaster(date));
+    dispatch(getretailCustomer());
     if (yearStart && yearEnd) {
       dispatch(getMasterDates({ yearStart, yearEnd }));
     }
-  }, []);
+  }, [dispatch]);
 
   return (
     <div className="app-home-container w100 h1">
