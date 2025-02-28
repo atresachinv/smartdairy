@@ -200,12 +200,12 @@ const UpdateSaleRate = () => {
               onChange={(e) => setSelectcode(e.target.value)}
               value={selectcode}
             >
-              <option value="">All</option>
+              <option value=""> {t("ps-all")} </option>
               {[
-                { value: 1, label: "Cattle Feed" },
-                { value: 2, label: "Medicines" },
-                { value: 3, label: "Grocery" },
-                { value: 4, label: "Other" },
+                { value: 1, label: `${t("ps-cattle")}` },
+                { value: 2, label: `${t("ps-medicine")}` },
+                { value: 3, label: `${t("ps-grocery")}` },
+                { value: 4, label: `${t("ps-other")}` },
               ].map((item) => (
                 <option key={item.value} value={item.value}>
                   {item.label}
@@ -224,7 +224,7 @@ const UpdateSaleRate = () => {
               value={itemcode}
               disabled={!selectcode}
             >
-              <option value="">All</option>
+              <option value=""> {t("ps-all")}</option>
               {filteredList.map((item) => {
                 if (!uniqueItems.has(item.itemcode)) {
                   uniqueItems.add(item.itemcode);
@@ -241,7 +241,7 @@ const UpdateSaleRate = () => {
         </div>
       </div>
       <div className="customer-list-table w100 h1 d-flex-col hidescrollbar bg">
-        <span className="heading p10">Product List</span>
+        <span className="heading p10"> {t("ps-productList")}</span>
         <div className="customer-heading-title-scroller w100 h1 mh100 d-flex-col ">
           <div className="data-headings-div formin h10 d-flex center  t-center sb bg7">
             <span className="f-info-text w5">{t("ps-srNo")}</span>
@@ -290,7 +290,7 @@ const UpdateSaleRate = () => {
       {isModalOpen && (
         <div className="pramod modal">
           <div className="modal-content forMin">
-            <h2 className="my10">Update Product Details</h2>
+            <h2 className="my10"> {t("ps-update-Product")}</h2>
             <b>
               <div className="d-flex w100 sb">
                 <label>
