@@ -203,7 +203,7 @@ const Mainappnavlinks = ({ setselected, handleSidebar }) => {
         {
           name: `${t("inventory:in-nv-prod-sale")}`,
           icon: <IoAnalyticsOutline className="icon" />,
-          path: "inventory/product/sales",
+          path: "inventory/product/sales/cattlefeed",
           index: 3.4,
           role: ["admin", "manager", "salesman"],
         },
@@ -225,6 +225,13 @@ const Mainappnavlinks = ({ setselected, handleSidebar }) => {
           icon: <TbTruckReturn className="icon" />,
           path: "inventory/returns",
           index: 3.6,
+          role: ["admin", "manager", "salesman"],
+        },
+        {
+          name: `${t("Stock Keeper")}`,
+          icon: <TbTruckReturn className="icon" />,
+          path: "inventory/stock-keeper",
+          index: 3.7,
           role: ["admin", "manager", "salesman"],
         },
       ],
@@ -497,7 +504,7 @@ const Mainappnavlinks = ({ setselected, handleSidebar }) => {
         ...(center_id === 0
           ? [
               {
-                name: `${t("dairy-Settings")}`,
+                name: `${t("dairy-settings")}`,
                 icon: <BsBuildingFillGear className="icon" />,
                 index: 9.1,
                 path: "settings/dairy",

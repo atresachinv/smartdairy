@@ -61,6 +61,7 @@ import MilkCollectorsReports from "./Apphome/Appnavviews/Milkcollection/MilkColl
 import MilkEveCollform from "./Apphome/Appnavviews/Milkcollection/MilkEveCollform";
 import MilkColleform from "./Apphome/Appnavviews/Milkcollection/Milkcollform";
 import Milkcollection from "./Apphome/Appnavviews/Milkcollection/Milkcollection";
+import DeliveryStockMaster from "./Inventory/InventroyPages/Stocks/DeliveryStock/DeliveryStockMaster";
 
 const Mainapp = () => {
   const dispatch = useDispatch();
@@ -182,6 +183,10 @@ const Mainapp = () => {
             <Route path="inventory/product/sales/*" element={<SalesMaster />} />
             <Route path="inventory/product/stock/*" element={<Stocks />} />
             <Route path="inventory/returns/*" element={<Returns />} />
+            <Route
+              path="inventory/stock-keeper/*"
+              element={<DeliveryStockMaster />}
+            />
             {/* accounts routes */}
             <Route path="accounts" element={<Accounts />} />
             {/* master routes */}
