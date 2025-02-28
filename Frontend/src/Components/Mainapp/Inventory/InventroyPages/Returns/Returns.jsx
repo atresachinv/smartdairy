@@ -8,7 +8,7 @@ import CustList from "./CustomerReturns/List";
 
 const Returns = () => {
   const [isselected, setIsSelected] = useState(
-    parseInt(localStorage.getItem("productReturns")) || "add-deal-return"
+    parseInt(localStorage.getItem("productReturns")) || "deal-return-list"
   );
   useEffect(() => {
     localStorage.setItem("productReturns", isselected);
@@ -23,10 +23,16 @@ const Returns = () => {
       </div>
       <div className="product-return-nav-views w100 h90 d-flex center p10">
         <Routes>
-          <Route path="/" element={<CreateDealer />} />
-          <Route path="add-deal-return" element={<CreateDealer />} />
-          <Route path="add-cust-return" element={<CreateCustomer />} />
+          <Route
+            path="deal-return-list/add-deal-return"
+            element={<CreateDealer />}
+          />
+          <Route
+            path="cust-return-list/add-cust-return"
+            element={<CreateCustomer />}
+          />
           <Route path="deal-return-list" element={<List />} />
+          <Route path="/" element={<List />} />
           <Route path="cust-return-list" element={<CustList />} />
         </Routes>
       </div>

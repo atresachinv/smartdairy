@@ -4,10 +4,11 @@ import { toast } from "react-toastify";
 import Swal from "sweetalert2";
 import axiosInstance from "../../../../../../App/axiosInstance";
 import Spinner from "../../../../../Home/Spinner/Spinner";
-import { MdDeleteOutline } from "react-icons/md";
+import { MdAddShoppingCart, MdDeleteOutline } from "react-icons/md";
 import { IoClose } from "react-icons/io5";
 import { useSelector } from "react-redux";
 import * as XLSX from "xlsx";
+import { NavLink } from "react-router-dom";
 
 const CustList = () => {
   const { customerlist } = useSelector((state) => state.customer);
@@ -238,36 +239,48 @@ const CustList = () => {
         className="download-print-pdf-excel-container w100 h10 d-flex j-end"
         style={{ display: "contents" }}
       >
-        <div className="w100 d-flex sa my5 f-wrap">
-          <div className="my10">
-            <label htmlFor="" className="info-text px10">
-              Date:
-            </label>
-            <input
-              type="date"
-              className="data"
-              value={date1}
-              onChange={(e) => SetDate1(e.target.value)}
-              max={date2}
-            />
-          </div>
-          <div className="my10">
-            <label className="info-text px10" htmlFor="">
-              To Date:
-            </label>
-            <input
-              type="date"
-              name="date"
-              className="data"
-              value={date2}
-              onChange={(e) => SetDate2(e.target.value)}
-              min={date1}
-            />
-          </div>
-          <div className="my10">
+        <div className="sales-dates-container w100  d-flex a-center sb sales-dates-container-mobile">
+          <div className="d-flex sb w60 sales-dates-container-mobile-w100">
+            <div className="date-input-div w35 d-flex a-center sb">
+              <label htmlFor="" className="label-text w30">
+                From :
+              </label>
+              <input
+                type="date"
+                className="data w70"
+                value={date1}
+                onChange={(e) => SetDate1(e.target.value)}
+                max={date2}
+              />
+            </div>
+            <div className="date-input-div w35 d-flex a-center sb">
+              <label htmlFor="" className="label-text w30">
+                To :
+              </label>
+              <input
+                type="date"
+                className="data w70"
+                value={date2}
+                onChange={(e) => SetDate2(e.target.value)}
+                min={date1}
+              />
+            </div>
             <button className="w-btn" onClick={handleShowbutton}>
               Show
             </button>
+          </div>
+          <div className="d-flex h1 sb center w30 sales-dates-container-mobile-w100  ">
+            <label htmlFor="" className="label-text   ">
+              Add Customer Return
+            </label>
+            <NavLink
+              className="w-btn d-flex "
+              style={{ textDecoration: "none" }}
+              to="add-cust-return"
+            >
+              <MdAddShoppingCart className="icon f-label" />
+              Add
+            </NavLink>
           </div>
         </div>
         <div className="w100 d-flex sa my5">

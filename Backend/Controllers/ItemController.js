@@ -470,7 +470,7 @@ exports.getMaxItemCode = async (req, res) => {
   const { dairy_id: companyid, center_id } = req.user;
 
   // Validate required fields
-  if (!companyid || !center_id) {
+  if (companyid == null || center_id == null) {
     return res.status(400).json({
       success: false,
       message: "Missing required fields: companyid or center_id",

@@ -15,21 +15,17 @@ const ReturnsNavlinks = ({ isselected, setIsSelected }) => {
       name: `Dealer Returns`,
       icon: <BsSignTurnRight className="icon" />,
       index: 0,
-      path: "add-deal-return",
-      submenus: [
-        { name: "Add", path: "add-deal-return", icon: <IoBagAddSharp /> },
-        { name: "List", path: "deal-return-list", icon: <FaListUl /> },
-      ],
+      path: "deal-return-list",
     },
     {
       name: `Customer Returns`,
       icon: <BsSignTurnSlightRight className="icon" />,
       index: 1,
-      path: "add-cust-return",
-      submenus: [
-        { name: "Add", path: "add-cust-return", icon: <IoBagAddSharp /> },
-        { name: "List", path: "cust-return-list", icon: <FaListUl /> },
-      ],
+      path: "cust-return-list",
+      // submenus: [
+      //   { name: "Add", path: "add-cust-return", icon: <IoBagAddSharp /> },
+      //   { name: "List", path: "cust-return-list", icon: <FaListUl /> },
+      // ],
     },
   ];
 
@@ -42,15 +38,13 @@ const ReturnsNavlinks = ({ isselected, setIsSelected }) => {
             isselected === button.path ? "selected" : ""
           }`}
           onClick={() => setIsSelected(button.path)}
-          onMouseEnter={() => setHoveredIndex(index)}
-          onMouseLeave={() => setHoveredIndex(null)}
         >
           <NavLink to={button.path} className={"sub-navlinks f-label-text"}>
             <span>{button.icon}</span>
             {button.name}
           </NavLink>
 
-          {button.submenus && hoveredIndex === index && (
+          {/* {button.submenus && hoveredIndex === index && (
             <ul className="dropdown-menu">
               {button.submenus.map((submenu, subIndex) => (
                 <li key={subIndex}>
@@ -61,7 +55,7 @@ const ReturnsNavlinks = ({ isselected, setIsSelected }) => {
                 </li>
               ))}
             </ul>
-          )}
+          )} */}
         </li>
       ))}
     </>
