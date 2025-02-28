@@ -11,54 +11,49 @@ import "../../../../../../Styles/Mainapp/Inventory/InventoryPages/Stock.css";
 // eslint-disable-next-line react/prop-types
 const DeliveryStockLinks = ({ isselected, setIsSelected, userRole }) => {
   const { t } = useTranslation(["milkcollection"]);
-  const [dropdownVisible, setDropdownVisible] = useState({});
-
-  const toggleDropdown = (index, isOpen) => {
-    setDropdownVisible((prev) => ({ ...prev, [index]: isOpen }));
-  };
 
   const hnavlinks = [
     {
-      name: `Delivery Stock`,
+      name: `Stock Keeper Sale`,
       icon: <SiElasticstack className="icon" />,
       index: 1,
-      path: "delivery/add-stock",
+      path: "list",
       role: ["super_admin", "admin"],
-      submenus: [
-        {
-          name: "Add Stock",
-          index: 1.1,
-          path: "delivery/add-stock",
-          icon: <IoBagAddSharp />,
-        },
-        {
-          name: "Stock List",
-          index: 1.2,
-          path: "delivery/list",
-          icon: <FaListUl />,
-        },
-      ],
+      // submenus: [
+      //   {
+      //     name: "Add Stock",
+      //     index: 1.1,
+      //     path: "delivery/add-stock",
+      //     icon: <IoBagAddSharp />,
+      //   },
+      //   {
+      //     name: "Stock List",
+      //     index: 1.2,
+      //     path: "delivery/list",
+      //     icon: <FaListUl />,
+      //   },
+      // ],
     },
     {
-      name: `Delivery Stock Return`,
+      name: `Stock Keeper Return`,
       icon: <MdOutlineAddTask className="icon" />,
       index: 2,
-      path: "delivery/add-stock",
+      path: "return-list",
       role: ["super_admin", "admin", "salesman"],
-      submenus: [
-        {
-          name: "Add return",
-          index: 2.1,
-          path: "delivery/returns",
-          icon: <BsSignTurnSlightRight />,
-        },
-        {
-          name: "Return List",
-          index: 2.2,
-          path: "delivery/return-list",
-          icon: <FaListUl />,
-        },
-      ],
+      // submenus: [
+      //   {
+      //     name: "Add return",
+      //     index: 2.1,
+      //     path: "delivery/returns",
+      //     icon: <BsSignTurnSlightRight />,
+      //   },
+      //   {
+      //     name: "Return List",
+      //     index: 2.2,
+      //     path: "delivery/return-list",
+      //     icon: <FaListUl />,
+      //   },
+      // ],
     },
   ];
 
@@ -76,15 +71,13 @@ const DeliveryStockLinks = ({ isselected, setIsSelected, userRole }) => {
             isselected === button.path ? "selected" : ""
           }`}
           onClick={() => setIsSelected(button.path)}
-          onMouseEnter={() => button.submenus && toggleDropdown(index, true)}
-          onMouseLeave={() => button.submenus && toggleDropdown(index, false)}
         >
           <NavLink to={button.path} className="sub-navlinks f-label-text">
             <span>{button.icon}</span>
             {button.name}
           </NavLink>
 
-          {button.submenus && dropdownVisible[index] && (
+          {/* {button.submenus && dropdownVisible[index] && (
             <ul className="dropdown-menu">
               {button.submenus.map((submenu, subIndex) => (
                 <li key={subIndex}>
@@ -95,7 +88,7 @@ const DeliveryStockLinks = ({ isselected, setIsSelected, userRole }) => {
                 </li>
               ))}
             </ul>
-          )}
+          )} */}
         </li>
       ))}
     </>

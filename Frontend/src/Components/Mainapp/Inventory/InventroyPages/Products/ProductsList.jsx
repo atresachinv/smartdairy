@@ -175,7 +175,10 @@ const ProductsList = () => {
               ))}
             </select>
           </div>
-          <button className="btn" onClick={downloadExcel}>
+          <button
+            className="btn sales-dates-container-mobile-btn"
+            onClick={downloadExcel}
+          >
             <span className="f-label-text px10"> {t("ps-down-excel")}</span>
             <FaDownload />
           </button>

@@ -133,9 +133,7 @@ const AppNavlinks = ({ isselected, setIsSelected }) => {
           className={`home-nav-item d-flex a-center ${
             isselected === button.index ? "selected" : ""
           }`}
-          onClick={() => setIsSelected(button.index)}
-          onMouseEnter={() => button.submenus && setDropdownVisible(true)}
-          onMouseLeave={() => button.submenus && setDropdownVisible(false)}
+          onClick={() => setIsSelected(button.index)} 
         >
           <NavLink to={button.path} className={"sub-navlinks f-label-text"}>
             <span>{button.icon}</span>

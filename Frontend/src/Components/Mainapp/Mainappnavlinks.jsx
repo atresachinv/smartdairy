@@ -76,7 +76,7 @@ const Mainappnavlinks = ({ setselected, handleSidebar }) => {
         {
           name: `${t("milkcollection:m-milkcoll")}`,
           icon: <BsGridFill className="icon" />,
-          path: "milk/collection",
+          path: "milk/collection/collection/morning",
           index: 1.0,
           role: ["admin", "manager", "milkcollector", "mobilecollector"],
         },
@@ -204,7 +204,7 @@ const Mainappnavlinks = ({ setselected, handleSidebar }) => {
         {
           name: `${t("inventory:in-nv-init-stock")}`,
           icon: <FaAlignJustify className="icon" />,
-          path: "inventory/product/stock",
+          path: "inventory/product/stock/starting/stock",
           index: 3.5,
           role: [
             "admin",
@@ -217,14 +217,14 @@ const Mainappnavlinks = ({ setselected, handleSidebar }) => {
         {
           name: `${t("inventory:in-nv-returns")}`,
           icon: <TbTruckReturn className="icon" />,
-          path: "inventory/returns",
+          path: "inventory/returns/deal-return-list",
           index: 3.6,
           role: ["admin", "manager", "salesman"],
         },
         {
           name: `${t("Stock Keeper")}`,
           icon: <TbTruckReturn className="icon" />,
-          path: "inventory/stock-keeper",
+          path: "inventory/stock-keeper/list",
           index: 3.7,
           role: ["admin", "manager", "salesman"],
         },
