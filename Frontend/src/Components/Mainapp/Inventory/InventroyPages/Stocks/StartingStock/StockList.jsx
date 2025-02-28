@@ -4,13 +4,16 @@ import * as XLSX from "xlsx";
 import { FaDownload } from "react-icons/fa6";
 import axiosInstance from "../../../../../../App/axiosInstance";
 import "./Stock.css";
-import { MdDeleteOutline } from "react-icons/md";
+import { MdAddShoppingCart, MdDeleteOutline } from "react-icons/md";
 import { toast } from "react-toastify";
 import { FaRegEdit } from "react-icons/fa";
 import Swal from "sweetalert2";
 import Spinner from "../../../../../Home/Spinner/Spinner";
+import { useTranslation } from "react-i18next";
+import { NavLink } from "react-router-dom";
 
 const StockList = () => {
+  const { t } = useTranslation(["puchasesale", "common"]);
   const [productList, setProductList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState("");
@@ -154,35 +157,53 @@ const StockList = () => {
 
   return (
     <div className="product-list-container w100 h1 d-flex-col p10">
-      <div className="download-print-pdf-excel-container w100 h20 d-flex j-end">
-        <div className="w100 d-flex sa">
-          <div>
-            <label htmlFor="seletgrop" className="mx5">
-              Select Item Group:
-            </label>
-            <select
-              name="ItemGroupCode"
-              className="data form-field"
-              onChange={(e) => setFilter(e.target.value)}
-              value={filter}
+      <div className="download-print-pdf-excel-container w100 h30 d-flex j-center">
+        <div className="sales-dates-container w100 h80 d-flex a-center sb sales-dates-container-mobile">
+          <div className="d-flex sb w60 sales-dates-container-mobile-w100">
+            <div>
+              <label htmlFor="seletgrop" className="mx5">
+                Select Item Group:
+              </label>
+              <select
+                name="ItemGroupCode"
+                className="data form-field"
+                onChange={(e) => setFilter(e.target.value)}
+                value={filter}
+              >
+                <option value="">All</option>
+                {[
+                  { value: 1, label: "Cattle Feed" },
+                  { value: 2, label: "Medicines" },
+                  { value: 3, label: "Grocery" },
+                  { value: 4, label: "Other" },
+                ].map((item) => (
+                  <option key={item.value} value={item.value}>
+                    {item.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <button
+              className="btn sales-dates-container-mobile-btn"
+              onClick={downloadExcel}
             >
-              <option value="">All</option>
-              {[
-                { value: 1, label: "Cattle Feed" },
-                { value: 2, label: "Medicines" },
-                { value: 3, label: "Grocery" },
-                { value: 4, label: "Other" },
-              ].map((item) => (
-                <option key={item.value} value={item.value}>
-                  {item.label}
-                </option>
-              ))}
-            </select>
+              <span className="f-label-text px10"> {t("ps-down-excel")}</span>
+              <FaDownload />
+            </button>
           </div>
-          <button className="btn" onClick={downloadExcel}>
-            <span className="f-label-text px10">Download</span>
-            <FaDownload />
-          </button>
+          <div className="d-flex h1 sb center w25 sales-dates-container-mobile-w100  p10 bg">
+            <label htmlFor="" className="label-text px5 ">
+              New Stock
+            </label>
+            <NavLink
+              className="w-btn d-flex "
+              style={{ textDecoration: "none" }}
+              to="add-stock"
+            >
+              <MdAddShoppingCart className="icon f-label" />
+              Add
+            </NavLink>
+          </div>
         </div>
       </div>
 
