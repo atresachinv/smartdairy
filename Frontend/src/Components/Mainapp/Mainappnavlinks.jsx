@@ -12,6 +12,7 @@ import {
   BsBuildingFillGear,
   BsHouseGearFill,
   BsFillCollectionFill,
+  BsSignTurnSlightRight,
 } from "react-icons/bs";
 import {
   FaUserTie,
@@ -29,12 +30,18 @@ import {
 } from "react-icons/fa6";
 import { TbTruckReturn } from "react-icons/tb";
 import { IoAnalyticsOutline } from "react-icons/io5";
-import { MdAddchart, MdGroupAdd, MdDomainAdd } from "react-icons/md";
+import {
+  MdAddchart,
+  MdGroupAdd,
+  MdDomainAdd,
+  MdOutlineAddTask,
+} from "react-icons/md";
 import { GrNotes, GrOrganization } from "react-icons/gr";
 import { NavLink } from "react-router-dom";
 import "../../Styles/Mainapp/Mainapphome.css";
 import { useSelector } from "react-redux";
 import { useTranslation } from "react-i18next";
+import { GiEdgeCrack } from "react-icons/gi";
 
 const Mainappnavlinks = ({ setselected, handleSidebar }) => {
   const { t } = useTranslation([
@@ -215,17 +222,38 @@ const Mainappnavlinks = ({ setselected, handleSidebar }) => {
           ],
         },
         {
-          name: `${t("inventory:in-nv-returns")}`,
+          name: `${t("inventory:nv-dealer-return")}`,
           icon: <TbTruckReturn className="icon" />,
-          path: "inventory/returns/deal-return-list",
+          path: "inventory/returns/",
           index: 3.6,
           role: ["admin", "manager", "salesman"],
         },
         {
-          name: `${t("Stock Keeper")}`,
+          name: `${t("inventory:nv-cust-return")}`,
+          icon: <BsSignTurnSlightRight className="icon" />,
+          path: "inventory/returns/cust-return-list/",
+          index: 3.7,
+          role: ["admin", "manager", "salesman"],
+        },
+        {
+          name: `${t("inventory:nv-stockKeeper")}`,
           icon: <TbTruckReturn className="icon" />,
           path: "inventory/stock-keeper/list",
-          index: 3.7,
+          index: 3.8,
+          role: ["admin", "manager", "salesman"],
+        },
+        {
+          name: `${t("inventory:nv-updateSellRate")}`,
+          icon: <MdOutlineAddTask className="icon" />,
+          path: "inventory/update-sell-rate",
+          index: 3.9,
+          role: ["admin", "manager", "salesman"],
+        },
+        {
+          name: `${t("inventory:nv-expiredPro")}`,
+          icon: <GiEdgeCrack className="icon" />,
+          path: "inventory/expired-product",
+          index: 3.11,
           role: ["admin", "manager", "salesman"],
         },
       ],

@@ -981,7 +981,7 @@ const CreateCattleFeed = () => {
                   <span className=" w5"></span>
                   <span className=" w35"></span>
                   <span className=" w10"></span>
-                  <span className="label-text w10">{t("c-total")} :</span>
+                  <span className="label-text w10">{t("ps-ttl-amt")} :</span>
                   <span className="label-text w10 t-end">
                     {cartItem.reduce((acc, item) => acc + item.Amount, 0)}
                   </span>

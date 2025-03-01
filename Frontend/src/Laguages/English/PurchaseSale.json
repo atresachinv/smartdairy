@@ -79,5 +79,8 @@
   "ps-startingStock": "Opening Stock",
   "ps-productList": "Product List",
   "ps-update-Product": "Update Product Details",
-  "ps-ProductFound": "No Product found"
+  "ps-ProductFound": "No Product found",
+  "ps-InvoiceDetails": "Invoice Details",
+  "ps-custRetrnRep": "Customer Returns Report",
+  "ps-addCustReturn": "Add Customer Return"
 }

@@ -1,14 +1,9 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { NavLink } from "react-router-dom";
-import { SiElasticstack } from "react-icons/si";
-import { GiEdgeCrack } from "react-icons/gi";
-import { MdOutlineAddTask } from "react-icons/md";
+import { SiElasticstack } from "react-icons/si"; 
 import "../../../../../Styles/Mainapp/Inventory/InventoryPages/Stock.css";
-import { IoBagAddSharp } from "react-icons/io5";
-import { FaListUl } from "react-icons/fa";
-import { BsSignTurnSlightRight } from "react-icons/bs";
-
+ 
 // eslint-disable-next-line react/prop-types
 const StocksNavlinks = ({ isselected, setIsSelected, userRole }) => {
   const { t } = useTranslation(["milkcollection"]);
@@ -30,37 +25,7 @@ const StocksNavlinks = ({ isselected, setIsSelected, userRole }) => {
       //   { name: "List", path: "list", icon: <FaListUl /> },
       // ],
     },
-    {
-      name: `Expired Product`,
-      icon: <GiEdgeCrack className="icon" />,
-      index: 1,
-      path: "expired/product",
-      role: ["super_admin", "admin"],
-    },
-    {
-      name: `Update Sale Rate`,
-      icon: <MdOutlineAddTask className="icon" />,
-      index: 2,
-      path: "update/sale/rate",
-      role: ["super_admin", "admin"],
-    },
-    // {
-    //   name: `Delivery Stock`,
-    //   icon: <MdOutlineAddTask className="icon" />,
-    //   index: 3,
-    //   path: "delivery/add-stock",
-    //   submenus: [
-    //     { name: "Add", path: "delivery/add-stock", icon: <IoBagAddSharp /> },
-    //     { name: "List", path: "delivery/list", icon: <FaListUl /> },
-    //     {
-    //       name: "Add return",
-    //       path: "delivery/returns",
-    //       icon: <BsSignTurnSlightRight />,
-    //     },
-    //     { name: "Return List", path: "delivery/return-list", icon: <FaListUl /> },
-    //   ],
-    //   role: ["super_admin", "admin", "salesman"],
-    // },
+      
   ];
 
   // Filter links based on userRole

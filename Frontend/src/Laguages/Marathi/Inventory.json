@@ -10,5 +10,10 @@
   "in-de-add": "व्यापारी जोडा",
   "in-de-no": "व्यापारी क्र.",
   "in-de-mname": "मराठी नावं",
-  "in-de-ename": "इंग्रजी नावं"
+  "in-de-ename": "इंग्रजी नावं",
+  "nv-dealer-return": "व्यापारी परत माल",
+  "nv-cust-return": "ग्राहक परत माल",
+  "nv-stockKeeper": "Stock Keeper",
+  "nv-updateSellRate": "अपडेट विक्री दर",
+  "nv-expiredPro": "घट नाश नोंद"
 }
