@@ -3,7 +3,7 @@
     flex-direction: column;
   }
   .custCol {
-    width: 100%;
+    width: 100% !important;
     margin: 10px;
   }
   .deal-info {

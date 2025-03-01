@@ -154,7 +154,7 @@ const CreateStock = () => {
     <div className="h1 w100 d-flex center">
       <div className="d-flex ">
         <div className="bg p10 w100">
-          <span className="heading ">Create Starting Stock</span>
+          <span className="heading "> {t("ps-startingStock")}</span>
           <form className="my10  " onSubmit={handleSubmit}>
             <div className="d-flex sb w100">
               <div className="col w45">
@@ -187,10 +187,10 @@ const CreateStock = () => {
                 >
                   <option value=""> {t("ps-sel-grp")} </option>
                   {[
-                    { value: 1, label: "Cattle Feed" },
-                    { value: 2, label: "Medicines" },
-                    { value: 3, label: "Grocery" },
-                    { value: 4, label: "Other" },
+                    { value: 1, label: `${t("ps-cattle")}` },
+                    { value: 2, label: `${t("ps-medicine")}` },
+                    { value: 3, label: `${t("ps-grocery")}` },
+                    { value: 4, label: `${t("ps-other")}` },
                   ].map((item) => (
                     <option key={item.value} value={item.value}>
                       {item.label}

@@ -11,5 +11,10 @@
     "in-de-add":"Add Dealers",
     "in-de-no":"Dealer No",
     "in-de-mname":"Marathi Name",
-    "in-de-ename":"English Name"
+    "in-de-ename":"English Name",
+    "nv-dealer-return":"Dealer Return",
+    "nv-cust-return":"Customer Return",
+    "nv-stockKeeper":"Stock Keeper",
+    "nv-updateSellRate":"Update Sell Rate",
+    "nv-expiredPro":"Expired Product"
 }

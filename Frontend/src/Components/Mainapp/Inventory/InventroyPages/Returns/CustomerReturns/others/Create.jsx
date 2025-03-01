@@ -1,15 +1,17 @@
 // eslint-disable-next-line no-unused-vars
 import React, { useEffect, useState } from "react";
-import axiosInstance from "../../../../../../App/axiosInstance";
+import axiosInstance from "../../../../../../../App/axiosInstance";
 import { useSelector } from "react-redux";
 import { MdDeleteOutline } from "react-icons/md";
 import { toast } from "react-toastify";
-import "./CustomerReturns.css";
+import "./../CustomerReturns.css";
 import { toWords } from "number-to-words";
 import jsPDF from "jspdf";
 import Swal from "sweetalert2";
+import { useTranslation } from "react-i18next";
 
-const CreateCustomer = () => {
+const OthCreate = () => {
+  const { t } = useTranslation(["puchasesale", "common"]);
   const [date, setDate] = useState("");
   const [cartItem, setCartItem] = useState([]);
   const [cname, setCname] = useState("");
@@ -17,22 +19,25 @@ const CreateCustomer = () => {
   const [rctno, setRctno] = useState(
     localStorage.getItem("custretreceiptno") || 1
   );
-
   const [amt, setAmt] = useState(0);
   const [selectitemcode, setSelectitemcode] = useState(0);
-  const [selectitemgrp, setSelectitemgrp] = useState(1);
   const [qty, setQty] = useState(1);
   const [rate, setRate] = useState(0);
   const [itemList, setItemList] = useState([]);
   const customerslist = useSelector((state) => state.customer.customerlist);
-  const dairyInfo = useSelector((state) => state.dairy.dairyData.SocietyName);
+  const dairyInfo = useSelector(
+    (state) =>
+      state.dairy.dairyData.marathi_name ||
+      state.dairy.dairyData.SocietyName ||
+      state.dairy.dairyData.center_name
+  );
   const [filteredProducts, setFilterProducts] = useState([]);
 
   // Fetch all items for the add to returns
   useEffect(() => {
     const fetchAllItems = async () => {
       try {
-        const { data } = await axiosInstance.get("/item/all");
+        const { data } = await axiosInstance.get("/item/all?ItemGroupCode=4"); //change in other group item
         if (data.itemsData) {
           setItemList(data.itemsData);
         } else {
@@ -99,12 +104,11 @@ const CreateCustomer = () => {
       );
       const newCartItem = {
         ReceiptNo: rctno, // Receipt No
-
         ItemCode: selectedItem?.ItemCode,
         BillDate: date + " 00:00:00",
         Qty: qty,
         CustCode: fcode,
-        ItemGroupCode: selectitemgrp,
+        ItemGroupCode: 4, //update this to the actual item group code
         Rate: rate,
         Amount: qty * rate,
         cn: 1,
@@ -192,27 +196,12 @@ const CreateCustomer = () => {
     e.target.select();
   };
 
-  // Filter out items that are already in the cart
-  const [filteredItems, setFilteredItems] = useState([]);
-
   useEffect(() => {
-    const itemsNotInCart = filteredProducts.filter(
+    const itemsNotInCart = itemList.filter(
       (item) => !cartItem.some((cart) => cart.ItemCode === item.ItemCode)
     );
-    setFilteredItems(itemsNotInCart);
-  }, [filteredProducts, cartItem]);
-
-  //onchange event for itemgroup code
-  useEffect(() => {
-    if (selectitemgrp) {
-      const filteredProducts = itemList.filter(
-        (product) => parseInt(product.ItemGroupCode) === parseInt(selectitemgrp)
-      );
-      setFilterProducts(filteredProducts);
-    } else {
-      setFilterProducts(itemList);
-    }
-  }, [itemList, selectitemgrp]);
+    setFilterProducts(itemsNotInCart);
+  }, [itemList, cartItem]);
 
   // Function to find item name based on item code
   const handleFindItemName = (id) => {
@@ -363,11 +352,11 @@ const CreateCustomer = () => {
   return (
     <div className="h1 w100 d-flex p10 sa a-center cust-return">
       <div className="custCol bg w45 h80">
-        <span className="heading p10">Add Customer Returns</span>
+        <span className="heading p10"> {t("ps-addCustReturn")}</span>
         <div className="w100 py10 px10">
           <div className="d-flex sb">
             <div className="col">
-              <label className="info-text px10">Date:</label>
+              <label className="info-text px10"> {t("ps-date")} :</label>
               <input
                 type="date"
                 className="data"
@@ -378,7 +367,7 @@ const CreateCustomer = () => {
               />
             </div>
             <div className="col">
-              <label className="info-text px10">Receipt No:</label>
+              <label className="info-text px10">{t("ps-rect-no")}:</label>
               <input
                 type="number"
                 name="number"
@@ -392,7 +381,7 @@ const CreateCustomer = () => {
           </div>
           <div className="d-flex sb">
             <div className="col w50">
-              <label className="info-text px10">Farmer Code:</label>
+              <label className="info-text px10"> {t("ps-custCode")}:</label>
               <input
                 type="number"
                 name="code"
@@ -407,7 +396,7 @@ const CreateCustomer = () => {
               />
             </div>
             <div className="col w50">
-              <label className="info-text px10">Farmer Name:</label>
+              <label className="info-text px10">{t("ps-cutName")}:</label>
               <input
                 type="text"
                 name="fname"
@@ -432,7 +421,7 @@ const CreateCustomer = () => {
             </div>
           </div>
           <div className="d-flex sb w100 ">
-            <div className="col w50">
+            {/* <div className="col w50">
               <label className="info-text px10">Select Item Group:</label>
               <select
                 disabled={!cname}
@@ -441,7 +430,7 @@ const CreateCustomer = () => {
                 className="data"
                 onChange={(e) => setSelectitemgrp(parseInt(e.target.value))}
                 onKeyDown={(e) =>
-                  handleKeyPress(e, document.getElementById("selectitemcode"))
+                  handleKeyPress(e, document.getElementById("c"))
                 }
               >
                 <option value="1">Cattle Feeds</option>
@@ -449,9 +438,9 @@ const CreateCustomer = () => {
                 <option value="3">Grocery</option>
                 <option value="4">Others</option>
               </select>
-            </div>
+            </div> */}
             <div className="col w50">
-              <label className="info-text px10">Select Items:</label>
+              <label className="info-text px10">{t("ps-itm-name")}:</label>
 
               <select
                 disabled={!fcode}
@@ -463,9 +452,9 @@ const CreateCustomer = () => {
                   handleKeyPress(e, document.getElementById("qty"))
                 }
               >
-                <option value="0">Select Item</option>
-                {filteredItems.length > 0 &&
-                  filteredItems.map((item, i) => (
+                <option value="0">{t("ps-itm-name")}</option>
+                {filteredProducts.length > 0 &&
+                  filteredProducts.map((item, i) => (
                     <option key={i} value={item.ItemCode}>
                       {item.ItemName}
                     </option>
@@ -476,7 +465,7 @@ const CreateCustomer = () => {
 
           <div className="d-flex sb ">
             <div className="col w50">
-              <label className="info-text px10">QTY:</label>
+              <label className="info-text px10">{t("ps-qty")}:</label>
               <input
                 disabled={!selectitemcode}
                 type="number"
@@ -493,7 +482,7 @@ const CreateCustomer = () => {
               />
             </div>
             <div className="col">
-              <label className="info-text px10">Rate:</label>
+              <label className="info-text px10">{t("ps-rate")}:</label>
               <input
                 type="number"
                 name="rate"
@@ -514,7 +503,7 @@ const CreateCustomer = () => {
           </div>
           <div className="d-flex sb ">
             <div className="col w50">
-              <label className="info-text px10">Amount:</label>
+              <label className="info-text px10">{t("ps-amt")}:</label>
               <input
                 type="number"
                 className="data"
@@ -532,14 +521,14 @@ const CreateCustomer = () => {
         </div>
       </div>
       <div className="custCol bg w45 h80">
-        <span className="heading p10">Item List</span>
+        <span className="heading p10">{t("ps-InvoiceDetails")}</span>
         <div className="w100 h70 p10">
           <div className="w100 h10 d-flex sb a-center t-center sticky-top bg2 py10">
-            <span className="f-label-text w5">No.</span>
-            <span className="f-label-text w15">Name</span>
-            <span className="f-label-text w5">Qty</span>
-            <span className="f-label-text w5">Rate</span>
-            <span className="f-label-text w10">Amount</span>
+            <span className="f-label-text w5"> {t("ps-srNo")}</span>
+            <span className="f-label-text w20"> {t("ps-itm-name")}</span>
+            <span className="f-label-text w5"> {t("ps-qty")}</span>
+            <span className="f-label-text w5"> {t("ps-rate")}</span>
+            <span className="f-label-text w10"> {t("ps-amt")}</span>
             <span className="f-label-text w20">Action</span>
           </div>
           {cartItem.length > 0 ? (
@@ -547,7 +536,7 @@ const CreateCustomer = () => {
               {cartItem.map((item, i) => (
                 <div key={i} className="w100 h10 d-flex sb a-center t-center">
                   <span className="label-text w5">{i + 1}</span>
-                  <span className="label-text w15">
+                  <span className="label-text w20">
                     {handleFindItemName(item.ItemCode)}
                   </span>
                   <span className="label-text w5">{item.Qty}</span>
@@ -566,7 +555,7 @@ const CreateCustomer = () => {
                 <span className="label-text w5"> </span>
                 <span className="label-text w15"></span>
                 <span className="label-text w5"> </span>
-                <span className="label-text w5">Total </span>
+                <span className="label-text w5">{t("ps-ttl-amt")} </span>
                 <span className="label-text w10">
                   {cartItem.reduce((acc, item) => acc + item.Amount, 0)}
                 </span>
@@ -574,12 +563,14 @@ const CreateCustomer = () => {
               </div>
             </>
           ) : (
-            <div className="w100 d-flex h1 center">No Item Available</div>
+            <div className="w100 d-flex h1 center">
+              {t("common:c-no-data-avai")}
+            </div>
           )}
 
           <div className="w100 d-flex j-end  my10">
             <button className="w-btn mx10 " onClick={handelClear}>
-              Clear
+              {t("puchasesale:ps-clr")}
             </button>
             <button className="w-btn mx10" onClick={exportToPDF}>
               Pdf
@@ -590,7 +581,7 @@ const CreateCustomer = () => {
               onClick={handleSubmit}
               disabled={cartItem.length == 0}
             >
-              Save
+              {t("milkcollection:m-btn-save")}
             </button>
           </div>
         </div>
@@ -599,4 +590,4 @@ const CreateCustomer = () => {
   );
 };
 
-export default CreateCustomer;
+export default OthCreate;
