@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import axiosInstance from "../../../../../../App/axiosInstance";
+import axiosInstance from "../../../../../../../App/axiosInstance";
 import { useSelector } from "react-redux";
 import { MdDeleteOutline } from "react-icons/md";
 import { toast } from "react-toastify";
@@ -7,33 +7,35 @@ import { toast } from "react-toastify";
 import { toWords } from "number-to-words";
 import jsPDF from "jspdf";
 import Swal from "sweetalert2";
+import { useTranslation } from "react-i18next";
 
-const CreateDealer = () => {
+const CreateDealerMedi = () => {
+  const { t } = useTranslation(["puchasesale", "milkcollection", "common"]);
   const [date, setDate] = useState("");
   const [cartItem, setCartItem] = useState([]);
   const [cname, setCname] = useState("");
   const [fcode, setFcode] = useState("");
   const [rctno, setRctno] = useState(
-    localStorage.getItem("dealretreceiptno") || 1
+    localStorage.getItem("dealretreceiptno2") || 1
   );
 
   const [amt, setAmt] = useState(0);
   const [selectitemcode, setSelectitemcode] = useState(0);
-  const [selectitemgrp, setSelectitemgrp] = useState(1);
   const [qty, setQty] = useState(1);
   const [rate, setRate] = useState(0);
   const [itemList, setItemList] = useState([]);
   const [dealerList, setDealerList] = useState([]);
-  const [sellrate, setSellrate] = useState(0);
   const [billNo, setBillNo] = useState("9112");
-  const dairyInfo = useSelector((state) => state.dairy.dairyData.SocietyName);
-  const [filteredProducts, setFilterProducts] = useState([]);
+  const dairyInfo = useSelector(
+    (state) =>
+      state.dairy.dairyData.SocietyName || state.dairy.dairyData.center_name
+  );
 
   // Fetch all items for the add to returns
   useEffect(() => {
     const fetchAllItems = async () => {
       try {
-        const { data } = await axiosInstance.get("/item/all");
+        const { data } = await axiosInstance.get("/item/all?ItemGroupCode=2");
         if (data.itemsData) {
           setItemList(data.itemsData);
         } else {
@@ -112,7 +114,7 @@ const CreateDealer = () => {
       setBillNo(`9${timestamp}`);
     };
     generateBillNo();
-  }, []);
+  }, [rctno]);
 
   // Add item to the cart
   const handleAddToCart = () => {
@@ -129,10 +131,9 @@ const CreateDealer = () => {
         qty: qty,
         dealerCode: fcode,
         dealerName: cname,
-        itemgroupcode: selectitemgrp,
+        itemgroupcode: 2, // update in other form
         rate: rate,
         amount: qty * rate,
-        salerate: parseFloat(sellrate),
         cn: 1,
       };
 
@@ -147,7 +148,6 @@ const CreateDealer = () => {
       setRate(0);
       setAmt(0);
       setSelectitemcode(0);
-      setSellrate(0);
     } else {
       toast.error("Please Enter all fields");
     }
@@ -181,13 +181,12 @@ const CreateDealer = () => {
           setQty(1);
           setRate(0);
           setAmt(0);
-          setSellrate(0);
           setRctno(parseInt(rctno) + 1);
           setSelectitemcode(0);
           toast.success(res.data.message);
           const timestamp = Date.now();
           setBillNo(`9${timestamp}`);
-          localStorage.setItem("dealretreceiptno", parseInt(rctno) + 1);
+          localStorage.setItem("dealretreceiptno2", parseInt(rctno) + 1);
         }
       } catch (error) {
         toast.error("Error Submitting items to server");
@@ -204,7 +203,6 @@ const CreateDealer = () => {
     setQty(1);
     setRate(0);
     setAmt(0);
-    setSellrate(0);
     setSelectitemcode(0);
   };
 
@@ -227,23 +225,11 @@ const CreateDealer = () => {
   const [filteredItems, setFilteredItems] = useState([]);
 
   useEffect(() => {
-    const itemsNotInCart = filteredProducts.filter(
+    const itemsNotInCart = itemList.filter(
       (item) => !cartItem.some((cart) => cart.itemcode === item.ItemCode)
     );
     setFilteredItems(itemsNotInCart);
-  }, [filteredProducts, cartItem]);
-
-  //onchange event for itemgroup code
-  useEffect(() => {
-    if (selectitemgrp) {
-      const filteredProducts = itemList.filter(
-        (product) => parseInt(product.ItemGroupCode) === parseInt(selectitemgrp)
-      );
-      setFilterProducts(filteredProducts);
-    } else {
-      setFilterProducts(itemList);
-    }
-  }, [itemList, selectitemgrp]);
+  }, [itemList, cartItem]);
 
   // Function to find item name based on item code
   const handleFindItemName = (id) => {
@@ -394,11 +380,11 @@ const CreateDealer = () => {
   return (
     <div className="h1 w100 d-flex p10 sa a-center cust-return">
       <div className="custCol bg w45 h90">
-        <span className="heading p10">Add Dealer Returns</span>
+        <span className="heading p10"> {t("ps-addDealReturnMedi")}</span>
         <div className="w100  px10">
           <div className="d-flex sb">
             <div className="col">
-              <label className="info-text px10">Date:</label>
+              <label className="info-text px10"> {t("ps-date")}:</label>
               <input
                 type="date"
                 className="data"
@@ -409,7 +395,7 @@ const CreateDealer = () => {
               />
             </div>
             <div className="col">
-              <label className="info-text px10">Receipt No:</label>
+              <label className="info-text px10">{t("ps-rect-no")}:</label>
               <input
                 type="number"
                 name="number"
@@ -423,7 +409,7 @@ const CreateDealer = () => {
           </div>
           <div className="d-flex sb my5">
             <div className="col w50">
-              <label className="info-text px10">Dealer Code:</label>
+              <label className="info-text px10"> {t("ps-custCode")}:</label>
               <input
                 type="number"
                 name="code"
@@ -433,22 +419,22 @@ const CreateDealer = () => {
                 min="0"
                 onFocus={handleFocus}
                 onKeyDown={(e) =>
-                  handleKeyPress(e, document.getElementById("selectitemgrp"))
+                  handleKeyPress(e, document.getElementById("selectitemcode"))
                 }
               />
             </div>
             <div className="col w50">
-              <label className="info-text px10">Dealer Name:</label>
+              <label className="info-text px10">{t("ps-dealer-name")}:</label>
               <select
                 id="cname"
                 value={cname}
                 className="data w100"
                 onChange={(e) => setCname(e.target.value)}
                 onKeyDown={(e) =>
-                  handleKeyPress(e, document.getElementById("selectitemgrp"))
+                  handleKeyPress(e, document.getElementById("selectitemcode"))
                 }
               >
-                <option value="">Select Dealer</option>
+                <option value="">{t("ps-dealer-name")}</option>
                 {dealerList.map((item, i) => (
                   <option key={i} value={item.cname}>
                     {item.cname}
@@ -459,25 +445,7 @@ const CreateDealer = () => {
           </div>
           <div className="d-flex sb w100 ">
             <div className="col w50">
-              <label className="info-text px10">Select Group:</label>
-              <select
-                disabled={!cname}
-                id="selectitemgrp"
-                value={selectitemgrp}
-                className="data"
-                onChange={(e) => setSelectitemgrp(parseInt(e.target.value))}
-                onKeyDown={(e) =>
-                  handleKeyPress(e, document.getElementById("selectitemcode"))
-                }
-              >
-                <option value="1">Cattle Feeds</option>
-                <option value="2">Medicines</option>
-                <option value="3">Grocery</option>
-                <option value="4">Others</option>
-              </select>
-            </div>
-            <div className="col w50">
-              <label className="info-text px10">Select Items:</label>
+              <label className="info-text px10">{t("ps-itm-name")}:</label>
 
               <select
                 disabled={!fcode}
@@ -489,7 +457,7 @@ const CreateDealer = () => {
                   handleKeyPress(e, document.getElementById("qty"))
                 }
               >
-                <option value="0">Select Item</option>
+                <option value="0">{t("ps-itm-name")}</option>
                 {filteredItems.length > 0 &&
                   filteredItems.map((item, i) => (
                     <option key={i} value={item.ItemCode}>
@@ -498,11 +466,8 @@ const CreateDealer = () => {
                   ))}
               </select>
             </div>
-          </div>
-
-          <div className="d-flex sb my5 ">
             <div className="col w50">
-              <label className="info-text px10">QTY:</label>
+              <label className="info-text px10">{t("ps-qty")}:</label>
               <input
                 disabled={!selectitemcode}
                 type="number"
@@ -518,15 +483,18 @@ const CreateDealer = () => {
                 onChange={(e) => setQty(Math.max(1, parseInt(e.target.value)))}
               />
             </div>
+          </div>
+
+          <div className="d-flex sb my5 ">
             <div className="col w50">
-              <label className="info-text px10">Rate:</label>
+              <label className="info-text px10">{t("ps-rate")}:</label>
               <input
                 type="number"
                 name="rate"
                 id="rate"
                 className="data w50"
                 onKeyDown={(e) =>
-                  handleKeyPress(e, document.getElementById("salerate"))
+                  handleKeyPress(e, document.getElementById("addtocart"))
                 }
                 value={rate}
                 onFocus={handleFocus}
@@ -537,27 +505,8 @@ const CreateDealer = () => {
                 disabled={!selectitemcode}
               />
             </div>
-          </div>
-          <div className="d-flex sb ">
             <div className="col w50">
-              <label className="info-text px10">Sale Rate:</label>
-              <input
-                type="number"
-                id="salerate"
-                onKeyDown={(e) =>
-                  handleKeyPress(e, document.getElementById("addtocart"))
-                }
-                className="data"
-                onFocus={handleFocus}
-                name="amount w50"
-                value={sellrate}
-                onChange={(e) =>
-                  setSellrate(Math.max(0, parseFloat(e.target.value)))
-                }
-              />
-            </div>
-            <div className="col w50">
-              <label className="info-text px10">Amount:</label>
+              <label className="info-text px10">{t("ps-amt")}:</label>
               <input
                 type="number"
                 className="data"
@@ -567,22 +516,27 @@ const CreateDealer = () => {
               />
             </div>
           </div>
+
           <div className=" d-flex j-end my10 ">
-            <button className="btn" id="addtocart" onClick={handleAddToCart}>
+            <button
+              className="btn my15"
+              id="addtocart"
+              onClick={handleAddToCart}
+            >
               Add to Cart
             </button>
           </div>
         </div>
       </div>
       <div className="custCol bg w45 h80">
-        <span className="heading p10">Item List</span>
+        <span className="heading p10">{t("ps-InvoiceDetails")}</span>
         <div className="w100 h70 p10">
           <div className="w100 h10 d-flex sb a-center t-center sticky-top bg2 py10">
-            <span className="f-label-text w5">No.</span>
-            <span className="f-label-text w15">Name</span>
-            <span className="f-label-text w5">Qty</span>
-            <span className="f-label-text w5">Rate</span>
-            <span className="f-label-text w10">Amount</span>
+            <span className="f-label-text w5"> {t("ps-srNo")}</span>
+            <span className="f-label-text w20"> {t("ps-itm-name")}</span>
+            <span className="f-label-text w5"> {t("ps-qty")}</span>
+            <span className="f-label-text w5"> {t("ps-rate")}</span>
+            <span className="f-label-text w10"> {t("ps-amt")}</span>
             <span className="f-label-text w20">Action</span>
           </div>
           {cartItem.length > 0 ? (
@@ -613,7 +567,7 @@ const CreateDealer = () => {
                 <span className="label-text w5"></span>
                 <span className="label-text w15"></span>
                 <span className="label-text w5"></span>
-                <span className="label-text w5">Total</span>
+                <span className="label-text w5">{t("ps-ttl-amt")}</span>
                 <span className="label-text w10">
                   {cartItem.reduce(
                     (acc, item) => acc + item.qty * item.rate,
@@ -624,19 +578,21 @@ const CreateDealer = () => {
               </div>
             </>
           ) : (
-            <div className="w100 d-flex h1 center">No Item Available</div>
+            <div className="w100 d-flex h1 center">
+              {t("common:c-no-data-avai")}
+            </div>
           )}
         </div>
         <div className="w100 d-flex j-end py10 my10">
           <button className="w-btn mx10 " onClick={handelClear}>
-            Clear
+            {t("puchasesale:ps-clr")}
           </button>
           <button className="w-btn mx10" onClick={exportToPDF}>
             Pdf
           </button>
 
           <button className="w-btn " onClick={handleSubmit}>
-            Save
+            {t("milkcollection:m-btn-save")}
           </button>
         </div>
       </div>
@@ -644,4 +600,4 @@ const CreateDealer = () => {
   );
 };
 
-export default CreateDealer;
+export default CreateDealerMedi;

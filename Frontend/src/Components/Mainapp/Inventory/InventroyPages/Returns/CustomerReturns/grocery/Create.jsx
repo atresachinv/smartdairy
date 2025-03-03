@@ -17,7 +17,7 @@ const GroCreate = () => {
   const [cname, setCname] = useState("");
   const [fcode, setFcode] = useState("");
   const [rctno, setRctno] = useState(
-    localStorage.getItem("custretreceiptno") || 1
+    localStorage.getItem("custretreceiptno2") || 1
   );
   const [amt, setAmt] = useState(0);
   const [selectitemcode, setSelectitemcode] = useState(0);
@@ -161,7 +161,7 @@ const GroCreate = () => {
           setRctno(parseInt(rctno) + 1);
           setSelectitemcode(0);
           toast.success(res.data.message);
-          localStorage.setItem("custretreceiptno", parseInt(rctno) + 1);
+          localStorage.setItem("custretreceiptno2", parseInt(rctno) + 1);
         }
       } catch (error) {
         console.error("Error Submitting items to server");
@@ -352,7 +352,7 @@ const GroCreate = () => {
   return (
     <div className="h1 w100 d-flex p10 sa a-center cust-return">
       <div className="custCol bg w45 h80">
-        <span className="heading p10"> {t("ps-addCustReturn")}</span>
+        <span className="heading p10"> {t("ps-addCustReturnGrocery")}</span>
         <div className="w100 py10 px10">
           <div className="d-flex sb">
             <div className="col">
@@ -461,9 +461,6 @@ const GroCreate = () => {
                   ))}
               </select>
             </div>
-          </div>
-
-          <div className="d-flex sb ">
             <div className="col w50">
               <label className="info-text px10">{t("ps-qty")}:</label>
               <input
@@ -481,6 +478,9 @@ const GroCreate = () => {
                 onChange={(e) => setQty(Math.max(1, parseInt(e.target.value)))}
               />
             </div>
+          </div>
+
+          <div className="d-flex sb ">
             <div className="col">
               <label className="info-text px10">{t("ps-rate")}:</label>
               <input
@@ -500,8 +500,6 @@ const GroCreate = () => {
                 disabled={!selectitemcode}
               />
             </div>
-          </div>
-          <div className="d-flex sb ">
             <div className="col w50">
               <label className="info-text px10">{t("ps-amt")}:</label>
               <input
@@ -512,7 +510,11 @@ const GroCreate = () => {
                 readOnly
               />
             </div>
-            <div className="col d-flex center ">
+          </div>
+          <div className="d-flex sb ">
+            <div className="col w50"></div>
+
+            <div className="col d-flex center p10">
               <button className="btn" id="addtocart" onClick={handleAddToCart}>
                 Add to Cart
               </button>

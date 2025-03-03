@@ -159,7 +159,7 @@ const StockList = () => {
     <div className="product-list-container w100 h1 d-flex-col p10">
       <div className="download-print-pdf-excel-container w100 h30 d-flex j-center">
         <div className="sales-dates-container w100 h80 d-flex a-center sb sales-dates-container-mobile">
-          <div className="d-flex sb w60 sales-dates-container-mobile-w100">
+          <div className="d-flex sb w60 sales-dates-container-mobile-w100 py10">
             <div>
               <label htmlFor="seletgrop" className="mx5">
                 {t("ps-sel-grp")}:

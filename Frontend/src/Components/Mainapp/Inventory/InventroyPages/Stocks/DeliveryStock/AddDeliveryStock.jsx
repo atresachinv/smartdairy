@@ -8,6 +8,7 @@ import { getAllProducts } from "../../../../../../App/Features/Mainapp/Inventory
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { useTranslation } from "react-i18next";
 import { listEmployee } from "../../../../../../App/Features/Mainapp/Masters/empMasterSlice";
+import { centersLists } from "../../../../../../App/Features/Dairy/Center/centerSlice";
 
 const AddDeliveryStock = () => {
   const dispatch = useDispatch();
@@ -23,7 +24,7 @@ const AddDeliveryStock = () => {
   const [fcode, setFcode] = useState("");
   const [date, setDate] = useState("");
   const [qty, setQty] = useState(1);
-  const [selectitemcode, setSelectitemcode] = useState(0);
+  const [selectitemcode, setSelectitemcode] = useState();
   const [rctno, setRctno] = useState(
     localStorage.getItem("deliveryStock") || 1
   );
@@ -32,14 +33,17 @@ const AddDeliveryStock = () => {
     (state) =>
       state.dairy.dairyData.SocietyName || state.dairy.dairyData.center_name
   );
-  const [selected, setSelected] = useState("option1");
+  const [selected, setSelected] = useState(1);
   const { emplist } = useSelector((state) => state.emp);
-
+  const centerList = useSelector(
+    (state) => state.center.centersList.centersDetails
+  );
   //get all
   useEffect(() => {
     dispatch(getAllProducts());
     dispatch(listEmployee());
-  }, []);
+    dispatch(centersLists());
+  }, [dispatch]);
 
   // set today date
   useEffect(() => {
@@ -47,13 +51,18 @@ const AddDeliveryStock = () => {
   }, []);
 
   //set cname on based fcode
-
+  console.log(centerList);
   useEffect(() => {
-    if (emplist.length > 0) {
+    if (selected === 2 && emplist.length > 0) {
       const customer = emplist.find(
         (customer) => customer.emp_id === parseInt(fcode)
       );
       setCname(customer?.emp_name || "");
+    } else if (selected === 1 && centerList.length > 0) {
+      const customer = centerList.find(
+        (customer) => customer.center_id === parseInt(fcode)
+      );
+      setCname(customer?.center_name || "");
     } else {
       setCname("");
     }
@@ -129,7 +138,7 @@ const AddDeliveryStock = () => {
   const handleSubmit = async () => {
     if (cartItem.length > 0) {
       try {
-        console.log("Submit data ", cartItem);
+        // console.log("Submit data ", cartItem);
 
         const res = await axiosInstance.post("/new/deliverystock", {
           items: cartItem,
@@ -149,13 +158,12 @@ const AddDeliveryStock = () => {
   // Set customer code (fcode) based on cname
 
   useEffect(() => {
-    if (cname && emplist.length > 0) {
+    if (selected === 2 && emplist.length > 0) {
       const custname = emplist.find((item) => item.emp_name === cname);
-      if (custname) {
-        setFcode(custname.emp_id ?? "");
-      } else {
-        setFcode("");
-      }
+      setFcode(custname?.emp_id ?? "");
+    } else if (selected === 1 && centerList.length > 0) {
+      const custname = centerList.find((item) => item.center_name === cname);
+      setFcode(custname?.center_id);
     } else {
       setFcode("");
     }
@@ -479,6 +487,12 @@ const AddDeliveryStock = () => {
     }
   };
 
+  const handleRation = (id) => {
+    setSelected(Number(id));
+    setCname("");
+    setFcode("");
+  };
+
   return (
     <div className="add-cattlefeed-sale-container w100 h1 d-flex-col sa">
       <span className="heading p10">Add Delivery Stock </span>
@@ -528,9 +542,9 @@ const AddDeliveryStock = () => {
                   <input
                     type="radio"
                     name="radio"
-                    value="option1"
-                    checked={selected === "option1"}
-                    onChange={() => setSelected("option1")}
+                    value={1}
+                    checked={selected === 1}
+                    onChange={(e) => handleRation(e.target.value)}
                   />
                   <label htmlFor="" className="info-text  px10 ">
                     Center
@@ -541,9 +555,9 @@ const AddDeliveryStock = () => {
                   <input
                     type="radio"
                     name="radio"
-                    value="option2"
-                    checked={selected === "option2"}
-                    onChange={() => setSelected("option2")}
+                    value={2}
+                    checked={selected === 2}
+                    onChange={(e) => handleRation(e.target.value)}
                   />
                   <label htmlFor="" className="info-text  px10  my5">
                     Employee
@@ -589,7 +603,7 @@ const AddDeliveryStock = () => {
                 }
               />
               <datalist id="farmer-list">
-                {selected === "option1" ? (
+                {selected === 2 ? (
                   <></>
                 ) : (
                   emplist &&
@@ -599,6 +613,20 @@ const AddDeliveryStock = () => {
                     )
                     .map((emp, index) => (
                       <option key={index} value={emp.emp_name} />
+                    ))
+                )}
+                {selected === 1 ? (
+                  <></>
+                ) : (
+                  centerList &&
+                  centerList
+                    .filter((emp) =>
+                      emp.center_name
+                        .toLowerCase()
+                        .includes(cname.toLowerCase())
+                    )
+                    .map((emp, index) => (
+                      <option key={index} value={emp.center_name} />
                     ))
                 )}
               </datalist>

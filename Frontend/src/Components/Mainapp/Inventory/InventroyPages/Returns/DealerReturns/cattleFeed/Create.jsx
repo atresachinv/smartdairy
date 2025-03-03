@@ -1,43 +1,41 @@
-// eslint-disable-next-line no-unused-vars
 import React, { useEffect, useState } from "react";
 import axiosInstance from "../../../../../../../App/axiosInstance";
 import { useSelector } from "react-redux";
 import { MdDeleteOutline } from "react-icons/md";
 import { toast } from "react-toastify";
-import "./../CustomerReturns.css";
+// import "./DealerReturns.css";
 import { toWords } from "number-to-words";
 import jsPDF from "jspdf";
 import Swal from "sweetalert2";
 import { useTranslation } from "react-i18next";
 
-const Create = () => {
-  const { t } = useTranslation(["puchasesale", "common"]);
+const CreateDealer = () => {
+  const { t } = useTranslation(["puchasesale", "milkcollection", "common"]);
   const [date, setDate] = useState("");
   const [cartItem, setCartItem] = useState([]);
   const [cname, setCname] = useState("");
   const [fcode, setFcode] = useState("");
   const [rctno, setRctno] = useState(
-    localStorage.getItem("custretreceiptno") || 1
+    localStorage.getItem("dealretreceiptno") || 1
   );
+
   const [amt, setAmt] = useState(0);
   const [selectitemcode, setSelectitemcode] = useState(0);
   const [qty, setQty] = useState(1);
   const [rate, setRate] = useState(0);
   const [itemList, setItemList] = useState([]);
-  const customerslist = useSelector((state) => state.customer.customerlist);
+  const [dealerList, setDealerList] = useState([]);
+  const [billNo, setBillNo] = useState("9112");
   const dairyInfo = useSelector(
     (state) =>
-      state.dairy.dairyData.marathi_name ||
-      state.dairy.dairyData.SocietyName ||
-      state.dairy.dairyData.center_name
+      state.dairy.dairyData.SocietyName || state.dairy.dairyData.center_name
   );
-  const [filteredProducts, setFilterProducts] = useState([]);
 
   // Fetch all items for the add to returns
   useEffect(() => {
     const fetchAllItems = async () => {
       try {
-        const { data } = await axiosInstance.get("/item/all?ItemGroupCode=1"); //change in other group item
+        const { data } = await axiosInstance.get("/item/all?ItemGroupCode=1");
         if (data.itemsData) {
           setItemList(data.itemsData);
         } else {
@@ -50,35 +48,48 @@ const Create = () => {
     fetchAllItems();
   }, []);
 
-  // Set customer name and ID based on the farmer code
+  // Fetch all dealer from API
   useEffect(() => {
-    if (customerslist.length > 0 && fcode) {
-      const customer = customerslist.find(
+    const fetchDealerList = async () => {
+      try {
+        const response = await axiosInstance.post("/dealer");
+        let customers = response?.data?.customerList || [];
+        customers.sort((a, b) => new Date(b.createdon) - new Date(a.createdon));
+        setDealerList(customers);
+      } catch (error) {
+        toast.error("Failed to fetch Dealer. Please try again.");
+      }
+    };
+    fetchDealerList();
+  }, []);
+
+  // Set customer name on the dealer code
+  useEffect(() => {
+    if (fcode) {
+      const dealer = dealerList.find(
         (customer) => customer.srno === parseInt(fcode)
       );
-      if (customer) {
-        setCname(customer.cname || "");
+      if (dealer) {
+        setCname(dealer.cname);
       } else {
-        setCname("");
+        setCname(""); // Reset if code doesn't match
       }
     } else {
       setCname("");
     }
-  }, [fcode, customerslist]);
+  }, [fcode, dealerList]);
 
-  // Set customer code (fcode) based on cname
+  // Set dealer code on the dealer name
   useEffect(() => {
-    if (cname && customerslist.length > 0) {
-      const custname = customerslist.find((item) => item.cname === cname);
-      if (custname) {
-        setFcode(custname.srno ?? "");
+    if (cname) {
+      const dealer = dealerList.find((customer) => customer.cname === cname);
+      if (dealer) {
+        setFcode(dealer.srno.toString());
       } else {
-        setFcode("");
+        setFcode(""); // Reset if name doesn't match
       }
-    } else {
-      setFcode("");
     }
-  }, [cname, customerslist]);
+  }, [cname, dealerList]);
 
   // Function to get the current date
   const getTodaysDate = () => {
@@ -96,6 +107,15 @@ const Create = () => {
     setAmt(rate * qty);
   }, [rate, qty]);
 
+  // Generate a new bill number using the current timestamp
+  useEffect(() => {
+    const generateBillNo = () => {
+      const timestamp = Date.now();
+      setBillNo(`9${timestamp}`);
+    };
+    generateBillNo();
+  }, [rctno]);
+
   // Add item to the cart
   const handleAddToCart = () => {
     if (selectitemcode > 0 && qty > 0 && rate > 0) {
@@ -103,14 +123,17 @@ const Create = () => {
         (item) => item.ItemCode === selectitemcode
       );
       const newCartItem = {
-        ReceiptNo: rctno, // Receipt No
-        ItemCode: selectedItem?.ItemCode,
-        BillDate: date + " 00:00:00",
-        Qty: qty,
-        CustCode: fcode,
-        ItemGroupCode: 1, //update this to the actual item group code
-        Rate: rate,
-        Amount: qty * rate,
+        receiptno: rctno, // Receipt No
+        BillNo: billNo,
+        itemcode: selectedItem?.ItemCode,
+        itemname: selectedItem?.ItemName,
+        purchasedate: date + " 00:00:00",
+        qty: qty,
+        dealerCode: fcode,
+        dealerName: cname,
+        itemgroupcode: 1, // update in other form
+        rate: rate,
+        amount: qty * rate,
         cn: 1,
       };
 
@@ -151,7 +174,7 @@ const Create = () => {
   const handleSubmit = async () => {
     if (cartItem.length > 0) {
       try {
-        const res = await axiosInstance.post("/sale/create", cartItem);
+        const res = await axiosInstance.post("/purchase/new", cartItem);
         if (res?.data?.success) {
           setFcode("");
           setCartItem([]);
@@ -161,10 +184,12 @@ const Create = () => {
           setRctno(parseInt(rctno) + 1);
           setSelectitemcode(0);
           toast.success(res.data.message);
-          localStorage.setItem("custretreceiptno", parseInt(rctno) + 1);
+          const timestamp = Date.now();
+          setBillNo(`9${timestamp}`);
+          localStorage.setItem("dealretreceiptno", parseInt(rctno) + 1);
         }
       } catch (error) {
-        console.error("Error Submitting items to server");
+        toast.error("Error Submitting items to server");
       }
     } else {
       toast.error("Please add items to the cart");
@@ -196,11 +221,14 @@ const Create = () => {
     e.target.select();
   };
 
+  // Filter out items that are already in the cart
+  const [filteredItems, setFilteredItems] = useState([]);
+
   useEffect(() => {
     const itemsNotInCart = itemList.filter(
-      (item) => !cartItem.some((cart) => cart.ItemCode === item.ItemCode)
+      (item) => !cartItem.some((cart) => cart.itemcode === item.ItemCode)
     );
-    setFilterProducts(itemsNotInCart);
+    setFilteredItems(itemsNotInCart);
   }, [itemList, cartItem]);
 
   // Function to find item name based on item code
@@ -212,7 +240,7 @@ const Create = () => {
   // Function to handle download pdf the invoice
   const exportToPDF = () => {
     if (cartItem.length === 0) {
-      alert("No data available to export.");
+      toast.error("No data available to export.");
       return;
     }
     handleSubmit();
@@ -229,13 +257,13 @@ const Create = () => {
     const columns = ["Sr No", "Items", "Qty", "Rate", "Amount"];
     const rows = cartItem.map((item, index) => [
       index + 1,
-      handleFindItemName(item.ItemCode),
-      item.Qty,
-      item.Rate,
-      item.Amount,
+      handleFindItemName(item.itemcode),
+      item.qty,
+      item.rate,
+      item.amount,
     ]);
 
-    const totalAmount = cartItem.reduce((acc, item) => acc + item.Amount, 0);
+    const totalAmount = cartItem.reduce((acc, item) => acc + item.amount, 0);
 
     // Page width for centering text
     const pageWidth = doc.internal.pageSize.getWidth();
@@ -351,12 +379,12 @@ const Create = () => {
 
   return (
     <div className="h1 w100 d-flex p10 sa a-center cust-return">
-      <div className="custCol bg w45 h80">
-        <span className="heading p10"> {t("ps-addCustReturnCattleFeed")}</span>
-        <div className="w100 py10 px10">
+      <div className="custCol bg w45 h90">
+        <span className="heading p10"> {t("ps-addDealReturnCattleFeed")}</span>
+        <div className="w100  px10">
           <div className="d-flex sb">
             <div className="col">
-              <label className="info-text px10"> {t("ps-date")} :</label>
+              <label className="info-text px10"> {t("ps-date")}:</label>
               <input
                 type="date"
                 className="data"
@@ -379,66 +407,43 @@ const Create = () => {
               />
             </div>
           </div>
-          <div className="d-flex sb">
+          <div className="d-flex sb my5">
             <div className="col w50">
               <label className="info-text px10"> {t("ps-custCode")}:</label>
               <input
                 type="number"
                 name="code"
-                className="data"
+                className="data "
                 value={fcode}
                 onChange={(e) => setFcode(e.target.value.replace(/\D/, ""))}
                 min="0"
                 onFocus={handleFocus}
                 onKeyDown={(e) =>
-                  handleKeyPress(e, document.getElementById("selectitemgrp"))
+                  handleKeyPress(e, document.getElementById("selectitemcode"))
                 }
               />
             </div>
             <div className="col w50">
-              <label className="info-text px10">{t("ps-cutName")}:</label>
-              <input
-                type="text"
-                name="fname"
-                className="data w100"
-                list="farmer-list"
-                onFocus={handleFocus}
+              <label className="info-text px10">{t("ps-dealer-name")}:</label>
+              <select
+                id="cname"
                 value={cname}
+                className="data w100"
                 onChange={(e) => setCname(e.target.value)}
                 onKeyDown={(e) =>
-                  handleKeyPress(e, document.getElementById("selectitemgrp"))
+                  handleKeyPress(e, document.getElementById("selectitemcode"))
                 }
-              />
-              <datalist id="farmer-list">
-                {customerslist
-                  .filter((customer) =>
-                    customer.cname.toLowerCase().includes(cname.toLowerCase())
-                  )
-                  .map((customer, index) => (
-                    <option key={index} value={customer.cname} />
-                  ))}
-              </datalist>
+              >
+                <option value="">{t("ps-dealer-name")}</option>
+                {dealerList.map((item, i) => (
+                  <option key={i} value={item.cname}>
+                    {item.cname}
+                  </option>
+                ))}
+              </select>
             </div>
           </div>
           <div className="d-flex sb w100 ">
-            {/* <div className="col w50">
-              <label className="info-text px10">Select Item Group:</label>
-              <select
-                disabled={!cname}
-                id="selectitemgrp"
-                value={selectitemgrp}
-                className="data"
-                onChange={(e) => setSelectitemgrp(parseInt(e.target.value))}
-                onKeyDown={(e) =>
-                  handleKeyPress(e, document.getElementById("c"))
-                }
-              >
-                <option value="1">Cattle Feeds</option>
-                <option value="2">Medicines</option>
-                <option value="3">Grocery</option>
-                <option value="4">Others</option>
-              </select>
-            </div> */}
             <div className="col w50">
               <label className="info-text px10">{t("ps-itm-name")}:</label>
 
@@ -453,8 +458,8 @@ const Create = () => {
                 }
               >
                 <option value="0">{t("ps-itm-name")}</option>
-                {filteredProducts.length > 0 &&
-                  filteredProducts.map((item, i) => (
+                {filteredItems.length > 0 &&
+                  filteredItems.map((item, i) => (
                     <option key={i} value={item.ItemCode}>
                       {item.ItemName}
                     </option>
@@ -480,8 +485,8 @@ const Create = () => {
             </div>
           </div>
 
-          <div className="d-flex sb ">
-            <div className="col">
+          <div className="d-flex sb my5 ">
+            <div className="col w50">
               <label className="info-text px10">{t("ps-rate")}:</label>
               <input
                 type="number"
@@ -511,13 +516,15 @@ const Create = () => {
               />
             </div>
           </div>
-          <div className="d-flex sb ">
-            <div className="col w50"></div>
-            <div className="col d-flex center p10 ">
-              <button className="btn" id="addtocart" onClick={handleAddToCart}>
-                Add to Cart
-              </button>
-            </div>
+
+          <div className=" d-flex j-end my10 ">
+            <button
+              className="btn my15"
+              id="addtocart"
+              onClick={handleAddToCart}
+            >
+              Add to Cart
+            </button>
           </div>
         </div>
       </div>
@@ -535,14 +542,17 @@ const Create = () => {
           {cartItem.length > 0 ? (
             <>
               {cartItem.map((item, i) => (
-                <div key={i} className="w100 h10 d-flex sb a-center t-center">
+                <div
+                  key={i}
+                  className="w100 h10 d-flex sb a-center t-center py10"
+                >
                   <span className="label-text w5">{i + 1}</span>
-                  <span className="label-text w20">
-                    {handleFindItemName(item.ItemCode)}
+                  <span className="label-text w15">
+                    {handleFindItemName(item.itemcode)}
                   </span>
-                  <span className="label-text w5">{item.Qty}</span>
-                  <span className="label-text w5">{item.Rate}</span>
-                  <span className="label-text w10">{item.Qty * item.Rate}</span>
+                  <span className="label-text w5">{item.qty}</span>
+                  <span className="label-text w5">{item.rate}</span>
+                  <span className="label-text w10">{item.qty * item.rate}</span>
                   <span className="label-text w20 d-flex j-center">
                     <MdDeleteOutline
                       color="red"
@@ -552,13 +562,17 @@ const Create = () => {
                   </span>
                 </div>
               ))}
-              <div className="w100 h10 d-flex sb a-center t-center ">
-                <span className="label-text w5"> </span>
+
+              <div className="w100 h10 d-flex sb a-center t-center">
+                <span className="label-text w5"></span>
                 <span className="label-text w15"></span>
-                <span className="label-text w5"> </span>
-                <span className="label-text w5">{t("ps-ttl-amt")} </span>
+                <span className="label-text w5"></span>
+                <span className="label-text w5">{t("ps-ttl-amt")}</span>
                 <span className="label-text w10">
-                  {cartItem.reduce((acc, item) => acc + item.Amount, 0)}
+                  {cartItem.reduce(
+                    (acc, item) => acc + item.qty * item.rate,
+                    0
+                  )}
                 </span>
                 <span className="label-text w20 d-flex j-center"></span>
               </div>
@@ -568,27 +582,22 @@ const Create = () => {
               {t("common:c-no-data-avai")}
             </div>
           )}
+        </div>
+        <div className="w100 d-flex j-end py10 my10">
+          <button className="w-btn mx10 " onClick={handelClear}>
+            {t("puchasesale:ps-clr")}
+          </button>
+          <button className="w-btn mx10" onClick={exportToPDF}>
+            Pdf
+          </button>
 
-          <div className="w100 d-flex j-end  my10">
-            <button className="w-btn mx10 " onClick={handelClear}>
-              {t("puchasesale:ps-clr")}
-            </button>
-            <button className="w-btn mx10" onClick={exportToPDF}>
-              Pdf
-            </button>
-
-            <button
-              className="w-btn "
-              onClick={handleSubmit}
-              disabled={cartItem.length == 0}
-            >
-              {t("milkcollection:m-btn-save")}
-            </button>
-          </div>
+          <button className="w-btn " onClick={handleSubmit}>
+            {t("milkcollection:m-btn-save")}
+          </button>
         </div>
       </div>
     </div>
   );
 };
 
-export default Create;
+export default CreateDealer;
