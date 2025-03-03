@@ -24,7 +24,7 @@ const CreateCattleFeed = () => {
   const salesRates = useSelector((state) => state.sales.salesRates);
   const customerslist = useSelector((state) => state.customer.customerlist);
   const productlist = useSelector(
-    (state) => state.inventory.allProducts,
+    (state) => state.inventory.allProducts || [],
     shallowEqual
   );
   const [cartItem, setCartItem] = useState([]);
