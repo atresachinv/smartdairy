@@ -2,14 +2,17 @@
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import Swal from "sweetalert2";
-import axiosInstance from "../../../../../../App/axiosInstance";
+import axiosInstance from "../../../../../../../App/axiosInstance";
 import { MdAddShoppingCart, MdDeleteOutline } from "react-icons/md";
 import { IoClose } from "react-icons/io5";
 import * as XLSX from "xlsx";
-import Spinner from "../../../../../Home/Spinner/Spinner";
+import Spinner from "../../../../../../Home/Spinner/Spinner";
 import { NavLink } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import { FaDownload } from "react-icons/fa6";
 
 const List = () => {
+  const { t } = useTranslation(["puchasesale", "common"]);
   const [date1, SetDate1] = useState("");
   const [date2, SetDate2] = useState("");
   const [fcode, setFcode] = useState("");
@@ -54,7 +57,9 @@ const List = () => {
     const fetchPurchaseList = async () => {
       setLoading(true);
       try {
-        const response = await axiosInstance.get("/purchase/all?cn=1");
+        const response = await axiosInstance.get(
+          "/purchase/all?cn=1&ItemGroupCode=1"
+        );
         let purchase = response?.data?.purchaseData || [];
         purchase.sort(
           (a, b) => new Date(b.purchasedate) - new Date(a.purchasedate)
@@ -97,7 +102,7 @@ const List = () => {
     try {
       const queryParams = new URLSearchParams(getItem).toString();
       const { data } = await axiosInstance.get(
-        `/purchase/all?cn=1&${queryParams}`
+        `/purchase/all?cn=1&ItemGroupCode=1&${queryParams}`
       );
       // console.log(data);
       if (data?.success) {
@@ -172,14 +177,15 @@ const List = () => {
 
   const groupedPurchaseArray = Object.values(groupedPurchase);
 
-  //for filter item grp code
+  //for searching Name /code to get the purchase list ------------------------------------------->
   useEffect(() => {
     if (fcode) {
-      const filteredItems = purchaseList.filter((item) => {
-        const isCodeMatch = item.itemgroupcode.toString().includes(fcode);
-        return isCodeMatch;
-      });
-
+      const filteredItems = purchaseList.filter(
+        (item) =>
+          item.dealerCode.toString().includes(fcode) ||
+          item.dealerName.toLowerCase().includes(fcode.toLowerCase()) ||
+          item.receiptno.toString().includes(fcode.toLowerCase())
+      );
       setfilteredPurchaseList(filteredItems);
     } else {
       setfilteredPurchaseList(purchaseList);
@@ -203,7 +209,7 @@ const List = () => {
           <div className="d-flex sb w60 sales-dates-container-mobile-w100">
             <div className="date-input-div w35 d-flex a-center sb">
               <label htmlFor="" className="label-text w30">
-                From :
+                {t("ps-from")} :
               </label>
               <input
                 type="date"
@@ -215,7 +221,7 @@ const List = () => {
             </div>
             <div className="date-input-div w35 d-flex a-center sb">
               <label htmlFor="" className="label-text w30">
-                To :
+                {t("ps-to")} :
               </label>
               <input
                 type="date"
@@ -226,12 +232,12 @@ const List = () => {
               />
             </div>
             <button className="w-btn" onClick={handleShowbutton}>
-              Show
+              {t("ps-show")}
             </button>
           </div>
-          <div className="d-flex h1 sb center w30 sales-dates-container-mobile-w100  ">
+          <div className="d-flex h1 sb center w30 sales-dates-container-mobile-w100 bg p10">
             <label htmlFor="" className="label-text   ">
-              Add Dealer Return
+              {t("ps-addDealReturnCattleFeed")}
             </label>
             <NavLink
               className="w-btn d-flex "
@@ -239,46 +245,45 @@ const List = () => {
               to="add-deal-return"
             >
               <MdAddShoppingCart className="icon f-label" />
-              Add
+              {t("ps-new")}
             </NavLink>
           </div>
         </div>
-        <div className="w100 d-flex sa my5">
-          <div>
-            <label htmlFor="" className="info-text px10">
-              Select Item Group:
-            </label>
-            <select
-              id="selectitemcode"
-              className="data"
+        <div className="find-customer-container w100   d-flex a-center my5 py5">
+          <div className="customer-search-div  d-flex a-center sb">
+            <input
+              type="text"
+              className="data w100"
+              name="code"
+              onFocus={(e) => e.target.select()}
               value={fcode}
               onChange={(e) =>
                 setFcode(e.target.value.replace(/[^a-zA-Z0-9 ]/g, ""))
               }
-            >
-              <option value="">All</option>
-              <option value="1">Cattle Feeds</option>
-              <option value="2">Medicines</option>
-              <option value="3">Grocery</option>
-              <option value="4">Others</option>
-            </select>
+              min="0"
+              title="Enter code or name to search details"
+              placeholder={`${t("ps-search")}`}
+            />
           </div>
-
-          <button className="w-btn" onClick={downloadExcel}>
-            Export Excel
+          <button
+            className="w-btn mx10 sales-dates-container-mobile-btn"
+            onClick={downloadExcel}
+          >
+            <span className="f-label-text px10"> {t("ps-down-excel")}</span>
+            <FaDownload />
           </button>
         </div>
       </div>
       <div className="customer-list-table w100 h1 d-flex-col hidescrollbar bg">
-        <span className="heading p10">Dealer Returns Report</span>
+        <span className="heading p10">{t("ps-dealRetrnRep")}</span>
         <div className="customer-heading-title-scroller w100 h1 mh100 d-flex-col">
           <div className="data-headings-div sale-data-headings-div h10 d-flex center t-center sb bg7">
-            <span className="f-info-text w5">Sr.No</span>
-            <span className="f-info-text w5">Date</span>
-            <span className="f-info-text w5">Rec. No</span>
-            <span className="f-info-text w10">DealerCode</span>
-            <span className="f-info-text w25">Dealer Name</span>
-            <span className="f-info-text w5">Amount</span>
+            <span className="f-info-text w5">{t("ps-srNo")}</span>
+            <span className="f-info-text w5">{t("ps-date")}</span>
+            <span className="f-info-text w5">{t("ps-rect-no")}</span>
+            <span className="f-info-text w10">{t("ps-code")}</span>
+            <span className="f-info-text w25">{t("ps-dealer-name")}</span>
+            <span className="f-info-text w5">{t("ps-ttl-amt")}</span>
             <span className="f-info-text w5">Actions</span>
           </div>
           {/* Show Spinner if loading, otherwise show the feed list */}
@@ -310,7 +315,7 @@ const List = () => {
                     onClick={() => handleView(item?.billno)}
                     title="View the Bill"
                   >
-                    View
+                    {t("ps-view")}
                   </button>
                   <MdDeleteOutline
                     onClick={() => handleDelete(item?.billno)}
@@ -325,7 +330,7 @@ const List = () => {
               </div>
             ))
           ) : (
-            <div className="d-flex h1 center">No Items found</div>
+            <div className="d-flex h1 center">{t("common:c-no-data-avai")}</div>
           )}
         </div>
       </div>
@@ -334,7 +339,7 @@ const List = () => {
         <div className="pramod modal">
           <div className="modal-content">
             <div className="d-flex sb deal-info">
-              <h2> Invoice Details</h2>
+              <h2> {t("ps-InvoiceDetails")}</h2>
               <IoClose
                 style={{ cursor: "pointer" }}
                 className="icon"
@@ -343,13 +348,20 @@ const List = () => {
             </div>
             <hr />
             <div className=" d-flex sb mx15 px15 deal-info-name">
-              <h4>Rect. No : {viewItems[0]?.receiptno || ""}</h4>
+              <h4>
+                {" "}
+                {t("ps-rect-no")} : {viewItems[0]?.receiptno || ""}
+              </h4>
               <div className="10">
-                Date :{formatDateToDDMMYYYY(viewItems[0]?.purchasedate)}
+                {t("ps-date")} :
+                {formatDateToDDMMYYYY(viewItems[0]?.purchasedate)}
               </div>
             </div>
             <div className=" d-flex sb mx15 px15 deal-info-name">
-              <h4>Dealer code : {viewItems[0]?.dealerCode || ""}</h4>
+              <h4>
+                {" "}
+                {t("ps-code")} : {viewItems[0]?.dealerCode || ""}
+              </h4>
               <h4 className="mx15">{viewItems[0]?.dealerName || ""}</h4>
             </div>
             <div className="modal-content w100  ">
@@ -357,11 +369,11 @@ const List = () => {
                 <table className="sales-table w100 ">
                   <thead className="bg1">
                     <tr>
-                      <th>SrNo</th>
-                      <th>Item Name</th>
-                      <th>Rate</th>
-                      <th>Qty</th>
-                      <th>Amount</th>
+                      <th className="f-info-text"> {t("ps-srNo")}</th>
+                      <th className="f-info-text"> {t("ps-itm-name")}</th>
+                      <th className="f-info-text"> {t("ps-rate")}</th>
+                      <th className="f-info-text"> {t("ps-qty")}</th>
+                      <th className="f-info-text"> {t("ps-amt")}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -380,7 +392,7 @@ const List = () => {
                       <td></td>
                       <td></td>
                       <td>
-                        <b>Total</b>
+                        <b> {t("ps-ttl-amt")}</b>
                       </td>
                       <td>
                         {(viewItems || []).reduce(

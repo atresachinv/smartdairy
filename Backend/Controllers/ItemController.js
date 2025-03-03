@@ -78,7 +78,10 @@ exports.getAllProducts = async (req, res) => {
         if (result.length === 0) {
           return res
             .status(200)
-            .json({ message: "No product found matching criteria!" });
+            .json({
+              message: "No product found matching criteria!",
+              productData: [],
+            });
         }
 
         res.status(200).json({

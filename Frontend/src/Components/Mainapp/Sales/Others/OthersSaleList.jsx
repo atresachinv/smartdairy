@@ -12,6 +12,7 @@ import { TbSortAscending2, TbSortDescending2 } from "react-icons/tb";
 import "../../../../Styles/Mainapp/Sales/Sales.css";
 import { NavLink } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { FaDownload } from "react-icons/fa6";
 
 const OthersSaleList = () => {
   const { t } = useTranslation(["puchasesale", "common"]);
@@ -327,7 +328,7 @@ const OthersSaleList = () => {
     <div className="customer-list-container-div w100 h1 d-flex-col p10">
       <div className="download-print-pdf-excel-container w100 h30 d-flex-col sb">
         <div className="sales-dates-container w100 h50 d-flex a-center sb sales-dates-container-mobile">
-          <div className="d-flex sb w60 sales-dates-container-mobile-w100">
+          <div className="d-flex sb w60 sales-dates-container-mobile-w100 py5">
             <div className="date-input-div w35 d-flex a-center sb">
               <label htmlFor="" className="label-text w30">
                 {t("ps-from")} :
@@ -390,7 +391,8 @@ const OthersSaleList = () => {
             className="w-btn mx10 sales-dates-container-mobile-btn"
             onClick={downloadExcel}
           >
-            {t("ps-down-excel")}
+            <span className="f-label-text px10"> {t("ps-down-excel")}</span>
+            <FaDownload />
           </button>
         </div>
       </div>

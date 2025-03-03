@@ -237,7 +237,7 @@ const Create = () => {
 
   return (
     <div className="purchase-cattle-feed-container w100 h1 d-flex-col p10">
-      <span className="heading">Add Other Items : </span>
+      <span className="heading"> {t("ps-nv-add-other")}</span>
       <div className="purchase-cattle-feed-inner-container w100 h1 d-flex sb">
         <form className="purchase-cattle-feed-form-container w50 h1 bg p10">
           <div className="purchase-input-row w100 h15 d-flex  a-center sb">

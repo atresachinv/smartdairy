@@ -10,6 +10,7 @@ import { NavLink } from "react-router-dom";
 import axiosInstance from "../../../../../../../App/axiosInstance";
 import Spinner from "../../../../../../Home/Spinner/Spinner";
 import { useTranslation } from "react-i18next";
+import { FaDownload } from "react-icons/fa6";
 
 const OthList = () => {
   const { t } = useTranslation(["puchasesale", "common"]);
@@ -284,7 +285,7 @@ const OthList = () => {
           </div>
           <div className="d-flex h1 sb center w30 sales-dates-container-mobile-w100  p10 bg">
             <label htmlFor="" className="label-text   ">
-              {t("ps-addCustReturn")}
+              {t("ps-addCustReturnOther")}
             </label>
             <NavLink
               className="w-btn d-flex "
@@ -316,7 +317,8 @@ const OthList = () => {
             className="w-btn mx10 sales-dates-container-mobile-btn"
             onClick={downloadExcel}
           >
-            {t("ps-down-excel")}
+            <span className="f-label-text px10"> {t("ps-down-excel")}</span>
+            <FaDownload />
           </button>
         </div>
       </div>

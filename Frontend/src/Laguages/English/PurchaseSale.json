@@ -82,5 +82,14 @@
   "ps-ProductFound": "No Product found",
   "ps-InvoiceDetails": "Invoice Details",
   "ps-custRetrnRep": "Customer Returns Report",
-  "ps-addCustReturn": "Add Customer Return"
+  "ps-addCustReturn": "Add Customer Return",
+  "ps-addCustReturnCattleFeed": "Cust Return Cattle Feed",
+  "ps-addCustReturnGrocery": "Cust Return Grocery",
+  "ps-addCustReturnMedi": "Cust Return Medicines",
+  "ps-addCustReturnOther": "Cust Return Others",
+  "ps-dealRetrnRep": "Dealer Returns Report",
+  "ps-addDealReturnCattleFeed": "Dealer Return Cattle Feed",
+  "ps-addDealReturnGrocery": "Dealer Return Grocery",
+  "ps-addDealReturnMedi": "Dealer Return Medicines",
+  "ps-addDealReturnOther": "Dealer Return Others"
 }

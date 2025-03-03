@@ -9,6 +9,7 @@ import Spinner from "../../../../../Home/Spinner/Spinner";
 import { IoClose } from "react-icons/io5";
 import { useDispatch, useSelector } from "react-redux";
 import { listEmployee } from "../../../../../../App/Features/Mainapp/Masters/empMasterSlice";
+import { FaDownload } from "react-icons/fa6";
 import { NavLink } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
@@ -358,7 +359,8 @@ const ListDeliveryStock = () => {
             className="w-btn mx10 sales-dates-container-mobile-btn"
             onClick={downloadExcel}
           >
-            {t("ps-down-excel")}
+            <span className="f-label-text px10"> {t("ps-down-excel")}</span>
+            <FaDownload />
           </button>
         </div>
       </div>
@@ -366,9 +368,9 @@ const ListDeliveryStock = () => {
         <span className="heading p10">Delivery Stock Report</span>
         <div className="customer-heading-title-scroller w100 h1 mh100 hidescrollbar d-flex-col">
           <div className="data-headings-div h10 d-flex center forDWidth t-center bg7 sb">
-            <span className="f-info-text w5">SrNo</span>
+            <span className="f-info-text w5"> {t("ps-srNo")}</span>
             <span className="f-info-text w10">
-              Date{" "}
+              {t("ps-date")}
               <span
                 className="px10 f-color-icon"
                 type="button"
@@ -381,9 +383,9 @@ const ListDeliveryStock = () => {
                 )}
               </span>
             </span>
-            <span className="f-info-text w5">Rec. No</span>
-            <span className="f-info-text w10">Emp Code</span>
-            <span className="f-info-text w15">Emp Name</span>
+            <span className="f-info-text w5">Chalan.No</span>
+            <span className="f-info-text w10">Party Code</span>
+            <span className="f-info-text w15">Party Name</span>
             <span className="f-info-text w10">Actions</span>
           </div>
           {loading ? (
@@ -418,7 +420,7 @@ const ListDeliveryStock = () => {
                         className="px5 "
                         onClick={() => handleEditClick(item.billno)}
                       >
-                        View
+                        {t("ps-view")}
                       </button>
                       <MdDeleteOutline
                         onClick={() => handleDelete(item.billno)}
@@ -430,7 +432,11 @@ const ListDeliveryStock = () => {
                   </div>
                 ))
               ) : (
-                <div className="box d-flex center">No found</div>
+                <div className="box d-flex center">
+                  <span className="label-text">
+                    {t("common:c-no-data-avai")}
+                  </span>
+                </div>
               )}
             </>
           )}
@@ -460,7 +466,7 @@ const ListDeliveryStock = () => {
               </label>
               <div className="10">
                 <label className="label-text">
-                  Date :{" "}
+                  {t("ps-date")} :{" "}
                   <span className="info-text">
                     {formatDateToDDMMYYYY(updatelist[0]?.saledate)}
                   </span>
@@ -486,9 +492,9 @@ const ListDeliveryStock = () => {
                 <table className="sales-table w100 ">
                   <thead className="bg1">
                     <tr>
-                      <th className="f-info-text">SrNo</th>
-                      <th className="f-info-text">Item Name</th>
-                      <th className="f-info-text">Qty</th>
+                      <th>{t("ps-srNo")}</th>
+                      <th>{t("ps-itm-name")}</th>
+                      <th>{t("ps-qty")}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -513,7 +519,7 @@ const ListDeliveryStock = () => {
                     <tr>
                       <td></td>
                       <td>
-                        <b>Total</b>
+                        <b>{t("ps-ttl-amt")}</b>
                       </td>
                       <td>
                         {(updatelist || []).reduce(
@@ -528,7 +534,7 @@ const ListDeliveryStock = () => {
             </div>
             <div className="d-flex my5 j-end">
               <button className="btn" onClick={handleUpdate}>
-                Update
+                {t("ps-update")}
               </button>
             </div>
           </div>

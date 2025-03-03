@@ -25,7 +25,7 @@ const CreateProducts = () => {
   //handle submit to create product
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(formData);
+    // console.log(formData);
     if (
       !formData.ItemName ||
       !formData.marname ||
@@ -42,7 +42,7 @@ const CreateProducts = () => {
       formData.UnitCode
     ) {
       try {
-        console.log("Product Data Submitted: ", formData);
+        // console.log("Product Data Submitted: ", formData);
         const res = await axiosInstance.post("/item/new", formData);
         if (res?.data?.success) {
           toast.success("Product Created Successfully!");

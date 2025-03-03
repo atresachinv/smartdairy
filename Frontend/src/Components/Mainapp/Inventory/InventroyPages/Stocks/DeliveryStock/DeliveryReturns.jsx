@@ -128,7 +128,7 @@ const DeliveryReturns = () => {
   const handleSubmit = async () => {
     if (cartItem.length > 0) {
       try {
-        console.log("Submit data ", cartItem);
+        // console.log("Submit data ", cartItem);
 
         const res = await axiosInstance.post("/new/deliverystock", {
           items: cartItem,
