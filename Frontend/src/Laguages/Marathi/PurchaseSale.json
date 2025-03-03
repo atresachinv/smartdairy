@@ -22,7 +22,7 @@
   "ps-bank-name": "बँक नाव",
   "ps-ac-no": "A/C नं..",
   "ps-ifsc": "IFSC",
-  "ps-down-excel": "डाउनलोड एक्सेल",
+  "ps-down-excel": "एक्सेल",
   "ps-dealer-no": "व्यापारी नं..",
   "ps-mar-name": "मराठी नाव",
   "ps-eng-name": "इंग्लिश नाव",
@@ -81,6 +81,15 @@
   "ps-update-Product": "मालाचे तपशील अपडेट",
   "ps-ProductFound": "कोणतेही मालाचे तपशील आढळले नाही.",
   "ps-InvoiceDetails": "बिल तपशील",
-  "ps-custRetrnRep": "ग्राहक परत यादी",
-  "ps-addCustReturn": "ग्राहक माल परत"
+  "ps-custRetrnRep": "उत्पादक परत यादी",
+  "ps-addCustReturn": "ग्राहक माल परत",
+  "ps-addCustReturnCattleFeed": "उत्पादक पशुखाद्य परत माल",
+  "ps-addCustReturnGrocery": "उत्पादक किराणा परत माल",
+  "ps-addCustReturnMedi": "उत्पादक औषधे परत माल",
+  "ps-addCustReturnOther": "उत्पादक इतर परत माल",
+  "ps-dealRetrnRep": "व्यापारी परत यादी",
+  "ps-addDealReturnCattleFeed": "व्यापारी परत पशुखाद्य",
+  "ps-addDealReturnGrocery": "व्यापारी परत किराणा",
+  "ps-addDealReturnMedi": "व्यापारी परत औषधे",
+  "ps-addDealReturnOther": "व्यापारी परत इतर"
 }

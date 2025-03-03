@@ -9,10 +9,10 @@ import "../../../../Styles/Mainapp/Setting/DairySetting.css";
 
 const MachineSettings = () => {
   const dispatch = useDispatch();
-  const [center, setCenter] = useState({});
   const centerSetting = useSelector(
     (state) => state.dairySetting.centerSetting
   );
+  const centerId = useSelector((state) => state.dairy.dairyData.center_id);
 
   const [settings, setSettings] = useState({
     id: "",
@@ -68,7 +68,7 @@ const MachineSettings = () => {
 
     if (result.isConfirmed) {
       const data = {
-        center_id: settings.center_id,
+        center_id: centerId,
         id: settings.id,
         salesms: settings.salesms ? 1 : 0,
         vSalesms: settings.vSalesms ? 1 : 0,

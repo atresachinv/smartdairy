@@ -1,8 +1,14 @@
 import { useState } from "react";
 import { Route, Routes } from "react-router-dom";
 import ReturnsNavlinks from "./ReturnsNavlinks";
-import List from "./List";
-import CreateDealer from "./Create";
+import CreateDealer from "./cattleFeed/Create";
+import List from "./cattleFeed/List";
+import GroList from "./grocery/List";
+import MedList from "./medicines/List";
+import OthList from "./others/List";
+import CreateDealerOth from "./others/Create";
+import CreateDealerMedi from "./medicines/Create";
+import CreateDealerGro from "./grocery/Create";
 
 const Returns = () => {
   const [isselected, setIsSelected] = useState(0);
@@ -20,6 +26,18 @@ const Returns = () => {
           <Route path="add-deal-return" element={<CreateDealer />} />
           <Route path="cattlefeed/add-deal-return" element={<CreateDealer />} />
           <Route path="cattlefeed" element={<List />} />
+          <Route path="grocery" element={<GroList />} />
+          <Route path="grocery/add-deal-return" element={<CreateDealerGro />} />
+          <Route path="medicines" element={<MedList />} />
+          <Route
+            path="medicines/add-deal-return"
+            element={<CreateDealerMedi />}
+          />
+          <Route path="other-products" element={<OthList />} />
+          <Route
+            path="other-products/add-deal-return"
+            element={<CreateDealerOth />}
+          />
           <Route path="*" element={<List />} />
         </Routes>
       </div>

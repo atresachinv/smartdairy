@@ -5,6 +5,7 @@ import Swal from "sweetalert2";
 import { MdAddShoppingCart, MdDeleteOutline } from "react-icons/md";
 import { IoClose } from "react-icons/io5";
 import { useSelector } from "react-redux";
+import { FaDownload } from "react-icons/fa6";
 import * as XLSX from "xlsx";
 import { NavLink } from "react-router-dom";
 import axiosInstance from "../../../../../../../App/axiosInstance";
@@ -284,7 +285,7 @@ const List = () => {
           </div>
           <div className="d-flex h1 sb center w30 sales-dates-container-mobile-w100  p10 bg">
             <label htmlFor="" className="label-text   ">
-              {t("ps-addCustReturn")}
+              {t("ps-addCustReturnCattleFeed")}
             </label>
             <NavLink
               className="w-btn d-flex "
@@ -313,10 +314,11 @@ const List = () => {
             />
           </div>
           <button
-            className="w-btn mx10 sales-dates-container-mobile-btn"
+            className="w-btn mx10 sales-dates-container-mobile-btn d-flex"
             onClick={downloadExcel}
           >
-            {t("ps-down-excel")}
+            <span className="f-label-text px10"> {t("ps-down-excel")}</span>
+            <FaDownload />
           </button>
         </div>
       </div>

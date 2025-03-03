@@ -366,9 +366,9 @@ const ReturnListDeliveryStock = () => {
         <span className="heading p10">Return Delivery Stock Report</span>
         <div className="customer-heading-title-scroller w100 h1 mh100 hidescrollbar d-flex-col">
           <div className="data-headings-div h10 d-flex center forDWidth t-center bg7 sb">
-            <span className="f-info-text w5">SrNo</span>
+            <span className="f-info-text w5"> {t("ps-srNo")}</span>
             <span className="f-info-text w10">
-              Date{" "}
+              {t("ps-date")}
               <span
                 className="px10 f-color-icon"
                 type="button"
@@ -418,7 +418,7 @@ const ReturnListDeliveryStock = () => {
                         className="px5 "
                         onClick={() => handleEditClick(item.billno)}
                       >
-                        View
+                        {t("ps-view")}
                       </button>
                       <MdDeleteOutline
                         onClick={() => handleDelete(item.billno)}
@@ -430,7 +430,12 @@ const ReturnListDeliveryStock = () => {
                   </div>
                 ))
               ) : (
-                <div className="box d-flex center">No found</div>
+                <div className="box d-flex center">
+                  {" "}
+                  <span className="label-text">
+                    {t("common:c-no-data-avai")}
+                  </span>
+                </div>
               )}
             </>
           )}
@@ -460,7 +465,7 @@ const ReturnListDeliveryStock = () => {
               </label>
               <div className="10">
                 <label className="label-text">
-                  Date :{" "}
+                  {t("ps-date")} :{" "}
                   <span className="info-text">
                     {formatDateToDDMMYYYY(updatelist[0]?.saledate)}
                   </span>
@@ -486,9 +491,9 @@ const ReturnListDeliveryStock = () => {
                 <table className="sales-table w100 ">
                   <thead className="bg1">
                     <tr>
-                      <th className="f-info-text">SrNo</th>
-                      <th className="f-info-text">Item Name</th>
-                      <th className="f-info-text">Qty</th>
+                      <th>{t("ps-srNo")}</th>
+                      <th>{t("ps-itm-name")}</th>
+                      <th>{t("ps-qty")}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -513,7 +518,7 @@ const ReturnListDeliveryStock = () => {
                     <tr>
                       <td></td>
                       <td>
-                        <b>Total</b>
+                        <b>{t("ps-ttl-amt")}</b>
                       </td>
                       <td>
                         {(updatelist || []).reduce(
@@ -528,7 +533,7 @@ const ReturnListDeliveryStock = () => {
             </div>
             <div className="d-flex my5 j-end">
               <button className="btn" onClick={handleUpdate}>
-                Update
+                {t("ps-update")}
               </button>
             </div>
           </div>

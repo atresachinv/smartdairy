@@ -1,21 +1,16 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { NavLink } from "react-router-dom";
-import { SiElasticstack } from "react-icons/si"; 
+import { SiElasticstack } from "react-icons/si";
 import "../../../../../Styles/Mainapp/Inventory/InventoryPages/Stock.css";
- 
+
 // eslint-disable-next-line react/prop-types
 const StocksNavlinks = ({ isselected, setIsSelected, userRole }) => {
-  const { t } = useTranslation(["milkcollection"]);
-  const [dropdownVisible, setDropdownVisible] = useState({});
-
-  const toggleDropdown = (index, isOpen) => {
-    setDropdownVisible((prev) => ({ ...prev, [index]: isOpen }));
-  };
+  const { t } = useTranslation(["milkcollection", "inventory"]);
 
   const hnavlinks = [
     {
-      name: `Starting Stock`,
+      name: `${t("inventory:in-nv-init-stock")}`,
       icon: <SiElasticstack className="icon" />,
       index: 0,
       path: "starting/stock",
@@ -25,7 +20,6 @@ const StocksNavlinks = ({ isselected, setIsSelected, userRole }) => {
       //   { name: "List", path: "list", icon: <FaListUl /> },
       // ],
     },
-      
   ];
 
   // Filter links based on userRole

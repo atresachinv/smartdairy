@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import axiosInstance from "../../../../../../App/axiosInstance";
 import { useTranslation } from "react-i18next";
+import "./Stock.css";
 
 // Function to get the current date
 const getTodaysDate = () => {
@@ -151,11 +152,11 @@ const CreateStock = () => {
   }, [formData.itemcode, itemList]);
 
   return (
-    <div className="h1 w100 d-flex center">
-      <div className="d-flex ">
+    <div className="h1 w100 d-flex center startingStock">
+      <div className="w50 h70 d-flex startingStockForm">
         <div className="bg p10 w100">
           <span className="heading "> {t("ps-startingStock")}</span>
-          <form className="my10  " onSubmit={handleSubmit}>
+          <form className="my10 " onSubmit={handleSubmit}>
             <div className="d-flex sb w100">
               <div className="col w45">
                 <label className="info-text px10">
