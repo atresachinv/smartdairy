@@ -67,12 +67,13 @@ exports.createDeliverStock = async (req, res) => {
           user_id,
           newBillNo, // Assign same bill number to all items
           item.rctno,
+          item.deliver_to,
         ]);
 
         // Insert multiple rows
         connection.query(
           `INSERT INTO delivery_stocks 
-          (dairy_id, center_id, itemgroupcode, ItemCode, ItemName, Qty, cn, saledate, to_user, salerate, saleby, billno,rctno) 
+          (dairy_id, center_id, itemgroupcode, ItemCode, ItemName, Qty, cn, saledate, to_user, salerate, saleby, billno,rctno,deliver_to) 
           VALUES ?`,
           [values],
           (err, insertResult) => {
