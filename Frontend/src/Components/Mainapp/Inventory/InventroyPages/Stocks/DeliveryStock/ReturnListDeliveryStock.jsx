@@ -381,9 +381,9 @@ const ReturnListDeliveryStock = () => {
                 )}
               </span>
             </span>
-            <span className="f-info-text w5">Rec. No</span>
-            <span className="f-info-text w10">Emp Code</span>
-            <span className="f-info-text w15">Emp Name</span>
+            <span className="f-info-text w5">Chalan.No</span>
+            <span className="f-info-text w10">Party Code</span>
+            <span className="f-info-text w15">Party Name</span>
             <span className="f-info-text w10">Actions</span>
           </div>
           {loading ? (
@@ -420,12 +420,12 @@ const ReturnListDeliveryStock = () => {
                       >
                         {t("ps-view")}
                       </button>
-                      <MdDeleteOutline
+                      {/* <MdDeleteOutline
                         onClick={() => handleDelete(item.billno)}
                         size={17}
                         className="table-icon"
                         style={{ color: "red" }}
-                      />
+                      /> */}
                     </span>
                   </div>
                 ))
@@ -460,7 +460,7 @@ const ReturnListDeliveryStock = () => {
             <hr />
             <div className=" d-flex sb mx15 px15 deal-info-name">
               <label className="label-text">
-                Rect. No :{" "}
+                Chalan No :{" "}
                 <span className="info-text">{updatelist[0]?.rctno || ""}</span>
               </label>
               <div className="10">
@@ -532,9 +532,9 @@ const ReturnListDeliveryStock = () => {
               </div>
             </div>
             <div className="d-flex my5 j-end">
-              <button className="btn" onClick={handleUpdate}>
+              {/* <button className="btn" onClick={handleUpdate}>
                 {t("ps-update")}
-              </button>
+              </button> */}
             </div>
           </div>
         </div>

@@ -33,7 +33,7 @@ const AddDeliveryStock = () => {
     (state) =>
       state.dairy.dairyData.SocietyName || state.dairy.dairyData.center_name
   );
-  const [selected, setSelected] = useState(1);
+  const [selected, setSelected] = useState(2);
   const { emplist } = useSelector((state) => state.emp);
   const centerList = useSelector(
     (state) => state.center.centersList.centersDetails
@@ -50,23 +50,6 @@ const AddDeliveryStock = () => {
     setDate(getTodaysDate());
   }, []);
 
-  //set cname on based fcode
-  console.log(centerList);
-  useEffect(() => {
-    if (selected === 2 && emplist.length > 0) {
-      const customer = emplist.find(
-        (customer) => customer.emp_id === parseInt(fcode)
-      );
-      setCname(customer?.emp_name || "");
-    } else if (selected === 1 && centerList.length > 0) {
-      const customer = centerList.find(
-        (customer) => customer.center_id === parseInt(fcode)
-      );
-      setCname(customer?.center_name || "");
-    } else {
-      setCname("");
-    }
-  }, [fcode, emplist]);
   // ----------------------------------------------------------------------------->
 
   const getTodaysDate = () => {
@@ -98,6 +81,7 @@ const AddDeliveryStock = () => {
         Qty: Number(qty),
         to_user: fcode,
         itemgroupcode: selectedItem.ItemGroupCode,
+        deliver_to: Number(selected),
         cn: 0,
       };
 
@@ -131,6 +115,7 @@ const AddDeliveryStock = () => {
     setFcode("");
     setCartItem([]);
     setQty(1);
+    setCname("");
     setSelectitemcode(0);
   };
 
@@ -155,19 +140,31 @@ const AddDeliveryStock = () => {
     }
   };
 
-  // Set customer code (fcode) based on cname
-
+  // Set customer code based on cname
   useEffect(() => {
     if (selected === 2 && emplist.length > 0) {
-      const custname = emplist.find((item) => item.emp_name === cname);
-      setFcode(custname?.emp_id ?? "");
+      const customer = emplist.find((item) => item.emp_name === cname);
+      if (customer && fcode !== customer.emp_id) setFcode(customer.emp_id);
     } else if (selected === 1 && centerList.length > 0) {
-      const custname = centerList.find((item) => item.center_name === cname);
-      setFcode(custname?.center_id);
-    } else {
-      setFcode("");
+      const customer = centerList.find((item) => item.center_name === cname);
+      if (customer && fcode !== customer.center_id)
+        setFcode(customer.center_id);
     }
-  }, [cname, emplist]);
+  }, [cname, emplist, centerList, selected]);
+
+  // Set customer name based on fcode
+  useEffect(() => {
+    if (selected === 2 && emplist.length > 0) {
+      const customer = emplist.find((item) => item.emp_id === parseInt(fcode));
+      if (customer && cname !== customer.emp_name) setCname(customer.emp_name);
+    } else if (selected === 1 && centerList.length > 0) {
+      const customer = centerList.find(
+        (item) => item.center_id === parseInt(fcode)
+      );
+      if (customer && cname !== customer.center_name)
+        setCname(customer.center_name);
+    }
+  }, [fcode, emplist, centerList, selected]);
 
   // Function to handle printing the invoice --------------------------------------->
   const handlePrint = () => {
@@ -603,32 +600,25 @@ const AddDeliveryStock = () => {
                 }
               />
               <datalist id="farmer-list">
-                {selected === 2 ? (
-                  <></>
-                ) : (
-                  emplist &&
-                  emplist
-                    .filter((emp) =>
-                      emp.emp_name.toLowerCase().includes(cname.toLowerCase())
-                    )
-                    .map((emp, index) => (
-                      <option key={index} value={emp.emp_name} />
-                    ))
-                )}
-                {selected === 1 ? (
-                  <></>
-                ) : (
-                  centerList &&
-                  centerList
-                    .filter((emp) =>
-                      emp.center_name
-                        .toLowerCase()
-                        .includes(cname.toLowerCase())
-                    )
-                    .map((emp, index) => (
-                      <option key={index} value={emp.center_name} />
-                    ))
-                )}
+                {selected === 1
+                  ? centerList &&
+                    centerList
+                      .filter((emp) =>
+                        emp.center_name
+                          .toLowerCase()
+                          .includes(cname.toLowerCase())
+                      )
+                      .map((emp, index) => (
+                        <option key={index} value={emp.center_name} />
+                      ))
+                  : emplist &&
+                    emplist
+                      .filter((emp) =>
+                        emp.emp_name.toLowerCase().includes(cname.toLowerCase())
+                      )
+                      .map((emp, index) => (
+                        <option key={index} value={emp.emp_name} />
+                      ))}
               </datalist>
             </div>
           </div>
