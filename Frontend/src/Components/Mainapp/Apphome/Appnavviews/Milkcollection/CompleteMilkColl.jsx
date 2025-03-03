@@ -601,9 +601,9 @@ const CompleteMilkColl = () => {
   //   );
   // };
 
-  // ------------------------------------------------------------------------------------->
+  // ------------------------------------------------------------------------------------------->
 
-  // Send Milk Collection Whatsapp Message ------------------------------------------------>
+  // Send Milk Collection Whatsapp Message ----------------------------------------------------->
 
   const sendMessage = async () => {
     const requestBody = {
@@ -642,12 +642,8 @@ const CompleteMilkColl = () => {
       console.error("Error sending message:", error);
     }
   };
-  // const checkTime = () => {
-  //   setValues((prevData) => ({
-  //     ...prevData,
-  //     time: !time ? 0 : 1,
-  //   }));
-  // };
+
+  // handle vehicle milk collection ------------------------------------------------------------>
   const handleCollection = async (e) => {
     e.preventDefault();
     // Validate fields before submission
@@ -691,7 +687,7 @@ const CompleteMilkColl = () => {
     }
   };
 
-  // Handling Download excel
+  // Handling Download excel ------------------------------------------------------------------->
   const downloadExcel = async () => {
     dispatch(completedMilkSankalan({ date: values.date, time: values.time }));
     if (completedcolldata) {
@@ -729,13 +725,13 @@ const CompleteMilkColl = () => {
 
   return (
     <div className="complete-mobile-milk-container w100 h1 d-flex-col center">
-      <span className="page-heading heading w100 h10 t-center">
-        Complete Milk Collection
-      </span>
       <form
         onSubmit={handleCollection}
         className="complete-mobile-milk-coll w60 h90 d-flex-col center bg p10"
       >
+        <span className="page-heading heading w100 h10 t-center">
+          {t("m-complete-coll")}
+        </span>
         <div className="form-date-div w100 h10 d-flex a-center j-start px10 my10 sb">
           <div className="select-mobile-collector-div w40 d-flex a-center sb">
             <label htmlFor="date" className="info-text w30">

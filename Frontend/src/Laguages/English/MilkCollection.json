@@ -23,6 +23,7 @@
   "m-t-liters": "Total Liters",
   "m-cust-code": "Code",
   "m-cust-name": "Customer Name",
+  "m-mobile": "Mobile",
   "m-sample-no": "Smaple No",
   "m-s-milk-type": "Select Milk Type",
   "m-s-date": "Date",
@@ -34,5 +35,8 @@
   "m-btn-saving": "Saving...",
 
   "m-d-excel": "Excel",
-  "m-d-show": "Show"
+  "m-d-show": "Show",
+
+  "m-cre-cust": "Create Customer",
+  "m-adv": "Advance"
 }

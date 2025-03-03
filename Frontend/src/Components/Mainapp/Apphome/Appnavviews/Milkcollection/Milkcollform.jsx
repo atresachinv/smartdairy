@@ -539,14 +539,22 @@ const MilkColleform = ({ switchToSettings }) => {
     }
   };
 
-  // ------------------------------------------------------------------------------------->
+  // handle enter press move cursor to next refrence Input -------------------------------->
+  const handleKeyDown = (e, nextRef) => {
+    if (e.key === "Enter" && nextRef.current) {
+      e.preventDefault();
+      nextRef.current.focus();
+    }
+  };
+
+  // Handle reset button ------------------------------------------------------------------------------------------>
 
   const handleResetButton = (e) => {
     e.preventDefault();
     setValues(initialValues);
   };
 
-  //Handling Milk Collection
+  //Handling Milk Collection  ------------------------------------------------------------------------------------->
 
   const handleCollection = async (e) => {
     e.preventDefault();

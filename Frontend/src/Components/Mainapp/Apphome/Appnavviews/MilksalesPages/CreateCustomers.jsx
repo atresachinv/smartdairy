@@ -5,10 +5,11 @@ import { toast } from "react-toastify";
 import "../../../../../Styles/Mainapp/MilkSales/MilkSales.css";
 import { useDispatch } from "react-redux";
 import { createRetailCustomer } from "../../../../../App/Features/Mainapp/Milksales/milkSalesSlice";
+import { useTranslation } from "react-i18next";
 
 const CreateCustomers = ({ clsebtn }) => {
   const dispatch = useDispatch();
-
+  const { t } = useTranslation(["milkcollection", "common"]);
   const [errors, setErrors] = useState({});
   const [custno, setCustno] = useState(() => {
     return localStorage.getItem("custno") || 2;
@@ -123,7 +124,7 @@ const CreateCustomers = ({ clsebtn }) => {
   return (
     <div className="create-reatil-milksale-customer-container d-flex-col sb center p10 bg">
       <div className="heading-and-close-btn-container w100 d-flex sb px10">
-        <span>Create Customer : </span>
+        <span className="heading">{t("m-cre-cust")} : </span>
         <span
           type="button"
           className="heading span-btn"
@@ -135,7 +136,7 @@ const CreateCustomers = ({ clsebtn }) => {
       <form className="create-customer-form-container w100 h1 d-flex-col">
         <div className="input-data-container w100 d-flex my10 sb">
           <div className="input-container-col w15 d-flex-col">
-            <label htmlFor="code">Code</label>
+            <label htmlFor="code">{t("m-cust-code")}</label>
             <input
               type="number"
               name="code"
@@ -149,7 +150,7 @@ const CreateCustomers = ({ clsebtn }) => {
             />
           </div>
           <div className="input-container-col w80 d-flex-col">
-            <label htmlFor="cname">Customer Name</label>
+            <label htmlFor="cname">{t("m-cust-name")}</label>
             <input
               type="text"
               name="cname"
@@ -165,7 +166,7 @@ const CreateCustomers = ({ clsebtn }) => {
         </div>
         <div className="input-data-container w100 d-flex my10 sb">
           <div className="input-container-col w45 d-flex-col">
-            <label htmlFor="mobile">Mobile</label>
+            <label htmlFor="mobile">{t("m-mobile")}</label>
             <input
               type="number"
               name="mobile"
@@ -179,7 +180,7 @@ const CreateCustomers = ({ clsebtn }) => {
             />
           </div>
           <div className="input-container-col w45 d-flex-col">
-            <label htmlFor="advance">Advance</label>
+            <label htmlFor="advance">{t("m-adv")}</label>
             <input
               type="number"
               name="advance"
@@ -194,14 +195,14 @@ const CreateCustomers = ({ clsebtn }) => {
         </div>
         <div className="create-reatil-milksale-btn-container w100 h10 py10 d-flex j-end">
           <button type="reset" className="w-btn mx10">
-            Reset
+            {t("m-btn-reset")}
           </button>
           <button
             type="submit"
             className="w-btn"
             onClick={handlecreateCustomer}
           >
-            Add
+            {t("m-btn-save")}
           </button>
         </div>
       </form>

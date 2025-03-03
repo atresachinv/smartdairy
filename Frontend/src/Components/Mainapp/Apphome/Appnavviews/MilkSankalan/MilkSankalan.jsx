@@ -297,7 +297,15 @@ const MilkSankalan = () => {
     }
   };
 
-  // ------------------------------------------------------------------------------------->
+  // handle enter press move cursor to next refrence Input -------------------------------->
+  const handleKeyDown = (e, nextRef) => {
+    if (e.key === "Enter" && nextRef.current) {
+      e.preventDefault();
+      nextRef.current.focus();
+    }
+  };
+
+  //Handle Vehicle Milk Collection -------------------------------------------------------->
 
   const handleMobileCollection = async (e) => {
     if (e) e.preventDefault();
@@ -331,6 +339,8 @@ const MilkSankalan = () => {
     }
   };
 
+  // Auto change AM - PM ------------------------------------------------------------------>
+  
   const currentHour = new Date().getHours();
   const heading =
     currentHour < 12 ? `${t("c-mrg-coll")}` : `${t("c-eve-coll")}`;
@@ -412,7 +422,6 @@ const MilkSankalan = () => {
               name="code"
               value={values.code}
               onChange={handleInputs}
-              // eslint-disable-next-line no-undef
               onKeyDown={(e) => handleKeyDown(e, litersRef)}
               ref={codeInputRef}
             />
@@ -451,7 +460,6 @@ const MilkSankalan = () => {
               onChange={handleInputs}
               value={values.liters}
               disabled={!values.code}
-              // eslint-disable-next-line no-undef
               onKeyDown={(e) => handleKeyDown(e, sampleRef)}
               ref={litersRef}
             />

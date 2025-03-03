@@ -72,7 +72,6 @@ const Apphome = () => {
         <AppNavlinks isselected={isselected} setIsSelected={setIsSelected} />
       </div>
       <div className="apphome-nav-views w100 h90 d-flex center">
-        {/* <AppNavviews index={isselected} /> */}
         <Routes>
           <Route path="collection/:time" element={<Milkcollection />} />
           <Route path="vehicle/collection" element={<MilkSankalan />} />
