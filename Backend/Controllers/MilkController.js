@@ -1337,11 +1337,19 @@ exports.fetchPrevLiters = async (req, res) => {
   });
 };
 
-//.........................................................
-// (Update) fetch Mobile Milk Collection .................
-//.........................................................
+// -------------------------------------------------------------------------------------->
+// (Update) fetch Mobile Milk Collection to complete milk collection -------------------->
+// -------------------------------------------------------------------------------------->
 
 exports.fetchMobileMilkCollection = async (req, res) => {
+  const dairy_id = req.user.dairy_id;
+  const center_id = req.user.center_id;
+
+  // Check if dairy_id, user_role, and center_id are available
+  if (!dairy_id) {
+    connection.release();
+    return res.status(400).json({ message: "Missing required fields" });
+  }
   pool.getConnection((err, connection) => {
     if (err) {
       console.error("Error getting MySQL connection: ", err);
@@ -1349,15 +1357,6 @@ exports.fetchMobileMilkCollection = async (req, res) => {
     }
 
     try {
-      const dairy_id = req.user.dairy_id;
-      const center_id = req.user.center_id;
-
-      // Check if dairy_id, user_role, and center_id are available
-      if (!dairy_id) {
-        connection.release();
-        return res.status(400).json({ message: "Missing required fields" });
-      }
-
       // Get the current date in YYYY-MM-DD format
       const currentDate = new Date().toISOString().split("T")[0];
 
@@ -1366,13 +1365,13 @@ exports.fetchMobileMilkCollection = async (req, res) => {
       const milkcollReport = `
         SELECT userid, Litres, cname, rno, SampleNo , ME
         FROM ${dairy_table}
-        WHERE ReceiptDate = ? AND companyid = ? AND center_id = ?  AND Driver = "1"
+        WHERE ReceiptDate = ?  AND center_id = ?  AND Driver = 1
       `;
 
       // Execute the query
       connection.query(
         milkcollReport,
-        [currentDate, dairy_id, center_id],
+        [currentDate, center_id],
         (err, result) => {
           connection.release();
 
@@ -1380,11 +1379,9 @@ exports.fetchMobileMilkCollection = async (req, res) => {
             console.error("Error executing query: ", err);
             return res.status(500).json({ message: "Query execution error" });
           }
-
           if (result.length === 0) {
-            return res.status(200).json({ mobileMilk: [] }); // Return empty array instead of 404
+            return res.status(200).json({ mobileMilkcoll: [] }); // Return empty array instead of 404
           }
-
           res.status(200).json({ mobileMilkcoll: result });
         }
       );
@@ -1430,7 +1427,7 @@ exports.updateMobileCollection = async (req, res) => {
       // Prepare the SQL query
       const updatemilkcollection = `
          UPDATE ${dairy_table}
-          SET  fat = ?,  snf = ?,  Amt = ?,  GLCode = ?,  AccCode = ?,  Digree = ?,  rate = ?,  updatedOn = ?,  UpdatedBy = ? , Driver = 0 
+          SET  fat = ?,  snf = ?,  Amt = ?,  GLCode = ?,  AccCode = ?,  Digree = ?,  rate = ?,  updatedOn = ?,  UpdatedBy = ? , Driver = 2 
           WHERE  companyid = ? AND  center_id = ? AND  rno = ? AND  SampleNo = ? 
       `;
 
@@ -2023,6 +2020,7 @@ exports.dashboardInfo = async (req, res) => {
 // Complete Milk Collection Report ..................................
 // ..................................................................
 
+// update driver 2 to retive only driver done collection
 exports.completedMilkReport = async (req, res) => {
   const { date, time } = req.query;
 
@@ -2057,7 +2055,7 @@ exports.completedMilkReport = async (req, res) => {
       const completedCollReport = `
         SELECT ReceiptDate, ME, rno, Litres, fat, snf, cname, rate, Amt, CB 
         FROM ${dairy_table}
-        WHERE center_id = ? AND ReceiptDate = ? AND ME = ? AND Driver = 0
+        WHERE center_id = ? AND ReceiptDate = ? AND ME = ? AND Driver = 2
       `;
 
       // Execute the query
@@ -2207,13 +2205,13 @@ exports.getRetailCustomer = async (req, res) => {
   });
 };
 
-
 //-------------------------------------------------------------------------------------------------->
 // Retail milk sales ------------------------------------------------------------------------------->
 //-------------------------------------------------------------------------------------------------->
 
 exports.RetailMilkCollection = async (req, res) => {
-  const { code, cname, liters, rate, amt, paidamt, rem_adv, paymode } = req.body;
+  const { code, cname, liters, rate, amt, paidamt, rem_adv, paymode } =
+    req.body;
 
   pool.getConnection((err, connection) => {
     if (err) {

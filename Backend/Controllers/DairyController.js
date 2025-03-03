@@ -59,7 +59,7 @@ exports.dairyInfo = async (req, res) => {
       } else {
         // Query for dairy center
         getDairyInfo = `
-          SELECT center_id, center_name, marathi_name, reg_no, reg_date, mobile, email, city, 
+          SELECT id, center_id, center_name, marathi_name, reg_no, reg_date, mobile, email, city, 
                  tehsil, district, pincode, auditclass, orgid, prefix
           FROM centermaster
           WHERE orgid = ? AND center_id = ?
@@ -102,6 +102,7 @@ exports.dairyInfo = async (req, res) => {
 // update dairy details .............................
 // ..................................................
 
+//v2 function 
 exports.updatedetails = async (req, res) => {
   const {
     marathiName,
@@ -118,20 +119,14 @@ exports.updatedetails = async (req, res) => {
     PinCode,
   } = req.body;
 
-  // Get dairy_id from the verified token (already decoded in middleware)
   const dairy_id = req.user.dairy_id;
+  const center_id = req.user.center_id;
 
-  if (!dairy_id) {
-    connection.release(); // Release connection
-    return res.status(400).json({ message: "Dairy ID not found!" });
+  if (!dairy_id || center_id === undefined) {
+    return res
+      .status(400)
+      .json({ message: "Dairy ID or Center ID not found!" });
   }
-
-  // SQL query to update dairy information
-  const updateDairyDetails = `
-    UPDATE societymaster 
-    SET SocietyName = ?, PhoneNo = ?, city = ?, PinCode = ?, 
-        AuditClass = ?, RegNo = ?, RegDate = ?, email = ?, tel = ?, dist = ?, gstno = ?, marathiName =?
-    WHERE SocietyCode = ?`;
 
   pool.getConnection((err, connection) => {
     if (err) {
@@ -139,43 +134,129 @@ exports.updatedetails = async (req, res) => {
       return res.status(500).json({ message: "Database connection error" });
     }
 
-    // Execute the query
-    connection.query(
-      updateDairyDetails,
-      [
-        SocietyName,
-        PhoneNo,
-        city,
-        PinCode,
-        AuditClass,
-        RegNo,
-        RegDate,
-        email,
-        tel,
-        dist,
-        gstno,
-        marathiName,
-        dairy_id,
-      ],
-      (err, result) => {
-        connection.release(); // Release the connection back to the pool
-
-        if (err) {
-          console.error("Error executing update query: ", err);
-          return res.status(500).json({ message: "Database query error" });
-        }
-
-        // Check if any row was updated
-        if (result.affectedRows === 0) {
-          return res.status(404).json({ message: "Dairy not found!" });
-        }
-
-        // Successfully updated
-        res
-          .status(200)
-          .json({ message: "Dairy information updated successfully!" });
+    connection.beginTransaction((err) => {
+      if (err) {
+        connection.release();
+        return res.status(500).json({ message: "Transaction error" });
       }
-    );
+
+      const updateSocietyQuery = `
+        UPDATE societymaster 
+        SET SocietyName = ?, PhoneNo = ?, city = ?, PinCode = ?, 
+            AuditClass = ?, RegNo = ?, RegDate = ?, email = ?, tel = ?, dist = ?, gstno = ?, marathiName = ?
+        WHERE SocietyCode = ?`;
+
+      const updateCenterQuery = `
+        UPDATE centermaster 
+        SET center_name = ?, marathi_name = ?, reg_no = ?, reg_date = ?, mobile = ?, email = ?, city = ?, 
+            tehsil = ?, district = ?, pincode = ?, auditclass = ?
+        WHERE orgid = ? AND center_id = ?`;
+
+      if (center_id === 0) {
+        connection.query(
+          updateSocietyQuery,
+          [
+            SocietyName,
+            PhoneNo,
+            city,
+            PinCode,
+            AuditClass,
+            RegNo,
+            RegDate,
+            email,
+            tel,
+            dist,
+            gstno,
+            marathiName,
+            dairy_id,
+          ],
+          (err, result) => {
+            if (err) {
+              return connection.rollback(() => {
+                connection.release();
+                res
+                  .status(500)
+                  .json({ message: "Error updating society details" });
+              });
+            }
+
+            connection.query(
+              updateCenterQuery,
+              [
+                SocietyName,
+                marathiName,
+                RegNo,
+                RegDate,
+                PhoneNo,
+                email,
+                city,
+                tel,
+                dist,
+                PinCode,
+                AuditClass,
+                dairy_id,
+                center_id,
+              ],
+              (err, result) => {
+                if (err) {
+                  return connection.rollback(() => {
+                    connection.release();
+                    res
+                      .status(500)
+                      .json({ message: "Error updating center details" });
+                  });
+                }
+                connection.commit((err) => {
+                  if (err) {
+                    return connection.rollback(() => {
+                      connection.release();
+                      res
+                        .status(500)
+                        .json({ message: "Transaction commit error" });
+                    });
+                  }
+                  connection.release();
+                  res.status(200).json({
+                    message:
+                      "Dairy and Center information updated successfully!",
+                  });
+                });
+              }
+            );
+          }
+        );
+      } else {
+        connection.query(
+          updateCenterQuery,
+          [
+            SocietyName,
+            marathiName,
+            RegNo,
+            RegDate,
+            PhoneNo,
+            email,
+            city,
+            tel,
+            dist,
+            PinCode,
+            AuditClass,
+            dairy_id,
+            center_id,
+          ],
+          (err, result) => {
+            connection.release();
+            if (err) {
+              return res
+                .status(500)
+                .json({ message: "Error updating center details" });
+            }
+            res
+              .status(200)
+              .json({ message: "Center information updated successfully!" });
+          }
+        );
+      }
+    });
   });
 };
 
@@ -458,13 +539,13 @@ exports.getAllcenters = async (req, res) => {
     return res.status(400).json({ message: "Unauthorized User!" });
   }
 
-  // // Check if the data is cached
-  // const cacheKey = `centers_${dairy_id}`;
-  // const cachedData = cache.get(cacheKey);
+  // Check if the data is cached
+  const cacheKey = `centers_${dairy_id}`;
+  const cachedData = cache.get(cacheKey);
 
-  // if (cachedData) {
-  //   return res.status(200).json({ centersDetails: cachedData });
-  // }
+  if (cachedData) {
+    return res.status(200).json({ centersDetails: cachedData });
+  }
 
   pool.getConnection((err, connection) => {
     if (err) {
@@ -487,7 +568,7 @@ exports.getAllcenters = async (req, res) => {
         }
 
         // Store the result in cache
-        // cache.set(cacheKey, result);
+        cache.set(cacheKey, result);
         res.status(200).json({ centersDetails: result });
       });
     } catch (error) {

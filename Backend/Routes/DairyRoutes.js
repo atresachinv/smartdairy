@@ -23,7 +23,7 @@ const router = express.Router();
 router.route("/dairy/masters").post(masterDates);
 router.route("/dairy/dashboard").post(verifyToken, dairyDashboardInfo);
 router.route("/dairyinfo").post(verifyToken, dairyInfo);
-router.route("/update/dairyinfo").post(verifyToken, updatedetails);
+router.route("/update/dairyinfo").put(verifyToken, updatedetails);
 router.route("/center/maxid").post(verifyToken, maxCenterId);
 router.route("/create/center").post(verifyToken, createCenter);
 router.route("/update/centerdetails").post(verifyToken, updateCenterInfo);

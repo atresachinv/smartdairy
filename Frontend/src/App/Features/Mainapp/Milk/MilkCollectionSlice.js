@@ -178,7 +178,6 @@ export const fetchMobileColl = createAsyncThunk(
 );
 
 //  Update MObile Milk Collection
-
 export const updateMobileColl = createAsyncThunk(
   "milkreport/getMilkCollReport",
   async (values, { rejectWithValue }) => {
@@ -304,7 +303,7 @@ const milkCollectionSlice = createSlice({
       .addCase(mobileMilkCollection.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.payload;
-      })
+      }) // fetch mobile milk collection ------------------------------------------------------------->
       .addCase(fetchMobileColl.pending, (state) => {
         state.status = "loading";
         state.error = null;

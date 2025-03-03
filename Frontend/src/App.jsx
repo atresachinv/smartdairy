@@ -128,6 +128,7 @@ function App() {
                   "manager",
                   "milkcollector",
                   "mobilecollector",
+                  "salesman",
                 ]}
               />
             }>

@@ -12,7 +12,7 @@ const cache = new NodeCache({});
 exports.getMaxCustNo = async (req, res) => {
   const dairy_id = req.user.dairy_id;
   const centerid = req.user.center_id;
-
+  
   pool.getConnection((err, connection) => {
     if (err) {
       console.error("Error getting MySQL connection: ", err);

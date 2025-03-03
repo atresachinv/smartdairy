@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import React, { useEffect, useState } from "react";
 import { TbMilk } from "react-icons/tb";
 import { v4 as uuidv4 } from "uuid";
@@ -479,10 +478,10 @@ const Mainappnavlinks = ({ setselected, handleSidebar }) => {
         ...(center_id === 0
           ? [
               {
-                name: `${t("dairy-init-info")}`,
+                name: `${t("dairy-cre-center")}`,
                 icon: <BsGridFill className="icon" />,
                 index: 8.3,
-                path: "dairy-cre-center",
+                path: "dairy/create/center",
                 role: ["admin", "super_admin", "manager"],
               },
             ]
@@ -579,7 +578,7 @@ const Mainappnavlinks = ({ setselected, handleSidebar }) => {
           >
             <div className="nav-main w80 d-flex a-center">
               {button.icon}
-              <NavLink className="main-nav-text px5 f-heading" to={button.path}>
+              <NavLink className="main-nav-text px5" to={button.path}>
                 {button.name}
               </NavLink>
             </div>

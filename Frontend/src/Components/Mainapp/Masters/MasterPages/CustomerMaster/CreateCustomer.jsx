@@ -70,7 +70,14 @@ const CreateCustomer = () => {
   useState(() => {
     dispatch(listRateCharts());
     dispatch(getMaxCustNo());
-  }, []);
+  }, [dispatch]);
+
+  useEffect(() => {
+    setFormData((prevData) => ({
+      ...prevData,
+      cust_no: custno,
+    }));
+  }, [custno]);
 
   const handleEditClick = () => {
     setIsEditing((prev) => !prev);
@@ -358,13 +365,12 @@ const CreateCustomer = () => {
       } else {
         // Create new customer
         dispatch(createCustomer(formData));
-        dispatch(getMaxCustNo());
         dispatch(listCustomer());
+        dispatch(getMaxCustNo());
         setFormData((prevData) => ({
           ...prevData,
           cust_no: custno,
         }));
-
         toast.success("Customer created successfully!");
       }
 

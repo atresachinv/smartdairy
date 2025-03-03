@@ -135,7 +135,7 @@ const MilkSankalan = () => {
         ...prev,
         cname: customer.cname.toString(),
         acccode: customer.cid,
-        mobile: customer.mobile,
+        mobile: customer.Phone,
         rateChartNo: customer.rateChartNo,
       }));
     } else {
