@@ -422,12 +422,12 @@ const ListDeliveryStock = () => {
                       >
                         {t("ps-view")}
                       </button>
-                      <MdDeleteOutline
+                      {/* <MdDeleteOutline
                         onClick={() => handleDelete(item.billno)}
                         size={17}
                         className="table-icon"
                         style={{ color: "red" }}
-                      />
+                      /> */}
                     </span>
                   </div>
                 ))
@@ -533,9 +533,9 @@ const ListDeliveryStock = () => {
               </div>
             </div>
             <div className="d-flex my5 j-end">
-              <button className="btn" onClick={handleUpdate}>
+              {/* <button className="btn" onClick={handleUpdate}>
                 {t("ps-update")}
-              </button>
+              </button> */}
             </div>
           </div>
         </div>
