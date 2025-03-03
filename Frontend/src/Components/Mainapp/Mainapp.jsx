@@ -50,7 +50,7 @@ import Products from "./Inventory/InventroyPages/Products/Products";
 import { checkCurrentSession } from "../../App/Features/Users/authSlice";
 import { toast } from "react-toastify";
 import "../../Styles/Mainapp/Mainapphome.css";
-import Returns from "./Inventory/InventroyPages/Returns/Returns";
+import Returns from "./Inventory/InventroyPages/Returns/DealerReturns/Returns";
 import SanghsalesMaster from "./MilkSales/SanghsalesPages/SanghsalesMaster";
 import SalesMaster from "./Sales/SalesMaster";
 import Milksales from "./Apphome/Appnavviews/MilksalesPages/Milksales";
@@ -62,13 +62,15 @@ import MilkEveCollform from "./Apphome/Appnavviews/Milkcollection/MilkEveCollfor
 import MilkColleform from "./Apphome/Appnavviews/Milkcollection/Milkcollform";
 import Milkcollection from "./Apphome/Appnavviews/Milkcollection/Milkcollection";
 import DeliveryStockMaster from "./Inventory/InventroyPages/Stocks/DeliveryStock/DeliveryStockMaster";
+import CustReturns from "./Inventory/InventroyPages/Returns/CustomerReturns/CustReturns";
+import SellRateMaster from "./Inventory/InventroyPages/Stocks/SellRate/SellRateMaster";
+import ExpiredProductsMaster from "./Inventory/InventroyPages/Stocks/ExpiredProduct/ExpiredProductsMaster";
 
 const Mainapp = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const dairy_id = useSelector((state) => state.dairy.dairyData.SocietyCode);
   const [openSidebar, setOpenSidebar] = useState(false); //fuctional sidebar
-
 
   // handle open close sidebar ---------------------------------------------------------->
   const handleSidebar = () => {
@@ -184,8 +186,20 @@ const Mainapp = () => {
             <Route path="inventory/product/stock/*" element={<Stocks />} />
             <Route path="inventory/returns/*" element={<Returns />} />
             <Route
+              path="inventory/returns/cust-return-list/*"
+              element={<CustReturns />}
+            />
+            <Route
               path="inventory/stock-keeper/*"
               element={<DeliveryStockMaster />}
+            />{" "}
+            <Route
+              path="inventory/update-sell-rate/*"
+              element={<SellRateMaster />}
+            />{" "}
+            <Route
+              path="inventory/expired-product/*"
+              element={<ExpiredProductsMaster />}
             />
             {/* accounts routes */}
             <Route path="accounts" element={<Accounts />} />

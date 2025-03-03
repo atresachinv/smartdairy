@@ -38,8 +38,10 @@ export const sendMessage = async ({
   try {
     console.log(requestBody);
     const response = await axiosInstance.post("/send-message", requestBody); // ✅ Remove JSON.stringify()
+    toast.success("Whatsapp message send successfully...");
     console.log("Response:", response.data);
   } catch (error) {
+    toast.error("Error in whatsapp message sending...");
     console.error("Error sending message:", error);
   }
 };

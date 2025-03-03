@@ -170,12 +170,12 @@ const StockList = () => {
                 onChange={(e) => setFilter(e.target.value)}
                 value={filter}
               >
-                <option value="">All</option>
+                <option value=""> {t("ps-all")} </option>
                 {[
-                  { value: 1, label: "Cattle Feed" },
-                  { value: 2, label: "Medicines" },
-                  { value: 3, label: "Grocery" },
-                  { value: 4, label: "Other" },
+                  { value: 1, label: `${t("ps-cattle")}` },
+                  { value: 2, label: `${t("ps-medicine")}` },
+                  { value: 3, label: `${t("ps-grocery")}` },
+                  { value: 4, label: `${t("ps-other")}` },
                 ].map((item) => (
                   <option key={item.value} value={item.value}>
                     {item.label}
@@ -193,7 +193,7 @@ const StockList = () => {
           </div>
           <div className="d-flex h1 sb center w25 sales-dates-container-mobile-w100  p10 bg">
             <label htmlFor="" className="label-text px5 ">
-              New Stock
+              {t("ps-newStock")}
             </label>
             <NavLink
               className="w-btn d-flex "
@@ -208,7 +208,7 @@ const StockList = () => {
       </div>
 
       <div className="product-list-table w100 h1 d-flex-col hidescrollbar bg ">
-        <span className="heading p10">Stock Report</span>
+        <span className="heading p10"> {t("ps-stockReport")}</span>
         <div className="product-heading-title-scroller w100 h1 mh100 d-flex-col">
           <div className="data-headings-div h10 d-flex forWidth center t-center sa bg7">
             <span className="f-info-text w5"> {t("ps-srNo")}</span>
@@ -256,14 +256,14 @@ const StockList = () => {
               </div>
             ))
           ) : (
-            <div className="d-flex h1 center">No Product found</div>
+            <div className="d-flex h1 center">{t("ps-ProductFound")}</div>
           )}
         </div>
       </div>
       {isModalOpen && (
         <div className="pramod modal">
           <div className="modal-content forMin">
-            <h2>Stock Product Details</h2>
+            <h2>{t("ps-stockProductDetail")}</h2>
             <label>
               {t("ps-itm-name")}: {editSale?.ItemCode}&nbsp;{editSale?.ItemName}
             </label>

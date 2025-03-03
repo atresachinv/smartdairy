@@ -2,15 +2,17 @@
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import Swal from "sweetalert2";
-import axiosInstance from "../../../../../../App/axiosInstance";
-import Spinner from "../../../../../Home/Spinner/Spinner";
 import { MdAddShoppingCart, MdDeleteOutline } from "react-icons/md";
 import { IoClose } from "react-icons/io5";
 import { useSelector } from "react-redux";
 import * as XLSX from "xlsx";
 import { NavLink } from "react-router-dom";
+import axiosInstance from "../../../../../../../App/axiosInstance";
+import Spinner from "../../../../../../Home/Spinner/Spinner";
+import { useTranslation } from "react-i18next";
 
-const CustList = () => {
+const MedList = () => {
+  const { t } = useTranslation(["puchasesale", "common"]);
   const { customerlist } = useSelector((state) => state.customer);
   const [date1, SetDate1] = useState("");
   const [date2, SetDate2] = useState("");
@@ -54,7 +56,7 @@ const CustList = () => {
   useEffect(() => {
     const fetchAllItems = async () => {
       try {
-        const { data } = await axiosInstance.get("/item/all");
+        const { data } = await axiosInstance.get("/item/all?ItemGroupCode=2");
         setItemList(data.itemsData || []);
       } catch (error) {
         console.error("Error fetching items:", error);
@@ -68,7 +70,9 @@ const CustList = () => {
     const fetchSales = async () => {
       setLoading(true);
       try {
-        const { data } = await axiosInstance.get("/sale/all?cn=1"); // Replace with your actual API URL
+        const { data } = await axiosInstance.get(
+          "/sale/all?cn=1&ItemGroupCode=2"
+        ); // Replace with your actual API URL
         if (data.success) {
           // console.log(data);
           setSales(data.salesData); // Assuming 'sales' is the array returned by your backend
@@ -111,7 +115,9 @@ const CustList = () => {
     // console.log(getItem);
     try {
       const queryParams = new URLSearchParams(getItem).toString();
-      const { data } = await axiosInstance.get(`/sale/all?cn=1&${queryParams}`);
+      const { data } = await axiosInstance.get(
+        `/sale/all?ItemGroupCode=2&cn=1&${queryParams}`
+      );
       if (data?.success) {
         setSales(data.salesData);
       }
@@ -212,12 +218,19 @@ const CustList = () => {
   }, {});
   const groupedSalesArray = Object.values(groupedSales);
 
-  //for filter item grp code
+  //for searching Name or code to get the sale list------------------------------------>
+
   useEffect(() => {
     if (fcode) {
       const filteredItems = sales.filter((item) => {
-        const isCodeMatch = item.ItemGroupCode.toString().includes(fcode);
-        return isCodeMatch;
+        const isCodeMatch = item.CustCode.toString().includes(fcode);
+        const isRecptMatch = item.ReceiptNo.toString().includes(fcode);
+
+        const isNameMatch = handleFindCustName(item.CustCode)
+          ?.toLowerCase()
+          .includes(fcode.toLowerCase());
+
+        return isCodeMatch || isRecptMatch || isNameMatch;
       });
 
       setFilteredSalesList(filteredItems);
@@ -236,14 +249,14 @@ const CustList = () => {
   return (
     <div className="customer-list-container-div w100 h1 d-flex-col p10">
       <div
-        className="download-print-pdf-excel-container w100 h10 d-flex j-end"
+        className="download-print-pdf-excel-container w100 h30 d-flex j-end"
         style={{ display: "contents" }}
       >
-        <div className="sales-dates-container w100  d-flex a-center sb sales-dates-container-mobile">
+        <div className="sales-dates-container w100   d-flex a-center sb sales-dates-container-mobile">
           <div className="d-flex sb w60 sales-dates-container-mobile-w100">
             <div className="date-input-div w35 d-flex a-center sb">
               <label htmlFor="" className="label-text w30">
-                From :
+                {t("ps-from")} :
               </label>
               <input
                 type="date"
@@ -255,7 +268,7 @@ const CustList = () => {
             </div>
             <div className="date-input-div w35 d-flex a-center sb">
               <label htmlFor="" className="label-text w30">
-                To :
+                {t("ps-to")} :
               </label>
               <input
                 type="date"
@@ -266,12 +279,12 @@ const CustList = () => {
               />
             </div>
             <button className="w-btn" onClick={handleShowbutton}>
-              Show
+              {t("ps-show")}
             </button>
           </div>
-          <div className="d-flex h1 sb center w30 sales-dates-container-mobile-w100  ">
+          <div className="d-flex h1 sb center w30 sales-dates-container-mobile-w100  p10 bg">
             <label htmlFor="" className="label-text   ">
-              Add Customer Return
+              {t("ps-addCustReturn")}
             </label>
             <NavLink
               className="w-btn d-flex "
@@ -279,47 +292,44 @@ const CustList = () => {
               to="add-cust-return"
             >
               <MdAddShoppingCart className="icon f-label" />
-              Add
+              {t("ps-new")}
             </NavLink>
           </div>
         </div>
-        <div className="w100 d-flex sa my5">
-          <div>
-            <label htmlFor="" className="info-text px10">
-              Select Item Group:
-            </label>
-            <select
-              id="selectitemcode"
-              className="data"
+        <div className="find-customer-container w100   d-flex a-center my5 py5">
+          <div className="customer-search-div  d-flex a-center sb">
+            <input
+              type="text"
+              className="data w100"
+              name="code"
               onFocus={(e) => e.target.select()}
               value={fcode}
               onChange={(e) =>
                 setFcode(e.target.value.replace(/[^a-zA-Z0-9 ]/g, ""))
               }
-            >
-              <option value="">All</option>
-              <option value="1">Cattle Feeds</option>
-              <option value="2">Medicines</option>
-              <option value="3">Grocery</option>
-              <option value="4">Others</option>
-            </select>
+              min="0"
+              title="Enter code or name to search details"
+              placeholder={`${t("ps-search")}`}
+            />
           </div>
-
-          <button className="w-btn" onClick={downloadExcel}>
-            Export Excel
+          <button
+            className="w-btn mx10 sales-dates-container-mobile-btn"
+            onClick={downloadExcel}
+          >
+            {t("ps-down-excel")}
           </button>
         </div>
       </div>
       <div className="customer-list-table w100 h1 d-flex-col hidescrollbar bg">
-        <span className="heading p10">Customer Returns Report</span>
+        <span className="heading p10"> {t("ps-custRetrnRep")} </span>
         <div className="customer-heading-title-scroller w100 h1 mh100 d-flex-col">
           <div className="data-headings-div sale-data-headings-div h10 d-flex center t-center sb bg7">
-            <span className="f-info-text w5">Sr.No</span>
-            <span className="f-info-text w5">Date</span>
-            <span className="f-info-text w5">Rec. No</span>
-            <span className="f-info-text w5">Cust Code</span>
-            <span className="f-info-text w25">Cust Name</span>
-            <span className="f-info-text w5">Amount</span>
+            <span className="f-info-text w5"> {t("ps-srNo")}</span>
+            <span className="f-info-text w5"> {t("ps-date")} </span>
+            <span className="f-info-text w5">{t("ps-rect-no")}</span>
+            <span className="f-info-text w5"> {t("ps-custCode")}</span>
+            <span className="f-info-text w25">{t("ps-cutName")}</span>
+            <span className="f-info-text w5">{t("ps-amt")}</span>
             <span className="f-info-text w5">Actions</span>
           </div>
           {/* Show Spinner if loading, otherwise show the feed list */}
@@ -363,7 +373,7 @@ const CustList = () => {
                     onClick={() => handleView(sale?.BillNo)}
                     title="View the Bill"
                   >
-                    View
+                    {t("ps-view")}
                   </button>
                   <MdDeleteOutline
                     onClick={() => handleDelete(sale?.BillNo)}
@@ -378,7 +388,7 @@ const CustList = () => {
               </div>
             ))
           ) : (
-            <div className="d-flex w-100 h1 center">No Items found</div>
+            <div className="d-flex w-100 h1 center">{t("ps-ProductFound")}</div>
           )}
         </div>
         {/* show invoice */}
@@ -386,7 +396,7 @@ const CustList = () => {
           <div className="pramod modal">
             <div className="modal-content">
               <div className="d-flex sb deal-info">
-                <h2>Invoice Details</h2>
+                <h2> {t("ps-InvoiceDetails")} </h2>
                 <IoClose
                   style={{ cursor: "pointer" }}
                   size={25}
@@ -395,13 +405,19 @@ const CustList = () => {
               </div>
               <hr />
               <div className=" d-flex sb mx15 px15  deal-info-name">
-                <h4>Rect. No : {viewItems[0]?.ReceiptNo || ""}</h4>
+                <h4>
+                  {" "}
+                  {t("ps-rect-no")} : {viewItems[0]?.ReceiptNo || ""}
+                </h4>
                 <div className="10">
-                  Date :{formatDateToDDMMYYYY(viewItems[0]?.BillDate)}
+                  {t("ps-date")} :{formatDateToDDMMYYYY(viewItems[0]?.BillDate)}
                 </div>
               </div>
               <div className=" d-flex sb mx15 px15 deal-info-name">
-                <h4>Customer code : {viewItems[0]?.CustCode || ""}</h4>
+                <h4>
+                  {" "}
+                  {t("ps-custCode")} : {viewItems[0]?.CustCode || ""}
+                </h4>
                 <h4 className="mx15">
                   {handleFindCustName(viewItems[0]?.CustCode) || ""}
                 </h4>
@@ -411,11 +427,11 @@ const CustList = () => {
                   <table className="sales-table w100 ">
                     <thead className="bg1">
                       <tr>
-                        <th>SrNo</th>
-                        <th>Item Name</th>
-                        <th>Rate</th>
-                        <th>Qty</th>
-                        <th>Amount</th>
+                        <th>{t("ps-srNo")}</th>
+                        <th>{t("ps-itm-name")}</th>
+                        <th>{t("ps-rate")}</th>
+                        <th>{t("ps-qty")}</th>
+                        <th>{t("ps-amt")}</th>
                         <th>Action</th>
                       </tr>
                     </thead>
@@ -444,7 +460,7 @@ const CustList = () => {
                         <td></td>
                         <td></td>
                         <td>
-                          <b>Total</b>
+                          <b> {t("ps-ttl-amt")}</b>
                         </td>
                         <td>
                           {(viewItems || []).reduce(
@@ -469,4 +485,4 @@ const CustList = () => {
   );
 };
 
-export default CustList;
+export default MedList;

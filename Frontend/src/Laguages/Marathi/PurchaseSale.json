@@ -74,9 +74,13 @@
   "ps-grocery": "किराणा",
   "ps-other": "इतर",
   "ps-newStock": "नवीन स्टॉक",
-  "ps-stockReport": "स्टॉक रिपोर्ट",
+  "ps-stockReport": "स्टॉक यादी",
   "ps-stockProductDetail": "स्टॉक मालाचे तपशील",
   "ps-startingStock": "सुरुवातीचा स्टॉक",
   "ps-productList": "मालाची यादी",
-  "ps-update-Product": "मालाचे तपशील अपडेट"
+  "ps-update-Product": "मालाचे तपशील अपडेट",
+  "ps-ProductFound": "कोणतेही मालाचे तपशील आढळले नाही.",
+  "ps-InvoiceDetails": "बिल तपशील",
+  "ps-custRetrnRep": "ग्राहक परत यादी",
+  "ps-addCustReturn": "ग्राहक माल परत"
 }
