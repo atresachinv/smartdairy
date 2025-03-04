@@ -13,6 +13,7 @@ import "../../../../Styles/Mainapp/Sales/Sales.css";
 import { NavLink } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { FaDownload } from "react-icons/fa6";
+import jsPDF from "jspdf";
 
 const GrocerySaleList = () => {
   const { t } = useTranslation(["puchasesale", "common"]);
@@ -29,9 +30,15 @@ const GrocerySaleList = () => {
   const [viewItems, setViewItems] = useState([]);
   const [loadings, SetLoadings] = useState(false);
   const [sortOrder, setSortOrder] = useState("desc");
+  const dairyInfo = useSelector(
+    (state) =>
+      state.dairy.dairyData.marathi_name ||
+      state.dairy.dairyData.SocietyName ||
+      state.dairy.dairyData.center_name
+  );
   //download Excel sheet ------------------------------------------------->
   const downloadExcel = () => {
-    const exportData = sales.map((sale) => ({
+    const exportData = filteredSalesList.map((sale) => ({
       BillDate: formatDateToDDMMYYYY(sale.BillDate),
       BillNo: sale.ReceiptNo,
       custCode: sale.CustCode,
@@ -322,6 +329,99 @@ const GrocerySaleList = () => {
     setIsInvoiceOpen(true);
   };
 
+  //download PDF
+  const downloadPdf = () => {
+    if (groupedSalesArray.length === 0) {
+      toast.warn("No data available to export.");
+      return;
+    }
+
+    const doc = new jsPDF();
+
+    // Define columns and rows
+    const columns = [
+      "Sr No",
+      "Date",
+      "Bill No",
+      "Code",
+      "Customer Name",
+      "Amount",
+    ];
+    const rows = groupedSalesArray.map((item, index) => [
+      index + 1,
+      formatDateToDDMMYYYY(item.BillDate),
+      item.ReceiptNo,
+      item.CustCode,
+      handleFindCustName(item.CustCode),
+      item.TotalAmount,
+    ]);
+
+    const totalAmount = groupedSalesArray.reduce(
+      (acc, item) => acc + item.TotalAmount,
+      0
+    );
+
+    // Page width for centering text
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const pageHeight = doc.internal.pageSize.getHeight();
+
+    // Define the margin and the height of the box
+    const margin = 10;
+    const boxHeight = pageHeight - 20; // Adjust as needed
+
+    // Add border for the entire content
+    doc.rect(margin, margin, pageWidth - 2 * margin, boxHeight);
+
+    // Add dairy name with border inside the box
+    const dairyName = dairyInfo;
+    doc.setFontSize(16);
+    doc.setFont("helvetica", "bold");
+    const dairyTextWidth = doc.getTextWidth(dairyName);
+    doc.text(dairyName, (pageWidth - dairyTextWidth) / 2, margin + 15);
+
+    // Add "Sale-Info" heading with border
+    doc.setFontSize(14);
+    const invoiceInfo = doc.getTextWidth("Sale-Info");
+    doc.text("Sale-Info", (pageWidth - invoiceInfo) / 2, margin + 25);
+    const gepInfo = doc.getTextWidth("Grocery Report");
+    doc.text("Grocery Report", (pageWidth - gepInfo) / 2, margin + 35);
+
+    // Add table for items with borders and centered text
+    doc.autoTable({
+      head: [columns],
+      body: rows,
+      startY: margin + 45,
+      margin: { top: 10 },
+      styles: {
+        cellPadding: 2,
+        fontSize: 11,
+        halign: "center", // Horizontal alignment for cells (centered)
+        valign: "middle", // Vertical alignment for cells (centered)
+        lineWidth: 0.08, // Line width for the borders
+        lineColor: [0, 0, 0], // Black border color
+      },
+      headStyles: {
+        fontSize: 12,
+        fontStyle: "bold",
+        fillColor: [225, 225, 225], // Light gray background for the header
+        textColor: [0, 0, 0], // Black text color for header
+      },
+      tableLineColor: [0, 0, 0], // Table border color (black)
+      tableLineWidth: 0.1, // Border width
+    });
+    // Add total amount with border
+    doc.setFontSize(12);
+    const totalAmountLabel = `Total Amount: ${totalAmount}`;
+    doc.text(totalAmountLabel, 145, doc.lastAutoTable.finalY + 10);
+
+    // Save the PDF
+    doc.save(
+      `Grocery_SaleReport_${formatDateToDDMMYYYY(
+        date1
+      )}_to_${formatDateToDDMMYYYY(date2)}.pdf`
+    );
+  };
+
   return (
     <div className="customer-list-container-div w100 h1 d-flex-col p10">
       <div className="download-print-pdf-excel-container w100 h30 d-flex-col sb">
@@ -390,7 +490,14 @@ const GrocerySaleList = () => {
             onClick={downloadExcel}
           >
             <span className="f-label-text px10"> {t("ps-down-excel")}</span>
-            <FaDownload />
+            <FaDownload className="icon" />
+          </button>
+          <button
+            className="w-btn mx10 sales-dates-container-mobile-btn"
+            onClick={downloadPdf}
+          >
+            <span className="f-label-text px10"> PDF </span>
+            <FaDownload className="icon" />
           </button>
         </div>
       </div>
@@ -417,6 +524,7 @@ const GrocerySaleList = () => {
             <span className="f-info-text w10"> {t("ps-custCode")}</span>
             <span className="f-info-text w30"> {t("ps-cutName")}</span>
             <span className="f-info-text w10">{t("ps-ttl-amt")}</span>
+            <span className="f-info-text w10">{t("CreatedBy")}</span>
             <span className="f-info-text w15">Actions</span>
           </div>
           {/* Show Spinner if loading, otherwise show the feed list */}
@@ -439,12 +547,13 @@ const GrocerySaleList = () => {
                 </span>
                 <span className="text w10">{sale.ReceiptNo}</span>
                 <span className="text w10">{sale.CustCode}</span>
-                <span className="text w30 t-start">
+                <span className="text w30">
                   {handleFindCustName(sale.CustCode)}
                 </span>
 
-                <span className="text w10 t-end">{sale.TotalAmount}</span>
-                <span className="text w15 d-flex j-center a-center sa">
+                <span className="text w10 ">{sale.TotalAmount}</span>
+                <span className="text w10 ">{sale.createdby}</span>
+                <span className="text w15 d-flex j-center a-center ">
                   <button
                     className="px5"
                     onClick={() => handleView(sale?.BillNo)}

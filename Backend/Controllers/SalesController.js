@@ -123,9 +123,14 @@ exports.getPaginatedSales = async (req, res) => {
   }
 
   if (dairy_id) {
-    query += ` AND companyid = ? AND center_id=?`; // Assuming companyid column exists in salesmaster
-    countQuery += ` AND companyid = ?  AND center_id=?`;
-    queryParams.push(dairy_id, center_id);
+    query += ` AND companyid = ?  `; // Assuming companyid column exists in salesmaster
+    countQuery += ` AND companyid = ? `;
+    queryParams.push(dairy_id);
+  }
+  if (center_id > 0) {
+    query += `AND center_id=?`;
+    countQuery += `AND center_id=?`;
+    queryParams.push(center_id);
   }
 
   // Append dynamic fields
