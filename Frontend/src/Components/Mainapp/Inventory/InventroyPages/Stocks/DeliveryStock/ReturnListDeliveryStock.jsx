@@ -11,6 +11,9 @@ import { useDispatch, useSelector } from "react-redux";
 import { listEmployee } from "../../../../../../App/Features/Mainapp/Masters/empMasterSlice";
 import { useTranslation } from "react-i18next";
 import { NavLink } from "react-router-dom";
+import { centersLists } from "../../../../../../App/Features/Dairy/Center/centerSlice";
+import jsPDF from "jspdf";
+import { FaDownload } from "react-icons/fa6";
 
 const ReturnListDeliveryStock = () => {
   const { t } = useTranslation(["puchasesale", "common"]);
@@ -25,7 +28,15 @@ const ReturnListDeliveryStock = () => {
   const [updatelist, setUpdateList] = useState([]);
   const dispatch = useDispatch();
   const { emplist } = useSelector((state) => state.emp);
-
+  const centerList = useSelector(
+    (state) => state.center.centersList.centersDetails
+  );
+  const dairyInfo = useSelector(
+    (state) =>
+      state.dairy.dairyData.marathi_name ||
+      state.dairy.dairyData.SocietyName ||
+      state.dairy.dairyData.center_name
+  );
   // Handle view button click for purchase list
   const handleEditClick = (id) => {
     const filterList = deliveryList.filter((item) => item.billno === id) || [];
@@ -37,7 +48,8 @@ const ReturnListDeliveryStock = () => {
   //get all
   useEffect(() => {
     dispatch(listEmployee());
-  }, []);
+    dispatch(centersLists());
+  }, [dispatch]);
 
   // Fetch delivery stock list from API
   useEffect(() => {
@@ -114,30 +126,25 @@ const ReturnListDeliveryStock = () => {
 
   // Function to download dealer list as an Excel file
   const downloadExcel = () => {
-    if (deliveryList.length === 0) {
+    if (groupedPurchaseArray.length === 0) {
       toast.warn("No data available to download.");
       return;
     }
 
-    const formattedData = deliveryList.map((item) => ({
-      PurchaseDate: formatDateToDDMMYYYY(item.purchasedate),
-      InvoiceIdBillNo: item.receiptno,
-      SupplierCode: item.dealerCode,
-      CustName: item.dealerName,
-      ItemCode: item.itemcode,
-      ItemName: item.itemname,
+    const formattedData = groupedPurchaseArray.map((item) => ({
+      Date: formatDateToDDMMYYYY(item.saledate),
+      InvoiceIdBillNo: item.rctno,
+      "Party Code": item.to_user,
+      "Party Name": findEmpName(item.to_user, item.deliver_to),
+      ItemCode: item.ItemCode,
+      ItemName: item.ItemName,
       Qty: item.qty,
-      Rate: item.rate,
-      Amt: item.amount,
-      "cgst%": item.cgst || 0,
-      "sgst%": item.sgst || 0,
-      CN: item.cn || 0,
     }));
 
     const worksheet = XLSX.utils.json_to_sheet(formattedData);
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
-    XLSX.writeFile(workbook, `PurchaseData_${date1}_to_${date2}.xlsx`);
+    XLSX.writeFile(workbook, `DC_Return_${date1}_to_${date2}.xlsx`);
   };
 
   // ----------------------------------------------------------------------------->
@@ -147,9 +154,9 @@ const ReturnListDeliveryStock = () => {
     const groupedPurchase = (filteredList || []).reduce((acc, item) => {
       const key = item.billno;
       if (!acc[key]) {
-        acc[key] = { ...item, TotalAmount: 0 };
+        acc[key] = { ...item, TotalQty: 0 };
       }
-      acc[key].TotalAmount += item.amt;
+      acc[key].TotalQty += item.Qty;
       return acc;
     }, {});
 
@@ -284,11 +291,112 @@ const ReturnListDeliveryStock = () => {
   };
 
   //find name
-  const findEmpName = (emp_id) => {
-    if (emplist) {
+  const findEmpName = (emp_id, deliver_to) => {
+    if (emplist && deliver_to === 2) {
       const emp = emplist.find((item) => parseInt(item.emp_id) == emp_id);
       return emp?.emp_name || "";
+    } else if (centerList && deliver_to === 1) {
+      const center = centerList.find(
+        (item) => parseInt(item.center_id) == emp_id
+      );
+      return center?.center_name || "";
     } else return "";
+  };
+
+  //download PDF
+  const downloadPdf = () => {
+    if (groupedPurchaseArray.length === 0) {
+      toast.warn("No data available to export.");
+      return;
+    }
+
+    const doc = new jsPDF();
+
+    // Define columns and rows
+    const columns = [
+      "Sr No",
+      "Date",
+      "Chalan No",
+      "Party Code",
+      "Party Name",
+      "Qty",
+    ];
+    const rows = groupedPurchaseArray.map((item, index) => [
+      index + 1,
+      formatDateToDDMMYYYY(item.saledate),
+      item.rctno,
+      item.to_user,
+      findEmpName(item.to_user, item.deliver_to),
+      item.TotalQty,
+    ]);
+
+    const totalAmount = groupedPurchaseArray.reduce(
+      (acc, item) => acc + item.TotalQty,
+      0
+    );
+
+    // Page width for centering text
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const pageHeight = doc.internal.pageSize.getHeight();
+
+    // Define the margin and the height of the box
+    const margin = 10;
+    const boxHeight = pageHeight - 20; // Adjust as needed
+
+    // Add border for the entire content
+    doc.rect(margin, margin, pageWidth - 2 * margin, boxHeight);
+
+    // Add dairy name with border inside the box
+    const dairyName = dairyInfo;
+    doc.setFontSize(16);
+    doc.setFont("helvetica", "bold");
+    const dairyTextWidth = doc.getTextWidth(dairyName);
+    doc.text(dairyName, (pageWidth - dairyTextWidth) / 2, margin + 15);
+
+    // Add "Sale-Info" heading with border
+    doc.setFontSize(14);
+    const invoiceInfo = doc.getTextWidth("DC-Info");
+    doc.text("DC-Info", (pageWidth - invoiceInfo) / 2, margin + 25);
+    const gepInfo = doc.getTextWidth("Return Delivery Chalan Report");
+    doc.text(
+      "Return Delivery Chalan Report",
+      (pageWidth - gepInfo) / 2,
+      margin + 35
+    );
+    // Add table for items with borders and centered text
+    doc.autoTable({
+      head: [columns],
+      body: rows,
+      startY: margin + 45,
+      margin: { top: 10 },
+      styles: {
+        cellPadding: 2,
+        fontSize: 11,
+        halign: "center", // Horizontal alignment for cells (centered)
+        valign: "middle", // Vertical alignment for cells (centered)
+        lineWidth: 0.08, // Line width for the borders
+        lineColor: [0, 0, 0], // Black border color
+      },
+      headStyles: {
+        fontSize: 12,
+        fontStyle: "bold",
+        fillColor: [225, 225, 225], // Light gray background for the header
+        textColor: [0, 0, 0], // Black text color for header
+      },
+      tableLineColor: [0, 0, 0], // Table border color (black)
+      tableLineWidth: 0.1, // Border width
+    });
+    // Add total amount with border
+    doc.setFontSize(12);
+    const totalAmountLabel = `Total Qty: ${totalAmount}`;
+    doc.text(totalAmountLabel, 145, doc.lastAutoTable.finalY + 10);
+
+    // Save the PDF
+    doc.save(
+      `Return_Delivery_Chalan_Report_${formatDateToDDMMYYYY(
+        date1
+      )}_to_${formatDateToDDMMYYYY(date2)}.pdf`
+    );
   };
 
   return (
@@ -358,7 +466,15 @@ const ReturnListDeliveryStock = () => {
             className="w-btn mx10 sales-dates-container-mobile-btn"
             onClick={downloadExcel}
           >
-            {t("ps-down-excel")}
+            <span className="f-label-text px10"> {t("ps-down-excel")}</span>
+            <FaDownload className="icon" />
+          </button>
+          <button
+            className="w-btn mx10 sales-dates-container-mobile-btn"
+            onClick={downloadPdf}
+          >
+            <span className="f-label-text px10"> PDF </span>
+            <FaDownload className="icon" />
           </button>
         </div>
       </div>
@@ -383,7 +499,8 @@ const ReturnListDeliveryStock = () => {
             </span>
             <span className="f-info-text w5">Chalan.No</span>
             <span className="f-info-text w10">Party Code</span>
-            <span className="f-info-text w15">Party Name</span>
+            <span className="f-info-text w25">Party Name</span>
+            <span className="f-info-text w5">Qty</span>
             <span className="f-info-text w10">Actions</span>
           </div>
           {loading ? (
@@ -409,9 +526,10 @@ const ReturnListDeliveryStock = () => {
                     </span>
                     <span className="text w5">{item.rctno}</span>
                     <span className="text w10">{item.to_user}</span>
-                    <span className="text w15">
-                      {findEmpName(item.to_user)}
+                    <span className="text w25">
+                      {findEmpName(item.to_user, item.deliver_to)}
                     </span>
+                    <span className="text w5">{item.TotalQty}</span>
                     <span className="text w10 d-flex j-center a-center">
                       <button
                         style={{ cursor: "pointer" }}

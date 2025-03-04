@@ -38,6 +38,13 @@ const CattleSaleList = () => {
       state.dairy.dairyData.SocietyName ||
       state.dairy.dairyData.center_name
   );
+  const [userRole, setUserRole] = useState(null);
+  console.log(userRole);
+  //set user role
+  useEffect(() => {
+    const myrole = localStorage.getItem("userRole");
+    setUserRole(myrole);
+  }, []);
 
   //download Excel sheet
   const downloadExcel = () => {
@@ -537,7 +544,13 @@ const CattleSaleList = () => {
             <span className="f-info-text w10"> {t("ps-custCode")}</span>
             <span className="f-info-text w30"> {t("ps-cutName")}</span>
             <span className="f-info-text w10">{t("ps-amt")}</span>
-            <span className="f-info-text w10">{t("CreatedBy")}</span>
+            {userRole === "salesman" ? (
+              <></>
+            ) : (
+              <>
+                <span className="f-info-text w10">{t("CreatedBy")}</span>
+              </>
+            )}
             <span className="f-info-text w15">Actions</span>
           </div>
           {loadings ? (
@@ -564,7 +577,14 @@ const CattleSaleList = () => {
                 </span>
 
                 <span className="text w10">{sale.TotalAmount}</span>
-                <span className="text w10 ">{sale.createdby}</span>
+                {userRole === "salesman" ? (
+                  <></>
+                ) : (
+                  <>
+                    <span className="text w10 ">{sale.createdby}</span>
+                  </>
+                )}
+
                 <span className="text w15 d-flex j-center a-center ">
                   <button
                     className="px5"
