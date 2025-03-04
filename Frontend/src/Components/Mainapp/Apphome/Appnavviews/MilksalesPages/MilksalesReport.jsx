@@ -15,7 +15,7 @@ import { getCenterMilkReport, getretailCustomer } from "../../../../../App/Featu
 
 const MilksalesReport = () => {
   const dispatch = useDispatch();
-  const { t } = useTranslation(["common", "milkcollection"]);
+  const { t } = useTranslation(["common", "milkcollection", "msales"]);
   const dairy_name = useSelector(
     (state) =>
       state.dairy.dairyData.SocietyName || state.dairy.dairyData.center_name
@@ -31,21 +31,18 @@ const MilksalesReport = () => {
     (state) => state.center.centersList.centersDetails || []
   );
 
-  const Emplist = useSelector((state) => state.emp.emplist || []);
+  // const Emplist = useSelector((state) => state.emp.emplist || []);
 
   // Local states ----------------------------------------------------------->
   const [errors, setErrors] = useState({});
   const [selectedCenterId, setSelectedCenterId] = useState("0");
-  const [selectedEmp, setSelectedEmp] = useState("");
   const [filteredSaleData, setFilteredSaleData] = useState([]);
-  const [selectedCenterName, setSelectedCenterName] = useState("");
   const initialValues = {
     fromdate: tDate || "",
     todate: tDate || "",
   };
 
   const [values, setValues] = useState(initialValues);
-
 
   // calculate amount -------------------------------------------------->
   const calculateTotalAmount = (data) => {
@@ -55,39 +52,15 @@ const MilksalesReport = () => {
   const calculateTotalQty = (data) => {
     return data.reduce((sum, item) => sum + parseInt(item.Qty), 0);
   };
-
-  const Qty = calculateTotalQty(AllSales);
-  const totalAmount = calculateTotalAmount(AllSales);
   //--------------------------------------------------------------------------------------->
   useEffect(() => {
-    // dispatch(listEmployee());
     dispatch(getretailCustomer());
-    // dispatch(mobileMilkCollReport());
   }, [dispatch]);
 
   // adding All center Data in  FilteredSaleData state ------------------------------------>
   useEffect(() => {
     setFilteredSaleData(AllSales);
   }, [AllSales]);
-
-  // useEffect(() => {
-  //   if (selectedEmp) {
-  //     const filteredData = AllSales.filter(
-  //       (data) => data.createdby === selectedEmp
-  //     );
-  //     setFilteredSaleData(filteredData);
-  //   } else {
-  //     setFilteredSaleData(AllSales);
-  //   }
-  // }, [selectedEmp]);
-
-  // const milkCollectors = useMemo(() => {
-  //   return Emplist.filter(
-  //     (emp) =>
-  //       emp.center_id.toString() === selectedCenterId &&
-  //       emp.designation === "mobilecollector"
-  //   );
-  // }, [selectedCenterId, Emplist]);
 
   const handleretailCenterChange = (event) => {
     const selectedCenterId = event.target.value;
@@ -98,15 +71,6 @@ const MilksalesReport = () => {
       setFilteredSaleData(filteredData);
     }
   };
-
-  // const handleCollectorChange = (event) => {
-  //   const selectedEmp = event.target.value;
-  //   const selectedEmpname = Emplist.find(
-  //     (emp) => emp.emp_mobile.toString() === selectedEmp
-  //   );
-  //   setSelectedEmpName(selectedEmpname ? selectedEmpname.emp_name : "");
-  //   setSelectedEmp(selectedEmp);
-  // };
 
   const validateField = (name, value) => {
     let error = {};
@@ -414,15 +378,24 @@ const MilksalesReport = () => {
       </div>
       <div className="milk-sales-data-div w100 d-flex-col h90 mh90 hidescrollbar bg">
         <div className="sales-info-heading w100 h10 d-flex a-center t-center sticky-top py10 sa bg7">
-          <span className="f-label-text w10">Code</span>
-          <span className="f-label-text w30">Customer Name</span>
-          <span className="f-label-text w10">Liters</span>
-          <span className="f-label-text w10">Rate</span>
-          <span className="f-label-text w10">Amount</span>
-          <span className="f-label-text w10">Pay Mode</span>
-          <span className="f-label-text w10">Paid Amt.</span>
-          {/* <span className="f-label-text w10">Advance</span>
-          <span className="f-label-text w10">Remaining</span> */}
+          <span className="f-label-text w10">
+            {t("milkcollection:m-cust-code")}
+          </span>
+          <span className="f-label-text w30">
+            {t("milkcollection:m-cust-name")}
+          </span>
+          <span className="f-label-text w10">{t("c-liters")}</span>
+          <span className="f-label-text w10">{t("c-rate")}</span>
+          <span className="f-label-text w10">{t("c-amt")}</span>
+          <span className="f-label-text w10">
+            {t("msales:m-s-pay-mode")}
+          </span>
+          <span className="f-label-text w10">
+            {t("msales:m-s-paid-amt")}
+          </span>
+          <span className="f-label-text w10">
+            {t("msales:m-s-cre-amt")}
+          </span>
         </div>
         {salesStatus === "loading" ? (
           <div className="w100 h80 d-flex center">
@@ -446,16 +419,13 @@ const MilksalesReport = () => {
               <span className="info-text w10">{sales.amt}</span>
               <span className="info-text w10">
                 {sales.paymode === 0
-                  ? "Creadit"
+                  ? `${t("msales:m-s-cre")}`
                   : sales.paymode === 1
-                  ? "Cash"
-                  : "Online"}
+                  ? `${t("msales:m-s-cash")}`
+                  : `${t("msales:m-s-online")}`}
               </span>
               <span className="info-text w10">{sales.paidamt}</span>
-              {/* <span className="info-text w10">0</span>
-              <span className="info-text w10">
-                {sales.amt -(0 + sales.paidamt)}
-              </span> */}
+              <span className="info-text w10">{sales.credit_amt || 0}</span>
             </div>
           ))
         ) : (

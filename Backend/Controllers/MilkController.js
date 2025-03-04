@@ -2144,8 +2144,6 @@ exports.createRetailCustomer = async (req, res) => {
           if (result.affectedRows === 0) {
             return res.status(404).json({ message: "Query execution error" });
           }
-          console.log("affected row", result.affectedRows);
-
           res
             .status(200)
             .json({ message: "Retail milk customer created successfully!" });
@@ -2164,23 +2162,21 @@ exports.createRetailCustomer = async (req, res) => {
 //-------------------------------------------------------------------------------------------------->
 
 exports.getRetailCustomer = async (req, res) => {
+  const dairy_id = req.user.dairy_id;
+  const center_id = req.user.center_id;
+
+  if (!dairy_id) {
+    return res.status(400).json({ message: "Dairy ID not found!" });
+  }
+
   pool.getConnection((err, connection) => {
     if (err) {
       console.error("Error getting MySQL connection: ", err);
       return res.status(500).json({ message: "Database connection error" });
     }
-
-    const dairy_id = req.user.dairy_id;
-    const center_id = req.user.center_id;
-
-    if (!dairy_id) {
-      connection.release();
-      return res.status(400).json({ message: "Dairy ID not found!" });
-    }
-
     // SQL query to fetch retail customers
     const query = `
-      SELECT code, cust_name, mobile, advance 
+      SELECT id, code, cust_name, mobile, advance 
       FROM retailsales_customers 
       WHERE dairy_id = ? AND center_id = ?
     `;
@@ -2194,9 +2190,10 @@ exports.getRetailCustomer = async (req, res) => {
       }
 
       if (result.length === 0) {
-        return res.status(404).json({ message: "No retail customers found!" });
+        return res
+          .status(404)
+          .json({ retailcust: [], message: "No retail customers found!" });
       }
-
       res.status(200).json({
         retailcust: result,
         message: "Retail customers retrieved successfully!",
@@ -2209,9 +2206,20 @@ exports.getRetailCustomer = async (req, res) => {
 // Retail milk sales ------------------------------------------------------------------------------->
 //-------------------------------------------------------------------------------------------------->
 
+// v2 version ----------->>>
 exports.RetailMilkCollection = async (req, res) => {
-  const { code, cname, liters, rate, amt, paidamt, rem_adv, paymode } =
-    req.body;
+  const {
+    id,
+    code,
+    cname,
+    liters,
+    rate,
+    amt,
+    paidamt,
+    credit_amt,
+    rem_adv,
+    paymode,
+  } = req.body;
 
   pool.getConnection((err, connection) => {
     if (err) {
@@ -2231,47 +2239,102 @@ exports.RetailMilkCollection = async (req, res) => {
 
       // Get the current date in YYYY-MM-DD format
       const currentDate = new Date().toISOString().split("T")[0];
-      const insertCode = code && code !== "" ? parseInt(code, 0) : 0;
+      const insertCode = code && code !== "" ? parseInt(code, 10) : 0;
       const insertLiters = parseFloat(liters) || 0;
-      // Get the current hour to determine AM or PM
-      const currentHour = new Date().getHours();
-      const time = currentHour < 12 ? 0 : 1;
-      // Prepare the SQL query
+      const time = new Date().getHours() < 12 ? 0 : 1;
+
+      // **UPDATE Query for rem_adv (Advance) if applicable**
+      const updateQuery = `UPDATE retailsales_customers SET advance = ? WHERE id = ?`;
+
+      // **INSERT Query for milk collection**
       const milkcollection = `
-      INSERT INTO retail_milk_sales 
-      (dairy_id, center_id, code , cust_name , liters , rate , amt , paidamt, rem_advance, paymode, saleby , saledate , saletime )
-        VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        INSERT INTO retail_milk_sales 
+        (dairy_id, center_id, code, cust_name, liters, rate, amt, paidamt, credit_amt, rem_advance, paymode, saleby, saledate, saletime)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       `;
 
-      // Execute the query
-      connection.query(
-        milkcollection,
-        [
-          dairy_id,
-          center_id,
-          insertCode,
-          cname,
-          insertLiters,
-          rate,
-          amt,
-          paidamt || 0.0,
-          rem_adv,
-          paymode,
-          user,
-          currentDate,
-          time,
-        ],
-        (err, result) => {
-          connection.release();
+      // **Execute UPDATE Query First if rem_adv > 0**
+      if (rem_adv === 0 ||rem_adv > 0) {
+        connection.query(
+          updateQuery,
+          [rem_adv, id],
+          (updateErr, updateResult) => {
+            if (updateErr) {
+              connection.release();
+              console.error("Error updating advance: ", updateErr);
+              return res
+                .status(500)
+                .json({ message: "Failed to update advance" });
+            }
 
-          if (err) {
-            console.error("Error executing query: ", err);
-            return res.status(500).json({ message: "Query execution error" });
+            // **Proceed with INSERT Query after UPDATE completes**
+            connection.query(
+              milkcollection,
+              [
+                dairy_id,
+                center_id,
+                insertCode,
+                cname,
+                insertLiters,
+                rate,
+                amt,
+                paidamt || 0.0,
+                credit_amt || 0.0,
+                rem_adv,
+                paymode,
+                user,
+                currentDate,
+                time,
+              ],
+              (insertErr, insertResult) => {
+                connection.release();
+
+                if (insertErr) {
+                  console.error("Error executing query: ", insertErr);
+                  return res
+                    .status(500)
+                    .json({ message: "Query execution error" });
+                }
+
+                res
+                  .status(200)
+                  .json({ message: "Milk entry saved successfully!" });
+              }
+            );
           }
+        );
+      } else {
+        // **Directly execute INSERT if no rem_adv update is needed**
+        connection.query(
+          milkcollection,
+          [
+            dairy_id,
+            center_id,
+            insertCode,
+            cname,
+            insertLiters,
+            rate,
+            amt,
+            paidamt || 0.0,
+            credit_amt || 0.0,
+            rem_adv,
+            paymode,
+            user,
+            currentDate,
+            time,
+          ],
+          (insertErr, insertResult) => {
+            connection.release();
 
-          res.status(200).json({ message: "Milk entry saved successfully!" });
-        }
-      );
+            if (insertErr) {
+              console.error("Error executing query: ", insertErr);
+              return res.status(500).json({ message: "Query execution error" });
+            }
+
+            res.status(200).json({ message: "Milk entry saved successfully!" });
+          }
+        );
+      }
     } catch (error) {
       connection.release();
       console.error("Error processing request: ", error);
@@ -2279,6 +2342,7 @@ exports.RetailMilkCollection = async (req, res) => {
     }
   });
 };
+
 
 //-------------------------------------------------------------------------------------------------->
 // Retail milk report for mobile milk collector ---------------------------------------------------->
@@ -2371,14 +2435,14 @@ exports.centerReMilkReports = async (req, res) => {
 
       if (center_id && center_id !== "0") {
         milkcollection = `
-          SELECT center_id, code, cust_name, liters, rate, amt, paidamt, paymode, saletime, saleby
+          SELECT center_id, code, cust_name, liters, rate, amt, paidamt, credit_amt, paymode, saletime, saleby
           FROM retail_milk_sales
           WHERE dairy_id = ? AND center_id = ? AND saledate BETWEEN ? AND ?
         `;
         queryParams.splice(1, 0, center_id); // Insert center_id in the second position
       } else {
         milkcollection = `
-          SELECT center_id, code,cust_name, liters, rate, amt, paidamt, paymode, saletime, saleby
+          SELECT center_id, code,cust_name, liters, rate, amt, paidamt, credit_amt, paymode, saletime, saleby
           FROM retail_milk_sales
           WHERE dairy_id = ? AND saledate BETWEEN ? AND ?
         `;
