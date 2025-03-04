@@ -102,7 +102,7 @@ exports.dairyInfo = async (req, res) => {
 // update dairy details .............................
 // ..................................................
 
-//v2 function 
+//v2 function
 exports.updatedetails = async (req, res) => {
   const {
     marathiName,
@@ -127,6 +127,8 @@ exports.updatedetails = async (req, res) => {
       .status(400)
       .json({ message: "Dairy ID or Center ID not found!" });
   }
+
+  const cacheKey = `dairyInfo_${dairy_id}_${center_id}`;
 
   pool.getConnection((err, connection) => {
     if (err) {
@@ -215,6 +217,10 @@ exports.updatedetails = async (req, res) => {
                         .json({ message: "Transaction commit error" });
                     });
                   }
+
+                  // Remove cache entry after successful update
+                  delete cache[cacheKey];
+
                   connection.release();
                   res.status(200).json({
                     message:
@@ -250,6 +256,10 @@ exports.updatedetails = async (req, res) => {
                 .status(500)
                 .json({ message: "Error updating center details" });
             }
+
+            // Remove cache entry after successful update
+            delete cache[cacheKey];
+
             res
               .status(200)
               .json({ message: "Center information updated successfully!" });

@@ -419,10 +419,10 @@ const MilksalesReport = () => {
               <span className="info-text w10">{sales.amt}</span>
               <span className="info-text w10">
                 {sales.paymode === 0
-                  ? "Creadit"
+                  ? `${t("msales:m-s-cre")}`
                   : sales.paymode === 1
-                  ? "Cash"
-                  : "Online"}
+                  ? `${t("msales:m-s-cash")}`
+                  : `${t("msales:m-s-online")}`}
               </span>
               <span className="info-text w10">{sales.paidamt}</span>
               <span className="info-text w10">{sales.credit_amt || 0}</span>
