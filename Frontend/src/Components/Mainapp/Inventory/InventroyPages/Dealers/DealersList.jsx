@@ -9,6 +9,8 @@ import { FaRegEdit } from "react-icons/fa";
 import { toast } from "react-toastify";
 import Swal from "sweetalert2";
 import { useTranslation } from "react-i18next";
+import { jsPDF } from "jspdf";
+import { useSelector } from "react-redux";
 
 const DealersList = () => {
   const { t } = useTranslation(["puchasesale", "common"]);
@@ -16,7 +18,12 @@ const DealersList = () => {
   const [loading, setLoading] = useState(false);
   const [editSale, setEditSale] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-
+  const dairyInfo = useSelector(
+    (state) =>
+      state.dairy.dairyData.marathi_name ||
+      state.dairy.dairyData.SocietyName ||
+      state.dairy.dairyData.center_name
+  );
   //open to edit item
   const handleEditClick = (id) => {
     setEditSale(id);
@@ -154,15 +161,114 @@ const DealersList = () => {
       }
     }
   };
+  //download PDF
+  const downloadPdf = () => {
+    if (dealerList.length === 0) {
+      toast.warn("No data available to export.");
+      return;
+    }
+
+    const doc = new jsPDF();
+
+    // Define columns and rows
+    const columns = [
+      "Sr. No",
+      "Code",
+      "Dealer Name",
+      "Phone No",
+      "City",
+      "Dist.",
+      "Bank Name",
+      "A/C No",
+      "IFSC",
+    ];
+    const rows = dealerList.map((item, index) => [
+      index + 1,
+      item.srno,
+      item.cname,
+      item.Phone,
+      item.City,
+      item.dist,
+      item.cust_bankname,
+      item.cust_accno,
+      item.cust_ifsc,
+    ]);
+
+    // Page width for centering text
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const pageHeight = doc.internal.pageSize.getHeight();
+
+    // Define the margin and the height of the box
+    const margin = 10;
+    const boxHeight = pageHeight - 20; // Adjust as needed
+
+    // Add border for the entire content
+    doc.rect(margin, margin, pageWidth - 2 * margin, boxHeight);
+
+    // Add dairy name with border inside the box
+    const dairyName = dairyInfo;
+    doc.setFontSize(16);
+    doc.setFont("helvetica", "bold");
+    const dairyTextWidth = doc.getTextWidth(dairyName);
+    doc.text(dairyName, (pageWidth - dairyTextWidth) / 2, margin + 15);
+
+    // Add "Sale-Info" heading with border
+    doc.setFontSize(14);
+    const invoiceInfo = doc.getTextWidth("Dealer-Info");
+    doc.text("Dealer-Info", (pageWidth - invoiceInfo) / 2, margin + 25);
+    const gepInfo = doc.getTextWidth("Dealerlist Report");
+    doc.text("Dealerlist Report", (pageWidth - gepInfo) / 2, margin + 35);
+    // Add table for items with borders and centered text
+    doc.autoTable({
+      head: [columns],
+      body: rows,
+      startY: margin + 45,
+      margin: { top: 10 },
+      styles: {
+        cellPadding: 2,
+        fontSize: 11,
+        halign: "center", // Horizontal alignment for cells (centered)
+        valign: "middle", // Vertical alignment for cells (centered)
+        lineWidth: 0.08, // Line width for the borders
+        lineColor: [0, 0, 0], // Black border color
+      },
+      headStyles: {
+        fontSize: 12,
+        fontStyle: "bold",
+        fillColor: [225, 225, 225], // Light gray background for the header
+        textColor: [0, 0, 0], // Black text color for header
+      },
+      tableLineColor: [0, 0, 0], // Table border color (black)
+      tableLineWidth: 0.1, // Border width
+    });
+
+    // Save the PDF
+    doc.save(`Dealerlist_Report.pdf`);
+  };
 
   return (
     <div className="customer-list-container-div w100 h1 d-flex-col p10">
-      <div className="download-print-pdf-excel-container w100 h10 d-flex j-end sb">
-        <span className="heading px10"> {t("ps-nv-dealer-list")}</span>
-        <button className="btn my5" onClick={downloadExcel}>
-          <span className="f-label-text px10">{t("ps-down-excel")}</span>
-          <FaDownload />
-        </button>
+      <div className="download-print-pdf-excel-container w100 h10 d-flex sb">
+        <span className="w30 prod-page-title heading px10">
+          {t("ps-nv-dealer-list")}
+        </span>
+        <div className="group-code-and-button-div w100 h1 d-flex sb">
+          <div></div>
+          <button
+            className="btn sales-dates-container-mobile-btn"
+            onClick={downloadExcel}
+          >
+            <span className="f-label-text px10"> {t("ps-down-excel")}</span>
+            <FaDownload />
+          </button>
+          <button
+            className="btn sales-dates-container-mobile-btn"
+            onClick={downloadPdf}
+          >
+            <span className="f-label-text px10"> PDF</span>
+            <FaDownload />
+          </button>
+        </div>
       </div>
       <div className="customer-list-table w100 h1 d-flex-col bg">
         <div className="customer-heading-title-scroller w100 h1 mh100  hidescrollbar d-flex-col sticky-top">
