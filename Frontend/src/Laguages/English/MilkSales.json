@@ -3,5 +3,13 @@
   "m-addsangha": "Add New Sangha",
   "m-sanghalist": "Sangha List",
   "m-s-sales": "Sangha Sales",
-  "m-s-report": "Sangha Sales Report"
+  "m-s-paidamt": "Paid Amount",
+  "m-s-paid-amt": "Paid Amt.",
+  "m-s-paymode": "Select Payment Mode",
+  "m-s-pay-mode": "Pay Mode",
+  "m-s-rem-adv": "Remaining Advance",
+  "m-s-cre": "Credit",
+  "m-s-cre-amt": "Credit Amt.",
+  "m-s-cash": "Cash",
+  "m-s-online": "Online"
 }

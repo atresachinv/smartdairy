@@ -5,12 +5,15 @@ import { toast } from "react-toastify";
 import { useTranslation } from "react-i18next";
 import { IoPersonAddSharp } from "react-icons/io5";
 import CreateCustomers from "./CreateCustomers";
-import { saveMilkEntry } from "../../../../../App/Features/Mainapp/Milksales/milkSalesSlice";
+import {
+  getretailCustomer,
+  saveMilkEntry,
+} from "../../../../../App/Features/Mainapp/Milksales/milkSalesSlice";
 import "../../../../../Styles/Mainapp/Apphome/Appnavview/MilkSales.css";
 
 const Milksales = ({ switchToSettings }) => {
   const dispatch = useDispatch();
-  const { t } = useTranslation(["milkcollection", "common"]);
+  const { t } = useTranslation(["milkcollection", "msales", "common"]);
 
   const tDate = useSelector((state) => state.date.toDate);
   const retailCustomers = useSelector((state) => state.milksales.customers);
@@ -33,6 +36,7 @@ const Milksales = ({ switchToSettings }) => {
 
   const initialValues = {
     date: tDate || changedDate,
+    id: "",
     code: "",
     cname: "",
     time: 0,
@@ -41,16 +45,44 @@ const Milksales = ({ switchToSettings }) => {
     amt: "",
     paymode: 0,
     paidamt: 0,
+    credit_amt: 0,
     advance: 0,
     rem_adv: 0,
   };
 
   const [values, setValues] = useState(initialValues);
 
+  useEffect(() => {
+    dispatch(getretailCustomer());
+  }, []);
+
   const handleInputs = (e) => {
     const { name, value } = e.target;
     setChangedDate(value);
     setValues({ ...values, [name]: value });
+  };
+
+  const handleSelectChange = (e) => {
+    const { name, value } = e.target;
+    const { liters } = values;
+    const parsedLiters = parseFloat(liters) || 0; // Ensure valid number
+    const amount = parsedLiters * 40;
+
+    setValues((prevValues) => {
+      const updatedValues = {
+        ...prevValues,
+        paymode: value,
+      };
+
+      // Update `paidamt` only if paymode is not "0" (Credit)
+      if (value !== "0") {
+        updatedValues.paidamt = amount.toFixed(2);
+      } else {
+        updatedValues.paidamt = 0;
+      }
+
+      return updatedValues;
+    });
   };
 
   // morning evening ----------------------------------------------------------->
@@ -73,18 +105,40 @@ const Milksales = ({ switchToSettings }) => {
         ...prev,
         rate: 40,
         amt: amount.toFixed(2),
-        paidamt: amount.toFixed(2),
-      })); 
-      if (values.paymode === 0 && values.advance > 0 ) {
-        setValues((prev) => ({
-          ...prev,
-          rem_adv: values.advance - Number(values.amt || 0),
-        }));
-      }
+      }));
     } catch (error) {
       console.error("Error in milk amount calculation :", error);
     }
   };
+
+  useEffect(() => {
+    if (values.amt > values.paidamt && values.amt !== values.paidamt) {
+      setValues((prev) => ({
+        ...prev,
+        credit_amt: Number(values.amt) - Number(values.paidamt),
+      }));
+    }
+  }, [values.paidamt, values.amt]);
+
+  useEffect(() => {
+    if (
+      values.paymode === 0 &&
+      values.advance > 0 &&
+      values.amt !== values.paidamt
+    ) {
+      setValues((prev) => ({
+        ...prev,
+        rem_adv: Math.max( 0,
+          Number(values.advance) - Number(values.credit_amt)
+        ),
+      }));
+    } else {
+      setValues((prev) => ({
+        ...prev,
+        rem_adv: Number(values.advance),
+      }));
+    }
+  }, [values.credit_amt, values.advance, values.paidamt]);
 
   // Trigger calculation whenever liters change ---------------------------------->
   useEffect(() => {
@@ -93,19 +147,12 @@ const Milksales = ({ switchToSettings }) => {
     }
   }, [values.liters]);
 
-  // const getToken = () => {
-  //   dispatch(fetchFCMTokens({ cust_no: values.code }));
-  // };
-
   // Effect to search for customer when code changes ---------------------------->
   useEffect(() => {
     if (values.code.length > 0) {
       const handler = setTimeout(() => {
-        // Ensure `code` has valid content before making API calls
         findCustomerByCode(values.code.trim());
-        // getToken();
       }, 500);
-
       return () => clearTimeout(handler);
     }
   }, [values.code, dispatch]);
@@ -124,6 +171,7 @@ const Milksales = ({ switchToSettings }) => {
     if (customer) {
       setValues((prev) => ({
         ...prev,
+        id: customer.id,
         cname: customer.cust_name,
         advance: customer.advance,
       }));
@@ -179,9 +227,9 @@ const Milksales = ({ switchToSettings }) => {
     e.preventDefault();
     try {
       console.log(values);
-      // dispatch(saveMilkEntry(values));
-      toast.success(`Milk Collection of ${values.cname} saved successfully!`);
+      dispatch(saveMilkEntry(values));
       setValues(initialValues);
+      toast.success(`Milk Collection of ${values.cname} saved successfully!`);
       codeInputRef.current.focus();
     } catch (error) {
       console.error("Error in saving Milk Sales:", error);
@@ -269,7 +317,7 @@ const Milksales = ({ switchToSettings }) => {
           </div> */}
           <div className="form-div w50 px10" style={{ position: "relative" }}>
             <label htmlFor="cname" className="info-text">
-              Customer name
+              {t("m-cust-name")}
             </label>
             <input
               className={`data ${
@@ -320,7 +368,7 @@ const Milksales = ({ switchToSettings }) => {
             </div>
             <div className="form-div px10">
               <label htmlFor="paymode" className="info-text">
-                Select Payment Mode
+                {t("msales:m-s-paymode")}
               </label>
               <select
                 className="data"
@@ -330,16 +378,16 @@ const Milksales = ({ switchToSettings }) => {
                 onKeyDown={(e) =>
                   handleKeyPress(e, document.getElementById("paidamt"))
                 }
-                onChange={handleInputs}
+                onChange={handleSelectChange}
               >
-                <option value="0">Credit</option>
-                <option value="1">Cash</option>
-                <option value="2">Online</option>
+                <option value="0">{t("msales:m-s-cre")}</option>
+                <option value="1">{t("msales:m-s-cash")}</option>
+                <option value="2">{t("msales:m-s-online")}</option>
               </select>
             </div>
             <div className="form-div px10">
               <label htmlFor="paidamt" className="info-text">
-                paid {t("common:c-amt")}
+                {t("msales:m-s-paidamt")}
               </label>
               <input
                 className={`data ${errors.amt ? "input-error" : ""}`}
@@ -389,6 +437,18 @@ const Milksales = ({ switchToSettings }) => {
                 id="amt"
                 step="any"
                 value={values.amt}
+              />
+            </div>
+            <div className="form-div px10">
+              <label htmlFor="amt" className="info-text">
+                {t("msales:m-s-rem-adv")}
+              </label>
+              <input
+                className={`data ${errors.amt ? "input-error" : ""}`}
+                type="number"
+                readOnly
+                placeholder="0.0"
+                value={values.rem_adv}
               />
             </div>
           </div>

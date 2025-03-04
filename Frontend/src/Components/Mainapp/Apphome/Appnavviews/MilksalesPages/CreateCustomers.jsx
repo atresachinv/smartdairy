@@ -1,5 +1,3 @@
-/* eslint-disable react/prop-types */
-/* eslint-disable no-unused-vars */
 import React, { useRef, useState } from "react";
 import { toast } from "react-toastify";
 import "../../../../../Styles/Mainapp/MilkSales/MilkSales.css";
@@ -12,11 +10,11 @@ const CreateCustomers = ({ clsebtn }) => {
   const { t } = useTranslation(["milkcollection", "common"]);
   const [errors, setErrors] = useState({});
   const [custno, setCustno] = useState(() => {
-    return localStorage.getItem("custno") || 2;
+    return parseInt(localStorage.getItem("custno"), 10) || 1;
   });
 
   const initialValues = {
-    code: custno || "",
+    code: custno,
     cname: "",
     mobile: "",
     advance: 0,
@@ -106,7 +104,8 @@ const CreateCustomers = ({ clsebtn }) => {
 
     dispatch(createRetailCustomer(values));
     setValues(initialValues);
-    localStorage.setItem("custno", custno + 1);
+    // localStorage.setItem("custno", 6); 
+    setCustno(localStorage.setItem("custno", custno + 1));
     toast.success("Customer Created Successfully!");
     clsebtn(false);
   };
@@ -141,8 +140,9 @@ const CreateCustomers = ({ clsebtn }) => {
               type="number"
               name="code"
               id="code"
+              readOnly
               className={`data  ${errors.code ? "input-error" : ""}`}
-              value={custno || ""}
+              value={values.code || ""}
               onChange={handleInputs}
               onKeyDown={(e) =>
                 handleKeyPress(e, document.getElementById("code"))

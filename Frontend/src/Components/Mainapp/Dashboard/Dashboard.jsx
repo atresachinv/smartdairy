@@ -398,10 +398,10 @@ const Dashboard = () => {
               <h3 className="heading">{t("c-center-info")} : </h3>
               <div className="center-sales-details-container w100 h1 d-flex f-wrap sb p10">
                 {centersmergedData.length > 0 ? (
-                  centersmergedData.map((center, index) => (
+                  centersmergedData.map((center) => (
                     <>
                       <div
-                        key={index}
+                        key={center.center_id}
                         className="center-sales-card w45 h30 d-flex-col sb bg p10"
                       >
                         <div className="card-title w100 h25 d-flex sb">
