@@ -61,7 +61,7 @@ const Sidebar = ({ setselected, handleSidebar }) => {
           />
         </ul>
         <div
-          className="logout-btn-div w100 d-flex p10 my10"
+          className="logout-btn-div w100 d-flex a-center p10 my10"
           onClick={handleLogout}
         >
           <span className="f-heading mx10">{t("c-logout")}</span>

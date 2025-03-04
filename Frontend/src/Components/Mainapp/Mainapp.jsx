@@ -1,5 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-/* eslint-disable no-unused-vars */
 import React, { useEffect, useState } from "react";
 import Sidebar from "./Sidebar";
 import Header from "./Header";
@@ -56,10 +54,7 @@ import SalesMaster from "./Sales/SalesMaster";
 import Milksales from "./Apphome/Appnavviews/MilksalesPages/Milksales";
 import MilksalesReport from "./Apphome/Appnavviews/MilksalesPages/MilksalesReport";
 import AdminSalesReports from "./Apphome/Appnavviews/MilkSankalan/AdminSalesReports";
-import SalesReports from "./Apphome/Appnavviews/MilkSankalan/SalesReports";
 import MilkCollectorsReports from "./Apphome/Appnavviews/Milkcollection/MilkCollectorsReports";
-import MilkEveCollform from "./Apphome/Appnavviews/Milkcollection/MilkEveCollform";
-import MilkColleform from "./Apphome/Appnavviews/Milkcollection/Milkcollform";
 import Milkcollection from "./Apphome/Appnavviews/Milkcollection/Milkcollection";
 import DeliveryStockMaster from "./Inventory/InventroyPages/Stocks/DeliveryStock/DeliveryStockMaster";
 import CustReturns from "./Inventory/InventroyPages/Returns/CustomerReturns/CustReturns";

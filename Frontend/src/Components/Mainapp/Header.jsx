@@ -5,7 +5,7 @@ import { fetchDairyInfo } from "../../App/Features/Admin/Dairyinfo/dairySlice";
 
 import "../../Styles/Mainapp/Mainapphome.css";
 
-const Header = ({ handleSidebar, logout }) => {
+const Header = ({ handleSidebar }) => {
   const dispatch = useDispatch();
 
   const toDate = useSelector((state) => state.date.toDate);
@@ -14,7 +14,7 @@ const Header = ({ handleSidebar, logout }) => {
     (state) =>
       state.dairy.dairyData.marathiName || state.dairy.dairyData.marathi_name
   );
-  
+
   useEffect(() => {
     dispatch(fetchDairyInfo());
   }, []);
