@@ -77,4 +77,7 @@
   .invoiceModelInfo {
     padding: 0px 10px !important;
   }
+  .icon {
+    display: none;
+  }
 }

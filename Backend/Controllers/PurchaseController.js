@@ -490,7 +490,7 @@ exports.paymentDeductionInfo = async (req, res) => {
 exports.createPurchases = async (req, res) => {
   const purchaseData = req.body; // Expecting an array of purchase objects
 
-  const { dairy_id, center_id } = req.user;
+  const { dairy_id, center_id, user_id } = req.user;
   // Validate input
   if (!Array.isArray(purchaseData) || purchaseData.length === 0) {
     return res.status(400).json({
@@ -519,7 +519,7 @@ exports.createPurchases = async (req, res) => {
     try {
       // Step 1: Build the bulk INSERT query dynamically, including dairy_id and center_id
       let insertQuery =
-        "INSERT INTO PurchaseMaster (purchasedate, itemcode, qty, dealerCode, dairy_id, center_id";
+        "INSERT INTO PurchaseMaster (purchasedate, itemcode, qty, dealerCode, dairy_id, center_id,createdby";
       const insertValues = [];
       const valuePlaceholders = [];
 
@@ -533,6 +533,7 @@ exports.createPurchases = async (req, res) => {
           dealerCode,
           dairy_id,
           center_id,
+          user_id,
         ];
 
         for (const key of Object.keys(otherFields)) {
@@ -614,9 +615,16 @@ exports.getAllPurchases = async (req, res) => {
   }
 
   // Append filter for dairy_id and center_id (Ensure these fields are in the WHERE clause)
-  query += ` AND dairy_id = ? AND center_id = ?`;
-  countQuery += ` AND dairy_id = ? AND center_id = ?`;
-  queryParams.push(dairy_id, center_id);
+  if (dairy_id) {
+    query += ` AND dairy_id = ?  `;
+    countQuery += ` AND dairy_id = ? `;
+    queryParams.push(dairy_id);
+  }
+  if (center_id > 0) {
+    query += `AND center_id=?`;
+    countQuery += `AND center_id=?`;
+    queryParams.push(center_id);
+  }
 
   // Append dynamic fields (filters that come from query parameters)
   for (const [field, value] of Object.entries(dynamicFields)) {
