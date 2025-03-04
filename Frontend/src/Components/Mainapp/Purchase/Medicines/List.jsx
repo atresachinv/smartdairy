@@ -11,6 +11,8 @@ import { TbSortAscending2, TbSortDescending2 } from "react-icons/tb";
 import { useTranslation } from "react-i18next";
 import { NavLink } from "react-router-dom";
 import { FaDownload } from "react-icons/fa6";
+import jsPDF from "jspdf";
+import { useSelector } from "react-redux";
 
 const List = () => {
   const { t } = useTranslation(["puchasesale", "common"]);
@@ -23,6 +25,12 @@ const List = () => {
   const [loading, SetLoading] = useState(false);
   const [sortOrder, setSortOrder] = useState("desc");
   const [updatelist, setUpdateList] = useState([]);
+  const dairyInfo = useSelector(
+    (state) =>
+      state.dairy.dairyData.marathi_name ||
+      state.dairy.dairyData.SocietyName ||
+      state.dairy.dairyData.center_name
+  );
   // console.log(filteredList);
 
   // Handle view button click for purchase list
@@ -112,12 +120,12 @@ const List = () => {
 
   // Function to download dealer list as an Excel file
   const downloadExcel = () => {
-    if (purchaseList.length === 0) {
+    if (filteredList.length === 0) {
       toast.warn("No data available to download.");
       return;
     }
 
-    const formattedData = purchaseList.map((item) => ({
+    const formattedData = filteredList.map((item) => ({
       PurchaseDate: formatDateToDDMMYYYY(item.purchasedate),
       InvoiceIdBillNo: item.receiptno,
       SupplierCode: item.dealerCode,
@@ -294,6 +302,98 @@ const List = () => {
     e.target.select();
   };
 
+  //download PDF
+  const downloadPdf = () => {
+    if (groupedPurchaseArray.length === 0) {
+      toast.warn("No data available to export.");
+      return;
+    }
+
+    const doc = new jsPDF();
+
+    // Define columns and rows
+    const columns = [
+      "Sr. No",
+      "Date",
+      "Bill No",
+      "Code",
+      "Dealer Name",
+      "Amount",
+    ];
+    const rows = groupedPurchaseArray.map((item, index) => [
+      index + 1,
+      formatDateToDDMMYYYY(item.purchasedate),
+      item.receiptno,
+      item.dealerCode,
+      item.dealerName,
+      item.TotalAmount,
+    ]);
+
+    const totalAmount = groupedPurchaseArray.reduce(
+      (acc, item) => acc + item.TotalAmount,
+      0
+    );
+
+    // Page width for centering text
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const pageHeight = doc.internal.pageSize.getHeight();
+
+    // Define the margin and the height of the box
+    const margin = 10;
+    const boxHeight = pageHeight - 20; // Adjust as needed
+
+    // Add border for the entire content
+    doc.rect(margin, margin, pageWidth - 2 * margin, boxHeight);
+
+    // Add dairy name with border inside the box
+    const dairyName = dairyInfo;
+    doc.setFontSize(16);
+    doc.setFont("helvetica", "bold");
+    const dairyTextWidth = doc.getTextWidth(dairyName);
+    doc.text(dairyName, (pageWidth - dairyTextWidth) / 2, margin + 15);
+
+    // Add "Sale-Info" heading with border
+    doc.setFontSize(14);
+    const invoiceInfo = doc.getTextWidth("Purchase-Info");
+    doc.text("Purchase-Info", (pageWidth - invoiceInfo) / 2, margin + 25);
+    const gepInfo = doc.getTextWidth("Medicines Report");
+    doc.text("Medicines Report", (pageWidth - gepInfo) / 2, margin + 35);
+    // Add table for items with borders and centered text
+    doc.autoTable({
+      head: [columns],
+      body: rows,
+      startY: margin + 45,
+      margin: { top: 10 },
+      styles: {
+        cellPadding: 2,
+        fontSize: 11,
+        halign: "center", // Horizontal alignment for cells (centered)
+        valign: "middle", // Vertical alignment for cells (centered)
+        lineWidth: 0.08, // Line width for the borders
+        lineColor: [0, 0, 0], // Black border color
+      },
+      headStyles: {
+        fontSize: 12,
+        fontStyle: "bold",
+        fillColor: [225, 225, 225], // Light gray background for the header
+        textColor: [0, 0, 0], // Black text color for header
+      },
+      tableLineColor: [0, 0, 0], // Table border color (black)
+      tableLineWidth: 0.1, // Border width
+    });
+    // Add total amount with border
+    doc.setFontSize(12);
+    const totalAmountLabel = `Total Amount: ${totalAmount}`;
+    doc.text(totalAmountLabel, 145, doc.lastAutoTable.finalY + 10);
+
+    // Save the PDF
+    doc.save(
+      `Medicines_PurchaseReport_${formatDateToDDMMYYYY(
+        date1
+      )}_to_${formatDateToDDMMYYYY(date2)}.pdf`
+    );
+  };
+
   return (
     <div className="customer-list-container-div w100 h1 d-flex-col p10">
       <div className="download-print-pdf-excel-container w100 h30 d-flex-col sb">
@@ -362,7 +462,14 @@ const List = () => {
             onClick={downloadExcel}
           >
             <span className="f-label-text px10"> {t("ps-down-excel")}</span>
-            <FaDownload />
+            <FaDownload className="icon" />
+          </button>
+          <button
+            className="w-btn mx10 sales-dates-container-mobile-btn"
+            onClick={downloadPdf}
+          >
+            <span className="f-label-text px10"> PDF </span>
+            <FaDownload className="icon" />
           </button>
         </div>
       </div>
@@ -389,6 +496,7 @@ const List = () => {
             <span className="f-info-text w10">{t("ps-dealer-no")}</span>
             <span className="f-info-text w15">{t("ps-dealer-name")}</span>
             <span className="f-info-text w10">{t("ps-ttl-amt")}</span>
+            <span className="f-info-text w10">{t("CreatedBy")}</span>
             <span className="f-info-text w10">Actions</span>
           </div>
           {loading ? (
@@ -418,6 +526,9 @@ const List = () => {
                       {item.dealerName || "Unknown"}
                     </span>
                     <span className="text w10">{item.TotalAmount}</span>
+                    <span className="text w10">
+                      {item.createdby || "Unknown"}
+                    </span>
                     <span className="text w10 d-flex j-center a-center">
                       <button
                         style={{ cursor: "pointer" }}
