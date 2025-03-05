@@ -22,8 +22,6 @@ const SaveRateChart = ({ rate }) => {
   const [formData, setFormData] = useState({
     rccode: "",
     rctype: "",
-    time: 2,
-    animalType: 0,
     rcdate: "",
   });
 
@@ -38,8 +36,6 @@ const SaveRateChart = ({ rate }) => {
     }
   }, [maxRcCode]);
 
-  console.log("rc types", rcTypes);
-
   const handleInput = (e) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({
@@ -52,17 +48,7 @@ const SaveRateChart = ({ rate }) => {
     let error = {};
 
     switch (name) {
-      case "rctype":
-        if (!/^[a-zA-Z0-9\s]+$/.test(value)) {
-          error[name] = "Invalid Ratechart Type.";
-        } else {
-          delete errors[name];
-        }
-        break;
-
       case "rccode":
-      case "time":
-      case "animalType":
         if (!/^\d$/.test(value.toString())) {
           errors[name] = `Invalid value of ${name}`;
         } else {
@@ -70,7 +56,6 @@ const SaveRateChart = ({ rate }) => {
         }
         break;
       case "rcdate":
-        // Check if the value is in YYYY-MM-DD format
         if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) {
           errors[name] = `Invalid value of ${name}`;
         } else {
@@ -86,13 +71,7 @@ const SaveRateChart = ({ rate }) => {
   };
 
   const validateFields = () => {
-    const fieldsToValidate = [
-      "rccode",
-      "rctype",
-      "time",
-      "animalType",
-      "rcdate",
-    ];
+    const fieldsToValidate = ["rccode", "rcdate"];
     const validationErrors = {};
     fieldsToValidate.forEach((field) => {
       const fieldError = validateField(field, formData[field]);
@@ -182,42 +161,32 @@ const SaveRateChart = ({ rate }) => {
       return;
     }
 
-    try {
-      // Dispatch and wait for response
-      const result = await dispatch(
-        saveRateChart({
-          rccode: parseInt(formData.rccode, 10),
-          rctype: formData.rctype,
-          rcdate: formData.rcdate,
-          time: parseInt(formData.time, 10),
-          animal: formData.animalType,
-          ratechart,
-        })
-      ).unwrap(); // Ensure it returns success/failure properly
-      // Show success message
-      if (result.status === 200) {
-        toast.success(result.message);
+    const result = await dispatch(
+      saveRateChart({
+        rccode: parseInt(formData.rccode, 10),
+        rctype: formData.rctype,
+        rcdate: formData.rcdate,
+        ratechart,
+      })
+    ).unwrap(); 
+    // Show success message
+    if (result.status === 200) {
+      toast.success(result.message);
 
-        // Fetch updated data
-        dispatch(fetchMaxRcCode());
-        dispatch(listRateCharts());
+      // Fetch updated data
+      dispatch(fetchMaxRcCode());
+      dispatch(listRateCharts());
 
-        // Reset form
-        setFormData({
-          rccode: maxRcCode,
-          rctype: "",
-          time: "",
-          animalType: "",
-          rcdate: "",
-        });
-
-        setRate([]);
-      } else {
-        toast.error(result.message);
-      }
-    } catch (error) {
-      // Show error message only if the request fails
-      toast.error(`Failed to save ratechart: ${error || "Unknown error"}`);
+      // Reset form
+      setFormData({
+        rccode: maxRcCode,
+        rctype: "",
+        time: "",
+        animalType: "",
+        rcdate: "",
+      });
+    } else {
+      toast.error(result.message);
     }
   };
 
@@ -255,9 +224,11 @@ const SaveRateChart = ({ rate }) => {
                 </label>
                 <select
                   id="rctype"
-                  className={`data w100 ${errors.rctype ? "input-error" : ""}`}
+                  className={`data w100`}
                   name="rctype"
+                  onChange={handleInput}
                 >
+                  <option value="">-- Select Type --</option>
                   {rcStatus === "loading" ? (
                     <option value="">Loading...</option>
                   ) : (
@@ -285,6 +256,7 @@ const SaveRateChart = ({ rate }) => {
                 type="date"
                 name="rcdate"
                 id="rcdate"
+                max={tDate}
                 value={formData.rcdate}
                 onChange={handleInput}
               />

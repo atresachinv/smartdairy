@@ -56,50 +56,6 @@ exports.maxRateChartNo = async (req, res) => {
 //find rate chart of perticular dairy / center  ...
 //.................................................
 
-// exports.maxRCTypeNo = async (req, res) => {
-//   const dairy_id = req.user.dairy_id;
-//   const center_id = req.user.center_id;
-
-//   if (!dairy_id) {
-//     console.log("Unauthorized User!");
-//     return res.status(400).json({ message: "Dairy ID not found!" });
-//   }
-//   console.log("Unauthorized User!");
-//   pool.getConnection((err, connection) => {
-//     if (err) {
-//       console.error("Error getting MySQL connection: ", err);
-//       return res.status(500).json({ message: "Database connection error" });
-//     }
-
-//     try {
-//       const maxRateChartNoQuery = `SELECT MAX(rctypeid) as maxRctype FROM ratecharttype WHERE companyid = ? AND center_id = ?`;
-
-//       connection.query(
-//         maxRateChartNoQuery,
-//         [dairy_id, center_id],
-//         (err, result) => {
-//           connection.release();
-//           if (err) {
-//             console.error("Error executing query: ", err);
-//             return res.status(500).json({ message: "Query execution error" });
-//           }
-//           const maxRcType = result[0]?.maxRctype
-//             ? Math.max(result[0].maxRcType + 1, 1)
-//             : 1;
-
-//           console.log(maxRcType);
-//           res.status(200).json({
-//             maxRcType: maxRcType,
-//           });
-//         }
-//       );
-//     } catch (error) {
-//       connection.release();
-//       return res.status(400).json({ message: error.message });
-//     }
-//   });
-// };
-
 exports.maxRCTypeNo = async (req, res) => {
   const dairy_id = req.user.dairy_id;
   const center_id = req.user.center_id;
@@ -133,20 +89,16 @@ exports.maxRCTypeNo = async (req, res) => {
           const maxRcType =
             result[0]?.maxRctype !== null ? (result[0]?.maxRctype || 0) + 1 : 1;
 
-          return res
-            .status(200)
-            .json({
-              maxRcType: maxRcType,
-              message: `Max ratechart type number ${maxRcType}`,
-            });
+          return res.status(200).json({
+            maxRcType: maxRcType,
+            message: "Max ratechart type number",
+          });
         }
       );
     } catch (error) {
       connection.release();
       console.error("Error in try block:", error);
-      return res
-        .status(500)
-        .json({ message: "Internal server error", error: error.message });
+      return res.status(500).json({ message: error.message });
     }
   });
 };
@@ -211,7 +163,7 @@ exports.saveRateChartType = async (req, res) => {
 // ....................................................
 
 //v2 function
-exports.listRatecharts = async (req, res) => {
+exports.listAllRCTypes = async (req, res) => {
   const dairy_id = req.user.dairy_id;
   const center_id = req.user.center_id;
 
@@ -265,7 +217,7 @@ exports.listRatecharts = async (req, res) => {
 
 //v2 function
 exports.saveRateChart = async (req, res) => {
-  const { rccode, rctype, rcdate, time, animal, ratechart } = req.body;
+  const { rccode, rctype, rcdate, ratechart } = req.body;
 
   // Acquire a connection from the pool
   pool.getConnection(async (err, connection) => {
@@ -288,7 +240,7 @@ exports.saveRateChart = async (req, res) => {
 
       const rctypecode = 0;
       const saveRatesQuery = `
-        INSERT INTO ratemaster (companyid, rccode, rcdate, rctypecode, rctypename, cb, fat, snf, rate, time, center_id)
+        INSERT INTO ratemaster (companyid, rccode, rcdate, rctypecode, rctypename, fat, snf, rate, center_id)
         VALUES ?
       `;
 
@@ -315,11 +267,9 @@ exports.saveRateChart = async (req, res) => {
           rcdate,
           rctypecode,
           rctype,
-          animal,
           fat,
           snf,
           rate,
-          time,
           center_id,
         ];
       });
@@ -694,6 +644,62 @@ exports.saveUpdatedRC = async (req, res) => {
   });
 };
 
+//--------------------------------------------------------------------------------->
+// Ratechart list  ---------------------------------------------------------------->
+//--------------------------------------------------------------------------------->
+
+//v2 function
+exports.listRatecharts = async (req, res) => {
+  const dairy_id = req.user.dairy_id;
+  const center_id = req.user.center_id;
+
+  if (!dairy_id) {
+    return res.status(401).json({ message: "Unauthorized User!" });
+  }
+
+  pool.getConnection((err, connection) => {
+    if (err) {
+      console.error("Error getting MySQL connection: ", err);
+      return res.status(500).json({ message: "Database connection error" });
+    }
+
+    try {
+      const rateChartListQuery = `
+        SELECT DISTINCT rccode, rcdate, rctypename, cb, time
+        FROM ratemaster
+        WHERE companyid = ? AND center_id = ?
+      `;
+
+      connection.query(
+        rateChartListQuery,
+        [dairy_id, center_id],
+        (err, result) => {
+          connection.release(); // Ensure connection is released
+          if (err) {
+            console.error("Error executing query: ", err);
+            return res.status(500).json({ message: "Query execution error" });
+          }
+
+          if (result.affectedRows === 0) {
+            res
+              .status(204)
+              .json({ ratecharts: [], message: "Ratechart's Not Found!" });
+          }
+
+          // Send the distinct rate chart details in the response
+          res
+            .status(200)
+            .json({ ratecharts: result, message: "Ratechart list found!" });
+        }
+      );
+    } catch (error) {
+      connection.release(); // Ensure the connection is released on error
+      console.error("Error processing request: ", error);
+      return res.status(500).json({ message: "Internal server error" });
+    }
+  });
+};
+
 // .............................................................................
 // Finding Distinct Ratechart used by dairy ....................................
 // .............................................................................
@@ -923,48 +929,59 @@ exports.collectionRatecharts = async (req, res) => {
 // .................................................................
 
 exports.deleteSelectedRatechart = async (req, res) => {
-  const { cb, rccode, rcdate, time } = req.body;
-  if (!cb || !rccode || !rcdate || !time) {
+  const { rccode, rcdate } = req.body;
+
+  if (!rccode || !rcdate) {
     return res
-      .status(500)
-      .json({ status: 500, message: "Ratechart data required to delete!" });
+      .status(400)
+      .json({ message: "Ratechart data required to delete!" });
   }
 
+  const dairy_id = req.user.dairy_id;
+  const center_id = req.user.center_id;
+
+  if (!dairy_id) {
+    return res.status(400).json({ status: 400, message: "Unauthorized User!" });
+  }
   pool.getConnection((err, connection) => {
     if (err) {
       console.error("Error getting MySQL connection: ", err);
-      return res.status(500).json({ message: "Database connection error" });
+      return res
+        .status(500)
+        .json({ status: 500, message: "Database connection error" });
     }
+
     try {
-      const dairy_id = req.user.dairy_id;
-      const center_id = req.user.center_id;
-
-      if (!dairy_id) {
-        connection.release();
-        return res.status(400).json({ message: "Dairy ID not found!" });
-      }
-
-      const getRatechartQuery = `DELETE FROM ratemaster WHERE companyid = ? AND center_id = ? AND rccode = ? AND time = ? AND rcdate = ? AND cb = ?`;
+      const deleteQuery = `DELETE FROM ratemaster WHERE companyid = ? AND center_id = ? AND rcdate = ? AND rccode = ?`;
 
       connection.query(
-        getRatechartQuery,
-        [dairy_id, center_id, rccode, time, rcdate, cb],
+        deleteQuery,
+        [dairy_id, center_id, rcdate, rccode],
         (err, result) => {
-          connection.release();
           if (err) {
             console.error("Error executing query: ", err);
-            return res.status(500).json({ message: "Query execution error" });
+            return res
+              .status(500)
+              .json({ status: 500, message: "Query execution error" });
           }
 
-          res.status(200).json({
-            status: 200,
-            message: "Ratechart deleted successfully!",
-          });
+          if (result.affectedRows === 0) {
+            return res
+              .status(204)
+              .json({ status: 204, message: "No matching ratechart found!" });
+          }
+
+          return res
+            .status(200)
+            .json({ status: 200, message: "Ratechart deleted successfully!" });
         }
       );
     } catch (error) {
-      connection.release();
-      return res.status(400).json({ message: error.message });
+      return res
+        .status(500)
+        .json({ message: "Internal Server Error", error: error.message });
+    } finally {
+      if (connection) connection.release();
     }
   });
 };

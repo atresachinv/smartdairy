@@ -22,15 +22,18 @@ const MilkRateMaster = () => {
   const tDate = useSelector((state) => state.date.toDate);
   const { status, progress } = useSelector((state) => state.ratechart);
   const maxRcCode = useSelector((state) => state.ratechart.maxRcCode);
-  const ratechartlist = useSelector((state) => state.ratechart.ratechartList || []);
+  const deletercstatus = useSelector((state) => state.ratechart.deletercstatus);
+  const ratechartlist = useSelector(
+    (state) => state.ratechart.ratechartList || []
+  );
   const Selectedrc = useSelector((state) => state.ratechart.selectedRateChart);
 
   const fileInputRef = React.useRef(null);
   const [selectedRateChart, setSelectedRateChart] = useState(null);
   const [rate, setRate] = useState([]);
   const [localError, setLocalError] = useState("");
-  const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
+  const [fileName, setFileName] = useState("");
 
   const [formData, setFormData] = useState({
     rccode: maxRcCode,
@@ -60,7 +63,7 @@ const MilkRateMaster = () => {
       );
       return;
     }
-
+    setFileName(file.name);
     try {
       setLoading(true); // Start loading
       const data = await file.arrayBuffer();
@@ -127,132 +130,6 @@ const MilkRateMaster = () => {
     return transformed;
   };
 
-  const handleInput = (e) => {
-    const { name, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
-  };
-
-  const validateField = (name, value) => {
-    const error = {};
-    switch (name) {
-      case "rccode":
-        if (!/^\d+$/.test(value)) {
-          error[name] = "Invalid RCCODE.";
-        } else {
-          delete errors[name];
-        }
-        break;
-      case "rctype":
-        if (!/^[a-zA-Z0-9\s]+$/.test(value)) {
-          error[name] = "Invalid RCTYPE.";
-        } else {
-          delete errors[name];
-        }
-        break;
-      case "time":
-        if (!/^\d+$/.test(value)) {
-          error[name] = "Invalid Time.";
-        } else {
-          delete errors[name];
-        }
-        break;
-      case "animal":
-        if (!/^\d+$/.test(value)) {
-          error[name] = "Invalid Animal Type.";
-        } else {
-          delete errors[name];
-        }
-        break;
-      case "rcdate":
-        if (!value || formData.rcdate > today) {
-          error[name] = "Implementation Date is Invalid.";
-        } else {
-          delete errors[name];
-        }
-        break;
-      default:
-        break;
-    }
-    return error;
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    // Basic validation
-    if (
-      !formData.rccode ||
-      !formData.rctype ||
-      !formData.rcdate ||
-      !formData.time ||
-      !formData.animalType ||
-      rate.length === 0
-    ) {
-      setLocalError(
-        "Please fill out all required fields and upload a valid Excel file."
-      );
-      return;
-    }
-
-    // Ensure numerical fields are numbers
-    const numericRccode = parseInt(formData.rccode, 10);
-    // const numericRctype = parseInt(formData.rctype, 10);
-    const numericTime = parseInt(formData.time, 10);
-
-    if (isNaN(numericRccode) || isNaN(numericTime)) {
-      setLocalError("RCCODE, RCTYPE, and Time must be valid numbers.");
-      return;
-    }
-
-    // Optionally, validate rate array entries
-    for (let i = 0; i < rate.length; i++) {
-      const entry = rate[i];
-      if (
-        typeof entry.FAT !== "number" ||
-        typeof entry.SNF !== "number" ||
-        typeof entry.Rate !== "number"
-      ) {
-        setLocalError(`Invalid rate data at row ${i + 1}.`);
-        return;
-      }
-    }
-
-    // Dispatch with validated and parsed data
-    await dispatch(
-      saveRateChart({
-        rccode: numericRccode,
-        rctype: formData.rctype,
-        rcdate: formData.rcdate,
-        time: numericTime,
-        animal: formData.animalType,
-        rate,
-      })
-    );
-
-    if (status === "succeeded") {
-      toast.success("Rate chart saved successfully!");
-      setFormData({
-        rccode: "",
-        rctype: "",
-        time: "",
-        animalType: "",
-        rcdate: "",
-      });
-
-      setRate([]);
-
-      dispatch(fetchMaxRcCode());
-      dispatch(listRateCharts());
-    } else {
-      setLocalError("Failed to save rate chart. Please try again.");
-    }
-
-    setLocalError("");
-  };
-
   // Function to handle row click
   const handleRowClick = (ratechart) => {
     // If the clicked rate chart is already selected, deselect it
@@ -281,31 +158,26 @@ const MilkRateMaster = () => {
     }
   };
 
-  const deleteSelectedRateChart = async () => {
+  const deleteSelectedRateChart = async (e) => {
+    e.preventDefault();
     if (!selectedRateChart) {
       toast.error("Please select a rate chart to delete.");
       return;
     }
     const ratechartDate = selectedRateChart.rcdate.slice(0, 10);
-    try {
-      const response = dispatch(
-        deleteRatechart({
-          cb: selectedRateChart.cb,
-          rccode: selectedRateChart.rccode,
-          rcdate: ratechartDate,
-          time: selectedRateChart.time,
-        })
-      );
-
-      if (response.meta.requestStatus === "fulfilled") {
-        toast.success("Ratechart Deleted Successfully!");
-        dispatch(fetchMaxRcCode());
-        dispatch(listRateCharts());
-      } else {
-        toast.error(response.payload || "Failed to delete ratechart.");
-      }
-    } catch (error) {
-      toast.error("An error occurred while deleting the ratechart.");
+    const result = await dispatch(
+      deleteRatechart({
+        rccode: selectedRateChart.rccode,
+        rcdate: ratechartDate,
+      })
+    ).unwrap();
+    if (result.status === 200) {
+      toast.success(result.message);
+      dispatch(fetchMaxRcCode());
+      dispatch(listRateCharts());
+      setSelectedRateChart(null);
+    } else {
+      toast.error(result.message);
     }
   };
 
@@ -345,7 +217,9 @@ const MilkRateMaster = () => {
       <div className="rate-chart-master-container w100 h1 d-flex sb">
         <div className="select-ratechart-container w40 h1 d-flex-col sa p10">
           <div className="select-excel-container w100 h10 d-flex a-center my10 sb">
-            <span className="info-text w40">Select Excel File</span>
+            <span className="label-text w40">
+              {!fileName ? "Select Excel File" : `${fileName}`}
+            </span>
             <input
               ref={fileInputRef}
               type="file"
@@ -367,21 +241,6 @@ const MilkRateMaster = () => {
               Loading...
             </div>
           )}
-          {/* Progress Bar */}
-          {/* {status === "loading" && (
-            <div className="progress-bar-container w100 my10">
-              <div
-                className="progress-bar"
-                style={{
-                  width: `${progress}%`,
-                  height: "20px",
-                  backgroundColor: "#4caf50",
-                  transition: "width 0.5s",
-                }}
-              ></div>
-              <span>{progress}%</span>
-            </div>
-          )} */}
           <div className="rate-chart-container w100 h90 d-flex-col bg">
             <span className="heading p10">
               Selected Rate Chart from Excel :{" "}
@@ -432,46 +291,6 @@ const MilkRateMaster = () => {
               <span className="f-info-text w15">Animal</span>
               <span className="f-info-text w25">Type</span>
             </div>
-            {/* <div className="rate-chart-div w100 h90 mh90 d-flex-col hidescrollbar">
-              {ratechartlist.map((ratechart, index) => (
-                <div
-                  onClick={() => handleRowClick(ratechart)}
-                  key={index}
-                  className="rate-chart-row-value w100  d-flex a-center t-center py10 sa"
-                  style={{
-                    backgroundColor:
-                      selectedRateChart === ratechart
-                        ? "#d1e7dd"
-                        : index % 2 === 0
-                        ? "#faefe3"
-                        : "#fff",
-                    cursor: "pointer",
-                  }}
-                >
-                  <span className="info-text w10">{ratechart.rccode}</span>
-                  <span className="info-text w20">
-                    {new Date(ratechart.rcdate).toLocaleDateString("en-GB", {
-                      year: "2-digit",
-                      month: "2-digit",
-                      day: "2-digit",
-                    })}
-                  </span>
-                  <span className="info-text w15">
-                    {ratechart.time === 0
-                      ? "Mrg"
-                      : ratechart.time === 1
-                      ? "Eve"
-                      : ratechart.time === 2
-                      ? "Both"
-                      : ""}
-                  </span>
-                  <span className="info-text w15">
-                    {ratechart.cb === 0 ? "Cow" : "Buffalo"}
-                  </span>
-                  <span className="info-text w25">{ratechart.rctypename}</span>
-                </div>
-              ))}
-            </div> */}
             <div className="rate-chart-div w100 h90 mh90 d-flex-col hidescrollbar">
               {ratechartlist
                 .slice() // Create a shallow copy to avoid mutating original state
@@ -520,15 +339,15 @@ const MilkRateMaster = () => {
           </div>
           <div className="button-div w100 h10 d-flex j-end">
             <button
-              type="submit"
+              type="button"
               className="btn mx10"
-              // disabled={status === "loading"}
+              disabled={deletercstatus === "loading"}
               onClick={deleteSelectedRateChart}
             >
-              Delete
+              {deletercstatus === "loading" ? "Deleting..." : "Delete"}
             </button>
             <button
-              type="submit"
+              type="button"
               className="btn mx10"
               disabled={status === "loading"}
               onClick={downloadRateChart}
@@ -536,7 +355,7 @@ const MilkRateMaster = () => {
               Download
             </button>
             <button
-              type="submit"
+              type="button"
               className="btn mx10"
               disabled={status === "loading"}
               onClick={ShowRatechart}

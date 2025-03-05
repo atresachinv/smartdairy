@@ -50,10 +50,10 @@
 /*--------Mobile Screen CSS-------*/
 
 @media screen and (max-width: 426px) {
-  .home-nav-item > a > span {
+  .home-nav-item  a  span {
     display: none;
   }
-                                .dropdown-menu {
-                                  right: 10px;
-                                }
+  .dropdown-menu {
+    right: 10px;
+  }
 }

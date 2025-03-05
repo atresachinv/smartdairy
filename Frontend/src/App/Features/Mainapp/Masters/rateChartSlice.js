@@ -41,7 +41,7 @@ export const fetchMaxRctype = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const response = await axiosInstance.post("/ratechart/maxrctype");
-      return response.data.maxRcType; 
+      return response.data.maxRcType;
     } catch (error) {
       const errorMessage =
         error.response?.data?.message || "Failed to fetch maxRcCode.";
@@ -57,7 +57,7 @@ export const addRcType = createAsyncThunk(
     try {
       const response = await axiosInstance.post("/ratechart/save/rc-type", {
         rccode,
-        rctype
+        rctype,
       });
       return response.data;
     } catch (error) {
@@ -201,15 +201,13 @@ export const fetchRateChart = createAsyncThunk(
 
 export const deleteRatechart = createAsyncThunk(
   "ratechart/deleteRatechart",
-  async ({ cb, rccode, rcdate, time }, { rejectWithValue }) => {
+  async ({ rccode, rcdate }, { rejectWithValue }) => {
     try {
       const response = await axiosInstance.post("/delete/ratechart", {
-        cb,
         rccode,
         rcdate,
-        time,
       });
-      return response.data.selectedRChart;
+      return response.data;
     } catch (error) {
       const errorMessage =
         error.response?.data?.message || "Failed to delete ratechart.";
