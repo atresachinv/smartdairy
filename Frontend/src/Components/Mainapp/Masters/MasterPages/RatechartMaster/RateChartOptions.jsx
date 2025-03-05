@@ -27,6 +27,10 @@ const RateChartOptions = ({ isSet, ratechart }) => {
       </div>
       <div className="ratechart-nav-views w100 h90 d-flex center">
         <Routes>
+          <Route
+            path="add/new-type"
+            element={<AddType isSet={isSet} ratechart={ratechart} />}
+          />
           <Route path="save-new" element={<SaveRateChart />} />
           <Route
             path="update-save"
@@ -35,10 +39,6 @@ const RateChartOptions = ({ isSet, ratechart }) => {
           <Route
             path="apply"
             element={<ApplyRatechart isSet={isSet} ratechart={ratechart} />}
-          />
-          <Route
-            path="add/new-type"
-            element={<AddType isSet={isSet} ratechart={ratechart} />}
           />
           <Route path="*" element={<AddType />} />
         </Routes>

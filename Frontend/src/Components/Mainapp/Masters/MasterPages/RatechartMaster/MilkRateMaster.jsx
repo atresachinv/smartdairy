@@ -22,7 +22,7 @@ const MilkRateMaster = () => {
   const tDate = useSelector((state) => state.date.toDate);
   const { status, progress } = useSelector((state) => state.ratechart);
   const maxRcCode = useSelector((state) => state.ratechart.maxRcCode);
-  const ratechartlist = useSelector((state) => state.ratechart.ratechartList);
+  const ratechartlist = useSelector((state) => state.ratechart.ratechartList || []);
   const Selectedrc = useSelector((state) => state.ratechart.selectedRateChart);
 
   const fileInputRef = React.useRef(null);

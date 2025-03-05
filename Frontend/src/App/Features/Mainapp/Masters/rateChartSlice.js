@@ -4,12 +4,14 @@ import axiosInstance from "../../../axiosInstance";
 const initialState = {
   ratechartList: [],
   rateChart: [], //used for milk collection
+  RCTypeList: [], //ratechart type list
   selectedRateChart: [], // selected for operations
   maxRcCode: "",
   maxRcType: "",
   excelRatechart: [],
   status: "idle",
   AddRCstatus: "idle",
+  RCTliststatus: "idle",
   updatestatus: "idle",
   savercstatus: "idle",
   deletercstatus: "idle",
@@ -49,18 +51,31 @@ export const fetchMaxRctype = createAsyncThunk(
 );
 
 //add new ratechart type --------------------------------------------------------->
-
 export const addRcType = createAsyncThunk(
   "ratechart/addRcType",
-  async ({ rccode, rctype, time, animal }, { rejectWithValue }) => {
+  async ({ rccode, rctype }, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.post("/add/rctype", {
+      const response = await axiosInstance.post("/ratechart/save/rc-type", {
         rccode,
-        rctype,
-        time,
-        animal,
+        rctype
       });
       return response.data;
+    } catch (error) {
+      const errorMessage =
+        error.response?.data?.message ||
+        "Failed to save Ratechart information.";
+      return rejectWithValue(errorMessage);
+    }
+  }
+);
+
+//List of ratechart types --------------------------------------------------------->
+export const listRcType = createAsyncThunk(
+  "ratechart/listRcType",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.post("/ratechart/type-list");
+      return response.data.ratechartTypes;
     } catch (error) {
       const errorMessage =
         error.response?.data?.message ||
@@ -350,6 +365,18 @@ const rateChartSlice = createSlice({
       })
       .addCase(addRcType.rejected, (state, action) => {
         state.AddRCstatus = "failed";
+        state.error = action.payload;
+      }) // List of Ratechart types ------------------------------------------------->
+      .addCase(listRcType.pending, (state) => {
+        state.RCTliststatus = "loading";
+        state.error = null;
+      })
+      .addCase(listRcType.fulfilled, (state, action) => {
+        state.RCTliststatus = "succeeded";
+        state.RCTypeList = action.payload;
+      })
+      .addCase(listRcType.rejected, (state, action) => {
+        state.RCTliststatus = "failed";
         state.error = action.payload;
       }) // Save Ratechart used for milk Collection --------------------------------->
       .addCase(saveRateChart.pending, (state) => {

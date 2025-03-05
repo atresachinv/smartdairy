@@ -17,7 +17,7 @@ const RateChartNavlinks = ({ isselected, setIsSelected }) => {
       name: "Save",
       icon: <VscSave className="icon" />,
       index: 1,
-      path: "save",
+      path: "save-new",
     },
     {
       name: "Update",

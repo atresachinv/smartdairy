@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { addRcType, fetchMaxRctype } from "../../../../../App/Features/Mainapp/Masters/rateChartSlice";
+import {
+  addRcType,
+  fetchMaxRctype,
+} from "../../../../../App/Features/Mainapp/Masters/rateChartSlice";
 import { toast } from "react-toastify";
 
 const AddType = () => {
@@ -13,11 +16,13 @@ const AddType = () => {
   const [formData, setFormData] = useState({
     rccode: "",
     rctype: "",
-    time: 2,
-    animal: 0,
   });
 
   // Update rccode when maxRct changes
+  useEffect(() => {
+    dispatch(fetchMaxRctype());
+  }, [dispatch]);
+
   useEffect(() => {
     if (maxRct) {
       setFormData((prevData) => ({ ...prevData, rccode: maxRct }));
@@ -45,23 +50,12 @@ const AddType = () => {
         break;
 
       case "rccode":
-      case "time":
-      case "animalType":
         if (!/^\d$/.test(value.toString())) {
           errors[name] = `Invalid value of ${name}`;
         } else {
           delete errors[name];
         }
         break;
-      case "rcdate":
-        // Check if the value is in YYYY-MM-DD format
-        if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) {
-          errors[name] = `Invalid value of ${name}`;
-        } else {
-          delete errors[name];
-        }
-        break;
-
       default:
         break;
     }
@@ -70,13 +64,7 @@ const AddType = () => {
   };
 
   const validateFields = () => {
-    const fieldsToValidate = [
-      "rccode",
-      "rctype",
-      "time",
-      "animalType",
-      "rcdate",
-    ];
+    const fieldsToValidate = ["rccode", "rctype"];
     const validationErrors = {};
     fieldsToValidate.forEach((field) => {
       const fieldError = validateField(field, formData[field]);
@@ -94,36 +82,31 @@ const AddType = () => {
       setErrors(validationErrors);
       return;
     }
+    // Dispatch and wait for response
+    const result = await dispatch(
+      addRcType({
+        rccode: parseInt(formData.rccode, 10),
+        rctype: formData.rctype,
+      })
+    ).unwrap(); // Ensure it returns success/failure properly
 
-    try {
-      // Dispatch and wait for response
-      const result = await dispatch(
-        addRcType({
-          rccode: parseInt(formData.rccode, 10),
-          rctype: formData.rctype,
-          time: parseInt(formData.time, 10),
-          animal: formData.animalType,
-        })
-      ).unwrap(); // Ensure it returns success/failure properly
-      // Show success message
-      toast.success("Ratechart type added successfully!");
-
-      // Fetch updated data
-      dispatch(fetchMaxRctype());
-      // Reset form
-      setFormData({
-        rccode: maxRct,
-        rctype: "",
-        time: "",
-        animalType: "",
-      });
-
-      setRate([]);
-    } catch (error) {
-      // Show error message only if the request fails
-      toast.error(`Failed to save ratechart: ${error || "Unknown error"}`);
+    if (result.status === 200) {
+      toast.success(result.message);
+    } else {
+      toast.error(result.message);
     }
+    // Fetch updated data
+    dispatch(fetchMaxRctype());
+    // Reset form
+    setFormData({
+      rccode: maxRct,
+      rctype: "",
+      time: "",
+      animalType: "",
+    });
+    setRate([]);
   };
+
   return (
     <div className="add-milk-type w100 h1 d-flex-col">
       <span className="heading">Add New Type : </span>
@@ -160,7 +143,7 @@ const AddType = () => {
             />
           </div>
         </div>
-        <div className="select-time-animal-type w100 my10 d-flex sb">
+        {/* <div className="select-time-animal-type w100 my10 d-flex sb">
           <div className="select-animal-type w50 h1 a-center d-flex">
             <label htmlFor="time" className="info-text w30">
               Time:
@@ -207,7 +190,7 @@ const AddType = () => {
               </option>
             </select>
           </div>
-        </div>
+        </div> */}
         <div className="button-div w100 h20 d-flex j-end">
           <button
             type="submit"

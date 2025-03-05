@@ -4,6 +4,7 @@ import { toast } from "react-toastify";
 import {
   fetchMaxRcCode,
   listRateCharts,
+  listRcType,
   saveRateChart,
 } from "../../../../../App/Features/Mainapp/Masters/rateChartSlice";
 import Spinner from "../../../../Home/Spinner/Spinner";
@@ -14,6 +15,8 @@ const SaveRateChart = ({ rate }) => {
   const status = useSelector((state) => state.ratechart.savercstatus);
   const maxRcCode = useSelector((state) => state.ratechart.maxRcCode);
   const ratechart = useSelector((state) => state.ratechart.excelRatechart);
+  const rcTypes = useSelector((state) => state.ratechart.RCTypeList);
+  const rcStatus = useSelector((state) => state.ratechart.RCTliststatus);
   const [errors, setErrors] = useState({});
 
   const [formData, setFormData] = useState({
@@ -24,12 +27,18 @@ const SaveRateChart = ({ rate }) => {
     rcdate: "",
   });
 
+  useEffect(() => {
+    dispatch(listRcType());
+  }, [dispatch]);
+
   // Update rccode when maxRcCode changes
   useEffect(() => {
     if (maxRcCode) {
       setFormData((prevData) => ({ ...prevData, rccode: maxRcCode }));
     }
   }, [maxRcCode]);
+
+  console.log("rc types", rcTypes);
 
   const handleInput = (e) => {
     const { name, value } = e.target;
@@ -244,64 +253,29 @@ const SaveRateChart = ({ rate }) => {
                 <label htmlFor="rctype" className="info-text w30">
                   Type :
                 </label>
-                <input
-                  className={`data w100 ${errors.rctype ? "input-error" : ""}`}
-                  type="text"
-                  name="rctype"
+                <select
                   id="rctype"
-                  value={formData.rctype}
-                  onChange={handleInput}
-                />
+                  className={`data w100 ${errors.rctype ? "input-error" : ""}`}
+                  name="rctype"
+                >
+                  {rcStatus === "loading" ? (
+                    <option value="">Loading...</option>
+                  ) : (
+                    <>
+                      {rcTypes.length > 0 ? (
+                        rcTypes.map((types) => (
+                          <option key={types.id} value={types.rctypename}>
+                            {types.rctypename}
+                          </option>
+                        ))
+                      ) : (
+                        <option value="">No types available!</option>
+                      )}
+                    </>
+                  )}
+                </select>
               </div>
             </div>
-            {/* <div className="select-time-animal-type w100 h30 d-flex sb">
-              <div className="select-animal-type w50 h1 a-center d-flex">
-                <label htmlFor="time" className="info-text w30">
-                  Time:
-                </label>
-                <select
-                  className={`data w60 ${errors.time ? "input-error" : ""}`}
-                  name="time"
-                  id="time"
-                  required
-                  value={formData.time}
-                  onChange={handleInput}
-                >
-                  <option className="info-text" value="2">
-                    Both
-                  </option>
-                  <option className="info-text" value="0">
-                    Mornning
-                  </option>
-                  <option className="info-text" value="1">
-                    Evenning
-                  </option>
-                </select>
-              </div>
-              <div className="select-animal-type w50 h1 a-center d-flex">
-                <label htmlFor="animalType" className="info-text w50">
-                  Animal :
-                </label>
-                <select
-                  className="data w50 "
-                  name="animalType"
-                  id="animalType"
-                  required
-                  value={formData.animalType}
-                  onChange={handleInput}
-                >
-                  <option className="info-text" value="0">
-                    Cow
-                  </option>
-                  <option className="info-text" value="1">
-                    Buffalo
-                  </option>
-                  <option className="info-text" value="2">
-                    Other
-                  </option>
-                </select>
-              </div>
-            </div> */}
             <div className="select-time-animal-type w100 my10 d-flex a-center sb">
               <label htmlFor="rcdate" className="info-text w50">
                 Ratechart date :{" "}

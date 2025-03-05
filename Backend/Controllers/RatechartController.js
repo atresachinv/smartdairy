@@ -2,6 +2,8 @@ const jwt = require("jsonwebtoken");
 const dotenv = require("dotenv");
 const pool = require("../Configs/Database");
 dotenv.config({ path: "Backend/.env" });
+const NodeCache = require("node-cache");
+const cache = new NodeCache({});
 
 //.................................................
 //find rate chart of perticular dairy / center  ...
@@ -54,7 +56,58 @@ exports.maxRateChartNo = async (req, res) => {
 //find rate chart of perticular dairy / center  ...
 //.................................................
 
+// exports.maxRCTypeNo = async (req, res) => {
+//   const dairy_id = req.user.dairy_id;
+//   const center_id = req.user.center_id;
+
+//   if (!dairy_id) {
+//     console.log("Unauthorized User!");
+//     return res.status(400).json({ message: "Dairy ID not found!" });
+//   }
+//   console.log("Unauthorized User!");
+//   pool.getConnection((err, connection) => {
+//     if (err) {
+//       console.error("Error getting MySQL connection: ", err);
+//       return res.status(500).json({ message: "Database connection error" });
+//     }
+
+//     try {
+//       const maxRateChartNoQuery = `SELECT MAX(rctypeid) as maxRctype FROM ratecharttype WHERE companyid = ? AND center_id = ?`;
+
+//       connection.query(
+//         maxRateChartNoQuery,
+//         [dairy_id, center_id],
+//         (err, result) => {
+//           connection.release();
+//           if (err) {
+//             console.error("Error executing query: ", err);
+//             return res.status(500).json({ message: "Query execution error" });
+//           }
+//           const maxRcType = result[0]?.maxRctype
+//             ? Math.max(result[0].maxRcType + 1, 1)
+//             : 1;
+
+//           console.log(maxRcType);
+//           res.status(200).json({
+//             maxRcType: maxRcType,
+//           });
+//         }
+//       );
+//     } catch (error) {
+//       connection.release();
+//       return res.status(400).json({ message: error.message });
+//     }
+//   });
+// };
+
 exports.maxRCTypeNo = async (req, res) => {
+  const dairy_id = req.user.dairy_id;
+  const center_id = req.user.center_id;
+
+  if (!dairy_id) {
+    return res.status(400).json({ message: "Unauthorized User!" });
+  }
+
   pool.getConnection((err, connection) => {
     if (err) {
       console.error("Error getting MySQL connection: ", err);
@@ -62,15 +115,10 @@ exports.maxRCTypeNo = async (req, res) => {
     }
 
     try {
-      const dairy_id = req.user.dairy_id;
-      const center_id = req.user.center_id;
-
-      if (!dairy_id) {
-        connection.release();
-        return res.status(400).json({ message: "Dairy ID not found!" });
-      }
-
-      const maxRateChartNoQuery = `SELECT MAX(rctypeid) as maxRctype FROM ratecharttype WHERE companyid = ? AND center_id = ?`;
+      const maxRateChartNoQuery = `
+        SELECT MAX(rctypeid) AS maxRctype FROM ratecharttype 
+        WHERE companyid = ? AND center_id = ?
+      `;
 
       connection.query(
         maxRateChartNoQuery,
@@ -81,11 +129,73 @@ exports.maxRCTypeNo = async (req, res) => {
             console.error("Error executing query: ", err);
             return res.status(500).json({ message: "Query execution error" });
           }
-          const maxRcType = result[0]?.maxRctype
-            ? Math.max(result[0].maxRcType + 1, 1)
-            : 1;
+
+          const maxRcType =
+            result[0]?.maxRctype !== null ? (result[0]?.maxRctype || 0) + 1 : 1;
+
+          return res
+            .status(200)
+            .json({
+              maxRcType: maxRcType,
+              message: `Max ratechart type number ${maxRcType}`,
+            });
+        }
+      );
+    } catch (error) {
+      connection.release();
+      console.error("Error in try block:", error);
+      return res
+        .status(500)
+        .json({ message: "Internal server error", error: error.message });
+    }
+  });
+};
+
+//--------------------------------------------------------------------------------->
+// Save Rate Chart Type ----------------------------------------------------------->
+//--------------------------------------------------------------------------------->
+
+exports.saveRateChartType = async (req, res) => {
+  const { rccode, rctype } = req.body;
+  const dairy_id = req.user.dairy_id;
+  const center_id = req.user.center_id;
+
+  if (!dairy_id) {
+    console.log("Unauthorized User!");
+    return res.status(400).json({ message: "Dairy ID not found!" });
+  }
+
+  // Acquire a connection from the pool
+  pool.getConnection(async (err, connection) => {
+    if (err) {
+      console.error("Error getting MySQL connection: ", err);
+      return res.status(500).json({ message: "Database connection error" });
+    }
+
+    try {
+      const saveRatesQuery = `
+        INSERT INTO ratecharttype (companyid, center_id, rctypeid, rctypename)
+        VALUES( ?, ?, ?, ?)
+      `;
+      connection.query(
+        saveRatesQuery,
+        [dairy_id, center_id, rccode, rctype],
+        (err, result) => {
+          if (err) {
+            connection.release();
+            console.error("Error executing query: ", err);
+            return res
+              .status(500)
+              .json({ status: 500, message: "Query execution error" });
+          }
+          // Clear the cache for rate charts of this dairy_id and center_id
+          const cacheKey = `ratecharts_${dairy_id}_${center_id}`;
+          cache.del(cacheKey);
+
+          connection.release();
           res.status(200).json({
-            maxRcType: maxRcType,
+            status: 200,
+            message: "Ratechart type saved successfully!",
           });
         }
       );
@@ -106,9 +216,8 @@ exports.listRatecharts = async (req, res) => {
   const center_id = req.user.center_id;
 
   if (!dairy_id) {
-    return res.status(400).json({ message: "Dairy ID not found!" });
+    return res.status(400).json({ message: "Unauthorized User!" });
   }
-
   pool.getConnection((err, connection) => {
     if (err) {
       console.error("Error getting MySQL connection: ", err);
@@ -117,8 +226,7 @@ exports.listRatecharts = async (req, res) => {
 
     try {
       const rateChartListQuery = `
-        SELECT DISTINCT rccode, rcdate, rctypename, cb, time
-        FROM ratemaster
+        SELECT id ,rctypename FROM ratecharttype
         WHERE companyid = ? AND center_id = ?
       `;
 
@@ -131,9 +239,16 @@ exports.listRatecharts = async (req, res) => {
             console.error("Error executing query: ", err);
             return res.status(500).json({ message: "Query execution error" });
           }
-
-          // Send the distinct rate chart details in the response
-          res.status(200).json({ ratecharts: result });
+          if (result.affectedRows === 0) {
+            res.status(200).json({
+              ratechartTypes: [],
+              message: "Ratechart types not found!",
+            });
+          }
+          res.status(200).json({
+            ratechartTypes: result,
+            message: "Ratechart types found!",
+          });
         }
       );
     } catch (error) {
@@ -809,7 +924,7 @@ exports.collectionRatecharts = async (req, res) => {
 
 exports.deleteSelectedRatechart = async (req, res) => {
   const { cb, rccode, rcdate, time } = req.body;
-  if ((!cb || !rccode || !rcdate || !time)) {
+  if (!cb || !rccode || !rcdate || !time) {
     return res
       .status(500)
       .json({ status: 500, message: "Ratechart data required to delete!" });
