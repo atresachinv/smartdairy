@@ -242,7 +242,7 @@ const Create = () => {
       <span className="heading">{t("ps-nv-add-cattlefeed")}</span>
       <div className="purchase-cattle-feed-inner-container w100 h1 d-flex sb">
         <form className="purchase-cattle-feed-form-container w50 h1 bg p10">
-          <div className="purchase-input-row w100 h15 d-flex  a-center sb">
+          <div className="purchase-input-row w100 h20 d-flex  a-center sb">
             <div className="purchase-input-col w45 d-flex-col sb">
               <label className="info-text px10"> {t("ps-date")} :</label>
               <input
@@ -275,7 +275,7 @@ const Create = () => {
               />
             </div>
           </div>
-          <div className="purchase-input-row w100 h15 d-flex  a-center sb">
+          <div className="purchase-input-row w100 h20 d-flex  a-center sb">
             <div className="purchase-input-col w45 d-flex-col sb">
               <label className="info-text px10">{t("ps-dealer-no")}:</label>
               <input
@@ -312,7 +312,7 @@ const Create = () => {
             </div>
           </div>
 
-          <div className="purchase-input-row w100 h15 d-flex a-center sb">
+          <div className="purchase-input-row w100 h20 d-flex a-center sb">
             <div className="purchase-input-col w45 d-flex-col sb">
               <label className="info-text px10">Select Items:</label>
               <select
@@ -352,7 +352,7 @@ const Create = () => {
               />
             </div>
           </div>
-          <div className="purchase-input-row w100 h15 d-flex a-center sb">
+          <div className="purchase-input-row w100 h20 d-flex a-center sb">
             <div className="purchase-input-col w45 d-flex-col sb">
               <label className="info-text px10">{t("ps-rate")}:</label>
               <input
@@ -386,7 +386,7 @@ const Create = () => {
               />
             </div>
           </div>
-          <div className="purchase-input-row w100 h15 d-flex  a-center sb">
+          <div className="purchase-input-row w100 h20 d-flex  a-center sb">
             <div className="purchase-input-col w45 d-flex-col">
               <label className="info-text px10">{t("ps-amt")}:</label>
               <input
@@ -398,11 +398,15 @@ const Create = () => {
                 readOnly
               />
             </div>
-          </div>
-          <div className="button-container w100 h10 d-flex j-end my5">
-            <button className="btn mx10" onClick={handleAddToCart}>
-              Add to Cart
-            </button>
+            <div className="button-container w100 h1 d-flex j-end my5">
+              <button
+                className="btn mx10"
+                style={{ marginTop: "auto" }}
+                onClick={handleAddToCart}
+              >
+                Add to Cart
+              </button>
+            </div>
           </div>
         </form>
 
