@@ -15,7 +15,7 @@ const CreateProducts = () => {
     ItemDesc: "",
     Manufacturer: "",
   });
-
+  const [itemlist, setItemList] = useState([]);
   //hanlde on change data
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -41,6 +41,19 @@ const CreateProducts = () => {
       formData.ItemGroupCode &&
       formData.UnitCode
     ) {
+      if (itemlist) {
+        const FoundItem = itemlist.filter(
+          (item) =>
+            item.ItemName.toLowerCase().trim() ===
+              formData.ItemName.toLowerCase().trim() ||
+            item.marname.toLowerCase().trim() ===
+              formData.marname.toLowerCase().trim()
+        );
+        if (FoundItem.length > 0) {
+          toast.error("Product Name already exist!");
+          return;
+        }
+      }
       try {
         // console.log("Product Data Submitted: ", formData);
         const res = await axiosInstance.post("/item/new", formData);
@@ -55,6 +68,7 @@ const CreateProducts = () => {
             ItemDesc: "",
             Manufacturer: "",
           });
+          fetchAllItems();
         }
       } catch (error) {
         // console.error("Error creating product: ", error);
@@ -88,7 +102,7 @@ const CreateProducts = () => {
     });
   };
 
-  //get max Itemcode
+  //get max Itemcode and get all item
   useEffect(() => {
     const fetchMaxItemCode = async () => {
       try {
@@ -104,10 +118,18 @@ const CreateProducts = () => {
         console.error("Failed to fetch max item code:", error);
       }
     };
-
+    fetchAllItems();
     fetchMaxItemCode();
   }, []);
 
+  const fetchAllItems = async () => {
+    try {
+      const { data } = await axiosInstance.get("/item/all");
+      setItemList(data.itemsData || []);
+    } catch (error) {
+      console.error("Failed to fetch items.", error);
+    }
+  };
   return (
     <div className="create-dealer-container w100 h1 d-flex-col p10 ">
       <span className="heading">{t("ps-nv-pro-add")}</span>
@@ -132,6 +154,7 @@ const CreateProducts = () => {
                 onKeyDown={(e) => handleKeyDown(e, "ItemCode")}
                 placeholder="Item Code"
                 required
+                disabled
               />
             </div>
             <div className="col">

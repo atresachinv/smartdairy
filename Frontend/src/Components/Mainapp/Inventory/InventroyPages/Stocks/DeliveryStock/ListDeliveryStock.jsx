@@ -494,7 +494,7 @@ const ListDeliveryStock = () => {
               </span>
             </span>
             <span className="f-info-text w5">Chalan.No</span>
-            <span className="f-info-text w10">Party Code</span>
+            <span className="f-info-text w15">Party Code</span>
             <span className="f-info-text w25">Party Name</span>
             <span className="f-info-text w5">Qty</span>
             <span className="f-info-text w10">Actions</span>

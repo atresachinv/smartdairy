@@ -22,6 +22,7 @@ const CreateDealers = () => {
     ctype: 2, // default value
   });
   const [errors, setErrors] = useState({});
+  const [dealerList, setDealerList] = useState([]);
 
   //get max dealer no
   const getMaxDealer = async () => {
@@ -32,8 +33,20 @@ const CreateDealers = () => {
       console.error("Error fetching items:", error);
     }
   };
+
+  const fetchDealerList = async () => {
+    try {
+      const response = await axiosInstance.post("/dealer");
+      let customers = response?.data?.customerList || [];
+      setDealerList(customers);
+    } catch (error) {
+      // console.error("Error fetching dealer list: ", error);
+    }
+  };
+
   useEffect(() => {
     getMaxDealer();
+    fetchDealerList();
   }, []);
 
   useEffect(() => {
@@ -69,6 +82,20 @@ const CreateDealers = () => {
     // console.log(newErrors);
     if (Object.keys(newErrors).length === 0) {
       // console.log("out try");
+      if (dealerList) {
+        const foundname = dealerList.filter(
+          (item) =>
+            item.cname.toLowerCase().trim() ===
+              formData.cust_name.toLowerCase().trim() ||
+            item.engName.toLowerCase().trim() ===
+              formData.marathi_name.toLowerCase().trim()
+        );
+        if (foundname.length > 0) {
+          toast.warn("Dealer Name already exists");
+          return;
+        }
+      }
+
       try {
         const response = await axiosInstance.post("/create/dealer", formData);
         toast.success(response.data.message);

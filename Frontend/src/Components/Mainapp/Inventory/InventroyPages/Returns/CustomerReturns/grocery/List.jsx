@@ -11,6 +11,7 @@ import axiosInstance from "../../../../../../../App/axiosInstance";
 import Spinner from "../../../../../../Home/Spinner/Spinner";
 import { useTranslation } from "react-i18next";
 import { FaDownload } from "react-icons/fa6";
+import jsPDF from "jspdf";
 
 const GroList = () => {
   const { t } = useTranslation(["puchasesale", "common"]);
@@ -25,6 +26,12 @@ const GroList = () => {
   const [filteredSalesList, setFilteredSalesList] = useState(sales);
   const [viewItems, setViewItems] = useState([]);
   const [loading, setLoading] = useState(false);
+  const dairyInfo = useSelector(
+    (state) =>
+      state.dairy.dairyData.marathi_name ||
+      state.dairy.dairyData.SocietyName ||
+      state.dairy.dairyData.center_name
+  );
   //download Excel sheet
   const downloadExcel = () => {
     const exportData = sales.map((sale) => ({
@@ -212,9 +219,10 @@ const GroList = () => {
   const groupedSales = filteredSalesList.reduce((acc, sale) => {
     const key = sale.BillNo; // Grouping by billNo
     if (!acc[key]) {
-      acc[key] = { ...sale, TotalAmount: 0 };
+      acc[key] = { ...sale, TotalAmount: 0, TotalQty: 0 };
     }
     acc[key].TotalAmount += sale.Amount;
+    acc[key].TotalQty += sale.Qty;
     return acc;
   }, {});
   const groupedSalesArray = Object.values(groupedSales);
@@ -245,6 +253,109 @@ const GroList = () => {
     setViewItems(filterList);
     // console.log(filterList);
     setIsInvoiceOpen(true);
+  };
+
+  //download PDF
+  const downloadPdf = () => {
+    if (groupedSalesArray.length === 0) {
+      toast.warn("No data available to export.");
+      return;
+    }
+
+    const doc = new jsPDF();
+
+    // Define columns and rows
+    const columns = [
+      "Sr.No",
+      "Date",
+      "Bill No",
+      "Code",
+      "Customer Name",
+      "Qty",
+      "Amount",
+    ];
+    const rows = groupedSalesArray.map((item, index) => [
+      index + 1,
+      formatDateToDDMMYYYY(item.BillDate),
+      item.ReceiptNo,
+      item.CustCode,
+      handleFindCustName(item.CustCode),
+      item.TotalQty,
+      item.TotalAmount,
+    ]);
+    const totalAmount = groupedSalesArray.reduce(
+      (acc, item) => acc + item.TotalAmount,
+      0
+    );
+    const totalQty = groupedSalesArray.reduce(
+      (acc, item) => acc + item.TotalQty,
+      0
+    );
+    // Page width for centering text
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const pageHeight = doc.internal.pageSize.getHeight();
+
+    // Define the margin and the height of the box
+    const margin = 10;
+    const boxHeight = pageHeight - 20; // Adjust as needed
+
+    // Add border for the entire content
+    doc.rect(margin, margin, pageWidth - 2 * margin, boxHeight);
+
+    // Add dairy name with border inside the box
+    const dairyName = dairyInfo;
+    doc.setFontSize(16);
+    doc.setFont("helvetica", "bold");
+    const dairyTextWidth = doc.getTextWidth(dairyName);
+    doc.text(dairyName, (pageWidth - dairyTextWidth) / 2, margin + 15);
+
+    // Add "Sale-Info" heading with border
+    doc.setFontSize(14);
+    const invoiceInfo = doc.getTextWidth("Return-Info");
+    doc.text("Return-Info", (pageWidth - invoiceInfo) / 2, margin + 25);
+    const gepInfo = doc.getTextWidth("Grocery Customer Return Report");
+    doc.text(
+      "Grocery Customer Return Report",
+      (pageWidth - gepInfo) / 2,
+      margin + 35
+    );
+    // Add table for items with borders and centered text
+    doc.autoTable({
+      head: [columns],
+      body: rows,
+      startY: margin + 45,
+      margin: { top: 10 },
+      styles: {
+        cellPadding: 2,
+        fontSize: 11,
+        halign: "center", // Horizontal alignment for cells (centered)
+        valign: "middle", // Vertical alignment for cells (centered)
+        lineWidth: 0.08, // Line width for the borders
+        lineColor: [0, 0, 0], // Black border color
+      },
+      headStyles: {
+        fontSize: 12,
+        fontStyle: "bold",
+        fillColor: [225, 225, 225], // Light gray background for the header
+        textColor: [0, 0, 0], // Black text color for header
+      },
+      tableLineColor: [0, 0, 0], // Table border color (black)
+      tableLineWidth: 0.1, // Border width
+    });
+
+    // Add total amount with border
+    doc.text(
+      `Total Qty: ${totalQty}     Total Amount: ${totalAmount}`,
+      75,
+      doc.lastAutoTable.finalY + 10
+    );
+
+    // Save the PDF
+    doc.save(
+      `Grocery_Cust_Return_Report_${formatDateToDDMMYYYY(
+        date1
+      )}_to_${formatDateToDDMMYYYY(date2)}.pdf`
+    );
   };
 
   return (
@@ -318,6 +429,13 @@ const GroList = () => {
             onClick={downloadExcel}
           >
             <span className="f-label-text px10"> {t("ps-down-excel")}</span>
+            <FaDownload />
+          </button>
+          <button
+            className="w-btn mx10 sales-dates-container-mobile-btn d-flex"
+            onClick={downloadPdf}
+          >
+            <span className="f-label-text px10">PDF</span>
             <FaDownload />
           </button>
         </div>
