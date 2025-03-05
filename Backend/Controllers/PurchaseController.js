@@ -581,8 +581,8 @@ exports.createPurchases = async (req, res) => {
 // Get All purchase items controller ---------------------------------------------------->
 // -------------------------------------------------------------------------------------->
 exports.getAllPurchases = async (req, res) => {
-  const { date1, date2, fcode, ...dynamicFields } = req.query;
-  const { dairy_id, center_id } = req.user; // Get dairy_id and center_id from the logged-in user
+  const { date1, date2, fcode, role, ...dynamicFields } = req.query;
+  const { dairy_id, center_id, user_id } = req.user; // Get dairy_id and center_id from the logged-in user
 
   let query = `
     SELECT * 
@@ -621,11 +621,17 @@ exports.getAllPurchases = async (req, res) => {
     queryParams.push(dairy_id);
   }
   if (center_id > 0) {
-    query += `AND center_id=?`;
-    countQuery += `AND center_id=?`;
+    query += `AND center_id=? `;
+    countQuery += `AND center_id=? `;
     queryParams.push(center_id);
   }
 
+  //if user can login as admin then he can see all the data
+  if (role && role === "salesman") {
+    query += `AND createdby=? `;
+    countQuery += `AND createdby=? `;
+    queryParams.push(user_id);
+  }
   // Append dynamic fields (filters that come from query parameters)
   for (const [field, value] of Object.entries(dynamicFields)) {
     if (value) {

@@ -32,6 +32,14 @@ const MedList = () => {
       state.dairy.dairyData.SocietyName ||
       state.dairy.dairyData.center_name
   );
+
+  const role = useSelector((state) => state.users.user?.role);
+  const [userRole, setUserRole] = useState(role);
+
+  useEffect(() => {
+    setUserRole(role);
+  }, [role]);
+
   //download Excel sheet
   const downloadExcel = () => {
     const exportData = sales.map((sale) => ({
@@ -79,7 +87,7 @@ const MedList = () => {
       setLoading(true);
       try {
         const { data } = await axiosInstance.get(
-          "/sale/all?cn=1&ItemGroupCode=2"
+          `/sale/all?cn=1&ItemGroupCode=2&role=${userRole}`
         ); // Replace with your actual API URL
         if (data.success) {
           // console.log(data);
@@ -124,7 +132,7 @@ const MedList = () => {
     try {
       const queryParams = new URLSearchParams(getItem).toString();
       const { data } = await axiosInstance.get(
-        `/sale/all?ItemGroupCode=2&cn=1&${queryParams}`
+        `/sale/all?ItemGroupCode=2&role=${userRole}&cn=1&${queryParams}`
       );
       if (data?.success) {
         setSales(data.salesData);
@@ -450,6 +458,13 @@ const MedList = () => {
             <span className="f-info-text w5"> {t("ps-custCode")}</span>
             <span className="f-info-text w25">{t("ps-cutName")}</span>
             <span className="f-info-text w5">{t("ps-amt")}</span>
+            {userRole === "salesman" ? (
+              <></>
+            ) : (
+              <>
+                <span className="f-info-text w10">{t("CreatedBy")}</span>
+              </>
+            )}
             <span className="f-info-text w5">Actions</span>
           </div>
           {/* Show Spinner if loading, otherwise show the feed list */}
@@ -487,6 +502,13 @@ const MedList = () => {
                 </span>
 
                 <span className="text w5">{sale.TotalAmount}</span>
+                {userRole === "salesman" ? (
+                  <></>
+                ) : (
+                  <>
+                    <span className="text w10 ">{sale.createdby}</span>
+                  </>
+                )}
                 <span className="text w5 d-flex j-center a-center">
                   <button
                     className="px5"
