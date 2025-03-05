@@ -524,7 +524,7 @@ const CattleSaleList = () => {
       <div className="sales-list-table w100 h80 d-flex-col bg">
         <span className="heading p10"> {t("ps-cattel-rep")}</span>
         <div className="sales-heading-title-scroller w100 h1 mh100 d-flex-col hidescrollbar">
-          <div className="sale-data-headings-div py10 d-flex center t-center sb sticky-top t-heading-bg">
+          <div className="sale-data-headings-div h10 d-flex center t-center sb sticky-top t-heading-bg">
             <span className="f-info-text w5"> {t("ps-srNo")}</span>
             <span className="f-info-text w10">
               {t("ps-date")}{" "}

@@ -247,7 +247,7 @@ const UpdateSaleRate = () => {
             <span className="f-info-text w5">{t("ps-srNo")}</span>
             <span className="f-info-text w5"> {t("ps-date")}</span>
             <span className="f-info-text w5"> {t("ps-rect-no")}</span>
-            <span className="f-info-text w20"> {t("ps-itm-name")}</span>
+            <span className="f-info-text w25"> {t("ps-itm-name")}</span>
             <span className="f-info-text w5">{t("ps-rate")}</span>
             <span className="f-info-text w5">{t("ps-sale-rate")}</span>
             <span className="f-info-text w5">{t("ps-qty")}</span>
@@ -269,7 +269,7 @@ const UpdateSaleRate = () => {
                   {formatDateToDDMMYYYY(item.purchasedate)}
                 </span>
                 <span className="text w5">{item.receiptno}</span>
-                <span className="text w20">{item.itemname}</span>
+                <span className="text w25">{item.itemname}</span>
                 <span className="text w5">{item.rate}</span>
                 <span className="text w5">{item.salerate}</span>
                 <span className="text w5">{item.qty}</span>

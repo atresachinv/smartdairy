@@ -11,6 +11,8 @@ import Swal from "sweetalert2";
 import Spinner from "../../../../../Home/Spinner/Spinner";
 import { useTranslation } from "react-i18next";
 import { NavLink } from "react-router-dom";
+import jsPDF from "jspdf";
+import { useSelector } from "react-redux";
 
 const StockList = () => {
   const { t } = useTranslation(["puchasesale", "common"]);
@@ -20,7 +22,12 @@ const StockList = () => {
   const [filteredProducts, setFilterProducts] = useState([]);
   const [editSale, setEditSale] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-
+  const dairyInfo = useSelector(
+    (state) =>
+      state.dairy.dairyData.marathi_name ||
+      state.dairy.dairyData.SocietyName ||
+      state.dairy.dairyData.center_name
+  );
   //open modal to edit product
   const handleEditClick = (id) => {
     setEditSale(id);
@@ -79,11 +86,17 @@ const StockList = () => {
         )
       : productList; // If no filter, export all products
 
+    if (filteredProducts.length == 0) {
+      toast.warn("No products found to export");
+      return;
+    }
+
     // Prepare data for export with only displayed columns
     const dataToExport = filteredProducts.map((product, index) => ({
       "Sr. No.": index + 1,
       "Item Code": product.ItemCode,
       "Item Name": product.ItemName,
+      "Group Name": gpName(product.ItemGroupCode),
       Qty: product.ItemQty,
       Rate: product.ItemRate,
       "Sale Rate": product.SaleRate,
@@ -155,6 +168,96 @@ const StockList = () => {
     }
   }, [productList, filter]);
 
+  const gpName = (code) => {
+    if (Number(code) === 1) return "Cattle Feed";
+    else if (Number(code) === 2) return "Medicines";
+    else if (Number(code) === 3) return "Grocery";
+    else return "Other";
+  };
+
+  //download PDF
+  const downloadPdf = () => {
+    if (filteredProducts.length === 0) {
+      toast.warn("No data available to export.");
+      return;
+    }
+
+    const doc = new jsPDF();
+
+    // Define columns and rows
+    const columns = [
+      "Sr.No",
+      "Item Code",
+      "Item Name",
+      "Group Name",
+      "Qty",
+      "Rate",
+      "Sale Rate",
+      "Amount",
+    ];
+    const rows = filteredProducts.map((item, index) => [
+      index + 1,
+      item.ItemCode,
+      item.ItemName,
+      gpName(item.ItemGroupCode),
+      item.ItemQty,
+      item.ItemRate,
+      item.SaleRate,
+      item.Amount,
+    ]);
+
+    // Page width for centering text
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const pageHeight = doc.internal.pageSize.getHeight();
+
+    // Define the margin and the height of the box
+    const margin = 10;
+    const boxHeight = pageHeight - 20; // Adjust as needed
+
+    // Add border for the entire content
+    doc.rect(margin, margin, pageWidth - 2 * margin, boxHeight);
+
+    // Add dairy name with border inside the box
+    const dairyName = dairyInfo;
+    doc.setFontSize(16);
+    doc.setFont("helvetica", "bold");
+    const dairyTextWidth = doc.getTextWidth(dairyName);
+    doc.text(dairyName, (pageWidth - dairyTextWidth) / 2, margin + 15);
+
+    // Add "Sale-Info" heading with border
+    doc.setFontSize(14);
+    const invoiceInfo = doc.getTextWidth("Stock-Info");
+    doc.text("Stock-Info", (pageWidth - invoiceInfo) / 2, margin + 25);
+    const gepInfo = doc.getTextWidth("Opening Stock Report");
+    doc.text("Opening Stock Report", (pageWidth - gepInfo) / 2, margin + 35);
+    // Add table for items with borders and centered text
+    doc.autoTable({
+      head: [columns],
+      body: rows,
+      startY: margin + 45,
+      margin: { top: 10 },
+      styles: {
+        cellPadding: 2,
+        fontSize: 11,
+        halign: "center", // Horizontal alignment for cells (centered)
+        valign: "middle", // Vertical alignment for cells (centered)
+        lineWidth: 0.08, // Line width for the borders
+        lineColor: [0, 0, 0], // Black border color
+      },
+      headStyles: {
+        fontSize: 12,
+        fontStyle: "bold",
+        fillColor: [225, 225, 225], // Light gray background for the header
+        textColor: [0, 0, 0], // Black text color for header
+      },
+      tableLineColor: [0, 0, 0], // Table border color (black)
+      tableLineWidth: 0.1, // Border width
+    });
+
+    // Save the PDF
+    doc.save(`Opening_Stock_Report.pdf`);
+  };
+
   return (
     <div className="product-list-container w100 h1 d-flex-col p10">
       <div className="download-print-pdf-excel-container w100 h30 d-flex j-center">
@@ -188,6 +291,13 @@ const StockList = () => {
               onClick={downloadExcel}
             >
               <span className="f-label-text px10"> {t("ps-down-excel")}</span>
+              <FaDownload />
+            </button>{" "}
+            <button
+              className="btn sales-dates-container-mobile-btn"
+              onClick={downloadPdf}
+            >
+              <span className="f-label-text px10"> PDF</span>
               <FaDownload />
             </button>
           </div>
