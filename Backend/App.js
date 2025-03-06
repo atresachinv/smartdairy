@@ -31,9 +31,13 @@ const payment = require("./Routes/PaymentRoutes");
 const notify = require("./Routes/fireBaseRoutes");
 const sales = require("./Routes/SalesRoutes");
 const products = require("./Routes/ItemRoutes");
-
+const stocks = require("./Routes/StockRoutes");
+const stockitem = require("./Routes/ItemStockRoutes");
+const deliverstock = require("./Routes/DeliveryStockRoutes");
+const admin = require("./Routes/AdminRoutes");
 //Common api starting
 
+app.use("/smartdairy/api", admin);
 app.use("/smartdairy/api", user);
 app.use("/smartdairy/api", dairy);
 app.use("/smartdairy/api", milk);
@@ -46,5 +50,8 @@ app.use("/smartdairy/api", payment);
 app.use("/smartdairy/api", notify);
 app.use("/smartdairy/api", sales);
 app.use("/smartdairy/api", products);
+app.use("/smartdairy/api", stocks);
+app.use("/smartdairy/api", stockitem);
+app.use("/smartdairy/api", deliverstock);
 
 module.exports = app;

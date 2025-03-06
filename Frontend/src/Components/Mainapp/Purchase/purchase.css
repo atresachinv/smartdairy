@@ -15,4 +15,22 @@
     margin: 15px;
     height: 100%;
   }
+  .sales-dates-container-mobile {
+    flex-direction: column-reverse !important;
+  }
+  .sales-dates-container-mobile-w100 {
+    align-items: center;
+    width: 100% !important;
+  }
+  .sales-dates-container-mobile-w100 .w-btn {
+    /* margin-bottom: 15px; */
+    width: 70px;
+  }
+  .sales-dates-container-mobile-btn {
+    width: 70px !important;
+    margin-right: 0px !important;
+  }
+  .purchase-add-text {
+    display: none;
+  }
 }

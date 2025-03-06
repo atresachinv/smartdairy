@@ -1,7 +1,39 @@
 {
   "nv-dash": "Dashboard",
   "nv-milk-coll": "Milk Collection",
+  "nv-milk-purchase": "Milk Purchase",
+  "nv-milk-sales": "Milk Sales",
+  "nv-inventory": "Inventory",
+  "nv-acc": "Accounts",
+  "nv-master": "Masters",
+  "nv-reports": "Reports",
+
+  "center-report": "Center Reports",
+  "milk-report": "Milk Reports",
+  "cust-report": "Customer Reports",
+  "emp-report": "Employee Reports",
+  "inventory-report": "Inventory Reports",
+  "sales-report": "Sales Reports",
+  "pay-report": "Payment Reports",
+
+  "nv-dairy-info": "Dairy Information",
+
+  "dairy-init-info": "Initial Information",
+  "dairy-cre-center": "Center Master",
+
+  "nv-settings": "Settings",
+
+  "dairy-settings": "Dairy Settings",
+  "inventory-settings": "Inventory Settings",
+  "machine-settings": "Machine Settings",
+
   "nv-pay": "Payment",
+
+  "milk-correction": "Milk Correction",
+  "milk-transfer": "Milk Transfer",
+  "pay-deduction": "Payment Deductions",
+  "gen-payments": "Generate Payments",
+
   "nv-cattel-feed": "Cattel feeds",
   "nv-deduction": "Deduction",
   "nv-animal": "Animal",
@@ -18,6 +50,8 @@
   "c-select-master": "Select Payment Period",
   "c-no-data-avai": "No Data Available",
 
+  "c-logout": "Logout",
+  "c-search": "Search...",
   "c-date": "Date",
   "c-m/e": "M/E",
   "c-m": "M",
@@ -35,9 +69,14 @@
   "c-rate": "Rate",
   "c-amt": "Amount",
   "c-liters": "Liters",
+
   "c-billno": "Bill No.",
+  "c-repno": "Receipt No.",
   "c-qty": "Qty",
   "c-prod": "Product",
+  "c-customer": "Customer",
+  "c-purch-amt": "Purchase Amt.",
+  "c-rs": "rs.",
   "c-total": "Total",
   "c-t-liters": "Total Liters",
   "c-avg-rate": "Avg Rate",
@@ -54,5 +93,23 @@
   "c-coll-report": "Collection Report",
   "c-sales-details": "Purchase Details",
   "c-mrg-coll": "Morning Milk Collection",
-  "c-eve-coll": "Evening Milk Collection"
+  "c-eve-coll": "Evening Milk Collection",
+  "c-prod-select": "Select Product",
+  "c-groce-select": "Select Product",
+  "c-medimedi-select": "Select Product",
+  "c-cattlefeed": "Cattle Feed",
+  "c-grocery": "Grocery",
+  "c-medicine": "Medicine",
+  "c-other": "Other",
+  "c-add-to-cart": "Add to Cart",
+  "c-item-list": "sale Item",
+  "c-print": "Print",
+  "c-no": "No.",
+  "c-name": "Name",
+
+  "c-center-info": "Center Information",
+  "c-centerno": "Center No.",
+  "c-anylatics": "Anylatics",
+  "c-liter-chart": "Liter Chart",
+  "c-amt-chart": "Amount Chart"
 }

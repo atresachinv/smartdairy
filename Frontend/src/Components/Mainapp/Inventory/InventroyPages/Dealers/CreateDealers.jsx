@@ -3,10 +3,11 @@ import axiosInstance from "../../../../../App/axiosInstance";
 import { toast } from "react-toastify";
 import "./Dealer.css";
 import "../../../../../Styles/Mainapp/Inventory/InventoryPages/Dealer.css";
+import { useTranslation } from "react-i18next";
 
 const CreateDealers = () => {
   const [custno, setCustno] = useState();
-
+  const { t } = useTranslation(["puchasesale", "common"]);
   const [formData, setFormData] = useState({
     cust_no: custno,
     marathi_name: "",
@@ -21,6 +22,7 @@ const CreateDealers = () => {
     ctype: 2, // default value
   });
   const [errors, setErrors] = useState({});
+  const [dealerList, setDealerList] = useState([]);
 
   //get max dealer no
   const getMaxDealer = async () => {
@@ -31,8 +33,20 @@ const CreateDealers = () => {
       console.error("Error fetching items:", error);
     }
   };
+
+  const fetchDealerList = async () => {
+    try {
+      const response = await axiosInstance.post("/dealer");
+      let customers = response?.data?.customerList || [];
+      setDealerList(customers);
+    } catch (error) {
+      // console.error("Error fetching dealer list: ", error);
+    }
+  };
+
   useEffect(() => {
     getMaxDealer();
+    fetchDealerList();
   }, []);
 
   useEffect(() => {
@@ -52,7 +66,9 @@ const CreateDealers = () => {
     const newErrors = {};
     Object.keys(formData).forEach((field) => {
       if (!formData[field] && field !== "prefix") {
-        newErrors[field] = "This field is required";
+        if (field === "marathi_name" || field === "cust_name") {
+          newErrors[field] = "This field is required";
+        }
       }
     });
     return newErrors;
@@ -66,6 +82,20 @@ const CreateDealers = () => {
     // console.log(newErrors);
     if (Object.keys(newErrors).length === 0) {
       // console.log("out try");
+      if (dealerList) {
+        const foundname = dealerList.filter(
+          (item) =>
+            item.cname.toLowerCase().trim() ===
+              formData.cust_name.toLowerCase().trim() ||
+            item.engName.toLowerCase().trim() ===
+              formData.marathi_name.toLowerCase().trim()
+        );
+        if (foundname.length > 0) {
+          toast.warn("Dealer Name already exists");
+          return;
+        }
+      }
+
       try {
         const response = await axiosInstance.post("/create/dealer", formData);
         toast.success(response.data.message);
@@ -124,15 +154,16 @@ const CreateDealers = () => {
 
   return (
     <div className="create-dealer-container w100 h1 d-flex-col p10 ">
-      <span className="heading">Create Dealer </span>
+      <span className="heading">{t("ps-nv-create-dealer")}</span>
       <div className="create-dealer-inner-container w100 h1 d-flex-col center">
         <form
           onSubmit={handleSubmit}
-          className="create-dealer-form-container w50 h70 d-flex-col p10 bg">
+          className="create-dealer-form-container w70 h80 d-flex-col p10 bg"
+        >
           <div className="row d-flex my10">
             <div className="col">
               <label className="info-text px10">
-                Dealer No: <span className="req">*</span>
+                {t("ps-code")} <span className="req">*</span>
               </label>
               <input
                 type="number"
@@ -149,7 +180,7 @@ const CreateDealers = () => {
           <div className="row d-flex">
             <div className="col">
               <label className="info-text px10">
-                Marathi Name: <span className="req">*</span>
+                {t("ps-mar-name")} <span className="req">*</span>
               </label>
               <input
                 type="text"
@@ -164,7 +195,8 @@ const CreateDealers = () => {
             </div>
             <div className="col">
               <label className="info-text px10">
-                English Name:<span className="req">*</span>
+                {t("ps-eng-name")}
+                <span className="req">*</span>
               </label>
               <input
                 type="text"
@@ -178,9 +210,7 @@ const CreateDealers = () => {
               />
             </div>
             <div className="col">
-              <label className="info-text px10">
-                Mobile No: <span className="req">*</span>
-              </label>
+              <label className="info-text px10">{t("ps-mono")}</label>
               <input
                 type="number"
                 name="mobile"
@@ -195,24 +225,7 @@ const CreateDealers = () => {
           </div>
           <div className="row d-flex">
             <div className="col">
-              <label className="info-text px10">
-                District:<span className="req">*</span>
-              </label>
-              <input
-                type="text"
-                name="district"
-                value={formData.district}
-                className={`data ${errors.district ? "input-error" : ""}`}
-                onChange={handleInputChange}
-                onKeyDown={(e) => handleKeyDown(e, e.target.name)}
-                onFocus={(e) => e.target.select()}
-                placeholder="Pune"
-              />
-            </div>
-            <div className="col">
-              <label className="info-text px10">
-                City:<span className="req">*</span>
-              </label>
+              <label className="info-text px10">{t("ps-city")}</label>
               <input
                 type="text"
                 name="city"
@@ -225,9 +238,20 @@ const CreateDealers = () => {
               />
             </div>
             <div className="col">
-              <label className="info-text px10">
-                PinCode:<span className="req">*</span>
-              </label>
+              <label className="info-text px10">{t("ps-dist")}</label>
+              <input
+                type="text"
+                name="district"
+                value={formData.district}
+                className={`data ${errors.district ? "input-error" : ""}`}
+                onChange={handleInputChange}
+                onKeyDown={(e) => handleKeyDown(e, e.target.name)}
+                onFocus={(e) => e.target.select()}
+                placeholder="Pune"
+              />
+            </div>
+            <div className="col">
+              <label className="info-text px10">{t("ps-pin")}</label>
               <input
                 type="number"
                 name="pincode"
@@ -242,9 +266,7 @@ const CreateDealers = () => {
           </div>
           <div className="row d-flex">
             <div className="col">
-              <label className="info-text px10">
-                Bank Name:<span className="req">*</span>
-              </label>
+              <label className="info-text px10">{t("ps-bank-name")}</label>
               <input
                 type="text"
                 name="bankName"
@@ -257,9 +279,7 @@ const CreateDealers = () => {
               />
             </div>
             <div className="col">
-              <label className="info-text px10">
-                Bank No:<span className="req">*</span>
-              </label>
+              <label className="info-text px10">{t("ps-ac-no")}</label>
               <input
                 type="number"
                 name="bank_ac"
@@ -272,9 +292,7 @@ const CreateDealers = () => {
               />
             </div>
             <div className="col">
-              <label className="info-text px10">
-                IFSC Code:<span className="req">*</span>
-              </label>
+              <label className="info-text px10">{t("ps-ifsc")}</label>
               <input
                 type="text"
                 name="bankIFSC"
@@ -289,10 +307,10 @@ const CreateDealers = () => {
           </div>
           <div className="button-container d-flex a-center j-end my10">
             <button className="btn" type="button" onClick={handleClear}>
-              Clear
+              {t("ps-clr")}
             </button>
             <button className="btn mx10" type="submit">
-              Submit
+              {t("ps-smt")}
             </button>
           </div>
         </form>

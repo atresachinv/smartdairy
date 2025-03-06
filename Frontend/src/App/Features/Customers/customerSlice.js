@@ -4,6 +4,7 @@ import axiosInstance from "../../axiosInstance";
 const initialState = {
   customerlist: [],
   maxCustNo: "",
+  cliststatus: "idle",
   status: "idle",
   error: null,
 };
@@ -78,14 +79,14 @@ const customerSlice = createSlice({
       })
       // Handle listCustomer actions
       .addCase(listCustomer.pending, (state) => {
-        state.status = "loading";
+        state.cliststatus = "loading";
       })
       .addCase(listCustomer.fulfilled, (state, action) => {
-        state.status = "succeeded";
+        state.cliststatus = "succeeded";
         state.customerlist = action.payload; // Replace the customer list with the fetched data
       })
       .addCase(listCustomer.rejected, (state, action) => {
-        state.status = "failed";
+        state.cliststatus = "failed";
         state.error = action.payload;
       });
   },

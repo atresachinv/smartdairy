@@ -32,7 +32,7 @@ aside .sidebar-logo {
   bottom: 0;
 }
 .logout-icon{
-  font-size: 22px;
+   font-size: clamp(20px, 2vw, 24px);
   color: #fff;
 }
 /* sidebar css end */

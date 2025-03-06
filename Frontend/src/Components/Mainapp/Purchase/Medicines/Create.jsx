@@ -7,7 +7,7 @@ import { useTranslation } from "react-i18next";
 import Swal from "sweetalert2";
 import "../../../../Styles/Mainapp/Purchase/Purchase.css";
 const Create = () => {
-  const { t } = useTranslation(["milkcollection", "common"]);
+  const { t } = useTranslation(["puchasesale", "milkcollection", "common"]);
   const [cartItem, setCartItem] = useState([]);
   const [cname, setCname] = useState("");
   const [fcode, setFcode] = useState("");
@@ -17,7 +17,9 @@ const Create = () => {
   const [rate, setRate] = useState(0);
   const [selectitemcode, setSelectitemcode] = useState(0);
   const [amt, setAmt] = useState(0);
-  const [rctno, setRctno] = useState(localStorage.getItem("receiptpurno") || 1);
+  const [rctno, setRctno] = useState(
+    localStorage.getItem("receiptpurno2") || 1
+  );
   const [dealerList, setDealerList] = useState([]);
   const [billNo, setBillNo] = useState("9112");
   const [sellrate, setSellrate] = useState(0);
@@ -132,6 +134,7 @@ const Create = () => {
           rate: rate,
           amount: qty * rate,
           salerate: parseInt(sellrate),
+          cn: 0,
         };
 
         // Update the cart items
@@ -197,7 +200,7 @@ const Create = () => {
           handelClear();
           setRctno(parseInt(rctno) + 1);
           toast.success(res.data.message);
-          localStorage.setItem("receiptpurno", parseInt(rctno) + 1);
+          localStorage.setItem("receiptpurno2", parseInt(rctno) + 1);
         }
       } catch (error) {
         console.error("Error Submitting items:", error);
@@ -223,14 +226,24 @@ const Create = () => {
     }
   };
 
+  // Filter out items that are already in the cart
+  const [filteredItems, setFilteredItems] = useState([]);
+
+  useEffect(() => {
+    const itemsNotInCart = itemList.filter(
+      (item) => !cartItem.some((cart) => cart.itemcode === item.ItemCode)
+    );
+    setFilteredItems(itemsNotInCart);
+  }, [itemList, cartItem]);
+
   return (
     <div className="purchase-cattle-feed-container w100 h1 d-flex-col p10">
-      <span className="heading">Add Medicines</span>
+      <span className="heading"> {t("ps-nv-add-medicines")}</span>
       <div className="purchase-cattle-feed-inner-container w100 h1 d-flex sb">
         <form className="purchase-cattle-feed-form-container w50 h1 bg p10">
-          <div className="purchase-input-row w100 h15 d-flex  a-center sb">
+          <div className="purchase-input-row w100 h20 d-flex  a-center sb">
             <div className="purchase-input-col w45 d-flex-col sb">
-              <label className="info-text px10">Date :</label>
+              <label className="info-text px10">{t("ps-date")} :</label>
               <input
                 type="date"
                 id="date"
@@ -245,7 +258,7 @@ const Create = () => {
               />
             </div>
             <div className="purchase-input-col w45 d-flex-col sb">
-              <label className="info-text px10">Receipt No:</label>
+              <label className="info-text px10">{t("ps-rect-no")}:</label>
               <input
                 type="number"
                 id="rctno"
@@ -261,9 +274,10 @@ const Create = () => {
               />
             </div>
           </div>
-          <div className="purchase-input-row w100 h15 d-flex  a-center sb">
+          <div className="purchase-input-row w100 h20 d-flex  a-center sb">
             <div className="purchase-input-col w45 d-flex-col sb">
-              <label className="info-text px10">Dealer Code:</label>
+              <label className="info-text px10">{t("ps-dealer-no")}:</label>
+
               <input
                 type="number"
                 id="fcode"
@@ -278,7 +292,8 @@ const Create = () => {
               />
             </div>
             <div className="purchase-input-col w45 d-flex-col sb">
-              <label className="info-text px10">Dealer Name:</label>
+              <label className="info-text px10">{t("ps-dealer-name")}:</label>
+
               <select
                 id="cname"
                 value={cname}
@@ -286,7 +301,8 @@ const Create = () => {
                 onChange={(e) => setCname(e.target.value)}
                 onKeyDown={(e) =>
                   handleKeyPress(e, document.getElementById("selectitemcode"))
-                }>
+                }
+              >
                 <option value="">Select Dealer</option>
                 {dealerList.map((item, i) => (
                   <option key={i} value={item.cname}>
@@ -297,7 +313,7 @@ const Create = () => {
             </div>
           </div>
 
-          <div className="purchase-input-row w100 h15 d-flex a-center sb">
+          <div className="purchase-input-row w100 h20 d-flex a-center sb">
             <div className="purchase-input-col w45 d-flex-col sb">
               <label className="info-text px10">Select Items:</label>
 
@@ -309,10 +325,11 @@ const Create = () => {
                 onChange={(e) => setSelectitemcode(parseInt(e.target.value))}
                 onKeyDown={(e) =>
                   handleKeyPress(e, document.getElementById("qty"))
-                }>
+                }
+              >
                 <option value="0">Select Item</option>
                 {itemList.length > 0 &&
-                  itemList.map((item, i) => (
+                  filteredItems.map((item, i) => (
                     <option key={i} value={item.ItemCode}>
                       {item.ItemName}
                     </option>
@@ -320,7 +337,8 @@ const Create = () => {
               </select>
             </div>
             <div className="purchase-input-col w45 d-flex-col sb">
-              <label className="info-text px10">QTY:</label>
+              <label className="info-text px10"> {t("ps-qty")}:</label>
+
               <input
                 id="qty"
                 disabled={!selectitemcode}
@@ -337,9 +355,10 @@ const Create = () => {
               />
             </div>
           </div>
-          <div className="purchase-input-row w100 h15 d-flex a-center sb">
+          <div className="purchase-input-row w100 h20 d-flex a-center sb">
             <div className="purchase-input-col w45 d-flex-col sb">
-              <label className="info-text px10">Purchase Rate:</label>
+              <label className="info-text px10">{t("ps-rate")}:</label>
+
               <input
                 id="rate"
                 type="number"
@@ -358,7 +377,8 @@ const Create = () => {
               />
             </div>
             <div className="purchase-input-col w45 d-flex-col sb">
-              <label className="info-text px10">Sale Rate:</label>
+              <label className="info-text px10">{t("ps-sale-rate")}:</label>
+
               <input
                 id="sellrate"
                 type="number"
@@ -371,9 +391,9 @@ const Create = () => {
               />
             </div>
           </div>
-          <div className="purchase-input-row w100 h15 d-flex  a-center sb">
+          <div className="purchase-input-row w100 h20 d-flex  a-center sb">
             <div className="purchase-input-col w45 d-flex-col">
-              <label className="info-text px10">Amount:</label>
+              <label className="info-text px10">{t("ps-amt")}:</label>
               <input
                 id="amt"
                 type="number"
@@ -383,23 +403,28 @@ const Create = () => {
                 readOnly
               />
             </div>
-          </div>
-          <div className="button-container w100 h10 d-flex j-end my5">
-            <button className="btn mx10" onClick={handleAddToCart}>
-              Add to Cart
-            </button>
+            <div className="button-container w100 h1 d-flex j-end my5">
+              <button
+                className="btn mx10"
+                style={{ marginTop: "auto" }}
+                onClick={handleAddToCart}
+              >
+                Add to Cart
+              </button>
+            </div>
           </div>
         </form>
 
         <div className="sales-list-outer-container w45 h1 d-flex-col bg">
-          <span className="heading w30 p10">Item List</span>
+          <span className="heading w50 p10">{t("ps-pur-list")}</span>
+
           <div className="sales-list-conatainer w100 h1 d-flex-col">
             <div className="sales-headings-row w100 h10 d-flex sb a-center t-center sticky-top t-heading-bg">
-              <span className="f-label-text w10">No.</span>
-              <span className="f-label-text w40">Name</span>
-              <span className="f-label-text w10">Qty</span>
-              <span className="f-label-text w10">Rate</span>
-              <span className="f-label-text w10">Amount</span>
+              <span className="f-label-text w10"> {t("ps-srNo")}</span>
+              <span className="f-label-text w40">{t("ps-itm-name")}</span>
+              <span className="f-label-text w10"> {t("ps-qty")}</span>
+              <span className="f-label-text w10"> {t("ps-rate")}</span>
+              <span className="f-label-text w10"> {t("ps-amt")}</span>
               <span className="f-label-text w20 t-center">Action</span>
             </div>
             {cartItem.length > 0 ? (
@@ -407,7 +432,8 @@ const Create = () => {
                 {cartItem.map((item, i) => (
                   <div
                     key={i}
-                    className="sales-headings-row w100 h10 d-flex a-center sb">
+                    className="sales-headings-row w100 h10 d-flex a-center sb"
+                  >
                     <span className="label-text w10 t-center">{i + 1}</span>
                     <span className="label-text w40 t-start">
                       {item.itemname}
@@ -429,7 +455,7 @@ const Create = () => {
                   <span className=" w10"></span>
                   <span className=" w40"></span>
                   <span className=" w10"></span>
-                  <span className="label-text w10">Total :</span>
+                  <span className="label-text w10">{t("ps-ttl-amt")} :</span>
                   <span className="label-text w10 t-end">
                     {cartItem.reduce((acc, item) => acc + item.amount, 0)}
                   </span>
@@ -444,13 +470,14 @@ const Create = () => {
           </div>
           <div className="sales-button-container w100 h10 d-flex a-center j-end">
             <button className="w-btn m10" onClick={handelClear}>
-              Clear
+              {t("ps-clr")}
             </button>
             <button
               className="w-btn mx10"
               onClick={handleSubmit}
-              disabled={cartItem.length == 0}>
-              Save
+              disabled={cartItem.length == 0}
+            >
+              {t("ps-smt")}
             </button>
           </div>
         </div>

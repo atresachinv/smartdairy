@@ -3,15 +3,20 @@ import * as XLSX from "xlsx";
 import Spinner from "../../../Home/Spinner/Spinner";
 import { useSelector } from "react-redux";
 import axiosInstance from "../../../../App/axiosInstance";
-import { MdDeleteOutline } from "react-icons/md";
+import { MdAddShoppingCart, MdDeleteOutline } from "react-icons/md";
 import Swal from "sweetalert2";
 import { IoClose } from "react-icons/io5";
 import { FaRegEdit } from "react-icons/fa";
 import { toast } from "react-toastify";
 import { TbSortAscending2, TbSortDescending2 } from "react-icons/tb";
 import "../../../../Styles/Mainapp/Sales/Sales.css";
+import { useTranslation } from "react-i18next";
+import { NavLink } from "react-router-dom";
+import { FaDownload } from "react-icons/fa6";
+import jsPDF from "jspdf";
 
 const MedicinesSaleList = () => {
+  const { t } = useTranslation(["puchasesale", "common"]);
   const { customerlist, loading } = useSelector((state) => state.customer);
   const [date1, SetDate1] = useState("");
   const [date2, SetDate2] = useState("");
@@ -25,9 +30,22 @@ const MedicinesSaleList = () => {
   const [viewItems, setViewItems] = useState([]);
   const [loadings, SetLoadings] = useState(false);
   const [sortOrder, setSortOrder] = useState("desc");
+  const dairyInfo = useSelector(
+    (state) =>
+      state.dairy.dairyData.marathi_name ||
+      state.dairy.dairyData.SocietyName ||
+      state.dairy.dairyData.center_name
+  );
+  const role = useSelector((state) => state.users.user?.role);
+  const [userRole, setUserRole] = useState(role);
+
+  useEffect(() => {
+    setUserRole(role);
+  }, [role]);
+
   //download Excel sheet
   const downloadExcel = () => {
-    const exportData = sales.map((sale) => ({
+    const exportData = filteredSalesList.map((sale) => ({
       BillDate: formatDateToDDMMYYYY(sale.BillDate),
       BillNo: sale.ReceiptNo,
       custCode: sale.CustCode,
@@ -39,11 +57,11 @@ const MedicinesSaleList = () => {
       Amt: sale.Amount,
       cgst: sale.cgst || 0,
       sgst: sale.sgst || 0,
-      cn: 0,
+      cn: sale.cn || 0,
     }));
 
     if (!Array.isArray(exportData) || exportData.length === 0) {
-      alert("No data available to export.");
+      toast.error("No data available to export.");
       return;
     }
 
@@ -69,13 +87,18 @@ const MedicinesSaleList = () => {
   // Fetch sales data from backend (API endpoint)
   useEffect(() => {
     const fetchSales = async () => {
+      SetLoadings(true);
       try {
-        const { data } = await axiosInstance.get("/sale/all?ItemGroupCode=2"); // Replace with your actual API URL
+        const { data } = await axiosInstance.get(
+          `/sale/all?ItemGroupCode=2&cn=0&role=${userRole}`
+        ); // Replace with your actual API URL
         if (data.success) {
           // console.log(data);
           setSales(data.salesData); // Assuming 'sales' is the array returned by your backend
         }
+        SetLoadings(false);
       } catch (error) {
+        SetLoadings(false);
         console.error("Error fetching sales:", error);
       }
     };
@@ -111,7 +134,7 @@ const MedicinesSaleList = () => {
     try {
       const queryParams = new URLSearchParams(getItem).toString();
       const { data } = await axiosInstance.get(
-        `/sale/all?ItemGroupCode=2&${queryParams}`
+        `/sale/all?ItemGroupCode=2&cn=0&role=${userRole}&${queryParams}`
       );
       if (data?.success) {
         setSales(data.salesData);
@@ -313,47 +336,150 @@ const MedicinesSaleList = () => {
     // console.log(filterList);
     setIsInvoiceOpen(true);
   };
+  //download PDF
+  const downloadPdf = () => {
+    if (groupedSalesArray.length === 0) {
+      toast.warn("No data available to export.");
+      return;
+    }
+
+    const doc = new jsPDF();
+
+    // Define columns and rows
+    const columns = [
+      "Sr No",
+      "Date",
+      "Bill No",
+      "Code",
+      "Customer Name",
+      "Amount",
+    ];
+    const rows = groupedSalesArray.map((item, index) => [
+      index + 1,
+      formatDateToDDMMYYYY(item.BillDate),
+      item.ReceiptNo,
+      item.CustCode,
+      handleFindCustName(item.CustCode),
+      item.TotalAmount,
+    ]);
+
+    const totalAmount = groupedSalesArray.reduce(
+      (acc, item) => acc + item.TotalAmount,
+      0
+    );
+
+    // Page width for centering text
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const pageHeight = doc.internal.pageSize.getHeight();
+
+    // Define the margin and the height of the box
+    const margin = 10;
+    const boxHeight = pageHeight - 20; // Adjust as needed
+
+    // Add border for the entire content
+    doc.rect(margin, margin, pageWidth - 2 * margin, boxHeight);
+
+    // Add dairy name with border inside the box
+    const dairyName = dairyInfo;
+    doc.setFontSize(16);
+    doc.setFont("helvetica", "bold");
+    const dairyTextWidth = doc.getTextWidth(dairyName);
+    doc.text(dairyName, (pageWidth - dairyTextWidth) / 2, margin + 15);
+
+    // Add "Sale-Info" heading with border
+    doc.setFontSize(14);
+    const invoiceInfo = doc.getTextWidth("Sale-Info");
+    doc.text("Sale-Info", (pageWidth - invoiceInfo) / 2, margin + 25);
+    const gepInfo = doc.getTextWidth("Medicines Report");
+    doc.text("Medicines Report", (pageWidth - gepInfo) / 2, margin + 35);
+    // Add table for items with borders and centered text
+    doc.autoTable({
+      head: [columns],
+      body: rows,
+      startY: margin + 45,
+      margin: { top: 10 },
+      styles: {
+        cellPadding: 2,
+        fontSize: 11,
+        halign: "center", // Horizontal alignment for cells (centered)
+        valign: "middle", // Vertical alignment for cells (centered)
+        lineWidth: 0.08, // Line width for the borders
+        lineColor: [0, 0, 0], // Black border color
+      },
+      headStyles: {
+        fontSize: 12,
+        fontStyle: "bold",
+        fillColor: [225, 225, 225], // Light gray background for the header
+        textColor: [0, 0, 0], // Black text color for header
+      },
+      tableLineColor: [0, 0, 0], // Table border color (black)
+      tableLineWidth: 0.1, // Border width
+    });
+    // Add total amount with border
+    doc.setFontSize(12);
+    const totalAmountLabel = `Total Amount: ${totalAmount}`;
+    doc.text(totalAmountLabel, 145, doc.lastAutoTable.finalY + 10);
+
+    // Save the PDF
+    doc.save(
+      `Medicines_SaleReport_${formatDateToDDMMYYYY(
+        date1
+      )}_to_${formatDateToDDMMYYYY(date2)}.pdf`
+    );
+  };
 
   return (
     <div className="customer-list-container-div w100 h1 d-flex-col p10">
-      <div className="download-print-pdf-excel-container w100 h20 d-flex-col sb">
-        <div className="sales-dates-container w60 h50 d-flex a-center sb">
-          <div className="date-input-div w35 d-flex a-center sb">
-            <label htmlFor="" className="label-text w30">
-              From :
-            </label>
-            <input
-              type="date"
-              className="data w70"
-              value={date1}
-              onChange={(e) => SetDate1(e.target.value)}
-              max={date2}
-            />
+      <div className="download-print-pdf-excel-container w100 h30 d-flex-col sb">
+        <div className="sales-dates-container w100 h50 d-flex a-center sb sales-dates-container-mobile">
+          <div className="d-flex sb w60 sales-dates-container-mobile-w100 py5">
+            <div className="date-input-div w35 d-flex a-center sb">
+              <label htmlFor="" className="label-text w30">
+                {t("ps-from")} :
+              </label>
+              <input
+                type="date"
+                className="data w70"
+                value={date1}
+                onChange={(e) => SetDate1(e.target.value)}
+                max={date2}
+              />
+            </div>
+            <div className="date-input-div w35 d-flex a-center sb">
+              <label htmlFor="" className="label-text w30">
+                {t("ps-to")} :
+              </label>
+              <input
+                type="date"
+                className="data w70"
+                value={date2}
+                onChange={(e) => SetDate2(e.target.value)}
+                min={date1}
+              />
+            </div>
+            <button className="w-btn" onClick={handleShowbutton}>
+              {t("ps-show")}
+            </button>
           </div>
-          <div className="date-input-div w35 d-flex a-center sb">
-            <label htmlFor="" className="label-text w30">
-              To :
+          <div className="d-flex h1 sb center w25 sales-dates-container-mobile-w100 p10 bg ">
+            <label htmlFor="" className="label-text px5 ">
+              {t("ps-nv-add-medicines")}
             </label>
-            <input
-              type="date"
-              className="data w70"
-              value={date2}
-              onChange={(e) => SetDate2(e.target.value)}
-              min={date1}
-            />
+            <NavLink
+              className="w-btn d-flex "
+              style={{ textDecoration: "none" }}
+              to="add-new"
+            >
+              <MdAddShoppingCart className="icon f-label" />
+              {t("ps-new")}
+            </NavLink>
           </div>
-          <button className="w-btn" onClick={handleShowbutton}>
-            Show
-          </button>
         </div>
         <div className="find-customer-container w100 h50 d-flex a-center my5">
-          <div className="customer-search-div w45 d-flex a-center sb">
-            <label htmlFor="" className="label-text w30">
-              Search:
-            </label>
+          <div className="customer-search-div  d-flex a-center sb">
             <input
               type="text"
-              className="data w70"
+              className="data w100"
               name="code"
               onFocus={(e) => e.target.select()}
               value={fcode}
@@ -362,24 +488,37 @@ const MedicinesSaleList = () => {
               }
               min="0"
               title="Enter code or name to search details"
+              placeholder={`${t("ps-search")}`}
             />
           </div>
-          <button className="w-btn mx10" onClick={downloadExcel}>
-            Excel
+          <button
+            className="w-btn mx10 sales-dates-container-mobile-btn"
+            onClick={downloadExcel}
+          >
+            <span className="f-label-text px10"> {t("ps-down-excel")}</span>
+            <FaDownload className="icon" />
+          </button>
+          <button
+            className="w-btn mx10 sales-dates-container-mobile-btn"
+            onClick={downloadPdf}
+          >
+            <span className="f-label-text px10"> PDF </span>
+            <FaDownload className="icon" />
           </button>
         </div>
       </div>
       <div className="sales-list-table w100 h80 d-flex-col hidescrollbar bg">
-        <span className="heading p10">Cattle Feed List</span>
+        <span className="heading p10"> {t("ps-medi-rep")}</span>
         <div className="sales-heading-title-scroller w100 h1 mh100 d-flex-col hidescrollbar">
           <div className="sale-data-headings-div h10 d-flex center t-center sb sticky-top t-heading-bg">
-            <span className="f-info-text w5">Sr.No</span>
+            <span className="f-info-text w5"> {t("ps-srNo")}</span>
             <span className="f-info-text w10">
-              Date{" "}
+              {t("ps-date")}{" "}
               <span
                 className="px10 f-color-icon"
                 type="button"
-                onClick={toggleSortOrder}>
+                onClick={toggleSortOrder}
+              >
                 {sortOrder === "asc" ? (
                   <TbSortAscending2 />
                 ) : (
@@ -387,14 +526,21 @@ const MedicinesSaleList = () => {
                 )}
               </span>
             </span>
-            <span className="f-info-text w10">Rec. No</span>
-            <span className="f-info-text w10">Cust Code</span>
-            <span className="f-info-text w30">Cust Name</span>
-            <span className="f-info-text w10">Amount</span>
+            <span className="f-info-text w10">{t("ps-rect-no")}</span>
+            <span className="f-info-text w10"> {t("ps-custCode")}</span>
+            <span className="f-info-text w30"> {t("ps-cutName")}</span>
+            <span className="f-info-text w10">{t("ps-amt")}</span>
+            {userRole === "salesman" ? (
+              <></>
+            ) : (
+              <>
+                <span className="f-info-text w10">{t("CreatedBy")}</span>
+              </>
+            )}
             <span className="f-info-text w15">Actions</span>
           </div>
           {/* Show Spinner if loading, otherwise show the feed list */}
-          {loading ? (
+          {loadings ? (
             <Spinner />
           ) : groupedSalesArray.length > 0 ? (
             groupedSalesArray.map((sale, index) => (
@@ -405,23 +551,33 @@ const MedicinesSaleList = () => {
                 }`}
                 style={{
                   backgroundColor: index % 2 === 0 ? "#faefe3" : "#fff",
-                }}>
+                }}
+              >
                 <span className="text w5">{index + 1}</span>
                 <span className="text w10">
                   {formatDateToDDMMYYYY(sale.BillDate)}
                 </span>
                 <span className="text w10">{sale.ReceiptNo}</span>
                 <span className="text w10">{sale.CustCode}</span>
-                <span className="text w30 t-start">
+                <span className="text w30 ">
                   {handleFindCustName(sale.CustCode)}
                 </span>
 
-                <span className="text w10 t-end">{sale.TotalAmount}</span>
-                <span className="text w15 d-flex j-center a-center sa">
+                <span className="text w10 ">{sale.TotalAmount}</span>
+                {userRole === "salesman" ? (
+                  <></>
+                ) : (
+                  <>
+                    <span className="text w10 ">{sale.createdby}</span>
+                  </>
+                )}
+
+                <span className="text w15 d-flex j-center a-center ">
                   <button
                     className="px5"
-                    onClick={() => handleView(sale?.BillNo)}>
-                    View
+                    onClick={() => handleView(sale?.BillNo)}
+                  >
+                    {t("ps-view")}
                   </button>
                   <MdDeleteOutline
                     onClick={() => handleDelete(sale?.BillNo)}
@@ -433,15 +589,15 @@ const MedicinesSaleList = () => {
               </div>
             ))
           ) : (
-            <div className="box d-flex center">No Items found</div>
+            <div className="box d-flex center"> {t("ps-sale-item")}</div>
           )}
         </div>
         {/* show invoice */}
         {isInvoiceOpen && viewItems.length > 0 && (
           <div className="pramod modal">
-            <div className="modal-content">
+            <div className="modal-content invoiceModel">
               <div className="d-flex sb">
-                <h2>Sale Bill Details</h2>
+                <h2> {t("ps-sale-bill-det")}</h2>
                 <IoClose
                   style={{ cursor: "pointer" }}
                   size={25}
@@ -449,14 +605,19 @@ const MedicinesSaleList = () => {
                 />
               </div>
               <hr />
-              <div className=" d-flex sb mx15 px15">
-                <h4>Rect. No : {viewItems[0]?.ReceiptNo || ""}</h4>
+              <div className=" d-flex sb mx15 px15 invoiceModelInfo">
+                <h4>
+                  {t("ps-rect-no")} : {viewItems[0]?.ReceiptNo || ""}
+                </h4>
                 <div className="10">
-                  Date :{formatDateToDDMMYYYY(viewItems[0]?.BillDate)}
+                  {t("ps-date")} :{formatDateToDDMMYYYY(viewItems[0]?.BillDate)}
                 </div>
               </div>
-              <div className=" d-flex sb mx15 px15">
-                <h4>Customer code : {viewItems[0]?.CustCode || ""}</h4>
+              <div className=" d-flex sb mx15 px15 invoiceModelInfo">
+                <h4>
+                  {" "}
+                  {t("ps-custCode")} : {viewItems[0]?.CustCode || ""}
+                </h4>
                 <h4 className="mx15">
                   {handleFindCustName(viewItems[0]?.CustCode) || ""}
                 </h4>
@@ -466,11 +627,11 @@ const MedicinesSaleList = () => {
                   <table className="sales-table w100 ">
                     <thead className="bg1">
                       <tr>
-                        <th>SrNo</th>
-                        <th>Item Name</th>
-                        <th>Rate</th>
-                        <th>Qty</th>
-                        <th>Amount</th>
+                        <th>{t("ps-srNo")}</th>
+                        <th>{t("ps-itm-name")}</th>
+                        <th>{t("ps-rate")}</th>
+                        <th>{t("ps-qty")}</th>
+                        <th>{t("ps-amt")}</th>
                         <th>Action</th>
                       </tr>
                     </thead>
@@ -505,7 +666,7 @@ const MedicinesSaleList = () => {
                         <td></td>
                         <td></td>
                         <td>
-                          <b>Total</b>
+                          <b> {t("ps-ttl-amt")}</b>
                         </td>
                         <td>
                           {(viewItems || []).reduce(
@@ -524,41 +685,44 @@ const MedicinesSaleList = () => {
         )}
         {/* its used for edit item */}
         {isModalOpen && (
-          <div className="modal">
+          <div className="modal sale">
             <div className="modal-content">
-              <h2>Update Sale Item</h2>
+              <h2> {t("ps-up-sale-item")}</h2>
               <label>
-                Receipt No:
+                {t("ps-rect-no")} :
                 <input
                   type="number"
                   value={editSale?.ReceiptNo}
+                  onFocus={(e) => e.target.select()}
                   onChange={(e) =>
                     setEditSale({ ...editSale, ReceiptNo: e.target.value })
                   }
                 />
               </label>
               <label>
-                Qty:
+                {t("ps-qty")}:
                 <input
                   type="number"
                   value={editSale?.Qty}
+                  onFocus={(e) => e.target.select()}
                   onChange={(e) =>
                     setEditSale({ ...editSale, Qty: e.target.value })
                   }
                 />
               </label>
               <label>
-                Rate:
+                {t("ps-rate")}:
                 <input
                   type="number"
                   value={editSale?.Rate}
+                  onFocus={(e) => e.target.select()}
                   onChange={(e) =>
                     setEditSale({ ...editSale, Rate: e.target.value })
                   }
                 />
               </label>
               <label>
-                Amount:
+                {t("ps-amt")}:
                 <input
                   type="number"
                   value={handleAmountCalculation()}
@@ -566,8 +730,11 @@ const MedicinesSaleList = () => {
                 />
               </label>
               <div>
-                <button onClick={() => setIsModalOpen(false)}>Cancel</button>
-                <button onClick={handleSaveChanges}>Save</button>
+                <button onClick={() => setIsModalOpen(false)}>
+                  {" "}
+                  {t("ps-cancel")}
+                </button>
+                <button onClick={handleSaveChanges}> {t("ps-update")}</button>
               </div>
             </div>
           </div>

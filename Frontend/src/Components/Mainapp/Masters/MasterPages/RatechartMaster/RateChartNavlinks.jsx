@@ -1,28 +1,34 @@
 import React from "react";
 import { BsSaveFill } from "react-icons/bs";
 import { VscSave } from "react-icons/vsc";
-import { CiSaveUp1 } from "react-icons/ci";
+import { IoIosSave } from "react-icons/io";
 import { GrUpdate } from "react-icons/gr";
 import { NavLink } from "react-router-dom";
 
 const RateChartNavlinks = ({ isselected, setIsSelected }) => {
   const ratechartnavlinks = [
     {
+      name: "Add Type",
+      icon: <IoIosSave className="icon" />,
+      index: 0,
+      path: "add/new-type",
+    },
+    {
       name: "Save",
       icon: <VscSave className="icon" />,
-      index: 0,
-      path: "save",
+      index: 1,
+      path: "save-new",
     },
     {
       name: "Update",
       icon: <GrUpdate className="icon" />,
-      index: 1,
+      index: 2,
       path: "update-save",
     },
     {
       name: "Apply",
       icon: <BsSaveFill className="icon" />,
-      index: 2,
+      index: 3,
       path: "apply",
     },
   ];
@@ -36,10 +42,14 @@ const RateChartNavlinks = ({ isselected, setIsSelected }) => {
           }`}
           onClick={() => {
             setIsSelected(button.index);
-          }}>
-          <NavLink to={button.path} className="sub-navlinks f-label-text">
-            {button.icon}
-            <span>{button.name}</span>
+          }}
+        >
+          <NavLink
+            to={button.path}
+            className="sub-navlinks f-label-text d-flex a-center"
+          >
+            <span>{button.icon}</span>
+            {button.name}
           </NavLink>
         </li>
       ))}

@@ -1,18 +1,11 @@
-import React, { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
+import { useState } from "react";
 import OthersNavlinks from "./OthersNavlinks";
 import { Route, Routes } from "react-router-dom";
 import OthersSaleList from "./OthersSaleList";
 import CreateOthers from "./CreateOthers";
 
 const OthersMaster = () => {
-  const [isselected, setIsSelected] = useState(
-    parseInt(localStorage.getItem("selectedOthersSaleIndex")) || 0
-  );
-  // Update localStorage whenever isselected changes
-  useEffect(() => {
-    localStorage.setItem("selectedOthersSaleIndex", isselected);
-  }, [isselected]);
+  const [isselected, setIsSelected] = useState(0);
 
   return (
     <div className="customer-master-container w100 h1 d-flex-col">

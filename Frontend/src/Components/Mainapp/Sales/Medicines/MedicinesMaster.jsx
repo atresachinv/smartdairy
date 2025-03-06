@@ -1,32 +1,12 @@
 // eslint-disable-next-line no-unused-vars
-import React, { useEffect, useState } from "react";
-// import "../../../../../Styles/Mainapp/Masters/CustomerMaster.css";
-import { useDispatch } from "react-redux";
-// import { getMaxCustNo } from "../../../../../App/Features/Customers/customerSlice";
+import React, { useState } from "react";
 import CattleFeedNavlinks from "./MedicinesNavlinks";
-import CattleFeedNavViews from "./MedicinesNavViews";
 import { Route, Routes } from "react-router-dom";
 import CattleSaleList from "./MedicinesSaleList";
 import CreateCattleFeed from "./CreateMedicines";
 
 const MedicinesMaster = () => {
-  const dispatch = useDispatch();
-  const [isselected, setIsSelected] = useState(
-    parseInt(localStorage.getItem("selectedMedicinesSaleIndex")) || 0
-  );
-
-  // Update localStorage whenever isselected changes
-  useEffect(() => {
-    localStorage.setItem("selectedMedicinesSaleIndex", isselected);
-  }, [isselected]);
-
-  // useEffect(() => {
-  //   localStorage.setItem("selectedCustIndex", isselected);
-  // }, [isselected]);
-
-  // useEffect(() => {
-  //   dispatch(getMaxCustNo());
-  // }, []);
+  const [isselected, setIsSelected] = useState(0);
 
   return (
     <div className="customer-master-container w100 h1 d-flex-col">

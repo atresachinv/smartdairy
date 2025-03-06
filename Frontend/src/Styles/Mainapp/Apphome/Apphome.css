@@ -19,10 +19,41 @@
 .sub-navlinks {
   text-decoration: none;
 }
+/* <<<-------------------------------------dropdown btn --------------------------------------------->>>> */
+.dropdown-menu {
+  position: absolute;
+  top: 75%;
+  left: auto;
+  background: white;
+  border: 1px solid #ddd;
+  padding: 0px;
+  list-style: none;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  z-index: 10;
+  min-width: 180px;
+  display: flex;
+  flex-direction: column;
+}
+
+.dropdown-item {
+  padding: 8px 12px;
+  text-decoration: none;
+  color: black;
+  display: block;
+}
+
+.dropdown-item:hover {
+  background-color: #f0f0f0;
+}
+
+/* <<<-------------------------------------dropdown btn css end ------------------------------------->>>> */
 /*--------Mobile Screen CSS-------*/
 
 @media screen and (max-width: 426px) {
-  .home-nav-item > a > span {
+  .home-nav-item  a  span {
     display: none;
+  }
+  .dropdown-menu {
+    right: 10px;
   }
 }

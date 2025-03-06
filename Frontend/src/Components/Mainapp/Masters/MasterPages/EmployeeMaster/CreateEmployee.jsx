@@ -1,3 +1,5 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable no-unused-vars */
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
@@ -217,25 +219,6 @@ const CreateEmployee = () => {
 
   // ................................................................................
 
-  // const setEmpData = async () => {
-  //   if (empData && formData.code) {
-  //     const updatedData = {
-  //       marathi_name: empData.marathi_name || "",
-  //       emp_name: empData.emp_name || "",
-  //       designation: empData.designation || "",
-  //       salary: empData.salary || "",
-  //       city: empData.emp_city || "",
-  //       tehsil: empData.emp_tel || "",
-  //       district: empData.emp_dist || "",
-  //       pincode: empData.pincode || "",
-  //       bankName: empData.emp_bankname || "",
-  //       bank_ac: empData.emp_accno || "",
-  //       bankIFSC: empData.emp_ifsc || "",
-  //     };
-  //     await setFormData((prev) => ({ ...prev, ...updatedData }));
-  //   }
-  // };
-
   useEffect(() => {
     if (isEditing && empData) {
       setFormData((prev) => ({
@@ -395,11 +378,10 @@ const CreateEmployee = () => {
                 id="designation"
                 onChange={handleInputChange}
                 value={formData.designation || ""}>
-                {/* <option value="">--Select Designation--</option> */}
                 <option value="manager">Manager</option>
                 <option value="milkcollector">Milk Collector</option>
                 <option value="mobilecollector">Mobile Milk Collector</option>
-                <option value="salesman">Salesman</option>
+                <option value="salesman">Stock Keeper</option>
               </select>
             </div>
             <div className="details-div w30 d-flex-col a-center px10">

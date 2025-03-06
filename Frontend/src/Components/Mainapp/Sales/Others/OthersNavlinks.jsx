@@ -26,16 +26,18 @@ const OthersNavlinks = ({ isselected, setIsSelected }) => {
           className={`home-nav-item d-flex a-center ${
             isselected === index ? "selected" : ""
           }`}
-          onClick={() => {
-            setIsSelected(index);
-          }}>
+        >
           <NavLink
             to={button.path}
+            onClick={() => {
+              setIsSelected(index);
+            }}
             className={({ isActive }) =>
               isActive
                 ? "sub-navlinks f-label-text selected"
                 : "sub-navlinks f-label-text"
-            }>
+            }
+          >
             {button.icon}
             <span>{button.name}</span>
           </NavLink>

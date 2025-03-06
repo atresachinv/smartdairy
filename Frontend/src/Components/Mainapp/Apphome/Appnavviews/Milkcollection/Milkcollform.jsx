@@ -14,18 +14,30 @@ import {
 import { useTranslation } from "react-i18next";
 import { getRateCharts } from "../../../../../App/Features/Mainapp/Masters/rateChartSlice";
 import "../../../../../Styles/Mainapp/Apphome/Appnavview/Milkcollection.css";
+import axiosInstance from "../../../../../App/axiosInstance";
+import { useParams } from "react-router-dom";
 
 const MilkColleform = ({ switchToSettings }) => {
   const dispatch = useDispatch();
+  const { time } = useParams();
   const { t } = useTranslation(["milkcollection", "common"]);
-
+  const dairyname = useSelector(
+    (state) =>
+      state.dairy.dairyData.SocietyName || state.dairy.dairyData.center_name
+  );
+  const dairyphone = useSelector(
+    (state) => state.dairy.dairyData.PhoneNo || state.dairy.dairyData.mobile
+  );
   const tDate = useSelector((state) => state.date.toDate);
   const token = useSelector((state) => state.notify.fcmToken);
-  // const milkColl = useSelector((state) => state.milkCollection.entries || []);
+  const centerSetting = useSelector(
+    (state) => state.dairySetting.centerSetting //center settings
+  );
+  const [settings, setSettings] = useState({}); //center settings
   const [customerList, setCustomerList] = useState([]);
   const [custList, setCustList] = useState({}); // to check remainning customer list
   const [milkRateChart, setMilkRatechart] = useState([]);
-  const [time, setTime] = useState(true);
+  // const [time, setTime] = useState(true);
   const [errors, setErrors] = useState({});
   const [changedDate, setChangedDate] = useState("");
   const [slotCount, setSlotCount] = useState(0); //To rerive local stored milk entries
@@ -33,11 +45,12 @@ const MilkColleform = ({ switchToSettings }) => {
   const litersRef = useRef(null);
   const fatRef = useRef(null);
   const snfRef = useRef(null);
+  const submitbtn = useRef(null);
 
   const initialValues = {
     date: changedDate || tDate,
     code: "",
-    time: 0,
+    shift: 0,
     animal: 0,
     liters: "",
     fat: "",
@@ -48,9 +61,27 @@ const MilkColleform = ({ switchToSettings }) => {
     cname: "",
     acccode: "",
     rcName: "",
+    mobile: "",
   };
 
   const [values, setValues] = useState(initialValues);
+
+  // dynamic shift time set in time -------------------------------------------------------------->
+  useEffect(() => {
+    setValues((prevData) => ({
+      ...prevData,
+      shift: time === "morning" ? 0 : 1,
+    }));
+  }, [time]);
+
+  //center settings ------------------------------------------------------------------------------>
+
+  //set setting
+  useEffect(() => {
+    if (centerSetting?.length > 0) {
+      setSettings(centerSetting[0]);
+    }
+  }, [centerSetting]);
 
   const handleInputs = (e) => {
     const { name, value } = e.target;
@@ -200,8 +231,8 @@ const MilkColleform = ({ switchToSettings }) => {
       } else {
         setValues((prev) => ({
           ...prev,
-          rate: "N/A",
-          amt: "N/A",
+          rate: 0,
+          amt: 0,
           degree: 0,
         }));
       }
@@ -251,6 +282,7 @@ const MilkColleform = ({ switchToSettings }) => {
         cname: customer.cname,
         acccode: customer.cid,
         rcName: customer.rcName,
+        mobile: customer.mobile || customer.Phone,
       }));
     } else {
       setValues((prev) => ({ ...prev, cname: "" })); // Clear cname if not found
@@ -380,79 +412,79 @@ const MilkColleform = ({ switchToSettings }) => {
   //     toast.success(`Notification sent successfully!`);
   //   };
 
-  const sendNotifications = async () => {
-    const title = "Milk Collection Receipt";
-    const body = {
-      name: values.cname,
-      date: values.date,
-      fat: values.fat,
-      snf: values.snf,
-      liters: values.liters,
-      rate: values.rate,
-      amount: values.amt,
-    };
+  // const sendNotifications = async () => {
+  //   const title = "Milk Collection Receipt";
+  //   const body = {
+  //     name: values.cname,
+  //     date: values.date,
+  //     fat: values.fat,
+  //     snf: values.snf,
+  //     liters: values.liters,
+  //     rate: values.rate,
+  //     amount: values.amt,
+  //   };
 
-    // Check if the token exists before proceeding
-    if (!token) {
-      toast.error("Device token is missing");
-      return;
-    }
+  //   // Check if the token exists before proceeding
+  //   if (!token) {
+  //     toast.error("Device token is missing");
+  //     return;
+  //   }
 
-    try {
-      // Show toast indicating the notification is being sent
-      toast.info("Sending notification...");
+  //   try {
+  //     // Show toast indicating the notification is being sent
+  //     toast.info("Sending notification...");
 
-      // Try sending the notification using the token
-      dispatch(
-        sendNewNotification({
-          title, // Notification title
-          body, // Notification body details
-          deviceToken: token, // Device token for the notification
-        })
-      );
+  //     // Try sending the notification using the token
+  //     dispatch(
+  //       sendNewNotification({
+  //         title, // Notification title
+  //         body, // Notification body details
+  //         deviceToken: token, // Device token for the notification
+  //       })
+  //     );
 
-      // On success, show a success toast
-      toast.success(`Notification sent successfully!`);
-    } catch (error) {
-      // Handle different token errors
-      if (error.message.includes("token")) {
-        // If token is expired or invalid, attempt to refresh or notify the user
-        toast.error(
-          "Notification token expired or invalid. Attempting to refresh..."
-        );
+  //     // On success, show a success toast
+  //     toast.success(`Notification sent successfully!`);
+  //   } catch (error) {
+  //     // Handle different token errors
+  //     if (error.message.includes("token")) {
+  //       // If token is expired or invalid, attempt to refresh or notify the user
+  //       toast.error(
+  //         "Notification token expired or invalid. Attempting to refresh..."
+  //       );
 
-        try {
-          // Refresh token here (ensure you have a function to handle this)
-          const refreshedToken = await requestForToken();
+  //       try {
+  //         // Refresh token here (ensure you have a function to handle this)
+  //         const refreshedToken = await requestForToken();
 
-          if (refreshedToken) {
-            // Update state with new token
-            setToken(refreshedToken);
+  //         if (refreshedToken) {
+  //           // Update state with new token
+  //           setToken(refreshedToken);
 
-            // Retry sending the notification with the new token
-            await dispatch(
-              sendNewNotification({
-                title,
-                body,
-                deviceToken: refreshedToken,
-              })
-            );
+  //           // Retry sending the notification with the new token
+  //           await dispatch(
+  //             sendNewNotification({
+  //               title,
+  //               body,
+  //               deviceToken: refreshedToken,
+  //             })
+  //           );
 
-            toast.success(
-              "Notification sent successfully with the refreshed token!"
-            );
-          } else {
-            toast.error("Failed to refresh token. Please try again later.");
-          }
-        } catch (refreshError) {
-          toast.error("Error refreshing token: " + refreshError.message);
-        }
-      } else {
-        // If it's another kind of error, display the general error
-        toast.error(`Error sending notification: ${error.message}`);
-      }
-    }
-  };
+  //           toast.success(
+  //             "Notification sent successfully with the refreshed token!"
+  //           );
+  //         } else {
+  //           toast.error("Failed to refresh token. Please try again later.");
+  //         }
+  //       } catch (refreshError) {
+  //         toast.error("Error refreshing token: " + refreshError.message);
+  //       }
+  //     } else {
+  //       // If it's another kind of error, display the general error
+  //       toast.error(`Error sending notification: ${error.message}`);
+  //     }
+  //   }
+  // };
 
   // Remove customer from custList
   const removeCustomer = () => {
@@ -468,68 +500,61 @@ const MilkColleform = ({ switchToSettings }) => {
   // ------------------------------------------------------------------------------------->
   // Send Milk Collection Whatsapp Message ------------------------------------------------>
 
-  //  const [responseMessage, setResponseMessage] = useState("");
-  //   const sendMessage = async () => {
-  //     const url = "https://partnersv1.pinbot.ai/v3/560504630471076/messages";
-  //     const apiKey = "0a4a47a3-d03c-11ef-bb5a-02c8a5e042bd";
-  //
-  //     const body = {
-  //       messaging_product: "whatsapp",
-  //       recipient_type: "individual",
-  //       to: "+919730999296",
-  //       type: "template",
-  //       template: {
-  //         name: "milk_collection_Reciept",
-  //         language: { code: "en" },
-  //         components: [
-  //           {
-  //             type: "body",
-  //             parameters: [
-  //               { type: "text", text: "15th January 2025" },
-  //               { type: "text", text: "Hari Om Dudh Sankalan Nimon" },
-  //               { type: "text", text: "01" },
-  //               { type: "text", text: "text-string" },
-  //               { type: "text", text: "text-string" },
-  //               { type: "text", text: "text-string" },
-  //               { type: "text", text: "text-string" },
-  //               { type: "text", text: "text-string" },
-  //               { type: "text", text: "text-string" },
-  //               { type: "text", text: "text-string" }
-  //             ]
-  //           }
-  //         ]
-  //       }
-  //     };
-  //
-  //     try {
-  //       const response = await fetch(url, {
-  //         method: 'POST',
-  //         headers: {
-  //           'Content-Type': 'application/json',
-  //           'apikey': apiKey
-  //         },
-  //         body: JSON.stringify(body)
-  //       });
-  //
-  //       if (!response.ok) {
-  //         throw new Error('Network response was not ok');
-  //       }
-  //
-  //       const responseData = await response.json();
-  //       setResponseMessage(JSON.stringify(responseData, null, 2));
-  //     } catch (error) {
-  //       console.error('There was a problem with the fetch operation:', error);
-  //     }
-  //   };
+  const sendMessage = async () => {
+    const requestBody = {
+      messaging_product: "whatsapp",
+      recipient_type: "individual",
+      to: `91${values.mobile}`,
+      type: "template",
+      template: {
+        name: "milk_collection_marathi",
+        language: { code: "en" },
+        components: [
+          {
+            type: "body",
+            parameters: [
+              { type: "text", text: dairyname },
+              { type: "text", text: values.cname },
+              { type: "text", text: values.code },
+              { type: "text", text: values.liters },
+              { type: "text", text: values.fat },
+              { type: "text", text: values.snf },
+              { type: "text", text: values.rate },
+              { type: "text", text: values.amt },
+              { type: "text", text: "--" },
+              { type: "text", text: dairyphone },
+              { type: "text", text: tDate },
+            ],
+          },
+        ],
+      },
+    };
+    try {
+      const response = await axiosInstance.post("/send-message", requestBody);
+      toast.success("Whatsapp message send successfully...");
+      console.log("Response:", response.data);
+    } catch (error) {
+      toast.error("Error in whatsapp message sending...");
+      console.error("Error sending message:", error);
+    }
+  };
 
-  // ------------------------------------------------------------------------------------->
+  // handle enter press move cursor to next refrence Input -------------------------------->
+  const handleKeyDown = (e, nextRef) => {
+    if (e.key === "Enter" && nextRef.current) {
+      e.preventDefault();
+      nextRef.current.focus();
+    }
+  };
+
+  // Handle reset button ------------------------------------------------------------------------------------------>
 
   const handleResetButton = (e) => {
     e.preventDefault();
     setValues(initialValues);
   };
 
-  //Handling Milk Collection
+  //Handling Milk Collection  ------------------------------------------------------------------------------------->
 
   const handleCollection = async (e) => {
     e.preventDefault();
@@ -541,8 +566,8 @@ const MilkColleform = ({ switchToSettings }) => {
       return;
     }
     try {
-      const allEntries = JSON.parse(localStorage.getItem("milkentries")) || [];
       dispatch(saveMilkOneEntry(values));
+      const allEntries = JSON.parse(localStorage.getItem("milkentries")) || [];
       const existingEntries =
         JSON.parse(localStorage.getItem("milkentries")) || [];
 
@@ -560,7 +585,14 @@ const MilkColleform = ({ switchToSettings }) => {
       //   prevList.filter((customer) => customer.srno.toString() !== values.code)
       // );
       removeCustomer();
-      // sendMessage();
+      if (
+        settings?.whsms !== undefined &&
+        settings?.millcoll !== undefined &&
+        settings.whsms === 1 &&
+        settings.millcoll === 1
+      ) {
+        sendMessage();
+      }
       codeInputRef.current.focus();
     } catch (error) {
       console.error("Error sending milk entries to backend:", error);
@@ -633,9 +665,10 @@ const MilkColleform = ({ switchToSettings }) => {
     <>
       <form
         onSubmit={handleCollection}
-        className="milk-col-form w100 h1 d-flex-col bg p10">
+        className="milk-col-form w100 h1 d-flex-col bg p10"
+      >
         <span className="heading w100 t-center py10">
-          {!time ? `${t("common:c-eve")}` : `${t("common:c-mrg")}`}{" "}
+          {values.shift === 0 ? `${t("common:c-mrg")}` : `${t("common:c-eve")}`}{" "}
           {t("m-milkcoll")}
         </span>
         <div className="form-setting w100 h10 d-flex a-center sb ">
@@ -651,21 +684,22 @@ const MilkColleform = ({ switchToSettings }) => {
               name="date"
               id="date"
               onChange={handleInputs}
-              // onChange={(e) => setChangedDate(e.target.value)}
               value={values.date || ""}
               max={tDate}
             />
           </div>
           <div className="setting-btn-switch w20 j-center d-flex">
-            {/* <span className="text">Morning</span> */}
             <button
               type="button"
-              onClick={handleTime}
-              className={`sakalan-time text ${time ? "on" : "off"}`}
-              aria-pressed={time}>
-              {time ? `${t("common:c-mrg")}` : `${t("common:c-eve")}`}
+              className={`sakalan-time text ${
+                values.shift === 0 ? "on" : "off"
+              }`}
+              aria-pressed={time}
+            >
+              {values.shift === 0
+                ? `${t("common:c-mrg")}`
+                : `${t("common:c-eve")}`}
             </button>
-            {/* <span className="text">Evening</span> */}
           </div>
           <BsGearFill className="color-icon w10" onClick={switchToSettings} />
         </div>
@@ -684,6 +718,7 @@ const MilkColleform = ({ switchToSettings }) => {
               value={values.code}
               onChange={handleInputs}
               ref={codeInputRef}
+              onKeyDown={(e) => handleKeyDown(e, litersRef)}
             />
           </div>
           <div className="form-div w50 px10">
@@ -759,6 +794,7 @@ const MilkColleform = ({ switchToSettings }) => {
                 onChange={handleInputChange}
                 value={values.snf}
                 disabled={!values.fat || !values.liters || !values.code}
+                onKeyDown={(e) => handleKeyDown(e, submitbtn)}
                 ref={snfRef}
               />
             </div>
@@ -817,10 +853,15 @@ const MilkColleform = ({ switchToSettings }) => {
           <button
             className="w-btn label-text"
             type="reset"
-            onClick={handleResetButton}>
+            onClick={handleResetButton}
+          >
             {t("m-btn-cancel")}
           </button>
-          <button className="w-btn label-text mx10" type="submit">
+          <button
+            className="w-btn label-text mx10"
+            type="submit"
+            ref={submitbtn}
+          >
             {t("m-btn-save")}
           </button>
         </div>

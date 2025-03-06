@@ -14,9 +14,11 @@ import profileReducer from "./Features/Customers/Profile/profileSlice";
 import mastersReducer from "./Features/Customers/Date/masterSlice";
 import purchaseReducer from "./Features/Purchase/purchaseSlice";
 import salesReducer from "./Features/Sales/salesSlice";
+import milksalesReducer from "./Features/Mainapp/Milksales/milkSalesSlice";
 import deductionReducer from "./Features/Deduction/deductionSlice";
 import paymentReducer from "./Features/Payments/paymentSlice";
 import dashboardReducer from "./Features/Customers/Dashboard/dashboardSlice";
+import admindashReducer from "./Features/Mainapp/Dashboard/dashboardSlice";
 import manualMasterReducer from "./Features/Customers/Date/masterdateSlice";
 //Milk Collection
 import custInfoReducer from "./Features/Mainapp/Dairyinfo/milkCollectionSlice";
@@ -28,6 +30,9 @@ import registerReducer from "./Features/Dairy/registerSlice";
 import userDataReducer from "./Features/Mainapp/Profile/ProfileSlice";
 // Inventory
 import inventoryReducer from "./Features/Mainapp/Inventory/inventorySlice";
+// super-admin
+import accessReducer from "./Features/Admin/SuperAdmin/accessSlice"; //super-admin
+import settingsReducer from "./Features/Mainapp/Settings/dairySettingSlice"; //super-admin
 
 export const store = configureStore({
   reducer: {
@@ -50,9 +55,11 @@ export const store = configureStore({
     masterdates: mastersReducer, // for master date list from db
     purchase: purchaseReducer,
     sales: salesReducer,
+    milksales: milksalesReducer,
     deduction: deductionReducer,
     payment: paymentReducer,
     dashboard: dashboardReducer,
+    admindashboard: admindashReducer,
     manualMasters: manualMasterReducer,
     //Milk Collection
     custinfo: custInfoReducer,
@@ -60,5 +67,7 @@ export const store = configureStore({
     milkCollection: milkcolleReducer,
     // Inventory
     inventory: inventoryReducer,
+    access: accessReducer,
+    dairySetting: settingsReducer,
   },
 });

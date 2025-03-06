@@ -1,18 +1,11 @@
-import React, { useEffect, useState } from "react";
+import { useState } from "react";
 import { Routes, Route } from "react-router-dom";
 import CattleFeedNavlinks from "./GroceryNavlinks";
 import CreateGrocery from "./CreateGrocery";
 import GrocerySaleList from "./GrocerySaleList";
 
 const GroceryMaster = () => {
-  const [isselected, setIsSelected] = useState(
-    parseInt(localStorage.getItem("selectedGrocerySaleIndex")) || 0
-  );
-
-  // Update localStorage whenever isselected changes
-  useEffect(() => {
-    localStorage.setItem("selectedGrocerySaleIndex", isselected);
-  }, [isselected]);
+  const [isselected, setIsSelected] = useState(0);
 
   return (
     <div className="customer-master-container w100 h1 d-flex-col">

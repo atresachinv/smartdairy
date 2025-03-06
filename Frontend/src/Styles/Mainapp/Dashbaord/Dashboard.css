@@ -52,11 +52,18 @@
 
   .selection-container .select-data-text {
     width: 100%;
+    min-height: fit-content;
+    flex-direction: column;
   }
   .selection-container .priod-container {
     width: 100%;
   }
-
+  .selection-container .select-data-text .info-text {
+    width: 100%;
+  }
+  .selection-container .select-data-text .label-text {
+    width: 100%;
+  }
   .dashboard-cards {
     height: 40%;
     margin-top: 10px;
@@ -91,12 +98,6 @@
     text-align: center;
   }
 
-  .dashboard-scrll-container .dashboard-data-charts {
-    min-height: 100%;
-    margin-top: 10px;
-    flex-direction: column;
-    padding: 10px;
-  }
   .dashboard-data-charts .milk-collection-chart {
     width: 100%;
     height: 300px;
@@ -112,3 +113,59 @@
 /*--------Tablet Screen CSS-------*/
 
 /*--------Mobile Screen CSS-------*/
+/* css for main dairy data container >>>>>-------------------------------- */
+@media screen and (max-width: 426px) {
+  .dashboard-scrll-container .Milk-sale-details-container {
+    min-height: fit-content;
+  }
+  .dashboard-scrll-container .dashboard-data-charts {
+    min-height: fit-content;
+    margin-top: 10px;
+    flex-direction: column;
+    padding: 10px;
+  }
+}
+/* css for center information data container >>>>>-------------------------------- */
+@media screen and (max-width: 426px) {
+  .dashboard-scrll-container .center-sale-details-container {
+    min-height: fit-content;
+  }
+  .center-sale-details-container .center-sales-details-container {
+    min-height: fit-content;
+    flex-direction: column;
+  }
+  .center-sale-details-container .center-sales-card {
+    width: 100%;
+  }
+}
+/* css for piechart information data container >>>>>-------------------------------- */
+@media screen and (max-width: 426px) {
+  .dashboard-scrll-container .liter-sales-details-inner-container {
+    min-height: fit-content;
+  }
+  .liter-sales-details-inner-container .pie-chart-container {
+    min-height: fit-content;
+    flex-direction: column-reverse;
+  }
+  .liter-sales-details-inner-container .liter-sales-card {
+    width: 100%;
+    height: 250px;
+    margin-bottom: 10px;
+  }
+  .liter-sales-details-inner-container .liter-sell-details {
+    width: 100%;
+    height: auto;
+    display: flex;
+    flex-direction: row;
+    margin-bottom: 10px;
+  }
+  .liter-sales-details-inner-container .liter-sell-details .details-card {
+    width: 100%;
+    min-height: fit-content;
+    display: flex;
+  }
+  .liter-sell-details .details-card .colour-box {
+    width: 20px;
+    height: 20px;
+  }
+}

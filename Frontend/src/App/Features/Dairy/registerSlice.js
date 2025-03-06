@@ -55,7 +55,7 @@ export const updateDairyDetails = createAsyncThunk(
   "register/updateDairyDetails",
   async (formData, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.post("/update/dairyinfo", formData);
+      const response = await axiosInstance.put("/update/dairyinfo", formData);
       return response.data; // Adjust according to your response structure
     } catch (error) {
       const errorMessage =

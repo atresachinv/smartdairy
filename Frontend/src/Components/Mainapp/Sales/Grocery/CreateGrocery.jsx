@@ -1,8 +1,7 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import axiosInstance from "../../../../App/axiosInstance";
 import { MdDeleteOutline } from "react-icons/md";
 import { useDispatch, useSelector, shallowEqual } from "react-redux";
-import * as XLSX from "xlsx";
 import { jsPDF } from "jspdf";
 import "jspdf-autotable";
 import { useTranslation } from "react-i18next";
@@ -13,10 +12,11 @@ import { getProductSaleRates } from "../../../../App/Features/Sales/salesSlice";
 import Invoice from "../Invoice";
 import "../../../../Styles/Mainapp/Sales/Sales.css";
 import { toWords } from "number-to-words";
+import { sendMessage } from "../WhatsAppSender";
 
 const CreateGrocery = () => {
   const dispatch = useDispatch();
-  const { t } = useTranslation(["milkcollection", "common"]);
+  const { t } = useTranslation(["common", "milkcollection", "puchasesale"]);
   const tDate = useSelector((state) => state.date.toDate);
   const salesRates = useSelector((state) => state.sales.salesRates);
   const customerslist = useSelector((state) => state.customer.customerlist);
@@ -31,37 +31,54 @@ const CreateGrocery = () => {
   const [qty, setQty] = useState(1);
   const [rate, setRate] = useState(0);
   const [selectitemcode, setSelectitemcode] = useState(0);
-  const [userid, setUserid] = useState("");
   const [amt, setAmt] = useState("");
-  const [rctno, setRctno] = useState("");
+  const [rctno, setRctno] = useState(localStorage.getItem("receiptno3") || 1);
   const [groupItems, setGroupItems] = useState([]);
   const [filteredItems, setFilteredItems] = useState([]); //p--
-  const [purchaseData, setPurchaseData] = useState([]); //p--
   const [userRole, setUserRole] = useState(null);
-  const dairyInfo = useSelector((state) => state.dairy.dairyData.SocietyName);
-
+  const dairyInfo = useSelector(
+    (state) =>
+      state.dairy.dairyData.SocietyName || state.dairy.dairyData.center_name
+  );
+  const dairymono = useSelector(
+    (state) => state.dairy.dairyData.PhoneNo || state.dairy.dairyData.mobile
+  );
+  const centerSetting = useSelector(
+    (state) => state.dairySetting.centerSetting
+  );
+  const [settings, setSettings] = useState({});
+   
+  //set setting
   useEffect(() => {
-    setRctno(localStorage.getItem("receiptno"));
+    if (centerSetting?.length > 0) {
+      setSettings(centerSetting[0]);
+    }
+  }, [centerSetting]);
+
+  //set user role
+  useEffect(() => {
     const myrole = localStorage.getItem("userRole");
     setUserRole(myrole);
   }, []);
 
+  //get all products and sale rate
   useEffect(() => {
     dispatch(getAllProducts());
     dispatch(getProductSaleRates(3));
-  }, []);
+  }, [dispatch]);
 
+  // set today date
   useEffect(() => {
     setDate(getTodaysDate());
   }, []);
 
+  //set cname on based fcode
   useEffect(() => {
     if (customerslist.length > 0) {
       const customer = customerslist.find(
         (customer) => customer.srno === parseInt(fcode)
       );
       setCname(customer?.cname || "");
-      setUserid(customer?.rno || "");
     } else {
       setCname("");
     }
@@ -81,6 +98,7 @@ const CreateGrocery = () => {
     }
   }, [selectitemcode, qty]);
 
+  //set amount
   useEffect(() => {
     if (rate) {
       setAmt(rate * qty);
@@ -107,7 +125,7 @@ const CreateGrocery = () => {
       return;
     }
 
-    if (Number(selectitemcode) > 0 && Number(qty) > 0) {
+    if (Number(selectitemcode) > 0 && Number(qty) > 0 && Number(rate) > 0) {
       const newCartItem = {
         ReceiptNo: rctno,
         ItemCode: selectedItem.ItemCode,
@@ -119,6 +137,7 @@ const CreateGrocery = () => {
         ItemGroupCode: 3,
         Rate: Number(rate),
         Amount: Number(qty) * Number(rate),
+        cn: 0,
       };
 
       setCartItem((prev) => [...prev, newCartItem]);
@@ -128,6 +147,8 @@ const CreateGrocery = () => {
       setRate("");
       setAmt(0); // Set amount to 0 instead of an empty string
       setSelectitemcode("");
+    } else {
+      toast.error("All fields are required");
     }
   };
 
@@ -144,11 +165,12 @@ const CreateGrocery = () => {
     });
 
     if (result.isConfirmed) {
-      const updatedCart = cartItem.filter((item, index) => index !== id);
+      const updatedCart = cartItem.filter((item, index) => index !== ItemCode);
       setCartItem(updatedCart);
     }
   };
 
+  //reset the field
   const handelClear = () => {
     setFcode("");
     setCartItem([]);
@@ -158,23 +180,48 @@ const CreateGrocery = () => {
     setSelectitemcode(0);
   };
 
+  //handle to save server
   const handleSubmit = async () => {
     if (cartItem.length > 0) {
       try {
         const res = await axiosInstance.post("/sale/create", cartItem);
         if (res?.data?.success) {
-          setFcode("");
-          setCartItem([]);
-          setQty(1);
-          setRate(0);
-          setAmt(0);
+          if (
+            settings?.whsms !== undefined &&
+            settings?.salesms !== undefined &&
+            settings.whsms === 1 &&
+            settings.salesms === 1
+          ) {
+            const customer = customerslist.find(
+              (customer) => customer.srno === parseInt(fcode)
+            );
+            let product = "";
+            for (let i = 0; i < cartItem.length; i++) {
+              product += `[${i + 1}. ${cartItem[i].ItemName} (${
+                cartItem[i].Qty
+              } X ${cartItem[i].Rate}=${cartItem[i].Amount})]${
+                i < cartItem.length - 1 ? ", " : ""
+              }`;
+            }
+            let cName = `${customer.srno}-${customer.cname}`;
+            sendMessage({
+              to: customer.Phone,
+              dName: dairyInfo,
+              cName: cName,
+              date: formatDateToDDMMYYYY(date),
+              rctNo: rctno,
+              amount: cartItem.reduce((acc, item) => acc + item.Amount, 0),
+              products: product,
+              mono: dairymono,
+            });
+          }
+          handelClear();
           setRctno(parseInt(rctno) + 1);
-          setSelectitemcode(0);
           toast.success(res.data.message);
-          localStorage.setItem("receiptno", parseInt(rctno) + 1);
+          localStorage.setItem("receiptno3", parseInt(rctno) + 1);
         }
       } catch (error) {
-        console.error("Error Submitting items:", error);
+        toast.error("Error Submitting to server ");
       }
     }
   };
@@ -196,13 +243,19 @@ const CreateGrocery = () => {
   // Function to handle printing the invoice --------------------------------------->
   const handlePrint = () => {
     handleSubmit();
-    if (cartItem.length > 0) {
-      const printWindow = window.open("", "_blank");
-      const printContent = document.getElementById("print-section").innerHTML;
+    if (
+      settings?.pType !== undefined &&
+      settings?.printer !== undefined &&
+      settings.printer === 1 &&
+      settings.pType === 0
+    ) {
+      if (cartItem.length > 0) {
+        const printWindow = window.open("", "_blank");
+        const printContent = document.getElementById("print-section").innerHTML;
 
-      if (printWindow) {
-        printWindow.document.write(
-          `
+        if (printWindow) {
+          printWindow.document.write(
+            `
         <html>
           <head>
             <title>Print</title>
@@ -308,23 +361,124 @@ const CreateGrocery = () => {
           </body>
         </html>
         `
-        );
-        printWindow.document.close();
-        printWindow.focus();
-        printWindow.print();
+          );
+          printWindow.document.close();
+          printWindow.focus();
+          printWindow.print();
+        } else {
+          toast.error("Failed to open print window. Check pop-up settings.");
+        }
       } else {
-        toast.error("Failed to open print window. Check pop-up settings.");
+        toast.warn("No data to print.");
       }
+    } else if (
+      settings?.pType !== undefined &&
+      settings?.printer !== undefined &&
+      settings.printer === 1 &&
+      settings.pType === 1
+    ) {
+      if (cartItem.length > 0) {
+        const printWindow = window.open("", "_blank");
+        const printContent =
+          document.getElementById("print-section1").innerHTML;
+        if (printWindow) {
+          printWindow.document.write(`
+<html>
+  <head>
+    <title>Print</title>
+    <style>
+      @page {
+        size: auto;
+        margin: 0;
+        width: 58mm;
+        min-height: 85mm;
+      }
+      body {
+        font-family: Arial, sans-serif;
+        font-size: 10px;
+        margin: 0;
+        padding: 0;
+        width: 58mm;
+        min-height: 85mm;
+
+      }
+      #print-section {
+        width: 58mm;
+        padding: 0.5mm;
+        box-sizing: border-box;
+        text-align: center;
+      }
+        .invoice{
+        margin-bottom:20px;
+        }
+      .invoice-header {
+        font-size: 14px;
+        font-weight: bold;
+        margin-bottom: 5px;
+      }
+      .invoice-info {
+      display: flex;
+        text-align: left;
+        margin-bottom: 5px;
+        justify-content: space-between;
+            padding: 0px 5px;
+      }
+      .invoice-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 10px;
+      }
+      .invoice-table th, .invoice-table td {
+        border-bottom: 1px dashed black;
+        padding: 2px;
+        text-align: center;
+      }
+       
+      .footer {
+        margin-top: 20px;
+        text-align: center;
+        font-size: 10px;
+        padding-bottom: 20px;
+      }
+      .outstanding-conatiner{
+        display:none;
+        }
+        .forColCut{
+        display: flex;
+    flex-direction: column;
+    }
+    .for58 {
+    margin-bottom: 5px;
+    }
+    .signature-box{
+    display:none;
+    }
+    </style>
+  </head>
+  <body>
+    <div id="print-section">${printContent}</div>
+  </body>
+</html>
+`);
+          printWindow.document.close();
+          printWindow.focus();
+          printWindow.print();
+        }
+      } else {
+        toast.warn("No data to print.");
+      }
+    } else {
+      toast.error("Please select the Printer");
     }
   };
 
   // Function to handle download pdf the invoice --------------------------------------->
   const exportToPDF = () => {
     if (cartItem.length === 0) {
-      toast.error("No data available to export.");
+      toast.warn("No data available to export.");
       return;
     }
-
+    handleSubmit();
     const convertToWords = (num) => {
       const [integerPart, decimalPart] = num.toString().split(".");
       const integerWords = toWords(integerPart);
@@ -484,19 +638,6 @@ const CreateGrocery = () => {
     doc.save("Invoice.pdf");
   };
 
-  //use set rate in rate field ----------------------------------------------------->
-  useEffect(() => {
-    if (purchaseData.length > 0) {
-      const sortedPurchaseData = [...purchaseData].sort(
-        (a, b) => new Date(b.purchaseid) - new Date(a.purchaseid)
-      );
-      const rateItem = sortedPurchaseData.find(
-        (item) => item.itemcode === selectitemcode
-      );
-      setRate(rateItem?.salerate ?? "");
-    }
-  }, [selectitemcode]);
-
   // Filter out items that are already in the cart --------------------------------->
   const handleItemstoShow = () => {
     if (userRole !== "mobilecollector") {
@@ -516,19 +657,7 @@ const CreateGrocery = () => {
 
   useEffect(() => {
     handleItemstoShow();
-  }, [productlist]);
-
-  //   useEffect(() => {
-  //     const items = productlist.filter((item) => item.ItemGroupCode === 1);
-  //     setGroupItems(items);
-  //   }, [productlist, cartItem]);
-  //
-  //   useEffect(() => {
-  //     const itemsNotInCart = groupItems.filter(
-  //       (item) => !cartItem.some((cart) => cart.ItemCode === item.ItemCode)
-  //     );
-  //     setFilteredItems(itemsNotInCart);
-  //   }, [groupItems]);
+  }, [productlist, cartItem]);
 
   // Select all the text when input is focused ------------------------------------->
   const handleFocus = (e) => {
@@ -551,15 +680,23 @@ const CreateGrocery = () => {
     return selectedItem.ItemName;
   };
 
+  const formatDateToDDMMYYYY = (dateStr) => {
+    const date = new Date(dateStr);
+    const day = String(date.getDate()).padStart(2, "0");
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
+  };
+
   return (
     <div className="add-cattlefeed-sale-container w100 h1 d-flex-col sa">
-      <span className="heading p10">Add Grocery : </span>
+      <span className="heading p10">{t("c-grocery")}</span>
       <div className="create-cattlefeed-sales-inner-container w100 h1 d-flex sb p10">
         <form className="create-sales-form-container w50 h1 bg p10">
           <div className="sales-details w100 h20 d-flex a-center sb ">
             <div className="col w50 d-flex a-center ">
               <label htmlFor="date" className="info-text w100">
-                Date :
+                {t("c-date")} :
               </label>
               <input
                 type="date"
@@ -573,7 +710,7 @@ const CreateGrocery = () => {
             </div>
             <div className="col w30 d-flex a-center">
               <label htmlFor="recieptno" className="info-text w100">
-                Receipt No :
+                {t("c-repno")} :
               </label>
               <input
                 type="number"
@@ -593,7 +730,7 @@ const CreateGrocery = () => {
           <div className="sale-details w100 h20 d-flex a-center sb ">
             <div className="col w20 ">
               <label htmlFor="code" className="info-text w100">
-                Code:
+                {t("milkcollection:m-cust-code")}:
               </label>
               <input
                 type="number"
@@ -611,7 +748,7 @@ const CreateGrocery = () => {
             </div>
             <div className="col w80">
               <label htmlFor="custname" className="info-text w100">
-                Customer Name:
+                {t("milkcollection:m-cust-name")}:
               </label>
               <input
                 type="text"
@@ -640,7 +777,7 @@ const CreateGrocery = () => {
           <div className="sales-details w100 h20 d-flex a-center sb ">
             <div className="col w80">
               <label htmlFor="items" className="info-text w100">
-                Select Product:
+                {t("c-groce-select")}:
               </label>
               {userRole !== "mobilecollector" ? (
                 <select
@@ -651,8 +788,9 @@ const CreateGrocery = () => {
                   onChange={(e) => setSelectitemcode(parseInt(e.target.value))}
                   onKeyDown={(e) =>
                     handleKeyPress(e, document.getElementById("qty"))
-                  }>
-                  <option value="0">-- select product --</option>
+                  }
+                >
+                  <option value="0">-- {t("c-groce-select")}--</option>
                   {filteredItems.map((item, i) => (
                     <option key={i} value={item.ItemCode}>
                       {item.ItemName}
@@ -668,8 +806,9 @@ const CreateGrocery = () => {
                   onChange={(e) => setSelectitemcode(parseInt(e.target.value))}
                   onKeyDown={(e) =>
                     handleKeyPress(e, document.getElementById("addtocart"))
-                  }>
-                  <option value="0">-- select product --</option>
+                  }
+                >
+                  <option value="0">-- {t("c-groce-select")} --</option>
                   {filteredItems.map((item, i) => (
                     <option key={i} value={item.ItemCode}>
                       {item.ItemName}
@@ -680,7 +819,7 @@ const CreateGrocery = () => {
             </div>
             <div className="col w20">
               <label htmlFor="qty" className="info-text w100">
-                QTY:
+                {t("c-qty")}:
               </label>
               <input
                 disabled={!selectitemcode}
@@ -702,7 +841,7 @@ const CreateGrocery = () => {
             <div className="sales-details w100 h20 d-flex ">
               <div className="col w30 ">
                 <label htmlFor="rate" className="info-text w100">
-                  Rate:
+                  {t("c-amt")}:
                 </label>
                 <input
                   type="number"
@@ -723,7 +862,7 @@ const CreateGrocery = () => {
               </div>
               <div className="col w30">
                 <label htmlFor="amt" className="info-text w100">
-                  Amount:
+                  {t("c-amt")}:
                 </label>
                 <input
                   type="number"
@@ -744,7 +883,8 @@ const CreateGrocery = () => {
               type="button"
               className="btn m10"
               id="addtocart"
-              onClick={handleAddToCart}>
+              onClick={handleAddToCart}
+            >
               Add to Cart
             </button>
           </div>
@@ -752,7 +892,7 @@ const CreateGrocery = () => {
 
         <div className="cattlefeed-sales-list-outer-container w45 h1 d-flex-col bg">
           <div className="title-and-button-container w100 d-flex a-center sb">
-            <span className="heading w30 p10">Item List</span>
+            <span className="heading w30 p10">{t("c-item-list")}</span>
             {userRole === "mobilecollector" ? (
               <div className="w70 d-flex a-center j-end ">
                 <div className="w100 d-flex j-end ">
@@ -766,22 +906,27 @@ const CreateGrocery = () => {
                 <button
                   type="button"
                   className="w-btn mx10"
-                  onClick={exportToPDF}>
+                  onClick={exportToPDF}
+                >
                   PDF
                 </button>
-                <button type="button" className="w-btn" onClick={handlePrint}>
-                  Print
-                </button>
+                {settings?.printer !== undefined && settings.printer === 1 ? (
+                  <button type="button" className="w-btn" onClick={handlePrint}>
+                    {t("c-print")}
+                  </button>
+                ) : (
+                  <></>
+                )}
               </div>
             )}
           </div>
           <div className="sales-list-conatainer w100 h1 d-flex-col">
             <div className="sales-headings-row w100 h10 d-flex sb a-center t-center sticky-top t-heading-bg">
-              <span className="f-label-text w10">No.</span>
-              <span className="f-label-text w40">Name</span>
-              <span className="f-label-text w10">Qty</span>
-              <span className="f-label-text w10">Rate</span>
-              <span className="f-label-text w10">Amount</span>
+              <span className="f-label-text w5">{t("c-no")}</span>
+              <span className="f-label-text w35">{t("c-name")}</span>
+              <span className="f-label-text w10">{t("c-qty")}</span>
+              <span className="f-label-text w10">{t("c-rate")}</span>
+              <span className="f-label-text w10">{t("c-amt")}</span>
               {userRole !== "mobilecollector" ? (
                 <span className="f-label-text w20 t-center">Action</span>
               ) : (
@@ -793,9 +938,10 @@ const CreateGrocery = () => {
                 {cartItem.map((item, i) => (
                   <div
                     key={i}
-                    className="sales-headings-row w100 h10 d-flex a-center sb">
-                    <span className="label-text w10 t-center">{i + 1}</span>
-                    <span className="label-text w40 t-start">
+                    className="sales-headings-row w100 h10 d-flex a-center sb"
+                  >
+                    <span className="label-text w5 t-center">{i + 1}</span>
+                    <span className="label-text w35 t-start">
                       {item.ItemName}
                     </span>
                     <span className="label-text w10 t-center">{item.Qty}</span>
@@ -816,10 +962,10 @@ const CreateGrocery = () => {
                   </div>
                 ))}
                 <div className="sales-total-headings-row w100 h10 d-flex a-center sb">
+                  <span className=" w5"></span>
+                  <span className=" w35"></span>
                   <span className=" w10"></span>
-                  <span className=" w40"></span>
-                  <span className=" w10"></span>
-                  <span className="label-text w10">Total :</span>
+                  <span className="label-text w10">{t("c-total")} :</span>
                   <span className="label-text w10 t-end">
                     {cartItem.reduce((acc, item) => acc + item.Amount, 0)}
                   </span>
@@ -835,13 +981,14 @@ const CreateGrocery = () => {
 
           <div className="sales-button-container w100 h10 d-flex a-center j-end">
             <button className="w-btn m10" onClick={handelClear}>
-              Clear
+              {t("puchasesale:ps-clr")}
             </button>
             <button
               className="w-btn mx10"
               onClick={handleSubmit}
-              disabled={cartItem.length == 0}>
-              Save
+              disabled={cartItem.length == 0}
+            >
+              {t("milkcollection:m-btn-save")}
             </button>
           </div>
         </div>
@@ -866,6 +1013,20 @@ const CreateGrocery = () => {
             rctno={rctno}
             date={date}
             dairyInfo={dairyInfo}
+          />
+        </div>
+        <div
+          id="print-section1"
+          style={{ display: "none", width: "58mm", padding: "2mm" }}
+        >
+          <Invoice
+            cartItem={cartItem}
+            handleFindItemName={handleFindItemName}
+            cname={cname}
+            dairyInfo={dairyInfo}
+            fcode={fcode}
+            rctno={rctno}
+            date={date}
           />
         </div>
       </div>

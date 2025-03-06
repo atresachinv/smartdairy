@@ -1,3 +1,5 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable no-unused-vars */
 import React, { useEffect, useState } from "react";
 import { Route, Routes } from "react-router-dom";
 import AppNavviews from "./AppNavviews";
@@ -17,6 +19,9 @@ import MilkCollectorsReports from "./Appnavviews/Milkcollection/MilkCollectorsRe
 import CreateCattleFeed from "../Sales/CattleFeed/CreateCattleFeed";
 import SalesReports from "./Appnavviews/MilkSankalan/SalesReports";
 import AdminSalesReports from "./Appnavviews/MilkSankalan/AdminSalesReports";
+import Milksales from "./Appnavviews/MilksalesPages/Milksales";
+import MilksalesReport from "./Appnavviews/MilksalesPages/MilksalesReport";
+import { getretailCustomer } from "../../../App/Features/Mainapp/Milksales/milkSalesSlice";
 
 const Apphome = () => {
   const dispatch = useDispatch();
@@ -25,14 +30,7 @@ const Apphome = () => {
   const yearStart = useSelector((state) => state.date.yearStart);
   const yearEnd = useSelector((state) => state.date.yearEnd);
 
-  const [isselected, setIsSelected] = useState(
-    parseInt(localStorage.getItem("MilkCollTabIndex")) || 0
-  );
-
-  // Update localStorage whenever isselected changes
-  useEffect(() => {
-    localStorage.setItem("MilkCollTabIndex", isselected);
-  }, [isselected]);
+  const [isselected, setIsSelected] = useState(0);
 
   //Store Milk Collection Ratechart to localstorage
   useEffect(() => {
@@ -62,20 +60,20 @@ const Apphome = () => {
     dispatch(getRateCharts());
     dispatch(getProfileInfo());
     dispatch(generateMaster(date));
+    dispatch(getretailCustomer());
     if (yearStart && yearEnd) {
       dispatch(getMasterDates({ yearStart, yearEnd }));
     }
-  }, []);
+  }, [dispatch]);
 
   return (
     <div className="app-home-container w100 h1">
       <div className="header-nav w100 h10 d-flex a-center">
         <AppNavlinks isselected={isselected} setIsSelected={setIsSelected} />
       </div>
-      <div className="apphome-nav-views w100 h90 d-flex center p10">
-        {/* <AppNavviews index={isselected} /> */}
+      <div className="apphome-nav-views w100 h90 d-flex center">
         <Routes>
-          <Route path="collection" element={<Milkcollection />} />
+          <Route path="collection/:time" element={<Milkcollection />} />
           <Route path="vehicle/collection" element={<MilkSankalan />} />
           <Route path="complete/collection" element={<CompleteMilkColl />} />
           <Route path="collection/reports" element={<SankalanReport />} />
@@ -86,7 +84,9 @@ const Apphome = () => {
           <Route path="vehicle/sales" element={<CreateCattleFeed />} />
           <Route path="vehicle/sales/report" element={<SalesReports />} />
           <Route path="admin/sales/report" element={<AdminSalesReports />} />
-          <Route path="*" element={<Milkcollection />} />
+          <Route path="retail/milk-sales" element={<Milksales />} />
+          <Route path="retail/sale-report" element={<MilksalesReport />} />
+          {/* <Route path="*" element={<Milkcollection />} /> */}
         </Routes>
       </div>
     </div>

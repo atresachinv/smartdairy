@@ -3,7 +3,7 @@ import Milkcollelist from "./Milkcollelist";
 import "../../../../../Styles/Mainapp/Apphome/Appnavview/Milkcollection.css";
 const Milkcollection = () => {
   return (
-    <div className="milk-collection-container w100 h1">
+    <div className="milk-collection-container w100 h1 p10">
       <div className="milk-form-list-container w100 h1 d-flex sa">
         <div className="milk-collection-form w60 ">
           <CollectionSettingForm />

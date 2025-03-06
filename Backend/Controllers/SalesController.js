@@ -97,8 +97,10 @@ exports.createSales = (req, res) => {
 //-------------------------------------------------------------------------->
 
 exports.getPaginatedSales = async (req, res) => {
-  const { date1, date2, fcode, ...dynamicFields } = req.query;
+  const { date1, date2, fcode, role, ...dynamicFields } = req.query;
   const dairy_id = req.user.dairy_id;
+  const center_id = req.user.center_id;
+  const user_id = req.user.user_id;
 
   let query = `
     SELECT * 
@@ -122,9 +124,21 @@ exports.getPaginatedSales = async (req, res) => {
   }
 
   if (dairy_id) {
-    query += ` AND companyid = ?`; // Assuming companyid column exists in salesmaster
-    countQuery += ` AND companyid = ?`;
+    query += ` AND companyid = ?  `; // Assuming companyid column exists in salesmaster
+    countQuery += ` AND companyid = ? `;
     queryParams.push(dairy_id);
+  }
+  if (center_id > 0) {
+    query += `AND center_id=? `;
+    countQuery += `AND center_id=? `;
+    queryParams.push(center_id);
+  }
+
+  //if user can login as admin then he can see all the data
+  if (role && role === "salesman") {
+    query += `AND createdby=? `;
+    countQuery += `AND createdby=? `;
+    queryParams.push(user_id);
   }
 
   // Append dynamic fields

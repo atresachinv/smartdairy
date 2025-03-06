@@ -5,14 +5,14 @@ import { fetchDairyInfo } from "../../App/Features/Admin/Dairyinfo/dairySlice";
 
 import "../../Styles/Mainapp/Mainapphome.css";
 
-const Header = ({ handleSidebar, logout }) => {
+const Header = ({ handleSidebar }) => {
   const dispatch = useDispatch();
 
   const toDate = useSelector((state) => state.date.toDate);
 
   const dairyname = useSelector(
     (state) =>
-      state.dairy.dairyData.SocietyName || state.dairy.dairyData.center_name
+      state.dairy.dairyData.marathiName || state.dairy.dairyData.marathi_name
   );
 
   useEffect(() => {

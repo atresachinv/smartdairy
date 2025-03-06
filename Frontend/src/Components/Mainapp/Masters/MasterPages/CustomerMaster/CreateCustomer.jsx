@@ -1,22 +1,22 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  createCustomer,
-  getMaxCustNo,
-  listCustomer,
-} from "../../../../../App/Features/Customers/customerSlice";
 import * as XLSX from "xlsx";
 import { toast } from "react-toastify";
 import { FaFileExcel } from "react-icons/fa";
 import {
+  createCustomer,
+  getMaxCustNo,
+  listCustomer,
   updateCustomer,
   uploadCustomerExcel,
 } from "../../../../../App/Features/Mainapp/Masters/custMasterSlice";
 import "../../../../../Styles/Mainapp/Masters/CustomerMaster.css";
 import { listRateCharts } from "../../../../../App/Features/Mainapp/Masters/rateChartSlice";
+import { useTranslation } from "react-i18next";
 
 const CreateCustomer = () => {
   const dispatch = useDispatch();
+  const { t } = useTranslation(["master", "common"]);
   const [isActive, setIsActive] = useState(true);
   const [isMember, setIsMember] = useState(false);
   const [errors, setErrors] = useState({});
@@ -70,7 +70,14 @@ const CreateCustomer = () => {
   useState(() => {
     dispatch(listRateCharts());
     dispatch(getMaxCustNo());
-  }, []);
+  }, [dispatch]);
+
+  useEffect(() => {
+    setFormData((prevData) => ({
+      ...prevData,
+      cust_no: custno,
+    }));
+  }, [custno]);
 
   const handleEditClick = () => {
     setIsEditing((prev) => !prev);
@@ -353,17 +360,17 @@ const CreateCustomer = () => {
       if (isEditing) {
         // Update existing customer in DB
         dispatch(updateCustomer(formData));
+        dispatch(listCustomer());
         toast.success("Customer updated successfully!");
       } else {
         // Create new customer
         dispatch(createCustomer(formData));
-        dispatch(getMaxCustNo());
         dispatch(listCustomer());
+        dispatch(getMaxCustNo());
         setFormData((prevData) => ({
           ...prevData,
           cust_no: custno,
         }));
-
         toast.success("Customer created successfully!");
       }
 
@@ -457,11 +464,12 @@ const CreateCustomer = () => {
       onSubmit={handleSubmit}
       className={`cust-details-setting-div w100 h1 d-flex sa ${
         isEditing ? "edit-bg" : "bg"
-      }`}>
+      }`}
+    >
       <div className="customer-details-container w60 h1 d-flex-col">
         <div className="tilte-container w100 d-flex a-center sb p10">
           <span className="heading ">
-            {isEditing ? "Update Customer" : "Create Customer"}
+            {isEditing ? `${t("m-custupdate")}` : `${t("m-custadd")}`}
           </span>
           <div className="toggle-inputs-div w30 h40 d-flex a-center sa">
             <span className="info-text w70 px10">
@@ -471,15 +479,17 @@ const CreateCustomer = () => {
               type="button"
               onClick={handleIsActive}
               className={`toggle-button ${isActive ? "on" : "off"}`}
-              aria-pressed={isActive}>
-              {isActive ? "Yes" : "No"}
+              aria-pressed={isActive}
+            >
+              {isActive ? `${t("m-yes")}` : `${t("m-no")}`}
             </button>
           </div>
         </div>
         <div className="cust-div cust-details-div w100 h15 d-flex a-center sb">
           <div className="details-div w30 d-flex-col a-center px10">
             <span className="info-text w100">
-              Cust No.<span className="req">*</span>{" "}
+              {t("m-ccode")}
+              <span className="req">*</span>{" "}
               {errors.cust_no && (
                 <span className="text error-message">{errors.cust_no}</span>
               )}
@@ -495,17 +505,20 @@ const CreateCustomer = () => {
           </div>
           <div className="details-div w70 d-flex a-center sb">
             <div className="toggle-inputs-div  h50 d-flex-col a-center sa">
-              <span className="info-text w100 px10">Is Member</span>
+              <span className="info-text w100 px10">{t("m-ismem")}</span>
               <button
                 type="button"
                 onClick={handleIsMember}
-                className={`toggle-button ${isMember ? "on" : "off"}`}>
-                {isMember ? "Yes" : "No"}
+                className={`toggle-button ${isMember ? "on" : "off"}`}
+              >
+                {isMember ? `${t("m-yes")}` : `${t("m-no")}`}
               </button>
             </div>
             {isMember && (
               <div className="toggle-inputs-div w60 h50 d-flex-col sb">
-                <span className="info-text w100 px10">Membership Date</span>
+                <span className="info-text w100 px10">
+                  {t("m-mdate")}Membership Date
+                </span>
                 <input
                   className={`data w100 ${errors.cust_no ? "input-error" : ""}`}
                   type="date"
@@ -520,7 +533,8 @@ const CreateCustomer = () => {
         <div className="cust-div cust-details-div w100 h15 d-flex sb">
           <div className="mcname-details-div w50 d-flex-col a-center px10">
             <span className=" info-text w100">
-              Customer Marathi Name<span className="req">*</span>{" "}
+              {t("m-mcname")}
+              <span className="req">*</span>{" "}
               {errors.marathi_name && (
                 <span className="text error-message">
                   {errors.marathi_name}
@@ -541,7 +555,8 @@ const CreateCustomer = () => {
           </div>
           <div className="cname-details-div w50 d-flex-col a-center px10">
             <span className="info-text w100">
-              Customer English Name<span className="req">*</span>
+              {t("m-ecname")}
+              <span className="req">*</span>
             </span>
             <input
               required
@@ -557,7 +572,8 @@ const CreateCustomer = () => {
         <div className="cust-div contact-details-div w100 h15 d-flex sb">
           <div className="mobile-details-div w25 d-flex-col a-center px10">
             <span className="info-text w100 ">
-              Mobile<span className="req">*</span>
+              {t("m-mobile")}
+              <span className="req">*</span>
             </span>
             <input
               required
@@ -570,7 +586,7 @@ const CreateCustomer = () => {
             />
           </div>
           <div className="Aadhhar-details-div w30 d-flex-col a-center px10">
-            <span className="info-text w100">Aadhaar No.</span>{" "}
+            <span className="info-text w100">{t("m-addhar")}</span>{" "}
             {errors.aadhaar_no && (
               <span className="text error-message">{errors.aadhaar_no}</span>
             )}
@@ -583,7 +599,7 @@ const CreateCustomer = () => {
             />
           </div>
           <div className="caste-details-div w20 d-flex-col a-center px10">
-            <span className="info-text w100">Caste</span>{" "}
+            <span className="info-text w100">{t("m-caste")}</span>{" "}
             {errors.caste && (
               <span className="text error-message">{errors.caste}</span>
             )}
@@ -596,7 +612,7 @@ const CreateCustomer = () => {
             />
           </div>
           <div className="gender-details-div w30 d-flex-col a-center px10">
-            <span className="info-text w100 h50">Gender</span>
+            <span className="info-text w100 h50">{t("m-gender")}</span>
             <div className="gender-input-div w100 h50 d-flex">
               <div className="gender-input w50 h40 d-flex a-center sb">
                 <input
@@ -608,7 +624,7 @@ const CreateCustomer = () => {
                   onChange={handleInputChange}
                   checked={formData.gender === "0"}
                 />
-                <span className="info-text w80">Male</span>
+                <span className="info-text w80">{t("m-male")}</span>
               </div>
               <div className="gender-input w50 h40 d-flex a-center sb">
                 <input
@@ -620,7 +636,7 @@ const CreateCustomer = () => {
                   onChange={handleInputChange}
                   checked={formData.gender === "1"}
                 />
-                <span className="info-text w80">Female</span>
+                <span className="info-text w80">{t("m-female")}</span>
               </div>
             </div>
           </div>
@@ -630,7 +646,8 @@ const CreateCustomer = () => {
           <div className="address-details w100 h1 d-flex sb">
             <div className="city-details-div w25 d-flex-col a-center px10">
               <span className="info-text w100 ">
-                City<span className="req">*</span>
+                {t("m-city")}
+                <span className="req">*</span>
               </span>
               <input
                 required
@@ -644,7 +661,8 @@ const CreateCustomer = () => {
             </div>
             <div className="tehsil-details-div w30 d-flex-col a-center px10">
               <span className="info-text w100">
-                Tehsil<span className="req">*</span>{" "}
+                {t("m-tel")}
+                <span className="req">*</span>{" "}
                 {errors.tehsil && (
                   <span className="text error-message">{errors.tehsil}</span>
                 )}
@@ -661,7 +679,8 @@ const CreateCustomer = () => {
             </div>
             <div className="dist-details-div w30 d-flex-col a-center px10">
               <span className="info-text w100">
-                District<span className="req">*</span>{" "}
+                {t("m-dist")}
+                <span className="req">*</span>{" "}
                 {errors.district && (
                   <span className="text error-message">{errors.district}</span>
                 )}
@@ -678,7 +697,8 @@ const CreateCustomer = () => {
             </div>
             <div className="pincode-details-div w20 d-flex-col a-center px10">
               <span className="info-text w100">
-                Pincode<span className="req">*</span>{" "}
+                {t("m-pincode")}
+                <span className="req">*</span>{" "}
                 {errors.pincode && (
                   <span className="text error-message">{errors.pincode}</span>
                 )}
@@ -699,7 +719,8 @@ const CreateCustomer = () => {
           <div className="milk-details-div w100 h1 d-flex  sb">
             <div className="milk-type-details-div w40 d-flex-col a-center px10">
               <span className="info-text w100 h50">
-                Milk Type <span className="req">*</span>
+                {t("m-mtype")}
+                <span className="req">*</span>
               </span>
               <div className="gender-input-div w100 h50 d-flex">
                 <div className="gender-input w50 h40 d-flex a-center sb">
@@ -712,7 +733,7 @@ const CreateCustomer = () => {
                     onChange={handleInputChange}
                     checked={formData.milktype === "0"}
                   />
-                  <span className="info-text w80">Cow</span>
+                  <span className="info-text w80">{t("m-mcow")}</span>
                 </div>
                 <div className="gender-input w50 h40 d-flex a-center sb">
                   <input
@@ -724,20 +745,21 @@ const CreateCustomer = () => {
                     onChange={handleInputChange}
                     checked={formData.milktype === "1"}
                   />
-                  <span className="info-text w80">Buffalo</span>
+                  <span className="info-text w80">{t("m-mbuffalo")}</span>
                 </div>
               </div>
             </div>
             <div className="ratechart-details-div w40 d-flex-col a-center px10">
-              <span className="info-text w100">Rate Chart Type</span>{" "}
+              <span className="info-text w100">{t("m-rtype")}</span>{" "}
               <select
                 name="rctype"
                 id="ratechartlist"
                 className={`data w100 ${errors.rctype ? "input-error" : ""}`}
                 onChange={handleInputChange}
                 value={formData.rctype || ""}
-                aria-label="Select Ratechart">
-                <option value="">-- select --</option>
+                aria-label="Select Ratechart"
+              >
+                <option value="">-- {t("m-select")} --</option>
                 {ratechartlist && ratechartlist.length > 0 ? (
                   [
                     ...new Set(ratechartlist.map((chart) => chart.rctypename)),
@@ -747,13 +769,13 @@ const CreateCustomer = () => {
                     </option>
                   ))
                 ) : (
-                  <option disabled>No Rate Charts Available</option>
+                  <option disabled>{t("m-no-rctype")}</option>
                 )}
               </select>
             </div>
 
             <div className="farmerid-details-div w40 d-flex-col a-center px10">
-              <span className="info-text w100">Farmer Id</span>{" "}
+              <span className="info-text w100">{t("m-farmerid")}</span>{" "}
               {errors.farmerid && (
                 <span className="text error-message">{errors.farmerid}</span>
               )}
@@ -771,7 +793,7 @@ const CreateCustomer = () => {
         <div className="cust-div Bank-details-div w100 h15 d-flex-col sb">
           <div className="bank-details w100 h1 d-flex f-wrap sb">
             <div className="bankname-details-div w40 d-flex-col a-center px10">
-              <span className="info-text w100 ">Bank Name</span>{" "}
+              <span className="info-text w100 ">{t("m-bname")}</span>{" "}
               {errors.bankName && (
                 <span className="text error-message">{errors.bankName}</span>
               )}
@@ -785,7 +807,7 @@ const CreateCustomer = () => {
               />
             </div>
             <div className="acc-details-div w30 d-flex-col a-center px10">
-              <span className="info-text w100">Bank A/C</span>{" "}
+              <span className="info-text w100">{t("m-accno")}</span>{" "}
               {errors.bank_ac && (
                 <span className="text error-message">{errors.bank_ac}</span>
               )}
@@ -799,7 +821,7 @@ const CreateCustomer = () => {
               />
             </div>
             <div className="ifsc-details-div w30 d-flex-col a-center px10">
-              <span className="info-text w100">Bank IFSC</span>{" "}
+              <span className="info-text w100">{t("m-ifsc")}</span>{" "}
               {errors.bankIFSC && (
                 <span className="text error-message">{errors.bankIFSC}</span>
               )}
@@ -816,10 +838,10 @@ const CreateCustomer = () => {
         </div>
       </div>
       <div className="cust-data-settings w40 h1 d-flex-col p10">
-        <span className="sub-heading px10">Settings (Rs/ltr) : </span>
+        <span className="sub-heading px10">{t("m-settings-rl")} : </span>
         <div className="cust-div milk-settings-div w100 h20 d-flex sa">
           <div className="details-div w45 h50 d-flex a-center">
-            <span className="info-text w70">Deposit :</span>
+            <span className="info-text w70">{t("m-deposit")} :</span>
             <input
               className="data w30"
               type="number"
@@ -830,7 +852,7 @@ const CreateCustomer = () => {
             />
           </div>
           <div className="details-div w45 h50 d-flex a-center ">
-            <span className="info-text w70">Commission :</span>
+            <span className="info-text w70">{t("m-commision")} :</span>
             <input
               className="data w30"
               type="number"
@@ -843,7 +865,7 @@ const CreateCustomer = () => {
         </div>
         <div className="cust-div milk-settings-div w100 h15 d-flex sa">
           <div className="details-div w45 h50 d-flex a-center ">
-            <span className="info-text w70">Rebat Commission :</span>
+            <span className="info-text w70">{t("m-rebet")} :</span>
             <input
               className="data w30"
               type="number"
@@ -854,7 +876,7 @@ const CreateCustomer = () => {
             />
           </div>
           <div className="details-div w45 h50 d-flex a-center ">
-            <span className="info-text w70">Transportation :</span>
+            <span className="info-text w70">{t("m-transportation")} :</span>
             <input
               className="data w30"
               type="number"
@@ -866,7 +888,7 @@ const CreateCustomer = () => {
           </div>
         </div>
         <div className="data-show-hide--setting-container w100 h60 d-flex-col">
-          <span className="sub-heading px10">Data Show/Hide Settings :</span>
+          <span className="sub-heading px10">{t("m-h-s-settings")} :</span>
           <div className="show-hide-content-div w100 h20 d-flex sa">
             <div className="details-div w50 d-flex a-center ">
               <input
@@ -875,7 +897,7 @@ const CreateCustomer = () => {
                 name="h_deposit"
                 onChange={handleInputChange}
               />
-              <span className="label-text w90">Hide Deposit </span>
+              <span className="label-text w90">{t("m-off-deposit")}</span>
             </div>
             <div className="details-div w50 d-flex a-center ">
               <input
@@ -884,7 +906,7 @@ const CreateCustomer = () => {
                 name="h_deduction"
                 onChange={handleInputChange}
               />
-              <span className="label-text w90">Hide Deductions </span>
+              <span className="label-text w90">{t("m-off-deduction")}</span>
             </div>
           </div>
           <div className="show-hide-content-div w100 h20 d-flex sa">
@@ -896,7 +918,7 @@ const CreateCustomer = () => {
                 id=""
                 onChange={handleInputChange}
               />
-              <span className="label-text w90">Hide All Rebat </span>
+              <span className="label-text w90">{t("m-off-allrebet")}</span>
             </div>
             <div className="details-div w50 d-flex a-center ">
               <input
@@ -905,7 +927,7 @@ const CreateCustomer = () => {
                 name="h_sanghrebet"
                 onChange={handleInputChange}
               />
-              <span className="label-text w90">Hide Sangh Rebat </span>
+              <span className="label-text w90">{t("m-off-sanghrebet")}</span>
             </div>
           </div>
           <div className="show-hide-content-div w100 h20 d-flex sa">
@@ -916,7 +938,7 @@ const CreateCustomer = () => {
                 name="h_dairyrebet"
                 onChange={handleInputChange}
               />
-              <span className="label-text w90">Hide Dairy Rebat </span>
+              <span className="label-text w90">{t("m-off-dairyrebet")}</span>
             </div>
             <div className="details-div w50 d-flex a-center ">
               <input
@@ -926,7 +948,9 @@ const CreateCustomer = () => {
                 id=""
                 onChange={handleInputChange}
               />
-              <span className="label-text w90">Hide Transportation </span>
+              <span className="label-text w90">
+                {t("m-off-transportation")}
+              </span>
             </div>
           </div>
         </div>
@@ -935,50 +959,55 @@ const CreateCustomer = () => {
           <button
             className="w-btn mx10"
             type="submit"
-            onClick={handleEditClick}>
-            {isEditing ? "CREATE" : "EDIT"}
+            onClick={handleEditClick}
+          >
+            {isEditing ? `${t("m-create")}` : `${t("m-edit")}`}
           </button>
           {isEditing ? (
             <button
               className="w-btn"
               type="submit"
-              disabled={status === "loading"}>
-              {status === "loading" ? "Updating..." : "UPDATE "}
+              disabled={status === "loading"}
+            >
+              {status === "loading" ? `${t("m-updating")}` : `${t("m-update")}`}
             </button>
           ) : (
             <button
               className="w-btn"
               type="submit"
-              disabled={status === "loading"}>
-              {status === "loading" ? "Creating..." : "CREATE "}
+              disabled={status === "loading"}
+            >
+              {status === "loading" ? `${t("m-creating")}` : `${t("m-create")}`}
             </button>
           )}
         </div>
         <div className="select-excel-button-container w100 h30 d-flex-col sa">
           <div className="excel-format-container w100 h50 d-flex a-center sb">
             <label htmlFor="d-excel" className="label-text">
-              Download Excel Format
+              {t("m-d-excel")}
             </label>
             <button
               type="button"
               className="w-btn"
               id="d-excel"
-              onClick={downloadEmptyExcel}>
-              Format
+              onClick={downloadEmptyExcel}
+            >
+              {t("m-download")}
             </button>
           </div>
           <div className="excel-format-container w100 h50 d-flex a-center sb">
             {!fileName ? (
               <>
                 <label htmlFor="selectExcel" className="label-text">
-                  Select Excel
+                  {t("m-excel")}
                 </label>
                 <button
                   id="selectExcel"
                   className="choose-excel-btn"
                   type="button"
-                  onClick={handleButtonClick}>
-                  Choose File
+                  onClick={handleButtonClick}
+                >
+                  {t("m-c-file")}
                 </button>
               </>
             ) : (
@@ -1004,8 +1033,11 @@ const CreateCustomer = () => {
               className="w-btn "
               type="submit"
               onClick={handleExcelUpload}
-              disabled={excelstatus === "loading"}>
-              {excelstatus === "loading" ? "Uploading..." : "Upload"}
+              disabled={excelstatus === "loading"}
+            >
+              {excelstatus === "loading"
+                ? `${t("m-uploading")}`
+                : `${t("m-upload")}`}
             </button>
           </div>
         </div>
