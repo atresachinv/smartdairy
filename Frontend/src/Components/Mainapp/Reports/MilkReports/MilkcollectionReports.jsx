@@ -1,13 +1,10 @@
 import React, { useRef, useEffect, useState, forwardRef } from "react";
 import * as XLSX from "xlsx";
-import axios from "axios";
 import { jsPDF } from "jspdf";
 import "jspdf-autotable";
 import { useReactToPrint } from "react-to-print";
-// import "../../MilkReportes/MilkReportcss/CertainMilkcollection.css";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
-// import { getDeductionInfo } from "../../../../../App/Features/Deduction/deductionSlice";
 import { BsCalendar3 } from "react-icons/bs";
 import Spinner from "../../../Home/Spinner/Spinner";
 import { generateMaster } from "../../../../App/Features/Customers/Date/masterdateSlice";

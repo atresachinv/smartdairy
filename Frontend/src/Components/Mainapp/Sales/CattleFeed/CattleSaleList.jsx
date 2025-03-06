@@ -32,6 +32,7 @@ const CattleSaleList = () => {
   const [viewItems, setViewItems] = useState([]);
   const [loadings, SetLoadings] = useState(false);
   const [sortOrder, setSortOrder] = useState("desc");
+  const [sortKey, setSortKey] = useState("BillDate");
   const dairyInfo = useSelector(
     (state) =>
       state.dairy.dairyData.marathi_name ||
@@ -305,18 +306,28 @@ const CattleSaleList = () => {
       return acc;
     }, {});
 
-    // Convert object to array and sort based on the selected order
-    return Object.values(groupedSales).sort((a, b) =>
-      sortOrder === "asc"
-        ? new Date(a.BillDate) - new Date(b.BillDate)
-        : new Date(b.BillDate) - new Date(a.BillDate)
-    );
+    return Object.values(groupedSales).sort((a, b) => {
+      if (sortKey === "BillDate") {
+        return sortOrder === "asc"
+          ? new Date(a.BillDate) - new Date(b.BillDate)
+          : new Date(b.BillDate) - new Date(a.BillDate);
+      } else {
+        return sortOrder === "asc"
+          ? a[sortKey] > b[sortKey]
+            ? 1
+            : -1
+          : a[sortKey] < b[sortKey]
+          ? 1
+          : -1;
+      }
+    });
   };
 
   // ---------------------------------------------------------------------------->
   // Toggle sorting order ------------------------------------------------------->
-  const toggleSortOrder = () => {
-    setSortOrder((prevOrder) => (prevOrder === "asc" ? "desc" : "asc"));
+  const handleSort = (key) => {
+    setSortKey(key);
+    setSortOrder(sortOrder === "asc" ? "desc" : "asc");
   };
 
   const groupedSalesArray = groupSales();
@@ -525,32 +536,87 @@ const CattleSaleList = () => {
         <div className="sales-heading-title-scroller w100 h1 mh100 d-flex-col hidescrollbar">
           <div className="sale-data-headings-div h10 d-flex center t-center sb sticky-top t-heading-bg">
             <span className="f-info-text w5"> {t("ps-srNo")}</span>
-            <span className="f-info-text w10">
-              {t("ps-date")}{" "}
+            <span className="f-info-text w20">
+              {t("ps-date")}
               <span
-                className="px10 f-color-icon"
+                className="px5 f-color-icon"
                 type="button"
-                onClick={toggleSortOrder}
+                onClick={() => handleSort("BillDate")}
               >
-                {sortOrder === "asc" ? (
-                  <TbSortAscending2 />
+                {sortKey === "BillDate" ? (
+                  sortOrder === "asc" ? (
+                    <TbSortAscending2 />
+                  ) : (
+                    <TbSortDescending2 />
+                  )
                 ) : (
-                  <TbSortDescending2 />
+                  <TbSortAscending2 />
                 )}
               </span>
             </span>
             <span className="f-info-text w10">{t("ps-rect-no")}</span>
-            <span className="f-info-text w10"> {t("ps-custCode")}</span>
-            <span className="f-info-text w30"> {t("ps-cutName")}</span>
-            <span className="f-info-text w10">{t("ps-amt")}</span>
+            <span className="f-info-text w10">
+              {t("ps-custCode")}
+              <span
+                className="px5 f-color-icon"
+                type="button"
+                onClick={() => handleSort("CustCode")}
+              >
+                {sortKey === "CustCode" ? (
+                  sortOrder === "asc" ? (
+                    <TbSortAscending2 />
+                  ) : (
+                    <TbSortDescending2 />
+                  )
+                ) : (
+                  <TbSortAscending2 />
+                )}
+              </span>
+            </span>
+            <span className="f-info-text w35"> {t("ps-cutName")}</span>
+            <span className="f-info-text w10">
+              {t("ps-amt")}
+              <span
+                className="px5 f-color-icon"
+                type="button"
+                onClick={() => handleSort("TotalAmount")}
+              >
+                {sortKey === "TotalAmount" ? (
+                  sortOrder === "asc" ? (
+                    <TbSortAscending2 />
+                  ) : (
+                    <TbSortDescending2 />
+                  )
+                ) : (
+                  <TbSortAscending2 />
+                )}
+              </span>
+            </span>
             {userRole === "salesman" ? (
               <></>
             ) : (
               <>
-                <span className="f-info-text w10">{t("CreatedBy")}</span>
+                <span className="f-info-text w20">
+                  {t("CreatedBy")}
+                  <span
+                    className="px5 f-color-icon"
+                    type="button"
+                    onClick={() => handleSort("createdby")}
+                  >
+                    {sortKey === "createdby" ? (
+                      sortOrder === "asc" ? (
+                        <TbSortAscending2 />
+                      ) : (
+                        <TbSortDescending2 />
+                      )
+                    ) : (
+                      <TbSortAscending2 />
+                    )}
+                  </span>
+                </span>
               </>
             )}
-            <span className="f-info-text w15">Actions</span>
+            <span className="f-info-text w10">Actions</span>
           </div>
           {loadings ? (
             <Spinner />
@@ -566,12 +632,12 @@ const CattleSaleList = () => {
                 }}
               >
                 <span className="text w5">{index + 1}</span>
-                <span className="text w10">
+                <span className="text w20">
                   {formatDateToDDMMYYYY(sale.BillDate)}
                 </span>
-                <span className="text w10">{sale.ReceiptNo}</span>
-                <span className="text w10">{sale.CustCode}</span>
-                <span className="text w30 ">
+                <span className="text w5">{sale.ReceiptNo}</span>
+                <span className="text w5">{sale.CustCode}</span>
+                <span className="text w35 ">
                   {handleFindCustName(sale.CustCode)}
                 </span>
 
@@ -580,11 +646,11 @@ const CattleSaleList = () => {
                   <></>
                 ) : (
                   <>
-                    <span className="text w10 ">{sale.createdby}</span>
+                    <span className="text w20 ">{sale.createdby}</span>
                   </>
                 )}
 
-                <span className="text w15 d-flex j-center a-center ">
+                <span className="text w10 d-flex j-center a-center ">
                   <button
                     className="px5"
                     onClick={() => handleView(sale?.BillNo)}

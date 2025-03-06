@@ -1,5 +1,3 @@
-/* eslint-disable no-unused-vars */
-/* eslint-disable react/prop-types */
 import React, { useEffect, useState } from "react";
 import {
   BsDatabaseAdd,
@@ -133,7 +131,7 @@ const AppNavlinks = ({ isselected, setIsSelected }) => {
           className={`home-nav-item d-flex a-center ${
             isselected === button.index ? "selected" : ""
           }`}
-          onClick={() => setIsSelected(button.index)} 
+          onClick={() => setIsSelected(button.index)}
         >
           <NavLink to={button.path} className={"sub-navlinks f-label-text"}>
             <span>{button.icon}</span>
