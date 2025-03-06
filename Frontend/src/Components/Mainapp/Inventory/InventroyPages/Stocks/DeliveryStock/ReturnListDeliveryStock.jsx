@@ -37,6 +37,13 @@ const ReturnListDeliveryStock = () => {
       state.dairy.dairyData.SocietyName ||
       state.dairy.dairyData.center_name
   );
+  const role = useSelector((state) => state.users.user?.role);
+  const [userRole, setUserRole] = useState(role);
+
+  useEffect(() => {
+    setUserRole(role);
+  }, [role]);
+
   // Handle view button click for purchase list
   const handleEditClick = (id) => {
     const filterList = deliveryList.filter((item) => item.billno === id) || [];
@@ -56,7 +63,9 @@ const ReturnListDeliveryStock = () => {
     const fetchDeliveryList = async () => {
       SetLoading(true);
       try {
-        const response = await axiosInstance.get("/all/deliverystock?cn=1");
+        const response = await axiosInstance.get(
+          `/all/deliverystock?cn=1&role=${userRole}`
+        );
         let list = response?.data?.data || [];
         list.sort((a, b) => new Date(b.saledate) - new Date(a.saledate));
         setDeliveryList(list);
@@ -185,7 +194,7 @@ const ReturnListDeliveryStock = () => {
     try {
       const queryParams = new URLSearchParams(getItem).toString();
       const { data } = await axiosInstance.get(
-        `/all/deliverystock?cn=1&${queryParams}`
+        `/all/deliverystock?cn=1&role=${userRole}&${queryParams}`
       );
       // console.log(data);
       if (data?.success) {
@@ -501,6 +510,13 @@ const ReturnListDeliveryStock = () => {
             <span className="f-info-text w15">Party Code</span>
             <span className="f-info-text w25">Party Name</span>
             <span className="f-info-text w5">Qty</span>
+            {userRole === "salesman" ? (
+              <></>
+            ) : (
+              <>
+                <span className="text w10">CreatedBy</span>
+              </>
+            )}
             <span className="f-info-text w10">Actions</span>
           </div>
           {loading ? (
@@ -530,6 +546,15 @@ const ReturnListDeliveryStock = () => {
                       {findEmpName(item.to_user, item.deliver_to)}
                     </span>
                     <span className="text w5">{item.TotalQty}</span>
+                    {userRole === "salesman" ? (
+                      <></>
+                    ) : (
+                      <>
+                        <span className="text w10">
+                          {item.saleby || "Unknown"}
+                        </span>
+                      </>
+                    )}
                     <span className="text w10 d-flex j-center a-center">
                       <button
                         style={{ cursor: "pointer" }}

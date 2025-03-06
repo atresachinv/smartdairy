@@ -18,7 +18,7 @@ const DeliveryStockLinks = ({ isselected, setIsSelected, userRole }) => {
       icon: <SiElasticstack className="icon" />,
       index: 1,
       path: "list",
-      role: ["super_admin", "admin"],
+      role: ["super_admin", "admin", "salesman"],
       // submenus: [
       //   {
       //     name: "Add Stock",

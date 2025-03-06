@@ -31,6 +31,14 @@ const OthList = () => {
       state.dairy.dairyData.SocietyName ||
       state.dairy.dairyData.center_name
   );
+
+  const role = useSelector((state) => state.users.user?.role);
+  const [userRole, setUserRole] = useState(role);
+
+  useEffect(() => {
+    setUserRole(role);
+  }, [role]);
+
   //download Excel sheet
   const downloadExcel = () => {
     const exportData = filteredPurchaseList.map((sale) => ({
@@ -65,7 +73,7 @@ const OthList = () => {
       setLoading(true);
       try {
         const response = await axiosInstance.get(
-          "/purchase/all?cn=1&ItemGroupCode=4"
+          `/purchase/all?cn=1&ItemGroupCode=4&role=${userRole}`
         );
         let purchase = response?.data?.purchaseData || [];
         purchase.sort(
@@ -109,7 +117,7 @@ const OthList = () => {
     try {
       const queryParams = new URLSearchParams(getItem).toString();
       const { data } = await axiosInstance.get(
-        `/purchase/all?cn=1&ItemGroupCode=4&${queryParams}`
+        `/purchase/all?cn=1&ItemGroupCode=4&role=${userRole}&${queryParams}`
       );
       // console.log(data);
       if (data?.success) {
@@ -401,6 +409,13 @@ const OthList = () => {
             <span className="f-info-text w10">{t("ps-code")}</span>
             <span className="f-info-text w25">{t("ps-dealer-name")}</span>
             <span className="f-info-text w5">{t("ps-ttl-amt")}</span>
+            {userRole === "salesman" ? (
+              <></>
+            ) : (
+              <>
+                <span className="f-info-text w10">{t("CreatedBy")}</span>
+              </>
+            )}
             <span className="f-info-text w5">Actions</span>
           </div>
           {/* Show Spinner if loading, otherwise show the feed list */}
@@ -426,6 +441,15 @@ const OthList = () => {
                 <span className="text w25">{item.dealerName}</span>
 
                 <span className="text w5">{item.TotalAmount}</span>
+                {userRole === "salesman" ? (
+                  <></>
+                ) : (
+                  <>
+                    <span className="text w10">
+                      {item.createdby || "Unknown"}
+                    </span>
+                  </>
+                )}
                 <span className="text w5 d-flex j-center a-center">
                   <button
                     className="px5"

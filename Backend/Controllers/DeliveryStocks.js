@@ -100,8 +100,8 @@ exports.createDeliverStock = async (req, res) => {
 
 // Get All Delivery Stocks with Date Range Filter
 exports.getDeliverStocks = async (req, res) => {
-  const { dairy_id, center_id } = req.user;
-  const { from_date, to_date, ...filters } = req.query; // Extract date filters separately
+  const { dairy_id, center_id, user_id } = req.user;
+  const { from_date, to_date, role, ...filters } = req.query; // Extract date filters separately
   const today = new Date().toISOString().split("T")[0]; // Get current date in YYYY-MM-DD format
 
   pool.getConnection((err, connection) => {
@@ -113,16 +113,26 @@ exports.getDeliverStocks = async (req, res) => {
     }
 
     // Base Query
-    let query = `SELECT * FROM delivery_stocks WHERE dairy_id = ? AND center_id = ?`;
-    let queryParams = [dairy_id, center_id];
+    let query = `SELECT * FROM delivery_stocks WHERE dairy_id = ? `;
+    let queryParams = [dairy_id];
 
-    // Apply Date Filter (Use provided range or default to today's date)
+    if (center_id > 0) {
+      query += `AND center_id = ? `;
+      queryParams.push(center_id);
+    }
+
     if (from_date && to_date) {
+      // Apply Date Filter (Use provided range or default to today's date)
       query += ` AND saledate BETWEEN ? AND ?`;
       queryParams.push(from_date, to_date);
     } else {
       query += ` AND saledate = ?`; // Default: Fetch current date data
       queryParams.push(today);
+    }
+    //if user can login as admin then he can see all the data
+    if (role && role === "salesman") {
+      query += `AND saleby=? `;
+      queryParams.push(user_id);
     }
 
     // Dynamically add other filters

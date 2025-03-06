@@ -36,6 +36,13 @@ const MedicinesSaleList = () => {
       state.dairy.dairyData.SocietyName ||
       state.dairy.dairyData.center_name
   );
+  const role = useSelector((state) => state.users.user?.role);
+  const [userRole, setUserRole] = useState(role);
+
+  useEffect(() => {
+    setUserRole(role);
+  }, [role]);
+
   //download Excel sheet
   const downloadExcel = () => {
     const exportData = filteredSalesList.map((sale) => ({
@@ -83,7 +90,7 @@ const MedicinesSaleList = () => {
       SetLoadings(true);
       try {
         const { data } = await axiosInstance.get(
-          "/sale/all?ItemGroupCode=2&cn=0"
+          `/sale/all?ItemGroupCode=2&cn=0&role=${userRole}`
         ); // Replace with your actual API URL
         if (data.success) {
           // console.log(data);
@@ -127,7 +134,7 @@ const MedicinesSaleList = () => {
     try {
       const queryParams = new URLSearchParams(getItem).toString();
       const { data } = await axiosInstance.get(
-        `/sale/all?ItemGroupCode=2&cn=0&${queryParams}`
+        `/sale/all?ItemGroupCode=2&cn=0&role=${userRole}&${queryParams}`
       );
       if (data?.success) {
         setSales(data.salesData);
@@ -523,8 +530,13 @@ const MedicinesSaleList = () => {
             <span className="f-info-text w10"> {t("ps-custCode")}</span>
             <span className="f-info-text w30"> {t("ps-cutName")}</span>
             <span className="f-info-text w10">{t("ps-amt")}</span>
-            <span className="f-info-text w10">{t("CreatedBy")}</span>
-
+            {userRole === "salesman" ? (
+              <></>
+            ) : (
+              <>
+                <span className="f-info-text w10">{t("CreatedBy")}</span>
+              </>
+            )}
             <span className="f-info-text w15">Actions</span>
           </div>
           {/* Show Spinner if loading, otherwise show the feed list */}
@@ -552,7 +564,14 @@ const MedicinesSaleList = () => {
                 </span>
 
                 <span className="text w10 ">{sale.TotalAmount}</span>
-                <span className="text w10 ">{sale.createdby}</span>
+                {userRole === "salesman" ? (
+                  <></>
+                ) : (
+                  <>
+                    <span className="text w10 ">{sale.createdby}</span>
+                  </>
+                )}
+
                 <span className="text w15 d-flex j-center a-center ">
                   <button
                     className="px5"
