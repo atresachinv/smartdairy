@@ -88,37 +88,35 @@ const ApplyRatechart = ({ isSet, ratechart }) => {
 
     if (!isSet) {
       toast.error("Please Select Ratechart To Apply");
-    } else {
-      try {
-        await dispatch(
-          applyRateChart({
-            applydate: formData.rcdate,
-            custFrom: formData.fromCust,
-            custTo: formData.toCust,
-            ratechart: ratechart,
-          })
-        );
-        setErrors({}); // Clear errors if submission is successful
-      } catch (error) {
-        toast.error("An error occurred while applying the rate chart.");
-        console.error(error);
+      return;
+    }
+    try {
+      const result = await dispatch(
+        applyRateChart({
+          applydate: formData.rcdate,
+          custFrom: formData.fromCust,
+          custTo: formData.toCust,
+          ratechart: ratechart,
+        })
+      ).unwrap();
+      if (result.status === 200) {
+        toast.success(result.message);
+        setErrors({});
+      } else {
+        toast.error(result.message);
       }
+    } catch (error) {
+      toast.error("An error occurred while applying the rate chart.");
+      console.error(error);
     }
   };
-
-  useEffect(() => {
-    if (status === "succeeded") {
-      toast.success("Ratechart Applied Successfully!");
-    } else if (status === "failed") {
-      toast.success("An error occurred while applying the rate chart, Try Again");
-    }
-  }, [status]);
 
   return (
     <>
       <form
         className="rate-chart-setting-div w100 h1 d-flex-col sa my10"
-        onSubmit={handleSubmit}>
+        onSubmit={handleSubmit}
+      >
         <span className="heading">Apply Selected Ratechart</span>
         <div className="select-time-animal-type w100 h25 d-flex sb">
           <div className="select-time w100 h1 a-center d-flex a-center sb">
@@ -178,7 +176,8 @@ const ApplyRatechart = ({ isSet, ratechart }) => {
           <button
             type="submit"
             className="btn mx10"
-            disabled={status === "loading"}>
+            disabled={status === "loading"}
+          >
             {status === "loading" ? "Appling..." : "Apply Ratechart"}
           </button>
         </div>

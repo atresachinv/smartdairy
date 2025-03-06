@@ -5,6 +5,7 @@ import { Route, Routes } from "react-router-dom";
 import SaveRateChart from "./SaveRateChart";
 import UpdateRatechart from "./UpdateRatechart";
 import ApplyRatechart from "./ApplyRatechart";
+import AddType from "./AddType";
 
 const RateChartOptions = ({ isSet, ratechart }) => {
   const [isselected, setIsSelected] = useState(
@@ -25,12 +26,11 @@ const RateChartOptions = ({ isSet, ratechart }) => {
         />
       </div>
       <div className="ratechart-nav-views w100 h90 d-flex center">
-        {/* <RateChartNavViews
-          index={isselected}
-          isSet={isSet}
-          ratechart={ratechart}
-        /> */}
         <Routes>
+          <Route
+            path="add/new-type"
+            element={<AddType isSet={isSet} ratechart={ratechart} />}
+          />
           <Route path="save-new" element={<SaveRateChart />} />
           <Route
             path="update-save"
@@ -40,7 +40,7 @@ const RateChartOptions = ({ isSet, ratechart }) => {
             path="apply"
             element={<ApplyRatechart isSet={isSet} ratechart={ratechart} />}
           />
-          <Route path="*" element={<SaveRateChart />} />
+          <Route path="*" element={<AddType />} />
         </Routes>
       </div>
     </div>

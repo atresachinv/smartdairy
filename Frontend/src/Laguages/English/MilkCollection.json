@@ -1,16 +1,29 @@
 {
+  "m-nv-custmaster": "Customer Master",
+  "m-nv-ratemaster": "Milk Rate Master",
+
   "m-milkcoll": "Milk Collection",
+
+  "m-mrgcoll": "Morning Collection",
+  "m-evecoll": "Evening Collection",
+
   "m-complete-coll": "Complete Milk Collection",
+  "m-sale-report": "Vehicle Sales Report",
   "m-milk-coll-report": "Milk Collection Report",
+  "m-retail-ms-report": "Retail Milk Sale Report",
+  "m-milk-sale": "Retail Milk Sale",
   "m-coll-list": "Milk Collection List",
   "m-select-coll": "Select Collector",
+  "m-payments": "Milk Payments",
   "m-sales": "Sales",
-
+  "m-milk-sales": "Milk Sales",
+  "m-sales-report": "Sales Report",
   "m-reports": "Reports",
   "m-count": "Sample Count",
   "m-t-liters": "Total Liters",
   "m-cust-code": "Code",
   "m-cust-name": "Customer Name",
+  "m-mobile": "Mobile",
   "m-sample-no": "Smaple No",
   "m-s-milk-type": "Select Milk Type",
   "m-s-date": "Date",
@@ -22,5 +35,8 @@
   "m-btn-saving": "Saving...",
 
   "m-d-excel": "Excel",
-  "m-d-show": "Show"
+  "m-d-show": "Show",
+
+  "m-cre-cust": "Create Customer",
+  "m-adv": "Advance"
 }

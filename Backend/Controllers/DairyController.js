@@ -4,6 +4,7 @@ const pool = require("../Configs/Database");
 dotenv.config({ path: "Backend/.env" });
 const NodeCache = require("node-cache");
 const cache = new NodeCache({});
+const axios = require("axios");
 
 // ................................................
 // Create New Dairy User...........................
@@ -13,7 +14,7 @@ const cache = new NodeCache({});
 //Dairy info ......................................
 //.................................................
 
-//v2
+//v3 center_id added in data
 exports.dairyInfo = async (req, res) => {
   // Extract user details from the request
   const dairy_id = req.user.dairy_id;
@@ -50,7 +51,7 @@ exports.dairyInfo = async (req, res) => {
       if (center_id === 0) {
         // Query for main dairy
         getDairyInfo = `
-          SELECT SocietyCode, SocietyName, PhoneNo, city, PinCode, AuditClass, RegNo, RegDate, 
+          SELECT SocietyCode, center_id, SocietyName, PhoneNo, city, PinCode, AuditClass, RegNo, RegDate, 
                  email, prefix, startDate, enddate, tel, dist, gstno, marathiName
           FROM societymaster
           WHERE SocietyCode = ?
@@ -58,7 +59,7 @@ exports.dairyInfo = async (req, res) => {
       } else {
         // Query for dairy center
         getDairyInfo = `
-          SELECT center_name, marathi_name, reg_no, reg_date, mobile, email, city, 
+          SELECT id, center_id, center_name, marathi_name, reg_no, reg_date, mobile, email, city, 
                  tehsil, district, pincode, auditclass, orgid, prefix
           FROM centermaster
           WHERE orgid = ? AND center_id = ?
@@ -101,6 +102,7 @@ exports.dairyInfo = async (req, res) => {
 // update dairy details .............................
 // ..................................................
 
+//v2 function
 exports.updatedetails = async (req, res) => {
   const {
     marathiName,
@@ -117,20 +119,16 @@ exports.updatedetails = async (req, res) => {
     PinCode,
   } = req.body;
 
-  // Get dairy_id from the verified token (already decoded in middleware)
   const dairy_id = req.user.dairy_id;
+  const center_id = req.user.center_id;
 
-  if (!dairy_id) {
-    connection.release(); // Release connection
-    return res.status(400).json({ message: "Dairy ID not found!" });
+  if (!dairy_id || center_id === undefined) {
+    return res
+      .status(400)
+      .json({ message: "Dairy ID or Center ID not found!" });
   }
-  
-  // SQL query to update dairy information
-  const updateDairyDetails = `
-    UPDATE societymaster 
-    SET SocietyName = ?, PhoneNo = ?, city = ?, PinCode = ?, 
-        AuditClass = ?, RegNo = ?, RegDate = ?, email = ?, tel = ?, dist = ?, gstno = ?, marathiName =?
-    WHERE SocietyCode = ?`;
+
+  const cacheKey = `dairyInfo_${dairy_id}_${center_id}`;
 
   pool.getConnection((err, connection) => {
     if (err) {
@@ -138,43 +136,137 @@ exports.updatedetails = async (req, res) => {
       return res.status(500).json({ message: "Database connection error" });
     }
 
-    // Execute the query
-    connection.query(
-      updateDairyDetails,
-      [
-        SocietyName,
-        PhoneNo,
-        city,
-        PinCode,
-        AuditClass,
-        RegNo,
-        RegDate,
-        email,
-        tel,
-        dist,
-        gstno,
-        marathiName,
-        dairy_id,
-      ],
-      (err, result) => {
-        connection.release(); // Release the connection back to the pool
-
-        if (err) {
-          console.error("Error executing update query: ", err);
-          return res.status(500).json({ message: "Database query error" });
-        }
-
-        // Check if any row was updated
-        if (result.affectedRows === 0) {
-          return res.status(404).json({ message: "Dairy not found!" });
-        }
-
-        // Successfully updated
-        res
-          .status(200)
-          .json({ message: "Dairy information updated successfully!" });
+    connection.beginTransaction((err) => {
+      if (err) {
+        connection.release();
+        return res.status(500).json({ message: "Transaction error" });
       }
-    );
+
+      const updateSocietyQuery = `
+        UPDATE societymaster 
+        SET SocietyName = ?, PhoneNo = ?, city = ?, PinCode = ?, 
+            AuditClass = ?, RegNo = ?, RegDate = ?, email = ?, tel = ?, dist = ?, gstno = ?, marathiName = ?
+        WHERE SocietyCode = ?`;
+
+      const updateCenterQuery = `
+        UPDATE centermaster 
+        SET center_name = ?, marathi_name = ?, reg_no = ?, reg_date = ?, mobile = ?, email = ?, city = ?, 
+            tehsil = ?, district = ?, pincode = ?, auditclass = ?
+        WHERE orgid = ? AND center_id = ?`;
+
+      if (center_id === 0) {
+        connection.query(
+          updateSocietyQuery,
+          [
+            SocietyName,
+            PhoneNo,
+            city,
+            PinCode,
+            AuditClass,
+            RegNo,
+            RegDate,
+            email,
+            tel,
+            dist,
+            gstno,
+            marathiName,
+            dairy_id,
+          ],
+          (err, result) => {
+            if (err) {
+              return connection.rollback(() => {
+                connection.release();
+                res
+                  .status(500)
+                  .json({ message: "Error updating society details" });
+              });
+            }
+
+            connection.query(
+              updateCenterQuery,
+              [
+                SocietyName,
+                marathiName,
+                RegNo,
+                RegDate,
+                PhoneNo,
+                email,
+                city,
+                tel,
+                dist,
+                PinCode,
+                AuditClass,
+                dairy_id,
+                center_id,
+              ],
+              (err, result) => {
+                if (err) {
+                  return connection.rollback(() => {
+                    connection.release();
+                    res
+                      .status(500)
+                      .json({ message: "Error updating center details" });
+                  });
+                }
+                connection.commit((err) => {
+                  if (err) {
+                    return connection.rollback(() => {
+                      connection.release();
+                      res
+                        .status(500)
+                        .json({ message: "Transaction commit error" });
+                    });
+                  }
+
+                  // Remove cache entry after successful update
+                  delete cache[cacheKey];
+
+                  connection.release();
+                  res.status(200).json({
+                    message:
+                      "Dairy and Center information updated successfully!",
+                  });
+                });
+              }
+            );
+          }
+        );
+      } else {
+        connection.query(
+          updateCenterQuery,
+          [
+            SocietyName,
+            marathiName,
+            RegNo,
+            RegDate,
+            PhoneNo,
+            email,
+            city,
+            tel,
+            dist,
+            PinCode,
+            AuditClass,
+            dairy_id,
+            center_id,
+          ],
+          (err, result) => {
+            connection.release();
+            if (err) {
+              return res
+                .status(500)
+                .json({ message: "Error updating center details" });
+            }
+
+            // Remove cache entry after successful update
+            delete cache[cacheKey];
+
+            res
+              .status(200)
+              .json({ message: "Center information updated successfully!" });
+          }
+        );
+      }
+    });
   });
 };
 
@@ -258,6 +350,8 @@ exports.createCenter = async (req, res) => {
 
     const designation = "Admin";
     const isAdmin = "1";
+    const insertRegNo = reg_no && reg_no !== "" ? parseInt(reg_no, 10) : null;
+    const insertRegDate = reg_date && reg_date !== "" ? reg_date : null;
 
     // SQL query to create the user associated with the center
     const createUserQuery = `
@@ -272,8 +366,8 @@ exports.createCenter = async (req, res) => {
         center_id,
         center_name,
         marathi_name,
-        reg_no,
-        reg_date,
+        insertRegNo,
+        insertRegDate,
         mobile,
         email,
         city,
@@ -610,4 +704,292 @@ exports.clearCache = (req, res) => {
     console.error("Error clearing cache: ", error);
     return res.status(500).json({ message: "Error clearing cache" });
   }
+};
+
+//--------------------------------------------------------------------------------------------------------->
+// Whats app  message send--------------------------------------------------------------------------------->
+//--------------------------------------------------------------------------------------------------------->
+
+exports.sendMessage = async (req, res) => {
+  try {
+    const response = await axios.post(
+      "https://partnersv1.pinbot.ai/v3/560504630471076/messages",
+      req.body,
+      {
+        headers: {
+          apikey: "0a4a47a3-d03c-11ef-bb5a-02c8a5e042bd",
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    res.json(response.data);
+  } catch (error) {
+    console.error(
+      "Error Details:",
+      error.response ? error.response.data : error.message
+    );
+    res
+      .status(500)
+      .json({ error: error.response ? error.response.data : error.message });
+  }
+};
+
+//--------------------------------------------------------------------------------------------------------->
+// Dashboard Information  --------------------------------------------------------------------------------->
+//--------------------------------------------------------------------------------------------------------->
+
+// Center wise milk Collection ---------------------------------------------------------------------------->
+
+exports.getCenterWiseMilkData = (req, res) => {
+  const { fromDate, toDate } = req.body;
+  const dairy_id = req.user.dairy_id;
+  if (!dairy_id) {
+    connection.release();
+    return res.status(400).json({ message: "Dairy ID not found!" });
+  }
+
+  pool.getConnection((err, connection) => {
+    if (err) {
+      console.error("Error getting MySQL connection: ", err);
+      return res.status(500).json({ message: "Database connection error" });
+    }
+    const dairy_table = `dailymilkentry_${dairy_id}`;
+    const getLiterAmt = `
+    SELECT center_id, 
+       SUM(litres) AS total_litres, 
+       SUM(amt) AS total_amount
+    FROM ${dairy_table}
+    WHERE ReceiptDate BETWEEN ? AND ?
+    GROUP BY center_id;
+  `;
+
+    connection.query(getLiterAmt, [fromDate, toDate], (err, result) => {
+      connection.release(); // Always release the connection back to the pool
+
+      if (err) {
+        console.error("Error executing query: ", err);
+        return res.status(500).json({ message: "Query execution error" });
+      }
+      if (result.length === 0) {
+        return res
+          .status(404)
+          .json({ message: "Rate not found for the provided parameters." });
+      }
+
+      res.status(200).json({ centerData: result });
+    });
+  });
+};
+
+// Center wise customer count ---------------------------------------------------------------------------->
+
+exports.getCenterCustomerCount = (req, res) => {
+  const dairy_id = req.user.dairy_id;
+  if (!dairy_id) {
+    connection.release();
+    return res.status(400).json({ message: "Dairy ID not found!" });
+  }
+
+  pool.getConnection((err, connection) => {
+    if (err) {
+      console.error("Error getting MySQL connection: ", err);
+      return res.status(500).json({ message: "Database connection error" });
+    }
+
+    const getCustCount = `
+      SELECT centerid, COUNT(*) AS total_customers
+      FROM customer WHERE orgid = ?
+      GROUP BY centerid;
+  `;
+
+    connection.query(getCustCount, [dairy_id], (err, result) => {
+      connection.release(); // Always release the connection back to the pool
+
+      if (err) {
+        console.error("Error executing query: ", err);
+        return res.status(500).json({ message: "Query execution error" });
+      }
+      if (result.length === 0) {
+        return res
+          .status(404)
+          .json({ message: "No Customers Available for this Dairy." });
+      }
+      res.status(200).json({ custCounts: result });
+    });
+  });
+};
+
+// center wise setting
+exports.getCenterSetting = (req, res) => {
+  const dairy_id = req.user.dairy_id;
+
+  pool.getConnection((err, connection) => {
+    if (err) {
+      console.error("Error getting MySQL connection: ", err);
+      return res
+        .status(500)
+        .json({ success: false, message: "Database connection error" });
+    }
+
+    const query = `
+      SELECT * 
+      FROM setting_Master 
+      WHERE dairy_id = ?  
+    `;
+
+    connection.query(query, [dairy_id], (err, results) => {
+      connection.release(); // Release the connection back to the pool
+
+      if (err) {
+        console.error("Error executing query: ", err);
+        return res
+          .status(500)
+          .json({ success: false, message: "Error fetching settings" });
+      }
+
+      if (results.length === 0) {
+        return res
+          .status(200)
+          .json({ success: true, data: [], message: "Settings not found" });
+      }
+
+      return res.status(200).json({ success: true, data: results });
+    });
+  });
+};
+// center wise setting
+exports.getOneCenterSetting = (req, res) => {
+  const dairy_id = req.user.dairy_id;
+  const center_id = req.user.center_id;
+
+  pool.getConnection((err, connection) => {
+    if (err) {
+      console.error("Error getting MySQL connection: ", err);
+      return res
+        .status(500)
+        .json({ success: false, message: "Database connection error" });
+    }
+
+    const query = `
+      SELECT * 
+      FROM setting_Master 
+      WHERE dairy_id = ?  and center_id=?
+    `;
+
+    connection.query(query, [dairy_id, center_id], (err, results) => {
+      connection.release(); // Release the connection back to the pool
+
+      if (err) {
+        console.error("Error executing query: ", err);
+        return res
+          .status(500)
+          .json({ success: false, message: "Error fetching settings" });
+      }
+
+      if (results.length === 0) {
+        return res
+          .status(200)
+          .json({ success: true, data: [], message: "Settings not found" });
+      }
+      return res.status(200).json({ success: true, data: results });
+    });
+  });
+};
+
+// center wise setting create or update
+exports.updateCenterSetting = (req, res) => {
+  const dairy_id = req.user.dairy_id;
+  const { id, center_id, ...updateData } = req.body;
+
+  pool.getConnection((err, connection) => {
+    if (err) {
+      console.error("Error getting MySQL connection: ", err);
+      return res
+        .status(500)
+        .json({ success: false, message: "Database connection error" });
+    }
+
+    if (id) {
+      // Directly update without checking existence
+      let setClause = [];
+      let values = [];
+
+      Object.keys(updateData).forEach((key) => {
+        if (key !== "id" && key !== "center_id") {
+          setClause.push(`${key} = ?`);
+          values.push(updateData[key]);
+        }
+      });
+
+      if (setClause.length === 0) {
+        connection.release();
+        return res.status(400).json({
+          success: false,
+          message: "No valid fields provided for update",
+        });
+      }
+
+      const updateQuery = `
+        UPDATE setting_Master 
+        SET ${setClause.join(", ")}, updatedBy=?, updatedDate=?
+        WHERE dairy_id = ? AND center_id = ? AND id = ?
+      `;
+
+      values.push(req.user.user_id, new Date(), dairy_id, center_id, id);
+
+      connection.query(updateQuery, values, (err, results) => {
+        connection.release();
+
+        if (err) {
+          console.error("Error executing update query: ", err);
+          return res
+            .status(500)
+            .json({ success: false, message: "Error updating settings" });
+        }
+
+        return res.status(200).json({
+          success: true,
+          message:
+            results.affectedRows > 0
+              ? "Settings updated successfully"
+              : "No changes made",
+          updatedData: updateData,
+        });
+      });
+    } else {
+      // Insert new record if `id` is not provided
+      const insertData = {
+        dairy_id,
+        center_id,
+        ...updateData,
+        updatedBy: req.user.user_id,
+        updatedDate: new Date(),
+      };
+      const insertQuery = `
+        INSERT INTO setting_Master (${Object.keys(insertData).join(", ")})
+        VALUES (${Object.keys(insertData)
+          .map(() => "?")
+          .join(", ")})
+      `;
+
+      const insertValues = Object.values(insertData);
+
+      connection.query(insertQuery, insertValues, (err, results) => {
+        connection.release();
+
+        if (err) {
+          console.error("Error executing insert query: ", err);
+          return res
+            .status(500)
+            .json({ success: false, message: "Error inserting settings" });
+        }
+
+        return res.status(200).json({
+          success: true,
+          message: "Settings inserted successfully",
+          insertedData: results,
+        });
+      });
+    }
+  });
 };

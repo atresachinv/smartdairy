@@ -10,23 +10,49 @@ import {
   BsCaretDownFill,
   BsBuildingFillGear,
   BsHouseGearFill,
+  BsFillCollectionFill,
+  BsSignTurnSlightRight,
 } from "react-icons/bs";
-import { FaUserCircle } from "react-icons/fa";
+import {
+  FaUserTie,
+  FaUserCircle,
+  FaAlignJustify,
+  FaFileAlt,
+} from "react-icons/fa";
 import {
   FaGears,
   FaFileLines,
   FaFileContract,
   FaFileInvoice,
   FaFileInvoiceDollar,
+  FaSitemap,
 } from "react-icons/fa6";
+import { TbTruckReturn } from "react-icons/tb";
+import { IoAnalyticsOutline } from "react-icons/io5";
+import {
+  MdAddchart,
+  MdGroupAdd,
+  MdDomainAdd,
+  MdOutlineAddTask,
+} from "react-icons/md";
 import { GrNotes, GrOrganization } from "react-icons/gr";
 import { NavLink } from "react-router-dom";
 import "../../Styles/Mainapp/Mainapphome.css";
+import { useSelector } from "react-redux";
+import { useTranslation } from "react-i18next";
+import { GiEdgeCrack } from "react-icons/gi";
 
 const Mainappnavlinks = ({ setselected, handleSidebar }) => {
+  const { t } = useTranslation([
+    "common",
+    "milkcollection",
+    "msales",
+    "inventory",
+    "master",
+  ]);
   const [activeMenu, setActiveMenu] = useState(null);
   const [userRole, setUserRole] = useState(null);
-
+  const center_id = useSelector((state) => state.dairy.dairyData.center_id);
   useEffect(() => {
     const myrole = localStorage.getItem("userRole");
     setUserRole(myrole);
@@ -34,16 +60,17 @@ const Mainappnavlinks = ({ setselected, handleSidebar }) => {
 
   const mainnavbuttons = [
     {
-      name: "Dashboard",
+      name: `${t("nv-dash")}`,
       icon: <BsGridFill className="icon" />,
-      // index: 0,
+      index: 0,
       path: "dashboard",
       role: ["admin", "super_admin", "manager"],
     },
     {
-      name: "Milk Collection",
+      name: `${t("nv-milk-purchase")}`,
       icon: <TbMilk className="icon" />,
-      path: "milk",
+      path: "#",
+      index: 1,
       role: [
         "admin",
         "super_admin",
@@ -51,227 +78,285 @@ const Mainappnavlinks = ({ setselected, handleSidebar }) => {
         "milkcollector",
         "mobilecollector",
       ],
-    },
-    {
-      name: "Inventory",
-      icon: <BsHouseFill className="icon" />,
-      index: 2,
-      role: ["admin", "super_admin", "manager", "salesman"],
       submenus: [
         {
-          name: "Dealer Master",
+          name: `${t("milkcollection:m-milkcoll")}`,
           icon: <BsGridFill className="icon" />,
-          index: 2.1,
-          path: "inventory/dealer",
+          path: "milk/collection/collection/morning",
+          index: 1.0,
+          role: ["admin", "manager", "mobilecollector"],
+        },
+        {
+          name: `${t("milkcollection:m-mrgcoll")}`,
+          icon: <BsGridFill className="icon" />,
+          path: "milk/collection/morning",
+          index: 1.1,
+          role: ["admin", "manager", "milkcollector", "salesman"],
+        },
+        {
+          name: `${t("milkcollection:m-evecoll")}`,
+          icon: <BsGridFill className="icon" />,
+          path: "milk/collection/evening",
+          index: 1.2,
+          role: ["admin", "manager", "milkcollector", "salesman"],
+        },
+        // {
+        //   name: `${t("milkcollection:m-milk-sale")}`,
+        //   icon: <BsGridFill className="icon" />,
+        //   path: "milk/retail/sales",
+        //   index: 1.3,
+        //   role: ["admin", "manager", "salesman"],
+        // },
+        {
+          name: `${t("milkcollection:m-nv-custmaster")}`,
+          icon: <BsGridFill className="icon" />,
+          path: "milk/customer/master",
+          index: 1.4,
           role: ["admin", "manager", "salesman"],
         },
         {
-          name: "Product List",
+          name: `${t("milkcollection:m-nv-ratemaster")}`,
           icon: <BsGridFill className="icon" />,
-          path: "inventory/product",
+          path: "milk/rate/master",
+          index: 1.5,
+          role: ["admin", "manager", "salesman"],
+        },
+        {
+          name: `${t("milkcollection:m-milk-coll-report")}`,
+          icon: <BsGridFill className="icon" />,
+          path: "milk/vehicle/milk-report",
+          index: 1.6,
+          role: ["admin", "manager", "salesman"],
+        },
+        {
+          name: `${t("milkcollection:m-sale-report")}`,
+          icon: <BsGridFill className="icon" />,
+          path: "milk/vehicle/sales-report",
+          index: 1.7,
+          role: ["admin", "manager", "salesman"],
+        },
+        {
+          name: `${t("milkcollection:m-retail-ms-report")}`,
+          icon: <BsGridFill className="icon" />,
+          path: "milk/retail/sales-report",
+          index: 1.8,
+          role: ["admin", "manager", "salesman"],
+        },
+        // {
+        //   name: `${t("milkcollection:m-payments")}`,
+        //   icon: <BsGridFill className="icon" />,
+        //   path: "milk/payment/master",
+        //   index: 1.9,
+        //   role: ["admin", "manager", "salesman"],
+        // },
+      ],
+    },
+    {
+      name: `${t("nv-milk-sales")}`,
+      icon: <TbMilk className="icon" />,
+      index: 2,
+      role: ["admin", "super_admin", "manager"],
+      submenus: [
+        {
+          name: `${t("msales:m-s-sales")}`,
+          icon: <BsGridFill className="icon" />,
+          path: "milk/sangha",
+          index: 2.1,
+          role: ["admin", "manager", "salesman"],
+        },
+        {
+          name: `${t("milkcollection:m-milk-sale")}`,
+          icon: <BsGridFill className="icon" />,
+          path: "milk/retail/sales",
           index: 2.2,
           role: ["admin", "manager", "salesman"],
         },
-        {
-          name: "Stock",
-          icon: <BsGridFill className="icon" />,
-          path: "inventory/product/stock",
-          index: 2.3,
-          role: [
-            "admin",
-            "super_admin",
-            "manager",
-            "milkcollector",
-            "mobilecollector",
-          ],
-        },
-        {
-          name: "Returns",
-          icon: <BsGridFill className="icon" />,
-          path: "inventory/returns",
-          index: 2.4,
-          role: ["admin", "manager", "salesman"],
-        },
-        {
-          name: "Reports",
-          icon: <BsGridFill className="icon" />,
-          path: "inventory/customer/returns",
-          role: ["admin", "manager", "salesman"],
-        },
-        {
-          name: "Dealer Returns",
-          icon: <BsGridFill className="icon" />,
-          path: "inventory/dealer/returns",
-          role: ["admin", "manager", "salesman"],
-        },
-        {
-          name: "Update Sale Rate",
-          icon: <BsGridFill className="icon" />,
-          path: "inventory/update/sale-rates",
-          role: ["admin", "manager", "salesman"],
-        },
       ],
     },
     {
-      name: "Accounts",
-      icon: <GrNotes className="icon" />,
-      // index: 3,
-      path: "accounts",
+      name: `${t("nv-inventory")}`,
+      icon: <BsHouseFill className="icon" />,
+      index: 3,
       role: ["admin", "super_admin", "manager", "salesman"],
-    },
-    {
-      name: "Masters",
-      icon: <TbMilk className="icon" />,
-      index: 4,
-      role: ["super_admin", "admin", "manager"],
       submenus: [
         {
-          name: "Main Ledger",
-          icon: <BsGridFill className="icon" />,
-          path: "master/main-ledger",
+          name: `${t("inventory:in-nv-dealar-master")}`,
+          icon: <FaUserTie className="icon" />,
+          index: 3.1,
+          path: "inventory/dealer",
+          role: ["admin", "manager"],
+        },
+        {
+          name: `${t("inventory:in-nv-prod-master")}`,
+          icon: <FaSitemap className="icon" />,
+          path: "inventory/product",
+          index: 3.2,
+          role: ["admin", "manager"],
+        },
+        {
+          name: `${t("inventory:in-nv-prod-purch")}`,
+          icon: <MdAddchart className="icon" />,
+          path: "inventory/product/purchase/cattlefeed",
+          index: 3.3,
+          role: ["admin", "manager", "salesman"],
+        },
+        {
+          name: `${t("inventory:in-nv-prod-sale")}`,
+          icon: <IoAnalyticsOutline className="icon" />,
+          path: "inventory/product/sales/cattlefeed",
+          index: 3.4,
+          role: ["admin", "manager", "salesman"],
+        },
+        {
+          name: `${t("inventory:in-nv-init-stock")}`,
+          icon: <FaAlignJustify className="icon" />,
+          path: "inventory/product/stock/starting/stock",
+          index: 3.5,
           role: ["admin", "super_admin", "manager"],
         },
         {
-          name: "Sub Ledger",
-          icon: <BsGridFill className="icon" />,
-          path: "master/sub-ledger",
-          role: ["admin", "super_admin", "manager"],
+          name: `${t("inventory:nv-dealer-return")}`,
+          icon: <TbTruckReturn className="icon" />,
+          path: "inventory/returns/",
+          index: 3.6,
+          role: ["admin", "manager", "salesman"],
         },
         {
-          name: "Customer Master",
-          icon: <BsGridFill className="icon" />,
-          path: "master/customer",
-          role: ["admin", "super_admin", "manager"],
+          name: `${t("inventory:nv-cust-return")}`,
+          icon: <BsSignTurnSlightRight className="icon" />,
+          path: "inventory/returns/cust-return-list/",
+          index: 3.7,
+          role: ["admin", "manager", "salesman"],
         },
         {
-          name: "Employee Master",
-          icon: <BsGridFill className="icon" />,
-          path: "master/employee",
-          role: ["admin", "super_admin", "manager"],
+          name: `${t("inventory:nv-stockKeeper")}`,
+          icon: <TbTruckReturn className="icon" />,
+          path: "inventory/stock-keeper/list",
+          index: 3.8,
+          role: ["admin", "manager", "salesman"],
         },
         {
-          name: "Bank Master",
-          icon: <BsGridFill className="icon" />,
-          path: "master/bank",
-          role: ["admin", "super_admin", "manager"],
+          name: `${t("inventory:nv-updateSellRate")}`,
+          icon: <MdOutlineAddTask className="icon" />,
+          path: "inventory/update-sell-rate",
+          index: 3.9,
+          role: ["admin", "manager"],
         },
         {
-          name: "Milk Rate Master",
-          icon: <BsGridFill className="icon" />,
-          path: "master/ratechart",
-          role: ["admin", "super_admin", "manager"],
+          name: `${t("inventory:nv-expiredPro")}`,
+          icon: <GiEdgeCrack className="icon" />,
+          path: "inventory/expired-product",
+          index: 3.11,
+          role: ["admin", "manager"],
         },
       ],
     },
     {
-      name: "Purchase",
-      icon: <TbMilk className="icon" />,
+      name: `${t("nv-acc")}`,
+      icon: <GrNotes className="icon" />,
+      index: 4,
+      path: "accounts",
+      role: ["admin", "super_admin", "manager"],
+    },
+    {
+      name: `${t("nv-master")}`,
+      icon: <BsFillCollectionFill className="icon" />,
       index: 5,
       role: ["super_admin", "admin", "manager"],
       submenus: [
         {
-          name: "Cattel Feed",
-          icon: <BsGridFill className="icon" />,
-          path: "purchase/cattlefeed",
+          name: `${t("master:m-nv-mledger")}`,
+          icon: <FaFileInvoice className="icon" />,
+          index: 5.1,
+          path: "master/main-ledger",
           role: ["admin", "super_admin", "manager"],
         },
         {
-          name: "Grocery",
-          icon: <BsGridFill className="icon" />,
-          path: "purchase/grocery",
+          name: `${t("master:m-nv-sledger")}`,
+          icon: <FaFileAlt className="icon" />,
+          index: 5.2,
+          path: "master/sub-ledger",
+          role: ["admin", "super_admin", "manager"],
+        },
+        // {
+        //   name: "Customer Master",
+        //   icon: <BsGridFill className="icon" />,
+        //   index: 5.3,
+        //   path: "master/customer",
+        //   role: ["admin", "super_admin", "manager"],
+        // },
+        {
+          name: `${t("master:m-nv-empmaster")}`,
+          icon: <MdGroupAdd className="icon" />,
+          index: 5.4,
+          path: "master/employee",
           role: ["admin", "super_admin", "manager"],
         },
         {
-          name: "Medicines",
-          icon: <BsGridFill className="icon" />,
-          path: "purchase/medicines",
-          role: ["admin", "super_admin", "manager"],
-        },
-        {
-          name: "Others",
-          icon: <BsGridFill className="icon" />,
-          path: "purchase/other",
-          role: ["admin", "super_admin", "manager"],
-        },
-      ],
-    },
-    {
-      name: "Sales",
-      icon: <TbMilk className="icon" />,
-      role: ["super_admin", "admin", "manager"],
-      submenus: [
-        {
-          name: "Cattle Feed",
-          icon: <BsGridFill className="icon" />,
-          path: "sales/cattlefeed",
-          role: ["admin", "super_admin", "manager"],
-        },
-        {
-          name: "Grocery",
-          icon: <BsGridFill className="icon" />,
-          path: "sales/grocery",
-          role: ["admin", "super_admin", "manager"],
-        },
-        {
-          name: "Medicines",
-          icon: <BsGridFill className="icon" />,
-          path: "sales/medicines",
-          role: ["admin", "super_admin", "manager"],
-        },
-        {
-          name: "Others",
-          icon: <BsGridFill className="icon" />,
-          path: "sales/other-items",
+          name: `${t("master:m-nv-bankmaster")}`,
+          icon: <MdDomainAdd className="icon" />,
+          index: 5.5,
+          path: "master/bank",
           role: ["admin", "super_admin", "manager"],
         },
       ],
     },
     {
-      name: "Reports",
+      name: `${t("nv-reports")}`,
       icon: <TbMilk className="icon" />,
-      index: 7,
+      index: 6,
       role: ["super_admin", "admin", "manager"],
       submenus: [
+        ...(center_id === 0
+          ? [
+              {
+                name: `${t("center-report")}`,
+                icon: <BsGridFill className="icon" />,
+                index: 6.1,
+                path: "reports/center",
+                role: ["admin", "super_admin", "manager"],
+              },
+            ]
+          : []),
         {
-          name: "Center Reports",
-          icon: <FaFileLines className="icon" />,
-          index: 7.1,
-          path: "reports/center",
-          role: ["admin", "super_admin", "manager"],
-        },
-        {
-          name: "Milk Reports",
+          name: `${t("milk-report")}`,
           icon: <FaFileContract className="icon" />,
+          index: 6.2,
           path: "reports/milk",
           role: ["admin", "super_admin", "manager"],
         },
         {
-          name: "Customer Reports",
+          name: `${t("cust-report")}`,
           icon: <FaFileLines className="icon" />,
+          index: 6.3,
           path: "reports/customer",
           role: ["admin", "super_admin", "manager"],
         },
         {
-          name: "Employee Reports",
+          name: `${t("emp-report")}`,
           icon: <FaFileLines className="icon" />,
+          index: 6.4,
           path: "reports/employee",
           role: ["admin", "super_admin", "manager"],
         },
         {
-          name: "Inventory Reports",
+          name: `${t("inventory-report")}`,
           icon: <FaFileInvoice className="icon" />,
+          index: 6.5,
           path: "reports/inventory",
           role: ["admin", "super_admin", "manager"],
         },
         {
-          name: "Sales Reports",
+          name: `${t("sales-report")}`,
           icon: <FaFileInvoice className="icon" />,
+          index: 6.6,
           path: "reports/sales",
           role: ["admin", "super_admin", "manager"],
         },
         {
-          name: "Payment Reports",
+          name: `${t("pay-report")}`,
           icon: <FaFileInvoiceDollar className="icon" />,
+          index: 6.7,
           path: "reports/payment",
           role: ["admin", "super_admin", "manager"],
         },
@@ -284,92 +369,112 @@ const Mainappnavlinks = ({ setselected, handleSidebar }) => {
       ],
     },
     {
-      name: "Payments",
+      name: `${t("nv-pay")}`,
       icon: <TbMilk className="icon" />,
-      index: 8,
+      index: 7,
       role: ["super_admin", "admin", "manager"],
       submenus: [
         {
-          name: "Milk Correction",
+          name: `${t("milk-correction")}`,
           icon: <BsGridFill className="icon" />,
+          index: 7.1,
           path: "payment/milk-correction",
           role: ["admin", "super_admin", "manager"],
         },
         {
-          name: "Milk Transfer",
+          name: `${t("milk-transfer")}`,
           icon: <BsGridFill className="icon" />,
+          index: 7.2,
           path: "payment/milk-transfer",
           role: ["admin", "super_admin", "manager"],
         },
         {
-          name: "Payment Deductions",
+          name: `${t("pay-deduction")}`,
           icon: <BsGridFill className="icon" />,
+          index: 7.3,
           path: "payment/add-deductions",
           role: ["admin", "super_admin", "manager"],
         },
         {
-          name: "Generate Payments",
+          name: `${t("gen-payments")}`,
           icon: <BsGridFill className="icon" />,
+          index: 7.4,
           path: "payment/generate",
           role: ["admin", "super_admin", "manager"],
         },
       ],
     },
     {
-      name: "Dairy",
+      name: `${t("nv-dairy-info")}`,
       icon: <BsCoin className="icon" />,
-      index: 9,
+      index: 8,
       role: ["admin", "super_admin", "manager"],
       submenus: [
         {
-          name: "Dairy Information",
+          name: `${t("nv-dairy-info")}`,
           icon: <GrOrganization className="icon" />,
+          index: 8.1,
           path: "dairy/information",
           role: ["admin", "super_admin", "manager"],
         },
         {
-          name: "Initial Information",
+          name: `${t("dairy-init-info")}`,
           icon: <BsGridFill className="icon" />,
+          index: 8.2,
           path: "dairy/initial-info",
           role: ["admin", "super_admin", "manager"],
         },
-        {
-          name: "Create New Center",
-          icon: <BsGridFill className="icon" />,
-          path: "dairy/create/center",
-          role: ["admin", "super_admin", "manager"],
-        },
+        ...(center_id === 0
+          ? [
+              {
+                name: `${t("dairy-cre-center")}`,
+                icon: <BsGridFill className="icon" />,
+                index: 8.3,
+                path: "dairy/create/center",
+                role: ["admin", "super_admin", "manager"],
+              },
+            ]
+          : []),
       ],
     },
     {
-      name: "Settings",
+      name: `${t("nv-settings")}`,
       icon: <BsGearFill className="icon" />,
-      index: 10,
-      role: ["super_admin", "admin", "manager"],
+      index: 9,
+      role: ["super_admin", "admin"],
       submenus: [
+        ...(center_id === 0
+          ? [
+              {
+                name: `${t("dairy-settings")}`,
+                icon: <BsBuildingFillGear className="icon" />,
+                index: 9.1,
+                path: "settings/dairy",
+                role: ["super_admin", "admin"],
+              },
+            ]
+          : []),
+
         {
-          name: "Dairy Settings",
-          icon: <BsBuildingFillGear className="icon" />,
-          path: "settings/dairy",
-          role: ["super_admin", "admin", "manager"],
-        },
-        {
-          name: "Inventory Settings",
+          name: `${t("inventory-settings")}`,
           icon: <BsHouseGearFill className="icon" />,
+          index: 9.2,
           path: "settings/inventory",
-          role: ["super_admin", "admin", "manager"],
+          role: ["super_admin", "admin"],
         },
         {
-          name: "Machine Settings",
+          name: `${t("machine-settings")}`,
           icon: <FaGears className="icon" />,
+          index: 9.3,
           path: "settings/machine",
-          role: ["super_admin", "admin", "manager"],
+          role: ["super_admin", "admin"],
         },
       ],
     },
     {
-      name: "My Profile",
+      name: `${t("nv-profile")}`,
       icon: <FaUserCircle className="icon" />,
+      index: 10,
       path: "profile-info",
       role: ["milkcollector", "mobilecollector"],
     },
@@ -418,10 +523,11 @@ const Mainappnavlinks = ({ setselected, handleSidebar }) => {
         <li key={uuidv4()} className="main-navs py5">
           <div
             className="nav-link w90 d-flex a-center"
-            onClick={() => handleMainClick(button)}>
+            onClick={() => handleMainClick(button)}
+          >
             <div className="nav-main w80 d-flex a-center">
               {button.icon}
-              <NavLink className="main-nav-text px5 f-heading" to={button.path}>
+              <NavLink className="main-nav-text px5" to={button.path}>
                 {button.name}
               </NavLink>
             </div>
@@ -442,7 +548,8 @@ const Mainappnavlinks = ({ setselected, handleSidebar }) => {
                   key={submenu.index}
                   className="submenu-item w90 d-flex a-center"
                   to={submenu.path}
-                  onClick={() => handleSubmenuClick(submenu)}>
+                  onClick={() => handleSubmenuClick(submenu)}
+                >
                   {submenu.icon}
                   <span className="submenu-text px10">{submenu.name}</span>
                 </NavLink>

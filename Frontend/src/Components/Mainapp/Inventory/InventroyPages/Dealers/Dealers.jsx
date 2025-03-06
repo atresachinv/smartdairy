@@ -6,9 +6,7 @@ import CreateDealers from "./CreateDealers";
 import { Route, Routes } from "react-router-dom";
 
 const Dealers = () => {
-  const [isselected, setIsSelected] = useState(
-    parseInt(localStorage.getItem("selectedDealersIndex")) || 0
-  );
+  const [isselected, setIsSelected] = useState(0);
 
   // Update localStorage whenever isselected changes
   useEffect(() => {

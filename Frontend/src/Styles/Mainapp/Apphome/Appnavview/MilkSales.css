@@ -1,0 +1,28 @@
+.dropdown-list {
+  position: absolute;
+  width: 100%;
+  background: white;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  max-height: 150px;
+  overflow-y: auto;
+  z-index: 10;
+}
+
+.dropdown-list li {
+  padding: 8px;
+  cursor: pointer;
+}
+
+.dropdown-list li:hover {
+  background: #f0f0f0;
+}
+
+@media screen and (max-width: 426px) {
+  .retail-milk-sales-form-container .milk-col-form {
+    width: 100%;
+  }
+  .milk-col-form .form-btns button {
+    width: auto;
+  }
+}

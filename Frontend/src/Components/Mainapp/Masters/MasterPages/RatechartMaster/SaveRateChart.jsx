@@ -4,6 +4,7 @@ import { toast } from "react-toastify";
 import {
   fetchMaxRcCode,
   listRateCharts,
+  listRcType,
   saveRateChart,
 } from "../../../../../App/Features/Mainapp/Masters/rateChartSlice";
 import Spinner from "../../../../Home/Spinner/Spinner";
@@ -14,15 +15,19 @@ const SaveRateChart = ({ rate }) => {
   const status = useSelector((state) => state.ratechart.savercstatus);
   const maxRcCode = useSelector((state) => state.ratechart.maxRcCode);
   const ratechart = useSelector((state) => state.ratechart.excelRatechart);
+  const rcTypes = useSelector((state) => state.ratechart.RCTypeList);
+  const rcStatus = useSelector((state) => state.ratechart.RCTliststatus);
   const [errors, setErrors] = useState({});
 
   const [formData, setFormData] = useState({
     rccode: "",
     rctype: "",
-    time: 2,
-    animalType: 0,
     rcdate: "",
   });
+
+  useEffect(() => {
+    dispatch(listRcType());
+  }, [dispatch]);
 
   // Update rccode when maxRcCode changes
   useEffect(() => {
@@ -43,17 +48,7 @@ const SaveRateChart = ({ rate }) => {
     let error = {};
 
     switch (name) {
-      case "rctype":
-        if (!/^[a-zA-Z0-9\s]+$/.test(value)) {
-          error[name] = "Invalid Ratechart Type.";
-        } else {
-          delete errors[name];
-        }
-        break;
-
       case "rccode":
-      case "time":
-      case "animalType":
         if (!/^\d$/.test(value.toString())) {
           errors[name] = `Invalid value of ${name}`;
         } else {
@@ -61,7 +56,6 @@ const SaveRateChart = ({ rate }) => {
         }
         break;
       case "rcdate":
-        // Check if the value is in YYYY-MM-DD format
         if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) {
           errors[name] = `Invalid value of ${name}`;
         } else {
@@ -77,13 +71,7 @@ const SaveRateChart = ({ rate }) => {
   };
 
   const validateFields = () => {
-    const fieldsToValidate = [
-      "rccode",
-      "rctype",
-      "time",
-      "animalType",
-      "rcdate",
-    ];
+    const fieldsToValidate = ["rccode", "rcdate"];
     const validationErrors = {};
     fieldsToValidate.forEach((field) => {
       const fieldError = validateField(field, formData[field]);
@@ -93,6 +81,71 @@ const SaveRateChart = ({ rate }) => {
   };
 
   //Handling Save Ratechart
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+
+  //   if (!ratechart) {
+  //     toast.error("Ratechart not Available!");
+  //     return;
+  //   }
+
+  //   // Validate fields before submission
+  //   const validationErrors = validateFields();
+  //   if (Object.keys(validationErrors).length) {
+  //     setErrors(validationErrors);
+  //     return;
+  //   }
+
+  //   // Ensure numerical fields are numbers
+  //   const numericRccode = parseInt(formData.rccode, 10);
+  //   // const numericRctype = parseInt(formData.rctype, 10);
+  //   const numericTime = parseInt(formData.time, 10);
+
+  //   if (isNaN(numericRccode) || isNaN(numericTime)) {
+  //     setLocalError("RCCODE, RCTYPE, and Time must be valid numbers.");
+  //     return;
+  //   }
+
+  //   if (
+  //     !formData.rcdate ||
+  //     new Date(formData.rcdate).toString() === "Invalid Date"
+  //   ) {
+  //     toast.error("Please provide a valid date.");
+  //     return;
+  //   }
+  //   if (!Array.isArray(ratechart) || ratechart.length === 0) {
+  //     toast.error("Ratechart cannot be empty.");
+  //     return;
+  //   }
+  //   // Dispatch with validated and parsed data
+  //   await dispatch(
+  //     saveRateChart({
+  //       rccode: numericRccode,
+  //       rctype: formData.rctype,
+  //       rcdate: formData.rcdate,
+  //       time: numericTime,
+  //       animal: formData.animalType,
+  //       ratechart: ratechart,
+  //     })
+  //   );
+
+  //   if (status === "succeeded") {
+  //     toast.success("Ratechart saved successfully!");
+  //     dispatch(fetchMaxRcCode());
+  //     dispatch(listRateCharts());
+  //     setFormData({
+  //       rccode: maxRcCode,
+  //       rctype: "",
+  //       time: "",
+  //       animalType: "",
+  //       rcdate: "",
+  //     });
+  //     setRate([]);
+  //   } else if (status === "failed") {
+  //     toast.error("Failed to save ratechart, Please try again!");
+  //   }
+  // };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -108,43 +161,23 @@ const SaveRateChart = ({ rate }) => {
       return;
     }
 
-    // Ensure numerical fields are numbers
-    const numericRccode = parseInt(formData.rccode, 10);
-    // const numericRctype = parseInt(formData.rctype, 10);
-    const numericTime = parseInt(formData.time, 10);
-
-    if (isNaN(numericRccode) || isNaN(numericTime)) {
-      setLocalError("RCCODE, RCTYPE, and Time must be valid numbers.");
-      return;
-    }
-
-    if (
-      !formData.rcdate ||
-      new Date(formData.rcdate).toString() === "Invalid Date"
-    ) {
-      toast.error("Please provide a valid date.");
-      return;
-    }
-    if (!Array.isArray(ratechart) || ratechart.length === 0) {
-      toast.error("Ratechart cannot be empty.");
-      return;
-    }
-    // Dispatch with validated and parsed data
-    await dispatch(
+    const result = await dispatch(
       saveRateChart({
-        rccode: numericRccode,
+        rccode: parseInt(formData.rccode, 10),
         rctype: formData.rctype,
         rcdate: formData.rcdate,
-        time: numericTime,
-        animal: formData.animalType,
-        ratechart: ratechart,
+        ratechart,
       })
-    );
+    ).unwrap(); 
+    // Show success message
+    if (result.status === 200) {
+      toast.success(result.message);
 
-    if (status === "succeeded") {
-      toast.success("Ratechart saved successfully!");
+      // Fetch updated data
       dispatch(fetchMaxRcCode());
       dispatch(listRateCharts());
+
+      // Reset form
       setFormData({
         rccode: maxRcCode,
         rctype: "",
@@ -152,9 +185,8 @@ const SaveRateChart = ({ rate }) => {
         animalType: "",
         rcdate: "",
       });
-      setRate([]);
-    } else if (status === "failed") {
-      toast.error("Failed to save ratechart, Please try again!");
+    } else {
+      toast.error(result.message);
     }
   };
 
@@ -162,14 +194,15 @@ const SaveRateChart = ({ rate }) => {
     <>
       <form
         className="rate-chart-setting-div w100 h1 d-flex-col sa my10"
-        onSubmit={handleSubmit}>
+        onSubmit={handleSubmit}
+      >
         <span className="heading">Save Selected Ratechart</span>
         {status === "loading" ? (
           <div className="loading-ToastContainer w100 h25 d-flex center">
             <Spinner />
           </div>
         ) : (
-          <div className="save-ratechart-contaner w100 h60 d-flex-col sb">
+          <div className="save-ratechart-contaner w100 h60 d-flex-col">
             <div className="select-time-animal-type w100 h30 d-flex sb">
               <div className="select-time w25 h1 a-center d-flex ">
                 <label htmlFor="rccode" className="info-text w100">
@@ -186,66 +219,35 @@ const SaveRateChart = ({ rate }) => {
                 />
               </div>
               <div className="select-animal-type w70 h1 a-center d-flex">
-                <label htmlFor="rctype" className="info-text w50">
-                  Ratechart Type :
+                <label htmlFor="rctype" className="info-text w30">
+                  Type :
                 </label>
-                <input
-                  className={`data w100 ${errors.rctype ? "input-error" : ""}`}
-                  type="text"
-                  name="rctype"
+                <select
                   id="rctype"
-                  value={formData.rctype}
+                  className={`data w100`}
+                  name="rctype"
                   onChange={handleInput}
-                />
-              </div>
-            </div>
-            <div className="select-time-animal-type w100 h30 d-flex sb">
-              <div className="select-animal-type w50 h1 a-center d-flex">
-                <label htmlFor="time" className="info-text w30">
-                  Time:
-                </label>
-                <select
-                  className={`data w60 ${errors.time ? "input-error" : ""}`}
-                  name="time"
-                  id="time"
-                  required
-                  value={formData.time}
-                  onChange={handleInput}>
-                  <option className="info-text" value="2">
-                    Both
-                  </option>
-                  <option className="info-text" value="0">
-                    Mornning
-                  </option>
-                  <option className="info-text" value="1">
-                    Evenning
-                  </option>
-                </select>
-              </div>
-              <div className="select-animal-type w50 h1 a-center d-flex">
-                <label htmlFor="animalType" className="info-text w50">
-                  Animal :
-                </label>
-                <select
-                  className="data w50 "
-                  name="animalType"
-                  id="animalType"
-                  required
-                  value={formData.animalType}
-                  onChange={handleInput}>
-                  <option className="info-text" value="0">
-                    Cow
-                  </option>
-                  <option className="info-text" value="1">
-                    Buffalo
-                  </option>
-                  <option className="info-text" value="2">
-                    Other
-                  </option>
+                >
+                  <option value="">-- Select Type --</option>
+                  {rcStatus === "loading" ? (
+                    <option value="">Loading...</option>
+                  ) : (
+                    <>
+                      {rcTypes.length > 0 ? (
+                        rcTypes.map((types) => (
+                          <option key={types.id} value={types.rctypename}>
+                            {types.rctypename}
+                          </option>
+                        ))
+                      ) : (
+                        <option value="">No types available!</option>
+                      )}
+                    </>
+                  )}
                 </select>
               </div>
             </div>
-            <div className="select-time-animal-type w100 h30 d-flex sb">
+            <div className="select-time-animal-type w100 my10 d-flex a-center sb">
               <label htmlFor="rcdate" className="info-text w50">
                 Ratechart date :{" "}
               </label>
@@ -254,6 +256,7 @@ const SaveRateChart = ({ rate }) => {
                 type="date"
                 name="rcdate"
                 id="rcdate"
+                max={tDate}
                 value={formData.rcdate}
                 onChange={handleInput}
               />
@@ -264,7 +267,8 @@ const SaveRateChart = ({ rate }) => {
           <button
             type="submit"
             className="btn mx10"
-            disabled={status === "loading"}>
+            disabled={status === "loading"}
+          >
             {status === "loading" ? "Saving..." : "Save Ratechart"}
           </button>
         </div>

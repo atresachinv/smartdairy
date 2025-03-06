@@ -1,0 +1,16 @@
+@media screen and (max-width: 426px) {
+  .cust-return {
+    flex-direction: column;
+  }
+  .custCol {
+    width: 100% !important;
+    margin: 10px;
+  }
+  .deal-info {
+    padding: 10px 10px;
+  }
+  .deal-info-name {
+    padding: 0px 10px;
+    margin: 0px;
+  }
+}

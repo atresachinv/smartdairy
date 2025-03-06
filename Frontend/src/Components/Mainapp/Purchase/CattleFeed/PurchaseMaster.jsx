@@ -4,12 +4,12 @@ import CattleFeedPurNavViews from "./CattleFeedPurNavViews";
 
 const PurchaseMaster = () => {
   const [isselected, setIsSelected] = useState(
-    parseInt(localStorage.getItem("selectedCattleFeedSaleIndex")) || 0
+    parseInt(localStorage.getItem("selectedCattleFeedPurIndex")) || 0
   );
 
   // Update localStorage whenever isselected changes
   useEffect(() => {
-    localStorage.setItem("selectedCattleFeedSaleIndex", isselected);
+    localStorage.setItem("selectedCattleFeedPurIndex", isselected);
   }, [isselected]);
 
   return (

@@ -1,3 +1,5 @@
+/* eslint-disable no-unused-vars */
+/* eslint-disable react/prop-types */
 import React, { useEffect, useState } from "react";
 import {
   BsDatabaseAdd,
@@ -11,6 +13,7 @@ import { NavLink } from "react-router-dom";
 const AppNavlinks = ({ isselected, setIsSelected }) => {
   const { t } = useTranslation(["milkcollection"]);
   const [userRole, setUserRole] = useState(null);
+  const [dropdownVisible, setDropdownVisible] = useState(false);
 
   useEffect(() => {
     const myrole = localStorage.getItem("userRole");
@@ -19,40 +22,47 @@ const AppNavlinks = ({ isselected, setIsSelected }) => {
 
   const hnavlinks = [
     {
-      name: `${t("m-milkcoll")}`,
+      name: `${t("m-mrgcoll")}`,
       icon: <BsDatabaseAdd className="icon" />,
       index: 0,
       role: ["super_admin", "admin", "manager"],
-      path: "collection",
+      path: "collection/morning",
+    },
+    {
+      name: `${t("m-evecoll")}`,
+      icon: <BsDatabaseAdd className="icon" />,
+      index: 1,
+      role: ["super_admin", "admin", "manager"],
+      path: "collection/evening",
     },
     {
       name: `${t("m-milkcoll")}`,
       icon: <BsDatabaseAdd className="icon" />,
-      index: 1,
+      index: 2,
       role: ["super_admin", "milkcollector", "mobilecollector"],
       path: "vehicle/collection",
     },
     {
       name: `${t("m-complete-coll")}`,
       icon: <BsFillFileEarmarkArrowUpFill className="icon" />,
-      index: 2,
-      path: "complete/collection",
-      role: ["super_admin", "admin", "manager", "admin", "manager"],
-    },
-    {
-      name: `${t("m-reports")}`,
-      icon: <BsFileTextFill className="icon" />,
       index: 3,
-      path: "collection/reports",
-      role: ["super_admin", "milkcollector", "mobilecollector"],
+      path: "complete/collection",
+      role: ["super_admin", "admin", "manager"],
     },
     {
       name: `${t("m-reports")}`,
       icon: <BsFileTextFill className="icon" />,
       index: 4,
-      path: "vehicle/collection/reports",
-      role: ["super_admin", "admin", "manager"],
+      path: "collection/reports",
+      role: ["super_admin", "milkcollector", "mobilecollector"],
     },
+    // {
+    //   name: `${t("m-milk-coll-report")}`,
+    //   icon: <BsFileTextFill className="icon" />,
+    //   index: 4,
+    //   path: "vehicle/collection/reports",
+    //   role: ["super_admin", "admin", "manager"],
+    // },
     {
       name: `${t("m-sales")}`,
       icon: <BsFileTextFill className="icon" />,
@@ -61,18 +71,39 @@ const AppNavlinks = ({ isselected, setIsSelected }) => {
       role: ["super_admin", "milkcollector", "mobilecollector"],
     },
     {
-      name: `sales Report`,
+      name: `${t("m-sales-report")}`,
       icon: <BsFileTextFill className="icon" />,
       index: 6,
       path: "vehicle/sales/report",
       role: ["super_admin", "milkcollector", "mobilecollector"],
     },
+    // {
+    //   name: `${t("m-sale-report")}`,
+    //   icon: <BsFileTextFill className="icon" />,
+    //   index: 7,
+    //   path: "admin/sales/report",
+    //   role: ["super_admin", "admin"],
+    // },
     {
-      name: `sales Report`,
+      name: `${t("m-milk-sale")}`,
       icon: <BsFileTextFill className="icon" />,
-      index: 7,
-      path: "admin/sales/report",
+      index: 8,
+      path: "retail/milk-sales",
       role: ["super_admin", "admin"],
+      // submenus: [
+      //   {
+      //     name: "Retail Sales",
+      //     icon: <BsFileTextFill className="icon" />,
+      //     path: "retail/milk-sales",
+      //     role: ["super_admin", "admin"],
+      //   },
+      //   {
+      //     name: "Sales Report",
+      //     icon: <BsFileTextFill className="icon" />,
+      //     path: "retail/sale-report",
+      //     role: ["super_admin", "admin"],
+      //   },
+      // ],
     },
   ];
 
@@ -84,7 +115,7 @@ const AppNavlinks = ({ isselected, setIsSelected }) => {
           return {
             ...route,
             submenus: route.submenus.filter((submenu) =>
-              submenu.role.includes(userRole)
+              submenu.role ? submenu.role.includes(userRole) : true
             ),
           };
         }
@@ -100,15 +131,30 @@ const AppNavlinks = ({ isselected, setIsSelected }) => {
         <li
           key={index}
           className={`home-nav-item d-flex a-center ${
-            isselected === button.path ? "selected" : ""
+            isselected === button.index ? "selected" : ""
           }`}
-          onClick={() => {
-            setIsSelected(button.path);
-          }}>
+          onClick={() => setIsSelected(button.index)} 
+        >
           <NavLink to={button.path} className={"sub-navlinks f-label-text"}>
             <span>{button.icon}</span>
             {button.name}
           </NavLink>
+
+          {button.submenus && dropdownVisible && (
+            <ul className="dropdown-menu">
+              {button.submenus.map((submenu, subIndex) => (
+                <li key={subIndex}>
+                  <NavLink
+                    to={submenu.path}
+                    className="dropdown-item d-flex a-center"
+                  >
+                    <span className="color-icon mx5">{button.icon}</span>
+                    {submenu.name}
+                  </NavLink>
+                </li>
+              ))}
+            </ul>
+          )}
         </li>
       ))}
     </>

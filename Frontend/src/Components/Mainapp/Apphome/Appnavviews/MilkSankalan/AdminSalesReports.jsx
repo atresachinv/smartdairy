@@ -325,14 +325,15 @@ const AdminSalesReports = () => {
     data.reduce((total, item) => total + parseFloat(item.Litres), 0);
 
   return (
-    <div className="milk-collector-reports w100 h1 d-flex-col sb">
+    <div className="milk-collector-reports w100 h1 d-flex-col sb p10">
       <label htmlFor="" className="heading">
-        Sales Report
+        {t("milkcollection:m-sale-report")} :
       </label>
       <div className="select-milk-collector-conatiner w100 h20 d-flex a-center sb px10">
         <form
           onSubmit={handleShowData}
-          className="form-label-select-div w50 d-flex-col a-center j-start">
+          className="form-label-select-div w50 d-flex-col a-center j-start"
+        >
           <label htmlFor="date" className="label-text w100">
             {t("common:c-date")} :
           </label>
@@ -363,7 +364,8 @@ const AdminSalesReports = () => {
             <button
               type="submit"
               className="btn"
-              disabled={!values.fromdate || !values.todate}>
+              disabled={!values.fromdate || !values.todate}
+            >
               {t("milkcollection:m-d-show")}
             </button>
           </div>
@@ -374,7 +376,8 @@ const AdminSalesReports = () => {
               className="data w100 h50 my5"
               id="center"
               value={selectedCenterId}
-              onChange={handleCenterChange}>
+              onChange={handleCenterChange}
+            >
               {centerList.map((center, i) => (
                 <option key={i} value={center.center_id}>
                   {center.center_name}
@@ -385,7 +388,8 @@ const AdminSalesReports = () => {
               className="data w100 h50"
               id="milk-collector"
               value={selectedEmp}
-              onChange={handleCollectorChange}>
+              onChange={handleCollectorChange}
+            >
               <option value="">-{t("milkcollection:m-select-coll")}-</option>
               {milkCollectors.map((emp, i) => (
                 <option key={i} value={emp.emp_mobile}>
@@ -475,7 +479,8 @@ const AdminSalesReports = () => {
               }`}
               style={{
                 backgroundColor: index % 2 === 0 ? "#faefe3" : "#fff",
-              }}>
+              }}
+            >
               <span className="label-text w10">{index + 1}</span>
               <span className="label-text w10">{sales.ReceiptNo}</span>
               <span className="label-text w10">{sales.CustCode}</span>

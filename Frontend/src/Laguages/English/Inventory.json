@@ -1,0 +1,20 @@
+{
+    "in-nv-dealar-master":"Dealer Master",
+    "in-nv-prod-master":"Product Master",
+    "in-nv-prod-purch":"Product Purchase",
+    "in-nv-prod-sale":"Product Sales",
+    "in-nv-init-stock":"Initial Stock",
+    "in-nv-returns":"Returns",
+
+
+    "in-de-list":"Dealer List",
+    "in-de-add":"Add Dealers",
+    "in-de-no":"Dealer No",
+    "in-de-mname":"Marathi Name",
+    "in-de-ename":"English Name",
+    "nv-dealer-return":"Dealer Return",
+    "nv-cust-return":"Customer Return",
+    "nv-stockKeeper":"Stock Keeper",
+    "nv-updateSellRate":"Update Sell Rate",
+    "nv-expiredPro":"Expired Product"
+}

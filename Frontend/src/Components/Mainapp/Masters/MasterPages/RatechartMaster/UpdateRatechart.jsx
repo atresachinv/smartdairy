@@ -104,36 +104,39 @@ const UpdateRatechart = ({ isSet, ratechart }) => {
     if (!isSet) {
       toast.error("Please select a ratechart to Update!.");
       return;
-    } else {
-      const updatedRates = ratechart.map((record) => {
-        // Parse both rate and amount to ensure they are numbers
-        const rate = parseFloat(record.rate);
-        const amount = parseFloat(formData.amount);
+    }
+    const updatedRates = ratechart.map((record) => {
+      // Parse both rate and amount to ensure they are numbers
+      const rate = parseFloat(record.rate);
+      const amount = parseFloat(formData.amount);
 
-        if (isNaN(rate) || isNaN(amount)) {
-          console.error("Invalid rate or amount value", { rate, amount });
-          return { ...record, rate: record.rate }; // Return the original rate if parsing fails
-        }
+      if (isNaN(rate) || isNaN(amount)) {
+        console.error("Invalid rate or amount value", { rate, amount });
+        return { ...record, rate: record.rate }; // Return the original rate if parsing fails
+      }
 
-        return {
-          ...record,
-          rate: parseFloat((rate + amount).toFixed(2)),
-          rcdate: formData.rcdate,
-        };
-      });
+      return {
+        ...record,
+        rate: parseFloat((rate + amount).toFixed(2)),
+        rcdate: formData.rcdate,
+      };
+    });
 
-      dispatch(
-        saveUpdatedRC({
-          ratechart: updatedRates,
-          rccode: maxRcCode,
-          rctype: isSet.rctypename,
-          animal: isSet.cb,
-          time: isSet.time,
-        })
-      );
+    const result = await dispatch(
+      saveUpdatedRC({
+        ratechart: updatedRates,
+        rccode: maxRcCode,
+        rctype: isSet.rctypename,
+        animal: isSet.cb,
+        time: isSet.time,
+      })
+    ).unwrap();
+    if (result.status === 200) {
       dispatch(fetchMaxRcCode());
       dispatch(listRateCharts());
-      toast.success("Ratechart updated successfully!");
+      toast.success(result.message);
+    } else {
+      toast.error(result.message);
     }
   };
 
@@ -141,7 +144,8 @@ const UpdateRatechart = ({ isSet, ratechart }) => {
     <>
       <form
         className="rate-chart-setting-div w100 h1 d-flex-col my10"
-        onSubmit={handleRatechartUpdate}>
+        onSubmit={handleRatechartUpdate}
+      >
         <span className="heading">Update Selected Ratechart</span>
         <div className="select-time-animal-type w100 h70 d-flex sb">
           {status === "loading" ? (
@@ -185,7 +189,8 @@ const UpdateRatechart = ({ isSet, ratechart }) => {
           <button
             type="submit"
             className="btn mx10"
-            disabled={status === "loading"}>
+            disabled={status === "loading"}
+          >
             {status === "loading" ? "Updating..." : "Update Ratechart"}
           </button>
         </div>

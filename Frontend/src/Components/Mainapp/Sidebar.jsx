@@ -10,8 +10,10 @@ import { useDispatch, useSelector } from "react-redux";
 import { logoutUser } from "../../App/Features/Users/authSlice";
 import { toast } from "react-toastify";
 import axiosInstance from "../../App/axiosInstance";
+import { useTranslation } from "react-i18next";
 
 const Sidebar = ({ setselected, handleSidebar }) => {
+  const { t } = useTranslation(["common"]);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -26,6 +28,7 @@ const Sidebar = ({ setselected, handleSidebar }) => {
       localStorage.removeItem("customerlist");
       localStorage.removeItem("milkentries");
       localStorage.removeItem("milkcollrcharts");
+      localStorage.removeItem("colldata");
 
       if (userRole === "milkcollector" || userRole === "mobilecollector") {
         localStorage.setItem("selectedTabIndex", 1);
@@ -51,16 +54,17 @@ const Sidebar = ({ setselected, handleSidebar }) => {
             <BsXLg />
           </span>
         </div>
-        <ul className="sidebar-list w100 h80 d-flex-col px10">
+        <ul className="sidebar-list w100 h80 mh80 hidescrollbar d-flex-col px10">
           <Mainappnavlinks
             setselected={setselected}
             handleSidebar={handleSidebar}
           />
         </ul>
         <div
-          className="logout-btn-div w100 d-flex p10 my10"
-          onClick={handleLogout}>
-          <span className="f-heading mx10">LOGOUT</span>
+          className="logout-btn-div w100 d-flex a-center p10 my10"
+          onClick={handleLogout}
+        >
+          <span className="f-heading mx10">{t("c-logout")}</span>
           <BiLogOutCircle className="logout-icon" />
         </div>
       </aside>

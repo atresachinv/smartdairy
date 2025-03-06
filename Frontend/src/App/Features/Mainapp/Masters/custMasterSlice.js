@@ -5,6 +5,7 @@ const initialState = {
   customerlist: [],
   maxCustNo: "",
   usedRCNO: [],
+  cliststatus: "idle",
   status: "idle",
   excelstatus: "idle",
   error: null,
@@ -111,24 +112,34 @@ const custMasterSlice = createSlice({
       .addCase(createCustomer.pending, (state) => {
         state.status = "loading";
       })
-      .addCase(createCustomer.fulfilled, (state, action) => {
+      .addCase(createCustomer.fulfilled, (state) => {
         state.status = "succeeded";
-        state.customerlist.push(action.payload); // Add the new customer to the list
       })
       .addCase(createCustomer.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.payload;
       })
-      // Handle listCustomer actions
-      .addCase(listCustomer.pending, (state) => {
+      // Handle update Customer actions
+      .addCase(updateCustomer.pending, (state) => {
         state.status = "loading";
       })
-      .addCase(listCustomer.fulfilled, (state, action) => {
+      .addCase(updateCustomer.fulfilled, (state) => {
         state.status = "succeeded";
-        state.customerlist = action.payload.customerList; // Replace the customer list with the fetched data
+      })
+      .addCase(updateCustomer.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.payload;
+      })
+      // Handle listCustomer actions
+      .addCase(listCustomer.pending, (state) => {
+        state.cliststatus = "loading";
+      })
+      .addCase(listCustomer.fulfilled, (state, action) => {
+        state.cliststatus = "succeeded";
+        state.customerlist = action.payload; // Replace the customer list with the fetched data
       })
       .addCase(listCustomer.rejected, (state, action) => {
-        state.status = "failed";
+        state.cliststatus = "failed";
         state.error = action.payload;
       })
       .addCase(fetchURCNo.pending, (state) => {

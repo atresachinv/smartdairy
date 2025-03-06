@@ -38,10 +38,13 @@
     min-height: fit-content;
     padding: 0;
   }
-  .create-dealer-form-container .row{
+  .create-dealer-form-container .row {
     margin: 0;
   }
   .create-dealer-form-container .button-container {
     flex-direction: row;
+  }
+  .forMin {
+    padding: 15px !important;
   }
 }

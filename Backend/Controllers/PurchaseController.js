@@ -490,7 +490,7 @@ exports.paymentDeductionInfo = async (req, res) => {
 exports.createPurchases = async (req, res) => {
   const purchaseData = req.body; // Expecting an array of purchase objects
 
-  const { dairy_id, center_id } = req.user;
+  const { dairy_id, center_id, user_id } = req.user;
   // Validate input
   if (!Array.isArray(purchaseData) || purchaseData.length === 0) {
     return res.status(400).json({
@@ -519,7 +519,7 @@ exports.createPurchases = async (req, res) => {
     try {
       // Step 1: Build the bulk INSERT query dynamically, including dairy_id and center_id
       let insertQuery =
-        "INSERT INTO PurchaseMaster (purchasedate, itemcode, qty, dealerCode, dairy_id, center_id";
+        "INSERT INTO PurchaseMaster (purchasedate, itemcode, qty, dealerCode, dairy_id, center_id,createdby";
       const insertValues = [];
       const valuePlaceholders = [];
 
@@ -533,6 +533,7 @@ exports.createPurchases = async (req, res) => {
           dealerCode,
           dairy_id,
           center_id,
+          user_id,
         ];
 
         for (const key of Object.keys(otherFields)) {
@@ -580,8 +581,8 @@ exports.createPurchases = async (req, res) => {
 // Get All purchase items controller ---------------------------------------------------->
 // -------------------------------------------------------------------------------------->
 exports.getAllPurchases = async (req, res) => {
-  const { date1, date2, fcode, ...dynamicFields } = req.query;
-  const { dairy_id, center_id } = req.user; // Get dairy_id and center_id from the logged-in user
+  const { date1, date2, fcode, role, ...dynamicFields } = req.query;
+  const { dairy_id, center_id, user_id } = req.user; // Get dairy_id and center_id from the logged-in user
 
   let query = `
     SELECT * 
@@ -614,10 +615,23 @@ exports.getAllPurchases = async (req, res) => {
   }
 
   // Append filter for dairy_id and center_id (Ensure these fields are in the WHERE clause)
-  query += ` AND dairy_id = ? AND center_id = ?`;
-  countQuery += ` AND dairy_id = ? AND center_id = ?`;
-  queryParams.push(dairy_id, center_id);
+  if (dairy_id) {
+    query += ` AND dairy_id = ?  `;
+    countQuery += ` AND dairy_id = ? `;
+    queryParams.push(dairy_id);
+  }
+  if (center_id > 0) {
+    query += `AND center_id=? `;
+    countQuery += `AND center_id=? `;
+    queryParams.push(center_id);
+  }
 
+  //if user can login as admin then he can see all the data
+  if (role && role === "salesman") {
+    query += `AND createdby=? `;
+    countQuery += `AND createdby=? `;
+    queryParams.push(user_id);
+  }
   // Append dynamic fields (filters that come from query parameters)
   for (const [field, value] of Object.entries(dynamicFields)) {
     if (value) {
@@ -886,11 +900,11 @@ exports.getAllProductSaleRate = async (req, res) => {
           INNER JOIN (
             SELECT itemcode, MAX(purchasedate) AS max_purchasedate
             FROM PurchaseMaster
-            WHERE dairy_id = ? AND center_id = ?
+            WHERE dairy_id = ? AND center_id = ? AND cn=0
             GROUP BY itemcode
           ) AS latest_sales
           ON pm.itemcode = latest_sales.itemcode AND pm.purchasedate = latest_sales.max_purchasedate
-          WHERE pm.dairy_id = ? AND pm.center_id = ?
+          WHERE pm.dairy_id = ? AND pm.center_id = ? AND cn=0
           ORDER BY pm.itemcode;
         `;
 
@@ -903,11 +917,11 @@ exports.getAllProductSaleRate = async (req, res) => {
           INNER JOIN (
             SELECT itemcode, MAX(purchasedate) AS max_purchasedate
             FROM PurchaseMaster
-            WHERE dairy_id = ? AND center_id = ? AND itemgroupcode = ?
+            WHERE dairy_id = ? AND center_id = ? AND itemgroupcode = ? AND cn=0
             GROUP BY itemcode
           ) AS latest_sales
           ON pm.itemcode = latest_sales.itemcode AND pm.purchasedate = latest_sales.max_purchasedate
-          WHERE pm.dairy_id = ? AND pm.center_id = ? AND pm.itemgroupcode = ?
+          WHERE pm.dairy_id = ? AND pm.center_id = ? AND pm.itemgroupcode = ? AND pm.cn=0
           ORDER BY pm.itemcode;
         `;
 

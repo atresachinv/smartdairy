@@ -44,6 +44,7 @@ export const getvehicleSale = createAsyncThunk(
     }
   }
 );
+
 // get all sales details for admin -------------------------------->
 export const getAllSale = createAsyncThunk(
   "sales/getAllSale",

@@ -29,7 +29,14 @@
 
 .main-nav-text {
   text-decoration: none;
-  font-size: clamp(14px, 3vw, 16px);
+  color: #fff;
+  font-size: clamp(1.2rem, 2vw, 1.4rem);
+}
+
+.submenu-text{
+text-decoration: none;
+color: #fff;
+  font-size: clamp(1.1rem, 2vw, 1.2rem);
 }
 
 .submenu .submenu-item {
@@ -37,7 +44,7 @@
   color: #fff;
   cursor: pointer;
   padding-left: 25px;
-  font-size: clamp(14px, 3vw, 16px);
+  font-size: clamp(16px, 3vw, 22px);
 }
 
 .sidenav-btns {

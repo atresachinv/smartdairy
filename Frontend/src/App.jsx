@@ -116,7 +116,7 @@ function App() {
           <Route path="/" element={<Home />} />
           {/* Protected Routes admin pannel */}
           <Route element={<ProtectedRoute allowedRoles={["super_admin"]} />}>
-            <Route path="/adminpanel" element={<AdminPannel />} />
+            <Route path="/adminpanel/*" element={<AdminPannel />} />
           </Route>
           {/* Protected Routes main app */}
           <Route
@@ -128,6 +128,7 @@ function App() {
                   "manager",
                   "milkcollector",
                   "mobilecollector",
+                  "salesman",
                 ]}
               />
             }>

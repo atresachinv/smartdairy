@@ -242,9 +242,12 @@ exports.userRegister = async (req, res) => {
                       ME INT,
                       CB INT,
                       SampleNo INT,
+                      Driver INT DEFAULT 0,
                       GLCode INT,
                       BillNo INT,
-                      BillDate DATE
+                      BillDate DATE,
+                      UpdatedBy VARCHAR(60),
+                      updatedOn DATE
                     )`;
 
                   connection.query(createMilkEntryTable, (err, result) => {
