@@ -12,6 +12,7 @@ import Spinner from "../../../../../../Home/Spinner/Spinner";
 import { useTranslation } from "react-i18next";
 import { FaDownload } from "react-icons/fa6";
 import jsPDF from "jspdf";
+import { TbSortAscending2, TbSortDescending2 } from "react-icons/tb";
 
 const GroList = () => {
   const { t } = useTranslation(["puchasesale", "common"]);
@@ -21,7 +22,8 @@ const GroList = () => {
   const [fcode, setFcode] = useState("");
   const [sales, setSales] = useState([]);
   const [itemList, setItemList] = useState([]);
-
+  const [sortOrder, setSortOrder] = useState("desc");
+  const [sortKey, setSortKey] = useState("BillDate");
   const [isInvoiceOpen, setIsInvoiceOpen] = useState(false);
   const [filteredSalesList, setFilteredSalesList] = useState(sales);
   const [viewItems, setViewItems] = useState([]);
@@ -223,17 +225,42 @@ const GroList = () => {
     return `${day}/${month}/${year}`;
   };
 
-  // Grouping by billNo
-  const groupedSales = filteredSalesList.reduce((acc, sale) => {
-    const key = sale.BillNo; // Grouping by billNo
-    if (!acc[key]) {
-      acc[key] = { ...sale, TotalAmount: 0, TotalQty: 0 };
-    }
-    acc[key].TotalAmount += sale.Amount;
-    acc[key].TotalQty += sale.Qty;
-    return acc;
-  }, {});
-  const groupedSalesArray = Object.values(groupedSales);
+  // Function to group sales by BillNo ------------------------------------------->
+  const groupSales = () => {
+    const groupedSales = filteredSalesList.reduce((acc, sale) => {
+      const key = sale.BillNo;
+      if (!acc[key]) {
+        acc[key] = { ...sale, TotalAmount: 0 };
+      }
+      acc[key].TotalAmount += sale.Amount;
+      return acc;
+    }, {});
+
+    return Object.values(groupedSales).sort((a, b) => {
+      if (sortKey === "BillDate") {
+        return sortOrder === "asc"
+          ? new Date(a.BillDate) - new Date(b.BillDate)
+          : new Date(b.BillDate) - new Date(a.BillDate);
+      } else {
+        return sortOrder === "asc"
+          ? a[sortKey] > b[sortKey]
+            ? 1
+            : -1
+          : a[sortKey] < b[sortKey]
+          ? 1
+          : -1;
+      }
+    });
+  };
+
+  // ---------------------------------------------------------------------------->
+  // Toggle sorting order ------------------------------------------------------->
+  const handleSort = (key) => {
+    setSortKey(key);
+    setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+  };
+
+  const groupedSalesArray = groupSales();
 
   //for searching Name or code to get the sale list------------------------------------>
 
@@ -453,16 +480,85 @@ const GroList = () => {
         <div className="customer-heading-title-scroller w100 h1 mh100 d-flex-col">
           <div className="data-headings-div sale-data-headings-div h10 d-flex center t-center sb bg7">
             <span className="f-info-text w5"> {t("ps-srNo")}</span>
-            <span className="f-info-text w5"> {t("ps-date")} </span>
+            <span className="f-info-text w10">
+              {" "}
+              {t("ps-date")}
+              <span
+                className="px5 f-color-icon"
+                type="button"
+                onClick={() => handleSort("BillDate")}
+              >
+                {sortKey === "BillDate" ? (
+                  sortOrder === "asc" ? (
+                    <TbSortAscending2 />
+                  ) : (
+                    <TbSortDescending2 />
+                  )
+                ) : (
+                  <TbSortAscending2 />
+                )}
+              </span>
+            </span>
             <span className="f-info-text w5">{t("ps-rect-no")}</span>
-            <span className="f-info-text w5"> {t("ps-custCode")}</span>
+            <span className="f-info-text w5">
+              {t("ps-custCode")}
+              <span
+                className="px5 f-color-icon"
+                type="button"
+                onClick={() => handleSort("CustCode")}
+              >
+                {sortKey === "CustCode" ? (
+                  sortOrder === "asc" ? (
+                    <TbSortAscending2 />
+                  ) : (
+                    <TbSortDescending2 />
+                  )
+                ) : (
+                  <TbSortAscending2 />
+                )}
+              </span>
+            </span>
             <span className="f-info-text w25">{t("ps-cutName")}</span>
-            <span className="f-info-text w5">{t("ps-amt")}</span>
+            <span className="f-info-text w10">
+              {t("ps-amt")}
+              <span
+                className="px5 f-color-icon"
+                type="button"
+                onClick={() => handleSort("TotalAmount")}
+              >
+                {sortKey === "TotalAmount" ? (
+                  sortOrder === "asc" ? (
+                    <TbSortAscending2 />
+                  ) : (
+                    <TbSortDescending2 />
+                  )
+                ) : (
+                  <TbSortAscending2 />
+                )}
+              </span>
+            </span>
             {userRole === "salesman" ? (
               <></>
             ) : (
               <>
-                <span className="f-info-text w10">{t("CreatedBy")}</span>
+                <span className="f-info-text w15">
+                  {t("CreatedBy")}
+                  <span
+                    className="px5 f-color-icon"
+                    type="button"
+                    onClick={() => handleSort("createdby")}
+                  >
+                    {sortKey === "createdby" ? (
+                      sortOrder === "asc" ? (
+                        <TbSortAscending2 />
+                      ) : (
+                        <TbSortDescending2 />
+                      )
+                    ) : (
+                      <TbSortAscending2 />
+                    )}
+                  </span>
+                </span>
               </>
             )}
             <span className="f-info-text w5">Actions</span>

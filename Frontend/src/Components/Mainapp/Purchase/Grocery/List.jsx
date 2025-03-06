@@ -24,6 +24,7 @@ const List = () => {
   const [date2, SetDate2] = useState("");
   const [loading, SetLoading] = useState(false);
   const [sortOrder, setSortOrder] = useState("desc");
+  const [sortKey, setSortKey] = useState("purchasedate");
   const [updatelist, setUpdateList] = useState([]);
   const dairyInfo = useSelector(
     (state) =>
@@ -164,17 +165,27 @@ const List = () => {
       return acc;
     }, {});
 
-    // Convert object to array and sort by purchasedate
-    return Object.values(groupedPurchase).sort((a, b) =>
-      sortOrder === "asc"
-        ? new Date(a.purchasedate) - new Date(b.purchasedate)
-        : new Date(b.purchasedate) - new Date(a.purchasedate)
-    );
+    return Object.values(groupedPurchase).sort((a, b) => {
+      if (sortKey === "purchasedate") {
+        return sortOrder === "asc"
+          ? new Date(a.purchasedate) - new Date(b.purchasedate)
+          : new Date(b.purchasedate) - new Date(a.purchasedate);
+      } else {
+        return sortOrder === "asc"
+          ? a[sortKey] > b[sortKey]
+            ? 1
+            : -1
+          : a[sortKey] < b[sortKey]
+          ? 1
+          : -1;
+      }
+    });
   };
 
-  // Toggle sorting order
-  const toggleSortOrder = () => {
-    setSortOrder((prevOrder) => (prevOrder === "asc" ? "desc" : "asc"));
+  // Toggle sorting order ------------------------------------------------------->
+  const handleSort = (key) => {
+    setSortKey(key);
+    setSortOrder(sortOrder === "asc" ? "desc" : "asc");
   };
 
   const groupedPurchaseArray = groupPurchases();
@@ -484,28 +495,83 @@ const List = () => {
           <div className="data-headings-div h10 d-flex center forDWidth t-center bg7 sb">
             <span className="f-info-text w5"> {t("ps-srNo")}</span>
             <span className="f-info-text w10">
-              {t("ps-date")}{" "}
+              {t("ps-date")}
               <span
-                className="px10 f-color-icon"
+                className="px5 f-color-icon"
                 type="button"
-                onClick={toggleSortOrder}
+                onClick={() => handleSort("purchasedate")}
               >
-                {sortOrder === "asc" ? (
-                  <TbSortAscending2 />
+                {sortKey === "purchasedate" ? (
+                  sortOrder === "asc" ? (
+                    <TbSortAscending2 />
+                  ) : (
+                    <TbSortDescending2 />
+                  )
                 ) : (
-                  <TbSortDescending2 />
+                  <TbSortAscending2 />
                 )}
               </span>
             </span>
             <span className="f-info-text w5">{t("ps-rect-no")}</span>
-            <span className="f-info-text w10">{t("ps-dealer-no")}</span>
-            <span className="f-info-text w15">{t("ps-dealer-name")}</span>
+            <span className="f-info-text w15">
+              {t("ps-dealer-no")}
+              <span
+                className="px5 f-color-icon"
+                type="button"
+                onClick={() => handleSort("dealerCode")}
+              >
+                {sortKey === "dealerCode" ? (
+                  sortOrder === "asc" ? (
+                    <TbSortAscending2 />
+                  ) : (
+                    <TbSortDescending2 />
+                  )
+                ) : (
+                  <TbSortAscending2 />
+                )}
+              </span>
+            </span>
+            <span className="f-info-text w15">
+              {t("ps-dealer-name")}
+              <span
+                className="px5 f-color-icon"
+                type="button"
+                onClick={() => handleSort("dealerName")}
+              >
+                {sortKey === "dealerName" ? (
+                  sortOrder === "asc" ? (
+                    <TbSortAscending2 />
+                  ) : (
+                    <TbSortDescending2 />
+                  )
+                ) : (
+                  <TbSortAscending2 />
+                )}
+              </span>
+            </span>
             <span className="f-info-text w10">{t("ps-ttl-amt")}</span>
             {userRole === "salesman" ? (
               <></>
             ) : (
               <>
-                <span className="f-info-text w10">{t("CreatedBy")}</span>
+                <span className="f-info-text w15">
+                  {t("CreatedBy")}
+                  <span
+                    className="px5 f-color-icon"
+                    type="button"
+                    onClick={() => handleSort("createdby")}
+                  >
+                    {sortKey === "createdby" ? (
+                      sortOrder === "asc" ? (
+                        <TbSortAscending2 />
+                      ) : (
+                        <TbSortDescending2 />
+                      )
+                    ) : (
+                      <TbSortAscending2 />
+                    )}
+                  </span>
+                </span>
               </>
             )}
             <span className="f-info-text w10">Actions</span>
@@ -532,7 +598,7 @@ const List = () => {
                       {formatDateToDDMMYYYY(item.purchasedate)}
                     </span>
                     <span className="text w5">{item.receiptno}</span>
-                    <span className="text w10">{item.dealerCode}</span>
+                    <span className="text w15">{item.dealerCode}</span>
                     <span className="text w15">
                       {item.dealerName || "Unknown"}
                     </span>
@@ -541,11 +607,12 @@ const List = () => {
                       <></>
                     ) : (
                       <>
-                        <span className="text w10">
+                        <span className="text w15">
                           {item.createdby || "Unknown"}
                         </span>
                       </>
                     )}
+
                     <span className="text w10 d-flex j-center a-center">
                       <button
                         style={{ cursor: "pointer" }}
