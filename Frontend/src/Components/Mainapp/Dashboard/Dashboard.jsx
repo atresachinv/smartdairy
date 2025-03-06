@@ -1,4 +1,4 @@
-import React, { PureComponent, useEffect, Suspense, useState } from "react";
+import React, { useEffect, Suspense, useState } from "react";
 import {
   BarChart,
   Bar,
@@ -7,12 +7,8 @@ import {
   Tooltip,
   XAxis,
   YAxis,
-  LineChart,
-  Line,
-  Legend,
   PieChart,
   Pie,
-  Sector,
   Cell,
 } from "recharts";
 import { BsDatabaseAdd, BsPersonFill } from "react-icons/bs";
@@ -319,15 +315,6 @@ const Dashboard = () => {
                 </h3>
               </div>
             </div>
-            {/* <div className="card">
-            <BsCurrencyRupee className="card-icon" />
-            <div className="card-inner">
-              <h3 className="text">Revenue</h3>
-              <h3 className="heading">
-                100 <span>Rs</span>
-              </h3>
-            </div>
-          </div> */}
           </div>
           <div className="dashboard-data-charts w100 h50 d-flex a-center sa ">
             <div className="milk-collection-chart w40 h1 d-flex-col p10 bg">

@@ -3,26 +3,30 @@ const dotenv = require("dotenv");
 const pool = require("../Configs/Database");
 dotenv.config({ path: "Backend/.env" });
 
-// ..................................................
-// Milk Collection .....................
-// ..................................................
-
-// Check Username ................
-
-//old
+//------------------------------------------------------------------------------------------------------------------->
+//Cusomer Details
+//------------------------------------------------------------------------------------------------------------------->
 exports.custDetails = async (req, res) => {
   const { user_code } = req.body;
-
+  const dairy_id = req.user.dairy_id;
+  const center_id = req.user.center_id;
+  if (!user_code) {
+    return res
+      .status(400)
+      .json({ status: 400, message: "User code Required!" });
+  }
+  if (!dairy_id) {
+    return res.status(401).json({ status: 401, message: "Unauthorized User!" });
+  }
   pool.getConnection((err, connection) => {
     if (err) {
       console.error("Error getting MySQL connection: ", err);
-      return res.status(500).json({ message: "Database connection error" });
+      return res
+        .status(500)
+        .json({ status: 500, message: "Database connection error!" });
     }
 
     try {
-      const dairy_id = req.user.dairy_id;
-      const center_id = req.user.center_id;
-
       const getCustname = `SELECT cid, cname, rateChartNo, ratecharttype, rcdate FROM customer WHERE srno = ? AND orgid = ?, center_id = ?`;
 
       connection.query(
@@ -32,74 +36,39 @@ exports.custDetails = async (req, res) => {
           connection.release();
           if (err) {
             console.error("Error executing query: ", err);
-            return res.status(500).json({ message: "Query execution error" });
+            return res
+              .status(500)
+              .json({ status: 500, message: "Query execution error!" });
           }
 
           // Check if result is empty (no customer found)
           if (result.length === 0) {
-            return res.status(404).json({ message: "Customer not found" });
+            return res
+              .status(404)
+              .json({ status: 404, message: "Customer details not found!" });
           }
 
           // Proceed if customer details are found
           const custdetails = result[0];
-          res.status(200).json({ custdetails });
+          res.status(200).json({
+            status: 200,
+            custdetails,
+            message: "Customers details found!",
+          });
         }
       );
     } catch (error) {
       console.error("Error processing request: ", error);
-      return res.status(500).json({ message: "Internal server error" });
+      return res
+        .status(500)
+        .json({ status: 500, message: "Internal server error!" });
     }
   });
 };
 
-// exports.maxDMEID = async (req, res) =>{
-//   pool.getConnection((err, connection) => {
-//     if (err) {
-//       console.error("Error getting MySQL connection: ", err);
-//       return res.status(500).json({ message: "Database connection error" });
-//     }
-//
-//     try {
-//       const dairy_id = req.user.dairy_id;
-//       const center_id = req.user.center_id;
-//
-//       if (!dairy_id) {
-//         connection.release();
-//         return res.status(400).json({ message: "Dairy ID not found!" });
-//       }
-//
-//       const maxRateChartNoQuery = `SELECT MAX(rccode) as maxRcCode FROM ratemaster WHERE companyid = ? AND center_id = ?`;
-//
-//       connection.query(
-//         maxRateChartNoQuery,
-//         [dairy_id, center_id],
-//         (err, result) => {
-//           connection.release();
-//           if (err) {
-//             console.error("Error executing query: ", err);
-//             return res.status(500).json({ message: "Query execution error" });
-//           }
-//           const maxRcCode = result[0]?.maxRcCode
-//             ? Math.max(result[0].maxRcCode + 1, 1)
-//             : 1;
-//
-//           res.status(200).json({
-//             maxRcCode: maxRcCode,
-//           });
-//         }
-//       );
-//     } catch (error) {
-//       connection.release();
-//       return res.status(400).json({ message: error.message });
-//     }
-//   });
-// }
-
-// saving milk collection to database
-
-//.........................................................
-// Save Milk Collection Settings ..........................
-//.........................................................
+//------------------------------------------------------------------------------------------------------------------->
+// Save Milk Collection Settings
+//------------------------------------------------------------------------------------------------------------------->
 
 exports.saveMilkCollSetting = async (req, res) => {
   const {
@@ -115,20 +84,36 @@ exports.saveMilkCollSetting = async (req, res) => {
     print,
   } = req.body;
 
+  const dairy_id = req.user.dairy_id;
+  const center_id = req.user.center_id;
+
+  if (
+    !milkType ||
+    !prevFat ||
+    !prevSnf ||
+    !prevDeg ||
+    !manLiters ||
+    !manFat ||
+    !manSnf ||
+    !manDeg ||
+    !sms ||
+    !print
+  ) {
+    return res
+      .status(400)
+      .json({ status: 400, message: "All fields data required!" });
+  }
+
+  if (!dairy_id) {
+    return res.status(401).json({ status: 401, message: "Unauthorized User!" });
+  }
+
   pool.getConnection((err, connection) => {
     if (err) {
       console.error("Error getting MySQL connection: ", err);
-      return res.status(500).json({ message: "Database connection error" });
-    }
-
-    const dairy_id = req.user.dairy_id;
-    const center_id = req.user.center_id;
-
-    if (!dairy_id || !center_id) {
-      connection.release();
       return res
-        .status(400)
-        .json({ message: "Dairy ID or Center ID not found!" });
+        .status(500)
+        .json({ status: 500, message: "Database connection error!" });
     }
 
     const saveMilkCollSettingQuery = `
@@ -158,20 +143,29 @@ exports.saveMilkCollSetting = async (req, res) => {
 
         if (err) {
           console.error("Error executing query: ", err);
-          return res.status(500).json({ message: "Query execution error" });
+          return res
+            .status(500)
+            .json({ status: 500, message: "Query execution error!" });
+        }
+        if (results.affectedRows === 0) {
+          return res.status(400).json({
+            status: 400,
+            message: "Milk collection settings failed to save!",
+          });
         }
 
-        res
-          .status(200)
-          .json({ message: "Milk Collection Settings Saved Successfully!" });
+        res.status(200).json({
+          status: 200,
+          message: "Milk Collection Settings Saved Successfully!",
+        });
       }
     );
   });
 };
 
-//.........................................................
-// Update Milk Collection Settings ........................
-//.........................................................
+//------------------------------------------------------------------------------------------------------------------->
+// Update Milk Collection Settings
+//------------------------------------------------------------------------------------------------------------------->
 
 exports.updateMilkCollSetting = async (req, res) => {
   const {
@@ -187,20 +181,36 @@ exports.updateMilkCollSetting = async (req, res) => {
     print,
   } = req.body;
 
+  const dairy_id = req.user.dairy_id;
+  const center_id = req.user.center_id;
+
+  if (
+    !milkType ||
+    !prevFat ||
+    !prevSnf ||
+    !prevDeg ||
+    !manLiters ||
+    !manFat ||
+    !manSnf ||
+    !manDeg ||
+    !sms ||
+    !print
+  ) {
+    return res
+      .status(400)
+      .json({ status: 400, message: "All field data required!" });
+  }
+
+  if (!dairy_id) {
+    return res.status(400).json({ status: 401, message: "Unauthorized User!" });
+  }
+
   pool.getConnection((err, connection) => {
     if (err) {
       console.error("Error getting MySQL connection: ", err);
-      return res.status(500).json({ message: "Database connection error" });
-    }
-
-    const dairy_id = req.user.dairy_id;
-    const center_id = req.user.center_id;
-
-    if (!dairy_id || !center_id) {
-      connection.release();
       return res
-        .status(400)
-        .json({ message: "Dairy ID or Center ID not found!" });
+        .status(500)
+        .json({ status: 500, message: "Database connection error" });
     }
 
     const updateMilkCollSettingQuery = `
@@ -230,88 +240,30 @@ exports.updateMilkCollSetting = async (req, res) => {
 
         if (err) {
           console.error("Error executing query: ", err);
-          return res.status(500).json({ message: "Query execution error" });
+          return res
+            .status(500)
+            .json({ status: 500, message: "Query execution error!" });
         }
 
-        res
-          .status(200)
-          .json({ message: "Milk Collection Settings Updated Successfully!" });
+        if (results.affectedRows === 0) {
+          return res.status(400).json({
+            status: 400,
+            message: "failed to update milk collection settings!",
+          });
+        }
+
+        res.status(200).json({
+          status: 200,
+          message: "Milk Collection Settings Updated Successfully!",
+        });
       }
     );
   });
 };
 
-//.........................................................
-// Save Milk Collection (slot wise entry)...................................
-//.........................................................
-
-// exports.milkCollection = async (req, res) => {
-//    const milkColl = req.body.entries;
-//
-//   pool.getConnection((err, connection) => {
-//     if (err) {
-//       console.error("Error getting MySQL connection: ", err);
-//       return res.status(500).json({ message: "Database connection error" });
-//     }
-//
-//     try {
-//       const dairy_id = req.user.dairy_id;
-//       const user_role = req.user.user_role;
-//       const center_id = req.user.center_id;
-//
-//       if (!dairy_id) {
-//         connection.release();
-//         return res.status(400).json({ message: "Dairy ID not found!" });
-//       }
-//
-//       const dairy_table = `dailymilkentry_${dairy_id}`;
-//
-//       // Prepare the SQL query
-//       const milkcollection = `
-//         INSERT INTO ${dairy_table}
-//         (companyid, userid, ReceiptDate, ME, CB, Litres, fat, snf, Amt, GLCode, AccCode, Digree, rate, cname, rno, center_id)
-//         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-//       `;
-//
-//       // Execute the query
-//       connection.query(
-//         milkcollection,
-//         [
-//           dairy_id,
-//           user_role,
-//           ReceiptDate,
-//           time,
-//           animal,
-//           liter,
-//           fat,
-//           snf,
-//           amt,
-//           "28",
-//           acccode,
-//           degree,
-//           rate,
-//           cname,
-//           rno,
-//           center_id,
-//         ],
-//         (err, results) => {
-//           connection.release();
-//
-//           if (err) {
-//             console.error("Error executing query: ", err);
-//             return res.status(500).json({ message: "Query execution error" });
-//           }
-//
-//           res.status(200).json({ message: "Milk entry saved successfully!" });
-//         }
-//       );
-//     } catch (error) {
-//       connection.release();
-//       console.error("Error processing request: ", error);
-//       return res.status(500).json({ message: "Internal server error" });
-//     }
-//   });
-// };
+//------------------------------------------------------------------------------------------------------------------->
+// Save Milk Collection (slot wise entry)
+//------------------------------------------------------------------------------------------------------------------->
 
 exports.milkCollection = async (req, res) => {
   const { milkColl } = req.body;
@@ -321,13 +273,13 @@ exports.milkCollection = async (req, res) => {
   const center_id = req.user.center_id;
 
   if (!dairy_id) {
-    return res.status(400).json({ message: "Dairy ID not found!" });
+    return res.status(400).json({ message: "Unauthorized User!" });
   }
 
   if (!Array.isArray(milkColl) || milkColl.length === 0) {
     return res
       .status(400)
-      .json({ message: "Entries should be a non-empty array" });
+      .json({ status: 400, message: "Milk collection data required!" });
   }
 
   const dairy_table = `dailymilkentry_${dairy_id}`;
@@ -397,13 +349,17 @@ exports.milkCollection = async (req, res) => {
   pool.getConnection((err, connection) => {
     if (err) {
       console.error("Error getting MySQL connection: ", err);
-      return res.status(500).json({ message: "Database connection error" });
+      return res
+        .status(500)
+        .json({ status: 500, message: "Database connection error" });
     }
 
     connection.beginTransaction((err) => {
       if (err) {
         connection.release();
-        return res.status(500).json({ message: "Transaction error" });
+        return res
+          .status(500)
+          .json({ status: 500, message: "Transaction error!" });
       }
 
       // Execute bulk insert query with values
@@ -412,7 +368,10 @@ exports.milkCollection = async (req, res) => {
           return connection.rollback(() => {
             connection.release();
             console.error("Error executing query: ", err);
-            res.status(500).json({ message: "Error saving milk entries" });
+            res.status(500).json({
+              status: 500,
+              message: "Error saving milk collection entries!",
+            });
           });
         }
 
@@ -420,12 +379,15 @@ exports.milkCollection = async (req, res) => {
           if (err) {
             return connection.rollback(() => {
               connection.release();
-              res.status(500).json({ message: "Transaction commit error" });
+              res
+                .status(500)
+                .json({ status: 500, message: "Transaction commit error!" });
             });
           }
 
           connection.release();
           res.status(200).json({
+            status: 200,
             message: "All milk entries saved successfully!",
             insertedRecords: results.affectedRows,
           });
@@ -436,7 +398,7 @@ exports.milkCollection = async (req, res) => {
 };
 
 //------------------------------------------------------------------------------------------------------------------->
-// currently working Save Milk Collection (single entry) ------------------------------------------------------------>
+// currently working Save Milk Collection (single entry)
 //------------------------------------------------------------------------------------------------------------------->
 
 exports.milkCollectionOneEntry = async (req, res) => {
@@ -454,22 +416,42 @@ exports.milkCollectionOneEntry = async (req, res) => {
     cname,
     acccode,
   } = req.body;
+
+  const dairy_id = req.user.dairy_id;
+  const user_role = req.user.user_role;
+  const center_id = req.user.center_id;
+
+  if (
+    !date ||
+    !code ||
+    !shift ||
+    !animal ||
+    !liters ||
+    !fat ||
+    !snf ||
+    !amt ||
+    !degree ||
+    !rate ||
+    !cname ||
+    !acccode
+  ) {
+    return res
+      .status(400)
+      .json({ status: 400, message: "All field data Required!" });
+  }
+  if (!dairy_id) {
+    return res.status(401).json({ status: 401, message: "Unauthorized User!" });
+  }
+
   pool.getConnection((err, connection) => {
     if (err) {
       console.error("Error getting MySQL connection: ", err);
-      return res.status(500).json({ message: "Database connection error" });
+      return res
+        .status(500)
+        .json({ status: 500, message: "Database connection error!" });
     }
 
     try {
-      const dairy_id = req.user.dairy_id;
-      const user_role = req.user.user_role;
-      const center_id = req.user.center_id;
-
-      if (!dairy_id) {
-        connection.release();
-        return res.status(400).json({ message: "Dairy ID not found!" });
-      }
-
       const dairy_table = `dailymilkentry_${dairy_id}`;
 
       // Prepare the SQL query
@@ -505,40 +487,50 @@ exports.milkCollectionOneEntry = async (req, res) => {
 
           if (err) {
             console.error("Error executing query: ", err);
-            return res.status(500).json({ message: "Query execution error" });
+            return res
+              .status(500)
+              .json({ status: 500, message: "Query execution error!" });
           }
-          res.status(200).json({ message: "Milk entry saved successfully!" });
+          res
+            .status(200)
+            .json({ status: 200, message: "Milk entry saved successfully!" });
         }
       );
     } catch (error) {
       connection.release();
       console.error("Error processing request: ", error);
-      return res.status(500).json({ message: "Internal server error" });
+      return res
+        .status(500)
+        .json({ status: 500, message: "Internal server error!" });
     }
   });
 };
 
-//.........................................................
-// Save Previous Milk Collection ..........................
-//.........................................................
+//------------------------------------------------------------------------------------------------------------------->
+// Save Previous Milk Collection
+//------------------------------------------------------------------------------------------------------------------->
 
-//get rate from rate chart and calculate amount....................................................................
+//get rate from rate chart and calculate amount
 
 exports.getRateAmount = (req, res) => {
   const { rccode, rcdate, fat, snf, time, animal, liters } = req.body;
+
+  const dairy_id = req.user.dairy_id;
+  const center_id = req.user.center_id;
+
+  if ((!rccode, !rcdate || !fat || !snf || !time || !animal || !liters)) {
+    return res
+      .status(400)
+      .json({ status: 400, message: "All fields data required!" });
+  }
+  if (!dairy_id) {
+    return res.status(401).json({ status: 401, message: "Unauthorized User!" });
+  }
 
   pool.getConnection((err, connection) => {
     if (err) {
       console.error("Error getting MySQL connection: ", err);
       return res.status(500).json({ message: "Database connection error" });
-    }
-
-    const dairy_id = req.user.dairy_id;
-    const center_id = req.user.center_id;
-
-    if (!dairy_id) {
-      connection.release();
-      return res.status(400).json({ message: "Dairy ID not found!" });
     }
 
     const getRateAmt = `
@@ -555,13 +547,16 @@ exports.getRateAmount = (req, res) => {
 
         if (err) {
           console.error("Error executing query: ", err);
-          return res.status(500).json({ message: "Query execution error" });
+          return res
+            .status(500)
+            .json({ status: 500, message: "Query execution error" });
         }
 
         if (results.length === 0) {
-          return res
-            .status(404)
-            .json({ message: "Rate not found for the provided parameters." });
+          return res.status(404).json({
+            status: 400,
+            message: "Rate not found for the provided parameters.",
+          });
         }
 
         const rate = results[0].rate;
@@ -569,18 +564,20 @@ exports.getRateAmount = (req, res) => {
         // Ensure 'liters' is a number
         const litersNumber = parseFloat(liters);
         if (isNaN(litersNumber)) {
-          return res.status(400).json({ message: "Invalid value for liters." });
+          return res
+            .status(400)
+            .json({ status: 400, message: "Invalid value for liters." });
         }
 
         const amt = litersNumber * parseFloat(rate);
 
-        res.status(200).json({ rate: parseFloat(rate), amt });
+        res.status(200).json({ status: 200, rate: parseFloat(rate), amt });
       }
     );
   });
 };
 
-//.................................................................................................................
+//------------------------------------------------------------------------------------------------------------------->
 
 exports.PreviousMilkCollection = async (req, res) => {
   const {
@@ -598,30 +595,40 @@ exports.PreviousMilkCollection = async (req, res) => {
     acccode,
   } = req.body;
 
+  const dairy_id = req.user.dairy_id;
+  const user_role = req.user.user_role;
+  const center_id = req.user.center_id;
+
+  if (
+    !code ||
+    !date ||
+    !time ||
+    !animal ||
+    !liters ||
+    !fat ||
+    !snf ||
+    !amt ||
+    !degree ||
+    !rate ||
+    !cname ||
+    !acccode
+  ) {
+    return res
+      .status(400)
+      .json({ status: 400, message: "All fileds required!" });
+  }
+  if (!dairy_id) {
+    return res.status(400).json({ status: 401, message: "Unauthorized User!" });
+  }
+
   pool.getConnection((err, connection) => {
     if (err) {
       console.error("Error getting MySQL connection: ", err);
-      return res.status(500).json({ message: "Database connection error" });
+      return res.status(500).json({status:500, message: "Database connection error!" });
     }
 
     try {
-      const dairy_id = req.user.dairy_id;
-      const user_role = req.user.user_role;
-      const center_id = req.user.center_id;
-
-      if (!dairy_id) {
-        connection.release();
-        return res.status(400).json({ message: "Dairy ID not found!" });
-      }
-
       const dairy_table = `dailymilkentry_${dairy_id}`;
-
-      //       // Get the current date in YYYY-MM-DD format
-      //       const currentDate = new Date().toISOString().split("T")[0];
-      //
-      //       // Get the current hour to determine AM or PM
-      //       const currentHour = new Date().getHours();
-      //       const time = currentHour < 12 ? 0 : 1;
 
       // Prepare the SQL query
       const milkcollection = `
@@ -656,22 +663,28 @@ exports.PreviousMilkCollection = async (req, res) => {
 
           if (err) {
             console.error("Error executing query: ", err);
-            return res.status(500).json({ message: "Query execution error" });
+            return res
+              .status(500)
+              .json({ status: 500, message: "Query execution error!" });
           }
-          res.status(200).json({ message: "Milk entry saved successfully!" });
+          res
+            .status(200)
+            .json({ status: 200, message: "Milk entry saved successfully!" });
         }
       );
     } catch (error) {
       connection.release();
       console.error("Error processing request: ", error);
-      return res.status(500).json({ message: "Internal server error" });
+      return res
+        .status(500)
+        .json({ status: 500, message: "Internal server error!" });
     }
   });
 };
 
-//.................................................................
-// Upload Previous Milk Collection Excel ..........................
-//.................................................................
+//------------------------------------------------------------------------------------------------------------------->
+// Upload Previous Milk Collection Excel
+//------------------------------------------------------------------------------------------------------------------->
 
 exports.UploadPreviousMilkCollection = async (req, res) => {
   const { code, animal, liters, cname, sample, acccode } = req.body;
@@ -744,9 +757,9 @@ exports.UploadPreviousMilkCollection = async (req, res) => {
   });
 };
 
-//.................................................................
-//  Previous Milk Collection List  ................................
-//.................................................................
+//------------------------------------------------------------------------------------------------------------------->
+//  Previous Milk Collection List
+//------------------------------------------------------------------------------------------------------------------->
 
 exports.PreviousMilkCollectionList = async (req, res) => {
   const { code, animal, liters, cname, sample, acccode } = req.body;
@@ -819,9 +832,9 @@ exports.PreviousMilkCollectionList = async (req, res) => {
   });
 };
 
-//.........................................................
-// Save Previous Milk Collection ..........................
-//.........................................................
+//------------------------------------------------------------------------------------------------------------------->
+// Save Previous Milk Collection
+//------------------------------------------------------------------------------------------------------------------->
 
 //get rate from rate chart and calculate amount....................................................................
 
@@ -970,9 +983,9 @@ exports.PreviousMilkCollection = async (req, res) => {
   });
 };
 
-//.................................................................
-// Upload Previous Milk Collection Excel ..........................
-//.................................................................
+//------------------------------------------------------------------------------------------------------------------->
+// Upload Previous Milk Collection Excel
+//------------------------------------------------------------------------------------------------------------------->
 
 exports.UploadPreviousMilkCollection = async (req, res) => {
   const { code, animal, liters, cname, sample, acccode } = req.body;
@@ -1045,9 +1058,9 @@ exports.UploadPreviousMilkCollection = async (req, res) => {
   });
 };
 
-//.................................................................
-//  Previous Milk Collection List  ................................
-//.................................................................
+//------------------------------------------------------------------------------------------------------------------->
+//  Previous Milk Collection List
+//------------------------------------------------------------------------------------------------------------------->
 
 exports.PreviousMilkCollectionList = async (req, res) => {
   const { code, animal, liters, cname, sample, acccode } = req.body;
@@ -1194,9 +1207,9 @@ exports.mobileMilkCollection = async (req, res) => {
   });
 };
 
-//.................................................................
-// fetch Mobile Milk Collection (for mobile collector) ................
-//.................................................................
+//------------------------------------------------------------------------------------------------------------------->
+// fetch Mobile Milk Collection (for mobile collector)
+//------------------------------------------------------------------------------------------------------------------->
 
 //v2 function
 exports.fetchMobileMilkColl = async (req, res) => {
@@ -1254,9 +1267,9 @@ exports.fetchMobileMilkColl = async (req, res) => {
   });
 };
 
-//.................................................................
-// Fetch code & Liter to Show prev ................................
-//.................................................................
+//------------------------------------------------------------------------------------------------------------------->
+// Fetch code & Liter to Show prev
+//------------------------------------------------------------------------------------------------------------------->
 
 //v2 function
 exports.fetchPrevLiters = async (req, res) => {
@@ -1337,9 +1350,9 @@ exports.fetchPrevLiters = async (req, res) => {
   });
 };
 
-// -------------------------------------------------------------------------------------->
-// (Update) fetch Mobile Milk Collection to complete milk collection -------------------->
-// -------------------------------------------------------------------------------------->
+//------------------------------------------------------------------------------------------------------------------->
+// (Update) fetch Mobile Milk Collection to complete milk collection
+//------------------------------------------------------------------------------------------------------------------->
 
 exports.fetchMobileMilkCollection = async (req, res) => {
   const dairy_id = req.user.dairy_id;
@@ -1392,9 +1405,9 @@ exports.fetchMobileMilkCollection = async (req, res) => {
     }
   });
 };
-//.........................................................
-// Update Mobile Milk Collection ..........................
-//.........................................................
+//------------------------------------------------------------------------------------------------------------------->
+// Update Mobile Milk Collection
+//------------------------------------------------------------------------------------------------------------------->
 
 exports.updateMobileCollection = async (req, res) => {
   const { code, fat, snf, amt, degree, rate, acccode, sample } = req.body;
@@ -1469,9 +1482,9 @@ exports.updateMobileCollection = async (req, res) => {
   });
 };
 
-//...............................................................
-// Milk Collection Report (use to Fillter).......................
-//...............................................................
+//------------------------------------------------------------------------------------------------------------------->
+// Milk Collection Report (use to Fillter)
+//------------------------------------------------------------------------------------------------------------------->
 
 exports.allMilkCollReport = async (req, res) => {
   const { fromDate, toDate } = req.query;
@@ -1528,9 +1541,9 @@ exports.allMilkCollReport = async (req, res) => {
   });
 };
 
-//...............................................................
-// Milk Collection of MilkCollector (for admin) .................
-//...............................................................
+//------------------------------------------------------------------------------------------------------------------->
+// Milk Collection of MilkCollector (for admin)
+//------------------------------------------------------------------------------------------------------------------->
 
 //v2 function
 exports.allMilkCollection = async (req, res) => {
@@ -1601,9 +1614,9 @@ exports.allMilkCollection = async (req, res) => {
   });
 };
 
-//...............................................................
-// Fetch dairy Milk Collection Report ...........................
-//...............................................................
+//------------------------------------------------------------------------------------------------------------------->
+// Fetch dairy Milk Collection Report
+//------------------------------------------------------------------------------------------------------------------->
 
 exports.todaysMilkCollReport = async (req, res) => {
   const { date } = req.query; // Read from `req.query`
@@ -1662,9 +1675,9 @@ exports.todaysMilkCollReport = async (req, res) => {
   });
 };
 
-//.............................................................................
-// Fetch dairy Milk Collection Report Customer Wise ...........................
-//.............................................................................
+//------------------------------------------------------------------------------------------------------------------->
+// Fetch dairy Milk Collection Report Customer Wise
+//------------------------------------------------------------------------------------------------------------------->
 
 exports.custWiseMilkCReort = async (req, res) => {
   const { fromDate, toDate } = req.body;
@@ -1728,31 +1741,27 @@ exports.custWiseMilkCReort = async (req, res) => {
   });
 };
 
-//.......................................................................
-// Update dairy Milk Collection Customer Wise ...........................
-//.......................................................................
+//------------------------------------------------------------------------------------------------------------------->
+// Update dairy Milk Collection Customer Wise
+//------------------------------------------------------------------------------------------------------------------->
 
 exports.updateMilkCollCustWise = async (req, res) => {};
 
-//.......................................................................
-// Delete Perticular (Time / Date) Milk Collection Customer Wise ........
-//.......................................................................
+//------------------------------------------------------------------------------------------------------------------->
+// Delete Perticular (Time / Date) Milk Collection Customer Wise
+//------------------------------------------------------------------------------------------------------------------->
 
 exports.DeleteMilkCollCustWise = async (req, res) => {};
 
-//.......................................................................
-// Delete All Milk Collection Of Perticular Customer.....................
-//.......................................................................
+//------------------------------------------------------------------------------------------------------------------->
+// Delete All Milk Collection Of Perticular Customer
+//------------------------------------------------------------------------------------------------------------------->
 
 exports.DeleteAllMilkCollCustomer = async (req, res) => {};
 
-//.........................................................
-// Save Milk Collection ...................................
-//.........................................................
-
-// ..................................................
-// todays milk report for Admin .....................
-// ..................................................
+//------------------------------------------------------------------------------------------------------------------->
+// todays milk report for Admin
+//------------------------------------------------------------------------------------------------------------------->
 
 exports.todaysReport = async (req, res) => {
   const { formDate, toDate } = req.body;
@@ -1823,9 +1832,9 @@ exports.todaysReport = async (req, res) => {
   });
 };
 
-// ..........................................
-// milk report for customer .................
-// ..........................................
+//------------------------------------------------------------------------------------------------------------------->
+// milk report for customer
+//------------------------------------------------------------------------------------------------------------------->
 
 exports.milkReport = async (req, res) => {
   const { fromDate, toDate } = req.body;
@@ -1936,9 +1945,9 @@ exports.milkReport = async (req, res) => {
   });
 };
 
-// ............................................
-// Dashboard Info Admin .......................
-// ............................................
+//------------------------------------------------------------------------------------------------------------------->
+// Dashboard Info Admin
+//------------------------------------------------------------------------------------------------------------------->
 
 exports.dashboardInfo = async (req, res) => {
   const { fromDate, toDate } = req.body;
@@ -2016,9 +2025,9 @@ exports.dashboardInfo = async (req, res) => {
   });
 };
 
-// ..................................................................
-// Complete Milk Collection Report ..................................
-// ..................................................................
+//------------------------------------------------------------------------------------------------------------------->
+// Complete Milk Collection Report
+//------------------------------------------------------------------------------------------------------------------->
 
 // update driver 2 to retive only driver done collection
 exports.completedMilkReport = async (req, res) => {
@@ -2085,13 +2094,6 @@ exports.completedMilkReport = async (req, res) => {
     }
   });
 };
-
-// ............................................
-// Dashboard Info Admin .......................
-// ............................................
-// ............................................
-// Dashboard Info Admin .......................
-// ............................................
 
 //------------------------------------------------------------------------------------//
 //<<<<<<<<<<<<<<<<<<<<<<<<<-------Retail Milk sales-------->>>>>>>>>>>>>>>>>>>>>>>>>>>//
@@ -2254,7 +2256,7 @@ exports.RetailMilkCollection = async (req, res) => {
       `;
 
       // **Execute UPDATE Query First if rem_adv > 0**
-      if (rem_adv === 0 ||rem_adv > 0) {
+      if (rem_adv === 0 || rem_adv > 0) {
         connection.query(
           updateQuery,
           [rem_adv, id],
@@ -2342,7 +2344,6 @@ exports.RetailMilkCollection = async (req, res) => {
     }
   });
 };
-
 
 //-------------------------------------------------------------------------------------------------->
 // Retail milk report for mobile milk collector ---------------------------------------------------->

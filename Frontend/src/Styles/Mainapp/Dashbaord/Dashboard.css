@@ -43,6 +43,22 @@
 
 /* dashboard cards css end */
 
+/* <<----------------------------css for dashboard navlinks ---------------------------->> */
+
+.dashboard-nav-item {
+  padding: 0 10px;
+}
+.dashboard-nav-item .active {
+  background-color: antiquewhite;
+  padding: 10px;
+}
+.dashboard-nav-item .sub-navlinks {
+  font-size: clamp(0.8rem, 2vw, 1.2rem);
+  font-weight: 600;
+}
+
+/* <<----------------------------css for dashboard navlinks end---------------------------->> */
+
 /*--------Small Screen ( < 992px) CSS-------*/
 
 @media screen and (max-width: 426px) {

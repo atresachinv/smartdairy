@@ -1,5 +1,4 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-/* eslint-disable no-unused-vars */
+
 import React, { useEffect, useState } from "react";
 import { Route, Routes } from "react-router-dom";
 import AppNavviews from "./AppNavviews";

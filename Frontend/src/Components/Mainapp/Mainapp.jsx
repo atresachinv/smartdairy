@@ -48,6 +48,7 @@ import Products from "./Inventory/InventroyPages/Products/Products";
 import { checkCurrentSession } from "../../App/Features/Users/authSlice";
 import { toast } from "react-toastify";
 import "../../Styles/Mainapp/Mainapphome.css";
+import InventoryRports from "./Reports/InventoryReports/InventoryRports";
 import Returns from "./Inventory/InventroyPages/Returns/DealerReturns/Returns";
 import SanghsalesMaster from "./MilkSales/SanghsalesPages/SanghsalesMaster";
 import SalesMaster from "./Sales/SalesMaster";
@@ -60,6 +61,7 @@ import DeliveryStockMaster from "./Inventory/InventroyPages/Stocks/DeliveryStock
 import CustReturns from "./Inventory/InventroyPages/Returns/CustomerReturns/CustReturns";
 import SellRateMaster from "./Inventory/InventroyPages/Stocks/SellRate/SellRateMaster";
 import ExpiredProductsMaster from "./Inventory/InventroyPages/Stocks/ExpiredProduct/ExpiredProductsMaster";
+import DashboardTabs from "./Dashboard/DashboardTabs/DashboardTabs";
 
 const Mainapp = () => {
   const dispatch = useDispatch();
@@ -144,7 +146,7 @@ const Mainapp = () => {
           {/* <Mainappviews index={isselected} /> */}
           <Routes>
             {/* dashboard route */}
-            <Route path="dashboard" element={<Dashboard />} />
+            <Route path="dashboard/*" element={<DashboardTabs />} />
             {/* milk purchase routes */}
             <Route path="milk/collection/*" element={<Apphome />} />
             <Route path="milk/collection/:time" element={<Milkcollection />} />
@@ -226,7 +228,7 @@ const Mainapp = () => {
             <Route path="reports/milk/*" element={<MilkcollectionReports />} />
             <Route path="reports/customer/*" element={<CustomerReports />} />
             <Route path="reports/employee/*" element={<CustomerReports />} />
-            <Route path="reports/inventory/*" element={<CustomerReports />} />
+            <Route path="reports/inventory/*" element={<InventoryRports />} />
             <Route path="reports/sales/*" element={<CustomerReports />} />
             <Route path="reports/payment/*" element={<PaymentReports />} />
             {/* payment routes */}

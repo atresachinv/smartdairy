@@ -499,3 +499,122 @@ exports.fetchAllSales = (req, res) => {
     }
   });
 };
+
+//get all sale data to start date is 1/04/YYYY to today date
+exports.getSaleStock = async (req, res) => {
+  const dairy_id = req.user.dairy_id;
+  const center_id = req.user.center_id;
+  const { ItemGroupCode } = req.query;
+  // Get the current date
+  const today = new Date();
+  const year = today.getFullYear();
+  const startYear = today.getMonth() >= 3 ? year : year - 1; // If before April, take previous year
+  const startDate = `${startYear}-04-01`; // Financial year starts from April 1st
+  const endDate = today.toISOString().split("T")[0]; // Today's date in YYYY-MM-DD format
+
+  let query = `
+    SELECT * 
+    FROM salesmaster 
+    WHERE BillDate BETWEEN ? AND ?`;
+
+  const queryParams = [startDate, endDate];
+  console.log(startDate);
+  console.log(endDate);
+
+  if (dairy_id) {
+    query += ` AND companyid = ? AND center_id=?`;
+    queryParams.push(dairy_id, center_id);
+  } else {
+    return res
+      .status(500)
+      .json({ message: "DairyId and Center Id are required" });
+  }
+  if (ItemGroupCode) {
+    query += ` AND ItemGroupCode = ?`;
+    queryParams.push(ItemGroupCode);
+  }
+  pool.getConnection((err, connection) => {
+    if (err) {
+      console.error("Error getting MySQL connection: ", err);
+      return res.status(500).json({ message: "Database connection error" });
+    }
+
+    connection.query(query, queryParams, (err, result) => {
+      connection.release();
+
+      if (err) {
+        console.error("Error executing query: ", err);
+        return res
+          .status(500)
+          .json({ message: "Error fetching sales data", error: err });
+      }
+
+      res.status(200).json({
+        success: true,
+        salesData: result,
+      });
+    });
+  });
+};
+
+//get all purchase data to start date is 1/04/YYYY to today date
+exports.getPurchaseStock = async (req, res) => {
+  const { dairy_id, center_id } = req.user;
+  const { ItemGroupCode } = req.query;
+  console.log(dairy_id);
+  console.log(center_id);
+
+  // Get the current date
+  const today = new Date();
+  const year = today.getFullYear();
+  const startYear = today.getMonth() >= 3 ? year : year - 1;
+  const startDate = `${startYear}-04-01`;
+  const endDate = today.toISOString().split("T")[0];
+
+  let query = `
+    SELECT * 
+    FROM PurchaseMaster 
+    WHERE purchasedate BETWEEN ? AND ?`;
+
+  const queryParams = [startDate, endDate];
+
+  // Ensure dairy_id and center_id are included
+  if (dairy_id) {
+    query += ` AND dairy_id = ? AND center_id = ?`;
+    queryParams.push(dairy_id, center_id);
+  } else {
+    return res
+      .status(400)
+      .json({ message: "DairyId and CenterId are required" });
+  }
+
+  // Filter by ItemGroupCode if provided
+  if (ItemGroupCode) {
+    query += ` AND ItemGroupCode = ?`;
+    queryParams.push(ItemGroupCode);
+  }
+
+  pool.getConnection((err, connection) => {
+    if (err) {
+      console.error("Error getting MySQL connection: ", err);
+      return res.status(500).json({ message: "Database connection error" });
+    }
+
+    // Fetch purchase data
+    connection.query(query, queryParams, (err, result) => {
+      connection.release();
+
+      if (err) {
+        console.error("Error executing query: ", err);
+        return res
+          .status(500)
+          .json({ message: "Error fetching purchase data", error: err });
+      }
+
+      res.status(200).json({
+        success: true,
+        purchaseData: result,
+      });
+    });
+  });
+};

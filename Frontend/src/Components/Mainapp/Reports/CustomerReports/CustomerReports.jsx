@@ -20,7 +20,29 @@ const CustomerReports = () => {
   const [commissionFilter, setCommissionFilter] = useState(false); // Changed to boolean for clarity
   const [depositFilter, setDepositFilter] = useState(false); // Changed to boolean for clarity
   const [isSabhasadFilter, setIsSabhasadFilter] = useState("All");
+  const [groupedCenters, setGroupedCenters] = useState("");
+  const [selectedCenterId, setSelectedCenterId] = useState("");
 
+  const centerList = useSelector(
+    (state) => state.center.centersList.centersDetails
+  );
+
+  // Function to handle selection change
+  const handleCenterChange = (event) => {
+    setSelectedCenterId(event.target.value);
+  };
+
+  // Filter data based on selected center ID
+  const filteredCenterCustomer = customerlist?.filter(
+    (row) => String(row.centerid) === String(selectedCenterId) // Ensure type match
+  );
+  //.........
+  const displayedData = selectedCenterId
+    ? filteredCenterCustomer
+    : filteredData;
+
+  console.log("Centerlist", filteredCenterCustomer);
+  //........ Dairy name 
   const dairyname = useSelector(
     (state) =>
       state.dairy.dairyData.SocietyName || state.dairy.dairyData.center_name
@@ -28,7 +50,7 @@ const CustomerReports = () => {
   const CityName = useSelector((state) => state.dairy.dairyData.city);
 
   const columnOptions = {
-    Empaty: "index+1",
+    Empty: "index+1",
     Code: "cid",
     Customer_Name: "cname",
     English_Name: "engName",
@@ -159,10 +181,20 @@ const CustomerReports = () => {
       alert("No data available to export.");
       return;
     }
-    const worksheet = XLSX.utils.json_to_sheet(filteredData);
+
+    // Get only selected columns
+    const columns = Object.values(selectedColumns).filter(Boolean);
+    const filteredExcelData = filteredData.map((row) =>
+      Object.fromEntries(columns.map((col) => [col, row[col] || "N/A"]))
+    );
+
+    // Create worksheet and workbook
+    const worksheet = XLSX.utils.json_to_sheet(filteredExcelData);
     const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Customer List");
-    XLSX.writeFile(workbook, "Customer_Master_List.xlsx");
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Milk Collection Report");
+
+    // Export Excel file
+    XLSX.writeFile(workbook, "Milk_Collection_Report.xlsx");
   };
 
   const exportToPDF = () => {
@@ -309,7 +341,8 @@ const CustomerReports = () => {
               <select
                 className="w80 data"
                 value={dropdownValue}
-                onChange={(e) => setDropdownValue(e.target.value)}>
+                onChange={(e) => setDropdownValue(e.target.value)}
+              >
                 <option value="1">All</option>
                 <option value="2">Active</option>
                 <option value="3">Non Active</option>
@@ -322,7 +355,8 @@ const CustomerReports = () => {
                 onChange={(e) => setIsSabhasadFilter(e.target.value)}
                 className="w80 data"
                 name="Member"
-                id="001">
+                id="001"
+              >
                 <option value="001">All</option>
                 <option value="001">Member</option>
                 <option value="001">Non-Member</option>
@@ -335,17 +369,40 @@ const CustomerReports = () => {
               <select
                 className="w80 data"
                 value={milkTypeFilter}
-                onChange={(e) => setMilkTypeFilter(e.target.value)}>
+                onChange={(e) => setMilkTypeFilter(e.target.value)}
+              >
                 <option value="All">All</option>
                 <option value="Cow">Cow</option>
                 <option value="Buffalo">Buffalo</option>
               </select>
             </div>
           </div>
-          <div className="centerwise-data-show w30 h60 d-flex sa a-center ">
+          {/* <div className="centerwise-data-show w30 h60 d-flex sa a-center ">
             <span className="info-text w20">Centerwise</span>
             <select className="data w60" name="selection" id="001">
               <option value=""></option>
+            </select>
+          </div> */}{" "}
+          <div className="centerwise-data-show w30 h60 d-flex sa a-center">
+            <span className="info-text w20">Centerwise</span>
+            <select
+              className="data w60"
+              name="selection"
+              id="001"
+              onChange={handleCenterChange}
+            >
+              <option value="">Select Center</option>
+              {centerList && centerList.length > 0 ? (
+                centerList.map((center, index) => (
+                  <option key={index} value={center.center_id}>
+                    {center.name || center.center_name}
+                  </option>
+                ))
+              ) : (
+                <option value="" disabled>
+                  No Centers Available
+                </option>
+              )}
             </select>
           </div>
           <div className="checkboxcommission-Deposite w40 h1 d-flex ">
@@ -410,56 +467,15 @@ const CustomerReports = () => {
               className="w30 data"
               key={i}
               onChange={(e) => handleColumnSelection(e, i)}
-              value={selectedColumns[i] || ""}>
+              value={selectedColumns[i] || ""}
+            >
               <option value="">Select Column</option>
               {dropdown}
             </select>
           ))}
         </div>
       </div>
-      {/* </div> */}
-
-      {/* <table
-        className="customer-table mh60 w100 hidescrollbar bg"
-        id="customer-table"
-      >
-        <thead>
-          <tr>
-            {Object.values(selectedColumns)
-              .filter(Boolean)
-              .map((col, idx) => {
-                const subName = Object.keys(columnOptions).find(
-                  (key) => columnOptions[key] === col
-                );
-                return <th key={idx}>{subName}</th>; // Display the sub-name
-              })}
-          </tr>
-        </thead>
-        <tbody>
-          {filteredData.length === 0 ||
-          Object.values(selectedColumns).filter(Boolean).length === 0 ? (
-            <tr className="w100 h1 d-flex center">
-              <td colSpan="6" className="no-data-message">
-                Please select Table columns
-              </td>
-            </tr>
-          ) : (
-            filteredData.map((row, rowIndex) => (
-              <tr key={rowIndex}>
-                {Object.values(selectedColumns)
-                  .filter(Boolean)
-                  .map((col, colIndex) => (
-                    <td key={colIndex}>
-                      {col === "createdon"
-                        ? row[col]?.slice(0, 10) || "0"
-                        : row[col] || "0"}
-                    </td>
-                  ))}
-              </tr>
-            ))
-          )}
-        </tbody>
-      </table> */}
+      {/* 
       <div className="table-container hidescrollbar">
         <table className="customer-table mh60 w100 bg" id="customer-table">
           <thead>
@@ -484,6 +500,46 @@ const CustomerReports = () => {
               </tr>
             ) : (
               filteredData.map((row, rowIndex) => (
+                <tr key={rowIndex}>
+                  {Object.values(selectedColumns)
+                    .filter(Boolean)
+                    .map((col, colIndex) => (
+                      <td key={colIndex}>
+                        {col === "createdon"
+                          ? row[col]?.slice(0, 10) || "0"
+                          : row[col] || "0"}
+                      </td>
+                    ))}
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
+      </div> */}
+      <div className="table-container hidescrollbar">
+        <table className="customer-table mh60 w100 bg" id="customer-table">
+          <thead>
+            <tr>
+              {Object.values(selectedColumns)
+                .filter(Boolean)
+                .map((col, idx) => {
+                  const subName = Object.keys(columnOptions).find(
+                    (key) => columnOptions[key] === col
+                  );
+                  return <th key={idx}>{subName}</th>;
+                })}
+            </tr>
+          </thead>
+          <tbody>
+            {displayedData.length === 0 ||
+            Object.values(selectedColumns).filter(Boolean).length === 0 ? (
+              <tr className="w100 h1 d-flex center">
+                <td colSpan="6" className="no-data-message">
+                  Please select Table columns
+                </td>
+              </tr>
+            ) : (
+              displayedData.map((row, rowIndex) => (
                 <tr key={rowIndex}>
                   {Object.values(selectedColumns)
                     .filter(Boolean)

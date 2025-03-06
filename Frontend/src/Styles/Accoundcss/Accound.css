@@ -1,0 +1,495 @@
+.businessman-repoer-div input {
+  margin-right: 10px;
+}
+.businessman-repoer-div .inputtag {
+  margin-right: 10px;
+}
+.from-sale-div input {
+  font-size: x-small;
+}
+/* Popup overlay */
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Popup box */
+.popup-box {
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  width: 350px;
+  text-align: center;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+/* Radio button container */
+.radio-buttons-container {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin: 15px 0;
+}
+
+/* Supplier input section */
+.supplier-inputs {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Buttons */
+.button-group {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+button {
+  padding: 8px 10px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.close-btn {
+  background: rgb(201, 93, 93);
+  color: white;
+}
+
+button:hover {
+  opacity: 0.8;
+}
+/* Popup styles */
+.popup {
+  display: block;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+}
+
+.popup-content {
+  background-color: white;
+  margin: 15% auto;
+  padding: 20px;
+  border-radius: 8px;
+  width: 300px;
+  text-align: center;
+}
+
+.close-btn {
+  position: absolute;
+  top: 10px;
+  right: 20px;
+  font-size: 25px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+/* Button to open popup */
+.open-popup-btn {
+  margin-top: 10px;
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+.open-popup-btn:hover {
+  background-color: #0056b3;
+}
+/* ===== Popup Overlay (Background Blur) ===== */
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+/* ===== Popup Box ===== */
+.popup-box {
+  background: white;
+  width: 400px;
+  max-width: 90%;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+  position: relative;
+  text-align: center;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+/* ===== Close Button (X) in Top Right Corner ===== */
+.close-btn {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  font-size: 22px;
+  font-weight: bold;
+  color: #555;
+  cursor: pointer;
+  background: none;
+  border: none;
+}
+
+.close-btn:hover {
+  color: red;
+}
+
+/* ===== Radio Buttons Styling ===== */
+.radio-buttons-container label {
+  display: block;
+  font-size: 16px;
+  margin-top: 10px;
+  cursor: pointer;
+}
+
+/* ===== Input Fields & Dropdown ===== */
+select {
+  width: calc(100% - 20px);
+  padding: 8px;
+  margin-top: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 14px;
+}
+
+/* ===== Buttons ===== */
+.button-group {
+  margin-top: 15px;
+}
+
+button {
+  padding: 10px 15px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  border-radius: 5px;
+  transition: background 0.3s ease-in-out;
+}
+
+button:hover {
+  background-color: #0056b3;
+}
+
+/*------------- Dsitrubuted Sell Popup-----------/*
+/* Wrapper for Sale Popup */
+.sale-register-container {
+  position: relative;
+  text-align: center;
+}
+
+/* Clickable Box */
+.sale-register-div {
+  cursor: pointer;
+  background: #f8f9fa;
+  /* padding: 12px 18px; */
+  border-radius: 6px;
+  font-weight: bold;
+  display: inline-block;
+  transition: background 0.3s ease;
+}
+
+.sale-register-div:hover {
+  background: #e0e0e0;
+}
+
+/* Popup Overlay */
+.popup-overlay {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(0, 0, 0, 0.4);
+  width: 50vw;
+  height: 50vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+/* Popup Box */
+.popup {
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  width: 60%;
+  max-width: 750px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* Popup Title */
+.popup h3 {
+  text-align: center;
+  font-size: 18px;
+  font-weight: bold;
+  color: #333;
+}
+
+/* Filter Fields - Horizontal Layout */
+.filter-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+/* Single Field */
+.filter-container div {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 100px;
+}
+
+.filter-container label {
+  font-weight: 600;
+  font-size: 14px;
+  margin-bottom: 5px;
+}
+
+.filter-container select,
+.filter-container input {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+/* Button Actions */
+.button-group {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+/* Buttons */
+.button-group button {
+  padding: 10px 20px;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  border-radius: 5px;
+  width: 150px;
+}
+
+/* Report Button */
+.button-group button:first-child {
+  background-color: #007bff;
+  color: white;
+}
+
+.button-group button:first-child:hover {
+  background-color: #0056b3;
+}
+
+/* Exit Button */
+.button-group button:last-child {
+  background-color: #dc3545;
+  color: white;
+}
+
+.button-group button:last-child:hover {
+  background-color: #a71d2a;
+}
+
+/* ===== Fade-in Animation for Popup ===== */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+@media screen and (max-width: 426px) {
+  .enventory-container-repots .enventory-reports-first-half-part {
+    width: 100%;
+  }
+  .enventory-container-repots {
+    flex-direction: column;
+  }
+  .enventory-container-repots .second-half-div {
+    width: 100%;
+  }
+  .enventory-reports-first-half-part
+    .fromto-date-sale-report
+    .from-sale-div
+    span {
+    width: 50px;
+  }
+  .enventory-reports-first-half-part .register-sale-and-purches-div {
+    height: 120px;
+  }
+  .enventory-reports-first-half-part
+    .fromto-date-sale-report
+    .from-sale-div
+    input {
+    width: 90px;
+    font-size: x-small;
+  }
+  .enventory-reports-first-half-part
+    .register-sale-and-purches-div
+    .salea-register-div
+    .Purches {
+    width: 100%;
+    height: 25px;
+  }
+  .enventory-reports-first-half-part
+    .register-sale-and-purches-div
+    .salea-register-div
+    .Disturbed-Purches-sale-register-div {
+    width: 100%;
+    height: 25px;
+  }
+  .enventory-reports-first-half-part
+    .register-sale-and-purches-div
+    .salea-register-div
+    .Dealerwise-div {
+    width: 100%;
+    height: 25px;
+  }
+  .enventory-reports-first-half-part
+    .register-sale-and-purches-div
+    .salea-register-div
+    .sale-register-div {
+    width: 100%;
+    height: 20px;
+  }
+  .enventory-reports-first-half-part
+    .register-sale-and-purches-div
+    .salea-register-div
+    .periodwise-purched {
+    width: 100%;
+    height: 20px;
+  }
+  .radio-buttons-for-cattlefeed .pashukhandya-radio-button {
+    width: 120px;
+  }
+  .span-input-yapari-mandal-conatainer .span-input-yapari-mandal-div {
+    justify-content: space-around;
+  }
+  .span-input-yapari-mandal-conatainer .span-input-yapari-mandal-div span {
+    width: 50px;
+  }
+  .span-input-yapari-mandal-conatainer .span-input-yapari-mandal-div input {
+    width: 80px;
+    font-size: x-small;
+    height: 30px;
+  }
+  .second-half-div .fromto-date-sale-report .from-sale-div span {
+    width: 50%;
+  }
+  .goodswise-avak-javak-div{
+    
+  }
+}
+@media screen and (max-width: 768px) {
+  .enventory-container-repots .enventory-reports-first-half-part {
+    width: 100%;
+  }
+  .enventory-container-repots {
+    flex-direction: column;
+  }
+  .enventory-container-repots .second-half-div {
+    width: 100%;
+  }
+  .enventory-reports-first-half-part
+    .fromto-date-sale-report
+    .from-sale-div
+    span {
+    width: 50px;
+  }
+  .enventory-reports-first-half-part .register-sale-and-purches-div {
+    height: 120px;
+  }
+  .enventory-reports-first-half-part
+    .fromto-date-sale-report
+    .from-sale-div
+    input {
+    width: 90px;
+    font-size: x-small;
+  }
+  .enventory-reports-first-half-part
+    .register-sale-and-purches-div
+    .salea-register-div
+    .Purches {
+    width: 100%;
+    height: 25px;
+  }
+  .enventory-reports-first-half-part
+    .register-sale-and-purches-div
+    .salea-register-div
+    .Disturbed-Purches-sale-register-div {
+    width: 100%;
+    height: 25px;
+  }
+  .enventory-reports-first-half-part
+    .register-sale-and-purches-div
+    .salea-register-div
+    .Dealerwise-div {
+    width: 100%;
+    height: 25px;
+  }
+  .enventory-reports-first-half-part
+    .register-sale-and-purches-div
+    .salea-register-div
+    .sale-register-div {
+    width: 100%;
+    height: 20px;
+  }
+  .enventory-reports-first-half-part
+    .register-sale-and-purches-div
+    .salea-register-div
+    .periodwise-purched {
+    width: 100%;
+    height: 20px;
+  }
+  .radio-buttons-for-cattlefeed .pashukhandya-radio-button {
+    width: 120px;
+  }
+  .span-input-yapari-mandal-conatainer .span-input-yapari-mandal-div {
+    justify-content: space-around;
+  }
+  .span-input-yapari-mandal-conatainer .span-input-yapari-mandal-div span {
+    width: 50px;
+  }
+  .span-input-yapari-mandal-conatainer .span-input-yapari-mandal-div input {
+    width: 80px;
+    font-size: x-small;
+    height: 30px;
+  }
+  .second-half-div .fromto-date-sale-report .from-sale-div span {
+    width: 50%;
+  }
+}
