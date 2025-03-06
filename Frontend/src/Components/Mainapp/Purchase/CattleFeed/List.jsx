@@ -31,6 +31,14 @@ const List = () => {
       state.dairy.dairyData.SocietyName ||
       state.dairy.dairyData.center_name
   );
+
+  const role = useSelector((state) => state.users.user?.role);
+  const [userRole, setUserRole] = useState(role);
+
+  useEffect(() => {
+    setUserRole(role);
+  }, [role]);
+
   // Handle view button click for purchase list
   const handleEditClick = (id) => {
     const filterList = purchaseList.filter((item) => item.billno === id) || [];
@@ -45,7 +53,7 @@ const List = () => {
       SetLoading(true);
       try {
         const response = await axiosInstance.get(
-          "/purchase/all?itemgroupcode=1&cn=0"
+          `/purchase/all?itemgroupcode=1&cn=0&role=${userRole}`
         );
         let purchase = response?.data?.purchaseData || [];
         purchase.sort(
@@ -183,7 +191,7 @@ const List = () => {
     try {
       const queryParams = new URLSearchParams(getItem).toString();
       const { data } = await axiosInstance.get(
-        `/purchase/all?ItemGroupCode=1&cn=0&${queryParams}`
+        `/purchase/all?ItemGroupCode=1&cn=0&role=${userRole}&${queryParams}`
       );
       // console.log(data);
       if (data?.success) {
@@ -495,7 +503,13 @@ const List = () => {
             <span className="f-info-text w10">{t("ps-dealer-no")}</span>
             <span className="f-info-text w15">{t("ps-dealer-name")}</span>
             <span className="f-info-text w10">{t("ps-ttl-amt")}</span>
-            <span className="f-info-text w10">{t("CreatedBy")}</span>
+            {userRole === "salesman" ? (
+              <></>
+            ) : (
+              <>
+                <span className="f-info-text w10">{t("CreatedBy")}</span>
+              </>
+            )}
             <span className="f-info-text w10">Actions</span>
           </div>
           {loading ? (
@@ -525,9 +539,16 @@ const List = () => {
                       {item.dealerName || "Unknown"}
                     </span>
                     <span className="text w10">{item.TotalAmount}</span>
-                    <span className="text w10">
-                      {item.createdby || "Unknown"}
-                    </span>
+                    {userRole === "salesman" ? (
+                      <></>
+                    ) : (
+                      <>
+                        <span className="text w10">
+                          {item.createdby || "Unknown"}
+                        </span>
+                      </>
+                    )}
+
                     <span className="text w10 d-flex j-center a-center">
                       <button
                         style={{ cursor: "pointer" }}

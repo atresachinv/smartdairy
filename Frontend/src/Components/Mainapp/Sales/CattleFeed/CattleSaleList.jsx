@@ -38,13 +38,12 @@ const CattleSaleList = () => {
       state.dairy.dairyData.SocietyName ||
       state.dairy.dairyData.center_name
   );
-  const [userRole, setUserRole] = useState(null);
-  console.log(userRole);
-  //set user role
+  const role = useSelector((state) => state.users.user?.role);
+  const [userRole, setUserRole] = useState(role);
+
   useEffect(() => {
-    const myrole = localStorage.getItem("userRole");
-    setUserRole(myrole);
-  }, []);
+    setUserRole(role);
+  }, [role]);
 
   //download Excel sheet
   const downloadExcel = () => {
@@ -93,7 +92,7 @@ const CattleSaleList = () => {
       SetLoadings(true);
       try {
         const { data } = await axiosInstance.get(
-          "/sale/all?ItemGroupCode=1&cn=0"
+          `/sale/all?ItemGroupCode=1&cn=0&role=${userRole}`
         ); // Replace with your actual API URL
         if (data.success) {
           // console.log(data);
@@ -137,7 +136,7 @@ const CattleSaleList = () => {
     try {
       const queryParams = new URLSearchParams(getItem).toString();
       const { data } = await axiosInstance.get(
-        `/sale/all?ItemGroupCode=1&cn=0&${queryParams}`
+        `/sale/all?ItemGroupCode=1&cn=0&role=${userRole}&${queryParams}`
       );
       if (data?.success) {
         setSales(data.salesData);
