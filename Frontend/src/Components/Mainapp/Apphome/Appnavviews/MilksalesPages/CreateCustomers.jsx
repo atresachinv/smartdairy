@@ -1,9 +1,9 @@
 import React, { useRef, useState } from "react";
 import { toast } from "react-toastify";
-import "../../../../../Styles/Mainapp/MilkSales/MilkSales.css";
 import { useDispatch } from "react-redux";
 import { createRetailCustomer } from "../../../../../App/Features/Mainapp/Milksales/milkSalesSlice";
 import { useTranslation } from "react-i18next";
+import "../../../../../Styles/Mainapp/MilkSales/MilkSales.css";
 
 const CreateCustomers = ({ clsebtn }) => {
   const dispatch = useDispatch();

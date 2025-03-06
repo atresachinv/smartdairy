@@ -9,147 +9,6 @@ const cache = new NodeCache({});
 // Create Emp (Admin Route)........................................
 //.................................................................
 
-// exports.createEmployee = async (req, res) => {
-//   const {
-//     date,
-//     marathi_name,
-//     emp_name,
-//     mobile,
-//     designation,
-//     salary,
-//     city,
-//     tehsil,
-//     district,
-//     pincode,
-//     bankName,
-//     bank_ac,
-//     bankIFSC,
-//     password,
-//   } = req.body;
-//
-//   const dairy_id = req.user.dairy_id;
-//   const center_id = req.user.center_id;
-//   const user_role = req.user.user_role;
-//
-//   pool.getConnection((err, connection) => {
-//     if (err) {
-//       console.error("Error getting MySQL connection: ", err);
-//       return res.status(500).json({ message: "Database connection error" });
-//     }
-//
-//     connection.beginTransaction((err) => {
-//       if (err) {
-//         connection.release();
-//         return res.status(500).json({ message: "Error starting transaction" });
-//       }
-//
-//       try {
-//         // Step 2: Insert into employeemaster table
-//         const createEmployeeQuery = `
-//           INSERT INTO employeemaster (
-//              dairy_id, center_id, emp_name , marathi_name, emp_mobile , emp_bankname , emp_accno , emp_ifsc , emp_city , emp_tal , emp_dist , createdon, createdby , designation , salary , pincode, emp_id
-//           ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-//         `;
-//
-//         connection.query(
-//           createEmployeeQuery,
-//           [
-//             dairy_id,
-//             center_id,
-//             emp_name,
-//             marathi_name,
-//             mobile,
-//             bankName,
-//             bank_ac,
-//             bankIFSC,
-//             city,
-//             tehsil,
-//             district,
-//             date,
-//             user_role,
-//             designation,
-//             salary,
-//             pincode,
-//             emp_id,
-//           ],
-//           (err, result) => {
-//             if (err) {
-//               return connection.rollback(() => {
-//                 connection.release();
-//                 console.error(
-//                   "Error inserting into employeemaster table: ",
-//                   err
-//                 );
-//                 return res
-//                   .status(500)
-//                   .json({ message: "Database query error" });
-//               });
-//             }
-//
-//             // Step 3: Insert into users table
-//             const createUserQuery = `
-//               INSERT INTO users (
-//                 username, password, isAdmin, createdon, createdby, designation,
-//                 mobile, SocietyCode, center_id
-//               ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-//             `;
-//
-//             connection.query(
-//               createUserQuery,
-//               [
-//                 mobile,
-//                 password,
-//                 1, // Assuming the user is always an admin by default
-//                 date,
-//                 user_role,
-//                 designation,
-//                 mobile,
-//                 dairy_id,
-//                 center_id,
-//               ],
-//               (err, result) => {
-//                 if (err) {
-//                   return connection.rollback(() => {
-//                     connection.release();
-//                     console.error("Error inserting into users table: ", err);
-//                     return res
-//                       .status(500)
-//                       .json({ message: "Database query error" });
-//                   });
-//                 }
-//
-//                 // Commit transaction after both inserts succeed
-//                 connection.commit((err) => {
-//                   if (err) {
-//                     return connection.rollback(() => {
-//                       connection.release();
-//                       console.error("Error committing transaction: ", err);
-//                       return res
-//                         .status(500)
-//                         .json({ message: "Error committing transaction" });
-//                     });
-//                   }
-//
-//                   connection.release();
-//                   res
-//                     .status(200)
-//                     .json({ message: "Employee created successfully!" });
-//                 });
-//               }
-//             );
-//           }
-//         );
-//       } catch (error) {
-//         connection.rollback(() => {
-//           connection.release();
-//           console.error("Error processing request: ", error);
-//           return res.status(500).json({ message: "Internal server error" });
-//         });
-//       }
-//     });
-//   });
-// };
-
 exports.createEmployee = async (req, res) => {
   const {
     date,
@@ -172,16 +31,24 @@ exports.createEmployee = async (req, res) => {
   const center_id = req.user.center_id;
   const user_role = req.user.user_role;
 
+  if (!dairy_id) {
+    return res.status(401).json({ status: 401, message: "Unauthorized User!" });
+  }
+
   pool.getConnection((err, connection) => {
     if (err) {
       console.error("Error getting MySQL connection: ", err);
-      return res.status(500).json({ message: "Database connection error" });
+      return res
+        .status(500)
+        .json({ status: 500, message: "Database connection error!" });
     }
 
     connection.beginTransaction((err) => {
       if (err) {
         connection.release();
-        return res.status(500).json({ message: "Error starting transaction" });
+        return res
+          .status(500)
+          .json({ status: 500, message: "Error starting transaction!" });
       }
 
       try {
@@ -198,7 +65,7 @@ exports.createEmployee = async (req, res) => {
                 console.error("Error finding max emp_id: ", err);
                 return res
                   .status(500)
-                  .json({ message: "Database query error" });
+                  .json({ status: 500, message: "Database query error" });
               });
             }
 
@@ -244,7 +111,7 @@ exports.createEmployee = async (req, res) => {
                     );
                     return res
                       .status(500)
-                      .json({ message: "Database query error" });
+                      .json({ status: 500, message: "Database query error" });
                   });
                 }
 
@@ -277,9 +144,10 @@ exports.createEmployee = async (req, res) => {
                           "Error inserting into users table: ",
                           err
                         );
-                        return res
-                          .status(500)
-                          .json({ message: "Database query error" });
+                        return res.status(500).json({
+                          status: 500,
+                          message: "Database query error",
+                        });
                       });
                     }
 
@@ -289,16 +157,18 @@ exports.createEmployee = async (req, res) => {
                         return connection.rollback(() => {
                           connection.release();
                           console.error("Error committing transaction: ", err);
-                          return res
-                            .status(500)
-                            .json({ message: "Error committing transaction" });
+                          return res.status(500).json({
+                            status: 500,
+                            message: "Error committing transaction",
+                          });
                         });
                       }
 
                       connection.release();
-                      res
-                        .status(200)
-                        .json({ message: "Employee created successfully!" });
+                      res.status(200).json({
+                        status: 200,
+                        message: "Employee created successfully!",
+                      });
                     });
                   }
                 );
@@ -314,7 +184,9 @@ exports.createEmployee = async (req, res) => {
         connection.rollback(() => {
           connection.release();
           console.error("Error processing request: ", error);
-          return res.status(500).json({ message: "Internal server error" });
+          return res
+            .status(500)
+            .json({ status: 500, message: "Internal server error" });
         });
       }
     });
@@ -328,9 +200,15 @@ exports.createEmployee = async (req, res) => {
 //v2
 exports.findEmpByCode = async (req, res) => {
   const { code } = req.body;
-
   const dairy_id = req.user.dairy_id;
   const center_id = req.user.center_id;
+
+  if (!code) {
+    return res.status(400).json({ status: 400, message: "Employee code required!" });
+  }
+  if (!dairy_id) {
+    return res.status(401).json({ status: 401, message: "Unauthorized User!" });
+  }
 
   pool.getConnection((err, connection) => {
     if (err) {
@@ -355,55 +233,17 @@ exports.findEmpByCode = async (req, res) => {
             .status(500)
             .json({ message: "Error retrieving employee data" });
         }
-        return res.status(200).json({ employee: result[0] });
+        if (result.affectedRows === 0) {
+          return res
+            .status(204)
+            .json({ status: 204, message: "Employee Not found!" });
+        }
+
+        return res.status(200).json({ status: 200, employee: result[0] });
       }
     );
   });
 };
-
-//v3
-// exports.findEmpByCode = async (req, res) => {
-//   const { code } = req.body;
-//
-//   const dairy_id = req.user.dairy_id;
-//   const center_id = req.user.center_id;
-//
-//   let connection;
-//
-//   try {
-//     // Get MySQL connection
-//     connection = await pool.getConnection();
-//
-//     const findEmpQuery = `
-//       SELECT * FROM employeemaster
-//       WHERE dairy_id = ? AND center_id = ? AND emp_id = ?
-//     `;
-//
-//     // Execute the query
-//     connection.query(
-//       findEmpQuery,
-//       [dairy_id, center_id, code],
-//       (error, result) => {
-//         if (error) {
-//           console.error("Error executing query: ", error);
-//           return res
-//             .status(500)
-//             .json({ message: "Error retrieving employee data" });
-//         }
-//
-//         return res.status(200).json({ employee: result[0] });
-//       }
-//     );
-//   } catch (error) {
-//     console.error("Unexpected error: ", error);
-//     return res.status(500).json({ message: "Unexpected error occurred" });
-//   } finally {
-//     // Ensure the connection is released
-//     if (connection) {
-//       connection.release();
-//     }
-//   }
-// };
 
 //.................................................................
 // Update Emp Info (Admin Route) ..................................
@@ -431,10 +271,34 @@ exports.updateEmployee = async (req, res) => {
   const center_id = req.user.center_id;
   const user_role = req.user.user_role;
 
+  if (!code ||
+    !date ||
+    !marathi_name ||
+    !emp_name ||
+    !designation ||
+    !salary ||
+    !city ||
+    !tehsil ||
+    !district ||
+    !pincode ||
+    !bankName ||
+    !bank_ac ||
+    !bankIFSC) {
+    return res
+      .status(400)
+      .json({ status: 400, message: "All field data required!" });
+  }
+
+  if (!dairy_id) {
+    return res.status(401).json({ status: 401, message: "Unauthorized User!" });
+  }
+
   pool.getConnection((err, connection) => {
     if (err) {
       console.error("Error getting MySQL connection: ", err);
-      return res.status(500).json({ message: "Database connection error" });
+      return res
+        .status(500)
+        .json({ status: 500, message: "Database connection error!" });
     }
 
     try {
@@ -471,11 +335,15 @@ exports.updateEmployee = async (req, res) => {
 
           if (error) {
             console.error("Error executing query: ", error);
-            return res.status(500).json({ message: "Error updating employee" });
+            return res
+              .status(500)
+              .json({ status: 500, message: "Error updating employee!" });
           }
 
           if (results.affectedRows === 0) {
-            return res.status(404).json({ message: "Employee not found" });
+            return res
+              .status(404)
+              .json({ status: 404, message: "Employee not found!" });
           }
           // Remove the cached employee list
           const cacheKey = `employeeList_${dairy_id}_${center_id}`;
@@ -483,13 +351,15 @@ exports.updateEmployee = async (req, res) => {
 
           return res
             .status(200)
-            .json({ message: "Employee updated successfully" });
+            .json({ status: 200, message: "Employee updated successfully!" });
         }
       );
     } catch (error) {
       connection.release();
       console.error("Error processing request: ", error);
-      return res.status(500).json({ message: "Internal server error" });
+      return res
+        .status(500)
+        .json({ status: 500, message: "Internal server error!" });
     }
   });
 };
@@ -505,9 +375,22 @@ exports.deleteEmployee = async (req, res) => {
   const dairy_id = req.user.dairy_id;
   const center_id = req.user.center_id;
 
+   if (!emp_id) {
+     return res
+       .status(400)
+       .json({ status: 400, message: "Employee id is required!" });
+   }
+   if (!dairy_id) {
+     return res
+       .status(401)
+       .json({ status: 401, message: "Unauthorized User!" });
+   }
+
   pool.getConnection((err, connection) => {
     if (err) {
-      return res.status(500).json({ message: "Database connection error" });
+      return res
+        .status(500)
+        .json({ status: 500, message: "Database connection error" });
     }
 
     try {
@@ -524,11 +407,15 @@ exports.deleteEmployee = async (req, res) => {
 
           if (error) {
             console.error("Error executing query: ", error);
-            return res.status(500).json({ message: "Error deleting employee" });
+            return res
+              .status(500)
+              .json({ status: 500, message: "Error deleting employee" });
           }
 
           if (results.affectedRows === 0) {
-            return res.status(404).json({ message: "Employee not found" });
+            return res
+              .status(404)
+              .json({ status: 404, message: "Employee not found" });
           }
 
           // Remove the cached employee list
@@ -537,13 +424,15 @@ exports.deleteEmployee = async (req, res) => {
 
           return res
             .status(200)
-            .json({ message: "Employee deleted successfully" });
+            .json({ status: 200, message: "Employee deleted successfully" });
         }
       );
     } catch (error) {
       connection.release();
       console.error("Error processing request: ", error);
-      return res.status(500).json({ message: "Internal server error" });
+      return res
+        .status(500)
+        .json({ status: 500, message: "Internal server error" });
     }
   });
 };

@@ -17,3 +17,12 @@
 .dropdown-list li:hover {
   background: #f0f0f0;
 }
+
+@media screen and (max-width: 426px) {
+  .retail-milk-sales-form-container .milk-col-form {
+    width: 100%;
+  }
+  .milk-col-form .form-btns button {
+    width: auto;
+  }
+}
