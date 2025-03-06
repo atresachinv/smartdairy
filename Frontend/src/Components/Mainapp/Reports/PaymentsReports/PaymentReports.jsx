@@ -6,7 +6,7 @@ const PaymentReports = () => {
   const [isselected, setIsSelected] = useState(
     parseInt(localStorage.getItem("PayReportTabIndex")) || 0
   );
-
+   
   // Update localStorage whenever isselected changes
   useEffect(() => {
     localStorage.setItem("PayReportTabIndex", isselected);

@@ -48,6 +48,7 @@ import { checkCurrentSession } from "../../App/Features/Users/authSlice";
 import { toast } from "react-toastify";
 import "../../Styles/Mainapp/Mainapphome.css";
 import Returns from "./Inventory/InventroyPages/Returns/Returns";
+import InventoryRports from "./Reports/InventoryReports/InventoryRports";
 
 const Mainapp = () => {
   const dispatch = useDispatch();
@@ -120,7 +121,8 @@ const Mainapp = () => {
       <div
         className={`sidebar-container ${
           openSidebar ? "open-sidebar " : "close-sidebar"
-        }`}>
+        }`}
+      >
         <Sidebar setselected={setIsselected} handleSidebar={handleSidebar} />
       </div>
       <div className="nav-main-view-container w80 h1 d-flex-col">
@@ -169,7 +171,7 @@ const Mainapp = () => {
             <Route path="reports/milk/*" element={<MilkcollectionReports />} />
             <Route path="reports/customer/*" element={<CustomerReports />} />
             <Route path="reports/employee/*" element={<CustomerReports />} />
-            <Route path="reports/inventory/*" element={<CustomerReports />} />
+            <Route path="reports/inventory/*" element={<InventoryRports />} />
             <Route path="reports/sales/*" element={<CustomerReports />} />
             <Route path="reports/payment/*" element={<PaymentReports />} />
             {/* payment routes */}

@@ -1,0 +1,257 @@
+/* Table Container */
+.table-container {
+  max-height: 300px; /* Adjust height as needed */
+  overflow-y: auto; /* Enables vertical scrolling */
+  overflow-x: auto; /* Enables horizontal scrolling if needed */
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  background-color: #fff;
+}
+
+/* Table */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+/* Sticky Table Header */
+thead {
+  background: linear-gradient(135deg, #4caf50, #2e7d32);
+  color: white;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+/* Header Cells */
+th {
+  padding: 12px 16px;
+  font-size: 14px;
+  position: static;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  text-align: left;
+  border-bottom: 2px solid #ddd;
+}
+
+/* Table Body */
+tbody tr {
+  transition: background 0.2s ease-in-out;
+}
+
+/* Alternating Row Colors */
+tbody tr:nth-child(odd) {
+  background-color: #f9f9f9;
+}
+
+tbody tr:nth-child(even) {
+  background-color: #ffffff;
+}
+
+/* Hover Effect */
+tbody tr:hover {
+  background-color: #e8f5e9;
+  cursor: pointer;
+}
+
+/* Table Cells */
+td {
+  padding: 12px 16px;
+  font-size: 14px;
+  color: #333;
+  border-bottom: 1px solid #ddd;
+  text-align: left;
+}
+
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .table-container {
+    overflow-x: auto;
+  }
+
+  table {
+    width: 100%;
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+
+  th,
+  td {
+    padding: 10px;
+    font-size: 13px;
+  }
+}
+
+@media screen and (max-width: 320px) {
+  .fromto-date-sale-report {
+    flex-direction: column;
+  }
+  .from-to-date-purches-conta .from-salee-div {
+    width: 50%;
+  }
+  .from-to-date-purches-conta .from-salee-div span {
+    width: 50%;
+  }
+  .from-to-date-purches-conta .from-salee-div input {
+    width: 100px;
+    font-size: x-small;
+    height: 35px;
+  }
+  .reports-print-buttondiv
+    .fromto-date-sale-report
+    .from-to-date-purches-conta {
+    display: flex;
+    align-items: center;
+  }
+  .reports-print-buttondiv .fromto-date-sale-report .businessman-repoer-div {
+    height: 50px;
+    margin-bottom: 20px;
+  }
+  .reports-print-buttondiv
+    .fromto-date-sale-report
+    .businessman-repoer-div
+    span {
+    width: 45px;
+    margin-right: 4px;
+  }
+  .reports-print-buttondiv
+    .fromto-date-sale-report
+    .businessman-repoer-div
+    .filter-code-div
+    input {
+    width: 50px;
+    font-size: small;
+  }
+  .reports-print-buttondiv
+    .fromto-date-sale-report
+    .businessman-repoer-div
+    .filter-name-wise-div
+    span {
+    margin-left: 10px;
+  }
+  .reports-print-buttondiv
+    .fromto-date-sale-report
+    .businessman-repoer-div
+    .button-for-pdf
+    button {
+    width: 40px;
+    font-size: x-small;
+  }
+  .reports-print-buttondiv
+    .fromto-date-sale-report
+    .businessman-repoer-div
+    .filter-name-wise-div
+    input {
+    width: 110px;
+    font-size: small;
+  }
+  .purches-report-section .purches-report-container {
+    flex-direction: column;
+  }
+
+  .purches-report-section
+    .purches-report-container
+    .purches-register-report
+    span {
+    width: 150px;
+  }
+
+  .purches-report-section
+    .purches-report-container
+    .purches-register-report
+    select {
+    width: 170px;
+    font-size: small;
+    margin-bottom: 10px;
+  }
+  .container {
+    margin-top: 10px;
+  }
+  .container .min-w-full .bg-gray-50 .tr .th {
+    font-size: 14px;
+    position: sticky;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    text-align: left;
+    border-bottom: 2px solid #ddd;
+  }
+    .bg-gray-50 th {
+    font-size: 12px; /* Reduce font size for smaller screens */
+    padding: 4px;
+  }
+  .px-6 {
+    padding: 4px; /* Reduce padding on small screens */
+  }
+}
+@media screen and (max-width: 768px) {
+  .fromto-date-sale-report {
+    flex-direction: column;
+  }
+  .from-to-date-purches-conta .from-salee-div {
+    width: 50%;
+  }
+  .from-to-date-purches-conta .from-salee-div span {
+    width: 50%;
+  }
+  .from-to-date-purches-conta .from-salee-div input {
+    width: 100px;
+    font-size: x-small;
+    height: 35px;
+  }
+  .reports-print-buttondiv
+    .fromto-date-sale-report
+    .from-to-date-purches-conta {
+    display: flex;
+    align-items: center;
+  }
+  .reports-print-buttondiv .fromto-date-sale-report .businessman-repoer-div {
+    height: 50px;
+    margin-bottom: 20px;
+  }
+  .reports-print-buttondiv
+    .fromto-date-sale-report
+    .businessman-repoer-div
+    span {
+    width: 45px;
+  }
+  .reports-print-buttondiv
+    .fromto-date-sale-report
+    .businessman-repoer-div
+    .filter-code-div
+    input {
+    width: 50px;
+    font-size: small;
+    margin-right: 10px;
+  }
+  .reports-print-buttondiv
+    .fromto-date-sale-report
+    .businessman-repoer-div
+    .filter-name-wise-div
+    input {
+    width: 110px;
+    font-size: small;
+  }
+  .purches-report-section .purches-report-container {
+    flex-direction: column;
+  }
+
+  .purches-report-section
+    .purches-report-container
+    .purches-register-report
+    span {
+    width: 150px;
+  }
+
+  .purches-report-section
+    .purches-report-container
+    .purches-register-report
+    select {
+    width: 170px;
+    font-size: small;
+    margin-bottom: 10px;
+  }
+}

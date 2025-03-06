@@ -390,7 +390,7 @@ exports.customerList = async (req, res) => {
                centerid, srno, cust_pincode, cust_addhar, cust_farmerid, cust_bankname,
                cust_ifsc, caste, gender, milktype, isActive, rcName
         FROM customer
-        WHERE orgid = ? AND centerid = ? AND (ctype IS NULL OR ctype = 1) AND (isdeleted IS NULL OR isdeleted = 0)
+        WHERE orgid = ? AND (ctype IS NULL OR ctype = 1) AND (isdeleted IS NULL OR isdeleted = 0)
       `;
 
       connection.query(getCustList, [dairy_id, center_id], (err, result) => {

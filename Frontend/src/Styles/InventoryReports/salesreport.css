@@ -1,0 +1,170 @@
+.report-table {
+  width: 100%;
+  height: 60vh; /* 60% of viewport height */
+  display: flex;
+  flex-direction: column; /* Stack children vertically */
+  align-items: center; /* Center content horizontally */
+  justify-content: flex-start; /* Align content at the top */
+  overflow: auto; /* Enable scrolling if content overflows */
+  border: 1px solid #ccc; /* Light border */
+  background-color: #fff; /* White background */
+  /* padding: 10px; */
+  border-radius: 5px; /* Slightly rounded corners */
+}
+
+/* Style the table inside */
+.report-table table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #f9f9f9;
+}
+
+/* Table header styling */
+.report-table th {
+  background: #007bff;
+  color: white;
+  padding: 10px;
+  text-align: left;
+  border-bottom: 2px solid #0056b3;
+}
+
+/* Table row styling */
+.report-table td {
+  padding: 8px;
+  border-bottom: 1px solid #ddd;
+}
+
+/* Alternating row colors */
+.report-table tr:nth-child(even) {
+  background: #f2f2f2;
+}
+
+/* Hover effect */
+.report-table tr:hover {
+  background: #e0e0e0;
+}
+/*   popup css */
+@media screen and (max-width: 321px) {
+  .sale-regsiter-reports .sale-register-distrubuted-reports {
+    width: 60%;
+    flex-direction: column;
+    height: 100px;
+  }
+  .sale-regsiter-reports .sale-register-distrubuted-reports span {
+    width: 60%;
+    align-items: center;
+  }
+  .sale-regsiter-reports .sale-register-distrubuted-reports select {
+    font-size: small;
+    width: 2;
+  }
+  .sale-regsiter-reports .sale-register-distrubuted-reports span {
+    width: 60%;
+    align-items: center;
+  }
+  .first-half-container-sales-report
+    .sale-regsiter-reports
+    .print-button-div
+    button {
+    margin-right: 10px;
+  }
+  .popup-overlay {
+    width: 600px;
+  }
+  .item-name-item-no-container .item-no-div {
+    flex-direction: column;
+  }
+  .item-name-item-no-container .item-no-div label {
+    width: 100px;
+  }
+  .item-name-item-no-container .item-no-div input {
+    margin: 10px;
+  }
+  .item-name-item-no-container .item-name-div {
+    flex-direction: column;
+    height: 100px;
+  }
+  .item-name-item-no-container .item-name-div label {
+    width: 100px;
+  }
+  .from-to-div-sales-report {
+    margin: 10px;
+  }
+  .from-to-div-sales-report .from-date-sales  input {
+    width: 110px;
+    font-size: x-small;
+    padding: 10px;
+  }
+  .from-to-div-sales-report .to-dates-sales   input {
+    width: 110px;
+    font-size: x-small;
+        padding: 10px;
+        margin-right: 15px;
+  }
+     .popup-content .from-to-div-sales-report {
+       margin-right: 10px;
+  }
+ 
+}
+@media screen and (max-width: 768px) {
+  .sale-regsiter-reports .sale-register-distrubuted-reports {
+    width: 60%;
+    flex-direction: column;
+    height: 100px;
+  }
+  .sale-regsiter-reports .sale-register-distrubuted-reports span {
+    width: 60%;
+    align-items: center;
+  }
+  .sale-regsiter-reports .sale-register-distrubuted-reports select {
+    font-size: small;
+    width: 2;
+  }
+  .sale-regsiter-reports .sale-register-distrubuted-reports span {
+    width: 60%;
+    align-items: center;
+  }
+  .first-half-container-sales-report
+    .sale-regsiter-reports
+    .print-button-div
+    button {
+    margin-right: 10px;
+  }
+  .popup-overlay {
+    width: 600px;
+  }
+  .item-name-item-no-container .item-no-div {
+    flex-direction: column;
+  }
+  .item-name-item-no-container .item-no-div label {
+    width: 100px;
+  }
+  .item-name-item-no-container .item-no-div input {
+    margin: 10px;
+  }
+  .item-name-item-no-container .item-name-div {
+    flex-direction: column;
+    height: 100px;
+  }
+  .item-name-item-no-container .item-name-div label {
+    width: 100px;
+  }
+  .from-to-div-sales-report {
+    margin: 10px;
+  }
+  .from-to-div-sales-report .from-date-sales  input {
+    width: 110px;
+    font-size: x-small;
+    padding: 10px;
+  }
+  .from-to-div-sales-report .to-dates-sales   input {
+    width: 110px;
+    font-size: x-small;
+        padding: 10px;
+        margin-right: 15px;
+  }
+     .popup-content .from-to-div-sales-report {
+       margin-right: 10px;
+  }
+ 
+}

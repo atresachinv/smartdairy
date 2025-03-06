@@ -113,128 +113,6 @@ const MilkcollectionReports = () => {
     }
   }, [summaryData]);
 
-  // >>>>> PDF ----
-  //   function exportToPDF() {
-  //     const dataToExport = sumreport ? summaryData : filteredData;
-  //
-  //     if (!dataToExport || dataToExport.length === 0) {
-  //       alert("No data available to export!");
-  //       return;
-  //     }
-  //
-  //     const doc = new jsPDF();
-  //     const formatDate = selectedDate;
-  //     const fromDate = formatDate.start;
-  //     const toDate = formatDate.end.slice(0, 10);
-  //
-  //     const dairyName = dairyinfo.SocietyName.toUpperCase(); // Replace with actual dairy name
-  //     const pageWidth = doc.internal.pageSize.getWidth();
-  //
-  //     // Add dairy name
-  //     doc.setFontSize(16);
-  //     doc.setFont("helvetica", "bold");
-  //     const dairyTextWidth = doc.getTextWidth(dairyName);
-  //     const dairyXOffset = (pageWidth - dairyTextWidth) / 2; // Center align
-  //     doc.text(dairyName, dairyXOffset, 10);
-  //
-  //     // Add report name
-  //     const reportName = sumreport
-  //       ? "Milk Collection Summary Report"
-  //       : "Milk Collection Detailed Report";
-  //     doc.setFontSize(14);
-  //     const reportTextWidth = doc.getTextWidth(reportName);
-  //     const reportXOffset = (pageWidth - reportTextWidth) / 2; // Center align
-  //     doc.text(reportName, reportXOffset, 20);
-  //
-  //     // Add date range details
-  //     const detailsText = `From: ${fromDate}  To: ${toDate}`;
-  //     doc.setFontSize(12);
-  //     const detailsTextWidth = doc.getTextWidth(detailsText);
-  //     const detailsXOffset = (pageWidth - detailsTextWidth) / 2;
-  //     doc.text(detailsText, detailsXOffset, 30);
-  //
-  //     // Table configuration based on sumreport
-  //     const tableColumn = sumreport
-  //       ? ["Code", "Liters", "Fat", "Snf", "Name", "Rate", "Amount", "C/B"]
-  //       : [
-  //           "Date",
-  //           "Shift",
-  //           "Code",
-  //           "Liters",
-  //           "Fat",
-  //           "Snf",
-  //           "Name",
-  //           "Rate",
-  //           "Amount",
-  //           "C/B",
-  //         ];
-  //
-  //     const tableRows = dataToExport.map((row) =>
-  //       sumreport
-  //         ? [
-  //             row.code,
-  //             row.Liters,
-  //             row.avgFat || row.fat,
-  //             row.avgSNF || row.snf,
-  //             row.cname.toUpperCase(),
-  //             row.avgRate || row.rate,
-  //             row.totalAmt || row.Amt,
-  //             row.CB === 0 ? "C" : "B",
-  //           ]
-  //         : [
-  //             row.ReceiptDate.slice(0, 10),
-  //             row.ME === 0 ? "M" : "E",
-  //             row.rno,
-  //             row.Litres,
-  //             row.fat,
-  //             row.snf,
-  //             row.cname.toUpperCase(),
-  //             row.rate,
-  //             row.Amt,
-  //             row.CB === 0 ? "C" : "B",
-  //           ]
-  //     );
-  //
-  //     // Generate table
-  //     doc.autoTable({
-  //       head: [tableColumn],
-  //       body: tableRows,
-  //       startY: 40,
-  //       styles: {
-  //         font: "helvetica",
-  //         lineColor: [0, 0, 0],
-  //         lineWidth: 0.1,
-  //         fontSize: 8,
-  //       },
-  //       columnStyles: sumreport
-  //         ? {
-  //             0: { halign: "right" },
-  //             1: { halign: "right" },
-  //             2: { halign: "right" },
-  //             3: { halign: "right" },
-  //             4: { halign: "left" },
-  //             5: { halign: "right" },
-  //             6: { halign: "right" },
-  //             7: { halign: "center" },
-  //           }
-  //         : {
-  //             1: { halign: "center" },
-  //             3: { halign: "right" },
-  //             4: { halign: "right" },
-  //             5: { halign: "right" },
-  //             6: { halign: "left" },
-  //             7: { halign: "right" },
-  //             8: { halign: "right" },
-  //             9: { halign: "center" },
-  //           },
-  //     });
-  //
-  //     // Save the PDF
-  //     doc.save(
-  //       sumreport ? "MilkCollectionSummary.pdf" : "MilkCollectionDetails.pdf"
-  //     );
-  //   }
-
   function exportToPDF() {
     const dataToExport = sumreport ? summaryData : filteredData;
 
@@ -418,45 +296,6 @@ const MilkcollectionReports = () => {
     XLSX.utils.book_append_sheet(workbook, worksheet, "sheet1");
     XLSX.writeFile(workbook, "milk-collection-report.xlsx");
   };
-
-  // >>>> Print ----
-  // const PrintComponent = forwardRef((props, ref) => {
-  //   const componentRef = useRef();
-  //   const handlePrint = useReactToPrint({
-  //     content: () => componentRef.current,
-  //   });
-  //   return (
-  //     <div ref={componentRef}>
-  //       <span className="heading">Milk Collection Report</span>
-  //       <table border="1" className="w100  d-flex-col ">
-  //         <thead>
-  //           <tr>
-  //             <th className="w10 label-text">No</th>
-  //             <th className="w10 label-text">Name</th>
-  //             <th className="w10 label-text">Liters</th>
-  //             <th className="w10 label-text">Fat </th>
-  //             <th className="w10 label-text">SNF</th>
-  //             <th className="w10 label-text">Rate/Liter</th>
-  //             <th className="w10 label-text">Amount</th>
-  //           </tr>
-  //         </thead>
-  //         <tbody className="w100 mh90 d-flex-col hidescrollbar   ">
-  //           {props.data.map((row, index) => (
-  //             <tr key={index}>
-  //               <td className="w10 text">{index + 1}</td>
-  //               <td className="w10 font">{row.cname}</td>
-  //               <td className="w10 font">{row.Litres}</td>
-  //               <td className="w10 font">{row.fat}</td>
-  //               <td className="w10 font">{row.snf}</td>
-  //               <td className="w10 font">{row.rate}</td>
-  //               <td className="w10 font">{row.Amt.toFixed(2)}</td>
-  //             </tr>
-  //           ))}
-  //         </tbody>
-  //       </table>
-  //     </div>
-  //   );
-  // });
 
   const PrintComponent = forwardRef((props, ref) => {
     const componentRef = useRef();
@@ -812,13 +651,15 @@ const MilkcollectionReports = () => {
                 </span>
                 <select
                   className="custom-select label-text w80 "
-                  onChange={handleSelectChange}>
+                  onChange={handleSelectChange}
+                >
                   <option>--{t("c-select-master")}--</option>
                   {manualMaster.map((dates, index) => (
                     <option
                       className="label-text w100 d-flex  sa"
                       key={index}
-                      value={index}>
+                      value={index}
+                    >
                       {new Date(dates.start).toLocaleDateString("en-GB", {
                         day: "2-digit",
                         month: "short", // Abbreviated month format
@@ -893,7 +734,8 @@ const MilkcollectionReports = () => {
                       id="daywise"
                       className="w50 data"
                       value={selectedDay}
-                      onChange={handleDateChange}>
+                      onChange={handleDateChange}
+                    >
                       <option value="">Select a Date</option>
                       {distinctDate.map((dates, index) => (
                         <option key={index} value={dates}>
@@ -913,7 +755,8 @@ const MilkcollectionReports = () => {
                       className="data w50"
                       name="animal"
                       id="animal"
-                      onChange={handleMilkTypeChange}>
+                      onChange={handleMilkTypeChange}
+                    >
                       <option className="text " value="2">
                         Cow-bufflow
                       </option>
@@ -933,7 +776,8 @@ const MilkcollectionReports = () => {
                       className="data w50"
                       name="milktype"
                       id="milktype"
-                      onChange={handleShiftChange}>
+                      onChange={handleShiftChange}
+                    >
                       <option className="text" value="2">
                         Morning-Evening
                       </option>
@@ -961,7 +805,7 @@ const MilkcollectionReports = () => {
           </div>
         </div>
 
-        <div className="Milk-collection-report-container w100 h70 d-flex-col bg">
+        {/* <div className="Milk-collection-report-container w100 h70 d-flex-col bg">
           <span className="heading p10">Milk Collection</span>
           <div className="Milk-report-heading w100 h1 mh100 d-flex-col hidescrollbar">
             <div className="milkdata-headings-div w100 h10 py10 d-flex center t-center sa bg1">
@@ -1004,7 +848,8 @@ const MilkcollectionReports = () => {
                       }`}
                       style={{
                         backgroundColor: index % 2 === 0 ? "#faefe3" : "#fff",
-                      }}>
+                      }}
+                    >
                       <span className="w10 text t-center">{customer.code}</span>
                       <span className="w25 text t-start">{customer.cname}</span>
                       <span className="w5 text t-center">{customer.fat}</span>
@@ -1034,7 +879,8 @@ const MilkcollectionReports = () => {
                       }`}
                       style={{
                         backgroundColor: index % 2 === 0 ? "#faefe3" : "#fff",
-                      }}>
+                      }}
+                    >
                       <span className="w10 text t-center">
                         {customer.ReceiptDate.slice(0, 10)}
                       </span>
@@ -1053,6 +899,167 @@ const MilkcollectionReports = () => {
                       </span>
                     </div>
                   ))
+                ) : (
+                  <div className="w100 h1 d-flex center">Data not found!</div>
+                )}
+              </>
+            )}
+          </div>
+        </div> */}
+        <div className="Milk-collection-report-container w100 h70 d-flex-col bg">
+          <span className="heading p10">Milk Collection</span>
+          <div className="Milk-report-heading w100 h1 mh100 d-flex-col hidescrollbar">
+            <div className="milkdata-headings-div w100 h10 py10 d-flex center t-center sa bg1">
+              {sumreport ? (
+                <>
+                  <span className="w10 f-info-text">Code</span>
+                  <span className="w25 f-info-text">Name</span>
+                  <span className="w5 f-info-text">AVG Fat</span>
+                  <span className="w5 f-info-text">AVG SNF</span>
+                  <span className="w10 f-info-text">Liters</span>
+                  <span className="w10 f-info-text">AVG Rate</span>
+                  <span className="w10 f-info-text">Total Amount</span>
+                  <span className="w10 f-info-text">C/B</span>
+                </>
+              ) : (
+                <>
+                  <span className="w10 f-label-text">Date</span>
+                  <span className="w5 f-label-text">M/E</span>
+                  <span className="w5 f-label-text">Code</span>
+                  <span className="w25 f-label-text">Name</span>
+                  <span className="w5 f-label-text">Liters</span>
+                  <span className="w5 f-label-text">Fat</span>
+                  <span className="w5 f-label-text">SNF</span>
+                  <span className="w10 f-label-text">Rate/ltr</span>
+                  <span className="w5 f-label-text">Amount</span>
+                  <span className="w5 f-label-text">C/B</span>
+                </>
+              )}
+            </div>
+
+            {sumreport ? (
+              <>
+                {status === "loading" ? (
+                  <Spinner />
+                ) : summaryData && summaryData.length > 0 ? (
+                  <>
+                    {summaryData.map((customer, index) => (
+                      <div
+                        key={index}
+                        className={`milkdata-div w100 h10 d-flex center t-center sa ${
+                          index % 2 === 0 ? "bg-light" : "bg-dark"
+                        }`}
+                        style={{
+                          backgroundColor: index % 2 === 0 ? "#faefe3" : "#fff",
+                        }}
+                      >
+                        <span className="w10 text t-center">
+                          {customer.code}
+                        </span>
+                        <span className="w25 text t-start">
+                          {customer.cname}
+                        </span>
+                        <span className="w5 text t-center">{customer.fat}</span>
+                        <span className="w5 text t-center">{customer.snf}</span>
+                        <span className="w10 text t-end">
+                          {customer.Liters}
+                        </span>
+                        <span className="w10 text t-center">
+                          {customer.rate}
+                        </span>
+                        <span className="w10 text t-end">{customer.Amt}</span>
+                        <span className="w10 text t-center">
+                          {customer.CB === 0 ? "Cow" : "Buffalo"}
+                        </span>
+                      </div>
+                    ))}
+
+                    {/* Total Row Using .slice() */}
+                    <div className="milkdata-div w100 h10 d-flex center t-center sa bg-total">
+                      <span className="w10 text t-center font-bold">Total</span>
+                      <span className="w25 text t-start"></span>
+                      <span className="w5 text t-center"></span>
+                      <span className="w5 text t-center"></span>
+                      <span className="w10 text t-end font-bold">
+                        {summaryData
+                          .slice(0, summaryData.length)
+                          .reduce((sum, item) => sum + (item.Liters || 0), 0)}
+                      </span>
+                      <span className="w10 text t-center"></span>
+                      <span className="w10 text t-end font-bold">
+                        {summaryData
+                          .slice(0, summaryData.length)
+                          .reduce((sum, item) => sum + (item.Amt || 0), 0)}
+                      </span>
+                      <span className="w10 text t-center"></span>
+                    </div>
+                  </>
+                ) : (
+                  <div className="w100 h1 d-flex center">Data not found!</div>
+                )}
+              </>
+            ) : (
+              <>
+                {status === "loading" ? (
+                  <Spinner />
+                ) : filteredData && filteredData.length > 0 ? (
+                  <>
+                    {filteredData.map((customer, index) => (
+                      <div
+                        key={index}
+                        className={`milkdata-div w100 h10 d-flex center t-center sa ${
+                          index % 2 === 0 ? "bg-light" : "bg-dark"
+                        }`}
+                        style={{
+                          backgroundColor: index % 2 === 0 ? "#faefe3" : "#fff",
+                        }}
+                      >
+                        <span className="w10 text t-center">
+                          {customer.ReceiptDate.slice(0, 10)}
+                        </span>
+                        <span className="w5 text t-center">
+                          {customer.ME === 0 ? "Mrg" : "Eve"}
+                        </span>
+                        <span className="w5 text t-center">{customer.rno}</span>
+                        <span className="w25 text t-start">
+                          {customer.cname}
+                        </span>
+                        <span className="w5 text t-end">{customer.Litres}</span>
+                        <span className="w5 text t-center">{customer.fat}</span>
+                        <span className="w5 text t-center">{customer.snf}</span>
+                        <span className="w10 text t-center">
+                          {customer.rate}
+                        </span>
+                        <span className="w5 text t-end">{customer.Amt}</span>
+                        <span className="w5 text t-center">
+                          {customer.CB === 0 ? "COW" : "Buffalo"}
+                        </span>
+                      </div>
+                    ))}
+
+                    {/* Total Row Using .slice() */}
+                    <div className="milkdata-div w100 h10 d-flex center t-center sa bg-total">
+                      <span className="w10 text t-center font-bold">Total</span>
+                      <span className="w5 text t-center"></span>
+                      <span className="w5 text t-center"></span>
+                      <span className="w25 text t-start"></span>
+                      <span className="w5 text t-end font-bold">
+                        {filteredData
+
+                          .reduce((sum, item) => sum + (item.Litres || 0), 0)
+                          .toFixed(2)}
+                      </span>
+                      <span className="w5 text t-center"></span>
+                      <span className="w5 text t-center"></span>
+                      <span className="w10 text t-center"></span>
+                      <span className="w5 text t-end font-bold">
+                        {filteredData
+                          .slice(0, filteredData.length)
+                          .reduce((sum, item) => sum + (item.Amt || 0), 0)}
+                      </span>
+                      <span className="w5 text t-center"></span>
+                    </div>
+                  </>
                 ) : (
                   <div className="w100 h1 d-flex center">Data not found!</div>
                 )}

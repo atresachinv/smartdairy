@@ -14,6 +14,7 @@ const DeductionReports = () => {
   const { t } = useTranslation(["common", "milkcollection"]);
   const dispatch = useDispatch();
   const manualMaster = useSelector((state) => state.manualMasters.masterlist);
+
   const customerlist = useSelector((state) => state.customer.customerlist);
   const deduction = useSelector((state) => state.deduction.alldeductionInfo);
   const dairyname = useSelector(
@@ -22,19 +23,37 @@ const DeductionReports = () => {
   );
   const CityName = useSelector((state) => state.dairy.dairyData.city);
   const status = useSelector((state) => state.deduction.deductionstatus);
-  const [selectedMaster, setSelectedMaster] = useState([]);
+  const [selectedMaster, setSelectedMaster] = useState("");
+  const [selectIndex, setSelectedIndex] = useState([]);
   const [mergedData, setMergedData] = useState([]);
   const [filteredDeduction, setFilteredDeduction] = useState([]);
   const [dnameOptions, setDnameOptions] = useState([]);
   const [selectedDname, setSelectedDname] = useState("");
-
+  console.log(selectedMaster);
   //----------------------------------------------------------------->
   // Handle the date selection
+  // const handleSelectChange = async (e) => {
+  //   const selectedIndex = e.target.value;
+  //   if (selectedIndex !== "") {
+  //     const selectedDates = manualMaster[selectedIndex];
+  //     setSelectedMaster(selectedDates);
+  //     dispatch(
+  //       getPaymentsDeductionInfo({
+  //         fromDate: selectedDates.start,
+  //         toDate: selectedDates.end,
+  //       })
+  //     );
+  //   }
+  // };
   const handleSelectChange = async (e) => {
     const selectedIndex = e.target.value;
     if (selectedIndex !== "") {
       const selectedDates = manualMaster[selectedIndex];
       setSelectedMaster(selectedDates);
+
+      // Store selected master in localStorage
+      localStorage.setItem("selectedMaster", JSON.stringify(selectedDates));
+
       dispatch(
         getPaymentsDeductionInfo({
           fromDate: selectedDates.start,
@@ -43,6 +62,16 @@ const DeductionReports = () => {
       );
     }
   };
+
+  // Retrieve selected master from localStorage on component mount
+  useEffect(() => {
+    const savedMaster = localStorage.getItem("selectedMaster");
+    if (savedMaster) {
+      setSelectedMaster(JSON.parse(savedMaster));
+    }
+  }, []);
+
+  
 
   //Extract Unique Acc Code and Merge customer names into deduction records ------------->
   useEffect(() => {
@@ -263,32 +292,64 @@ const DeductionReports = () => {
 
   return (
     <div className="deduction-report-container w100 h1 d-flex-col sb">
-      <span className="heading h10">Deduction Report</span>
-      <div className="deduction-first-filter-container w100 h10 d-flex-col">
-        <div className="filters-from-to-date-button-div w100 h10 d-flex a-center sa">
+      <span className="heading  ">Deduction Report</span>
+      <div className="deduction-first-filter-container w100 h10 d-flex-col ">
+        <div className="filters-from-to-date-button-div w100 h1 d-flex a-center sa">
           <div className="dates-and-filter-deduction-container w65 h1 d-flex a-center sb">
             <div className="custmize-report-div w50 d-flex a-center sb p10">
               <span className="cl-icon w20 h1 d-flex center info-text">
                 <BsCalendar3 />
               </span>
+        
               <select
                 className="custom-select label-text w80 h1"
-                onChange={handleSelectChange}>
-                <option>--{t("c-select-master")}--</option>
+                onChange={handleSelectChange}
+              >
+                <option>
+                  {selectedMaster === "" ? (
+                    <span>{t("c-select-master")}</span>
+                  ) : (
+                    <>
+                      {new Date(selectedMaster.start).toLocaleDateString(
+                        "en-GB",
+                        {
+                          day: "2-digit",
+                          month: "short",
+                          year: "numeric",
+                        }
+                      )}
+                      To :
+                      {new Date(selectedMaster.end).toLocaleDateString(
+                        "en-GB",
+                        {
+                          day: "2-digit",
+                          month: "short",
+                          year: "numeric",
+                        }
+                      )}
+                    </>
+                  )}
+                </option>
                 {manualMaster.map((dates, index) => (
                   <option
-                    className="label-text w100 d-flex  sa"
+                    className="label-text w100 d-flex sa"
                     key={index}
-                    value={index}>
+                    value={index}
+                    selected={
+                      selectedMaster &&
+                      selectedMaster.start === dates.start &&
+                      selectedMaster.end === dates.end
+                    }
+                  >
                     {new Date(dates.start).toLocaleDateString("en-GB", {
                       day: "2-digit",
-                      month: "short", // Abbreviated month format
+                      month: "short",
                       year: "numeric",
                     })}
                     To :
                     {new Date(dates.end).toLocaleDateString("en-GB", {
                       day: "2-digit",
-                      month: "short", // Abbreviated month format
+                      month: "short",
                       year: "numeric",
                     })}
                   </option>
@@ -300,7 +361,8 @@ const DeductionReports = () => {
               <select
                 className="w50 data"
                 value={selectedDname}
-                onChange={(e) => setSelectedDname(e.target.value)}>
+                onChange={(e) => setSelectedDname(e.target.value)}
+              >
                 <option value="">-- Select --</option>
                 {dnameOptions.map((dname, index) => (
                   <option key={index} value={dname}>
@@ -323,8 +385,8 @@ const DeductionReports = () => {
           </div>
         </div>
       </div>
-      <div className="deduction-data-outer-container w100 h90 d-flex-col mh90 hidescrollbar bg">
-        <div className="deduction-heading-container w100 h10 py10 d-flex a-center t-center sb sticky-top t-heading-bg">
+      <div className="deduction-data-outer-container w100 h80  d-flex-col mh80 hidescrollbar bg">
+        <div className="deduction-heading-container w100 h10  d-flex a-center t-center sb sticky-top t-heading-bg">
           <span className="f-label-text w10">Code</span>
           <span className="f-label-text w50">Customer Name</span>
           <span className="f-label-text w20">Deduction</span>
@@ -341,7 +403,8 @@ const DeductionReports = () => {
               className="deduction-data-container w100 h10 d-flex a-center sa"
               style={{
                 backgroundColor: index % 2 === 0 ? "#faefe3" : "#fff",
-              }}>
+              }}
+            >
               <span className="info-text w10 t-start">{item.Code}</span>
               <span className="info-text w45 t-start">{item.customerName}</span>
               <span className="text w20 t-start">{item.dname}</span>
@@ -359,3 +422,5 @@ const DeductionReports = () => {
 };
 
 export default DeductionReports;
+
+

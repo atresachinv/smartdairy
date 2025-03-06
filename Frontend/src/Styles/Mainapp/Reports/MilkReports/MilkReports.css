@@ -17,6 +17,11 @@
 .fillter-data-container .fitter-hide-show-container {
   min-height: fit-content;
 }
+.bg-total {
+  background-color: #e0e0e0;
+  font-weight: bold;
+}
+
 
 @media screen and (max-width: 426px) {
   .Milkcollection-container {

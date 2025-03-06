@@ -13,7 +13,7 @@ const PaymentRegister = () => {
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
   const [deductionData, setDeductionData] = useState({});
-  const tableRefs = useRef([]); // Array of refs for multiple tables
+  const tableRefs = useRef([]); // Array of refs  mn for multiple tables
   const deduction = useSelector((state) => state.deduction.alldeductionInfo);
   const status = useSelector((state) => state.deduction.deductionstatus);
   const dairyname = useSelector(
@@ -259,7 +259,8 @@ const PaymentRegister = () => {
       <span className="heading">Payment summary</span>
       <form
         onSubmit={handlefetchData}
-        className="from-to-date-button-container w100 h20 d-flex">
+        className="from-to-date-button-container w100 h20 d-flex"
+      >
         <div className="date-from-to-div w40 d-flex h50 ">
           <div className="from-div-container w50 d-flex h1 a-center sa">
             <span className="label-text w20">From:</span>
@@ -309,7 +310,8 @@ const PaymentRegister = () => {
                 </span>
                 <span
                   className="w100 h50 d-flex center label-text"
-                  style={{ backgroundColor: "#faefe3" }}>
+                  style={{ backgroundColor: "#faefe3" }}
+                >
                   {totals.tliters.toFixed(2)}
                 </span>
               </div>
@@ -319,7 +321,8 @@ const PaymentRegister = () => {
                 </span>
                 <span
                   className="w100 h50 d-flex center label-text"
-                  style={{ backgroundColor: "#faefe3" }}>
+                  style={{ backgroundColor: "#faefe3" }}
+                >
                   {totals.pamt.toFixed(2)}
                 </span>
               </div>
@@ -329,7 +332,8 @@ const PaymentRegister = () => {
                 </span>
                 <span
                   className="w100 h50 d-flex center label-text"
-                  style={{ backgroundColor: "#faefe3" }}>
+                  style={{ backgroundColor: "#faefe3" }}
+                >
                   {totals.damt.toFixed(2)}
                 </span>
               </div>
@@ -339,25 +343,11 @@ const PaymentRegister = () => {
                 </span>
                 <span
                   className="w100 h50 d-flex center label-text"
-                  style={{ backgroundColor: "#faefe3" }}>
+                  style={{ backgroundColor: "#faefe3" }}
+                >
                   {totals.pamt.toFixed(2) - totals.damt.toFixed(2)}
                 </span>
               </div>
-
-              {/* <div className="headings-pay-register-totals-container w100 h50 py10 d-flex a-center sa bg1">
-                <span className="w20 f-label-text">Total Liters</span>
-                <span className="w20 f-label-text">Total Payment </span>
-                <span className="w20 f-label-text">Total Deductions </span>
-                <span className="w20 f-label-text">Net Payment</span>
-              </div> 
-              <div
-                className="headings-pay-register-totals-container w100 h50 d-flex a-center sa"
-                style={{ backgroundColor: "#faefe3" }}>
-                <span className="w20 label-text">{totals.tliters.toFixed(2)}</span>
-                <span className="w20 label-text">{totals.pamt.toFixed(2)}</span>
-                <span className="w20 label-text">{totals.damt.toFixed(2)}</span>
-                <span className="w20 label-text">{totals.pamt.toFixed(2) - totals.damt.toFixed(2)}</span>
-              </div> */}
             </div>
             <div className="payment-deduction-info-container w100 h80 mh80 hidescrollbar d-flex-col center">
               <div className="headings-pay-register-totals-container w50 p10 d-flex t-center sticky-top sb bg1">
@@ -370,7 +360,8 @@ const PaymentRegister = () => {
                   style={{
                     backgroundColor: index % 2 === 0 ? "#faefe3" : "#fff",
                   }}
-                  className="headings-pay-register-totals-container w50 h10 d-flex a-center sb">
+                  className="headings-pay-register-totals-container w50 h10 d-flex a-center sb"
+                >
                   <span className="w50 label-text px10">{name}</span>
                   <span className="w50 label-text t-end px10">
                     {total.toFixed(2)}
