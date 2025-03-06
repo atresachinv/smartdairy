@@ -240,11 +240,11 @@ const UpdateSaleRate = () => {
           </div>
         </div>
       </div>
-      <div className="customer-list-table w100 h1 d-flex-col hidescrollbar bg">
+      <div className="customer-list-table w100 h1 d-flex-col  bg">
         <span className="heading p10"> {t("ps-productList")}</span>
-        <div className="customer-heading-title-scroller w100 h1 mh100 d-flex-col ">
-          <div className="data-headings-div formin h10 d-flex center  t-center sb bg7">
-            <span className="f-info-text w5">{t("ps-srNo")}</span>
+        <div className="customer-heading-title-scroller w100 h1 mh100 hidescrollbar d-flex-col ">
+          <div className="data-headings-div h10 d-flex center forDWidth t-center bg7 sb sticky-top">
+            {/* <span className="f-info-text w5">{t("ps-srNo")}</span> */}
             <span className="f-info-text w5"> {t("ps-date")}</span>
             <span className="f-info-text w5"> {t("ps-rect-no")}</span>
             <span className="f-info-text w25"> {t("ps-itm-name")}</span>
@@ -264,7 +264,7 @@ const UpdateSaleRate = () => {
                   backgroundColor: index % 2 === 0 ? "#faefe3" : "#fff",
                 }}
               >
-                <span className="text w5">{index + 1}</span>
+                {/* <span className="text w5">{index + 1}</span> */}
                 <span className="text w5">
                   {formatDateToDDMMYYYY(item.purchasedate)}
                 </span>
