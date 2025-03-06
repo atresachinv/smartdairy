@@ -9,10 +9,8 @@ const MilkReports = () => {
   const dispatch = useDispatch();
   const manualMaster = useSelector((state) => state.manualMasters.masterlist);
   const collection = useSelector((state) => state.milkCollection.allMilkColl);
-  // const [date, setDate] = useState("2023-10-11");
-  const [selectedPeriod, setSelectedPeriod] = useState(null);
+  // const [selectedPeriod, setSelectedPeriod] = useState(null);
   const [groupedData, setGroupedData] = useState({});
-  console.log(collection);
 
   const [filters, setFilters] = useState({
     center: false, // "By Center"
@@ -85,7 +83,7 @@ const MilkReports = () => {
     const selectedIndex = e.target.value;
     if (selectedIndex !== "") {
       const selectedDates = manualMaster[selectedIndex];
-      setSelectedPeriod(selectedDates);
+      // setSelectedPeriod(selectedDates);
       dispatch(
         getAllMilkCollReport({
           fromDate: selectedDates.start,

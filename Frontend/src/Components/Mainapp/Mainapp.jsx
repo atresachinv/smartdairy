@@ -60,6 +60,7 @@ import DeliveryStockMaster from "./Inventory/InventroyPages/Stocks/DeliveryStock
 import CustReturns from "./Inventory/InventroyPages/Returns/CustomerReturns/CustReturns";
 import SellRateMaster from "./Inventory/InventroyPages/Stocks/SellRate/SellRateMaster";
 import ExpiredProductsMaster from "./Inventory/InventroyPages/Stocks/ExpiredProduct/ExpiredProductsMaster";
+import DashboardTabs from "./Dashboard/DashboardTabs/DashboardTabs";
 
 const Mainapp = () => {
   const dispatch = useDispatch();
@@ -144,7 +145,7 @@ const Mainapp = () => {
           {/* <Mainappviews index={isselected} /> */}
           <Routes>
             {/* dashboard route */}
-            <Route path="dashboard" element={<Dashboard />} />
+            <Route path="dashboard/*" element={<DashboardTabs />} />
             {/* milk purchase routes */}
             <Route path="milk/collection/*" element={<Apphome />} />
             <Route path="milk/collection/:time" element={<Milkcollection />} />

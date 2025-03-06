@@ -204,7 +204,9 @@ exports.findEmpByCode = async (req, res) => {
   const center_id = req.user.center_id;
 
   if (!code) {
-    return res.status(400).json({ status: 400, message: "Employee code required!" });
+    return res
+      .status(400)
+      .json({ status: 400, message: "Employee code required!" });
   }
   if (!dairy_id) {
     return res.status(401).json({ status: 401, message: "Unauthorized User!" });
@@ -271,7 +273,8 @@ exports.updateEmployee = async (req, res) => {
   const center_id = req.user.center_id;
   const user_role = req.user.user_role;
 
-  if (!code ||
+  if (
+    !code ||
     !date ||
     !marathi_name ||
     !emp_name ||
@@ -283,7 +286,8 @@ exports.updateEmployee = async (req, res) => {
     !pincode ||
     !bankName ||
     !bank_ac ||
-    !bankIFSC) {
+    !bankIFSC
+  ) {
     return res
       .status(400)
       .json({ status: 400, message: "All field data required!" });
@@ -375,16 +379,14 @@ exports.deleteEmployee = async (req, res) => {
   const dairy_id = req.user.dairy_id;
   const center_id = req.user.center_id;
 
-   if (!emp_id) {
-     return res
-       .status(400)
-       .json({ status: 400, message: "Employee id is required!" });
-   }
-   if (!dairy_id) {
-     return res
-       .status(401)
-       .json({ status: 401, message: "Unauthorized User!" });
-   }
+  if (!emp_id) {
+    return res
+      .status(400)
+      .json({ status: 400, message: "Employee id is required!" });
+  }
+  if (!dairy_id) {
+    return res.status(401).json({ status: 401, message: "Unauthorized User!" });
+  }
 
   pool.getConnection((err, connection) => {
     if (err) {
@@ -444,10 +446,14 @@ exports.deleteEmployee = async (req, res) => {
 exports.employeeList = async (req, res) => {
   const dairy_id = req.user.dairy_id;
   const center_id = req.user.center_id;
-
+  if (!dairy_id) {
+    return res.status(401).json({ status: 401, message: "Unauthorised User!" });
+  }
   pool.getConnection((err, connection) => {
     if (err) {
-      return res.status(500).json({ message: "Database connection error" });
+      return res
+        .status(500)
+        .json({ status: 500, message: "Database connection error!" });
     }
 
     try {
@@ -479,14 +485,25 @@ exports.employeeList = async (req, res) => {
           console.error("Error executing query: ", error);
           return res
             .status(500)
-            .json({ message: "Error retrieving employee data" });
+            .json({ status: 500, message: "Error retrieving employee data!" });
         }
-        return res.status(200).json({ empList: result });
+
+        if (result.affectedRows === 0) {
+          return res
+            .status(204)
+            .json({ status: 204, message: "Emplyees not found!" });
+        }
+
+        return res
+          .status(200)
+          .json({ status: 200, empList: result, message: "Employees found!" });
       });
     } catch (error) {
       connection.release();
       console.error("Unexpected error: ", error);
-      return res.status(500).json({ message: "Unexpected server error" });
+      return res
+        .status(500)
+        .json({ status: 500, message: "Unexpected server error!" });
     }
   });
 };
@@ -548,61 +565,3 @@ exports.employeeDetails = async (req, res) => {
     }
   });
 };
-
-//v3
-// exports.employeeList = async (req, res) => {
-//   const dairy_id = req.user.dairy_id;
-//   const center_id = req.user.center_id;
-//
-//   if (!dairy_id) {
-//     return res.status(400).json({ message: "Dairy ID not found!" });
-//   }
-//
-//   // Construct the cache key
-//   const cacheKey = `employeeList_${dairy_id}_${center_id}`;
-//
-//   try {
-//     // Check if data is already cached
-//     const cachedData = cache.get(cacheKey);
-//     if (cachedData) {
-//       return res.status(200).json({ empList: cachedData });
-//     }
-//
-//     // If cache miss, query the database
-//     pool.getConnection((err, connection) => {
-//       if (err) {
-//         console.error("Error getting MySQL connection: ", err);
-//         return res.status(500).json({ message: "Database connection error" });
-//       }
-//
-//       const emplist = `
-//         SELECT emp_name, emp_mobile, designation, salary, emp_id
-//         FROM employeemaster
-//         WHERE dairy_id = ? AND center_id = ?
-//       `;
-//
-//       connection.query(emplist, [dairy_id, center_id], (error, result) => {
-//         // Release connection back to the pool
-//         connection.release();
-//
-//         if (error) {
-//           console.error("Error executing query: ", error);
-//           return res
-//             .status(500)
-//             .json({ message: "Error retrieving employee data" });
-//         }
-//
-//         // Cache the result for future requests
-//         cache.set(cacheKey, result);
-//
-//         // Return the result
-//         return res.status(200).json({ empList: result });
-//       });
-//     });
-//   } catch (error) {
-//     console.error("Unexpected error: ", error);
-//     return res.status(500).json({ message: "Unexpected error occurred" });
-//   } finally {
-//     connection.release();
-//   }
-// };
