@@ -100,13 +100,6 @@ const Mainappnavlinks = ({ setselected, handleSidebar }) => {
           index: 1.2,
           role: ["admin", "manager", "milkcollector", "salesman"],
         },
-        // {
-        //   name: `${t("milkcollection:m-milk-sale")}`,
-        //   icon: <BsGridFill className="icon" />,
-        //   path: "milk/retail/sales",
-        //   index: 1.3,
-        //   role: ["admin", "manager", "salesman"],
-        // },
         {
           name: `${t("milkcollection:m-nv-custmaster")}`,
           icon: <BsGridFill className="icon" />,
@@ -142,13 +135,6 @@ const Mainappnavlinks = ({ setselected, handleSidebar }) => {
           index: 1.8,
           role: ["admin", "manager", "salesman"],
         },
-        // {
-        //   name: `${t("milkcollection:m-payments")}`,
-        //   icon: <BsGridFill className="icon" />,
-        //   path: "milk/payment/master",
-        //   index: 1.9,
-        //   role: ["admin", "manager", "salesman"],
-        // },
       ],
     },
     {
@@ -358,6 +344,12 @@ const Mainappnavlinks = ({ setselected, handleSidebar }) => {
           icon: <FaFileInvoiceDollar className="icon" />,
           index: 6.7,
           path: "reports/payment",
+          role: ["admin", "super_admin", "manager"],
+        },
+        {
+          name: "IR Purches Report",
+          icon: <FaFileInvoiceDollar className="icon" />,
+          path: "reports/inventory",
           role: ["admin", "super_admin", "manager"],
         },
       ],

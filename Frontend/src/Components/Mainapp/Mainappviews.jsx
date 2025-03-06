@@ -10,6 +10,8 @@ import ProductList from "./Inventory/InventroyPages/ProductList";
 import ProductPurchase from "./Inventory/InventroyPages/ProductPurchase";
 import ProductSale from "./Inventory/InventroyPages/ProductSale";
 import StartingStockInfo from "./Inventory/InventroyPages/StartingStockInfo";
+import Reports from "./Inventory/InventroyPages/Reports";
+
 // Import Submenu Components for Settings
 import DairySettings from "./Settings/DairySettings/DairySettings";
 import InventorySettings from "./Settings/InventorySettings/InventorySettings";
@@ -62,6 +64,9 @@ const Mainappviews = ({ index }) => {
       return <ProductSale />;
     case 2.4:
       return <StartingStockInfo />;
+    case 2.5:
+      return <Reports />;
+
     case 3:
       return <Accounts />;
     // Master Submenus
@@ -110,6 +115,8 @@ const Mainappviews = ({ index }) => {
       return <MilkRateMaster />;
     case 7.7:
       return <PaymentReports />;
+    case 7.8:
+      return <IRPurchesReport />;
     //Payments Submenus
     case 8.1:
       return <MilkCorrection />;
