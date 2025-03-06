@@ -11,6 +11,7 @@ import Swal from "sweetalert2";
 import { useTranslation } from "react-i18next";
 import { jsPDF } from "jspdf";
 import { useSelector } from "react-redux";
+import { TbSortAscending2, TbSortDescending2 } from "react-icons/tb";
 
 const DealersList = () => {
   const { t } = useTranslation(["puchasesale", "common"]);
@@ -18,6 +19,9 @@ const DealersList = () => {
   const [loading, setLoading] = useState(false);
   const [editSale, setEditSale] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [sortOrder, setSortOrder] = useState("desc");
+  const [sortKey, setSortKey] = useState("");
+
   const dairyInfo = useSelector(
     (state) =>
       state.dairy.dairyData.marathi_name ||
@@ -246,6 +250,20 @@ const DealersList = () => {
     doc.save(`Dealerlist_Report.pdf`);
   };
 
+  //sort
+  const sortDealers = (key) => {
+    const sortedList = [...dealerList].sort((a, b) => {
+      if (sortOrder === "asc") {
+        return a[key] > b[key] ? 1 : -1;
+      } else {
+        return a[key] < b[key] ? 1 : -1;
+      }
+    });
+
+    setDealerList(sortedList);
+    setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+    setSortKey(key); // Update the sorted column
+  };
   return (
     <div className="customer-list-container-div w100 h1 d-flex-col p10">
       <div className="download-print-pdf-excel-container w100 h10 d-flex sb">
@@ -273,15 +291,49 @@ const DealersList = () => {
       <div className="customer-list-table w100 h1 d-flex-col bg">
         <div className="customer-heading-title-scroller w100 h1 mh100  hidescrollbar d-flex-col sticky-top">
           <div className="data-headings-div h10 d-flex center forDWidth t-center sb bg7">
-            <span className="f-info-text w5">{t("ps-srNo")}</span>
-            <span className="f-info-text w5">{t("ps-code")}</span>
-            <span className="f-info-text w25">{t("ps-dealer-name")}</span>
-            <span className="f-info-text w10">{t("ps-mono")}</span>
-            <span className="f-info-text w10">{t("ps-city")}</span>
+            {/* <span className="f-info-text w5">{t("ps-srNo")}</span> */}
+            <span className="f-info-text w10">
+              {t("ps-code")}
+              <span
+                className="px10 f-color-icon"
+                type="button"
+                onClick={() => sortDealers("srno")}
+              >
+                {sortKey === "srno" ? (
+                  sortOrder === "asc" ? (
+                    <TbSortAscending2 />
+                  ) : (
+                    <TbSortDescending2 />
+                  )
+                ) : (
+                  <TbSortAscending2 />
+                )}
+              </span>
+            </span>
+            <span className="f-info-text w25">
+              {t("ps-dealer-name")}
+              <span
+                className="px10 f-color-icon"
+                type="button"
+                onClick={() => sortDealers("cname")}
+              >
+                {sortKey === "cname" ? (
+                  sortOrder === "asc" ? (
+                    <TbSortAscending2 />
+                  ) : (
+                    <TbSortDescending2 />
+                  )
+                ) : (
+                  <TbSortAscending2 />
+                )}
+              </span>
+            </span>
+            <span className="f-info-text w15">{t("ps-mono")}</span>
+            <span className="f-info-text w15">{t("ps-city")}</span>
             <span className="f-info-text w10">{t("ps-dist")}</span>
             {/* <span className="f-info-text w10">PinCode</span> */}
             <span className="f-info-text w15">{t("ps-bank-name")}</span>
-            <span className="f-info-text w15">{t("ps-ac-no")}</span>
+            <span className="f-info-text w20">{t("ps-ac-no")}</span>
             <span className="f-info-text w10">{t("ps-ifsc")}</span>
             <span className="f-info-text w10">Actions</span>
           </div>
@@ -299,15 +351,15 @@ const DealersList = () => {
                   backgroundColor: index % 2 === 0 ? "#faefe3" : "#fff",
                 }}
               >
-                <span className="text w5">{index + 1}</span>
-                <span className="text w5">{customer.srno}</span>
-                <span className="text w25 t-start">{customer.cname}</span>
-                <span className="text w10">{customer.Phone}</span>
-                <span className="text w10">{customer.City}</span>
+                {/* <span className="text w5">{index + 1}</span> */}
+                <span className="text w10">{customer.srno}</span>
+                <span className="text w25">{customer.cname}</span>
+                <span className="text w15">{customer.Phone}</span>
+                <span className="text w15">{customer.City}</span>
                 <span className="text w10">{customer.dist}</span>
                 {/* <span className="text w10">{customer.cust_pincode}</span> */}
                 <span className="text w15">{customer.cust_bankname}</span>
-                <span className="text w15">{customer.cust_accno}</span>
+                <span className="text w20">{customer.cust_accno}</span>
                 <span className="text w10">{customer.cust_ifsc}</span>
                 <span className="text w10">
                   <FaRegEdit

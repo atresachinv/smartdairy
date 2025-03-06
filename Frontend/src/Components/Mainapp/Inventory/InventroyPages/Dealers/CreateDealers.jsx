@@ -4,6 +4,7 @@ import { toast } from "react-toastify";
 import "./Dealer.css";
 import "../../../../../Styles/Mainapp/Inventory/InventoryPages/Dealer.css";
 import { useTranslation } from "react-i18next";
+import { useSelector } from "react-redux";
 
 const CreateDealers = () => {
   const [custno, setCustno] = useState();
@@ -23,6 +24,18 @@ const CreateDealers = () => {
   });
   const [errors, setErrors] = useState({});
   const [dealerList, setDealerList] = useState([]);
+  const { city, tel, dist, PinCode } = useSelector(
+    (state) => state.dairy.dairyData
+  );
+
+  useEffect(() => {
+    setFormData((prev) => ({
+      ...prev,
+      city: city,
+      district: dist,
+      pincode: PinCode,
+    }));
+  }, [city, dist, PinCode]);
 
   //get max dealer no
   const getMaxDealer = async () => {

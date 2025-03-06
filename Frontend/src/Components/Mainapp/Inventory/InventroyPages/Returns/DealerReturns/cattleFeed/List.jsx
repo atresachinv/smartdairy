@@ -12,6 +12,7 @@ import { useTranslation } from "react-i18next";
 import { FaDownload } from "react-icons/fa6";
 import jsPDF from "jspdf";
 import { useSelector } from "react-redux";
+import { TbSortAscending2, TbSortDescending2 } from "react-icons/tb";
 
 const List = () => {
   const { t } = useTranslation(["puchasesale", "common"]);
@@ -19,7 +20,8 @@ const List = () => {
   const [date2, SetDate2] = useState("");
   const [fcode, setFcode] = useState("");
   const [purchaseList, setPurchaseList] = useState([]);
-
+  const [sortOrder, setSortOrder] = useState("desc");
+  const [sortKey, setSortKey] = useState("purchasedate");
   const [isInvoiceOpen, setIsInvoiceOpen] = useState(false);
   const [filteredPurchaseList, setfilteredPurchaseList] =
     useState(purchaseList);
@@ -181,17 +183,40 @@ const List = () => {
   };
 
   // Group purchase by bill number
-  const groupedPurchase = (filteredPurchaseList || []).reduce((acc, item) => {
-    const key = item.billno;
-    if (!acc[key]) {
-      acc[key] = { ...item, TotalAmount: 0, TotalQty: 0 };
-    }
-    acc[key].TotalAmount += item.amount;
-    acc[key].TotalQty += item.qty;
-    return acc;
-  }, {});
+  const groupPurchases = () => {
+    const groupedPurchase = (filteredPurchaseList || []).reduce((acc, item) => {
+      const key = item.billno;
+      if (!acc[key]) {
+        acc[key] = { ...item, TotalAmount: 0 };
+      }
+      acc[key].TotalAmount += item.amount;
+      return acc;
+    }, {});
 
-  const groupedPurchaseArray = Object.values(groupedPurchase);
+    return Object.values(groupedPurchase).sort((a, b) => {
+      if (sortKey === "purchasedate") {
+        return sortOrder === "asc"
+          ? new Date(a.purchasedate) - new Date(b.purchasedate)
+          : new Date(b.purchasedate) - new Date(a.purchasedate);
+      } else {
+        return sortOrder === "asc"
+          ? a[sortKey] > b[sortKey]
+            ? 1
+            : -1
+          : a[sortKey] < b[sortKey]
+          ? 1
+          : -1;
+      }
+    });
+  };
+  // ---------------------------------------------------------------------------->
+  // Toggle sorting order ------------------------------------------------------->
+  const handleSort = (key) => {
+    setSortKey(key);
+    setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+  };
+
+  const groupedPurchaseArray = groupPurchases();
 
   //for searching Name /code to get the purchase list ------------------------------------------->
   useEffect(() => {
@@ -405,16 +430,84 @@ const List = () => {
         <div className="customer-heading-title-scroller w100 h1 mh100 d-flex-col">
           <div className="data-headings-div sale-data-headings-div h10 d-flex center t-center sb bg7">
             <span className="f-info-text w5">{t("ps-srNo")}</span>
-            <span className="f-info-text w5">{t("ps-date")}</span>
+            <span className="f-info-text w15">
+              {t("ps-date")}
+              <span
+                className="px5 f-color-icon"
+                type="button"
+                onClick={() => handleSort("purchasedate")}
+              >
+                {sortKey === "purchasedate" ? (
+                  sortOrder === "asc" ? (
+                    <TbSortAscending2 />
+                  ) : (
+                    <TbSortDescending2 />
+                  )
+                ) : (
+                  <TbSortAscending2 />
+                )}
+              </span>
+            </span>
             <span className="f-info-text w5">{t("ps-rect-no")}</span>
-            <span className="f-info-text w10">{t("ps-code")}</span>
-            <span className="f-info-text w25">{t("ps-dealer-name")}</span>
+            <span className="f-info-text w10">
+              {t("ps-code")}
+              <span
+                className="px5 f-color-icon"
+                type="button"
+                onClick={() => handleSort("dealerCode")}
+              >
+                {sortKey === "dealerCode" ? (
+                  sortOrder === "asc" ? (
+                    <TbSortAscending2 />
+                  ) : (
+                    <TbSortDescending2 />
+                  )
+                ) : (
+                  <TbSortAscending2 />
+                )}
+              </span>
+            </span>
+            <span className="f-info-text w25">
+              {t("ps-dealer-name")}
+              <span
+                className="px5 f-color-icon"
+                type="button"
+                onClick={() => handleSort("dealerName")}
+              >
+                {sortKey === "dealerName" ? (
+                  sortOrder === "asc" ? (
+                    <TbSortAscending2 />
+                  ) : (
+                    <TbSortDescending2 />
+                  )
+                ) : (
+                  <TbSortAscending2 />
+                )}
+              </span>
+            </span>
             <span className="f-info-text w5">{t("ps-ttl-amt")}</span>
             {userRole === "salesman" ? (
               <></>
             ) : (
               <>
-                <span className="f-info-text w10">{t("CreatedBy")}</span>
+                <span className="f-info-text w15">
+                  {t("CreatedBy")}
+                  <span
+                    className="px5 f-color-icon"
+                    type="button"
+                    onClick={() => handleSort("createdby")}
+                  >
+                    {sortKey === "createdby" ? (
+                      sortOrder === "asc" ? (
+                        <TbSortAscending2 />
+                      ) : (
+                        <TbSortDescending2 />
+                      )
+                    ) : (
+                      <TbSortAscending2 />
+                    )}
+                  </span>
+                </span>
               </>
             )}
             <span className="f-info-text w5">Actions</span>
@@ -434,7 +527,7 @@ const List = () => {
                 }}
               >
                 <span className="text w5">{index + 1}</span>
-                <span className="text w5">
+                <span className="text w15">
                   {formatDateToDDMMYYYY(item.purchasedate)}
                 </span>
                 <span className="text w5 ">{item.receiptno}</span>
@@ -446,7 +539,7 @@ const List = () => {
                   <></>
                 ) : (
                   <>
-                    <span className="text w10">
+                    <span className="text w15">
                       {item.createdby || "Unknown"}
                     </span>
                   </>
