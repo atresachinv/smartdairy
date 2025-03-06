@@ -12,6 +12,7 @@ import { toast } from "react-toastify";
 import Swal from "sweetalert2";
 import { jsPDF } from "jspdf";
 import { useSelector } from "react-redux";
+import { TbSortAscending2, TbSortDescending2 } from "react-icons/tb";
 
 const ProductsList = () => {
   const { t } = useTranslation(["puchasesale", "common"]);
@@ -32,6 +33,9 @@ const ProductsList = () => {
     setEditSale(id);
     setIsModalOpen(true);
   };
+
+  const [sortOrder, setSortOrder] = useState("desc");
+  const [sortKey, setSortKey] = useState("");
 
   //handle update product
   const handleSaveChanges = async () => {
@@ -224,6 +228,21 @@ const ProductsList = () => {
     doc.save(`Product_list_Report.pdf`);
   };
 
+  //sort
+  const handleSort = (key) => {
+    const sortedList = [...productList].sort((a, b) => {
+      if (sortOrder === "asc") {
+        return a[key] > b[key] ? 1 : -1;
+      } else {
+        return a[key] < b[key] ? 1 : -1;
+      }
+    });
+
+    setProductList(sortedList);
+    setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+    setSortKey(key); // Update the sorted column
+  };
+
   return (
     <div className="product-list-container w100 h1 d-flex-col p10">
       <div className="download-print-pdf-excel-container w100 h10 d-flex sb">
@@ -274,8 +293,42 @@ const ProductsList = () => {
         <div className="product-heading-title-scroller w100 h1 mh100 hidescrollbar d-flex-col br6">
           <div className="sales-data-headings-div p10 d-flex center sticky-top bg7 sa">
             <span className="f-info-text w5">{t("ps-srNo")}</span>
-            <span className="f-info-text w10">{t("ps-code")}</span>
-            <span className="f-info-text w25">{t("ps-itm-name")}</span>
+            <span className="f-info-text w10">
+              {t("ps-code")}
+              <span
+                className="px10 f-color-icon"
+                type="button"
+                onClick={() => handleSort("ItemCode")}
+              >
+                {sortKey === "ItemCode" ? (
+                  sortOrder === "asc" ? (
+                    <TbSortAscending2 />
+                  ) : (
+                    <TbSortDescending2 />
+                  )
+                ) : (
+                  <TbSortAscending2 />
+                )}
+              </span>
+            </span>
+            <span className="f-info-text w25">
+              {t("ps-itm-name")}
+              <span
+                className="px10 f-color-icon"
+                type="button"
+                onClick={() => handleSort("ItemName")}
+              >
+                {sortKey === "ItemName" ? (
+                  sortOrder === "asc" ? (
+                    <TbSortAscending2 />
+                  ) : (
+                    <TbSortDescending2 />
+                  )
+                ) : (
+                  <TbSortAscending2 />
+                )}
+              </span>
+            </span>
             <span className="f-info-text w20">{t("ps-desc")}</span>
             <span className="f-info-text w10">Action</span>
           </div>

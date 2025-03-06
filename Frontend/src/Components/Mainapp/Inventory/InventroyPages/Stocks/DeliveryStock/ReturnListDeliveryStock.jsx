@@ -25,6 +25,7 @@ const ReturnListDeliveryStock = () => {
   const [date2, SetDate2] = useState("");
   const [loading, SetLoading] = useState(false);
   const [sortOrder, setSortOrder] = useState("desc");
+  const [sortKey, setSortKey] = useState("saledate");
   const [updatelist, setUpdateList] = useState([]);
   const dispatch = useDispatch();
   const { emplist } = useSelector((state) => state.emp);
@@ -169,17 +170,27 @@ const ReturnListDeliveryStock = () => {
       return acc;
     }, {});
 
-    // Convert object to array and sort by saledate
-    return Object.values(groupedPurchase).sort((a, b) =>
-      sortOrder === "asc"
-        ? new Date(a.saledate) - new Date(b.saledate)
-        : new Date(b.saledate) - new Date(a.saledate)
-    );
+    return Object.values(groupedPurchase).sort((a, b) => {
+      if (sortKey === "saledate") {
+        return sortOrder === "asc"
+          ? new Date(a.saledate) - new Date(b.saledate)
+          : new Date(b.saledate) - new Date(a.saledate);
+      } else {
+        return sortOrder === "asc"
+          ? a[sortKey] > b[sortKey]
+            ? 1
+            : -1
+          : a[sortKey] < b[sortKey]
+          ? 1
+          : -1;
+      }
+    });
   };
 
   // Toggle sorting order
-  const toggleSortOrder = () => {
-    setSortOrder((prevOrder) => (prevOrder === "asc" ? "desc" : "asc"));
+  const handleSort = (key) => {
+    setSortKey(key);
+    setSortOrder(sortOrder === "asc" ? "desc" : "asc");
   };
 
   const groupedPurchaseArray = groupPurchases();
@@ -495,26 +506,98 @@ const ReturnListDeliveryStock = () => {
             <span className="f-info-text w10">
               {t("ps-date")}
               <span
-                className="px10 f-color-icon"
+                className="px5 f-color-icon"
                 type="button"
-                onClick={toggleSortOrder}
+                onClick={() => handleSort("saledate")}
               >
-                {sortOrder === "asc" ? (
-                  <TbSortAscending2 />
+                {sortKey === "saledate" ? (
+                  sortOrder === "asc" ? (
+                    <TbSortAscending2 />
+                  ) : (
+                    <TbSortDescending2 />
+                  )
                 ) : (
-                  <TbSortDescending2 />
+                  <TbSortAscending2 />
                 )}
               </span>
             </span>
-            <span className="f-info-text w5">Chalan.No</span>
-            <span className="f-info-text w15">Party Code</span>
-            <span className="f-info-text w25">Party Name</span>
-            <span className="f-info-text w5">Qty</span>
+            <span className="f-info-text w15">
+              Chalan.No
+              <span
+                className="px5 f-color-icon"
+                type="button"
+                onClick={() => handleSort("rctno")}
+              >
+                {sortKey === "rctno" ? (
+                  sortOrder === "asc" ? (
+                    <TbSortAscending2 />
+                  ) : (
+                    <TbSortDescending2 />
+                  )
+                ) : (
+                  <TbSortAscending2 />
+                )}
+              </span>
+            </span>
+            <span className="f-info-text w15">
+              Party Code
+              <span
+                className="px5 f-color-icon"
+                type="button"
+                onClick={() => handleSort("rctno")}
+              >
+                {sortKey === "rctno" ? (
+                  sortOrder === "asc" ? (
+                    <TbSortAscending2 />
+                  ) : (
+                    <TbSortDescending2 />
+                  )
+                ) : (
+                  <TbSortAscending2 />
+                )}
+              </span>
+            </span>
+            <span className="f-info-text w25">
+              Party Name
+              <span
+                className="px5 f-color-icon"
+                type="button"
+                onClick={() => handleSort("rctno")}
+              >
+                {sortKey === "rctno" ? (
+                  sortOrder === "asc" ? (
+                    <TbSortAscending2 />
+                  ) : (
+                    <TbSortDescending2 />
+                  )
+                ) : (
+                  <TbSortAscending2 />
+                )}
+              </span>
+            </span>
+            <span className="f-info-text w5">
+              Qty
+              <span
+                className="px5 f-color-icon"
+                type="button"
+                onClick={() => handleSort("TotalQty")}
+              >
+                {sortKey === "TotalQty" ? (
+                  sortOrder === "asc" ? (
+                    <TbSortAscending2 />
+                  ) : (
+                    <TbSortDescending2 />
+                  )
+                ) : (
+                  <TbSortAscending2 />
+                )}
+              </span>
+            </span>
             {userRole === "salesman" ? (
               <></>
             ) : (
               <>
-                <span className="text w10">CreatedBy</span>
+                <span className="f-info-text w10">CreatedBy</span>
               </>
             )}
             <span className="f-info-text w10">Actions</span>
@@ -540,8 +623,8 @@ const ReturnListDeliveryStock = () => {
                     <span className="text w10">
                       {formatDateToDDMMYYYY(item.saledate)}
                     </span>
-                    <span className="text w5">{item.rctno}</span>
-                    <span className="text w10">{item.to_user}</span>
+                    <span className="text w15">{item.rctno}</span>
+                    <span className="text w15">{item.to_user}</span>
                     <span className="text w25">
                       {findEmpName(item.to_user, item.deliver_to)}
                     </span>

@@ -48,6 +48,7 @@ import Products from "./Inventory/InventroyPages/Products/Products";
 import { checkCurrentSession } from "../../App/Features/Users/authSlice";
 import { toast } from "react-toastify";
 import "../../Styles/Mainapp/Mainapphome.css";
+import InventoryRports from "./Reports/InventoryReports/InventoryRports";
 import Returns from "./Inventory/InventroyPages/Returns/DealerReturns/Returns";
 import SanghsalesMaster from "./MilkSales/SanghsalesPages/SanghsalesMaster";
 import SalesMaster from "./Sales/SalesMaster";
@@ -227,7 +228,7 @@ const Mainapp = () => {
             <Route path="reports/milk/*" element={<MilkcollectionReports />} />
             <Route path="reports/customer/*" element={<CustomerReports />} />
             <Route path="reports/employee/*" element={<CustomerReports />} />
-            <Route path="reports/inventory/*" element={<CustomerReports />} />
+            <Route path="reports/inventory/*" element={<InventoryRports />} />
             <Route path="reports/sales/*" element={<CustomerReports />} />
             <Route path="reports/payment/*" element={<PaymentReports />} />
             {/* payment routes */}

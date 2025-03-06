@@ -13,6 +13,7 @@ import { useTranslation } from "react-i18next";
 import { NavLink } from "react-router-dom";
 import jsPDF from "jspdf";
 import { useSelector } from "react-redux";
+import { TbSortAscending2, TbSortDescending2 } from "react-icons/tb";
 
 const StockList = () => {
   const { t } = useTranslation(["puchasesale", "common"]);
@@ -22,6 +23,8 @@ const StockList = () => {
   const [filteredProducts, setFilterProducts] = useState([]);
   const [editSale, setEditSale] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [sortOrder, setSortOrder] = useState("desc");
+  const [sortKey, setSortKey] = useState("");
   const dairyInfo = useSelector(
     (state) =>
       state.dairy.dairyData.marathi_name ||
@@ -258,6 +261,21 @@ const StockList = () => {
     doc.save(`Opening_Stock_Report.pdf`);
   };
 
+  //Handle sort
+  const handleSort = (key) => {
+    const sortedList = [...filteredProducts].sort((a, b) => {
+      if (sortOrder === "asc") {
+        return a[key] > b[key] ? 1 : -1;
+      } else {
+        return a[key] < b[key] ? 1 : -1;
+      }
+    });
+
+    setFilterProducts(sortedList);
+    setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+    setSortKey(key);
+  };
+
   return (
     <div className="product-list-container w100 h1 d-flex-col p10">
       <div className="download-print-pdf-excel-container w100 h30 d-flex j-center">
@@ -322,10 +340,78 @@ const StockList = () => {
         <div className="product-heading-title-scroller w100 h1 mh100 d-flex-col">
           <div className="data-headings-div h10 d-flex forWidth center t-center sa bg7">
             <span className="f-info-text w5"> {t("ps-srNo")}</span>
-            <span className="f-info-text w5">{t("ps-code")}</span>
-            <span className="f-info-text w15">{t("ps-itm-name")}</span>
-            <span className="f-info-text w5">{t("ps-qty")}</span>
-            <span className="f-info-text w5">{t("ps-rate")}</span>
+            <span className="f-info-text w10">
+              {t("ps-code")}
+              <span
+                className="px10 f-color-icon"
+                type="button"
+                onClick={() => handleSort("ItemCode")}
+              >
+                {sortKey === "ItemCode" ? (
+                  sortOrder === "asc" ? (
+                    <TbSortAscending2 />
+                  ) : (
+                    <TbSortDescending2 />
+                  )
+                ) : (
+                  <TbSortAscending2 />
+                )}
+              </span>
+            </span>
+            <span className="f-info-text w15">
+              {t("ps-itm-name")}
+              <span
+                className="px5 f-color-icon"
+                type="button"
+                onClick={() => handleSort("ItemName")}
+              >
+                {sortKey === "ItemName" ? (
+                  sortOrder === "asc" ? (
+                    <TbSortAscending2 />
+                  ) : (
+                    <TbSortDescending2 />
+                  )
+                ) : (
+                  <TbSortAscending2 />
+                )}
+              </span>
+            </span>
+            <span className="f-info-text w5">
+              {t("ps-qty")}
+              <span
+                className="px5 f-color-icon"
+                type="button"
+                onClick={() => handleSort("ItemQty")}
+              >
+                {sortKey === "ItemQty" ? (
+                  sortOrder === "asc" ? (
+                    <TbSortAscending2 />
+                  ) : (
+                    <TbSortDescending2 />
+                  )
+                ) : (
+                  <TbSortAscending2 />
+                )}
+              </span>
+            </span>
+            <span className="f-info-text w5">
+              {t("ps-rate")}
+              <span
+                className="px5 f-color-icon"
+                type="button"
+                onClick={() => handleSort("ItemRate")}
+              >
+                {sortKey === "ItemRate" ? (
+                  sortOrder === "asc" ? (
+                    <TbSortAscending2 />
+                  ) : (
+                    <TbSortDescending2 />
+                  )
+                ) : (
+                  <TbSortAscending2 />
+                )}
+              </span>
+            </span>
             <span className="f-info-text w5">{t("ps-sale-rate")}</span>
             <span className="f-info-text w5">{t("ps-amt")}</span>
             <span className="f-info-text w5">Action</span>
@@ -344,8 +430,8 @@ const StockList = () => {
                 }}
               >
                 <span className="text w5">{index + 1}</span>
-                <span className="text w5">{product.ItemCode}</span>
-                <span className="text w15 t-start">{product.ItemName}</span>
+                <span className="text w10">{product.ItemCode}</span>
+                <span className="text w15">{product.ItemName}</span>
                 <span className="text w5">{product.ItemQty}</span>
                 <span className="text w5">{product.ItemRate}</span>
                 <span className="text w5">{product.SaleRate}</span>

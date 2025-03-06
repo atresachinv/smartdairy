@@ -396,10 +396,9 @@ const DeductionReports = () => {
   const [filteredDeduction, setFilteredDeduction] = useState([]);
   const [dnameOptions, setDnameOptions] = useState([]);
   const [selectedDname, setSelectedDname] = useState("");
-
+  console.log(selectedMaster);
   //----------------------------------------------------------------->
   // Handle the date selection --------------------------------------->
-
   const handleSelectChange = async (e) => {
     const selectedIndex = e.target.value;
     if (selectedIndex !== "") {
@@ -775,3 +774,5 @@ const DeductionReports = () => {
 };
 
 export default DeductionReports;
+
+
