@@ -208,6 +208,14 @@ const StockList = () => {
       item.SaleRate,
       item.Amount,
     ]);
+    const totalAmount = filteredProducts.reduce(
+      (acc, item) => acc + item.Amount,
+      0
+    );
+    const totalQty = filteredProducts.reduce(
+      (acc, item) => acc + item.ItemQty,
+      0
+    );
 
     // Page width for centering text
     const pageWidth = doc.internal.pageSize.getWidth();
@@ -256,6 +264,13 @@ const StockList = () => {
       tableLineColor: [0, 0, 0], // Table border color (black)
       tableLineWidth: 0.1, // Border width
     });
+    // Add total amount with border
+    doc.setFontSize(12);
+    doc.text(
+      `Total Qty : ${totalQty}        Total Amount: ${totalAmount}`,
+      75,
+      doc.lastAutoTable.finalY + 10
+    );
 
     // Save the PDF
     doc.save(`Opening_Stock_Report.pdf`);
@@ -339,7 +354,7 @@ const StockList = () => {
         <span className="heading p10"> {t("ps-stockReport")}</span>
         <div className="product-heading-title-scroller w100 h1 mh100 d-flex-col">
           <div className="data-headings-div h10 d-flex forWidth center t-center sa bg7">
-            <span className="f-info-text w5"> {t("ps-srNo")}</span>
+            {/* <span className="f-info-text w5"> {t("ps-srNo")}</span> */}
             <span className="f-info-text w10">
               {t("ps-code")}
               <span
@@ -429,7 +444,7 @@ const StockList = () => {
                   backgroundColor: index % 2 === 0 ? "#faefe3" : "#fff",
                 }}
               >
-                <span className="text w5">{index + 1}</span>
+                {/* <span className="text w5">{index + 1}</span> */}
                 <span className="text w10">{product.ItemCode}</span>
                 <span className="text w15">{product.ItemName}</span>
                 <span className="text w5">{product.ItemQty}</span>

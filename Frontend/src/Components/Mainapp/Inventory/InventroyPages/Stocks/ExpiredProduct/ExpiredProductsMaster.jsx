@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import ExpiredProductNav from "./ExpiredProductNav";
-import ExpiredProducts from "./ExpiredProducts";
 import { Route, Routes } from "react-router-dom";
+import CattleSaleList from "./CattleFeed/CattleSaleList";
+import CreateCattleFeed from "./CattleFeed/CreateCattleFeed";
 
 const ExpiredProductsMaster = () => {
   const [userRole, setUserRole] = useState(null);
@@ -23,7 +24,8 @@ const ExpiredProductsMaster = () => {
       </div>
       <div className="stock-nav-views w100 h90 d-flex center p10">
         <Routes>
-          <Route path="*" element={<ExpiredProducts />} />
+          <Route path="*" element={<CattleSaleList />} />
+          <Route path="add-new" element={<CreateCattleFeed />} />
         </Routes>
       </div>
     </div>

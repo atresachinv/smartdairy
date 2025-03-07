@@ -8,7 +8,10 @@ import "./Stock.css";
 // Function to get the current date
 const getTodaysDate = () => {
   const today = new Date();
-  return today.toISOString().split("T")[0];
+  const year = today.getFullYear();
+  const startYear = today.getMonth() >= 3 ? year : year - 1;
+  const start = `${startYear}-04-01`;
+  return start;
 };
 
 const CreateStock = () => {
@@ -163,6 +166,7 @@ const CreateStock = () => {
                   {t("ps-date")}: <span className="req">*</span>
                 </label>
                 <input
+                  disabled
                   type="date"
                   name="purchasedate"
                   value={formData.purchasedate}

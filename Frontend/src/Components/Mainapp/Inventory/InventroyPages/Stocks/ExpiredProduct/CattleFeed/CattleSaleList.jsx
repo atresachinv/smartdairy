@@ -2,16 +2,16 @@
 /* eslint-disable no-unused-vars */
 import React, { useEffect, useState } from "react";
 import * as XLSX from "xlsx";
-import Spinner from "../../../Home/Spinner/Spinner";
+import Spinner from "../../../../../../Home/Spinner/Spinner";
 import { useSelector } from "react-redux";
-import axiosInstance from "../../../../App/axiosInstance";
+import axiosInstance from "../../../../../../../App/axiosInstance";
 import { MdAddShoppingCart, MdDeleteOutline } from "react-icons/md";
 import Swal from "sweetalert2";
 import { IoClose } from "react-icons/io5";
 import { FaRegEdit } from "react-icons/fa";
 import { toast } from "react-toastify";
 import { TbSortAscending2, TbSortDescending2 } from "react-icons/tb";
-import "../../../../Styles/Mainapp/Sales/Sales.css";
+import "../../../../../../../Styles/Mainapp/Sales/Sales.css";
 import { NavLink } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { FaDownload } from "react-icons/fa6";
@@ -19,7 +19,6 @@ import { jsPDF } from "jspdf";
 
 const CattleSaleList = () => {
   const { t } = useTranslation(["puchasesale", "common"]);
-  const { customerlist, loading } = useSelector((state) => state.customer);
   const [date1, SetDate1] = useState("");
   const [date2, SetDate2] = useState("");
   const [fcode, setFcode] = useState("");
@@ -51,8 +50,6 @@ const CattleSaleList = () => {
     const exportData = filteredSalesList.map((sale) => ({
       BillDate: formatDateToDDMMYYYY(sale.BillDate),
       BillNo: sale.ReceiptNo,
-      custCode: sale.CustCode,
-      custName: handleFindCustName(sale.CustCode),
       ItemCode: sale.ItemCode,
       ItemName: handleFindItemName(sale.ItemCode),
       Qty: sale.Qty,
@@ -60,7 +57,6 @@ const CattleSaleList = () => {
       Amt: sale.Amount,
       cgst: sale.cgst || 0,
       sgst: sale.sgst || 0,
-      cn: sale.cn || 0,
     }));
 
     if (!Array.isArray(exportData) || exportData.length === 0) {
@@ -93,7 +89,7 @@ const CattleSaleList = () => {
       SetLoadings(true);
       try {
         const { data } = await axiosInstance.get(
-          `/sale/all?ItemGroupCode=1&cn=0&role=${userRole}`
+          `/sale/all?ItemGroupCode=1&cn=2&role=${userRole}`
         ); // Replace with your actual API URL
         if (data.success) {
           // console.log(data);
@@ -137,7 +133,7 @@ const CattleSaleList = () => {
     try {
       const queryParams = new URLSearchParams(getItem).toString();
       const { data } = await axiosInstance.get(
-        `/sale/all?ItemGroupCode=1&cn=0&role=${userRole}&${queryParams}`
+        `/sale/all?ItemGroupCode=1&cn=2&role=${userRole}&${queryParams}`
       );
       if (data?.success) {
         setSales(data.salesData);
@@ -218,12 +214,6 @@ const CattleSaleList = () => {
   const handleFindItemName = (id) => {
     const selectedItem = itemList.find((item) => item.ItemCode === id);
     return selectedItem?.ItemName || "Unknown Item";
-  };
-
-  //get cust name from cust code
-  const handleFindCustName = (id) => {
-    const selectedItem = customerlist.find((item) => item.srno === id);
-    return selectedItem?.cname || "Unknown Customer";
   };
 
   // calculate total amount
@@ -337,14 +327,8 @@ const CattleSaleList = () => {
   useEffect(() => {
     if (fcode) {
       const filteredItems = sales.filter((item) => {
-        const isCodeMatch = item.CustCode.toString().includes(fcode);
         const isRecptMatch = item.ReceiptNo.toString().includes(fcode);
-
-        const isNameMatch = handleFindCustName(item.CustCode)
-          ?.toLowerCase()
-          .includes(fcode.toLowerCase());
-
-        return isCodeMatch || isRecptMatch || isNameMatch;
+        return isRecptMatch;
       });
 
       setFilteredSalesList(filteredItems);
@@ -370,20 +354,11 @@ const CattleSaleList = () => {
     const doc = new jsPDF();
 
     // Define columns and rows
-    const columns = [
-      "Sr No",
-      "Date",
-      "Bill No",
-      "Code",
-      "Customer Name",
-      "Amount",
-    ];
+    const columns = ["Sr No", "Date", "Bill No", "Amount"];
     const rows = groupedSalesArray.map((item, index) => [
       index + 1,
       formatDateToDDMMYYYY(item.BillDate),
       item.ReceiptNo,
-      item.CustCode,
-      handleFindCustName(item.CustCode),
       item.TotalAmount,
     ]);
 
@@ -555,25 +530,7 @@ const CattleSaleList = () => {
               </span>
             </span>
             <span className="f-info-text w10">{t("ps-rect-no")}</span>
-            <span className="f-info-text w10">
-              {t("ps-custCode")}
-              <span
-                className="px5 f-color-icon"
-                type="button"
-                onClick={() => handleSort("CustCode")}
-              >
-                {sortKey === "CustCode" ? (
-                  sortOrder === "asc" ? (
-                    <TbSortAscending2 />
-                  ) : (
-                    <TbSortDescending2 />
-                  )
-                ) : (
-                  <TbSortAscending2 />
-                )}
-              </span>
-            </span>
-            <span className="f-info-text w35"> {t("ps-cutName")}</span>
+
             <span className="f-info-text w10">
               {t("ps-amt")}
               <span
@@ -636,11 +593,6 @@ const CattleSaleList = () => {
                   {formatDateToDDMMYYYY(sale.BillDate)}
                 </span>
                 <span className="text w5">{sale.ReceiptNo}</span>
-                <span className="text w5">{sale.CustCode}</span>
-                <span className="text w35 ">
-                  {handleFindCustName(sale.CustCode)}
-                </span>
-
                 <span className="text w10">{sale.TotalAmount}</span>
 
                 <span className="text w10 d-flex j-center a-center ">
@@ -675,7 +627,7 @@ const CattleSaleList = () => {
           <div className="pramod modal ">
             <div className="modal-content invoiceModel">
               <div className="d-flex sb">
-                <h2> {t("ps-sale-bill-det")}</h2>
+                <h2> Invoice Details</h2>
                 <IoClose
                   style={{ cursor: "pointer" }}
                   size={25}
@@ -691,14 +643,7 @@ const CattleSaleList = () => {
                   {t("ps-date")} :{formatDateToDDMMYYYY(viewItems[0]?.BillDate)}
                 </div>
               </div>
-              <div className=" d-flex sb mx15 px15 invoiceModelInfo">
-                <h4>
-                  {t("ps-custCode")} : {viewItems[0]?.CustCode || ""}
-                </h4>
-                <h4 className="mx15">
-                  {handleFindCustName(viewItems[0]?.CustCode) || ""}
-                </h4>
-              </div>
+              <div className=" d-flex sb mx15 px15 invoiceModelInfo"></div>
               <div className="modal-content w100  ">
                 <div className="sales-table-container w100">
                   <table className="sales-table w100 ">
