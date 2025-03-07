@@ -39,7 +39,7 @@ const DeductionReports = () => {
       setSelectedMaster(selectedDates);
       // Store selected master in localStorage
       localStorage.setItem("selectedMaster", JSON.stringify(selectedDates));
-
+        console.log(" Manual MAster", manualMaster);
       dispatch(
         getPaymentsDeductionInfo({
           fromDate: selectedDates.start,
