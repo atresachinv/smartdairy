@@ -3,6 +3,37 @@ import axiosInstance from "../../axiosInstance";
 import { toast } from "react-toastify";
 // --------------------------------------------------------------->
 // login function ------------------------------------------------>
+export const checkdairyName = createAsyncThunk(
+  "auth/checkdairyName",
+  async (dairyname, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.post("/check/dairyname", dairyname);
+      return response.data; // Contains user_role
+    } catch (err) {
+      const errorMessage = err.response?.data?.message || "Login failed";
+      toast.error(errorMessage);
+      return rejectWithValue(errorMessage);
+    }
+  }
+);
+// --------------------------------------------------------------->
+// login function ------------------------------------------------>
+export const checkuserName = createAsyncThunk(
+  "auth/checkuserName",
+  async (username, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.post("/check/username", username);
+      return response.data; // Contains user_role
+    } catch (err) {
+      const errorMessage = err.response?.data?.message || "Login failed";
+      toast.error(errorMessage);
+      return rejectWithValue(errorMessage);
+    }
+  }
+);
+
+// --------------------------------------------------------------->
+// login function ------------------------------------------------>
 export const loginUser = createAsyncThunk(
   "auth/loginUser",
   async (values, { rejectWithValue }) => {
@@ -63,12 +94,13 @@ export const checkCurrentSession = createAsyncThunk(
   }
 );
 
-
 const authSlice = createSlice({
   name: "auth",
   initialState: {
     userRole: "",
     user: {},
+    username: "",
+    dairyname: "",
     token: null,
     isAuthenticated: false,
     loading: false,
@@ -97,7 +129,31 @@ const authSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
-    builder
+    builder // check dairyname exist or not ------------------------------------>
+      .addCase(checkdairyName.pending, (state) => {
+        state.status = "loading";
+        state.error = null;
+      })
+      .addCase(checkdairyName.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        state.dairyname = action.payload;
+      })
+      .addCase(checkdairyName.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.payload;
+      }) //check username exist or not------------------------------------>
+      .addCase(checkuserName.pending, (state) => {
+        state.status = "loading";
+        state.error = null;
+      })
+      .addCase(checkuserName.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        state.username = action.payload;
+      })
+      .addCase(checkuserName.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.payload;
+      }) //login user ------------------------------------>
       .addCase(loginUser.pending, (state) => {
         state.loading = true;
         state.error = null;

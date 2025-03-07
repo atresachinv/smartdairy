@@ -4,18 +4,26 @@ import { useDispatch, useSelector } from "react-redux";
 import "../../../Styles/Home/Forms.css";
 import { toast } from "react-toastify";
 import { registerUser, reset } from "../../../App/Features/Dairy/registerSlice";
+import {
+  checkdairyName,
+  checkuserName,
+} from "../../../App/Features/Users/authSlice";
 
 const Register = ({ switchToLogin }) => {
-  const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  // Selectors to get registration status and error from Redux
   const { status, error } = useSelector((state) => state.register);
   const tDate = useSelector((state) => state.date.toDate); // Assuming you have a date slice
-
+  const [dairyName, setDairyName] = useState(true); // if dairyname found update true
+  const [userName, setUserName] = useState(true); // if username found update true
+  const [errors, setErrors] = useState({});
+  const [prefixString, setPrefixString] = useState("");
+  const [endDate, setEndDate] = useState("");
   // Local state for form values and errors
-  const [values, setValues] = useState({
+
+  const initialstate = {
     dairy_name: "",
+    marathi_name: "",
     user_name: "",
     user_phone: "",
     user_city: "",
@@ -23,12 +31,10 @@ const Register = ({ switchToLogin }) => {
     user_password: "",
     confirm_password: "",
     terms: false,
-  });
+  };
+  const [values, setValues] = useState(initialstate);
 
-  const [errors, setErrors] = useState({});
-  const [prefixString, setPrefixString] = useState("");
-  const [endDate, setEndDate] = useState("");
-
+  // --------------------------------------------------------------------------------------------->
   // Generate prefix string on component mount
   useEffect(() => {
     const generatePrefix = () => {
@@ -44,6 +50,7 @@ const Register = ({ switchToLogin }) => {
     generatePrefix();
   }, []);
 
+  // --------------------------------------------------------------------------------------------->
   // Generate end date 365 days from tDate
   useEffect(() => {
     const generateEndDate = (date) => {
@@ -58,6 +65,7 @@ const Register = ({ switchToLogin }) => {
     generateEndDate(tDate);
   }, [tDate]);
 
+  // --------------------------------------------------------------------------------------------->
   // Handle input changes and validation
   const handleInputs = (e) => {
     const { name, value, type, checked } = e.target;
@@ -72,6 +80,39 @@ const Register = ({ switchToLogin }) => {
     setErrors((prevErrors) => ({ ...prevErrors, ...newErrors }));
   };
 
+  // --------------------------------------------------------------------------------------------->
+  // cheking dairyname or username is exit or not -------------------------------------------->
+  useEffect(() => {
+    if (values.dairy_name.length > 2) {
+      console.log("heloo from dairy name");
+      const delay = setTimeout(checkDairyName, 500); // Delay API call
+      return () => clearTimeout(delay);
+    }
+  }, [values.dairy_name]);
+
+  useEffect(() => {
+    if (values.user_name.length > 2) {
+      console.log("heloo from user name");
+      const delay = setTimeout(checkUserName, 1500); // Delay API call
+      return () => clearTimeout(delay);
+    }
+  }, [values.user_name]);
+
+  const checkDairyName = async () => {
+    const result = await dispatch(
+      checkdairyName({ dairyname: values.dairy_name })
+    ).unwrap();
+    setDairyName(result.available);
+  };
+
+  const checkUserName = async () => {
+    const result = await dispatch(
+      checkuserName({ username: values.user_name })
+    ).unwrap();
+    setUserName(result.available);
+  };
+
+  // --------------------------------------------------------------------------------------------->
   // Field validation function
   const validateField = (name, value) => {
     const error = {};
@@ -79,6 +120,13 @@ const Register = ({ switchToLogin }) => {
       case "dairy_name":
         if (!/^[a-zA-Z0-9\s]+$/.test(value)) {
           error.dairy_name = "Invalid dairy name.";
+        } else {
+          delete errors[name];
+        }
+        break;
+      case "marathi_name":
+        if (!/^[\u0900-\u097Fa-zA-Z0-9\s]+$/.test(value)) {
+          error.marathi_name = "Invalid dairy name.";
         } else {
           delete errors[name];
         }
@@ -142,6 +190,7 @@ const Register = ({ switchToLogin }) => {
   const validateFields = () => {
     const fieldsToValidate = [
       "dairy_name",
+      "dairy_name",
       "user_name",
       "user_phone",
       "user_city",
@@ -174,22 +223,34 @@ const Register = ({ switchToLogin }) => {
       return;
     }
 
-    if (Object.keys(validationErrors).length === 0) {
-      const requestData = {
-        dairy_name: values.dairy_name,
-        user_name: values.user_name,
-        user_phone: values.user_phone,
-        user_city: values.user_city,
-        user_pincode: values.user_pincode,
-        user_password: values.user_password,
-        terms: values.terms ? 1 : 0, // Mapping: true -> 1, false -> 0
-        prefix: prefixString,
-        date: tDate,
-        endDate: endDate,
-      };
-      dispatch(registerUser(requestData));
+    if (!dairyName) {
+      toast.error("Same dairyname not allowed!");
+      return;
+    }
+    if (!userName) {
+      toast.error("Same username not allowed!");
+      return;
+    }
+
+    const requestData = {
+      dairy_name: values.dairy_name,
+      user_name: values.user_name,
+      user_phone: values.user_phone,
+      user_city: values.user_city,
+      user_pincode: values.user_pincode,
+      user_password: values.user_password,
+      terms: values.terms ? 1 : 0, // Mapping: true -> 1, false -> 0
+      prefix: prefixString,
+      date: tDate,
+      endDate: endDate,
+    };
+    const result = await dispatch(registerUser(requestData)).unwrap();
+
+    if (result.status === 200) {
+      setValues(initialstate);
+      toast.success(result.message);
     } else {
-      toast.error("Please fix the highlighted errors before submitting.");
+      toast.error(result.message);
     }
   };
 
@@ -202,6 +263,7 @@ const Register = ({ switchToLogin }) => {
       // Reset form fields
       setValues({
         dairy_name: "",
+        marathi_name: "",
         user_name: "",
         user_phone: "",
         user_city: "",
@@ -223,14 +285,18 @@ const Register = ({ switchToLogin }) => {
     <div className="form-container w70 h1 d-flex-col">
       <form
         onSubmit={handleRegister}
-        className="signup-form w100 d-flex-col align-center p10">
+        className="signup-form w100 d-flex-col align-center p10"
+      >
         <span className="title t-center">Register Now</span>
         <div className="data-div w100">
-          <label className="text">
-            Enter Dairy Name <span className="req">*</span>
+          <label htmlFor="dairy_name" className="text">
+            Enter Dairy Name <span className="req">*</span>{" "}
           </label>
           <input
-            className={`data ${errors.dairy_name ? "error-border" : ""}`}
+            id="dairy_name"
+            className={`data ${
+              errors.dairy_name || dairyName === false ? "input-error" : ""
+            }`}
             type="text"
             name="dairy_name"
             required
@@ -241,15 +307,38 @@ const Register = ({ switchToLogin }) => {
           {errors.dairy_name && (
             <span className="error-message">Invalid dairy name.</span>
           )}
+          {dairyName === false && (
+            <span className="error-message">dairyname exist.</span>
+          )}
         </div>
-
+        <div className="data-div w100">
+          <label htmlFor="m-name" className="text">
+            Marathi Dairy Name <span className="req">*</span>
+          </label>
+          <input
+            id="m-name"
+            className={`data ${errors.marathi_name ? "input-error" : ""}`}
+            type="text"
+            name="marathi_name"
+            required
+            placeholder="स्मार्ट डेअरी २.०"
+            value={values.marathi_name}
+            onChange={handleInputs}
+          />
+          {errors.marathi_name && (
+            <span className="error-message">Invalid marathi name.</span>
+          )}
+        </div>
         <div className="data-outer w100 d-flex sb">
           <div className="data-div-2">
-            <label className="text">
+            <label htmlFor="user_name" className="text">
               Enter Username <span className="req">*</span>
             </label>
             <input
-              className={`data ${errors.user_name ? "error-border" : ""}`}
+              id="user_name"
+              className={`data ${
+                errors.user_name || userName === false ? "input-error" : ""
+              }`}
               type="text"
               name="user_name"
               required
@@ -260,19 +349,23 @@ const Register = ({ switchToLogin }) => {
             {errors.user_name && (
               <span className="error-message">Invalid username.</span>
             )}
+            {userName === false && (
+              <span className="error-message">username exist.</span>
+            )}
           </div>
 
           {/* Phone Number */}
           <div className="data-div-2">
-            <label className="text">
+            <label htmlFor="user_phone" className="text">
               Enter Phone Number <span className="req">*</span>
             </label>
             <input
-              className={`data ${errors.user_phone ? "error-border" : ""}`}
+              id="user_phone"
+              className={`data ${errors.user_phone ? "input-error" : ""}`}
               type="tel"
               name="user_phone"
               required
-              placeholder="Mobile Number"
+              placeholder="99XXXXXXXX"
               value={values.user_phone}
               onChange={handleInputs}
             />
@@ -286,15 +379,16 @@ const Register = ({ switchToLogin }) => {
         <div className="data-outer w100 d-flex sb">
           {/* City */}
           <div className="data-div-2">
-            <label className="text">
+            <label htmlFor="user_city" className="text">
               Enter City <span className="req">*</span>
             </label>
             <input
-              className={`data ${errors.user_city ? "error-border" : ""}`}
+              id="user_city"
+              className={`data ${errors.user_city ? "input-error" : ""}`}
               type="text"
               name="user_city"
               required
-              placeholder="Location"
+              placeholder="city"
               value={values.user_city}
               onChange={handleInputs}
             />
@@ -305,11 +399,12 @@ const Register = ({ switchToLogin }) => {
 
           {/* Pincode */}
           <div className="data-div-2">
-            <label className="text">
+            <label htmlFor="user_pincode" className="text">
               Enter Pincode <span className="req">*</span>
             </label>
             <input
-              className={`data ${errors.user_pincode ? "error-border" : ""}`}
+              id="user_pincode"
+              className={`data ${errors.user_pincode ? "input-error" : ""}`}
               type="number"
               name="user_pincode"
               required
@@ -327,11 +422,12 @@ const Register = ({ switchToLogin }) => {
         <div className="data-outer w100 d-flex sb">
           {/* Password */}
           <div className="data-div-2">
-            <label className="text">
+            <label htmlFor="user_password" className="text">
               Enter Password <span className="req">*</span>
             </label>
             <input
-              className={`data ${errors.user_password ? "error-border" : ""}`}
+              id="user_password"
+              className={`data ${errors.user_password ? "input-error" : ""}`}
               type="password"
               name="user_password"
               required
@@ -348,13 +444,12 @@ const Register = ({ switchToLogin }) => {
 
           {/* Confirm Password */}
           <div className="data-div-2">
-            <label className="text">
+            <label htmlFor="confirm_password" className="text">
               Confirm Password <span className="req">*</span>
             </label>
             <input
-              className={`data ${
-                errors.confirm_password ? "error-border" : ""
-              }`}
+              id="confirm_password"
+              className={`data ${errors.confirm_password ? "input-error" : ""}`}
               type="password"
               name="confirm_password"
               required
@@ -372,12 +467,12 @@ const Register = ({ switchToLogin }) => {
         <div className="terms-conditions h10 d-flex center">
           <span className="w100 d-flex text center p10">
             <input
-              className={`checkboxx ${errors.terms ? "error-border" : ""}`}
+              className={`checkboxx ${errors.terms ? "input-error" : ""}`}
               type="checkbox"
               name="terms"
               checked={values.terms}
               onChange={handleInputs}
-            />{" "}
+            />
             I agree to all terms and conditions.<span className="req">*</span>
           </span>
           {errors.terms && (
@@ -389,7 +484,8 @@ const Register = ({ switchToLogin }) => {
         <button
           type="submit"
           className="btn w100"
-          disabled={status === "loading"}>
+          disabled={status === "loading"}
+        >
           {status === "loading" ? "Registering..." : "Register"}
         </button>
 

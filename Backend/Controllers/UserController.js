@@ -7,126 +7,84 @@ const crypto = require("crypto");
 
 dotenv.config({ path: "Backend/.env" });
 
-//---------------------------------------------------------------------------->
-// Register ------------------------------------------------------------------>
-//---------------------------------------------------------------------------->
+//------------------------------------------------------------------------------------------->
+// Check Existing Username ------------------------------------------------------------------>
+//------------------------------------------------------------------------------------------->
 
-//v2 function
-// exports.userRegister = async (req, res) => {
-//   const {
-//     dairy_name,
-//     user_name,
-//     user_phone,
-//     user_city,
-//     user_pincode,
-//     user_password,
-//     terms,
-//     prefix,
-//     date,
-//     endDate,
-//   } = req.body;
-//
-//   pool.getConnection((err, connection) => {
-//     if (err) {
-//       console.error("Error getting MySQL connection: ", err);
-//       return res.status(500).json({ message: "Database connection error" });
-//     }
-//
-//     // Query to get the maximum SocietCode
-//     const getMaxSocietCode = `SELECT MAX(SocietyCode) AS maxCode FROM societymaster`;
-//
-//     connection.query(getMaxSocietCode, (err, result) => {
-//       if (err) {
-//         connection.release();
-//         console.error("Error fetching max SocietyCode: ", err);
-//         return res.status(500).json({ message: "Database query error" });
-//       }
-//
-//       // Increment SocietCode by 1
-//       const newSocietCode = result[0].maxCode ? result[0].maxCode + 1 : 1;
-//
-//       // Query to insert into societymaster
-//       const createdairy = `INSERT INTO societymaster (SocietyCode, SocietyName, PhoneNo, city, PinCode, prefix, terms, startdate, enddate) VALUES (?,?,?,?,?,?,?,?,?)`;
-//
-//       connection.query(
-//         createdairy,
-//         [
-//           newSocietCode,
-//           dairy_name,
-//           user_phone,
-//           user_city,
-//           user_pincode,
-//           prefix,
-//           terms,
-//           date,
-//           endDate,
-//         ],
-//         (err, result) => {
-//           if (err) {
-//             connection.release();
-//             console.error("Error inserting into societymaster: ", err);
-//             return res.status(500).json({ message: "Database query error" });
-//           }
-//
-//           // Query to insert into centermaster
-//           const createcenter = `INSERT INTO centermaster (center_id, center_name, marathi_name, mobile, city, pincode, orgid, prefix) VALUES (?,?,?,?,?,?,?)`;
-//
-//           connection.query(
-//             createcenter,
-//             [
-//               0,
-//               dairy_name,
-//               dairy_name,
-//               user_phone,
-//               user_city,
-//               user_pincode,
-//               newSocietCode,
-//               prefix,
-//             ],
-//             (err, result) => {
-//               if (err) {
-//                 connection.release();
-//                 console.error("Error inserting into centermaster: ", err);
-//                 return res
-//                   .status(500)
-//                   .json({ message: "Database query error" });
-//               }
-//
-//               const designation = "Admin";
-//               const isAdmin = "1";
-//               // Query to insert into users
-//               const createuser = `INSERT INTO users (username, password, designation, isAdmin, SocietyCode) VALUES (?,?,?,?,?)`;
-//
-//               connection.query(
-//                 createuser,
-//                 [user_name, user_password, designation, isAdmin, newSocietCode],
-//                 (err, result) => {
-//                   connection.release();
-//                   if (err) {
-//                     console.error("Error inserting into users: ", err);
-//                     return res
-//                       .status(500)
-//                       .json({ message: "Database query error" });
-//                   }
-//
-//                   // Success response
-//                   res
-//                     .status(200)
-//                     .json({ message: "User registered successfully!" });
-//                 }
-//               );
-//             }
-//           );
-//         }
-//       );
-//     });
-//   });
-// };
+exports.checkUniqueDname = (req, res) => {
+  const { dairyname } = req.body;
+  if (!dairyname) {
+    return res
+      .status(400)
+      .json({ status: 400, message: "Dairyname required!" });
+  }
+   const lowerDairyName = dairyname.toLowerCase();
+  const query =
+    "SELECT COUNT(*) AS count FROM societymaster WHERE SocietyName = ?";
+  try {
+    pool.getConnection((err, connection) => {
+      if (err) {
+        return res
+          .status(500)
+          .json({ status: 500, message: "Database connection error!" });
+      }
+      connection.query(query, [lowerDairyName], (err, result) => {
+        connection.release();
+        if (err) {
+          return res
+            .status(500)
+            .json({ status: 500, message: "Database error!" });
+        }
+        const available = result[0].count === 0;
+        res.json({ status: 200, available });
+      });
+    });
+  } catch (error) {
+    res.status(500).json({ status: 500, message: "Server error!" });
+  }
+};
 
+exports.checkUniqueusername = (req, res) => {
+  const { username } = req.body;
+   if (!username) {
+     return res
+       .status(400)
+       .json({ status: 400, message: "Dairyname required!" });
+   }
+   const lowerUserName = username.toLowerCase();
+  const query = "SELECT COUNT(*) AS count FROM users WHERE username = ?";
+  try {
+    pool.getConnection((err, connection) => {
+      if (err) {
+        return res
+          .status(500)
+          .json({ status: 500, message: "Database connection error" });
+      }
+      connection.query(query, [lowerUserName], (err, result) => {
+        connection.release();
+        if (err) {
+          return res
+            .status(500)
+            .json({ status: 500, message: "Database error!" });
+        }
+        const found = result[0].count === 0;
+
+        res.json({ status: 200, available: found });
+      });
+    });
+  } catch (error) {
+    res.status(500).json({ status: 500, message: "Server error" });
+  }
+};
+
+//------------------------------------------------------------------------------------------->
+// Register --------------------------------------------------------------------------------->
+//------------------------------------------------------------------------------------------->
 //v3 function to create dailymilkentry table ----------------------------------->
 exports.userRegister = async (req, res) => {
   const {
     dairy_name,
+    marathi_name,
     user_name,
     user_phone,
     user_city,
@@ -137,11 +95,30 @@ exports.userRegister = async (req, res) => {
     date,
     endDate,
   } = req.body;
+  if (
+    !dairy_name ||
+    !marathi_name ||
+    !user_name ||
+    !user_phone ||
+    !user_city ||
+    !user_pincode ||
+    !user_password ||
+    !terms ||
+    !prefix ||
+    !date ||
+    !endDate
+  ) {
+    return res
+      .status(400)
+      .json({ status: 400, message: "All fields data required!" });
+  }
 
   pool.getConnection((err, connection) => {
     if (err) {
       console.error("Error getting MySQL connection: ", err);
-      return res.status(500).json({ message: "Database connection error" });
+      return res
+        .status(500)
+        .json({ status: 500, message: "Database connection error" });
     }
 
     // Query to get the maximum SocietyCode
@@ -151,7 +128,9 @@ exports.userRegister = async (req, res) => {
       if (err) {
         connection.release();
         console.error("Error fetching max SocietyCode: ", err);
-        return res.status(500).json({ message: "Database query error" });
+        return res
+          .status(500)
+          .json({ status: 500, message: "Database query error!" });
       }
 
       // Increment SocietyCode by 1
@@ -159,13 +138,14 @@ exports.userRegister = async (req, res) => {
       const tableName = `dailymilkentry_${newSocietCode}`;
 
       // Query to insert into societymaster
-      const createdairy = `INSERT INTO societymaster (SocietyCode, SocietyName, PhoneNo, city, PinCode, prefix, terms, startdate, enddate) VALUES (?,?,?,?,?,?,?,?,?)`;
+      const createdairy = `INSERT INTO societymaster (SocietyCode, SocietyName, marathiName, PhoneNo, city, PinCode, prefix, terms, startdate, enddate) VALUES (?,?,?,?,?,?,?,?,?)`;
 
       connection.query(
         createdairy,
         [
           newSocietCode,
           dairy_name,
+          marathi_name,
           user_phone,
           user_city,
           user_pincode,
@@ -178,7 +158,9 @@ exports.userRegister = async (req, res) => {
           if (err) {
             connection.release();
             console.error("Error inserting into societymaster: ", err);
-            return res.status(500).json({ message: "Database query error" });
+            return res
+              .status(500)
+              .json({ status: 500, message: "Database query error!" });
           }
 
           // Query to insert into centermaster
@@ -189,7 +171,7 @@ exports.userRegister = async (req, res) => {
             [
               0,
               dairy_name,
-              dairy_name,
+              marathi_name,
               user_phone,
               user_city,
               user_pincode,
@@ -202,7 +184,7 @@ exports.userRegister = async (req, res) => {
                 console.error("Error inserting into centermaster: ", err);
                 return res
                   .status(500)
-                  .json({ message: "Database query error" });
+                  .json({ status: 500, message: "Database query error!" });
               }
 
               const designation = "Admin";
@@ -220,7 +202,7 @@ exports.userRegister = async (req, res) => {
                     console.error("Error inserting into users: ", err);
                     return res
                       .status(500)
-                      .json({ message: "Database query error" });
+                      .json({ status: 500, message: "Database query error!" });
                   }
 
                   // Query to create dynamic table
@@ -254,15 +236,16 @@ exports.userRegister = async (req, res) => {
                     connection.release();
                     if (err) {
                       console.error("Error creating milk entry table: ", err);
-                      return res
-                        .status(500)
-                        .json({ message: "Database query error" });
+                      return res.status(500).json({
+                        status: 500,
+                        message: "Database query error!",
+                      });
                     }
 
                     // Success response
                     res.status(200).json({
-                      message:
-                        "User registered and table created successfully!",
+                      status: 200,
+                      message: "User registered successfully!",
                       tableName: tableName,
                     });
                   });
@@ -279,100 +262,6 @@ exports.userRegister = async (req, res) => {
 //---------------------------------------------------------------------------->
 // Login --------------------------------------------------------------------->
 //---------------------------------------------------------------------------->
-
-// updated function with session token ------------------------>
-// exports.userLogin = async (req, res) => {
-//   const { user_id, user_password } = req.body;
-//
-//   pool.getConnection((err, connection) => {
-//     if (err) {
-//       console.error("Error getting MySQL connection: ", err);
-//       return res.status(500).json({ message: "Database connection error" });
-//     }
-//
-//     try {
-//       const checkUser =
-//         "SELECT username, isActive, designation, SocietyCode, pcode, center_id, session_token FROM users WHERE username = ? AND password = ?";
-//
-//       connection.query(checkUser, [user_id, user_password], (err, result) => {
-//         if (err) {
-//           connection.release();
-//           return res.status(500).json({ message: "Database query error" });
-//         }
-//
-//         if (result.length === 0) {
-//           connection.release();
-//           return res
-//             .status(401)
-//             .json({ message: "Invalid User ID or password, try again!" });
-//         }
-//
-//         const user = result[0];
-//
-//         // Check if user is already logged in
-//         if (user.session_token) {
-//           connection.release();
-//           return res.status(403).json({
-//             message:
-//               "You are already logged in from another device. Please logout first.",
-//           });
-//         }
-//
-//         // Generate a new session token
-//         const sessionToken = crypto.randomBytes(32).toString("hex");
-//
-//         // Generate JWT token for authentication
-//         const token = jwt.sign(
-//           {
-//             user_id: user.username,
-//             user_code: user.pcode,
-//             is_active: user.isActive,
-//             user_role: user.designation,
-//             dairy_id: user.SocietyCode,
-//             center_id: user.center_id,
-//           },
-//           process.env.SECRET_KEY,
-//           { expiresIn: "4hr" }
-//         );
-//
-//         // Update the user's session_token in the database
-//         const updateSession =
-//           "UPDATE users SET session_token = ? WHERE username = ?";
-//         connection.query(
-//           updateSession,
-//           [sessionToken, user.username],
-//           (err) => {
-//             connection.release();
-//             if (err) {
-//               return res
-//                 .status(500)
-//                 .json({ message: "Error updating session" });
-//             }
-//
-//             // Set token in cookie
-//             res.cookie("token", token, {
-//               httpOnly: true,
-//               sameSite: "strict",
-//               // secure: true,
-//               maxAge: 4 * 60 * 60 * 1000, // 4hr
-//             });
-//
-//             res.status(200).json({
-//               message: "Login successful",
-//               token,
-//               user_role: user.designation,
-//               sessionToken,
-//             });
-//           }
-//         );
-//       });
-//     } catch (error) {
-//       connection.release();
-//       console.error("Error processing request: ", error);
-//       return res.status(500).json({ message: "Internal server error" });
-//     }
-//   });
-// };
 
 // updated function with session token ------------------------>
 exports.userLogin = async (req, res) => {

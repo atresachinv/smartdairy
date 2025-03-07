@@ -1,6 +1,8 @@
 const express = require("express");
 const verifyToken = require("../Middlewares/VerifyToken");
 const {
+  checkUniqueDname,
+  checkUniqueusername,
   userLogin,
   userRegister,
   userLogout,
@@ -13,6 +15,8 @@ const router = express.Router();
 
 // User Routes
 
+router.route("/check/dairyname").post(checkUniqueDname);
+router.route("/check/username").post(checkUniqueusername);
 router.route("/register").post(userRegister);
 router.route("/login").post(userLogin);
 router.route("/logout").post(verifyToken, userLogout);

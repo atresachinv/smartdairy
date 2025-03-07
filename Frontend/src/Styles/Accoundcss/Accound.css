@@ -54,21 +54,21 @@
   margin-top: 20px;
 }
 
-button {
+/* .button {
   padding: 8px 10px;
   border: none;
   border-radius: 5px;
   cursor: pointer;
-}
+} */
 
 .close-btn {
   background: rgb(201, 93, 93);
   color: white;
 }
 
-button:hover {
+/* .button:hover {
   opacity: 0.8;
-}
+} */
 /* Popup styles */
 .popup {
   display: block;
@@ -179,7 +179,7 @@ select {
   margin-top: 15px;
 }
 
-button {
+/* button {
   padding: 10px 15px;
   background-color: #007bff;
   color: white;
@@ -192,7 +192,7 @@ button {
 
 button:hover {
   background-color: #0056b3;
-}
+} */
 
 /*------------- Dsitrubuted Sell Popup-----------/*
 /* Wrapper for Sale Popup */

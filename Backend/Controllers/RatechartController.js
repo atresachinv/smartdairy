@@ -458,6 +458,151 @@ exports.applyRateChart = async (req, res) => {
   });
 };
 
+//v3 function
+exports.applyRateChart = async (req, res) => {
+  const { applydate, custFrom, custTo, ratechart } = req.body;
+
+  const dairy_id = req.user.dairy_id;
+  const center_id = req.user.center_id;
+
+  if (!dairy_id) {
+    return res.status(401).json({status: 401, message: "Unauthorized User!" });
+  }
+
+  if (!applydate || !custFrom || !custTo || !ratechart) {
+    return res
+      .status(400)
+      .json({
+        status: 400,
+        message: "All information required to apply ratechart!",
+      });
+  }
+
+  const dairy_table = `dailymilkentry_${dairy_id}`;
+
+  pool.getConnection(async (err, connection) => {
+    if (err) {
+      console.error("Error getting MySQL connection: ", err);
+      return res
+        .status(500)
+        .json({ status: 500, message: "Database connection error" });
+    }
+
+    try {
+      // Start transaction
+      connection.beginTransaction(async (err) => {
+        if (err) {
+          connection.release();
+          console.error("Error starting transaction: ", err);
+          return res
+            .status(500)
+            .json({ status: 500, message: "Transaction error" });
+        }
+
+        try {
+          // Fetch milk collection data
+          const fetchCollectionQuery = `
+            SELECT id, litres, fat, snf
+            FROM ${dairy_table}
+            WHERE center_id = ? AND ReceiptDate >= ? AND rno BETWEEN ? AND ? AND fat !== 0
+          `;
+
+          const milkEntries = await new Promise((resolve, reject) => {
+            connection.query(
+              fetchCollectionQuery,
+              [center_id, applydate, custFrom, custTo],
+              (err, results) => {
+                if (err) return reject(err);
+                resolve(results);
+              }
+            );
+          });
+
+          if (milkEntries.length === 0) {
+            throw new Error("No milk entries found!");
+          }
+
+          // Prepare updates based on ratechart
+          const updates = milkEntries.map((entry) => {
+            const { id, litres, fat, snf } = entry;
+
+            // Find matching rate from the ratechart
+            const rateRecord = ratechart.find(
+              (record) =>
+                parseFloat(record.fat.toFixed(1)) ===
+                  parseFloat(fat.toFixed(1)) &&
+                parseFloat(record.snf.toFixed(1)) === parseFloat(snf.toFixed(1))
+            );
+
+            if (!rateRecord) {
+              throw new Error(
+                `No matching rate found for FAT: ${fat}, SNF: ${snf}`
+              );
+            }
+
+            const rate = parseFloat(rateRecord.rate.toFixed(2));
+            const amt = parseFloat((litres * rate).toFixed(2));
+
+            return { id, rate, amt };
+          });
+
+          // Update the records in the database
+          for (const update of updates) {
+            await new Promise((resolve, reject) => {
+              const updateQuery = `
+                UPDATE ${dairy_table}
+                SET rate = ?, Amt = ?
+                WHERE id = ?
+              `;
+
+              connection.query(
+                updateQuery,
+                [update.rate, update.amt, update.id],
+                (err, result) => {
+                  if (err) return reject(err);
+                  resolve(result);
+                }
+              );
+            });
+          }
+
+          // Commit transaction
+          connection.commit((err) => {
+            if (err) {
+              connection.rollback(() => connection.release());
+              console.error("Error committing transaction: ", err);
+              return res
+                .status(500)
+                .json({ status: 500, message: "Transaction commit error" });
+            }
+
+            connection.release();
+            res.status(200).json({
+              status: 200,
+              message:
+                "Ratechart applied and dairy milk data updated successfully!",
+            });
+          });
+        } catch (error) {
+          connection.rollback(() => connection.release());
+          console.error("Transaction rolled back due to error: ", error);
+          res.status(500).json({
+            status: 500,
+            message: "Transaction failed",
+            error: error.message,
+          });
+        }
+      });
+    } catch (error) {
+      connection.release();
+      console.error("Error: ", error);
+      return res
+        .status(500)
+        .json({ status: 500, message: "Server error", error: error.message });
+    }
+  });
+};
+
 // .............................................................................
 // Updating selected Ratechart .................................................
 // .............................................................................
