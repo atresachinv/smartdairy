@@ -47,7 +47,7 @@ const CreateGrocery = () => {
     (state) => state.dairySetting.centerSetting
   );
   const [settings, setSettings] = useState({});
-   
+
   //set setting
   useEffect(() => {
     if (centerSetting?.length > 0) {
@@ -925,8 +925,8 @@ const CreateGrocery = () => {
               <span className="f-label-text w5">{t("c-no")}</span>
               <span className="f-label-text w35">{t("c-name")}</span>
               <span className="f-label-text w10">{t("c-qty")}</span>
-              <span className="f-label-text w10">{t("c-rate")}</span>
-              <span className="f-label-text w10">{t("c-amt")}</span>
+              <span className="f-label-text w20">{t("c-rate")}</span>
+              <span className="f-label-text w20">{t("c-amt")}</span>
               {userRole !== "mobilecollector" ? (
                 <span className="f-label-text w20 t-center">Action</span>
               ) : (
@@ -941,12 +941,12 @@ const CreateGrocery = () => {
                     className="sales-headings-row w100 h10 d-flex a-center sb"
                   >
                     <span className="label-text w5 t-center">{i + 1}</span>
-                    <span className="label-text w35 t-start">
+                    <span className="label-text w35 t-center">
                       {item.ItemName}
                     </span>
                     <span className="label-text w10 t-center">{item.Qty}</span>
-                    <span className="label-text w10 t-end">{item.Rate}</span>
-                    <span className="label-text w10 t-end">{item.Amount}</span>
+                    <span className="label-text w20 t-end">{item.Rate}</span>
+                    <span className="label-text w20 t-end">{item.Amount}</span>
                     {userRole !== "mobilecollector" ? (
                       <span className="label-text w20 t-center">
                         <MdDeleteOutline
@@ -965,7 +965,9 @@ const CreateGrocery = () => {
                   <span className=" w5"></span>
                   <span className=" w35"></span>
                   <span className=" w10"></span>
-                  <span className="label-text w10">{t("c-total")} :</span>
+                  <span className="label-text w20">
+                    {t("puchasesale:ps-ttl-amt")} :
+                  </span>
                   <span className="label-text w10 t-end">
                     {cartItem.reduce((acc, item) => acc + item.Amount, 0)}
                   </span>

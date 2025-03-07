@@ -661,8 +661,8 @@ const MedicinesSaleList = () => {
         </div>
         {/* show invoice */}
         {isInvoiceOpen && viewItems.length > 0 && (
-          <div className="pramod modal">
-            <div className="modal-content invoiceModel">
+          <div className="saleModal">
+            <div className="modal-content ">
               <div className="d-flex sb">
                 <h2> {t("ps-sale-bill-det")}</h2>
                 <IoClose
@@ -672,7 +672,7 @@ const MedicinesSaleList = () => {
                 />
               </div>
               <hr />
-              <div className=" d-flex sb mx15 px15 invoiceModelInfo">
+              <div className=" d-flex sb mx15 px15 ">
                 <h4>
                   {t("ps-rect-no")} : {viewItems[0]?.ReceiptNo || ""}
                 </h4>
@@ -680,21 +680,20 @@ const MedicinesSaleList = () => {
                   {t("ps-date")} :{formatDateToDDMMYYYY(viewItems[0]?.BillDate)}
                 </div>
               </div>
-              <div className=" d-flex sb mx15 px15 invoiceModelInfo">
+              <div className=" d-flex sb mx15 px15 ">
                 <h4>
-                  {" "}
                   {t("ps-custCode")} : {viewItems[0]?.CustCode || ""}
                 </h4>
                 <h4 className="mx15">
                   {handleFindCustName(viewItems[0]?.CustCode) || ""}
                 </h4>
               </div>
-              <div className="modal-content w100  ">
+              <div className=" w100">
                 <div className="sales-table-container w100">
-                  <table className="sales-table w100 ">
-                    <thead className="bg1">
+                  <table className="sales-table1">
+                    <thead className="bg1 w100">
                       <tr>
-                        <th>{t("ps-srNo")}</th>
+                        {/* <th>{t("ps-srNo")}</th> */}
                         <th>{t("ps-itm-name")}</th>
                         <th>{t("ps-rate")}</th>
                         <th>{t("ps-qty")}</th>
@@ -705,7 +704,7 @@ const MedicinesSaleList = () => {
                     <tbody>
                       {viewItems.map((item, i) => (
                         <tr key={i}>
-                          <td>{i + 1}</td>
+                          {/* <td>{i + 1}</td> */}
                           <td>{handleFindItemName(item.ItemCode)}</td>
                           <td className="w15"> {item.Rate}</td>
 
@@ -729,7 +728,7 @@ const MedicinesSaleList = () => {
                         </tr>
                       ))}
                       <tr>
-                        <td></td>
+                        {/* <td></td> */}
                         <td></td>
                         <td></td>
                         <td>
@@ -752,18 +751,18 @@ const MedicinesSaleList = () => {
         )}
         {/* its used for edit item */}
         {isModalOpen && (
-          <div className="modal sale">
-            <div className="modal-content">
+          <div className="modal">
+            <div className="saleModal-content">
               <h2> {t("ps-up-sale-item")}</h2>
               <label>
                 {t("ps-rect-no")} :
                 <input
                   type="number"
                   value={editSale?.ReceiptNo}
-                  onFocus={(e) => e.target.select()}
                   onChange={(e) =>
                     setEditSale({ ...editSale, ReceiptNo: e.target.value })
                   }
+                  onFocus={(e) => e.target.select()}
                 />
               </label>
               <label>
@@ -771,10 +770,10 @@ const MedicinesSaleList = () => {
                 <input
                   type="number"
                   value={editSale?.Qty}
-                  onFocus={(e) => e.target.select()}
                   onChange={(e) =>
                     setEditSale({ ...editSale, Qty: e.target.value })
                   }
+                  onFocus={(e) => e.target.select()}
                 />
               </label>
               <label>
@@ -796,7 +795,7 @@ const MedicinesSaleList = () => {
                   disabled
                 />
               </label>
-              <div>
+              <div className="button-container w100 d-flex a-center">
                 <button onClick={() => setIsModalOpen(false)}>
                   {" "}
                   {t("ps-cancel")}
