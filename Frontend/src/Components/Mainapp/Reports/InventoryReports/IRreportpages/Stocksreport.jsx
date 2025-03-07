@@ -46,7 +46,7 @@ const Stocksreport = () => {
           "http://localhost:4040/smartdairy/api/stock/purchase/all"
           // { fromdate, todate }
         );
-        console.log("API Response:", response.data.purchaseData);
+
         SetSales(response.data.purchaseData);
       } catch (error) {
         console.error(
@@ -58,8 +58,6 @@ const Stocksreport = () => {
 
     fetchData();
   }, []); // Run useEffect when fromDate or toDate changes
-
-  console.log(" purchess data ", sales);
 
   //...  Sales Report
   //...  Saledata Api calling
@@ -74,7 +72,7 @@ const Stocksreport = () => {
           "http://localhost:4040/smartdairy/api/stock/sale/all",
           { fromdate, todate }
         );
-        console.log("API Response:", response.data.salesData);
+
         SetSaleData(response.data.salesData);
       } catch (error) {
         console.log(
@@ -83,12 +81,9 @@ const Stocksreport = () => {
         );
       }
     };
-    console.log(" saleing data ", saledata);
 
     salefetchData();
   }, []); // Run useEffect when fromDate or toDate changes-
-
-  console.log(" hallo salesdata ", saledata);
 
   const calculateRemainingStock = () => {
     const stockMap = {};
@@ -131,7 +126,6 @@ const Stocksreport = () => {
 
   useEffect(() => {
     const stockData = calculateRemainingStock(sales, saledata);
-    console.log("Calculated stockData:", stockData);
 
     if (selectedReport) {
       console.log("Filtering for report (itemgroupcode):", selectedReport);
@@ -302,9 +296,6 @@ const Stocksreport = () => {
     printWindow.document.close();
   };
 
- 
-  
-
   //... Report Table heading
   const reportColumns = {
     "All Stock Summary": [
@@ -345,82 +336,81 @@ const Stocksreport = () => {
       { header: "Amount", accessor: "amount" },
     ],
   };
-const handleStockChange = (event) => {
-  const selectedStockType = event.target.value;
-  setSelectedStock(selectedStockType);
+  const handleStockChange = (event) => {
+    const selectedStockType = event.target.value;
+    setSelectedStock(selectedStockType);
 
-  let itemGroupCode = null;
-  let stockType = "";
+    let itemGroupCode = null;
+    let stockType = "";
 
-  if (selectedStockType === "Cattle Feed") {
-    itemGroupCode = 1;
-    stockType = "Cattle Feed";
-  } else if (selectedStockType === "Grocery") {
-    itemGroupCode = 3;
-    stockType = "Grocery";
-  } else if (selectedStockType === "Medicine") {
-    itemGroupCode = 2;
-    stockType = "Medicine";
-  } else if (selectedStockType === "Dairy Goods") {
-    itemGroupCode = 4;
-    stockType = "Dairy Goods";
-  }
-
-  if (itemGroupCode === null) return;
-
-  // Filter purchases and sales based on itemGroupCode
-  const filteredPurchases = sales.filter(
-    (item) => item.itemgroupcode === itemGroupCode
-  );
-  const filteredSales = saledata.filter(
-    (item) => item.ItemGroupCode === itemGroupCode
-  );
-
-  // Map for grouping stock by ItemCode
-  const stockMap = {};
-
-  // Process purchases
-  filteredPurchases.forEach((purchase) => {
-    if (!stockMap[purchase.ItemCode]) {
-      stockMap[purchase.ItemCode] = {
-        ItemCode: purchase.ItemCode,
-        ItemName: purchase.ItemName,
-        Unit: purchase.Unit,
-        PurchaseQty: 0,
-        SaleQty: 0,
-        Rate: purchase.Rate || 0, // Ensure rate is captured from purchases
-        Amount: 0,
-      };
+    if (selectedStockType === "Cattle Feed") {
+      itemGroupCode = 1;
+      stockType = "Cattle Feed";
+    } else if (selectedStockType === "Grocery") {
+      itemGroupCode = 3;
+      stockType = "Grocery";
+    } else if (selectedStockType === "Medicine") {
+      itemGroupCode = 2;
+      stockType = "Medicine";
+    } else if (selectedStockType === "Dairy Goods") {
+      itemGroupCode = 4;
+      stockType = "Dairy Goods";
     }
-    stockMap[purchase.ItemCode].PurchaseQty += purchase.Quantity || 0;
-  });
 
-  // Process sales
-  filteredSales.forEach((sale) => {
-    if (!stockMap[sale.ItemCode]) {
-      stockMap[sale.ItemCode] = {
-        ItemCode: sale.ItemCode,
-        ItemName: sale.ItemName,
-        Unit: sale.Unit,
-        PurchaseQty: 0,
-        SaleQty: 0,
-        Rate: 0, // Default rate if no purchase data
-        Amount: 0,
-      };
-    }
-    stockMap[sale.ItemCode].SaleQty += sale.Quantity || 0;
-  });
+    if (itemGroupCode === null) return;
 
-  // Convert stockMap to array and calculate remaining stock & amount
-  const groupedStock = Object.values(stockMap).map((stock) => ({
-    ...stock,
-    RemainingStock: stock.PurchaseQty - stock.SaleQty,
-    Amount: (stock.PurchaseQty - stock.SaleQty) * stock.Rate, // Calculate amount
-  }));
+    // Filter purchases and sales based on itemGroupCode
+    const filteredPurchases = sales.filter(
+      (item) => item.itemgroupcode === itemGroupCode
+    );
+    const filteredSales = saledata.filter(
+      (item) => item.ItemGroupCode === itemGroupCode
+    );
 
-  setFilteredSales(groupedStock);
-};
+    // Map for grouping stock by ItemCode
+    const stockMap = {};
 
+    // Process purchases
+    filteredPurchases.forEach((purchase) => {
+      if (!stockMap[purchase.ItemCode]) {
+        stockMap[purchase.ItemCode] = {
+          ItemCode: purchase.ItemCode,
+          ItemName: purchase.ItemName,
+          Unit: purchase.Unit,
+          PurchaseQty: 0,
+          SaleQty: 0,
+          Rate: purchase.Rate || 0, // Ensure rate is captured from purchases
+          Amount: 0,
+        };
+      }
+      stockMap[purchase.ItemCode].PurchaseQty += purchase.Quantity || 0;
+    });
+
+    // Process sales
+    filteredSales.forEach((sale) => {
+      if (!stockMap[sale.ItemCode]) {
+        stockMap[sale.ItemCode] = {
+          ItemCode: sale.ItemCode,
+          ItemName: sale.ItemName,
+          Unit: sale.Unit,
+          PurchaseQty: 0,
+          SaleQty: 0,
+          Rate: 0, // Default rate if no purchase data
+          Amount: 0,
+        };
+      }
+      stockMap[sale.ItemCode].SaleQty += sale.Quantity || 0;
+    });
+
+    // Convert stockMap to array and calculate remaining stock & amount
+    const groupedStock = Object.values(stockMap).map((stock) => ({
+      ...stock,
+      RemainingStock: stock.PurchaseQty - stock.SaleQty,
+      Amount: (stock.PurchaseQty - stock.SaleQty) * stock.Rate, // Calculate amount
+    }));
+
+    setFilteredSales(groupedStock);
+  };
 
   // const handleStockChange = (event) => {
   //   const selectedStockType = event.target.value;
@@ -632,7 +622,6 @@ const handleStockChange = (event) => {
             </div>
           )}
       </div>
-    
     </div>
   );
 };

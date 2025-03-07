@@ -825,7 +825,7 @@ const SalesReport = () => {
     fetchItems();
   }, []);
 
-  console.log("itemwise data", item);
+ 
   // Group items by ItemGroupCode
   const groupItemsByCode = (data) => {
     const groupedData = data.reduce((acc, item) => {

@@ -95,6 +95,7 @@ td {
   }
   .from-to-date-purches-conta .from-salee-div span {
     width: 50%;
+    font-size: small;
   }
   .from-to-date-purches-conta .from-salee-div input {
     width: 100px;
@@ -117,6 +118,7 @@ td {
     span {
     width: 45px;
     margin-right: 4px;
+     font-size: small;
   }
   .reports-print-buttondiv
     .fromto-date-sale-report
@@ -132,6 +134,7 @@ td {
     .filter-name-wise-div
     span {
     margin-left: 10px;
+
   }
   .reports-print-buttondiv
     .fromto-date-sale-report
@@ -158,6 +161,7 @@ td {
     .purches-register-report
     span {
     width: 150px;
+    font-size: small;
   }
 
   .purches-report-section
