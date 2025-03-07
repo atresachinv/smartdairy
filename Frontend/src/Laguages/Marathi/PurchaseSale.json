@@ -91,5 +91,9 @@
   "ps-addDealReturnCattleFeed": "व्यापारी परत पशुखाद्य",
   "ps-addDealReturnGrocery": "व्यापारी परत किराणा",
   "ps-addDealReturnMedi": "व्यापारी परत औषधे",
-  "ps-addDealReturnOther": "व्यापारी परत इतर"
+  "ps-addDealReturnOther": "व्यापारी परत इतर",
+  "ps-cattle-feed-expired": "पशुखाद्य घटनाश यादी",
+  "ps-cattle-gro-expired": "किराणा घटनाश यादी",
+  "ps-cattle-medi-expired": "औषधे घटनाश यादी",
+  "ps-cattle-other-expired": "इतर वस्तु घटनाश यादी"
 }
