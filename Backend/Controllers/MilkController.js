@@ -400,7 +400,7 @@ exports.milkCollection = async (req, res) => {
 //------------------------------------------------------------------------------------------------------------------->
 // currently working Save Milk Collection (single entry)
 //------------------------------------------------------------------------------------------------------------------->
-
+//v2 rctype added ----------
 exports.milkCollectionOneEntry = async (req, res) => {
   const {
     date,
@@ -411,6 +411,7 @@ exports.milkCollectionOneEntry = async (req, res) => {
     fat,
     snf,
     amt,
+    rcName,
     degree,
     rate,
     cname,
@@ -430,6 +431,7 @@ exports.milkCollectionOneEntry = async (req, res) => {
     !fat ||
     !snf ||
     !amt ||
+    !rcName ||
     !degree ||
     !rate ||
     !cname ||
@@ -457,8 +459,8 @@ exports.milkCollectionOneEntry = async (req, res) => {
       // Prepare the SQL query
       const milkcollection = `
         INSERT INTO ${dairy_table} 
-        (companyid, userid, ReceiptDate, ME, CB, Litres, fat, snf, Amt, GLCode, AccCode, Digree, rate, cname, rno, center_id) 
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? , ?)
+        (companyid, userid, ReceiptDate, ME, CB, Litres, fat, snf, Amt, rctype, GLCode, AccCode, Digree, rate, cname, rno, center_id) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? , ?, ?)
       `;
 
       // Execute the query
@@ -474,6 +476,7 @@ exports.milkCollectionOneEntry = async (req, res) => {
           fat,
           snf,
           amt,
+          rcName,
           "28", // GLCode
           acccode,
           degree,
@@ -624,7 +627,9 @@ exports.PreviousMilkCollection = async (req, res) => {
   pool.getConnection((err, connection) => {
     if (err) {
       console.error("Error getting MySQL connection: ", err);
-      return res.status(500).json({status:500, message: "Database connection error!" });
+      return res
+        .status(500)
+        .json({ status: 500, message: "Database connection error!" });
     }
 
     try {

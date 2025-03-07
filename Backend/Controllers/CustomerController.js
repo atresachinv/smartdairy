@@ -12,7 +12,7 @@ const cache = new NodeCache({});
 exports.getMaxCustNo = async (req, res) => {
   const dairy_id = req.user.dairy_id;
   const centerid = req.user.center_id;
-  
+
   pool.getConnection((err, connection) => {
     if (err) {
       console.error("Error getting MySQL connection: ", err);
@@ -90,17 +90,23 @@ exports.createCustomer = async (req, res) => {
   const isAdmin = "0";
   const formattedCode = String(cust_no).padStart(3, "0");
   const fax = `${prefix}${formattedCode}`;
-
+  if (dairy_id) {
+    return res.status(401).json({ status: 401, message: "Unauthorized User" });
+  }
   pool.getConnection((err, connection) => {
     if (err) {
       console.error("Error getting MySQL connection: ", err);
-      return res.status(500).json({ message: "Database connection error" });
+      return res
+        .status(500)
+        .json({ status: 500, message: "Database connection error" });
     }
 
     connection.beginTransaction((err) => {
       if (err) {
         connection.release();
-        return res.status(500).json({ message: "Error starting transaction" });
+        return res
+          .status(500)
+          .json({ status: 500, message: "Error starting transaction" });
       }
 
       try {
@@ -111,7 +117,9 @@ exports.createCustomer = async (req, res) => {
             return connection.rollback(() => {
               connection.release();
               console.error("Error querying maxCid: ", err);
-              return res.status(500).json({ message: "Database query error" });
+              return res
+                .status(500)
+                .json({ status: 500, message: "Database query error" });
             });
           }
 
@@ -180,7 +188,7 @@ exports.createCustomer = async (req, res) => {
                   console.error("Error inserting into customer table: ", err);
                   return res
                     .status(500)
-                    .json({ message: "Database query error" });
+                    .json({ status: 500, message: "Database query error" });
                 });
               }
 
@@ -214,7 +222,7 @@ exports.createCustomer = async (req, res) => {
                       console.error("Error inserting into users table: ", err);
                       return res
                         .status(500)
-                        .json({ message: "Database query error" });
+                        .json({ status: 500, message: "Database query error" });
                     });
                   }
 
@@ -224,16 +232,18 @@ exports.createCustomer = async (req, res) => {
                       return connection.rollback(() => {
                         connection.release();
                         console.error("Error committing transaction: ", err);
-                        return res
-                          .status(500)
-                          .json({ message: "Error committing transaction" });
+                        return res.status(500).json({
+                          status: 500,
+                          message: "Error committing transaction",
+                        });
                       });
                     }
 
                     connection.release();
-                    res
-                      .status(200)
-                      .json({ message: "Customer created successfully!" });
+                    res.status(200).json({
+                      status: 200,
+                      message: "Customer created successfully!",
+                    });
                   });
                 }
               );
@@ -244,7 +254,9 @@ exports.createCustomer = async (req, res) => {
         connection.rollback(() => {
           connection.release();
           console.error("Error processing request: ", error);
-          return res.status(500).json({ message: "Internal server error" });
+          return res
+            .status(500)
+            .json({ status: 500, message: "Internal server error" });
         });
       }
     });
@@ -294,7 +306,9 @@ exports.updateCustomer = async (req, res) => {
   pool.getConnection((err, connection) => {
     if (err) {
       console.error("Error getting MySQL connection: ", err);
-      return res.status(500).json({ message: "Database connection error" });
+      return res
+        .status(500)
+        .json({ status: 500, message: "Database connection error" });
     }
 
     try {
@@ -344,22 +358,28 @@ exports.updateCustomer = async (req, res) => {
 
           if (error) {
             console.error("Error executing query: ", error);
-            return res.status(500).json({ message: "Error updating customer" });
+            return res
+              .status(500)
+              .json({ status: 500, message: "Error updating customer" });
           }
 
           if (results.affectedRows === 0) {
-            return res.status(404).json({ message: "Customer not found" });
+            return res
+              .status(404)
+              .json({ status: 404, message: "Customer not found" });
           }
 
           return res
             .status(200)
-            .json({ message: "Customer updated successfully" });
+            .json({ status: 200, message: "Customer updated successfully" });
         }
       );
     } catch (error) {
       connection.release();
       console.error("Error processing request: ", error);
-      return res.status(500).json({ message: "Internal server error" });
+      return res
+        .status(500)
+        .json({ status: 500, message: "Internal server error" });
     }
   });
 };
@@ -369,30 +389,29 @@ exports.updateCustomer = async (req, res) => {
 //..............................................................
 
 exports.customerList = async (req, res) => {
+  const dairy_id = req.user.dairy_id;
+  const center_id = req.user.center_id;
+  // Check for unauthorized access
+  if (!dairy_id) {
+    return res.status(401).json({ status: 401, message: "Unauthorized User!" });
+  }
+  const getCustList = `
+    SELECT cid, cname, Phone, fax, City, tal, dist, cust_accno, createdby,
+           createdon, mobile, isSabhasad, rno, orgid, engName, rateChartNo,
+           centerid, srno, cust_pincode, cust_addhar, cust_farmerid, cust_bankname,
+           cust_ifsc, caste, gender, milktype, isActive, rcName
+    FROM customer
+    WHERE orgid = ? AND (ctype IS NULL OR ctype = 1) AND (isdeleted IS NULL OR isdeleted = 0)
+  `;
   pool.getConnection((err, connection) => {
     if (err) {
       console.error("Error getting MySQL connection: ", err);
-      return res.status(500).json({ message: "Database connection error" });
+      return res
+        .status(500)
+        .json({ status: 500, message: "Database connection error" });
     }
 
     try {
-      const dairy_id = req.user.dairy_id;
-      const center_id = req.user.center_id;
-      // Check for unauthorized access
-      if (!dairy_id) {
-        connection.release();
-        return res.status(400).json({ message: "Unauthorized User!" });
-      }
-
-      const getCustList = `
-        SELECT cid, cname, Phone, fax, City, tal, dist, cust_accno, createdby,
-               createdon, mobile, isSabhasad, rno, orgid, engName, rateChartNo,
-               centerid, srno, cust_pincode, cust_addhar, cust_farmerid, cust_bankname,
-               cust_ifsc, caste, gender, milktype, isActive, rcName
-        FROM customer
-        WHERE orgid = ? AND (ctype IS NULL OR ctype = 1) AND (isdeleted IS NULL OR isdeleted = 0)
-      `;
-
       connection.query(getCustList, [dairy_id, center_id], (err, result) => {
         connection.release(); // Always release the connection after query execution
 
@@ -400,10 +419,11 @@ exports.customerList = async (req, res) => {
           console.error("Error executing query: ", err); // Correct error reference
           return res
             .status(500)
-            .json({ message: "Error fetching customer list" });
+            .json({ status: 500, message: "Error fetching customer list" });
         }
 
         return res.status(200).json({
+          status: 200,
           customerList: result, // Return the entire result array
           message: "Customer list retrieved successfully", // Updated message
         });
@@ -411,7 +431,9 @@ exports.customerList = async (req, res) => {
     } catch (error) {
       connection.release();
       console.error("Error processing request: ", error);
-      return res.status(500).json({ message: "Internal server error" });
+      return res
+        .status(500)
+        .json({ status: 500, message: "Internal server error" });
     }
   });
 };

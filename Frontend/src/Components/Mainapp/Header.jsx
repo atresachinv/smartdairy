@@ -14,6 +14,10 @@ const Header = ({ handleSidebar }) => {
     (state) =>
       state.dairy.dairyData.marathiName || state.dairy.dairyData.marathi_name
   );
+  // const dairy = useSelector(
+  //   (state) => state.dairy.dairyData || state.dairy.dairyData
+  // );
+  // console.log(dairy);
 
   useEffect(() => {
     dispatch(fetchDairyInfo());

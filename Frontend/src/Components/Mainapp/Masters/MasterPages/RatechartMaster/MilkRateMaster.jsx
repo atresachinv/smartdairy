@@ -139,10 +139,9 @@ const MilkRateMaster = () => {
       setSelectedRateChart(ratechart);
       dispatch(
         fetchRateChart({
-          cb: ratechart.cb,
           rccode: ratechart.rccode,
           rcdate: ratechart.rcdate,
-          time: ratechart.time,
+          rctype: ratechart.rctypename,
         })
       );
     }
@@ -246,7 +245,6 @@ const MilkRateMaster = () => {
               Selected Rate Chart from Excel :{" "}
             </span>
             <div className="rate-chart-col-title w100 d-flex a-center t-center sa py10 bg1">
-              {/* <span className="f-info-text w5">No.</span> */}
               <span className="f-info-text w15">FAT</span>
               <span className="f-info-text w10">SNF</span>
               <span className="f-info-text w15">Rate</span>
@@ -287,8 +285,6 @@ const MilkRateMaster = () => {
             <div className="rate-chart-col-title w100 d-flex a-center t-center sa py10 bg1">
               <span className="f-info-text w10">No.</span>
               <span className="f-info-text w20">Date</span>
-              <span className="f-info-text w15">Time</span>
-              <span className="f-info-text w15">Animal</span>
               <span className="f-info-text w25">Type</span>
             </div>
             <div className="rate-chart-div w100 h90 mh90 d-flex-col hidescrollbar">
@@ -317,18 +313,6 @@ const MilkRateMaster = () => {
                         month: "2-digit",
                         day: "2-digit",
                       })}
-                    </span>
-                    <span className="info-text w15">
-                      {ratechart.time === 0
-                        ? "Mrg"
-                        : ratechart.time === 1
-                        ? "Eve"
-                        : ratechart.time === 2
-                        ? "Both"
-                        : ""}
-                    </span>
-                    <span className="info-text w15">
-                      {ratechart.cb === 0 ? "Cow" : "Buffalo"}
                     </span>
                     <span className="info-text w25">
                       {ratechart.rctypename}

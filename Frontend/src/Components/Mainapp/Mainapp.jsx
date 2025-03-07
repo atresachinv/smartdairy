@@ -62,6 +62,7 @@ import CustReturns from "./Inventory/InventroyPages/Returns/CustomerReturns/Cust
 import SellRateMaster from "./Inventory/InventroyPages/Stocks/SellRate/SellRateMaster";
 import ExpiredProductsMaster from "./Inventory/InventroyPages/Stocks/ExpiredProduct/ExpiredProductsMaster";
 import DashboardTabs from "./Dashboard/DashboardTabs/DashboardTabs";
+import ComingSoon from "./ComingSoon";
 
 const Mainapp = () => {
   const dispatch = useDispatch();
@@ -146,7 +147,7 @@ const Mainapp = () => {
           {/* <Mainappviews index={isselected} /> */}
           <Routes>
             {/* dashboard route */}
-            <Route path="dashboard/*" element={<DashboardTabs />} />
+            <Route path="dashboard/*" element={<ComingSoon />} />
             {/* milk purchase routes */}
             <Route path="milk/collection/*" element={<Apphome />} />
             <Route path="milk/collection/:time" element={<Milkcollection />} />
@@ -199,7 +200,7 @@ const Mainapp = () => {
               element={<ExpiredProductsMaster />}
             />
             {/* accounts routes */}
-            <Route path="accounts" element={<Accounts />} />
+            <Route path="accounts" element={<ComingSoon />} />
             {/* master routes */}
             <Route path="master/main-ledger/*" element={<MainLedger />} />
             <Route path="master/sub-ledger/*" element={<SubLedger />} />
@@ -224,12 +225,12 @@ const Mainapp = () => {
             <Route path="sales/medicines/*" element={<MedicinesMaster />} />
             <Route path="sales/other-items/*" element={<OthersMaster />} />
             {/* reports routes */}
-            <Route path="reports/center/*" element={<CustomerReports />} />
+            <Route path="reports/center/*" element={<ComingSoon />} />
             <Route path="reports/milk/*" element={<MilkcollectionReports />} />
             <Route path="reports/customer/*" element={<CustomerReports />} />
-            <Route path="reports/employee/*" element={<CustomerReports />} />
+            <Route path="reports/employee/*" element={<ComingSoon />} />
             <Route path="reports/inventory/*" element={<InventoryRports />} />
-            <Route path="reports/sales/*" element={<CustomerReports />} />
+            <Route path="reports/sales/*" element={<ComingSoon />} />
             <Route path="reports/payment/*" element={<PaymentReports />} />
             {/* payment routes */}
             <Route

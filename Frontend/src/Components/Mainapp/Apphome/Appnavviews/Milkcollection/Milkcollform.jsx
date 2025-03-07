@@ -275,7 +275,6 @@ const MilkColleform = ({ switchToSettings }) => {
     const customer = customerList.find(
       (customer) => customer.srno.toString() === code
     );
-
     if (customer) {
       setValues((prev) => ({
         ...prev,
@@ -566,34 +565,41 @@ const MilkColleform = ({ switchToSettings }) => {
       return;
     }
     try {
-      dispatch(saveMilkOneEntry(values));
-      const allEntries = JSON.parse(localStorage.getItem("milkentries")) || [];
-      const existingEntries =
-        JSON.parse(localStorage.getItem("milkentries")) || [];
+      const result = await dispatch(saveMilkOneEntry(values)).unwrap();
 
-      await existingEntries.push(values);
-      localStorage.setItem("milkentries", JSON.stringify(existingEntries));
-      setValues(initialValues); // Reset form to initial values
-      setErrors({}); // Reset errors
+      if (result.status === 200) {
+        const allEntries =
+          JSON.parse(localStorage.getItem("milkentries")) || [];
+        const existingEntries =
+          JSON.parse(localStorage.getItem("milkentries")) || [];
 
-      // sendNotifications();
+        await existingEntries.push(values);
+        localStorage.setItem("milkentries", JSON.stringify(existingEntries));
+        setValues(initialValues); // Reset form to initial values
+        setErrors({}); // Reset errors
 
-      toast.success(`Milk Collection of ${values.cname} saved successfully!`);
+        // sendNotifications();
 
-      // Remove customer from custList
-      // setCustList((prevList) =>
-      //   prevList.filter((customer) => customer.srno.toString() !== values.code)
-      // );
-      removeCustomer();
-      if (
-        settings?.whsms !== undefined &&
-        settings?.millcoll !== undefined &&
-        settings.whsms === 1 &&
-        settings.millcoll === 1
-      ) {
-        sendMessage();
+        // toast.success(`Milk Collection of ${values.cname} saved successfully!`);
+        toast.success(result.message);
+
+        // Remove customer from custList
+        // setCustList((prevList) =>
+        //   prevList.filter((customer) => customer.srno.toString() !== values.code)
+        // );
+        removeCustomer();
+        if (
+          settings?.whsms !== undefined &&
+          settings?.millcoll !== undefined &&
+          settings.whsms === 1 &&
+          settings.millcoll === 1
+        ) {
+          sendMessage();
+        }
+        codeInputRef.current.focus();
+      } else {
+        toast.error(result.message);
       }
-      codeInputRef.current.focus();
     } catch (error) {
       console.error("Error sending milk entries to backend:", error);
     }
