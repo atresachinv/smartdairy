@@ -91,5 +91,9 @@
   "ps-addDealReturnCattleFeed": "Dealer Return Cattle Feed",
   "ps-addDealReturnGrocery": "Dealer Return Grocery",
   "ps-addDealReturnMedi": "Dealer Return Medicines",
-  "ps-addDealReturnOther": "Dealer Return Others"
+  "ps-addDealReturnOther": "Dealer Return Others",
+  "ps-cattle-feed-expired": "Cattle Feed Expired Report",
+  "ps-cattle-gro-expired": "Grocery Expired Report",
+  "ps-cattle-medi-expired": "Medicines Expired Report",
+  "ps-cattle-other-expired": "Other Expired Report"
 }

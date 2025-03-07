@@ -27,7 +27,9 @@ const CreateCattleFeed = () => {
   const [rate, setRate] = useState(0);
   const [selectitemcode, setSelectitemcode] = useState(0);
   const [amt, setAmt] = useState("");
-  const [rctno, setRctno] = useState(localStorage.getItem("receiptno1") || 1);
+  const [rctno, setRctno] = useState(
+    localStorage.getItem("receiptnoexp1") || 1
+  );
   const [groupItems, setGroupItems] = useState([]);
   const [filteredItems, setFilteredItems] = useState([]); //p--
   const [userRole, setUserRole] = useState(null);
@@ -145,7 +147,7 @@ const CreateCattleFeed = () => {
   };
   //reset the field
   const handelClear = () => {
-    setFcode("");
+    // setFcode("");
     setCartItem([]);
     setQty(1);
     setRate(0);
@@ -155,48 +157,25 @@ const CreateCattleFeed = () => {
 
   //handle to save server
   const handleSubmit = async () => {
-    if (cartItem.length > 0) {
-      try {
-        const res = await axiosInstance.post("/sale/create", cartItem);
-        if (res?.data?.success) {
-          // if (
-          //   settings?.whsms !== undefined &&
-          //   settings?.salesms !== undefined &&
-          //   settings.whsms === 1 &&
-          //   settings.salesms === 1
-          // ) {
-          //   const customer = customerslist.find(
-          //     (customer) => customer.srno === parseInt(fcode)
-          //   );
-          //   let product = "";
-          //   for (let i = 0; i < cartItem.length; i++) {
-          //     product += `[${i + 1}. ${cartItem[i].ItemName} (${
-          //       cartItem[i].Qty
-          //     } X ${cartItem[i].Rate}=${cartItem[i].Amount})]${
-          //       i < cartItem.length - 1 ? ", " : ""
-          //     }`;
-          //   }
-          //   let cName = `${customer.srno}-${customer.cname}`;
-          //   sendMessage({
-          //     to: customer.Phone,
-          //     dName: dairyInfo,
-          //     cName: cName,
-          //     date: formatDateToDDMMYYYY(date),
-          //     rctNo: rctno,
-          //     amount: cartItem.reduce((acc, item) => acc + item.Amount, 0),
-          //     products: product,
-          //     mono: dairymono,
-          //   });
-          // }
+    if (cartItem.length === 0) {
+      toast.warn("Cart is empty!");
+      return;
+    }
 
-          handelClear();
-          setRctno(parseInt(rctno) + 1);
-          toast.success(res.data.message);
-          localStorage.setItem("receiptno1", parseInt(rctno) + 1);
-        }
-      } catch (error) {
-        toast.error("Error Submitting to server ");
+    try {
+      const res = await axiosInstance.post("/sale/create", cartItem);
+
+      if (res?.data?.success) {
+        handelClear();
+        const newReceiptNo = parseInt(rctno) + 1;
+        setRctno(newReceiptNo);
+        localStorage.setItem("receiptnoexp1", newReceiptNo);
+        toast.success(res.data.message);
+      } else {
+        toast.error(res.data.message || "Submission failed!");
       }
+    } catch (error) {
+      toast.error("Error submitting to server");
     }
   };
 
@@ -228,26 +207,15 @@ const CreateCattleFeed = () => {
     }
   };
 
-  // Function to find item name based on item code --------------------------------->
-  const handleFindItemName = (id) => {
-    const selectedItem = productlist.find((item) => item.ItemCode === id);
-    return selectedItem.ItemName;
-  };
-
-  const formatDateToDDMMYYYY = (dateStr) => {
-    const date = new Date(dateStr);
-    const day = String(date.getDate()).padStart(2, "0");
-    const month = String(date.getMonth() + 1).padStart(2, "0");
-    const year = date.getFullYear();
-    return `${day}/${month}/${year}`;
-  };
-
   return (
     <div className="add-cattlefeed-sale-container w100 h1 d-flex-col sa">
       <span className="heading p10">{t("c-cattlefeed")}</span>
       <div className="create-cattlefeed-sales-inner-container w100 h1 d-flex sb p10">
-        <form className="create-sales-form-container w50 h1 bg p10">
-          <div className="sales-details w100 h20 d-flex a-center sb ">
+        <form
+          className="create-sales-form-container w50  bg p10"
+          style={{ height: "fit-content" }}
+        >
+          <div className="sales-details w100   d-flex a-center sb ">
             <div className="col w50 d-flex a-center ">
               <label htmlFor="date" className="info-text w100">
                 {t("c-date")} :
@@ -281,7 +249,7 @@ const CreateCattleFeed = () => {
               />
             </div>
           </div>
-          <div className="sales-details w100 h20 d-flex a-center sb ">
+          <div className="sales-details w100  d-flex a-center sb ">
             <div className="col w80">
               <label htmlFor="items" className="info-text w100">
                 {t("c-prod-select")}:
@@ -324,7 +292,7 @@ const CreateCattleFeed = () => {
               />
             </div>
           </div>
-          <div className="sales-details w100 h20 d-flex ">
+          <div className="sales-details w100   d-flex ">
             <div className="col w30 ">
               <label htmlFor="rate" className="info-text w100">
                 {t("c-rate")}:
@@ -361,7 +329,7 @@ const CreateCattleFeed = () => {
             </div>
           </div>
 
-          <div className="sales-btn-container w100 h20 d-flex j-end my10">
+          <div className="sales-btn-container w100  d-flex j-end my10">
             <button
               type="button"
               className="btn m10"
@@ -375,7 +343,9 @@ const CreateCattleFeed = () => {
 
         <div className="cattlefeed-sales-list-outer-container w45 h1 d-flex-col bg">
           <div className="title-and-button-container w100 d-flex a-center sb">
-            <span className="heading w30 p10">{t("c-item-list")}</span>
+            <span className="heading w30 p10">
+              {t("puchasesale:ps-InvoiceDetails")}
+            </span>
           </div>
           <div className="sales-list-conatainer w100 h1 d-flex-col">
             <div className="sales-headings-row w100 h10 d-flex sb a-center t-center sticky-top t-heading-bg">

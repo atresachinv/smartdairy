@@ -13,7 +13,7 @@ const CreateProducts = () => {
     ItemGroupCode: "",
     UnitCode: "",
     ItemDesc: "",
-    Manufacturer: "",
+    ManufacturerName: "",
   });
   const [itemlist, setItemList] = useState([]);
   //hanlde on change data
@@ -66,7 +66,7 @@ const CreateProducts = () => {
             ItemGroupCode: "",
             UnitCode: "",
             ItemDesc: "",
-            Manufacturer: "",
+            ManufacturerName: "",
           });
           fetchAllItems();
         }
@@ -98,7 +98,7 @@ const CreateProducts = () => {
       ItemGroupCode: "",
       UnitCode: "",
       ItemDesc: "",
-      Manufacturer: "",
+      ManufacturerName: "",
     });
   };
 
@@ -138,7 +138,7 @@ const CreateProducts = () => {
           onSubmit={handleSubmit}
           className="create-dealer-form-container w50 h90 d-flex-col p10 bg"
         >
-          <div className="row d-flex my10">
+          <div className="row d-flex my5">
             <div className="col">
               <label className="info-text px10">
                 {t("ps-code")}
@@ -174,7 +174,7 @@ const CreateProducts = () => {
               />
             </div>
           </div>
-          <div className="row d-flex my10">
+          <div className="row d-flex my5">
             <div className="col">
               <label className="info-text px10">
                 {t("ps-mar-name")}
@@ -218,7 +218,7 @@ const CreateProducts = () => {
               </select>
             </div>
           </div>
-          <div className="row d-flex my10">
+          <div className="row d-flex my5">
             <div className="col">
               <label className="info-text px10">
                 Unit Code: <span className="req">*</span>
@@ -257,18 +257,18 @@ const CreateProducts = () => {
               />
             </div>
           </div>
-          <div className="row d-flex my10">
+          <div className="row d-flex my5">
             <div className="col">
               <label className="info-text px10">{t("ps-manuf")}</label>
               <input
                 type="text"
-                name="Manufacturer"
-                value={formData.Manufacturer}
+                name="ManufacturerName"
+                value={formData.ManufacturerName}
                 onFocus={(e) => e.target.select()}
                 className={`data form-field`}
                 onChange={handleInputChange}
-                onKeyDown={(e) => handleKeyDown(e, "Manufacturer")}
-                placeholder="Manufacturer"
+                onKeyDown={(e) => handleKeyDown(e, "ManufacturerName")}
+                placeholder="ManufacturerName"
               />
             </div>
           </div>

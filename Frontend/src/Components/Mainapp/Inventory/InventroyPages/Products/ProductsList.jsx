@@ -179,14 +179,27 @@ const ProductsList = () => {
     }
 
     const doc = new jsPDF();
-
+    const getCategoryName = (groupCode) => {
+      switch (groupCode) {
+        case 1:
+          return "Cattle Feed";
+        case 2:
+          return "Medicines";
+        case 3:
+          return "Grocery";
+        case 4:
+          return "Other";
+        default:
+          return "Unknown";
+      }
+    };
     // Define columns and rows
     const columns = ["Sr.No", "Code", "Product Name", "Group", "Description"];
     const rows = productList.map((item, index) => [
       index + 1,
       item.ItemCode,
       item.ItemName,
-      item.ItemGroupCode,
+      getCategoryName(item.ItemGroupCode),
       item.ItemDesc,
     ]);
 
@@ -263,14 +276,14 @@ const ProductsList = () => {
         <span className="w30 prod-page-title heading px10">
           {t("ps-nv-pro-list")}
         </span>
-        <div className="group-code-and-button-div w100 h1 d-flex sb">
-          <div>
-            <label htmlFor="seletgrop" className="mx5">
+        <div className="group-code-and-button-div w100 h1  d-flex sb">
+          <div className="d-flex w40 a-center">
+            <label htmlFor="seletgrop" className="w30">
               {t("ps-sel-grp")}
             </label>
             <select
               name="ItemGroupCode"
-              className="data form-field"
+              className="data w70 form-field"
               onChange={handleFilterChange}
               value={filter}
             >

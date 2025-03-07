@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from "react";
 import * as XLSX from "xlsx";
-import Spinner from "../../../Home/Spinner/Spinner";
+import Spinner from "../../../../../../Home/Spinner/Spinner";
 import { useSelector } from "react-redux";
-import axiosInstance from "../../../../App/axiosInstance";
+import axiosInstance from "../../../../../../../App/axiosInstance";
 import { MdAddShoppingCart, MdDeleteOutline } from "react-icons/md";
 import Swal from "sweetalert2";
 import { IoClose } from "react-icons/io5";
 import { FaRegEdit } from "react-icons/fa";
 import { toast } from "react-toastify";
 import { TbSortAscending2, TbSortDescending2 } from "react-icons/tb";
-import "../../../../Styles/Mainapp/Sales/Sales.css";
+import "../../../../../../../Styles/Mainapp/Sales/Sales.css";
 import { NavLink } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { FaDownload } from "react-icons/fa6";
@@ -49,8 +49,6 @@ const OthersSaleList = () => {
     const exportData = filteredSalesList.map((sale) => ({
       BillDate: formatDateToDDMMYYYY(sale.BillDate),
       BillNo: sale.ReceiptNo,
-      custCode: sale.CustCode,
-      custName: handleFindCustName(sale.CustCode),
       ItemCode: sale.ItemCode,
       ItemName: handleFindItemName(sale.ItemCode),
       Qty: sale.Qty,
@@ -58,7 +56,6 @@ const OthersSaleList = () => {
       Amt: sale.Amount,
       cgst: sale.cgst || 0,
       sgst: sale.sgst || 0,
-      cn: sale.cn || 0,
     }));
 
     if (!Array.isArray(exportData) || exportData.length === 0) {
@@ -91,7 +88,7 @@ const OthersSaleList = () => {
       SetLoadings(true);
       try {
         const { data } = await axiosInstance.get(
-          `/sale/all?ItemGroupCode=4&cn=0&role=${userRole}`
+          `/sale/all?ItemGroupCode=4&cn=2&role=${userRole}`
         ); // Replace with your actual API URL
         if (data.success) {
           // console.log(data);
@@ -135,7 +132,7 @@ const OthersSaleList = () => {
     try {
       const queryParams = new URLSearchParams(getItem).toString();
       const { data } = await axiosInstance.get(
-        `/sale/all?ItemGroupCode=4&cn=0&role=${userRole}&${queryParams}`
+        `/sale/all?ItemGroupCode=4&cn=2&role=${userRole}&${queryParams}`
       );
       if (data?.success) {
         setSales(data.salesData);
@@ -288,9 +285,10 @@ const OthersSaleList = () => {
     const groupedSales = filteredSalesList.reduce((acc, sale) => {
       const key = sale.BillNo;
       if (!acc[key]) {
-        acc[key] = { ...sale, TotalAmount: 0 };
+        acc[key] = { ...sale, TotalAmount: 0, totalQty: 0 };
       }
       acc[key].TotalAmount += sale.Amount;
+      acc[key].totalQty += sale.Qty;
       return acc;
     }, {});
 
@@ -325,14 +323,8 @@ const OthersSaleList = () => {
   useEffect(() => {
     if (fcode) {
       const filteredItems = sales.filter((item) => {
-        const isCodeMatch = item.CustCode.toString().includes(fcode);
         const isRecptMatch = item.ReceiptNo.toString().includes(fcode);
-
-        const isNameMatch = handleFindCustName(item.CustCode)
-          ?.toLowerCase()
-          .includes(fcode.toLowerCase());
-
-        return isCodeMatch || isRecptMatch || isNameMatch;
+        return isRecptMatch;
       });
 
       setFilteredSalesList(filteredItems);
@@ -358,20 +350,12 @@ const OthersSaleList = () => {
     const doc = new jsPDF();
 
     // Define columns and rows
-    const columns = [
-      "Sr No",
-      "Date",
-      "Bill No",
-      "Code",
-      "Customer Name",
-      "Amount",
-    ];
+    const columns = ["Sr No", "Date", "Bill No", "Qty", "Amount"];
     const rows = groupedSalesArray.map((item, index) => [
       index + 1,
       formatDateToDDMMYYYY(item.BillDate),
       item.ReceiptNo,
-      item.CustCode,
-      handleFindCustName(item.CustCode),
+      item.totalQty,
       item.TotalAmount,
     ]);
 
@@ -379,7 +363,10 @@ const OthersSaleList = () => {
       (acc, item) => acc + item.TotalAmount,
       0
     );
-
+    const totalqty = groupedSalesArray.reduce(
+      (acc, item) => acc + item.totalQty,
+      0
+    );
     // Page width for centering text
     const pageWidth = doc.internal.pageSize.getWidth();
     const pageHeight = doc.internal.pageSize.getHeight();
@@ -400,8 +387,8 @@ const OthersSaleList = () => {
 
     // Add "Sale-Info" heading with border
     doc.setFontSize(14);
-    const invoiceInfo = doc.getTextWidth("Sale-Info");
-    doc.text("Sale-Info", (pageWidth - invoiceInfo) / 2, margin + 25);
+    const invoiceInfo = doc.getTextWidth("Expired-Info");
+    doc.text("Expired-Info", (pageWidth - invoiceInfo) / 2, margin + 25);
     const gepInfo = doc.getTextWidth("Others Report");
     doc.text("Others Report", (pageWidth - gepInfo) / 2, margin + 35);
     // Add table for items with borders and centered text
@@ -429,12 +416,15 @@ const OthersSaleList = () => {
     });
     // Add total amount with border
     doc.setFontSize(12);
-    const totalAmountLabel = `Total Amount: ${totalAmount}`;
-    doc.text(totalAmountLabel, 145, doc.lastAutoTable.finalY + 10);
+    doc.text(
+      `Total Qty:${totalqty}         Total Amount: ${totalAmount}`,
+      75,
+      doc.lastAutoTable.finalY + 10
+    );
 
     // Save the PDF
     doc.save(
-      `Other_SaleReport_${formatDateToDDMMYYYY(
+      `Other_Expired_Report_${formatDateToDDMMYYYY(
         date1
       )}_to_${formatDateToDDMMYYYY(date2)}.pdf`
     );
@@ -520,10 +510,10 @@ const OthersSaleList = () => {
         </div>
       </div>
       <div className="sales-list-table w100 h80 d-flex-col hidescrollbar bg">
-        <span className="heading p10"> {t("ps-other-rep")}</span>
+        <span className="heading p10"> {t("ps-cattle-other-expired")}</span>
         <div className="sales-heading-title-scroller w100 h1 mh100 d-flex-col hidescrollbar">
           <div className="sale-data-headings-div h10 d-flex center t-center sb sticky-top t-heading-bg">
-            <span className="f-info-text w5"> {t("ps-srNo")}</span>
+            {/* <span className="f-info-text w5"> {t("ps-srNo")}</span> */}
             <span className="f-info-text w20">
               {t("ps-date")}
               <span
@@ -543,25 +533,7 @@ const OthersSaleList = () => {
               </span>
             </span>
             <span className="f-info-text w10">{t("ps-rect-no")}</span>
-            <span className="f-info-text w10">
-              {t("ps-custCode")}
-              <span
-                className="px5 f-color-icon"
-                type="button"
-                onClick={() => handleSort("CustCode")}
-              >
-                {sortKey === "CustCode" ? (
-                  sortOrder === "asc" ? (
-                    <TbSortAscending2 />
-                  ) : (
-                    <TbSortDescending2 />
-                  )
-                ) : (
-                  <TbSortAscending2 />
-                )}
-              </span>
-            </span>
-            <span className="f-info-text w35"> {t("ps-cutName")}</span>
+
             <span className="f-info-text w10">
               {t("ps-amt")}
               <span
@@ -580,6 +552,7 @@ const OthersSaleList = () => {
                 )}
               </span>
             </span>
+            <span className="f-info-text w10">Actions</span>
             {userRole === "salesman" ? (
               <></>
             ) : (
@@ -604,9 +577,7 @@ const OthersSaleList = () => {
                 </span>
               </>
             )}
-            <span className="f-info-text w10">Actions</span>
           </div>
-          {/* Show Spinner if loading, otherwise show the feed list */}
           {loadings ? (
             <Spinner />
           ) : groupedSalesArray.length > 0 ? (
@@ -620,24 +591,12 @@ const OthersSaleList = () => {
                   backgroundColor: index % 2 === 0 ? "#faefe3" : "#fff",
                 }}
               >
-                <span className="text w5">{index + 1}</span>
+                {/* <span className="text w5">{index + 1}</span> */}
                 <span className="text w20">
                   {formatDateToDDMMYYYY(sale.BillDate)}
                 </span>
                 <span className="text w5">{sale.ReceiptNo}</span>
-                <span className="text w5">{sale.CustCode}</span>
-                <span className="text w35 ">
-                  {handleFindCustName(sale.CustCode)}
-                </span>
-
                 <span className="text w10">{sale.TotalAmount}</span>
-                {userRole === "salesman" ? (
-                  <></>
-                ) : (
-                  <>
-                    <span className="text w20 ">{sale.createdby}</span>
-                  </>
-                )}
 
                 <span className="text w10 d-flex j-center a-center ">
                   <button
@@ -653,6 +612,13 @@ const OthersSaleList = () => {
                     style={{ color: "red" }}
                   />
                 </span>
+                {userRole === "salesman" ? (
+                  <></>
+                ) : (
+                  <>
+                    <span className="text w20 ">{sale.createdby}</span>
+                  </>
+                )}
               </div>
             ))
           ) : (
@@ -661,10 +627,10 @@ const OthersSaleList = () => {
         </div>
         {/* show invoice */}
         {isInvoiceOpen && viewItems.length > 0 && (
-          <div className="pramod modal">
+          <div className="pramod modal ">
             <div className="modal-content invoiceModel">
               <div className="d-flex sb">
-                <h2> {t("ps-sale-bill-det")}</h2>
+                <h2> Invoice Details</h2>
                 <IoClose
                   style={{ cursor: "pointer" }}
                   size={25}
@@ -680,15 +646,7 @@ const OthersSaleList = () => {
                   {t("ps-date")} :{formatDateToDDMMYYYY(viewItems[0]?.BillDate)}
                 </div>
               </div>
-              <div className=" d-flex sb mx15 px15 invoiceModelInfo">
-                <h4>
-                  {" "}
-                  {t("ps-custCode")} : {viewItems[0]?.CustCode || ""}
-                </h4>
-                <h4 className="mx15">
-                  {handleFindCustName(viewItems[0]?.CustCode) || ""}
-                </h4>
-              </div>
+              <div className=" d-flex sb mx15 px15 invoiceModelInfo"></div>
               <div className="modal-content w100  ">
                 <div className="sales-table-container w100">
                   <table className="sales-table w100 ">

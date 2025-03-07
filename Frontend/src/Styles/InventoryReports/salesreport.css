@@ -53,6 +53,7 @@
   .sale-regsiter-reports .sale-register-distrubuted-reports span {
     width: 60%;
     align-items: center;
+        font-size: small;
   }
   .sale-regsiter-reports .sale-register-distrubuted-reports select {
     font-size: small;

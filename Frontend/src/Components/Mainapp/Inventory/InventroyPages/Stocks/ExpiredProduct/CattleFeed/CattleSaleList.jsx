@@ -290,9 +290,10 @@ const CattleSaleList = () => {
     const groupedSales = filteredSalesList.reduce((acc, sale) => {
       const key = sale.BillNo;
       if (!acc[key]) {
-        acc[key] = { ...sale, TotalAmount: 0 };
+        acc[key] = { ...sale, TotalAmount: 0, totalQty: 0 };
       }
       acc[key].TotalAmount += sale.Amount;
+      acc[key].totalQty += sale.Qty;
       return acc;
     }, {});
 
@@ -354,16 +355,21 @@ const CattleSaleList = () => {
     const doc = new jsPDF();
 
     // Define columns and rows
-    const columns = ["Sr No", "Date", "Bill No", "Amount"];
+    const columns = ["Sr No", "Date", "Bill No", "Qty", "Amount"];
     const rows = groupedSalesArray.map((item, index) => [
       index + 1,
       formatDateToDDMMYYYY(item.BillDate),
       item.ReceiptNo,
+      item.totalQty,
       item.TotalAmount,
     ]);
 
     const totalAmount = groupedSalesArray.reduce(
       (acc, item) => acc + item.TotalAmount,
+      0
+    );
+    const totalqty = groupedSalesArray.reduce(
+      (acc, item) => acc + item.totalQty,
       0
     );
 
@@ -387,8 +393,8 @@ const CattleSaleList = () => {
 
     // Add "Sale-Info" heading with border
     doc.setFontSize(14);
-    const invoiceInfo = doc.getTextWidth("Sale-Info");
-    doc.text("Sale-Info", (pageWidth - invoiceInfo) / 2, margin + 25);
+    const invoiceInfo = doc.getTextWidth("Expired-Info");
+    doc.text("Expired-Info", (pageWidth - invoiceInfo) / 2, margin + 25);
     const gepInfo = doc.getTextWidth("Cattle Feed Report");
     doc.text("Cattle Feed Report", (pageWidth - gepInfo) / 2, margin + 35);
     // Add table for items with borders and centered text
@@ -416,12 +422,16 @@ const CattleSaleList = () => {
     });
     // Add total amount with border
     doc.setFontSize(12);
-    const totalAmountLabel = `Total Amount: ${totalAmount}`;
-    doc.text(totalAmountLabel, 145, doc.lastAutoTable.finalY + 10);
+
+    doc.text(
+      `Total Qty:${totalqty}         Total Amount: ${totalAmount}`,
+      75,
+      doc.lastAutoTable.finalY + 10
+    );
 
     // Save the PDF
     doc.save(
-      `Cattle_Feed_SaleReport_${formatDateToDDMMYYYY(
+      `Cattle_Feed_Expired_Report_${formatDateToDDMMYYYY(
         date1
       )}_to_${formatDateToDDMMYYYY(date2)}.pdf`
     );
@@ -507,7 +517,7 @@ const CattleSaleList = () => {
         </div>
       </div>
       <div className="sales-list-table w100 h80 d-flex-col bg">
-        <span className="heading p10"> {t("ps-cattel-rep")}</span>
+        <span className="heading p10"> {t("ps-cattle-feed-expired")}</span>
         <div className="sales-heading-title-scroller w100 h1 mh100 d-flex-col hidescrollbar">
           <div className="sale-data-headings-div h10 d-flex center t-center sb sticky-top t-heading-bg">
             {/* <span className="f-info-text w5"> {t("ps-srNo")}</span> */}

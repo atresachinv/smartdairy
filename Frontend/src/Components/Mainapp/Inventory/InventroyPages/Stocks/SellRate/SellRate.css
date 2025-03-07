@@ -29,7 +29,7 @@
 
 .sales-list-container h1 {
   display: flex;
-  font-size: clamp(16px, 3vw, 20px);
+  /* font-size: clamp(16px, 3vw, 20px); */
   font-weight: 600;
   color: #7235ed;
   cursor: pointer;
@@ -121,14 +121,14 @@
 }
 
 .modal .modal-content h2 {
-  font-size: 1.5rem; /* Slightly larger heading */
+  /* font-size: 1.5rem; Slightly larger heading */
   margin-bottom: 10px;
   color: #333; /* Darker text for better readability */
   text-align: center;
 }
 
 .modal .modal-content label {
-  font-size: 1rem;
+  /* font-size: 1rem; */
   color: #555;
   margin-bottom: 5px;
 }
@@ -138,7 +138,7 @@
 .modal .modal-content textarea {
   width: 100%;
   padding: 10px;
-  font-size: 1rem;
+  /* font-size: 1rem; */
   border: 1px solid #ccc;
   border-radius: 8px;
   margin-bottom: 5px;
@@ -161,7 +161,7 @@
 
 .modal .modal-content button {
   padding: 10px 20px;
-  font-size: 1rem;
+  /* font-size: 1rem; */
   border: none;
   border-radius: 8px;
   cursor: pointer;

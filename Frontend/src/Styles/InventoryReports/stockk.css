@@ -10,6 +10,7 @@
     .from-sale-stock-div
     span {
     width: 100px;
+    
   }
 
   .first-half-span-input-div
@@ -62,10 +63,14 @@
   }
   .first-half-span-input-div .stocks-from-todate-reports-div .fromto-date-Stock-report .from-sale-stock-div span   {
        width: 40px;
+       font-size: small;
   }
   .first-half-span-input-div .stocks-from-todate-reports-div .fromto-date-Stock-report .from-sale-stock-div input  {
        width: 100px;
        font-size: x-small;
+  }
+  .stocks-report-selact-div span {
+      font-size: small;
   }
 
 }

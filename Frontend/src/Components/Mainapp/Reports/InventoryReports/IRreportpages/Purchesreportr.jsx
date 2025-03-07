@@ -53,7 +53,7 @@ const Purchesreportr = () => {
     fetchData();
   }, []); // Run useEffect when fromDate or toDate changes
 
-  console.log("  purches data ", sales);
+ 
 
   //---------------------------DealerWise Report --------------------------------------->>
   useEffect(() => {
@@ -74,7 +74,7 @@ const Purchesreportr = () => {
     fetchData();
   }, []);
 
-  console.log(" Dealer Name ", dealer);
+
 
   //... Dealer Pdf
   useEffect(() => {

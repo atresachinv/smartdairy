@@ -42,7 +42,7 @@ const CustomerReports = () => {
     : filteredData;
 
   console.log("Centerlist", filteredCenterCustomer);
-  //........ Dairy name 
+  //........ Dairy name
   const dairyname = useSelector(
     (state) =>
       state.dairy.dairyData.SocietyName || state.dairy.dairyData.center_name
@@ -330,82 +330,96 @@ const CustomerReports = () => {
   ));
 
   return (
-    <div className="customer-master-container w100 h1 d-flex-col">
-      <span className="heading p10">Customer Report</span>
+    <d iv className="customer-master-container w100 h1 d-flex-col">
+      <span className="heading ">Customer Report</span>
       {/* <div className="select-column-button w100 h30 d-flex-col h40"> */}
       <div className="middel-filter-applay-div w100 h20 d-flex-col">
         <div className="dropdown-filter-checkbox-div w100 h50 d-flex ">
-          <div className="dropdown-filter-div w70 h1 d-flex sa">
-            <div className="active-not-active-data w30 h90 d-flex j-center a-center ">
-              <span className="info-text w80">Active :</span>
-              <select
-                className="w80 data"
-                value={dropdownValue}
-                onChange={(e) => setDropdownValue(e.target.value)}
-              >
-                <option value="1">All</option>
-                <option value="2">Active</option>
-                <option value="3">Non Active</option>
-              </select>
+          <div className="dropdown-filter-div w100 h1 d-flex sa">
+            <div className="active-and-member-div w50  h1 a-center d-flex ">
+              <div className="active-not-active-data w50 h90 d-flex j-center a-center ">
+                <span className="info-text w30 ">Active:</span>
+                <select
+                  className="w60 data my10"
+                  value={dropdownValue}
+                  onChange={(e) => setDropdownValue(e.target.value)}
+                >
+                  <option value="1">All</option>
+                  <option value="2">Active</option>
+                  <option value="3">Non Active</option>
+                </select>
+              </div>
+              <div className="active-not-active-data w50 h90 d-flex j-center a-center">
+                <span className="info-text w40">Memeber :</span>
+                <select
+                  value={isSabhasadFilter}
+                  onChange={(e) => setIsSabhasadFilter(e.target.value)}
+                  className="w50 data my10"
+                  name="Member"
+                  id="001"
+                >
+                  <option value="001">All</option>
+                  <option value="001">Member</option>
+                  <option value="001">Non-Member</option>
+                </select>
+              </div>
             </div>
-            <div className="active-not-active-data w30 h90 d-flex j-center a-center">
-              <span className="info-text w80">Memeber :</span>
-              <select
-                value={isSabhasadFilter}
-                onChange={(e) => setIsSabhasadFilter(e.target.value)}
-                className="w80 data"
-                name="Member"
-                id="001"
-              >
-                <option value="001">All</option>
-                <option value="001">Member</option>
-                <option value="001">Non-Member</option>
-              </select>
+            <div className="dropdown-filter-div w50 h1 d-flex ">
+              <div className="active-not-active-data w50 h90 d-flex j-center a-center">
+                <span className="info-text w50">Milk Type:</span>
+                <select
+                  className="w70 data my10"
+                  value={milkTypeFilter}
+                  onChange={(e) => setMilkTypeFilter(e.target.value)}
+                >
+                  <option value="All">All</option>
+                  <option value="Cow">Cow</option>
+                  <option value="Buffalo">Buffalo</option>
+                </select>
+              </div>
+
+              <div className="centerwise-data-show w50 h1 d-flex   sa a-center ">
+                <span className="info-text w30">Center:</span>
+                <select
+                  className="data w60 my10"
+                  name="selection"
+                  id="001"
+                  onChange={handleCenterChange}
+                >
+                  <option value="">Select Center</option>
+                  {centerList && centerList.length > 0 ? (
+                    centerList.map((center, index) => (
+                      <option key={index} value={center.center_id}>
+                        {center.name || center.center_name}
+                      </option>
+                    ))
+                  ) : (
+                    <option value="" disabled>
+                      No Centers Available
+                    </option>
+                  )}
+                </select>
+              </div>
             </div>
           </div>
-          <div className="dropdown-filter-div w70 h1 d-flex sa">
-            <div className="active-not-active-data w30 h90 d-flex j-center a-center">
-              <span className="info-text w80">Milk Type:</span>
-              <select
-                className="w80 data"
-                value={milkTypeFilter}
-                onChange={(e) => setMilkTypeFilter(e.target.value)}
-              >
-                <option value="All">All</option>
-                <option value="Cow">Cow</option>
-                <option value="Buffalo">Buffalo</option>
-              </select>
-            </div>
+        </div>
+
+        <div className="centerwise-and-button-div w100 h50 d-flex a-center">
+          <div className="data-show-buttons d-flex w50 h40 sa a-center">
+            <button className="w-btn" onClick={handleClear}>
+              Reset
+            </button>
+            <button className="w-btn" onClick={exportToExcel}>
+              Excel
+            </button>
+            <button className="w-btn" onClick={exportToPDF}>
+              PDF
+            </button>
+            <button className="w-btn" onClick={handlePrint}>
+              Print
+            </button>
           </div>
-          {/* <div className="centerwise-data-show w30 h60 d-flex sa a-center ">
-            <span className="info-text w20">Centerwise</span>
-            <select className="data w60" name="selection" id="001">
-              <option value=""></option>
-            </select>
-          </div> */}{" "}
-          <div className="centerwise-data-show w30 h60 d-flex sa a-center">
-            <span className="info-text w20">Centerwise</span>
-            <select
-              className="data w60"
-              name="selection"
-              id="001"
-              onChange={handleCenterChange}
-            >
-              <option value="">Select Center</option>
-              {centerList && centerList.length > 0 ? (
-                centerList.map((center, index) => (
-                  <option key={index} value={center.center_id}>
-                    {center.name || center.center_name}
-                  </option>
-                ))
-              ) : (
-                <option value="" disabled>
-                  No Centers Available
-                </option>
-              )}
-            </select>
-          </div>
-          <div className="checkboxcommission-Deposite w40 h1 d-flex ">
+          <div className="checkboxcommission-Deposite w40 h1 d-flex a-center ">
             <div className="commission-checkbox w50 h70 d-flex sa a-center ">
               <input
                 type="checkbox"
@@ -424,37 +438,13 @@ const CustomerReports = () => {
             </div>
           </div>
         </div>
-
-        <div className="centerwise-and-button-div w100 h50 d-flex">
-          {/* <div className="centerwise-data-show w30 h60 d-flex sa a-center ">
-              <span className="info-text w20">Centerwise</span>
-              <select className="data w60" name="selection" id="001">
-                <option value=""></option>
-              </select>
-            </div> */}
-          <div className="data-show-buttons d-flex w50 h40 sa a-center">
-            <button className="w-btn" onClick={handleClear}>
-              Reset
-            </button>
-            <button className="w-btn" onClick={exportToExcel}>
-              Excel
-            </button>
-            <button className="w-btn" onClick={exportToPDF}>
-              PDF
-            </button>
-            <button className="w-btn" onClick={handlePrint}>
-              Print
-            </button>
-          </div>
-        </div>
       </div>
       <div className="select-column-div w100 h10 d-flex-col  ">
-        <div className="select-column-div w10 d-flex ">
-          <span className="info-text w100 h1 d-flex ">Select Column</span>
-        </div>
-
-        <div className="hide-selection-selection-bar d-flex w90 h70 bg">
-          <select className="w15 data" onChange={handleColumnCountChange}>
+        <div className="hide-selection-selection-bar d-flex w100 h1 bg a-center ">
+          <span className="info-text w1 h1 d-flex a-center ">
+            Select Column:
+          </span>
+          <select className="w25 data" onChange={handleColumnCountChange}>
             {[...Array(6).keys()].map((num) => (
               <option key={num + 1} value={num + 1}>
                 {num + 1}
@@ -464,7 +454,7 @@ const CustomerReports = () => {
 
           {[...Array(numberOfColumns)].map((_, i) => (
             <select
-              className="w30 data"
+              className="w100 data"
               key={i}
               onChange={(e) => handleColumnSelection(e, i)}
               value={selectedColumns[i] || ""}
@@ -556,7 +546,7 @@ const CustomerReports = () => {
           </tbody>
         </table>
       </div>
-    </div>
+    </d>
   );
 };
 

@@ -688,7 +688,7 @@ const List = () => {
                 <table className="sales-table w100 ">
                   <thead className="bg1">
                     <tr>
-                      <th className="f-info-text"> {t("ps-srNo")}</th>
+                      {/* <th className="f-info-text"> {t("ps-srNo")}</th> */}
                       <th className="f-info-text"> {t("ps-itm-name")}</th>
                       <th className="f-info-text"> {t("ps-rate")}</th>
                       <th className="f-info-text"> {t("ps-sale-rate")}</th>
@@ -699,9 +699,9 @@ const List = () => {
                   <tbody>
                     {updatelist.map((item, i) => (
                       <tr key={i}>
-                        <td>{i + 1}</td>
+                        {/* <td>{i + 1}</td> */}
                         <td>{item.itemname}</td>
-                        <td className="w15">
+                        <td className="w20">
                           <input
                             name="rate"
                             type="number"
@@ -712,7 +712,7 @@ const List = () => {
                             }
                           />
                         </td>
-                        <td className="w15">
+                        <td className="w20">
                           <input
                             name="sale"
                             type="number"
@@ -723,7 +723,7 @@ const List = () => {
                             }
                           />
                         </td>
-                        <td className="w15">
+                        <td className="w20">
                           <input
                             name="qty"
                             type="number"
@@ -738,7 +738,7 @@ const List = () => {
                       </tr>
                     ))}
                     <tr>
-                      <td></td>
+                      {/* <td></td> */}
                       <td></td>
                       <td></td>
                       <td></td>

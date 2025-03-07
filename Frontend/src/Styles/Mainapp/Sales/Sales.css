@@ -1,3 +1,136 @@
+.saleModal-content {
+  background-color: #ffffff; /* Pure white for a clean look */
+  /* width: 100%; Limit width for better usability on larger screens */
+  max-height: 90%; /* Prevent overflow */
+  border-radius: 12px; /* Softer rounded edges */
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* Subtle shadow for depth */
+  overflow: auto; /* Scroll if content overflows */
+  padding: 15px; /* Add padding for internal content */
+  display: flex;
+  flex-direction: column;
+  gap: 3px; /* Space between elements */
+}
+
+.modal .saleModal-content h2 {
+  /* font-size: 1.5rem; Slightly larger heading */
+  margin-bottom: 10px;
+  color: #333; /* Darker text for better readability */
+  text-align: center;
+}
+
+.modal .saleModal-content label {
+  /* font-size: 1rem; */
+  color: #555;
+  margin-bottom: 5px;
+}
+
+.modal .saleModal-content input,
+.modal .saleModal-content select,
+.modal .saleModal-content textarea {
+  width: 100%;
+  padding: 10px;
+  /* font-size: 1rem; */
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  margin-bottom: 5px;
+  box-sizing: border-box;
+}
+
+.modal .saleModal-content input:focus,
+.modal .saleModal-content select:focus,
+.modal .saleModal-content textarea:focus {
+  outline: none;
+  border-color: #007bff; /* Highlight color */
+  box-shadow: 0 0 4px rgba(0, 123, 255, 0.3);
+}
+
+.modal .saleModal-content .modal-buttons {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px; /* Space between buttons */
+}
+
+.modal .saleModal-content button {
+  padding: 10px 20px;
+  /* font-size: 1rem; */
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.modal .saleModal-content button:last-child {
+  background-color: #007bff;
+  color: white;
+}
+
+.modal .saleModal-content button:last-child:hover {
+  background-color: #0056b3;
+}
+
+.modal .saleModal-content button:first-child {
+  background-color: #f8f9fa;
+  color: #333;
+}
+
+.modal .saleModal-content button:first-child:hover {
+  background-color: #e2e6ea;
+}
+.saleModal {
+  position: fixed;
+  z-index: 101;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6); /* Slightly darker for better focus */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.saleModal .modal-content {
+  background-color: #ffffff; /* Pure white for a clean look */
+  /* width: 100%; Limit width for better usability on larger screens */
+  max-height: 90%; /* Prevent overflow */
+  border-radius: 12px; /* Softer rounded edges */
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* Subtle shadow for depth */
+  overflow: auto; /* Scroll if content overflows */
+  padding: 15px; /* Add padding for internal content */
+  display: flex;
+  flex-direction: column;
+  gap: 3px; /* Space between elements */
+  width: 50%;
+}
+
+.saleModal .modal-content h2 {
+  /* font-size: 1.5rem; Slightly larger heading */
+  margin-bottom: 10px;
+  color: #333; /* Darker text for better readability */
+  text-align: center;
+}
+
+.sales-table1 {
+  width: 100%;
+  border-spacing: 0;
+  border-collapse: collapse;
+}
+
+.sales-table1 th {
+  position: sticky; /* Make the header sticky */
+  top: 0; /* Stick to the top */
+  background-color: #a386dc;
+  z-index: 100; /* Ensure it appears above other rows */
+  text-align: center;
+  font-weight: bold;
+  padding: 4px;
+  border: 1px solid #ccc;
+  /* padding-top: 20px; */
+}
+.sales-table1 td {
+  text-align: center;
+  /* padding: 4px; */
+  border: 1px solid #ccc;
+}
 @media screen and (max-width: 426px) {
   .add-cattlefeed-sale-container {
     min-height: auto;
@@ -76,6 +209,14 @@
   }
   .invoiceModelInfo {
     padding: 0px 10px !important;
+  }
+  .saleModel {
+    /* width: ; */
+    padding: 15px 15px !important;
+  }
+  .saleModal .modal-content {
+    /* padding: 15px 15px; */
+    width: 100%;
   }
   /* .icon {
     display: none;
