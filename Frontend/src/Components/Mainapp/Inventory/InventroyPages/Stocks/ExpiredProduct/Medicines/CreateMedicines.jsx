@@ -1,6 +1,4 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-/* eslint-disable no-unused-vars */
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import axiosInstance from "../../../../App/axiosInstance";
 import { MdDeleteOutline } from "react-icons/md";
 import { useDispatch, useSelector, shallowEqual } from "react-redux";
@@ -17,14 +15,14 @@ import "../../../../Styles/Mainapp/Sales/Sales.css";
 import { toWords } from "number-to-words";
 import { sendMessage } from "../WhatsAppSender";
 
-const CreateCattleFeed = () => {
+const CreateMedicines = () => {
   const dispatch = useDispatch();
   const { t } = useTranslation(["common", "milkcollection", "puchasesale"]);
   const tDate = useSelector((state) => state.date.toDate);
   const salesRates = useSelector((state) => state.sales.salesRates);
   const customerslist = useSelector((state) => state.customer.customerlist);
   const productlist = useSelector(
-    (state) => state.inventory.allProducts || [],
+    (state) => state.inventory.allProducts,
     shallowEqual
   );
   const [cartItem, setCartItem] = useState([]);
@@ -35,15 +33,13 @@ const CreateCattleFeed = () => {
   const [rate, setRate] = useState(0);
   const [selectitemcode, setSelectitemcode] = useState(0);
   const [amt, setAmt] = useState("");
-  const [rctno, setRctno] = useState(localStorage.getItem("receiptno1") || 1);
+  const [rctno, setRctno] = useState(localStorage.getItem("receiptno2") || 1);
   const [groupItems, setGroupItems] = useState([]);
   const [filteredItems, setFilteredItems] = useState([]); //p--
   const [userRole, setUserRole] = useState(null);
   const dairyInfo = useSelector(
     (state) =>
-      state.dairy.dairyData.marathi_name ||
-      state.dairy.dairyData.SocietyName ||
-      state.dairy.dairyData.center_name
+      state.dairy.dairyData.SocietyName || state.dairy.dairyData.center_name
   );
   const dairymono = useSelector(
     (state) => state.dairy.dairyData.PhoneNo || state.dairy.dairyData.mobile
@@ -69,7 +65,7 @@ const CreateCattleFeed = () => {
   //get all products and sale rate
   useEffect(() => {
     dispatch(getAllProducts());
-    dispatch(getProductSaleRates(1));
+    dispatch(getProductSaleRates(2));
   }, [dispatch]);
 
   // set today date
@@ -102,6 +98,7 @@ const CreateCattleFeed = () => {
       }
     }
   }, [selectitemcode, qty]);
+
   //set amount
   useEffect(() => {
     if (rate) {
@@ -128,7 +125,6 @@ const CreateCattleFeed = () => {
       toast.error("Invalid product selected!");
       return;
     }
-    console.log(selectedItem);
 
     if (Number(selectitemcode) > 0 && Number(qty) > 0 && Number(rate) > 0) {
       const newCartItem = {
@@ -139,8 +135,7 @@ const CreateCattleFeed = () => {
         Qty: Number(qty),
         CustCode: fcode,
         cust_name: cname,
-        ItemGroupCode:
-          userRole !== "mobilecollector" ? 1 : selectedItem.ItemGroupCode,
+        ItemGroupCode: 2,
         Rate: Number(rate),
         Amount: Number(qty) * Number(rate),
         cn: 0,
@@ -175,6 +170,7 @@ const CreateCattleFeed = () => {
       setCartItem(updatedCart);
     }
   };
+
   //reset the field
   const handelClear = () => {
     setFcode("");
@@ -220,11 +216,10 @@ const CreateCattleFeed = () => {
               mono: dairymono,
             });
           }
-
           handelClear();
           setRctno(parseInt(rctno) + 1);
           toast.success(res.data.message);
-          localStorage.setItem("receiptno1", parseInt(rctno) + 1);
+          localStorage.setItem("receiptno2", parseInt(rctno) + 1);
         }
       } catch (error) {
         toast.error("Error Submitting to server ");
@@ -249,7 +244,6 @@ const CreateCattleFeed = () => {
   // Function to handle printing the invoice --------------------------------------->
   const handlePrint = () => {
     handleSubmit();
-
     if (
       settings?.pType !== undefined &&
       settings?.printer !== undefined &&
@@ -263,111 +257,111 @@ const CreateCattleFeed = () => {
         if (printWindow) {
           printWindow.document.write(
             `
-        <html>
-          <head>
-            <title>Print</title>
-            <style>
-              @page {
-                size: A4 landscape;
-                margin: 5mm;
-              }
-              body {
-                font-family: Arial, sans-serif;
-                font-size: 12px;
-                margin: 0;
-                padding: 0;
-              }
-              #print-section {
-                display: flex;
-                justify-content: space-between;
-                width: 100%;
-                height:100%;
-                padding: 10mm;
-                box-sizing: border-box;
-                flex-wrap: wrap;
-              }
-              .invoice { 
-                width: 46%;
-                border: 1px solid black;
-                height:100%;
-                padding: 1mm;
-                box-sizing: border-box;
-               display: flex;
-              flex-direction: column;
-              }
-              .invoice-header {
-                text-align: center;
-                font-size: 16px;
-                font-weight: bold;
-                margin-bottom: 0;
-              }
-                 .invoice-sub-header {
-                text-align: center;
-                font-size: 14px;
-                font-weight: bold;
-                margin-bottom: 10px;
-                margin-right: 90px;
-
-              }
-              .invoice-info {
-                display: flex;
-                margin:0 10px;
-                justify-content: space-between;
-                margin-bottom: 10px;
-              }
-
-              .invoice-outstanding-container{
-                width: 100%;
-                display: flex; 
-                justify-content: end;
-                margin-bottom:10px;
-              }
-              .outstanding-conatiner{
-                width: 120px;
-                height : 50px;
-                text-align: center;
-                border: 1px solid black;
-              }
-     
-
-              .invoice-table {
-                width: 100%;
-                border-collapse: collapse;
-                margin-bottom: 10px;
-              }
-              .invoice-table th, .invoice-table td {
-              font-size: 12px;
-                border: 1px solid black;
-                padding: 5px;
-                text-align: center;
-                word-wrap: break-word;
-              }
-              
-            
-              .signature-box {
-                display: flex;
-                justify-content: space-between;
-                margin-top: auto;
-                font-weight: bold;
-              }
-              .signature-box span {
-                width: 45%;
-                text-align: center;
-                border-top: 1px solid black;
-                padding-top: 10px;
-              }
-                .footer{
-                margin-top:10px;
-                display:flex;
-                justify-content:center;
+          <html>
+            <head>
+              <title>Print</title>
+              <style>
+                @page {
+                  size: A4 landscape;
+                  margin: 5mm;
                 }
-            </style>
-          </head>
-          <body>
-            <div id="print-section">${printContent}</div>
-          </body>
-        </html>
-        `
+                body {
+                  font-family: Arial, sans-serif;
+                  font-size: 12px;
+                  margin: 0;
+                  padding: 0;
+                }
+                #print-section {
+                  display: flex;
+                  justify-content: space-between;
+                  width: 100%;
+                  height:100%;
+                  padding: 10mm;
+                  box-sizing: border-box;
+                  flex-wrap: wrap;
+                }
+                .invoice { 
+                  width: 46%;
+                  border: 1px solid black;
+                  height:100%;
+                  padding: 1mm;
+                  box-sizing: border-box;
+                 display: flex;
+                flex-direction: column;
+                }
+                .invoice-header {
+                  text-align: center;
+                  font-size: 16px;
+                  font-weight: bold;
+                  margin-bottom: 0;
+                }
+                   .invoice-sub-header {
+                  text-align: center;
+                  font-size: 14px;
+                  font-weight: bold;
+                  margin-bottom: 10px;
+                  margin-right: 90px;
+  
+                }
+                .invoice-info {
+                  display: flex;
+                  margin:0 10px;
+                  justify-content: space-between;
+                  margin-bottom: 10px;
+                }
+  
+                .invoice-outstanding-container{
+                  width: 100%;
+                  display: flex; 
+                  justify-content: end;
+                  margin-bottom:10px;
+                }
+                .outstanding-conatiner{
+                  width: 120px;
+                  height : 50px;
+                  text-align: center;
+                  border: 1px solid black;
+                }
+       
+  
+                .invoice-table {
+                  width: 100%;
+                  border-collapse: collapse;
+                  margin-bottom: 10px;
+                }
+                .invoice-table th, .invoice-table td {
+                font-size: 12px;
+                  border: 1px solid black;
+                  padding: 5px;
+                  text-align: center;
+                  word-wrap: break-word;
+                }
+                
+              
+                .signature-box {
+                  display: flex;
+                  justify-content: space-between;
+                  margin-top: auto;
+                  font-weight: bold;
+                }
+                .signature-box span {
+                  width: 45%;
+                  text-align: center;
+                  border-top: 1px solid black;
+                  padding-top: 10px;
+                }
+                  .footer{
+                  margin-top:10px;
+                  display:flex;
+                  justify-content:center;
+                  }
+              </style>
+            </head>
+            <body>
+              <div id="print-section">${printContent}</div>
+            </body>
+          </html>
+          `
           );
           printWindow.document.close();
           printWindow.focus();
@@ -390,83 +384,83 @@ const CreateCattleFeed = () => {
           document.getElementById("print-section1").innerHTML;
         if (printWindow) {
           printWindow.document.write(`
-<html>
-  <head>
-    <title>Print</title>
-    <style>
-      @page {
-        size: auto;
-        margin: 0;
-        width: 58mm;
-        min-height: 85mm;
-      }
-      body {
-        font-family: Arial, sans-serif;
-        font-size: 10px;
-        margin: 0;
-        padding: 0;
-        width: 58mm;
-        min-height: 85mm;
-
-      }
-      #print-section {
-        width: 58mm;
-        padding: 0.5mm;
-        box-sizing: border-box;
-        text-align: center;
-      }
-        .invoice{
-        margin-bottom:20px;
+  <html>
+    <head>
+      <title>Print</title>
+      <style>
+        @page {
+          size: auto;
+          margin: 0;
+          width: 58mm;
+          min-height: 85mm;
         }
-      .invoice-header {
-        font-size: 14px;
-        font-weight: bold;
-        margin-bottom: 5px;
-      }
-      .invoice-info {
-      display: flex;
-        text-align: left;
-        margin-bottom: 5px;
-        justify-content: space-between;
-            padding: 0px 5px;
-      }
-      .invoice-table {
-        width: 100%;
-        border-collapse: collapse;
-        font-size: 10px;
-      }
-      .invoice-table th, .invoice-table td {
-        border-bottom: 1px dashed black;
-        padding: 2px;
-        text-align: center;
-      }
-       
-      .footer {
-        margin-top: 20px;
-        text-align: center;
-        font-size: 10px;
-        padding-bottom: 20px;
-      }
-      .outstanding-conatiner{
-        display:none;
+        body {
+          font-family: Arial, sans-serif;
+          font-size: 10px;
+          margin: 0;
+          padding: 0;
+          width: 58mm;
+          min-height: 85mm;
+  
         }
-        .forColCut{
+        #print-section {
+          width: 58mm;
+          padding: 0.5mm;
+          box-sizing: border-box;
+          text-align: center;
+        }
+          .invoice{
+          margin-bottom:20px;
+          }
+        .invoice-header {
+          font-size: 14px;
+          font-weight: bold;
+          margin-bottom: 5px;
+        }
+        .invoice-info {
         display: flex;
-    flex-direction: column;
-    }
-    .for58 {
-    margin-bottom: 5px;
-    }
-    .signature-box{
-    display:none;
-    }
-    </style>
-  </head>
-  <body>
-    <div id="print-section">${printContent}</div>
-  </body>
-</html>
-`);
+          text-align: left;
+          margin-bottom: 5px;
+          justify-content: space-between;
+              padding: 0px 5px;
+        }
+        .invoice-table {
+          width: 100%;
+          border-collapse: collapse;
+          font-size: 10px;
+        }
+        .invoice-table th, .invoice-table td {
+          border-bottom: 1px dashed black;
+          padding: 2px;
+          text-align: center;
+        }
+         
+        .footer {
+          margin-top: 20px;
+          text-align: center;
+          font-size: 10px;
+          padding-bottom: 20px;
+        }
+        .outstanding-conatiner{
+          display:none;
+          }
+          .forColCut{
+          display: flex;
+      flex-direction: column;
+      }
+      .for58 {
+      margin-bottom: 5px;
+      }
+      .signature-box{
+      display:none;
+      }
+      </style>
+    </head>
+    <body>
+      <div id="print-section">${printContent}</div>
+    </body>
+  </html>
+  `);
           printWindow.document.close();
           printWindow.focus();
           printWindow.print();
@@ -645,22 +639,12 @@ const CreateCattleFeed = () => {
     doc.save("Invoice.pdf");
   };
 
-  // useEffect(() => {
-  //   if (purchaseData.length > 0) {
-  //     const sortedPurchaseData = [...purchaseData].sort(
-  //       (a, b) => new Date(b.purchaseid) - new Date(a.purchaseid)
-  //     );
-  //     const rateItem = sortedPurchaseData.find(
-  //       (item) => item.itemcode === selectitemcode
-  //     );
-  //     setRate(rateItem?.salerate ?? "");
-  //   }
-  // }, [selectitemcode]);
+  //use set rate in rate field ----------------------------------------------------->
 
   // Filter out items that are already in the cart --------------------------------->
   const handleItemstoShow = () => {
     if (userRole !== "mobilecollector") {
-      const items = productlist.filter((item) => item.ItemGroupCode === 1);
+      const items = productlist.filter((item) => item.ItemGroupCode === 2);
       setGroupItems(items);
       const itemsNotInCart = groupItems.filter(
         (item) => !cartItem.some((cart) => cart.ItemCode === item.ItemCode)
@@ -673,6 +657,7 @@ const CreateCattleFeed = () => {
       setFilteredItems(itemsNotInCart);
     }
   };
+
   useEffect(() => {
     handleItemstoShow();
   }, [productlist, cartItem]);
@@ -708,13 +693,13 @@ const CreateCattleFeed = () => {
 
   return (
     <div className="add-cattlefeed-sale-container w100 h1 d-flex-col sa">
-      <span className="heading p10">{t("c-cattlefeed")}</span>
+      <span className="heading p10">{t("c-medicine")} </span>
       <div className="create-cattlefeed-sales-inner-container w100 h1 d-flex sb p10">
         <form className="create-sales-form-container w50 h1 bg p10">
           <div className="sales-details w100 h20 d-flex a-center sb ">
             <div className="col w50 d-flex a-center ">
               <label htmlFor="date" className="info-text w100">
-                {t("c-date")} :
+                Date :
               </label>
               <input
                 type="date"
@@ -795,7 +780,7 @@ const CreateCattleFeed = () => {
           <div className="sales-details w100 h20 d-flex a-center sb ">
             <div className="col w80">
               <label htmlFor="items" className="info-text w100">
-                {t("c-prod-select")}:
+                {t("c-medimedi-select")}:
               </label>
               {userRole !== "mobilecollector" ? (
                 <select
@@ -808,7 +793,7 @@ const CreateCattleFeed = () => {
                     handleKeyPress(e, document.getElementById("qty"))
                   }
                 >
-                  <option value="0">-- {t("c-prod-select")} --</option>
+                  <option value="0">-- {t("c-medimedi-select")} --</option>
                   {filteredItems.map((item, i) => (
                     <option key={i} value={item.ItemCode}>
                       {item.ItemName}
@@ -826,7 +811,7 @@ const CreateCattleFeed = () => {
                     handleKeyPress(e, document.getElementById("addtocart"))
                   }
                 >
-                  <option value="0">-- {t("c-prod-select")} --</option>
+                  <option value="0">-- {t("c-medimedi-select")} --</option>
                   {filteredItems.map((item, i) => (
                     <option key={i} value={item.ItemCode}>
                       {item.ItemName}
@@ -866,7 +851,7 @@ const CreateCattleFeed = () => {
                   name="rate"
                   id="rate"
                   className="data w70"
-                  value={rate || ""}
+                  value={rate}
                   onFocus={handleFocus}
                   onChange={(e) =>
                     setRate(Math.max(0, parseFloat(e.target.value)))
@@ -958,8 +943,8 @@ const CreateCattleFeed = () => {
                     key={i}
                     className="sales-headings-row w100 h10 d-flex a-center sb"
                   >
-                    <span className="label-text w10 t-center">{i + 1}</span>
-                    <span className="label-text w40 t-start">
+                    <span className="label-text w5 t-center">{i + 1}</span>
+                    <span className="label-text w35 t-start">
                       {item.ItemName}
                     </span>
                     <span className="label-text w10 t-center">{item.Qty}</span>
@@ -983,9 +968,7 @@ const CreateCattleFeed = () => {
                   <span className=" w5"></span>
                   <span className=" w35"></span>
                   <span className=" w10"></span>
-                  <span className="label-text w10">
-                    {t("puchasesale:ps-ttl-amt")} :
-                  </span>
+                  <span className="label-text w10">{t("c-total")} :</span>
                   <span className="label-text w10 t-end">
                     {cartItem.reduce((acc, item) => acc + item.Amount, 0)}
                   </span>
@@ -1000,11 +983,10 @@ const CreateCattleFeed = () => {
           </div>
 
           <div className="sales-button-container w100 h10 d-flex a-center j-end">
-            <button type="button" className="w-btn m10" onClick={handelClear}>
+            <button className="w-btn m10" onClick={handelClear}>
               {t("puchasesale:ps-clr")}
             </button>
             <button
-              type="button"
               className="w-btn mx10"
               onClick={handleSubmit}
               disabled={cartItem.length == 0}
@@ -1055,4 +1037,4 @@ const CreateCattleFeed = () => {
   );
 };
 
-export default CreateCattleFeed;
+export default CreateMedicines;

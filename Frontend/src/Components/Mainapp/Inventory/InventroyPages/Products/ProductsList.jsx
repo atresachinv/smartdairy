@@ -54,7 +54,21 @@ const ProductsList = () => {
         ItemName: editSale.ItemName,
         ItemDesc: editSale.ItemDesc,
       };
+      if (productList) {
+        const FoundItem = productList.filter(
+          (item) =>
+            item.id !== editSale.id &&
+            (item.ItemName.toLowerCase().trim() ===
+              updateItem.ItemName.toLowerCase().trim() ||
+              item.marname.toLowerCase().trim() ===
+                updateItem.ItemName.toLowerCase().trim())
+        );
 
+        if (FoundItem.length > 0) {
+          toast.error("Product Name already exists!");
+          return;
+        }
+      }
       try {
         const res = await axiosInstance.put("/item/update", updateItem);
         if (res?.data?.success) {
@@ -292,7 +306,7 @@ const ProductsList = () => {
       <div className="product-list-table w100 h90 d-flex-col bg">
         <div className="product-heading-title-scroller w100 h1 mh100 hidescrollbar d-flex-col br6">
           <div className="sales-data-headings-div p10 d-flex center sticky-top bg7 sa">
-            <span className="f-info-text w5">{t("ps-srNo")}</span>
+            {/* <span className="f-info-text w5">{t("ps-srNo")}</span> */}
             <span className="f-info-text w10">
               {t("ps-code")}
               <span
@@ -312,7 +326,25 @@ const ProductsList = () => {
               </span>
             </span>
             <span className="f-info-text w25">
-              {t("ps-itm-name")}
+              English Name
+              <span
+                className="px10 f-color-icon"
+                type="button"
+                onClick={() => handleSort("ItemName")}
+              >
+                {sortKey === "ItemName" ? (
+                  sortOrder === "asc" ? (
+                    <TbSortAscending2 />
+                  ) : (
+                    <TbSortDescending2 />
+                  )
+                ) : (
+                  <TbSortAscending2 />
+                )}
+              </span>
+            </span>{" "}
+            <span className="f-info-text w25">
+              Marathi Name
               <span
                 className="px10 f-color-icon"
                 type="button"
@@ -329,7 +361,7 @@ const ProductsList = () => {
                 )}
               </span>
             </span>
-            <span className="f-info-text w20">{t("ps-desc")}</span>
+            {/* <span className="f-info-text w20">{t("ps-desc")}</span> */}
             <span className="f-info-text w10">Action</span>
           </div>
           {loading ? (
@@ -345,14 +377,15 @@ const ProductsList = () => {
                   backgroundColor: index % 2 === 0 ? "#faefe3" : "#fff",
                 }}
               >
-                <span className="info-text w5">{index + 1}</span>
+                {/* <span className="info-text w5">{index + 1}</span> */}
                 <span className="info-text w10">{product.ItemCode}</span>
                 <span className="info-text w25 t-start">
                   {product.ItemName}
                 </span>
-                <span className="info-text w20 t-start">
+                <span className="info-text w25 t-start">{product.marname}</span>
+                {/* <span className="info-text w20 t-start">
                   {product.ItemDesc}
-                </span>
+                </span> */}
                 <span className="info-text w10 d-flex sa">
                   <FaRegEdit
                     size={18}
@@ -385,13 +418,15 @@ const ProductsList = () => {
                 onChange={(e) =>
                   setEditSale({ ...editSale, ItemName: e.target.value })
                 }
+                onFocus={(e) => e.target.select()}
               />
-            </label>{" "}
+            </label>
             <label>
               {t("ps-desc")}
               <input
                 type="text"
                 value={editSale?.ItemDesc}
+                onFocus={(e) => e.target.select()}
                 onChange={(e) =>
                   setEditSale({ ...editSale, ItemDesc: e.target.value })
                 }

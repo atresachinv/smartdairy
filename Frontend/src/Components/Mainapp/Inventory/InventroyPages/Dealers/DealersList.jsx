@@ -56,6 +56,20 @@ const DealersList = () => {
         cust_accno: editSale.cust_accno,
       };
       // console.log(updateCust);
+      if (dealerList) {
+        const foundname = dealerList.filter(
+          (item) =>
+            (item.id !== editSale.id &&
+              item.cname.toLowerCase().trim() ===
+                updateCust.cname.toLowerCase().trim()) ||
+            item.engName.toLowerCase().trim() ===
+              updateCust.cname.toLowerCase().trim()
+        );
+        if (foundname.length > 0) {
+          toast.warn("Dealer Name already exists");
+          return;
+        }
+      }
       try {
         const res = await axiosInstance.patch("/update/dealer", updateCust);
         if (res?.data?.success) {
@@ -289,13 +303,13 @@ const DealersList = () => {
         </div>
       </div>
       <div className="customer-list-table w100 h1 d-flex-col bg">
-        <div className="customer-heading-title-scroller w100 h1 mh100  hidescrollbar d-flex-col sticky-top">
-          <div className="data-headings-div h10 d-flex center forDWidth t-center sb bg7">
+        <div className="customer-heading-title-scroller w100 h1 mh100  hidescrollbar d-flex-col ">
+          <div className="data-headings-div h10 d-flex center forDWidth t-center sb bg7 sticky-top">
             {/* <span className="f-info-text w5">{t("ps-srNo")}</span> */}
-            <span className="f-info-text w10">
+            <span className="f-info-text w15">
               {t("ps-code")}
               <span
-                className="px10 f-color-icon"
+                className="px5 f-color-icon"
                 type="button"
                 onClick={() => sortDealers("srno")}
               >
@@ -311,7 +325,25 @@ const DealersList = () => {
               </span>
             </span>
             <span className="f-info-text w25">
-              {t("ps-dealer-name")}
+              English name
+              <span
+                className="px10 f-color-icon"
+                type="button"
+                onClick={() => sortDealers("cname")}
+              >
+                {sortKey === "cname" ? (
+                  sortOrder === "asc" ? (
+                    <TbSortAscending2 />
+                  ) : (
+                    <TbSortDescending2 />
+                  )
+                ) : (
+                  <TbSortAscending2 />
+                )}
+              </span>
+            </span>
+            <span className="f-info-text w25">
+              Marathi name
               <span
                 className="px10 f-color-icon"
                 type="button"
@@ -329,12 +361,12 @@ const DealersList = () => {
               </span>
             </span>
             <span className="f-info-text w15">{t("ps-mono")}</span>
-            <span className="f-info-text w15">{t("ps-city")}</span>
-            <span className="f-info-text w10">{t("ps-dist")}</span>
+            {/* <span className="f-info-text w15">{t("ps-city")}</span> */}
+            {/* <span className="f-info-text w10">{t("ps-dist")}</span> */}
             {/* <span className="f-info-text w10">PinCode</span> */}
-            <span className="f-info-text w15">{t("ps-bank-name")}</span>
-            <span className="f-info-text w20">{t("ps-ac-no")}</span>
-            <span className="f-info-text w10">{t("ps-ifsc")}</span>
+            {/* <span className="f-info-text w15">{t("ps-bank-name")}</span> */}
+            {/* <span className="f-info-text w20">{t("ps-ac-no")}</span> */}
+            {/* <span className="f-info-text w10">{t("ps-ifsc")}</span> */}
             <span className="f-info-text w10">Actions</span>
           </div>
           {/* Show Spinner if loading, otherwise show the customer list */}
@@ -352,15 +384,16 @@ const DealersList = () => {
                 }}
               >
                 {/* <span className="text w5">{index + 1}</span> */}
-                <span className="text w10">{customer.srno}</span>
+                <span className="text w15">{customer.srno}</span>
                 <span className="text w25">{customer.cname}</span>
+                <span className="text w25">{customer.engName}</span>
                 <span className="text w15">{customer.Phone}</span>
-                <span className="text w15">{customer.City}</span>
-                <span className="text w10">{customer.dist}</span>
+                {/* <span className="text w15">{customer.City}</span> */}
+                {/* <span className="text w10">{customer.dist}</span> */}
                 {/* <span className="text w10">{customer.cust_pincode}</span> */}
-                <span className="text w15">{customer.cust_bankname}</span>
-                <span className="text w20">{customer.cust_accno}</span>
-                <span className="text w10">{customer.cust_ifsc}</span>
+                {/* <span className="text w15">{customer.cust_bankname}</span> */}
+                {/* <span className="text w20">{customer.cust_accno}</span> */}
+                {/* <span className="text w10">{customer.cust_ifsc}</span> */}
                 <span className="text w10">
                   <FaRegEdit
                     size={15}
@@ -385,22 +418,38 @@ const DealersList = () => {
         <div className="pramod modal ">
           <div className="modal-content minSize">
             <h2>{t("ps-up-deal-detail")}</h2>
-
-            <label>
-              {t("ps-mono")}
-              <input
-                type="number"
-                id="phono"
-                value={editSale?.Phone}
-                onFocus={(e) => e.target.select()}
-                onChange={(e) =>
-                  setEditSale({ ...editSale, Phone: e.target.value })
-                }
-                onKeyDown={(e) =>
-                  handleKeyPress(e, document.getElementById("city"))
-                }
-              />
-            </label>
+            <div className="row d-flex  ">
+              <label>
+                {t("ps-dealer-name")}
+                <input
+                  type="text"
+                  id="cname"
+                  value={editSale?.cname}
+                  onFocus={(e) => e.target.select()}
+                  onChange={(e) =>
+                    setEditSale({ ...editSale, cname: e.target.value })
+                  }
+                  onKeyDown={(e) =>
+                    handleKeyPress(e, document.getElementById("phono"))
+                  }
+                />
+              </label>
+              <label style={{ marginLeft: "10px" }}>
+                {t("ps-mono")}
+                <input
+                  type="number"
+                  id="phono"
+                  value={editSale?.Phone}
+                  onFocus={(e) => e.target.select()}
+                  onChange={(e) =>
+                    setEditSale({ ...editSale, Phone: e.target.value })
+                  }
+                  onKeyDown={(e) =>
+                    handleKeyPress(e, document.getElementById("city"))
+                  }
+                />
+              </label>
+            </div>
             <div className="row d-flex my10">
               <label>
                 {t("ps-city")}

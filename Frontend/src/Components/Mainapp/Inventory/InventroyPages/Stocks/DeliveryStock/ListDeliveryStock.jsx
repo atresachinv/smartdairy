@@ -498,7 +498,7 @@ const ListDeliveryStock = () => {
         <span className="heading p10">Delivery Stock Report</span>
         <div className="customer-heading-title-scroller w100 h1 mh100 hidescrollbar d-flex-col">
           <div className="data-headings-div h10 d-flex center forDWidth t-center bg7 sb">
-            <span className="f-info-text w5"> {t("ps-srNo")}</span>
+            {/* <span className="f-info-text w5"> {t("ps-srNo")}</span> */}
             <span className="f-info-text w10">
               {t("ps-date")}
               <span
@@ -589,14 +589,14 @@ const ListDeliveryStock = () => {
                 )}
               </span>
             </span>
+            <span className="f-info-text w10">Actions</span>
             {userRole === "salesman" ? (
               <></>
             ) : (
               <>
-                <span className="f-info-text w10">CreatedBy</span>
+                <span className="f-info-text w15">CreatedBy</span>
               </>
             )}
-            <span className="f-info-text w10">Actions</span>
           </div>
           {loading ? (
             <div className="box d-flex center">
@@ -615,7 +615,7 @@ const ListDeliveryStock = () => {
                       backgroundColor: index % 2 === 0 ? "#faefe3" : "#fff",
                     }}
                   >
-                    <span className="text w5">{index + 1}</span>
+                    {/* <span className="text w5">{index + 1}</span> */}
                     <span className="text w10">
                       {formatDateToDDMMYYYY(item.saledate)}
                     </span>
@@ -625,15 +625,7 @@ const ListDeliveryStock = () => {
                       {findEmpName(item.to_user, item.deliver_to)}
                     </span>
                     <span className="text w5">{item.TotalQty}</span>
-                    {userRole === "salesman" ? (
-                      <></>
-                    ) : (
-                      <>
-                        <span className="text w10">
-                          {item.saleby || "Unknown"}
-                        </span>
-                      </>
-                    )}
+
                     <span className="text w10 d-flex j-center a-center">
                       <button
                         style={{ cursor: "pointer" }}
@@ -649,6 +641,15 @@ const ListDeliveryStock = () => {
                         style={{ color: "red" }}
                       /> */}
                     </span>
+                    {userRole === "salesman" ? (
+                      <></>
+                    ) : (
+                      <>
+                        <span className="text w15">
+                          {item.saleby || "Unknown"}
+                        </span>
+                      </>
+                    )}
                   </div>
                 ))
               ) : (

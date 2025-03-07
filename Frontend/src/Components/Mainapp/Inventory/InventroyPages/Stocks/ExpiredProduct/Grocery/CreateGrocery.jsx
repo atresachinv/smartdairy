@@ -1,10 +1,7 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-/* eslint-disable no-unused-vars */
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import axiosInstance from "../../../../App/axiosInstance";
 import { MdDeleteOutline } from "react-icons/md";
 import { useDispatch, useSelector, shallowEqual } from "react-redux";
-import * as XLSX from "xlsx";
 import { jsPDF } from "jspdf";
 import "jspdf-autotable";
 import { useTranslation } from "react-i18next";
@@ -17,14 +14,14 @@ import "../../../../Styles/Mainapp/Sales/Sales.css";
 import { toWords } from "number-to-words";
 import { sendMessage } from "../WhatsAppSender";
 
-const CreateCattleFeed = () => {
+const CreateGrocery = () => {
   const dispatch = useDispatch();
   const { t } = useTranslation(["common", "milkcollection", "puchasesale"]);
   const tDate = useSelector((state) => state.date.toDate);
   const salesRates = useSelector((state) => state.sales.salesRates);
   const customerslist = useSelector((state) => state.customer.customerlist);
   const productlist = useSelector(
-    (state) => state.inventory.allProducts || [],
+    (state) => state.inventory.allProducts,
     shallowEqual
   );
   const [cartItem, setCartItem] = useState([]);
@@ -35,15 +32,13 @@ const CreateCattleFeed = () => {
   const [rate, setRate] = useState(0);
   const [selectitemcode, setSelectitemcode] = useState(0);
   const [amt, setAmt] = useState("");
-  const [rctno, setRctno] = useState(localStorage.getItem("receiptno1") || 1);
+  const [rctno, setRctno] = useState(localStorage.getItem("receiptno3") || 1);
   const [groupItems, setGroupItems] = useState([]);
   const [filteredItems, setFilteredItems] = useState([]); //p--
   const [userRole, setUserRole] = useState(null);
   const dairyInfo = useSelector(
     (state) =>
-      state.dairy.dairyData.marathi_name ||
-      state.dairy.dairyData.SocietyName ||
-      state.dairy.dairyData.center_name
+      state.dairy.dairyData.SocietyName || state.dairy.dairyData.center_name
   );
   const dairymono = useSelector(
     (state) => state.dairy.dairyData.PhoneNo || state.dairy.dairyData.mobile
@@ -52,7 +47,7 @@ const CreateCattleFeed = () => {
     (state) => state.dairySetting.centerSetting
   );
   const [settings, setSettings] = useState({});
-
+   
   //set setting
   useEffect(() => {
     if (centerSetting?.length > 0) {
@@ -69,7 +64,7 @@ const CreateCattleFeed = () => {
   //get all products and sale rate
   useEffect(() => {
     dispatch(getAllProducts());
-    dispatch(getProductSaleRates(1));
+    dispatch(getProductSaleRates(3));
   }, [dispatch]);
 
   // set today date
@@ -102,6 +97,7 @@ const CreateCattleFeed = () => {
       }
     }
   }, [selectitemcode, qty]);
+
   //set amount
   useEffect(() => {
     if (rate) {
@@ -128,7 +124,6 @@ const CreateCattleFeed = () => {
       toast.error("Invalid product selected!");
       return;
     }
-    console.log(selectedItem);
 
     if (Number(selectitemcode) > 0 && Number(qty) > 0 && Number(rate) > 0) {
       const newCartItem = {
@@ -139,8 +134,7 @@ const CreateCattleFeed = () => {
         Qty: Number(qty),
         CustCode: fcode,
         cust_name: cname,
-        ItemGroupCode:
-          userRole !== "mobilecollector" ? 1 : selectedItem.ItemGroupCode,
+        ItemGroupCode: 3,
         Rate: Number(rate),
         Amount: Number(qty) * Number(rate),
         cn: 0,
@@ -175,6 +169,7 @@ const CreateCattleFeed = () => {
       setCartItem(updatedCart);
     }
   };
+
   //reset the field
   const handelClear = () => {
     setFcode("");
@@ -220,11 +215,10 @@ const CreateCattleFeed = () => {
               mono: dairymono,
             });
           }
-
           handelClear();
           setRctno(parseInt(rctno) + 1);
           toast.success(res.data.message);
-          localStorage.setItem("receiptno1", parseInt(rctno) + 1);
+          localStorage.setItem("receiptno3", parseInt(rctno) + 1);
         }
       } catch (error) {
         toast.error("Error Submitting to server ");
@@ -249,7 +243,6 @@ const CreateCattleFeed = () => {
   // Function to handle printing the invoice --------------------------------------->
   const handlePrint = () => {
     handleSubmit();
-
     if (
       settings?.pType !== undefined &&
       settings?.printer !== undefined &&
@@ -645,22 +638,10 @@ const CreateCattleFeed = () => {
     doc.save("Invoice.pdf");
   };
 
-  // useEffect(() => {
-  //   if (purchaseData.length > 0) {
-  //     const sortedPurchaseData = [...purchaseData].sort(
-  //       (a, b) => new Date(b.purchaseid) - new Date(a.purchaseid)
-  //     );
-  //     const rateItem = sortedPurchaseData.find(
-  //       (item) => item.itemcode === selectitemcode
-  //     );
-  //     setRate(rateItem?.salerate ?? "");
-  //   }
-  // }, [selectitemcode]);
-
   // Filter out items that are already in the cart --------------------------------->
   const handleItemstoShow = () => {
     if (userRole !== "mobilecollector") {
-      const items = productlist.filter((item) => item.ItemGroupCode === 1);
+      const items = productlist.filter((item) => item.ItemGroupCode === 3);
       setGroupItems(items);
       const itemsNotInCart = groupItems.filter(
         (item) => !cartItem.some((cart) => cart.ItemCode === item.ItemCode)
@@ -673,6 +654,7 @@ const CreateCattleFeed = () => {
       setFilteredItems(itemsNotInCart);
     }
   };
+
   useEffect(() => {
     handleItemstoShow();
   }, [productlist, cartItem]);
@@ -708,7 +690,7 @@ const CreateCattleFeed = () => {
 
   return (
     <div className="add-cattlefeed-sale-container w100 h1 d-flex-col sa">
-      <span className="heading p10">{t("c-cattlefeed")}</span>
+      <span className="heading p10">{t("c-grocery")}</span>
       <div className="create-cattlefeed-sales-inner-container w100 h1 d-flex sb p10">
         <form className="create-sales-form-container w50 h1 bg p10">
           <div className="sales-details w100 h20 d-flex a-center sb ">
@@ -728,7 +710,7 @@ const CreateCattleFeed = () => {
             </div>
             <div className="col w30 d-flex a-center">
               <label htmlFor="recieptno" className="info-text w100">
-                {t("c-repno")}
+                {t("c-repno")} :
               </label>
               <input
                 type="number"
@@ -795,7 +777,7 @@ const CreateCattleFeed = () => {
           <div className="sales-details w100 h20 d-flex a-center sb ">
             <div className="col w80">
               <label htmlFor="items" className="info-text w100">
-                {t("c-prod-select")}:
+                {t("c-groce-select")}:
               </label>
               {userRole !== "mobilecollector" ? (
                 <select
@@ -808,7 +790,7 @@ const CreateCattleFeed = () => {
                     handleKeyPress(e, document.getElementById("qty"))
                   }
                 >
-                  <option value="0">-- {t("c-prod-select")} --</option>
+                  <option value="0">-- {t("c-groce-select")}--</option>
                   {filteredItems.map((item, i) => (
                     <option key={i} value={item.ItemCode}>
                       {item.ItemName}
@@ -826,7 +808,7 @@ const CreateCattleFeed = () => {
                     handleKeyPress(e, document.getElementById("addtocart"))
                   }
                 >
-                  <option value="0">-- {t("c-prod-select")} --</option>
+                  <option value="0">-- {t("c-groce-select")} --</option>
                   {filteredItems.map((item, i) => (
                     <option key={i} value={item.ItemCode}>
                       {item.ItemName}
@@ -859,14 +841,14 @@ const CreateCattleFeed = () => {
             <div className="sales-details w100 h20 d-flex ">
               <div className="col w30 ">
                 <label htmlFor="rate" className="info-text w100">
-                  {t("c-rate")}:
+                  {t("c-amt")}:
                 </label>
                 <input
                   type="number"
                   name="rate"
                   id="rate"
                   className="data w70"
-                  value={rate || ""}
+                  value={rate}
                   onFocus={handleFocus}
                   onChange={(e) =>
                     setRate(Math.max(0, parseFloat(e.target.value)))
@@ -958,8 +940,8 @@ const CreateCattleFeed = () => {
                     key={i}
                     className="sales-headings-row w100 h10 d-flex a-center sb"
                   >
-                    <span className="label-text w10 t-center">{i + 1}</span>
-                    <span className="label-text w40 t-start">
+                    <span className="label-text w5 t-center">{i + 1}</span>
+                    <span className="label-text w35 t-start">
                       {item.ItemName}
                     </span>
                     <span className="label-text w10 t-center">{item.Qty}</span>
@@ -983,9 +965,7 @@ const CreateCattleFeed = () => {
                   <span className=" w5"></span>
                   <span className=" w35"></span>
                   <span className=" w10"></span>
-                  <span className="label-text w10">
-                    {t("puchasesale:ps-ttl-amt")} :
-                  </span>
+                  <span className="label-text w10">{t("c-total")} :</span>
                   <span className="label-text w10 t-end">
                     {cartItem.reduce((acc, item) => acc + item.Amount, 0)}
                   </span>
@@ -1000,11 +980,10 @@ const CreateCattleFeed = () => {
           </div>
 
           <div className="sales-button-container w100 h10 d-flex a-center j-end">
-            <button type="button" className="w-btn m10" onClick={handelClear}>
+            <button className="w-btn m10" onClick={handelClear}>
               {t("puchasesale:ps-clr")}
             </button>
             <button
-              type="button"
               className="w-btn mx10"
               onClick={handleSubmit}
               disabled={cartItem.length == 0}
@@ -1055,4 +1034,4 @@ const CreateCattleFeed = () => {
   );
 };
 
-export default CreateCattleFeed;
+export default CreateGrocery;

@@ -522,7 +522,7 @@ const MedicinesSaleList = () => {
         <span className="heading p10"> {t("ps-medi-rep")}</span>
         <div className="sales-heading-title-scroller w100 h1 mh100 d-flex-col hidescrollbar">
           <div className="sale-data-headings-div h10 d-flex center t-center sb sticky-top t-heading-bg">
-            <span className="f-info-text w5"> {t("ps-srNo")}</span>
+            {/* <span className="f-info-text w5"> {t("ps-srNo")}</span> */}
             <span className="f-info-text w20">
               {t("ps-date")}
               <span
@@ -579,6 +579,8 @@ const MedicinesSaleList = () => {
                 )}
               </span>
             </span>
+            <span className="f-info-text w10">Actions</span>
+
             {userRole === "salesman" ? (
               <></>
             ) : (
@@ -603,7 +605,6 @@ const MedicinesSaleList = () => {
                 </span>
               </>
             )}
-            <span className="f-info-text w10">Actions</span>
           </div>
           {/* Show Spinner if loading, otherwise show the feed list */}
           {loadings ? (
@@ -619,7 +620,7 @@ const MedicinesSaleList = () => {
                   backgroundColor: index % 2 === 0 ? "#faefe3" : "#fff",
                 }}
               >
-                <span className="text w5">{index + 1}</span>
+                {/* <span className="text w5">{index + 1}</span> */}
                 <span className="text w20">
                   {formatDateToDDMMYYYY(sale.BillDate)}
                 </span>
@@ -630,13 +631,6 @@ const MedicinesSaleList = () => {
                 </span>
 
                 <span className="text w10">{sale.TotalAmount}</span>
-                {userRole === "salesman" ? (
-                  <></>
-                ) : (
-                  <>
-                    <span className="text w20 ">{sale.createdby}</span>
-                  </>
-                )}
 
                 <span className="text w10 d-flex j-center a-center ">
                   <button
@@ -652,6 +646,13 @@ const MedicinesSaleList = () => {
                     style={{ color: "red" }}
                   />
                 </span>
+                {userRole === "salesman" ? (
+                  <></>
+                ) : (
+                  <>
+                    <span className="text w20 ">{sale.createdby}</span>
+                  </>
+                )}
               </div>
             ))
           ) : (

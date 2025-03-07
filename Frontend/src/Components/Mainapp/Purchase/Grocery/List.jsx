@@ -493,7 +493,7 @@ const List = () => {
         <span className="heading p10"> {t("ps-cattle-gro-rep")}</span>
         <div className="customer-heading-title-scroller w100 h1 mh100 hidescrollbar d-flex-col">
           <div className="data-headings-div h10 d-flex center forDWidth t-center bg7 sb">
-            <span className="f-info-text w5"> {t("ps-srNo")}</span>
+            {/* <span className="f-info-text w5"> {t("ps-srNo")}</span> */}
             <span className="f-info-text w10">
               {t("ps-date")}
               <span
@@ -550,6 +550,7 @@ const List = () => {
               </span>
             </span>
             <span className="f-info-text w10">{t("ps-ttl-amt")}</span>
+            <span className="f-info-text w10">Actions</span>
             {userRole === "salesman" ? (
               <></>
             ) : (
@@ -574,7 +575,6 @@ const List = () => {
                 </span>
               </>
             )}
-            <span className="f-info-text w10">Actions</span>
           </div>
           {loading ? (
             <div className="box d-flex center">
@@ -593,7 +593,7 @@ const List = () => {
                       backgroundColor: index % 2 === 0 ? "#faefe3" : "#fff",
                     }}
                   >
-                    <span className="text w5">{index + 1}</span>
+                    {/* <span className="text w5">{index + 1}</span> */}
                     <span className="text w10">
                       {formatDateToDDMMYYYY(item.purchasedate)}
                     </span>
@@ -603,16 +603,6 @@ const List = () => {
                       {item.dealerName || "Unknown"}
                     </span>
                     <span className="text w10">{item.TotalAmount}</span>
-                    {userRole === "salesman" ? (
-                      <></>
-                    ) : (
-                      <>
-                        <span className="text w15">
-                          {item.createdby || "Unknown"}
-                        </span>
-                      </>
-                    )}
-
                     <span className="text w10 d-flex j-center a-center">
                       <button
                         style={{ cursor: "pointer" }}
@@ -628,6 +618,15 @@ const List = () => {
                         style={{ color: "red" }}
                       />
                     </span>
+                    {userRole === "salesman" ? (
+                      <></>
+                    ) : (
+                      <>
+                        <span className="text w15">
+                          {item.createdby || "Unknown"}
+                        </span>
+                      </>
+                    )}
                   </div>
                 ))
               ) : (

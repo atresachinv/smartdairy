@@ -230,9 +230,10 @@ const MedList = () => {
     const groupedSales = filteredSalesList.reduce((acc, sale) => {
       const key = sale.BillNo;
       if (!acc[key]) {
-        acc[key] = { ...sale, TotalAmount: 0 };
+        acc[key] = { ...sale, TotalAmount: 0, TotalQty: 0 };
       }
       acc[key].TotalAmount += sale.Amount;
+      acc[key].TotalQty += sale.Qty;
       return acc;
     }, {});
 
@@ -479,7 +480,7 @@ const MedList = () => {
         <span className="heading p10"> {t("ps-custRetrnRep")} </span>
         <div className="customer-heading-title-scroller w100 h1 mh100 d-flex-col">
           <div className="data-headings-div sale-data-headings-div h10 d-flex center t-center sb bg7">
-            <span className="f-info-text w5"> {t("ps-srNo")}</span>
+            {/* <span className="f-info-text w5"> {t("ps-srNo")}</span> */}
             <span className="f-info-text w10">
               {" "}
               {t("ps-date")}
@@ -537,6 +538,7 @@ const MedList = () => {
                 )}
               </span>
             </span>
+            <span className="f-info-text w5">Actions</span>
             {userRole === "salesman" ? (
               <></>
             ) : (
@@ -561,7 +563,6 @@ const MedList = () => {
                 </span>
               </>
             )}
-            <span className="f-info-text w5">Actions</span>
           </div>
           {/* Show Spinner if loading, otherwise show the feed list */}
           {loading ? (
@@ -577,17 +578,9 @@ const MedList = () => {
                   backgroundColor: index % 2 === 0 ? "#faefe3" : "#fff",
                 }}
               >
-                <span className="text w5">
-                  {
-                    /* <FaRegEdit
-                    size={15}
-                    className="table-icon"
-                    onClick={() => handleEditClick(sale)}
-                  /> */
-
-                    index + 1
-                  }
-                </span>
+                {/* <span className="text w5">
+                  
+                </span> */}
                 <span className="text w5">
                   {formatDateToDDMMYYYY(sale.BillDate)}
                 </span>
@@ -598,13 +591,7 @@ const MedList = () => {
                 </span>
 
                 <span className="text w5">{sale.TotalAmount}</span>
-                {userRole === "salesman" ? (
-                  <></>
-                ) : (
-                  <>
-                    <span className="text w10 ">{sale.createdby}</span>
-                  </>
-                )}
+
                 <span className="text w5 d-flex j-center a-center">
                   <button
                     className="px5"
@@ -621,6 +608,13 @@ const MedList = () => {
                     style={{ color: "red" }}
                   />
                 </span>
+                {userRole === "salesman" ? (
+                  <></>
+                ) : (
+                  <>
+                    <span className="text w10 ">{sale.createdby}</span>
+                  </>
+                )}
 
                 {/* Assuming all customers are active */}
               </div>

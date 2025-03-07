@@ -12,6 +12,7 @@ import { useTranslation } from "react-i18next";
 import { FaDownload } from "react-icons/fa6";
 import { useSelector } from "react-redux";
 import { TbSortAscending2, TbSortDescending2 } from "react-icons/tb";
+import jsPDF from "jspdf";
 
 const GroList = () => {
   const { t } = useTranslation(["puchasesale", "common"]);
@@ -186,9 +187,10 @@ const GroList = () => {
     const groupedPurchase = (filteredPurchaseList || []).reduce((acc, item) => {
       const key = item.billno;
       if (!acc[key]) {
-        acc[key] = { ...item, TotalAmount: 0 };
+        acc[key] = { ...item, TotalAmount: 0, TotalQty: 0 };
       }
       acc[key].TotalAmount += item.amount;
+      acc[key].TotalQty += item.qty;
       return acc;
     }, {});
 
@@ -428,7 +430,7 @@ const GroList = () => {
         <span className="heading p10">{t("ps-dealRetrnRep")}</span>
         <div className="customer-heading-title-scroller w100 h1 mh100 d-flex-col">
           <div className="data-headings-div sale-data-headings-div h10 d-flex center t-center sb bg7">
-            <span className="f-info-text w5">{t("ps-srNo")}</span>
+            {/* <span className="f-info-text w5">{t("ps-srNo")}</span> */}
             <span className="f-info-text w15">
               {t("ps-date")}
               <span
@@ -485,6 +487,7 @@ const GroList = () => {
               </span>
             </span>
             <span className="f-info-text w5">{t("ps-ttl-amt")}</span>
+            <span className="f-info-text w5">Actions</span>
             {userRole === "salesman" ? (
               <></>
             ) : (
@@ -509,7 +512,6 @@ const GroList = () => {
                 </span>
               </>
             )}
-            <span className="f-info-text w5">Actions</span>
           </div>
           {/* Show Spinner if loading, otherwise show the feed list */}
           {loading ? (
@@ -525,7 +527,7 @@ const GroList = () => {
                   backgroundColor: index % 2 === 0 ? "#faefe3" : "#fff",
                 }}
               >
-                <span className="text w5">{index + 1}</span>
+                {/* <span className="text w5">{index + 1}</span> */}
                 <span className="text w15">
                   {formatDateToDDMMYYYY(item.purchasedate)}
                 </span>
@@ -534,15 +536,7 @@ const GroList = () => {
                 <span className="text w25">{item.dealerName}</span>
 
                 <span className="text w5">{item.TotalAmount}</span>
-                {userRole === "salesman" ? (
-                  <></>
-                ) : (
-                  <>
-                    <span className="text w15">
-                      {item.createdby || "Unknown"}
-                    </span>
-                  </>
-                )}
+
                 <span className="text w5 d-flex j-center a-center">
                   <button
                     className="px5"
@@ -559,7 +553,15 @@ const GroList = () => {
                     style={{ color: "red" }}
                   />
                 </span>
-
+                {userRole === "salesman" ? (
+                  <></>
+                ) : (
+                  <>
+                    <span className="text w15">
+                      {item.createdby || "Unknown"}
+                    </span>
+                  </>
+                )}
                 {/* Assuming all customers are active */}
               </div>
             ))
