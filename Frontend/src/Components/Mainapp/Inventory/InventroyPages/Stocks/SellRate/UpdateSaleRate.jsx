@@ -162,14 +162,14 @@ const UpdateSaleRate = () => {
         className="download-print-pdf-excel-container w100 h10 d-flex j-end"
         style={{ display: "contents" }}
       >
-        <div className="w100 d-flex sa my5 f-wrap">
-          <div className="my10">
+        <div className="w100 d-flex sa my5">
+          <div className="my10 px5 w50">
             <label htmlFor="" className="info-text px10">
               {t("ps-from")} :
             </label>
             <input
               type="date"
-              className="data"
+              className="data "
               value={date1}
               onChange={(e) => SetDate1(e.target.value)}
               max={date2}
@@ -189,14 +189,14 @@ const UpdateSaleRate = () => {
             />
           </div>
         </div>
-        <div className="w100 d-flex sa f-wrap my5">
-          <div className="my5">
-            <label className="info-text px10" htmlFor="">
+        <div className="w100 d-flex ">
+          <div className="my5 w50 d-flex center">
+            <label className="info-text px5" htmlFor="">
               {t("ps-sel-grp")}:
             </label>
             <select
               name="ItemGroupCode"
-              className="data form-field"
+              className="data form-field w40"
               onChange={(e) => setSelectcode(e.target.value)}
               value={selectcode}
             >
@@ -213,13 +213,13 @@ const UpdateSaleRate = () => {
               ))}
             </select>
           </div>
-          <div className="my5">
-            <label className="info-text px10" htmlFor="">
+          <div className="my5 w50 d-flex center">
+            <label className="info-text px5" htmlFor="">
               {t("ps-itm-name")}:
             </label>
             <select
               name="ItemGroupCode"
-              className="data form-field"
+              className="data form-field w40"
               onChange={(e) => setItemcode(e.target.value)}
               value={itemcode}
               disabled={!selectcode}
@@ -243,7 +243,7 @@ const UpdateSaleRate = () => {
       <div className="customer-list-table w100 h1 d-flex-col  bg">
         <span className="heading p10"> {t("ps-productList")}</span>
         <div className="customer-heading-title-scroller w100 h1 mh100 hidescrollbar d-flex-col ">
-          <div className="data-headings-div h10 d-flex center forDWidth t-center bg7 sb sticky-top">
+          <div className="data-headings-div h10 d-flex center formin t-center bg7 sb sticky-top">
             {/* <span className="f-info-text w5">{t("ps-srNo")}</span> */}
             <span className="f-info-text w5"> {t("ps-date")}</span>
             <span className="f-info-text w5"> {t("ps-rect-no")}</span>

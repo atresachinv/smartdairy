@@ -179,14 +179,27 @@ const ProductsList = () => {
     }
 
     const doc = new jsPDF();
-
+    const getCategoryName = (groupCode) => {
+      switch (groupCode) {
+        case 1:
+          return "Cattle Feed";
+        case 2:
+          return "Medicines";
+        case 3:
+          return "Grocery";
+        case 4:
+          return "Other";
+        default:
+          return "Unknown";
+      }
+    };
     // Define columns and rows
     const columns = ["Sr.No", "Code", "Product Name", "Group", "Description"];
     const rows = productList.map((item, index) => [
       index + 1,
       item.ItemCode,
       item.ItemName,
-      item.ItemGroupCode,
+      getCategoryName(item.ItemGroupCode),
       item.ItemDesc,
     ]);
 
