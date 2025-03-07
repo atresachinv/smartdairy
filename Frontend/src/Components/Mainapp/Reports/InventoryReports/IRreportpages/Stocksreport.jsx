@@ -163,146 +163,59 @@ const Stocksreport = () => {
     } else if (selectedStock === "Dairy Goods") {
       selectedStockData = sales.filter((item) => item.itemgroupcode === 4);
       stockType = "Dairy Goods";
+    } else {
+      // If "All Stock" is selected, include everything
+      selectedStockData = sales;
+      stockType = "All Stock";
     }
 
     generateStockReportPDF(stockType, selectedStockData);
   };
 
   ///.... Print SHow
-  // const handleGeneratePrintReport = () => {
-  //   let selectedStockData = [];
-  //   let stockType = "";
-
-  //   if (selectedStock === "Cattle Feed") {
-  //     selectedStockData = sales.filter((item) => item.itemgroupcode === 1);
-  //     stockType = "Cattle Feed";
-  //   } else if (selectedStock === "Grocery") {
-  //     selectedStockData = sales.filter((item) => item.itemgroupcode === 3);
-  //     stockType = "Grocery";
-  //   } else if (selectedStock === "Medicine") {
-  //     selectedStockData = sales.filter((item) => item.itemgroupcode === 2);
-  //     stockType = "Medicine";
-  //   } else if (selectedStock === "Dairy Goods") {
-  //     selectedStockData = sales.filter((item) => item.itemgroupcode === 4);
-  //     stockType = "Dairy Goods";
-  //   }
-  //   if (!stockType || selectedStockData.length === 0) return;
-
-  //   const printWindow = window.open("", "_blank");
-  //   printWindow.document.write(`
-  //   <html>
-  //     <head>
-  //       <title>${stockType} Stock Report</title>
-  //       <style>
-  //         @page {
-  //           size: 58mm auto;
-  //           margin: 0;
-  //         }
-  //         body {
-  //           font-family: Arial, sans-serif;
-  //           font-size: 10px;
-  //           width: 58mm;
-  //           margin: 0;
-  //           padding: 0;
-  //         }
-  //         .report-container {
-  //           width: 100%;
-  //           padding: 10px;
-  //         }
-  //         h2, h3 {
-  //           text-align: center;
-  //           margin: 0;
-  //         }
-  //         p {
-  //           font-size: 9px;
-  //           text-align: center;
-  //           margin: 5px 0;
-  //         }
-  //         table {
-  //           width: 100%;
-  //           border-collapse: collapse;
-  //           margin-top: 10px;
-  //           font-size: 8px;
-  //         }
-  //         th, td {
-  //           border: 1px solid black;
-  //           padding: 4px;
-  //           text-align: center;
-  //         }
-  //         // th {
-  //         //   background-color:rgb(103, 105, 107);
-  //         //   color: white;
-  //         // }
-  //         // tfoot {
-  //         //   font-weight: bold;
-  //         //   background: #f2f2f2;
-  //         // }
-  //       </style>
-  //     </head>
-  //     <body>
-  //       <div class="report-container">
-  //         <h2>${dairyname}</h2>
-  //         <h3>${CityName}</h3>
-  //         <h3>${stockType} Stock Report</h3>
-  //         <p>From: ${fromdate} | To: ${todate}</p>
-  //         <table>
-  //           <thead>
-  //             <tr>
-  //               ${reportColumns[selectedStock]
-  //                 .map((col) => `<th>${col.header}</th>`)
-  //                 .join("")}
-  //             </tr>
-  //           </thead>
-  //           <tbody>
-  //             ${selectedStockData
-  //               .map(
-  //                 (row) => `
-  //               <tr>
-  //                 ${reportColumns[selectedStock]
-  //                   .map((col) => `<td>${row[col.accessor] ?? "N/A"}</td>`)
-  //                   .join("")}
-  //               </tr>
-  //             `
-  //               )
-  //               .join("")}
-  //           </tbody>
-  //           <tfoot>
-  //             <tr>
-  //               <td colspan="${
-  //                 reportColumns[selectedStock].length - 2
-  //               }" style="text-align: right;">Total</td>
-  //               <td>
-  //                 ${selectedStockData.reduce(
-  //                   (sum, item) => sum + (item.remainingquantity || 0),
-  //                   0
-  //                 )}
-  //               </td>
-  //               <td>
-  //                 ₹${selectedStockData
-  //                   .reduce((sum, item) => sum + (item.amount || 0), 0)
-  //                   .toFixed(2)}
-  //               </td>
-  //             </tr>
-  //           </tfoot>
-  //         </table>
-  //       </div>
-  //       <script>
-  //         window.print();
-  //         window.onafterprint = function() { window.close(); };
-  //       </script>
-  //     </body>
-  //   </html>
-  // `);
-  //   printWindow.document.close();
-  // };
   const handleGeneratePrintReport = () => {
-    if (!selectedStock || FilteredSales.length === 0) return;
+    let selectedStockData = [];
+    let stockType = "";
+
+    // Handle different stock selections
+    if (selectedStock === "Cattle Feed") {
+      selectedStockData = sales.filter((item) => item.itemgroupcode === 1);
+      stockType = "Cattle Feed";
+    } else if (selectedStock === "Grocery") {
+      selectedStockData = sales.filter((item) => item.itemgroupcode === 3);
+      stockType = "Grocery";
+    } else if (selectedStock === "Medicine") {
+      selectedStockData = sales.filter((item) => item.itemgroupcode === 2);
+      stockType = "Medicine";
+    } else if (selectedStock === "Dairy Goods") {
+      selectedStockData = sales.filter((item) => item.itemgroupcode === 4);
+      stockType = "Dairy Goods";
+    } else {
+      // If "All Stock" is selected, include everything
+      selectedStockData = sales;
+      stockType = "All Stock";
+    }
+
+    if (!selectedStockData.length) {
+      alert("No data available for the selected stock type.");
+      return;
+    }
+
+    // Calculate totals
+    const totalRemainingQty = selectedStockData.reduce(
+      (sum, item) => sum + (item.RemainingStock || 0),
+      0
+    );
+    const totalAmount = selectedStockData.reduce(
+      (sum, item) => sum + (item.amount || 0),
+      0
+    );
 
     const printWindow = window.open("", "_blank");
     printWindow.document.write(`
     <html>
       <head>
-        <title>${selectedStock} Stock Report</title>
+        <title>${stockType} Stock Report</title>
         <style>
           @page {
             size: 58mm auto;
@@ -345,7 +258,7 @@ const Stocksreport = () => {
         <div class="report-container">
           <h2>${dairyname}</h2>
           <h3>${CityName}</h3>
-          <h3>${selectedStock} Stock Report</h3>
+          <h3>${stockType} Stock Report</h3>
           <p>From: ${fromdate} | To: ${todate}</p>
           <table>
             <thead>
@@ -356,33 +269,25 @@ const Stocksreport = () => {
               </tr>
             </thead>
             <tbody>
-              ${FilteredSales.map(
-                (row) => `
+              ${selectedStockData
+                .map(
+                  (row) => `
                 <tr>
                   ${reportColumns[selectedStock]
                     .map((col) => `<td>${row[col.accessor] ?? "N/A"}</td>`)
                     .join("")}
                 </tr>
               `
-              ).join("")}
+                )
+                .join("")}
             </tbody>
             <tfoot>
               <tr>
                 <td colspan="${
                   reportColumns[selectedStock].length - 2
                 }" style="text-align: right;">Total</td>
-                <td>
-                  ${FilteredSales.reduce(
-                    (sum, item) => sum + (item.remainingquantity || 0),
-                    0
-                  )}
-                </td>
-                <td>
-                  ₹${FilteredSales.reduce(
-                    (sum, item) => sum + (item.amount || 0),
-                    0
-                  ).toFixed(2)}
-                </td>
+                <td>${totalRemainingQty}</td>
+                <td>₹${totalAmount.toFixed(2)}</td>
               </tr>
             </tfoot>
           </table>
@@ -397,6 +302,8 @@ const Stocksreport = () => {
     printWindow.document.close();
   };
 
+ 
+  
 
   //... Report Table heading
   const reportColumns = {

@@ -299,6 +299,10 @@ const MilkcollectionReports = () => {
     const handlePrint = useReactToPrint({
       content: () => componentRef.current,
     });
+    //......const totalLiters = summaryData.reduce((sum, item) => sum + (item.Liters || 0), 0).toFixed(2);
+    const totalAmount = summaryData
+      .reduce((sum, item) => sum + (item.Amt || 0), 0)
+      .toFixed(2);
 
     return (
       <div ref={componentRef}>
@@ -802,107 +806,6 @@ const MilkcollectionReports = () => {
           </div>
         </div>
 
-        {/* <div className="Milk-collection-report-container w100 h70 d-flex-col bg">
-          <span className="heading p10">Milk Collection</span>
-          <div className="Milk-report-heading w100 h1 mh100 d-flex-col hidescrollbar">
-            <div className="milkdata-headings-div w100 h10 py10 d-flex center t-center sa bg1">
-              {sumreport ? (
-                <>
-                  <span className="w10 f-info-text">Code</span>
-                  <span className="w25 f-info-text">Name</span>
-                  <span className="w5 f-info-text">AVG Fat </span>
-                  <span className="w5 f-info-text">AVG SNF</span>
-                  <span className="w10 f-info-text">Liters</span>
-                  <span className="w10 f-info-text">AVG Rate</span>
-                  <span className="w10 f-info-text">Total Amount</span>
-                  <span className="w10 f-info-text">C/B</span>
-                </>
-              ) : (
-                <>
-                  <span className="w10 f-label-text">Date</span>
-                  <span className="w5 f-label-text">M/E</span>
-                  <span className="w5 f-label-text">Code</span>
-                  <span className="w25 f-label-text">Name</span>
-                  <span className="w5 f-label-text">Liters</span>
-                  <span className="w5 f-label-text">Fat</span>
-                  <span className="w5 f-label-text">SNF</span>
-                  <span className="w10 f-label-text">Rate/ltr</span>
-                  <span className="w5 f-label-text">Amount</span>
-                  <span className="w5 f-label-text">C/B</span>
-                </>
-              )}
-            </div>
-            {sumreport ? (
-              <>
-                {status === "loading" ? (
-                  <Spinner />
-                ) : summaryData && summaryData.length > 0 ? (
-                  summaryData.map((customer, index) => (
-                    <div
-                      key={index}
-                      className={`milkdata-div w100 h10 d-flex center t-center sa ${
-                        index % 2 === 0 ? "bg-light" : "bg-dark"
-                      }`}
-                      style={{
-                        backgroundColor: index % 2 === 0 ? "#faefe3" : "#fff",
-                      }}
-                    >
-                      <span className="w10 text t-center">{customer.code}</span>
-                      <span className="w25 text t-start">{customer.cname}</span>
-                      <span className="w5 text t-center">{customer.fat}</span>
-                      <span className="w5 text t-center">{customer.snf}</span>
-                      <span className="w10 text t-end">{customer.Liters}</span>
-                      <span className="w10 text t-center">{customer.rate}</span>
-                      <span className="w10 text t-end">{customer.Amt}</span>
-                      <span className="w10 text t-center">
-                        {customer.CB === 0 ? "Cow" : "Buffalo"}
-                      </span>
-                    </div>
-                  ))
-                ) : (
-                  <div className="w100 h1 d-flex center">Data not found!</div>
-                )}
-              </>
-            ) : (
-              <>
-                {status === "loading" ? (
-                  <Spinner />
-                ) : filteredData && filteredData.length > 0 ? (
-                  filteredData.map((customer, index) => (
-                    <div
-                      key={index}
-                      className={`milkdata-div w100 h10 d-flex center t-center sa ${
-                        index % 2 === 0 ? "bg-light" : "bg-dark"
-                      }`}
-                      style={{
-                        backgroundColor: index % 2 === 0 ? "#faefe3" : "#fff",
-                      }}
-                    >
-                      <span className="w10 text t-center">
-                        {customer.ReceiptDate.slice(0, 10)}
-                      </span>
-                      <span className="w5 text t-center">
-                        {customer.ME === 0 ? "Mrg" : "Eve"}
-                      </span>
-                      <span className="w5 text t-center">{customer.rno}</span>
-                      <span className="w25 text t-start">{customer.cname}</span>
-                      <span className="w5 text t-end">{customer.Litres}</span>
-                      <span className="w5 text t-center">{customer.fat}</span>
-                      <span className="w5 text t-center">{customer.snf}</span>
-                      <span className="w10 text t-center">{customer.rate}</span>
-                      <span className="w5 text t-end">{customer.Amt}</span>
-                      <span className="w5 text t-center">
-                        {customer.CB === 0 ? "COW" : "Buffalo"}
-                      </span>
-                    </div>
-                  ))
-                ) : (
-                  <div className="w100 h1 d-flex center">Data not found!</div>
-                )}
-              </>
-            )}
-          </div>
-        </div> */}
         <div className="Milk-collection-report-container w100 h70 d-flex-col bg">
           <span className="heading p10">Milk Collection</span>
           <div className="Milk-report-heading w100 h1 mh100 d-flex-col hidescrollbar">
