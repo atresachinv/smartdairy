@@ -1,5 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-/* eslint-disable no-unused-vars */
 import React, { useEffect, useState } from "react";
 import * as XLSX from "xlsx";
 import Spinner from "../../../Home/Spinner/Spinner";
@@ -15,9 +13,9 @@ import "../../../../Styles/Mainapp/Sales/Sales.css";
 import { NavLink } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { FaDownload } from "react-icons/fa6";
-import { jsPDF } from "jspdf";
+import jsPDF from "jspdf";
 
-const CattleSaleList = () => {
+const OthersSaleList = () => {
   const { t } = useTranslation(["puchasesale", "common"]);
   const { customerlist, loading } = useSelector((state) => state.customer);
   const [date1, SetDate1] = useState("");
@@ -78,7 +76,7 @@ const CattleSaleList = () => {
   useEffect(() => {
     const fetchAllItems = async () => {
       try {
-        const { data } = await axiosInstance.get("/item/all?ItemGroupCode=1");
+        const { data } = await axiosInstance.get("/item/all?ItemGroupCode=4");
         setItemList(data.itemsData || []);
       } catch (error) {
         console.error("Error fetching items:", error);
@@ -93,7 +91,7 @@ const CattleSaleList = () => {
       SetLoadings(true);
       try {
         const { data } = await axiosInstance.get(
-          `/sale/all?ItemGroupCode=1&cn=0&role=${userRole}`
+          `/sale/all?ItemGroupCode=4&cn=0&role=${userRole}`
         ); // Replace with your actual API URL
         if (data.success) {
           // console.log(data);
@@ -137,7 +135,7 @@ const CattleSaleList = () => {
     try {
       const queryParams = new URLSearchParams(getItem).toString();
       const { data } = await axiosInstance.get(
-        `/sale/all?ItemGroupCode=1&cn=0&role=${userRole}&${queryParams}`
+        `/sale/all?ItemGroupCode=4&cn=0&role=${userRole}&${queryParams}`
       );
       if (data?.success) {
         setSales(data.salesData);
@@ -242,55 +240,45 @@ const CattleSaleList = () => {
     return `${day}/${month}/${year}`;
   };
 
-  // update invoice and its item ----------------------------------------------------->
+  // update invoice and its item
   const handleSaveChanges = async () => {
-    const result = await Swal.fire({
-      title: "Confirm Update?",
-      text: "Are you sure you want to Update this?",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Yes, Update it!",
-    });
+    const updatedAmount = parseFloat(editSale.Qty) * parseFloat(editSale.Rate);
 
-    if (result.isConfirmed) {
-      const updatedAmount =
-        parseFloat(editSale.Qty) * parseFloat(editSale.Rate);
+    const updateItem = {
+      saleid: editSale.saleid,
+      ReceiptNo: editSale.ReceiptNo,
+      Rate: editSale.Rate,
+      Qty: editSale.Qty,
+      Amount: updatedAmount,
+    };
+    // console.log(updateItem);
+    // console.log("Updatiing sales");
+    try {
+      const res = await axiosInstance.put("/sale/update", updateItem);
+      if (res?.data?.success) {
+        toast.success("Sale updated successfully");
 
-      const updateItem = {
-        saleid: editSale.saleid,
-        ReceiptNo: editSale.ReceiptNo,
-        Rate: editSale.Rate,
-        Qty: editSale.Qty,
-        Amount: updatedAmount,
-      };
-      try {
-        const res = await axiosInstance.put("/sale/update", updateItem);
-        if (res?.data?.success) {
-          toast.success("Sale updated successfully");
-
-          setSales((prevSales) => {
-            return prevSales.map((sale) => {
-              if (sale.saleid === editSale.saleid) {
-                return { ...sale, ...editSale, Amount: updatedAmount };
-              }
-              return sale;
-            });
+        setSales((prevSales) => {
+          return prevSales.map((sale) => {
+            if (sale.saleid === editSale.saleid) {
+              return { ...sale, ...editSale, Amount: updatedAmount };
+            }
+            return sale;
           });
-          setViewItems((prevSales) => {
-            return prevSales.map((sale) => {
-              if (sale.saleid === editSale.saleid) {
-                return { ...sale, ...editSale, Amount: updatedAmount };
-              }
-              return sale;
-            });
+        });
+        setViewItems((prevSales) => {
+          return prevSales.map((sale) => {
+            if (sale.saleid === editSale.saleid) {
+              return { ...sale, ...editSale, Amount: updatedAmount };
+            }
+            return sale;
           });
-          setIsModalOpen(false);
-        }
-      } catch (error) {
-        toast.error("Server Error to update sale");
+        });
+        setIsModalOpen(false);
       }
+    } catch (error) {
+      toast.error("Server Error to update sale");
+      // console.error("Error updating sale:", error);
     }
   };
 
@@ -414,8 +402,8 @@ const CattleSaleList = () => {
     doc.setFontSize(14);
     const invoiceInfo = doc.getTextWidth("Sale-Info");
     doc.text("Sale-Info", (pageWidth - invoiceInfo) / 2, margin + 25);
-    const gepInfo = doc.getTextWidth("Cattle Feed Report");
-    doc.text("Cattle Feed Report", (pageWidth - gepInfo) / 2, margin + 35);
+    const gepInfo = doc.getTextWidth("Others Report");
+    doc.text("Others Report", (pageWidth - gepInfo) / 2, margin + 35);
     // Add table for items with borders and centered text
     doc.autoTable({
       head: [columns],
@@ -446,7 +434,7 @@ const CattleSaleList = () => {
 
     // Save the PDF
     doc.save(
-      `Cattle_Feed_SaleReport_${formatDateToDDMMYYYY(
+      `Other_SaleReport_${formatDateToDDMMYYYY(
         date1
       )}_to_${formatDateToDDMMYYYY(date2)}.pdf`
     );
@@ -487,7 +475,7 @@ const CattleSaleList = () => {
           </div>
           <div className="d-flex h1 sb center w25 sales-dates-container-mobile-w100  p10 bg">
             <label htmlFor="" className="label-text px5 ">
-              {t("ps-nv-add-cattlefeed")}
+              {t("ps-nv-add-other")}
             </label>
             <NavLink
               className="w-btn d-flex "
@@ -531,11 +519,11 @@ const CattleSaleList = () => {
           </button>
         </div>
       </div>
-      <div className="sales-list-table w100 h80 d-flex-col bg">
-        <span className="heading p10"> {t("ps-cattel-rep")}</span>
+      <div className="sales-list-table w100 h80 d-flex-col hidescrollbar bg">
+        <span className="heading p10"> {t("ps-other-rep")}</span>
         <div className="sales-heading-title-scroller w100 h1 mh100 d-flex-col hidescrollbar">
           <div className="sale-data-headings-div h10 d-flex center t-center sb sticky-top t-heading-bg">
-            {/* <span className="f-info-text w5"> {t("ps-srNo")}</span> */}
+            <span className="f-info-text w5"> {t("ps-srNo")}</span>
             <span className="f-info-text w20">
               {t("ps-date")}
               <span
@@ -592,7 +580,6 @@ const CattleSaleList = () => {
                 )}
               </span>
             </span>
-            <span className="f-info-text w10">Actions</span>
             {userRole === "salesman" ? (
               <></>
             ) : (
@@ -617,7 +604,9 @@ const CattleSaleList = () => {
                 </span>
               </>
             )}
+            <span className="f-info-text w10">Actions</span>
           </div>
+          {/* Show Spinner if loading, otherwise show the feed list */}
           {loadings ? (
             <Spinner />
           ) : groupedSalesArray.length > 0 ? (
@@ -631,7 +620,7 @@ const CattleSaleList = () => {
                   backgroundColor: index % 2 === 0 ? "#faefe3" : "#fff",
                 }}
               >
-                {/* <span className="text w5">{index + 1}</span> */}
+                <span className="text w5">{index + 1}</span>
                 <span className="text w20">
                   {formatDateToDDMMYYYY(sale.BillDate)}
                 </span>
@@ -642,6 +631,13 @@ const CattleSaleList = () => {
                 </span>
 
                 <span className="text w10">{sale.TotalAmount}</span>
+                {userRole === "salesman" ? (
+                  <></>
+                ) : (
+                  <>
+                    <span className="text w20 ">{sale.createdby}</span>
+                  </>
+                )}
 
                 <span className="text w10 d-flex j-center a-center ">
                   <button
@@ -657,13 +653,6 @@ const CattleSaleList = () => {
                     style={{ color: "red" }}
                   />
                 </span>
-                {userRole === "salesman" ? (
-                  <></>
-                ) : (
-                  <>
-                    <span className="text w20 ">{sale.createdby}</span>
-                  </>
-                )}
               </div>
             ))
           ) : (
@@ -672,7 +661,7 @@ const CattleSaleList = () => {
         </div>
         {/* show invoice */}
         {isInvoiceOpen && viewItems.length > 0 && (
-          <div className="pramod modal ">
+          <div className="pramod modal">
             <div className="modal-content invoiceModel">
               <div className="d-flex sb">
                 <h2> {t("ps-sale-bill-det")}</h2>
@@ -693,6 +682,7 @@ const CattleSaleList = () => {
               </div>
               <div className=" d-flex sb mx15 px15 invoiceModelInfo">
                 <h4>
+                  {" "}
                   {t("ps-custCode")} : {viewItems[0]?.CustCode || ""}
                 </h4>
                 <h4 className="mx15">
@@ -770,10 +760,10 @@ const CattleSaleList = () => {
                 <input
                   type="number"
                   value={editSale?.ReceiptNo}
+                  onFocus={(e) => e.target.select()}
                   onChange={(e) =>
                     setEditSale({ ...editSale, ReceiptNo: e.target.value })
                   }
-                  onFocus={(e) => e.target.select()}
                 />
               </label>
               <label>
@@ -781,10 +771,10 @@ const CattleSaleList = () => {
                 <input
                   type="number"
                   value={editSale?.Qty}
+                  onFocus={(e) => e.target.select()}
                   onChange={(e) =>
                     setEditSale({ ...editSale, Qty: e.target.value })
                   }
-                  onFocus={(e) => e.target.select()}
                 />
               </label>
               <label>
@@ -806,7 +796,7 @@ const CattleSaleList = () => {
                   disabled
                 />
               </label>
-              <div className="button-container w100 d-flex a-center">
+              <div>
                 <button onClick={() => setIsModalOpen(false)}>
                   {" "}
                   {t("ps-cancel")}
@@ -821,4 +811,4 @@ const CattleSaleList = () => {
   );
 };
 
-export default CattleSaleList;
+export default OthersSaleList;

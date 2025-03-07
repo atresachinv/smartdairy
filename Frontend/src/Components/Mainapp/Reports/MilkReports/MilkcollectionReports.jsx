@@ -299,6 +299,10 @@ const MilkcollectionReports = () => {
     const handlePrint = useReactToPrint({
       content: () => componentRef.current,
     });
+    //......const totalLiters = summaryData.reduce((sum, item) => sum + (item.Liters || 0), 0).toFixed(2);
+    const totalAmount = summaryData
+      .reduce((sum, item) => sum + (item.Amt || 0), 0)
+      .toFixed(2);
 
     return (
       <div ref={componentRef}>
