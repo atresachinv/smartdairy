@@ -77,7 +77,7 @@ const CreateCustomer = () => {
       ...prevData,
       cust_no: custno,
     }));
-  }, [custno]);
+  }, [dispatch, custno]);
 
   const handleEditClick = () => {
     setIsEditing((prev) => !prev);
@@ -149,7 +149,12 @@ const CreateCustomer = () => {
   const handleInputChange = (e) => {
     const { name, type, checked, value } = e.target;
 
-    if (type === "checkbox") {
+    if (type === "radio") {
+      setFormData((prevData) => ({
+        ...prevData,
+        [name]: parseInt(value, 10), // For radio buttons, set the value as integer
+      }));
+    } else if (type === "checkbox") {
       setFormData((prevData) => ({
         ...prevData,
         [name]: checked ? 1 : 0, // For checkboxes, set 1 for true, 0 for false
@@ -312,7 +317,6 @@ const CreateCustomer = () => {
       const customer = customerList.find(
         (customer) => customer.srno.toString() === code
       );
-
       if (customer) {
         setFormData((prev) => ({
           ...prev,
@@ -356,32 +360,33 @@ const CreateCustomer = () => {
       return;
     }
 
-    try {
-      if (isEditing) {
-        // Update existing customer in DB
-        const result = await dispatch(updateCustomer(formData)).unwrap();
-        if (result.status === 200) {
-          dispatch(listCustomer());
-          toast.success(result.message);
-        } else {
-          toast.error(result.message);
-        }
+    // try {
+    if (isEditing) {
+      // Update existing customer in DB
+      const result = await dispatch(updateCustomer(formData)).unwrap();
+      if (result.status === 200) {
+        dispatch(listCustomer());
+        toast.success(result.message);
       } else {
-        // Create new customer
-        const result = await dispatch(createCustomer(formData)).unwrap();
-        if (result.status === 200) {
-          dispatch(listCustomer());
-          dispatch(getMaxCustNo());
-          toast.success(result.message);
-        } else {
-          toast.error(result.message);
-        }
+        toast.error(result.message);
       }
-      // Reset the form after fetching the new cust_no
-      resetForm();
-    } catch (error) {
-      toast.error("Failed to create Customer. Please try again.");
+    } else {
+      console.log(formData);
+      // Create new customer
+      const result = await dispatch(createCustomer(formData)).unwrap();
+      if (result.status === 200) {
+        dispatch(listCustomer());
+        dispatch(getMaxCustNo());
+        resetForm();
+        toast.success(result.message);
+      } else {
+        toast.error(result.message);
+      }
     }
+    // Reset the form after fetching the new cust_no
+    // } catch (error) {
+    //   toast.error("Failed to create Customer. Please try again.");
+    // }
   };
 
   //----------------------------------------------------------------------------------->
@@ -461,7 +466,6 @@ const CreateCustomer = () => {
       toast.error("Please select and process an Excel file first.");
     }
   };
-
   return (
     <form
       onSubmit={handleSubmit}

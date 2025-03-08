@@ -104,6 +104,7 @@ const DairySettings = () => {
   return (
     <div className="dairy-settings-page w100 h1 d-flex-col">
       <span className="heading p10 w100 d-flex j-center">Dairy Settings</span>
+      
       <div className="h1 w100 d-flex j-center ">
         <div className="mx5 my5 w90 d-flex-col bg center">
           {[...centerList]
