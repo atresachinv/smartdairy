@@ -43,7 +43,7 @@
   table-layout: fixed;
 }
 
-@media screen and (max-width: 320px) {
+@media screen and (max-width: 426px) {
   .customer-master-container .middel-filter-applay-div {
     height: auto;
     height: 150px;
