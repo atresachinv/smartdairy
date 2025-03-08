@@ -1121,7 +1121,7 @@ Total Amount:        ${totalAmount.toFixed(2)}
                 />
               </div>
               <div className="button-for-pdf d-flex a-center h50 w20">
-                <button className="btn  n" onClick={DealergeneratePDF}>
+                <button className="btn  " onClick={DealergeneratePDF}>
                   PDF
                 </button>
               </div>

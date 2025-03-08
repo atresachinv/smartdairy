@@ -330,9 +330,8 @@ const CustomerReports = () => {
   ));
 
   return (
-    <div iv className="customer-master-container w100 h1 d-flex-col">
+    <div className="customer-master-container w100 h1 d-flex-col">
       <span className="heading ">Customer Report</span>
-      {/* <div className="select-column-button w100 h30 d-flex-col h40"> */}
       <div className="middel-filter-applay-div w100 h20 d-flex-col">
         <div className="dropdown-filter-checkbox-div w100 h50 d-flex ">
           <div className="dropdown-filter-div w100 h1 d-flex sa">
@@ -466,87 +465,7 @@ const CustomerReports = () => {
           ))}
         </div>
       </div>
-      {/* 
-      <div className="table-container hidescrollbar">
-        <table className="customer-table mh60 w100 bg" id="customer-table">
-          <thead>
-            <tr>
-              {Object.values(selectedColumns)
-                .filter(Boolean)
-                .map((col, idx) => {
-                  const subName = Object.keys(columnOptions).find(
-                    (key) => columnOptions[key] === col
-                  );
-                  return <th key={idx}>{subName}</th>;
-                })}
-            </tr>
-          </thead>
-          <tbody>
-            {filteredData.length === 0 ||
-            Object.values(selectedColumns).filter(Boolean).length === 0 ? (
-              <tr className="w100 h1 d-flex center">
-                <td colSpan="6" className="no-data-message">
-                  Please select Table columns
-                </td>
-              </tr>
-            ) : (
-              filteredData.map((row, rowIndex) => (
-                <tr key={rowIndex}>
-                  {Object.values(selectedColumns)
-                    .filter(Boolean)
-                    .map((col, colIndex) => (
-                      <td key={colIndex}>
-                        {col === "createdon"
-                          ? row[col]?.slice(0, 10) || "0"
-                          : row[col] || "0"}
-                      </td>
-                    ))}
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
-      </div> */}
-      {/* <div className="table-container hidescrollbar">
-        <table className="customer-table mh60 w100 bg" id="customer-table">
-          <thead>
-            <tr>
-              {Object.values(selectedColumns)
-                .filter(Boolean)
-                .map((col, idx) => {
-                  const subName = Object.keys(columnOptions).find(
-                    (key) => columnOptions[key] === col
-                  );
-                  return <th key={idx}>{subName}</th>;
-                })}
-            </tr>
-          </thead>
-          <tbody>
-            {displayedData.length === 0 ||
-            Object.values(selectedColumns).filter(Boolean).length === 0 ? (
-              <tr className="w100 h1 d-flex center">
-                <td colSpan="6" className="no-data-message">
-                  Please select Table columns
-                </td>
-              </tr>
-            ) : (
-              displayedData.map((row, rowIndex) => (
-                <tr key={rowIndex}>
-                  {Object.values(selectedColumns)
-                    .filter(Boolean)
-                    .map((col, colIndex) => (
-                      <td key={colIndex}>
-                        {col === "createdon"
-                          ? row[col]?.slice(0, 10) || "0"
-                          : row[col] || "0"}
-                      </td>
-                    ))}
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
-      </div> */}
+
       <div className="table-container">
         <div className="table-scroll-wrapper">
           <table className="customer-table">
