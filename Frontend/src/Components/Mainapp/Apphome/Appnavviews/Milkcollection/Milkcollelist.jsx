@@ -9,7 +9,7 @@ const Milkcollelist = () => {
   const milkColl = useSelector((state) => state.milkCollection.entries || [])
     .slice()
     .reverse();
-  
+
   const [custList, setCustomersList] = useState({}); // to check remainning customer list
   const [isRCust, setIsRCust] = useState(false); // to show remainning customer list
 
@@ -40,7 +40,8 @@ const Milkcollelist = () => {
             milkColl.map((entry, i) => (
               <div
                 key={i}
-                className="collection-details w100 d-flex-col bg3 br6">
+                className="collection-details w100 d-flex-col bg3 br6"
+              >
                 <div className="col-user-info w100 h40 d-flex a-center sa p10">
                   <span className="text w20">{entry.code}</span>
                   <span className="text w70">{entry.cname}</span>
@@ -57,9 +58,9 @@ const Milkcollelist = () => {
                     <span className="text w15 d-flex center">
                       {t("common:c-snf")}
                     </span>
-                    <span className="text w15 d-flex center">
+                    {/* <span className="text w15 d-flex center">
                       {t("common:c-deg")}
-                    </span>
+                    </span> */}
                     <span className="text w20 d-flex center">
                       {t("common:c-rate")}
                     </span>
@@ -77,9 +78,9 @@ const Milkcollelist = () => {
                     <span className="text w15 d-flex center">
                       {entry.snf || "00.0"}
                     </span>
-                    <span className="text w15 d-flex center">
+                    {/* <span className="text w15 d-flex center">
                       {entry.degree || "00.0"}
-                    </span>
+                    </span> */}
                     <span className="text w20 d-flex center">
                       {entry.rate || "00.0"}
                     </span>
@@ -112,7 +113,8 @@ const Milkcollelist = () => {
                 }`}
                 style={{
                   backgroundColor: index % 2 === 0 ? "#faefe3" : "#fff",
-                }}>
+                }}
+              >
                 <span className="info-text w15 t-center">{customer.srno}</span>
                 <span className="info-text w50">{customer.cname}</span>
                 <span className="info-text w30 t-start">{customer.Phone}</span>

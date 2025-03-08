@@ -7,6 +7,8 @@ const initialState = {
   usedRCNO: [],
   cliststatus: "idle",
   status: "idle",
+  createstatus: "idle",
+  updatestatus: "idle",
   excelstatus: "idle",
   error: null,
 };
@@ -110,24 +112,24 @@ const custMasterSlice = createSlice({
       })
       // Handle createCustomer actions
       .addCase(createCustomer.pending, (state) => {
-        state.status = "loading";
+        state.createstatus = "loading";
       })
       .addCase(createCustomer.fulfilled, (state) => {
-        state.status = "succeeded";
+        state.createstatus = "succeeded";
       })
       .addCase(createCustomer.rejected, (state, action) => {
-        state.status = "failed";
+        state.createstatus = "failed";
         state.error = action.payload;
       })
       // Handle update Customer actions
       .addCase(updateCustomer.pending, (state) => {
-        state.status = "loading";
+        state.updatestatus = "loading";
       })
       .addCase(updateCustomer.fulfilled, (state) => {
-        state.status = "succeeded";
+        state.updatestatus = "succeeded";
       })
       .addCase(updateCustomer.rejected, (state, action) => {
-        state.status = "failed";
+        state.updatestatus = "failed";
         state.error = action.payload;
       })
       // Handle listCustomer actions

@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import { Route, Routes } from "react-router-dom";
 import AppNavviews from "./AppNavviews";
@@ -24,33 +23,29 @@ import { getretailCustomer } from "../../../App/Features/Mainapp/Milksales/milkS
 
 const Apphome = () => {
   const dispatch = useDispatch();
-  // const milkcollRatechart = useSelector((state) => state.ratechart.rateChart);
+  const customerlist = useSelector((state) => state.customers.customerlist);
+   const center_id = useSelector(
+      (state) =>
+        state.dairy.dairyData.center_id || state.dairy.dairyData.center_id
+    );
   const date = useSelector((state) => state.date.toDate);
   const yearStart = useSelector((state) => state.date.yearStart);
   const yearEnd = useSelector((state) => state.date.yearEnd);
 
   const [isselected, setIsSelected] = useState(0);
 
-  // //Store Milk Collection Ratechart to localstorage
-  // useEffect(() => {
-  //   if (milkcollRatechart && milkcollRatechart.length > 0) {
-  //     saveRatechart();
-  //   }
-  // }, [milkcollRatechart]);
-
-  // const saveRatechart = () => {
-  //   // Convert data to JSON and calculate size
-  //   const jsonData = JSON.stringify(milkcollRatechart);
-  //   const dataSize = new Blob([jsonData]).size;
-  //   // Check if size is within localStorage limit (usually 5 MB)
-  //   const maxSize = 5 * 1024 * 1024; // 5 MB in bytes
-  //   if (dataSize <= maxSize) {
-  //     localStorage.setItem("milkcollrcharts", jsonData);
-  //     console.log("Data successfully stored in localStorage.");
-  //   } else {
-  //     console.warn("Data size exceeds localStorage limit, cannot store.");
-  //   }
-  // };
+  //  save only lgoin center customer list in local storage --------------------------------------->
+  useEffect(() => {
+    // Filter customers with centerid === 0
+    const filteredCustomers = customerlist.filter(
+      (customer) => customer.centerid === center_id
+    );
+    // Save only if there are customers with centerid === 0
+    if (filteredCustomers.length > 0) {
+      console.log(filteredCustomers);
+      localStorage.setItem("customerlist", JSON.stringify(filteredCustomers));
+    }
+  }, [customerlist]);
 
   //save customer list in local storage
   useEffect(() => {

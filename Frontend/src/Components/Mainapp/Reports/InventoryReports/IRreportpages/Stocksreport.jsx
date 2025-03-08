@@ -4,6 +4,8 @@ import "jspdf-autotable";
 import axios, { all } from "axios";
 import { useSelector } from "react-redux";
 import "../../../../../Styles/InventoryReports/stockk.css";
+import { toast } from "react-toastify";
+import axiosInstance from "../../../../../App/axiosInstance";
 
 const Stocksreport = () => {
   const [fromdate, setFromDate] = useState("");
@@ -37,15 +39,15 @@ const Stocksreport = () => {
   //... Purches Data APi calling
   useEffect(() => {
     const fetchData = async () => {
-      // if (!fromdate || !todate) {
-      //   alert("Please select both From and To dates.");
-      //   return;
-      // }
+      if (!fromdate || !todate) {
+        toast.error("Please select both From and To dates.");
+        return;
+      }
       try {
-        const response = await axios.get(
-          "http://localhost:4040/smartdairy/api/stock/purchase/all"
-          // { fromdate, todate }
-        );
+        const response = await axiosInstance.get("/stock/purchase/all", {
+          fromdate,
+          todate,
+        });
 
         SetSales(response.data.purchaseData);
       } catch (error) {
@@ -57,21 +59,21 @@ const Stocksreport = () => {
     };
 
     fetchData();
-  }, []); // Run useEffect when fromDate or toDate changes
+  }, [fromdate, todate]); // Run useEffect when fromDate or toDate changes
 
   //...  Sales Report
   //...  Saledata Api calling
   useEffect(() => {
     const salefetchData = async () => {
-      // if (!fromdate || !toDate) {
-      //   alert("Please select both From and To dates.");
-      //   return;
-      // }
+      if (!fromdate || !todate) {
+        toast.error("Please select both From and To dates.");
+        return;
+      }
       try {
-        const response = await axios.get(
-          "http://localhost:4040/smartdairy/api/stock/sale/all",
-          { fromdate, todate }
-        );
+        const response = await axiosInstance.get("/stock/sale/all", {
+          fromdate,
+          todate,
+        });
 
         SetSaleData(response.data.salesData);
       } catch (error) {
@@ -83,7 +85,7 @@ const Stocksreport = () => {
     };
 
     salefetchData();
-  }, []); // Run useEffect when fromDate or toDate changes-
+  }, [fromdate, todate]); // Run useEffect when fromDate or toDate changes-
 
   const calculateRemainingStock = () => {
     const stockMap = {};

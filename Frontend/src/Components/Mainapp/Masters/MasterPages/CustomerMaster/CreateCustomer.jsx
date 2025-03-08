@@ -25,7 +25,8 @@ const CreateCustomer = () => {
   const toDate = useSelector((state) => state.date.toDate);
   const custno = useSelector((state) => state.customer.maxCustNo);
   const prefix = useSelector((state) => state.dairy.dairyData.prefix);
-  const status = useSelector((state) => state.customer.status);
+  const createstatus = useSelector((state) => state.customer.createstatus);
+  const updatestatus = useSelector((state) => state.customer.updatestatus);
   const excelstatus = useSelector((state) => state.customer.excelstatus);
   const ratechartlist = useSelector((state) => state.ratechart.ratechartList);
   const [fileName, setFileName] = useState("");
@@ -453,15 +454,24 @@ const CreateCustomer = () => {
       fileInputRef.current.value = ""; // Reset file input
     }
   };
-
-  const handleExcelUpload = (e) => {
+  const handleExcelUpload = async (e) => {
     e.preventDefault();
     if (excelData && excelData.length > 0) {
-      dispatch(uploadCustomerExcel({ excelData, prefix })); // Send processed data to backend
-      setExcelData([]);
-      dispatch(listCustomer());
-      dispatch(getMaxCustNo());
-      toast.success("Customer's uploaded Successfully!");
+      const result = await dispatch(
+        uploadCustomerExcel({ excelData, prefix })
+      ).unwrap();
+      if (result.status === 200) {
+        setExcelData([]);
+        dispatch(listCustomer());
+        dispatch(getMaxCustNo());
+        setFormData((prevData) => ({
+          ...prevData,
+          cust_no: custno,
+        }));
+        toast.success(result.message);
+      } else {
+        toast.error(result.message);
+      }
     } else {
       toast.error("Please select and process an Excel file first.");
     }
@@ -974,17 +984,21 @@ const CreateCustomer = () => {
             <button
               className="w-btn"
               type="submit"
-              disabled={status === "loading"}
+              disabled={updatestatus === "loading"}
             >
-              {status === "loading" ? `${t("m-updating")}` : `${t("m-update")}`}
+              {updatestatus === "loading"
+                ? `${t("m-updating")}`
+                : `${t("m-update")}`}
             </button>
           ) : (
             <button
               className="w-btn"
               type="submit"
-              disabled={status === "loading"}
+              disabled={createstatus === "loading"}
             >
-              {status === "loading" ? `${t("m-creating")}` : `${t("m-create")}`}
+              {createstatus === "loading"
+                ? `${t("m-creating")}`
+                : `${t("m-create")}`}
             </button>
           )}
         </div>

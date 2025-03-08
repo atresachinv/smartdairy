@@ -341,7 +341,6 @@ const CompleteMilkColl = () => {
     const customer = customerList.find(
       (customer) => customer.srno.toString() === code.toString()
     );
-    console.log("findmilkCollByCode", customer);
     if (customer) {
       setValues((prev) => ({
         ...prev,
@@ -392,7 +391,6 @@ const CompleteMilkColl = () => {
       setValues((prev) => ({ ...prev, code: "", cname: "", liters: "" }));
       return;
     }
-    console.log("from code function");
     // Ensure the code is a string for comparison
     const collection = collectionList.find(
       (collection) =>
@@ -508,10 +506,8 @@ const CompleteMilkColl = () => {
     try {
       const response = await axiosInstance.post("/send-message", requestBody);
       toast.success("Whatsapp message send successfully...");
-      console.log("Response:", response.data);
     } catch (error) {
       toast.error("Error in whatsapp message sending...");
-      console.error("Error sending message:", error);
     }
   };
 

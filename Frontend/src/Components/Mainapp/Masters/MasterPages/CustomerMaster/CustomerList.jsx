@@ -28,7 +28,7 @@ const CustomerList = () => {
     (state) =>
       state.dairy.dairyData.center_id || state.dairy.dairyData.center_id
   );
-  console.log(center_id);
+  console.log(customerlist);
 
   const downloadExcel = () => {
     if (!Array.isArray(customerlist) || customerlist.length === 0) {
@@ -38,7 +38,7 @@ const CustomerList = () => {
 
     // Prepare data for Excel (including all required fields)
     const excelData = customerlist.map((customer) => [
-      customer.rno || "", // Code
+      customer.srno || "", // Code
       customer.cname || "", // Customer Name
       customer.mobile || "", // Mobile
       customer.cust_addhar || "", // Aadhar No

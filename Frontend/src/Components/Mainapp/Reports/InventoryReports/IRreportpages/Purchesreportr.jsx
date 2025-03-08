@@ -4,6 +4,8 @@ import { useSelector } from "react-redux";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
 import "../../../../../Styles/InventoryReports/Purchesreport.css";
+import axiosInstance from "../../../../../App/axiosInstance";
+import { toast } from "react-toastify";
 
 const Purchesreportr = () => {
   const [fromdate, setFromDate] = useState("");
@@ -30,16 +32,15 @@ const Purchesreportr = () => {
   // ......  purches APi Calling
   useEffect(() => {
     const fetchData = async () => {
-      // if (!fromdate || !todate) {
-      //   alert("Please select both From and To dates.");
-      //   return;
-      // }
+      if (!fromdate || !todate) {
+        toast.error("Please select both From and To dates.");
+        return;
+      }
       try {
-        const response = await axios.get(
-          "http://localhost:4040/smartdairy/api/stock/purchase/all"
-          // { fromdate, todate }
-        );
-        console.log("API Response:", response.data.purchaseData);
+        const response = await axiosInstance.get("/stock/purchase/all", {
+          fromdate,
+          todate,
+        });
         SetSales(response.data.purchaseData);
         setShowTable(true); // Show table after fetching data
       } catch (error) {
@@ -51,16 +52,13 @@ const Purchesreportr = () => {
     };
 
     fetchData();
-  }, []); // Run useEffect when fromDate or toDate changes
+  }, [fromdate, todate]); // Run useEffect when fromDate or toDate changes
 
   //---------------------------DealerWise Report --------------------------------------->>
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const responce = await axios.post(
-          "http://localhost:4040/smartdairy/api/dealer"
-        );
-        console.log("Dealer", responce.data.customerList);
+        const responce = await axiosInstance.post("/dealer");
         SetDealer(responce.data.customerList);
       } catch (error) {
         console.log(
@@ -76,13 +74,10 @@ const Purchesreportr = () => {
   useEffect(() => {
     const fetchAllData = async () => {
       try {
-        const response = await axios.get(
-          "http://localhost:4040/smartdairy/api/stock/purchase/all"
-        );
+        const response = await axiosInstance.get("/stock/purchase/all");
         setAllSales(response.data.purchaseData);
       } catch (error) {
-        console.error("Error fetching data:", error);
-        alert("Failed to fetch purchase data.");
+        toast.error("Failed to fetch purchase data.");
       }
     };
 

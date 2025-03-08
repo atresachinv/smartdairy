@@ -94,7 +94,7 @@ const MilkSankalan = () => {
   //   }
   // }, [customerlist]);
 
-  // Effect to load customer list from local storage
+  // Effect to load customer list from local storage ------------------------>
   useEffect(() => {
     const storedCustomerList = localStorage.getItem("customerlist");
     if (storedCustomerList) {

@@ -67,8 +67,6 @@ const MilkColleform = ({ switchToSettings }) => {
 
   const [values, setValues] = useState(initialValues);
 
-console.log(customerList);
-
   // dynamic shift time set in time -------------------------------------------------------------->
   useEffect(() => {
     setValues((prevData) => ({

@@ -624,241 +624,7 @@ exports.custDashboardInfo = async (req, res) => {
 // Upload customers from Excel ------------------------------------------>
 // ---------------------------------------------------------------------->
 
-//v2 function
-// exports.uploadExcelCustomer = async (req, res) => {
-//   const { data } = req.body;
-//
-//   const dairy_id = req.user.dairy_id;
-//   const centerid = req.user.center_id;
-//
-//   pool.getConnection((err, connection) => {
-//     if (err) {
-//       console.error("Error getting MySQL connection: ", err);
-//       return res.status(500).json({ message: "Database connection error" });
-//     }
-//     try {
-//       const query =
-//         "SELECT MAX(cid) AS maxCid FROM customer";
-//
-//       connection.query(query, [dairy_id, centerid], (error, results) => {
-//         // Release connection after query execution
-//         connection.release();
-//
-//
-//
-//       if (!user_id) {
-//         return res.status(400).json({ message: "User ID not found!" });
-//       }
-//
-//
-//       const customerQuery = `
-//         INSERT INTO customer (
-//               cid, cname, Phone, fax, City, tal, dist, cust_accno, createdby,
-//               createdon, mobile, isSabhasad, rno, orgid, engName,
-//               centerid, srno, cust_pincode, cust_addhar, cust_farmerid, cust_bankname,
-//               cust_ifsc, caste, gender, milktype
-//             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-//          `;
-//
-//       const values = data.map((row) => [
-//         row.cust_name,
-//         row.isActive,
-//         row.isMember,
-//         row.date,
-//         row.prefix,
-//         row.cust_no,
-//         row.marathi_name,
-//         row.member_date,
-//         row.mobile,
-//         row.aadhaar_no,
-//         row.caste,
-//         row.gender,
-//         row.city,
-//         row.tehsil,
-//         row.district,
-//         row.pincode,
-//         row.milktype,
-//         row.rctype,
-//         row.farmerid,
-//         row.bankName,
-//         row.bank_ac,
-//         row.bankIFSC,
-//       ]);
-//
-//       connection.query(customerQuery, [values], (err, result) => {
-//         connection.release();
-//         if (err) {
-//           console.error("Error executing summary query: ", err);
-//           return res.status(500).json({ message: "Query execution error" });
-//         }
-//
-//         res
-//           .status(200)
-//           .json({ message: "Customer successfully inserted from Excel file!" });
-//       });
-//     } catch (error) {
-//       console.error("Error processing request: ", error);
-//       return res.status(500).json({ message: "Internal server error" });
-//     }
-//   });
-// };
-
-// exports.uploadExcelCustomer = async (req, res) => {
-//   const { excelData, prefix } = req.body;
-//
-//   const dairy_id = req.user.dairy_id;
-//   const centerid = req.user.center_id;
-//   const user_role = req.user.user_role;
-//   const designation = "Customer";
-//   const isAdmin = "0";
-//   const fax = `${prefix}${cust_no}`;
-//
-//   pool.getConnection((err, connection) => {
-//     if (err) {
-//       console.error("Error getting MySQL connection: ", err);
-//       return res.status(500).json({ message: "Database connection error" });
-//     }
-//
-//     connection.beginTransaction((err) => {
-//       if (err) {
-//         connection.release();
-//         return res.status(500).json({ message: "Error starting transaction" });
-//       }
-//
-//       try {
-//         // Step 1: Get the max cid
-//         const maxCidQuery = `SELECT MAX(cid) AS maxCid FROM customer`;
-//         connection.query(maxCidQuery, (err, maxCidResult) => {
-//           if (err) {
-//             return connection.rollback(() => {
-//               connection.release();
-//               console.error("Error querying maxCid: ", err);
-//               return res.status(500).json({ message: "Database query error" });
-//             });
-//           }
-//
-//           const cid = (maxCidResult[0]?.maxCid || 0) + 1; // Calculate new cid
-//
-//           // Step 2: Insert into customer table
-//           const createCustomerQuery = `
-//             INSERT INTO customer (
-//               cid, cname, Phone, fax, City, tal, dist, cust_accno, createdby,
-//               createdon, mobile, isSabhasad, rno, orgid, engName,
-//               centerid, srno, cust_pincode, cust_addhar, cust_farmerid, cust_bankname,
-//               cust_ifsc, caste, gender, milktype
-//             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-//          `;
-//
-//           connection.query(
-//             createCustomerQuery,
-//             [
-//               cid,
-//               cust_name,
-//               mobile,
-//               fax,
-//               city,
-//               tehsil,
-//               district,
-//               bank_ac,
-//               user_role,
-//               date,
-//               mobile,
-//               isMember,
-//               fax,
-//               dairy_id,
-//               marathi_name,
-//               rctype || null,
-//               centerid,
-//               cust_no,
-//               pincode,
-//               aadhaar_no || null,
-//               farmerid || null,
-//               bankName || null,
-//               bankIFSC || null,
-//               caste || null,
-//               gender,
-//               milktype,
-//               member_date,
-//               isActive,
-//             ],
-//             (err, result) => {
-//               if (err) {
-//                 return connection.rollback(() => {
-//                   connection.release();
-//                   console.error("Error inserting into customer table: ", err);
-//                   return res
-//                     .status(500)
-//                     .json({ message: "Database query error" });
-//                 });
-//               }
-//
-//               // Step 3: Insert into users table
-//               const createUserQuery = `
-//               INSERT INTO users (
-//                 username, password, isAdmin, createdon, createdby, designation,
-//                 pincode, mobile, SocietyCode, pcode, center_id
-//               ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-//             `;
-//
-//               connection.query(
-//                 createUserQuery,
-//                 [
-//                   fax,
-//                   mobile,
-//                   isAdmin,
-//                   date,
-//                   user_role,
-//                   designation,
-//                   pincode,
-//                   mobile,
-//                   dairy_id,
-//                   cid,
-//                   centerid,
-//                 ],
-//                 (err, result) => {
-//                   if (err) {
-//                     return connection.rollback(() => {
-//                       connection.release();
-//                       console.error("Error inserting into users table: ", err);
-//                       return res
-//                         .status(500)
-//                         .json({ message: "Database query error" });
-//                     });
-//                   }
-//
-//                   // Commit transaction after both inserts succeed
-//                   connection.commit((err) => {
-//                     if (err) {
-//                       return connection.rollback(() => {
-//                         connection.release();
-//                         console.error("Error committing transaction: ", err);
-//                         return res
-//                           .status(500)
-//                           .json({ message: "Error committing transaction" });
-//                       });
-//                     }
-//
-//                     connection.release();
-//                     res
-//                       .status(200)
-//                       .json({ message: "Customer created successfully!" });
-//                   });
-//                 }
-//               );
-//             }
-//           );
-//         });
-//       } catch (error) {
-//         connection.rollback(() => {
-//           connection.release();
-//           console.error("Error processing request: ", error);
-//           return res.status(500).json({ message: "Internal server error" });
-//         });
-//       }
-//     });
-//   });
-// };
-
+// new customer excel upload function ------------------------------------>
 exports.uploadExcelCustomer = async (req, res) => {
   const { excelData, prefix } = req.body;
   const dairy_id = req.user.dairy_id;
@@ -901,34 +667,28 @@ exports.uploadExcelCustomer = async (req, res) => {
             });
           }
 
-          const cid = maxCidResult[0]?.maxCid || 0; // Start from max cid
+          let cid = maxCidResult[0]?.maxCid || 0; // Start from max cid
 
-          // Step 2: Process each customer data
+          // Step 2: Process each customer
           const processCustomerData = (index) => {
             if (index >= excelData.length) {
-              // If all customers processed, commit transaction
               return connection.commit((err) => {
+                connection.release();
                 if (err) {
-                  return connection.rollback(() => {
-                    connection.release();
-                    console.error("Error committing transaction: ", err);
-                    return res.status(500).json({
-                      status: 500,
-                      message: "Error committing transaction",
-                    });
+                  console.error("Error committing transaction: ", err);
+                  return res.status(500).json({
+                    status: 500,
+                    message: "Error committing transaction",
                   });
                 }
-                connection.release();
                 res.status(200).json({
                   status: 200,
-                  message: "Customers created successfully!",
+                  message: "Customers processed successfully!",
                 });
               });
             }
 
             const customer = excelData[index];
-            const customerid = cid + 1; // Increment cid for each customer
-
             const {
               Code,
               Customer_Name,
@@ -951,104 +711,212 @@ exports.uploadExcelCustomer = async (req, res) => {
 
             const formattedCode = String(Code).padStart(3, "0");
             const fax = `${prefix}${formattedCode}`;
-            const isMember = 0; // Assuming a default value; adjust as needed
-            const member_date = new Date(); // Assuming current date; adjust as needed
-            const isActive = 1; // Assuming active by default; adjust as needed
-            const createdOn = new Date(); // Assuming current date for createdOn
+            const isMember = 0;
+            const member_date = new Date();
+            const isActive = 1;
+            const createdOn = new Date();
             const animal = Animal_Type === "cow" ? "0" : "1";
-            const createCustomerQuery = `
-              INSERT INTO customer (
-                cid, cname, Phone, fax, City, tal, dist, cust_accno, createdby,
-                createdon, mobile, isSabhasad, rno, orgid, engName,
-                centerid, srno, cust_pincode, cust_addhar, cust_farmerid, cust_bankname,
-                cust_ifsc, caste, gender, milktype, sabhasad_date, isActive, rcName
-              ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? , ? , ?)
-            `;
+
+            // Step 3: Check if customer already exists
+            const checkCustomerQuery = `SELECT cid FROM customer WHERE orgid = ? AND centerid = ? AND srno = ? AND ctype = 1`;
 
             connection.query(
-              createCustomerQuery,
-              [
-                customerid,
-                Customer_Name,
-                Mobile,
-                fax,
-                City,
-                Tehsil,
-                District,
-                Bank_AccNo,
-                user_role,
-                createdOn,
-                Mobile,
-                isMember,
-                fax,
-                dairy_id,
-                Marathi_Name,
-                centerid,
-                Code,
-                Pincode,
-                Addhar_No || null,
-                Farmer_Id || null,
-                Bank_Name || null,
-                Bank_IFSC || null,
-                Caste || null,
-                Gender,
-                animal || 0,
-                member_date,
-                isActive,
-                Ratechart_Type || null,
-              ],
-              (err) => {
+              checkCustomerQuery,
+              [dairy_id, centerid, Code],
+              (err, existingCustomer) => {
                 if (err) {
                   return connection.rollback(() => {
                     connection.release();
-                    console.error("Error inserting into customer table: ", err);
+                    console.error("Error checking customer existence: ", err);
                     return res
                       .status(500)
                       .json({ status: 500, message: "Database query error" });
                   });
                 }
 
-                const createUserQuery = `
-                  INSERT INTO users (
-                    username, password, isAdmin, createdon, createdby, designation,
-                    pincode, mobile, SocietyCode, pcode, center_id
-                  ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                `;
+                if (existingCustomer.length > 0) {
+                  // Customer exists, update record
+                  const updateCustomerQuery = `
+                    UPDATE customer
+                    SET cname=?, engName=?, Phone=?, City=?, tal=?, dist=?, cust_accno=?, mobile=?, cust_pincode=?,
+                        cust_addhar=?, cust_farmerid=?, cust_bankname=?, cust_ifsc=?, caste=?, gender=?, milktype=?, rcName=?
+                    WHERE cid=?`;
 
-                connection.query(
-                  createUserQuery,
-                  [
-                    fax,
-                    Mobile,
-                    isAdmin,
-                    createdOn,
-                    user_role,
-                    designation,
-                    Pincode,
-                    Mobile,
-                    dairy_id,
-                    cid,
-                    centerid,
-                  ],
-                  (err) => {
-                    if (err) {
-                      return connection.rollback(() => {
-                        connection.release();
-                        console.error(
-                          "Error inserting into users table: ",
-                          err
-                        );
-                        return res.status(500).json({
-                          status: 500,
-                          message: "Database query error!",
+                  connection.query(
+                    updateCustomerQuery,
+                    [
+                      Customer_Name,
+                      Marathi_Name,
+                      Mobile,
+                      City,
+                      Tehsil,
+                      District,
+                      Bank_AccNo,
+                      Mobile,
+                      Pincode,
+                      Addhar_No || null,
+                      Farmer_Id || null,
+                      Bank_Name || null,
+                      Bank_IFSC || null,
+                      Caste || null,
+                      Gender,
+                      animal || 0,
+                      Ratechart_Type || null,
+                      existingCustomer[0].cid,
+                    ],
+                    (err) => {
+                      if (err) {
+                        return connection.rollback(() => {
+                          connection.release();
+                          console.error("Error updating customer: ", err);
+                          return res.status(500).json({
+                            status: 500,
+                            message: "Error updating customer record!",
+                          });
                         });
-                      });
-                    }
+                      }
 
-                    // Process the next customer
-                    processCustomerData(index + 1);
-                  }
-                );
+                      // Update user record for existing customer
+                      const updateUserQuery = `
+                        UPDATE users
+                        SET username=?, password=?, isAdmin=?, createdon=?, createdby=?, designation=?, pincode=?, mobile=?, SocietyCode=?, pcode=?, center_id=?
+                        WHERE pcode=?`;
+
+                      connection.query(
+                        updateUserQuery,
+                        [
+                          fax,
+                          Mobile,
+                          isAdmin,
+                          createdOn,
+                          user_role,
+                          designation,
+                          Pincode,
+                          Mobile,
+                          dairy_id,
+                          existingCustomer[0].cid,
+                          centerid,
+                          existingCustomer[0].cid,
+                        ],
+                        (err) => {
+                          if (err) {
+                            return connection.rollback(() => {
+                              connection.release();
+                              console.error(
+                                "Error updating user record: ",
+                                err
+                              );
+                              return res.status(500).json({
+                                status: 500,
+                                message: "Database query error!",
+                              });
+                            });
+                          }
+                          processCustomerData(index + 1);
+                        }
+                      );
+                    }
+                  );
+                } else {
+                  // Customer does not exist, insert new record
+                  const customerid = ++cid;
+                  const insertCustomerQuery = `
+                    INSERT INTO customer (
+                      cid, ctype, cname, Phone, fax, City, tal, dist, cust_accno, createdby, createdon, mobile,
+                      isSabhasad, rno, orgid, engName, centerid, srno, cust_pincode, cust_addhar, cust_farmerid,
+                      cust_bankname, cust_ifsc, caste, gender, milktype, sabhasad_date, isActive, rcName
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+
+                  connection.query(
+                    insertCustomerQuery,
+                    [
+                      customerid,
+                      1,
+                      Customer_Name,
+                      Mobile,
+                      fax,
+                      City,
+                      Tehsil,
+                      District,
+                      Bank_AccNo,
+                      user_role,
+                      createdOn,
+                      Mobile,
+                      isMember,
+                      fax,
+                      dairy_id,
+                      Marathi_Name,
+                      centerid,
+                      Code,
+                      Pincode,
+                      Addhar_No || null,
+                      Farmer_Id || null,
+                      Bank_Name || null,
+                      Bank_IFSC || null,
+                      Caste || null,
+                      Gender,
+                      animal || 0,
+                      member_date,
+                      isActive,
+                      Ratechart_Type || null,
+                    ],
+                    (err) => {
+                      if (err) {
+                        return connection.rollback(() => {
+                          connection.release();
+                          console.error(
+                            "Error inserting into customer table: ",
+                            err
+                          );
+                          return res.status(500).json({
+                            status: 500,
+                            message: "Database query error",
+                          });
+                        });
+                      }
+
+                      // Insert user record for newly created customer
+                      const insertUserQuery = `
+                        INSERT INTO users (
+                          username, password, isAdmin, createdon, createdby, designation,
+                          pincode, mobile, SocietyCode, pcode, center_id
+                        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+
+                      connection.query(
+                        insertUserQuery,
+                        [
+                          fax,
+                          Mobile,
+                          isAdmin,
+                          createdOn,
+                          user_role,
+                          designation,
+                          Pincode,
+                          Mobile,
+                          dairy_id,
+                          customerid,
+                          centerid,
+                        ],
+                        (err) => {
+                          if (err) {
+                            return connection.rollback(() => {
+                              connection.release();
+                              console.error(
+                                "Error inserting into users table: ",
+                                err
+                              );
+                              return res.status(500).json({
+                                status: 500,
+                                message: "Database query error!",
+                              });
+                            });
+                          }
+                          processCustomerData(index + 1);
+                        }
+                      );
+                    }
+                  );
+                }
               }
             );
           };
@@ -1056,7 +924,8 @@ exports.uploadExcelCustomer = async (req, res) => {
           // Start processing customers from index 0
           processCustomerData(0);
         });
-        // Remove the cached customer list
+
+        // Remove cached customer list
         const cacheKey = `customerList_${dairy_id}_${centerid}`;
         cache.del(cacheKey);
       } catch (error) {

@@ -308,7 +308,9 @@ const Register = ({ switchToLogin }) => {
             <span className="error-message">Invalid dairy name.</span>
           )}
           {dairyName === false && (
-            <span className="error-message">dairyname exist.</span>
+            <span className="error-message">
+              Duplicate dairyname, try different.
+            </span>
           )}
         </div>
         <div className="data-div w100">
@@ -350,7 +352,9 @@ const Register = ({ switchToLogin }) => {
               <span className="error-message">Invalid username.</span>
             )}
             {userName === false && (
-              <span className="error-message">username exist.</span>
+              <span className="error-message">
+                Duplicate username, try different.
+              </span>
             )}
           </div>
 
