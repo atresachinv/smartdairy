@@ -17,13 +17,13 @@ const CollectionSettingForm = () => {
   const switchToColl = () => setCurrentForm(form_type.collection);
   const switchToSettings = () => setCurrentForm(form_type.settings);
 
-  const { customerlist } = useSelector((state) => state.customer); //save customer list
+  // const { customerlist } = useSelector((state) => state.customer); //save customer list
 
-  useEffect(() => {
-    if (customerlist && customerlist.length > 0) {
-      localStorage.setItem("customerlist", JSON.stringify(customerlist));
-    }
-  }, [customerlist]);
+  // useEffect(() => {
+  //   if (customerlist && customerlist.length > 0) {
+  //     localStorage.setItem("customerlist", JSON.stringify(customerlist));
+  //   }
+  // }, [customerlist]);
 
   return (
     <div className="forms-container-div w100 h1 d-flex center">

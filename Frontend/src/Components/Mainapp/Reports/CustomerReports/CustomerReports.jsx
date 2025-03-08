@@ -5,9 +5,6 @@ import "jspdf-autotable";
 import { useDispatch, useSelector } from "react-redux";
 import { listCustomer } from "../../../../App/Features/Mainapp/Masters/custMasterSlice";
 import "../../../../Styles/Mainapp/Reports/ReportPages/CustomerReports.css";
-// import { listCustomer } from "../../../../App/Features/Customers/customerSlice";
-// import "../../../../../Styles/Report/CustomerReport.css";
-// import { listCustomer } from "../../../../../App/Features/Customers/customerSlice";
 
 const CustomerReports = () => {
   const dispatch = useDispatch();
@@ -20,7 +17,6 @@ const CustomerReports = () => {
   const [commissionFilter, setCommissionFilter] = useState(false); // Changed to boolean for clarity
   const [depositFilter, setDepositFilter] = useState(false); // Changed to boolean for clarity
   const [isSabhasadFilter, setIsSabhasadFilter] = useState("All");
-  const [groupedCenters, setGroupedCenters] = useState("");
   const [selectedCenterId, setSelectedCenterId] = useState("");
 
   const centerList = useSelector(
@@ -41,7 +37,6 @@ const CustomerReports = () => {
     ? filteredCenterCustomer
     : filteredData;
 
-  console.log("Centerlist", filteredCenterCustomer);
   //........ Dairy name
   const dairyname = useSelector(
     (state) =>
@@ -335,10 +330,10 @@ const CustomerReports = () => {
         <div className="dropdown-filter-checkbox-div w100 h50 d-flex ">
           <div className="dropdown-filter-div w100 h1 d-flex sa">
             <div className="active-and-member-div w50  h1 a-center d-flex ">
-              <div className="active-not-active-data w50 h90 d-flex j-center a-center ">
-                <span className="info-text w30 ">Active:</span>
+              <div className="active-not-active-data w50 h1 d-flex j-center a-center ">
+                <span className="info-text w50 ">Active:</span>
                 <select
-                  className="w60 data my10"
+                  className="w50 data my10"
                   value={dropdownValue}
                   onChange={(e) => setDropdownValue(e.target.value)}
                 >

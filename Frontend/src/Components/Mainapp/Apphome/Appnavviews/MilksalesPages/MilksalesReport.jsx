@@ -11,7 +11,10 @@ import { RiFileExcel2Fill } from "react-icons/ri";
 import "../../../../../Styles/Mainapp/Apphome/Appnavview/Milkcollection.css";
 import Spinner from "../../../../Home/Spinner/Spinner";
 import { getAllSale } from "../../../../../App/Features/Sales/salesSlice";
-import { getCenterMilkReport, getretailCustomer } from "../../../../../App/Features/Mainapp/Milksales/milkSalesSlice";
+import {
+  getCenterMilkReport,
+  getretailCustomer,
+} from "../../../../../App/Features/Mainapp/Milksales/milkSalesSlice";
 
 const MilksalesReport = () => {
   const dispatch = useDispatch();
@@ -81,7 +84,7 @@ const MilksalesReport = () => {
     }
     return error;
   };
-
+  console.log(AllSales);
   const validateFields = () => {
     const fieldsToValidate = ["fromdate", "todate"];
     const validationErrors = {};
@@ -137,7 +140,7 @@ const MilksalesReport = () => {
     const excelData = AllSales.map((sales) => [
       sales.code ?? 0,
       sales.cust_name ?? "--",
-      formatDate(sales.BillDate),
+      formatDate(sales.saledate),
       sales.liters ?? 0,
       sales.rate ?? 0,
       sales.amt ?? 0,
@@ -175,7 +178,6 @@ const MilksalesReport = () => {
     XLSX.utils.book_append_sheet(workbook, worksheet, "Retail Sales");
     XLSX.writeFile(workbook, fileName);
   };
-
 
   // -------------------------------------------------------------------->
   // Function to download PDF file ------------------------------------>
@@ -378,6 +380,7 @@ const MilksalesReport = () => {
       </div>
       <div className="milk-sales-data-div w100 d-flex-col h90 mh90 hidescrollbar bg">
         <div className="sales-info-heading w100 h10 d-flex a-center t-center sticky-top py10 sa bg7">
+          <span className="f-label-text w10">{t("Bill Date")}</span>
           <span className="f-label-text w10">
             {t("milkcollection:m-cust-code")}
           </span>
@@ -387,15 +390,9 @@ const MilksalesReport = () => {
           <span className="f-label-text w10">{t("c-liters")}</span>
           <span className="f-label-text w10">{t("c-rate")}</span>
           <span className="f-label-text w10">{t("c-amt")}</span>
-          <span className="f-label-text w10">
-            {t("msales:m-s-pay-mode")}
-          </span>
-          <span className="f-label-text w10">
-            {t("msales:m-s-paid-amt")}
-          </span>
-          <span className="f-label-text w10">
-            {t("msales:m-s-cre-amt")}
-          </span>
+          <span className="f-label-text w10">{t("msales:m-s-pay-mode")}</span>
+          <span className="f-label-text w10">{t("msales:m-s-paid-amt")}</span>
+          <span className="f-label-text w10">{t("msales:m-s-cre-amt")}</span>
         </div>
         {salesStatus === "loading" ? (
           <div className="w100 h80 d-flex center">
@@ -412,6 +409,7 @@ const MilksalesReport = () => {
                 backgroundColor: index % 2 === 0 ? "#faefe3" : "#fff",
               }}
             >
+              <span className="info-text w10">{sales.saledate}</span>
               <span className="info-text w10">{sales.code}</span>
               <span className="info-text w30">{sales.cust_name || "--"}</span>
               <span className="info-text w10">{sales.liters}</span>

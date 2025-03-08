@@ -2376,7 +2376,7 @@ exports.retailMilkReports = async (req, res) => {
 
       // Prepare the SQL query
       const salesreport = `
-      SELECT code , liters , rate , amt , saletime 
+      SELECT code , liters , rate , amt , saletime ,saledate
       FROM retail_milk_sales
         WHERE dairy_id = ? AND center_id = ? AND saledate = ? , saleby = ?
       `;
