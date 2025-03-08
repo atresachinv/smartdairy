@@ -330,7 +330,7 @@ const CustomerReports = () => {
   ));
 
   return (
-    <d iv className="customer-master-container w100 h1 d-flex-col">
+    <div iv className="customer-master-container w100 h1 d-flex-col">
       <span className="heading ">Customer Report</span>
       {/* <div className="select-column-button w100 h30 d-flex-col h40"> */}
       <div className="middel-filter-applay-div w100 h20 d-flex-col">
@@ -350,7 +350,7 @@ const CustomerReports = () => {
                 </select>
               </div>
               <div className="active-not-active-data w50 h90 d-flex j-center a-center">
-                <span className="info-text w40">Memeber :</span>
+                <span className="info-text w40">Memeber:</span>
                 <select
                   value={isSabhasadFilter}
                   onChange={(e) => setIsSabhasadFilter(e.target.value)}
@@ -364,11 +364,11 @@ const CustomerReports = () => {
                 </select>
               </div>
             </div>
-            <div className="dropdown-filter-div w50 h1 d-flex ">
-              <div className="active-not-active-data w50 h90 d-flex j-center a-center">
+            <div className="dropdown-filter-center-div w50 h1 d-flex  a-center ">
+              <div className="active-not-active-data w50 h1 d-flex sa j-center a-center">
                 <span className="info-text w50">Milk Type:</span>
                 <select
-                  className="w70 data my10"
+                  className="w70 data "
                   value={milkTypeFilter}
                   onChange={(e) => setMilkTypeFilter(e.target.value)}
                 >
@@ -378,7 +378,7 @@ const CustomerReports = () => {
                 </select>
               </div>
 
-              <div className="centerwise-data-show w50 h1 d-flex   sa a-center ">
+              <div className="centerwise-data-show w50 h1 d-flex j-center a-center  sa">
                 <span className="info-text w30">Center:</span>
                 <select
                   className="data w60 my10"
@@ -439,9 +439,9 @@ const CustomerReports = () => {
           </div>
         </div>
       </div>
-      <div className="select-column-div w100 h10 d-flex-col  ">
-        <div className="hide-selection-selection-bar d-flex w100 h1 bg a-center ">
-          <span className="info-text w1 h1 d-flex a-center ">
+      <div className="select-column-div w100 h10 d-flex  ">
+        <div className="hide-selection-selection-bar d-flex w20 h1  a-center ">
+          <span className="info-text w100 h1 d-flex a-center ">
             Select Column:
           </span>
           <select className="w25 data" onChange={handleColumnCountChange}>
@@ -451,7 +451,8 @@ const CustomerReports = () => {
               </option>
             ))}
           </select>
-
+        </div>
+        <div className="selected-hide-no-column d-flex a-center h1 w80">
           {[...Array(numberOfColumns)].map((_, i) => (
             <select
               className="w100 data"
@@ -506,7 +507,7 @@ const CustomerReports = () => {
           </tbody>
         </table>
       </div> */}
-      <div className="table-container hidescrollbar">
+      {/* <div className="table-container hidescrollbar">
         <table className="customer-table mh60 w100 bg" id="customer-table">
           <thead>
             <tr>
@@ -545,8 +546,50 @@ const CustomerReports = () => {
             )}
           </tbody>
         </table>
+      </div> */}
+      <div className="table-container">
+        <div className="table-scroll-wrapper">
+          <table className="customer-table">
+            <thead>
+              <tr>
+                {Object.values(selectedColumns)
+                  .filter(Boolean)
+                  .map((col, idx) => {
+                    const subName = Object.keys(columnOptions).find(
+                      (key) => columnOptions[key] === col
+                    );
+                    return <th key={idx}>{subName}</th>;
+                  })}
+              </tr>
+            </thead>
+            <tbody>
+              {displayedData.length === 0 ||
+              Object.values(selectedColumns).filter(Boolean).length === 0 ? (
+                <tr>
+                  <td colSpan="6" className="no-data-message">
+                    Please select Table columns
+                  </td>
+                </tr>
+              ) : (
+                displayedData.map((row, rowIndex) => (
+                  <tr key={rowIndex}>
+                    {Object.values(selectedColumns)
+                      .filter(Boolean)
+                      .map((col, colIndex) => (
+                        <td key={colIndex}>
+                          {col === "createdon"
+                            ? row[col]?.slice(0, 10) || "0"
+                            : row[col] || "0"}
+                        </td>
+                      ))}
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
-    </d>
+    </div>
   );
 };
 
