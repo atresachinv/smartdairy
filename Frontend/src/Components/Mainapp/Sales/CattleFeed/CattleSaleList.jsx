@@ -672,8 +672,8 @@ const CattleSaleList = () => {
         </div>
         {/* show invoice */}
         {isInvoiceOpen && viewItems.length > 0 && (
-          <div className="pramod modal ">
-            <div className="modal-content invoiceModel">
+          <div className="saleModal">
+            <div className="modal-content ">
               <div className="d-flex sb">
                 <h2> {t("ps-sale-bill-det")}</h2>
                 <IoClose
@@ -683,7 +683,7 @@ const CattleSaleList = () => {
                 />
               </div>
               <hr />
-              <div className=" d-flex sb mx15 px15 invoiceModelInfo">
+              <div className=" d-flex sb mx15 px15 ">
                 <h4>
                   {t("ps-rect-no")} : {viewItems[0]?.ReceiptNo || ""}
                 </h4>
@@ -691,7 +691,7 @@ const CattleSaleList = () => {
                   {t("ps-date")} :{formatDateToDDMMYYYY(viewItems[0]?.BillDate)}
                 </div>
               </div>
-              <div className=" d-flex sb mx15 px15 invoiceModelInfo">
+              <div className=" d-flex sb mx15 px15 ">
                 <h4>
                   {t("ps-custCode")} : {viewItems[0]?.CustCode || ""}
                 </h4>
@@ -699,62 +699,62 @@ const CattleSaleList = () => {
                   {handleFindCustName(viewItems[0]?.CustCode) || ""}
                 </h4>
               </div>
-              <div className="modal-content w100  ">
-                <div className="sales-table-container w100">
-                  <table className="sales-table w100 ">
-                    <thead className="bg1">
-                      <tr>
-                        <th>{t("ps-srNo")}</th>
-                        <th>{t("ps-itm-name")}</th>
-                        <th>{t("ps-rate")}</th>
-                        <th>{t("ps-qty")}</th>
-                        <th>{t("ps-amt")}</th>
-                        <th>Action</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {viewItems.map((item, i) => (
-                        <tr key={i}>
-                          <td>{i + 1}</td>
-                          <td>{handleFindItemName(item.ItemCode)}</td>
-                          <td className="w15"> {item.Rate}</td>
+              <div className=" w100">
+              <div className="sales-table-container w100">
+                <table className="sales-table1">
+                  <thead className="bg1 w100">
+                  <tr>
+                    {/* <th>{t("ps-srNo")}</th> */}
+                    <th>{t("ps-itm-name")}</th>
+                    <th>{t("ps-rate")}</th>
+                    <th>{t("ps-qty")}</th>
+                    <th>{t("ps-amt")}</th>
+                    <th>Action</th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                    {viewItems.map((item, i) => (
+                      <tr key={i}>
+                        {/* <td>{i + 1}</td> */}
+                        <td>{handleFindItemName(item.ItemCode)}</td>
+                        <td className="w15"> {item.Rate}</td>
 
-                          <td className="w15">{item.Qty}</td>
-                          <td>{item.Amount}</td>
-                          <td>
-                            <FaRegEdit
-                              size={15}
-                              className="table-icon"
-                              title="Update Item details"
-                              onClick={() => handleEditClick(item)}
-                            />
-                            <MdDeleteOutline
-                              onClick={() => handleDeleteItem(item?.saleid)}
-                              size={15}
-                              title="Delete the Item"
-                              className="table-icon "
-                              style={{ color: "red" }}
-                            />
-                          </td>
-                        </tr>
-                      ))}
-                      <tr>
-                        <td></td>
-                        <td></td>
-                        <td></td>
+                        <td className="w15">{item.Qty}</td>
+                        <td>{item.Amount}</td>
                         <td>
-                          <b> {t("ps-ttl-amt")}</b>
+                          <FaRegEdit
+                            size={15}
+                            className="table-icon"
+                            title="Update Item details"
+                            onClick={() => handleEditClick(item)}
+                          />
+                          <MdDeleteOutline
+                            onClick={() => handleDeleteItem(item?.saleid)}
+                            size={15}
+                            title="Delete the Item"
+                            className="table-icon "
+                            style={{ color: "red" }}
+                          />
                         </td>
-                        <td>
-                          {(viewItems || []).reduce(
-                            (acc, item) => acc + (item.Amount || 0),
-                            0
-                          )}
-                        </td>
-                        <td></td>
                       </tr>
-                    </tbody>
-                  </table>
+                    ))}
+                    <tr>
+                      {/* <td></td> */}
+                      <td></td>
+                      <td></td>
+                      <td>
+                        <b> {t("ps-ttl-amt")}</b>
+                      </td>
+                      <td>
+                        {(viewItems || []).reduce(
+                          (acc, item) => acc + (item.Amount || 0),
+                          0
+                        )}
+                      </td>
+                      <td></td>
+                    </tr>
+                  </tbody>
+                </table>
                 </div>
               </div>
             </div>
@@ -762,8 +762,8 @@ const CattleSaleList = () => {
         )}
         {/* its used for edit item */}
         {isModalOpen && (
-          <div className="modal sale">
-            <div className="modal-content">
+          <div className="modal">
+            <div className="saleModal-content">
               <h2> {t("ps-up-sale-item")}</h2>
               <label>
                 {t("ps-rect-no")} :

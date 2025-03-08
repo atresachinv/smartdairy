@@ -499,7 +499,7 @@ const ListDeliveryStock = () => {
         <div className="customer-heading-title-scroller w100 h1 mh100 hidescrollbar d-flex-col">
           <div className="data-headings-div h10 d-flex center forDWidth t-center bg7 sb">
             {/* <span className="f-info-text w5"> {t("ps-srNo")}</span> */}
-            <span className="f-info-text w10">
+            <span className="f-info-text w15">
               {t("ps-date")}
               <span
                 className="px5 f-color-icon"
@@ -616,7 +616,7 @@ const ListDeliveryStock = () => {
                     }}
                   >
                     {/* <span className="text w5">{index + 1}</span> */}
-                    <span className="text w10">
+                    <span className="text w15">
                       {formatDateToDDMMYYYY(item.saledate)}
                     </span>
                     <span className="text w15">{item.rctno}</span>
@@ -664,7 +664,7 @@ const ListDeliveryStock = () => {
         </div>
       </div>
       {isModalOpen && updatelist.length > 0 && (
-        <div className="pramod modal">
+        <div className="saleModal">
           <div className="modal-content">
             <div className="d-flex sb deal-info">
               <label className="heading"> Bill Details</label>
@@ -681,12 +681,12 @@ const ListDeliveryStock = () => {
             </div>
             <hr />
             <div className=" d-flex sb mx15 px15 deal-info-name">
-              <label className="label-text">
+              <label className="info-text">
                 Rect. No :{" "}
                 <span className="info-text">{updatelist[0]?.rctno || ""}</span>
               </label>
               <div className="10">
-                <label className="label-text">
+                <label className="info-text">
                   {t("ps-date")} :{" "}
                   <span className="info-text">
                     {formatDateToDDMMYYYY(updatelist[0]?.saledate)}
@@ -695,52 +695,50 @@ const ListDeliveryStock = () => {
               </div>
             </div>
             <div className=" d-flex sb mx15 px15 deal-info-name">
-              <label className="lable-text">
+              <label className="info-text">
                 Emp code :{" "}
                 <span className="info-text">
                   {updatelist[0]?.to_user || ""}
                 </span>
               </label>
-              <label className="label-text">
+              <label className="info-text mx15 px10">
                 Emp Name :{" "}
                 <span className="info-text">
-                  {findEmpName(updatelist[0]?.to_user) || ""}
+                  {findEmpName(
+                    updatelist[0]?.to_user,
+                    updatelist[0]?.deliver_to
+                  ) || ""}
                 </span>
               </label>
             </div>
-            <div className="modal-content w100  ">
+            <div className=" w100">
               <div className="sales-table-container w100">
-                <table className="sales-table w100 ">
-                  <thead className="bg1">
+                <table className="sales-table1">
+                  <thead className="bg1 w100">
                     <tr>
-                      <th>{t("ps-srNo")}</th>
+                      {/* <th>{t("ps-srNo")}</th> */}
                       <th>{t("ps-itm-name")}</th>
+                      <th>{t("ps-rate")}</th>
                       <th>{t("ps-qty")}</th>
+                      {/* <th>{t("ps-amt")}</th> */}
                     </tr>
                   </thead>
                   <tbody>
                     {updatelist.map((item, i) => (
                       <tr key={i}>
-                        <td>{i + 1}</td>
-                        <td>{item.ItemName}</td>
-
-                        <td className="w15">
-                          <input
-                            name="qty"
-                            type="number"
-                            value={item.Qty}
-                            onFocus={handleFocus}
-                            onChange={(e) =>
-                              handleItemChange(i, "qty", e.target.value)
-                            }
-                          />
-                        </td>
+                        {/* <td>{i + 1}</td> */}
+                        <td className="w15">{i + 1}</td>
+                        <td> {item.ItemName}</td>
+                        <td className="w15">{item.Qty}</td>
+                        {/* <td>{i}</td> */}
                       </tr>
                     ))}
                     <tr>
+                      {/* <td></td> */}
                       <td></td>
+                      {/* <td></td> */}
                       <td>
-                        <b>{t("ps-ttl-amt")}</b>
+                        <b> {t("ps-ttl-amt")}</b>
                       </td>
                       <td>
                         {(updatelist || []).reduce(
@@ -748,15 +746,11 @@ const ListDeliveryStock = () => {
                           0
                         )}
                       </td>
+                      {/* <td></td> */}
                     </tr>
                   </tbody>
                 </table>
               </div>
-            </div>
-            <div className="d-flex my5 j-end">
-              {/* <button className="btn" onClick={handleUpdate}>
-                {t("ps-update")}
-              </button> */}
             </div>
           </div>
         </div>

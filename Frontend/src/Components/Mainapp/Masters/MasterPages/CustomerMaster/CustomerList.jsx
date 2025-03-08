@@ -99,7 +99,7 @@ const CustomerList = () => {
     const value = e.target.value.toLowerCase();
     setSearchTerm(value);
   };
-
+  console.log(filteredData);
   const debouncedFilter = useMemo(() => {
     const timeout = setTimeout(() => {
       const filtered = customerlist.filter((customer) => {
@@ -164,7 +164,7 @@ const CustomerList = () => {
                 <span className="f-info-text w10">{t("master:m-mno")}</span>
                 <span className="f-info-text w15">{t("master:m-mdate")}</span>
                 <span className="f-info-text w15">{t("master:m-rtype")}</span>
-                <span className="f-info-text w5">{t("master:m-mtype")}</span>
+                <span className="f-info-text w10">{t("master:m-mtype")}</span>
                 <span className="f-info-text w5">{t("master:m-active")}</span>
               </div>
               {/* Show Spinner if loading, otherwise show the customer list */}
@@ -212,8 +212,8 @@ const CustomerList = () => {
                       )}
                     </span>
                     <span className="text w15">{customer.rcName}</span>
-                    <span className="text w5 t-start">
-                      {customer.milktype === 1 ? "Cow" : "Buffalo"}
+                    <span className="text w10 t-start">
+                      {customer.milktype === 0 ? "Cow" : "Buffalo"}
                     </span>
                     <span className="text w5">
                       {customer.isActive === 1 ? "Yes" : "No"}

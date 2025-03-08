@@ -179,14 +179,27 @@ const ProductsList = () => {
     }
 
     const doc = new jsPDF();
-
+    const getCategoryName = (groupCode) => {
+      switch (groupCode) {
+        case 1:
+          return "Cattle Feed";
+        case 2:
+          return "Medicines";
+        case 3:
+          return "Grocery";
+        case 4:
+          return "Other";
+        default:
+          return "Unknown";
+      }
+    };
     // Define columns and rows
     const columns = ["Sr.No", "Code", "Product Name", "Group", "Description"];
     const rows = productList.map((item, index) => [
       index + 1,
       item.ItemCode,
       item.ItemName,
-      item.ItemGroupCode,
+      getCategoryName(item.ItemGroupCode),
       item.ItemDesc,
     ]);
 
@@ -307,7 +320,7 @@ const ProductsList = () => {
         <div className="product-heading-title-scroller w100 h1 mh100 hidescrollbar d-flex-col br6">
           <div className="sales-data-headings-div p10 d-flex center sticky-top bg7 sa">
             {/* <span className="f-info-text w5">{t("ps-srNo")}</span> */}
-            <span className="f-info-text w10">
+            <span className="f-info-text w15">
               {t("ps-code")}
               <span
                 className="px10 f-color-icon"
@@ -325,7 +338,7 @@ const ProductsList = () => {
                 )}
               </span>
             </span>
-            <span className="f-info-text w25">
+            <span className="f-info-text w30">
               English Name
               <span
                 className="px10 f-color-icon"
@@ -343,7 +356,7 @@ const ProductsList = () => {
                 )}
               </span>
             </span>{" "}
-            <span className="f-info-text w25">
+            <span className="f-info-text w30">
               Marathi Name
               <span
                 className="px10 f-color-icon"
@@ -378,11 +391,11 @@ const ProductsList = () => {
                 }}
               >
                 {/* <span className="info-text w5">{index + 1}</span> */}
-                <span className="info-text w10">{product.ItemCode}</span>
-                <span className="info-text w25 t-start">
+                <span className="info-text w15">{product.ItemCode}</span>
+                <span className="info-text w30 t-start">
                   {product.ItemName}
                 </span>
-                <span className="info-text w25 t-start">{product.marname}</span>
+                <span className="info-text w30 t-start">{product.marname}</span>
                 {/* <span className="info-text w20 t-start">
                   {product.ItemDesc}
                 </span> */}
