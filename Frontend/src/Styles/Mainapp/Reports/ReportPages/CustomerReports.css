@@ -23,7 +23,7 @@
   z-index: 10;
 }
 
-.customer-table th, 
+.customer-table th,
 .customer-table td {
   padding: 10px;
   border: 1px solid #ddd;
@@ -43,8 +43,7 @@
   table-layout: fixed;
 }
 
-
-@media screen and (max-width: 320px) {
+@media screen and (max-width: 426px) {
   .customer-master-container .middel-filter-applay-div {
     height: auto;
     height: 150px;
@@ -110,7 +109,6 @@
   }
   .centerwise-and-button-div {
     margin-top: 60px;
-    
   }
   .centerwise-and-button-div button {
     height: 30px;
@@ -154,8 +152,8 @@
     margin: 20px;
     margin-top: 0px;
   }
-  .centerwise-and-button-div .checkboxcommission-Deposite  {
-     justify-content: space-around ;
+  .centerwise-and-button-div .checkboxcommission-Deposite {
+    justify-content: space-around;
   }
   .select-column-div {
     flex-direction: column;
@@ -168,15 +166,144 @@
   }
   .select-column-div .hide-selection-selection-bar select {
     height: 30px;
-   
   }
-   .select-column-div  .selected-hide-no-column{
+  .select-column-div .selected-hide-no-column {
     width: 100%;
-    overflow-x: auto ;
+    overflow-x: auto;
   }
-   .select-column-div  .selected-hide-no-column select{
-     width: 150px;
-   
+  .select-column-div .selected-hide-no-column select {
+    width: 150px;
   }
-   
+}
+@media screen and (max-width: 768px) {
+  .customer-master-container .middel-filter-applay-div {
+    height: auto;
+    height: 150px;
+  }
+
+  .customer-master-container
+    .middel-filter-applay-div
+    .dropdown-filter-checkbox-div
+    .active-not-active-data {
+    flex-direction: column;
+  }
+  .customer-master-container
+    .middel-filter-applay-div
+    .dropdown-filter-checkbox-div
+    .active-not-active-data
+    span {
+    width: 120px;
+    height: 10px;
+  }
+  .customer-master-container
+    .middel-filter-applay-div
+    .dropdown-filter-checkbox-div
+    .dropdown-filter-div {
+    flex-direction: column;
+  }
+  .customer-master-container
+    .middel-filter-applay-div
+    .dropdown-filter-checkbox-div
+    .dropdown-filter-div
+    select {
+    width: 140px;
+    margin-bottom: 10px;
+  }
+  .customer-master-container
+    .middel-filter-applay-div
+    .dropdown-filter-checkbox-div
+    .active-and-member-div {
+    width: 100%;
+    height: 50px;
+  }
+
+  .customer-master-container
+    .middel-filter-applay-div
+    .dropdown-filter-checkbox-div
+    .active-and-member-div
+    .active-not-active-data
+    span {
+    width: 70px;
+    height: 10px;
+  }
+  .customer-master-container
+    .middel-filter-applay-div
+    .dropdown-filter-checkbox-div
+    .dropdown-filter-div {
+    width: 100%;
+  }
+  .customer-master-container
+    .middel-filter-applay-div
+    .dropdown-filter-checkbox-div
+    .dropdown-filter-div
+    select {
+    margin-top: 13px;
+  }
+  .centerwise-and-button-div {
+    margin-top: 60px;
+  }
+  .centerwise-and-button-div button {
+    height: 30px;
+  }
+  .middel-filter-applay-div .dropdown-filter-center-div {
+    width: 100%;
+  }
+  .middel-filter-applay-div .dropdown-filter-center-div .centerwise-data-show {
+    flex-direction: column;
+  }
+  .middel-filter-applay-div
+    .dropdown-filter-center-div
+    .centerwise-data-show
+    select {
+    margin-top: 10px;
+  }
+  .middel-filter-applay-div
+    .dropdown-filter-center-div
+    .centerwise-data-show
+    span {
+    height: 10px;
+  }
+
+  .customer-master-container .middel-filter-applay-div {
+    height: 200px;
+  }
+  .middel-filter-applay-div .centerwise-and-button-div {
+    flex-direction: column;
+    margin-top: 20px;
+  }
+  .middel-filter-applay-div .centerwise-and-button-div .data-show-buttons {
+    width: 100%;
+  }
+  .middel-filter-applay-div .centerwise-and-button-div {
+    height: 100px;
+    margin-bottom: 10px;
+  }
+  .centerwise-and-button-div .checkboxcommission-Deposite {
+    width: 100%;
+    height: 120px;
+    margin: 20px;
+    margin-top: 0px;
+  }
+  .centerwise-and-button-div .checkboxcommission-Deposite {
+    justify-content: space-around;
+  }
+  .select-column-div {
+    flex-direction: column;
+  }
+
+  .select-column-div .hide-selection-selection-bar {
+    width: 300px;
+    height: 10px;
+    margin-bottom: 10px;
+  }
+  .select-column-div .hide-selection-selection-bar select {
+    height: 30px;
+  }
+  .select-column-div .selected-hide-no-column {
+    width: 100%;
+    overflow-x: auto;
+  }
+  .select-column-div .selected-hide-no-column select {
+    width: 150px;
+  }
 }
