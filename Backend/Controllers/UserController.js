@@ -8,7 +8,7 @@ const crypto = require("crypto");
 dotenv.config({ path: "Backend/.env" });
 
 //------------------------------------------------------------------------------------------->
-// Check Existing Username ------------------------------------------------------------------>
+// Check Existing dairyname & Username ------------------------------------------------------------------>
 //------------------------------------------------------------------------------------------->
 
 exports.checkUniqueDname = (req, res) => {
@@ -18,7 +18,7 @@ exports.checkUniqueDname = (req, res) => {
       .status(400)
       .json({ status: 400, message: "Dairyname required!" });
   }
-   const lowerDairyName = dairyname.toLowerCase();
+  const lowerDairyName = dairyname.toLowerCase();
   const query =
     "SELECT COUNT(*) AS count FROM societymaster WHERE SocietyName = ?";
   try {
@@ -46,12 +46,12 @@ exports.checkUniqueDname = (req, res) => {
 
 exports.checkUniqueusername = (req, res) => {
   const { username } = req.body;
-   if (!username) {
-     return res
-       .status(400)
-       .json({ status: 400, message: "Dairyname required!" });
-   }
-   const lowerUserName = username.toLowerCase();
+  if (!username) {
+    return res
+      .status(400)
+      .json({ status: 400, message: "Dairyname required!" });
+  }
+  const lowerUserName = username.toLowerCase();
   const query = "SELECT COUNT(*) AS count FROM users WHERE username = ?";
   try {
     pool.getConnection((err, connection) => {
@@ -221,6 +221,7 @@ exports.userRegister = async (req, res) => {
                       Litres DECIMAL(8,2) DEFAULT 0.00,
                       rate DECIMAL(8,2) DEFAULT 0.00,
                       Amt DECIMAL(10,2) DEFAULT 0.00,
+                      rctype VARCHAR(50),
                       ME INT,
                       CB INT,
                       SampleNo INT,

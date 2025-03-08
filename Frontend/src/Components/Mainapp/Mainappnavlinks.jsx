@@ -346,12 +346,6 @@ const Mainappnavlinks = ({ setselected, handleSidebar }) => {
           path: "reports/payment",
           role: ["admin", "super_admin", "manager"],
         },
-        {
-          name: "IR Purches Report",
-          icon: <FaFileInvoiceDollar className="icon" />,
-          path: "reports/inventory",
-          role: ["admin", "super_admin", "manager"],
-        },
       ],
     },
     {

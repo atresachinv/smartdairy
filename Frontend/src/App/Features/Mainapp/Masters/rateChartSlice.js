@@ -183,10 +183,10 @@ export const getRateCharts = createAsyncThunk(
 
 export const fetchRateChart = createAsyncThunk(
   "ratechart/fetchRateChart",
-  async ({ cb, rccode, rcdate, time }, { rejectWithValue }) => {
+  async ({ rccode, rcdate, rctype }, { rejectWithValue }) => {
     try {
       const response = await axiosInstance.get("/selected/ratechart", {
-        params: { cb, rccode, rcdate, time },
+        params: { rccode, rcdate, rctype },
       });
       return response.data.selectedRChart;
     } catch (error) {
@@ -252,15 +252,34 @@ export const fetchselectedRateChart = createAsyncThunk(
 
 //apply rate chart imcomplete  ------------------------------------------------------------->
 
+// export const applyRateChart = createAsyncThunk(
+//   "ratechart/applyRateChart",
+//   async ({ applydate, custFrom, custTo, ratechart }, { rejectWithValue }) => {
+//     try {
+//       const response = await axiosInstance.post("/apply/ratechart", {
+//         applydate,
+//         custFrom,
+//         custTo,
+//         ratechart,
+//       });
+//       return response.data;
+//     } catch (error) {
+//       const errorMessage =
+//         error.response?.data?.message || "Failed to apply ratechart!.";
+//       return rejectWithValue(errorMessage);
+//     }
+//   }
+// );
+
 export const applyRateChart = createAsyncThunk(
   "ratechart/applyRateChart",
-  async ({ applydate, custFrom, custTo, ratechart }, { rejectWithValue }) => {
+  async ({ rcfromdate, rctodate, custFrom, custTo }, { rejectWithValue }) => {
     try {
       const response = await axiosInstance.post("/apply/ratechart", {
-        applydate,
+        rcfromdate,
+        rctodate,
         custFrom,
         custTo,
-        ratechart,
       });
       return response.data;
     } catch (error) {

@@ -359,21 +359,24 @@ const CreateCustomer = () => {
     try {
       if (isEditing) {
         // Update existing customer in DB
-        dispatch(updateCustomer(formData));
-        dispatch(listCustomer());
-        toast.success("Customer updated successfully!");
+        const result = await dispatch(updateCustomer(formData)).unwrap();
+        if (result.status === 200) {
+          dispatch(listCustomer());
+          toast.success(result.message);
+        } else {
+          toast.error(result.message);
+        }
       } else {
         // Create new customer
-        dispatch(createCustomer(formData));
-        dispatch(listCustomer());
-        dispatch(getMaxCustNo());
-        setFormData((prevData) => ({
-          ...prevData,
-          cust_no: custno,
-        }));
-        toast.success("Customer created successfully!");
+        const result = await dispatch(createCustomer(formData)).unwrap();
+        if (result.status === 200) {
+          dispatch(listCustomer());
+          dispatch(getMaxCustNo());
+          toast.success(result.message);
+        } else {
+          toast.error(result.message);
+        }
       }
-
       // Reset the form after fetching the new cust_no
       resetForm();
     } catch (error) {
@@ -622,7 +625,7 @@ const CreateCustomer = () => {
                   value="0"
                   id="male"
                   onChange={handleInputChange}
-                  checked={formData.gender === "0"}
+                  checked={formData.gender === 0}
                 />
                 <span className="info-text w80">{t("m-male")}</span>
               </div>
@@ -634,7 +637,7 @@ const CreateCustomer = () => {
                   value="1"
                   id="female"
                   onChange={handleInputChange}
-                  checked={formData.gender === "1"}
+                  checked={formData.gender === 1}
                 />
                 <span className="info-text w80">{t("m-female")}</span>
               </div>
@@ -731,7 +734,7 @@ const CreateCustomer = () => {
                     value={0}
                     id="cow"
                     onChange={handleInputChange}
-                    checked={formData.milktype === "0"}
+                    checked={formData.milktype === 0}
                   />
                   <span className="info-text w80">{t("m-mcow")}</span>
                 </div>
@@ -743,7 +746,7 @@ const CreateCustomer = () => {
                     id="buffalo"
                     value={1}
                     onChange={handleInputChange}
-                    checked={formData.milktype === "1"}
+                    checked={formData.milktype === 1}
                   />
                   <span className="info-text w80">{t("m-mbuffalo")}</span>
                 </div>
