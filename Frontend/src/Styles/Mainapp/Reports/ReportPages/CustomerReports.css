@@ -2,7 +2,7 @@
   width: 100%;
   overflow-x: auto; /* Enable horizontal scrolling */
   overflow-y: auto; /* Enable vertical scrolling */
-  max-height: 400px; /* Adjust as needed */
+  max-height: 380px; /* Adjust as needed */
   position: relative;
 }
 
@@ -21,6 +21,7 @@
   top: 0;
   background: rgb(100, 60, 60);
   z-index: 10;
+  
 }
 
 .customer-table th,
@@ -58,6 +59,12 @@
   .customer-master-container
     .middel-filter-applay-div
     .dropdown-filter-checkbox-div
+    .active-not-active-data select {
+    width: 120px;
+  }
+  .customer-master-container
+    .middel-filter-applay-div
+    .dropdown-filter-checkbox-div
     .active-not-active-data
     span {
     width: 120px;
@@ -84,6 +91,7 @@
     width: 100%;
     height: 50px;
   }
+ 
 
   .customer-master-container
     .middel-filter-applay-div
@@ -106,6 +114,11 @@
     .dropdown-filter-div
     select {
     margin-top: 13px;
+    width: 170px;
+
+  }
+  .dropdown-filter-checkbox-div{
+    margin-bottom: 3px;
   }
   .centerwise-and-button-div {
     margin-top: 60px;
@@ -154,6 +167,7 @@
   }
   .centerwise-and-button-div .checkboxcommission-Deposite {
     justify-content: space-around;
+  
   }
   .select-column-div {
     flex-direction: column;
@@ -163,147 +177,24 @@
     width: 300px;
     height: 10px;
     margin-bottom: 10px;
+
   }
   .select-column-div .hide-selection-selection-bar select {
     height: 30px;
+    width: 200px;
+  }
+  .select-column-div .hide-selection-selection-bar span {
+    height: 30px;
+    width: 200px;
   }
   .select-column-div .selected-hide-no-column {
     width: 100%;
     overflow-x: auto;
+
   }
   .select-column-div .selected-hide-no-column select {
     width: 150px;
-  }
-}
-@media screen and (max-width: 768px) {
-  .customer-master-container .middel-filter-applay-div {
-    height: auto;
-    height: 150px;
-  }
-
-  .customer-master-container
-    .middel-filter-applay-div
-    .dropdown-filter-checkbox-div
-    .active-not-active-data {
-    flex-direction: column;
-  }
-  .customer-master-container
-    .middel-filter-applay-div
-    .dropdown-filter-checkbox-div
-    .active-not-active-data
-    span {
-    width: 120px;
-    height: 10px;
-  }
-  .customer-master-container
-    .middel-filter-applay-div
-    .dropdown-filter-checkbox-div
-    .dropdown-filter-div {
-    flex-direction: column;
-  }
-  .customer-master-container
-    .middel-filter-applay-div
-    .dropdown-filter-checkbox-div
-    .dropdown-filter-div
-    select {
-    width: 140px;
-    margin-bottom: 10px;
-  }
-  .customer-master-container
-    .middel-filter-applay-div
-    .dropdown-filter-checkbox-div
-    .active-and-member-div {
-    width: 100%;
-    height: 50px;
-  }
-
-  .customer-master-container
-    .middel-filter-applay-div
-    .dropdown-filter-checkbox-div
-    .active-and-member-div
-    .active-not-active-data
-    span {
-    width: 70px;
-    height: 10px;
-  }
-  .customer-master-container
-    .middel-filter-applay-div
-    .dropdown-filter-checkbox-div
-    .dropdown-filter-div {
-    width: 100%;
-  }
-  .customer-master-container
-    .middel-filter-applay-div
-    .dropdown-filter-checkbox-div
-    .dropdown-filter-div
-    select {
-    margin-top: 13px;
-  }
-  .centerwise-and-button-div {
-    margin-top: 60px;
-  }
-  .centerwise-and-button-div button {
     height: 30px;
   }
-  .middel-filter-applay-div .dropdown-filter-center-div {
-    width: 100%;
-  }
-  .middel-filter-applay-div .dropdown-filter-center-div .centerwise-data-show {
-    flex-direction: column;
-  }
-  .middel-filter-applay-div
-    .dropdown-filter-center-div
-    .centerwise-data-show
-    select {
-    margin-top: 10px;
-  }
-  .middel-filter-applay-div
-    .dropdown-filter-center-div
-    .centerwise-data-show
-    span {
-    height: 10px;
-  }
-
-  .customer-master-container .middel-filter-applay-div {
-    height: 200px;
-  }
-  .middel-filter-applay-div .centerwise-and-button-div {
-    flex-direction: column;
-    margin-top: 20px;
-  }
-  .middel-filter-applay-div .centerwise-and-button-div .data-show-buttons {
-    width: 100%;
-  }
-  .middel-filter-applay-div .centerwise-and-button-div {
-    height: 100px;
-    margin-bottom: 10px;
-  }
-  .centerwise-and-button-div .checkboxcommission-Deposite {
-    width: 100%;
-    height: 120px;
-    margin: 20px;
-    margin-top: 0px;
-  }
-  .centerwise-and-button-div .checkboxcommission-Deposite {
-    justify-content: space-around;
-  }
-  .select-column-div {
-    flex-direction: column;
-  }
-
-  .select-column-div .hide-selection-selection-bar {
-    width: 300px;
-    height: 10px;
-    margin-bottom: 10px;
-  }
-  .select-column-div .hide-selection-selection-bar select {
-    height: 30px;
-  }
-  .select-column-div .selected-hide-no-column {
-    width: 100%;
-    overflow-x: auto;
-  }
-  .select-column-div .selected-hide-no-column select {
-    width: 150px;
-  }
 }
+

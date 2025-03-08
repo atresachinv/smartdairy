@@ -50,7 +50,6 @@ const CustomerReports = () => {
   const CityName = useSelector((state) => state.dairy.dairyData.city);
 
   const columnOptions = {
-    Empty: "index+1",
     Code: "cid",
     Customer_Name: "cname",
     English_Name: "engName",
