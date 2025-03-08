@@ -53,8 +53,6 @@ const Purchesreportr = () => {
     fetchData();
   }, []); // Run useEffect when fromDate or toDate changes
 
- 
-
   //---------------------------DealerWise Report --------------------------------------->>
   useEffect(() => {
     const fetchData = async () => {
@@ -73,8 +71,6 @@ const Purchesreportr = () => {
     };
     fetchData();
   }, []);
-
-
 
   //... Dealer Pdf
   useEffect(() => {
@@ -1105,7 +1101,7 @@ Total Amount:        ${totalAmount.toFixed(2)}
             </div>
             <div className="businessman-repoer-div w100 h50 d-flex a-center">
               <div className="filter-code-div w30 d-flex a-center">
-                <span className="w30 heading info-text">Code: </span>
+                <span className="w40  info-text">Code: </span>
                 <input
                   className="w40 data"
                   type="text"
@@ -1125,14 +1121,7 @@ Total Amount:        ${totalAmount.toFixed(2)}
                 />
               </div>
               <div className="button-for-pdf d-flex a-center h50 w20">
-                <button
-                  className="info-text heading btn"
-                  onClick={DealergeneratePDF}
-                  style={{
-                    cursor: "pointer",
-                    color: "blue",
-                  }}
-                >
+                <button className="btn  n" onClick={DealergeneratePDF}>
                   PDF
                 </button>
               </div>
