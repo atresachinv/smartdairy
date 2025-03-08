@@ -90,8 +90,14 @@ exports.createCustomer = async (req, res) => {
   const isAdmin = "0";
   const formattedCode = String(cust_no).padStart(3, "0");
   const fax = `${prefix}${formattedCode}`;
-  if (dairy_id) {
-    return res.status(401).json({ status: 401, message: "Unauthorized User" });
+
+  if (!dairy_id) {
+    return res.status(401).json({ status: 401, message: "Unauthorized User!" });
+  }
+  if (!req.body) {
+    return res
+      .status(400)
+      .json({ status: 400, message: "All field data required!" });
   }
   pool.getConnection((err, connection) => {
     if (err) {
@@ -250,6 +256,9 @@ exports.createCustomer = async (req, res) => {
             }
           );
         });
+        // Remove the cached customer list
+        const cacheKey = `customerList_${dairy_id}_${centerid}`;
+        cache.del(cacheKey);
       } catch (error) {
         connection.rollback(() => {
           connection.release();
@@ -303,6 +312,7 @@ exports.updateCustomer = async (req, res) => {
     h_transportation,
   } = req.body;
 
+  const { dairy_id, center_id } = req.user;
   pool.getConnection((err, connection) => {
     if (err) {
       console.error("Error getting MySQL connection: ", err);
@@ -374,6 +384,9 @@ exports.updateCustomer = async (req, res) => {
             .json({ status: 200, message: "Customer updated successfully" });
         }
       );
+      // Remove the cached customer list
+      const cacheKey = `customerList_${dairy_id}_${center_id}`;
+      cache.del(cacheKey);
     } catch (error) {
       connection.release();
       console.error("Error processing request: ", error);
@@ -391,18 +404,37 @@ exports.updateCustomer = async (req, res) => {
 exports.customerList = async (req, res) => {
   const dairy_id = req.user.dairy_id;
   const center_id = req.user.center_id;
-  // Check for unauthorized access
+
   if (!dairy_id) {
     return res.status(401).json({ status: 401, message: "Unauthorized User!" });
   }
-  const getCustList = `
-    SELECT cid, cname, Phone, fax, City, tal, dist, cust_accno, createdby,
-           createdon, mobile, isSabhasad, rno, orgid, engName, rateChartNo,
-           centerid, srno, cust_pincode, cust_addhar, cust_farmerid, cust_bankname,
-           cust_ifsc, caste, gender, milktype, isActive, rcName
-    FROM customer
-    WHERE orgid = ? AND (ctype IS NULL OR ctype = 1) AND (isdeleted IS NULL OR isdeleted = 0)
-  `;
+
+  const cacheKey = `customerList_${dairy_id}_${center_id}`;
+  // Check if data exists in cache
+  const cachedData = cache.get(cacheKey);
+  if (cachedData) {
+    return res.status(200).json({
+      status: 200,
+      customerList: cachedData,
+      message: "Customers found!",
+    });
+  }
+
+  // SQL Query for retrieving customers
+  const getCustList =
+    center_id === 0
+      ? `SELECT cid, cname, Phone, fax, City, tal, dist, cust_accno, createdby, createdon, mobile,
+              isSabhasad, rno, orgid, engName, rateChartNo, centerid, srno, cust_pincode,
+              cust_addhar, cust_farmerid, cust_bankname, cust_ifsc, caste, gender, milktype, isActive, rcName
+       FROM customer
+       WHERE orgid = ? AND (ctype IS NULL OR ctype = 1) AND (isdeleted IS NULL OR isdeleted = 0)
+       ORDER BY centerid ASC, srno ASC`
+      : `SELECT cid, cname, Phone, fax, City, tal, dist, cust_accno, createdby, createdon, mobile,
+              isSabhasad, rno, orgid, engName, rateChartNo, centerid, srno, cust_pincode,
+              cust_addhar, cust_farmerid, cust_bankname, cust_ifsc, caste, gender, milktype, isActive, rcName
+       FROM customer
+       WHERE orgid = ? AND centerid = ? AND (ctype IS NULL OR ctype = 1) AND (isdeleted IS NULL OR isdeleted = 0)`;
+
   pool.getConnection((err, connection) => {
     if (err) {
       console.error("Error getting MySQL connection: ", err);
@@ -412,28 +444,32 @@ exports.customerList = async (req, res) => {
     }
 
     try {
-      connection.query(getCustList, [dairy_id, center_id], (err, result) => {
-        connection.release(); // Always release the connection after query execution
+      const params = center_id === 0 ? [dairy_id] : [dairy_id, center_id];
 
+      connection.query(getCustList, params, (err, result) => {
         if (err) {
-          console.error("Error executing query: ", err); // Correct error reference
+          console.error("Error executing query: ", err);
           return res
             .status(500)
             .json({ status: 500, message: "Error fetching customer list" });
         }
 
+        // Store in cache before sending response
+        cache.set(cacheKey, result);
+
         return res.status(200).json({
           status: 200,
-          customerList: result, // Return the entire result array
-          message: "Customer list retrieved successfully", // Updated message
+          customerList: result,
+          message: "Customer list retrieved successfully",
         });
       });
     } catch (error) {
-      connection.release();
       console.error("Error processing request: ", error);
       return res
         .status(500)
         .json({ status: 500, message: "Internal server error" });
+    } finally {
+      connection.release(); // Ensure connection is always released
     }
   });
 };
@@ -488,6 +524,7 @@ exports.uniqueRchartList = async (req, res) => {
 
 exports.deleteCustomer = async (req, res) => {
   const { cid } = req.body;
+  const { dairy_id, center_id } = req.user;
   pool.getConnection((err, connection) => {
     if (err) {
       console.error("Error getting MySQL connection: ", err);
@@ -518,6 +555,9 @@ exports.deleteCustomer = async (req, res) => {
           .status(200)
           .json({ message: "Customer deleted successfully" });
       });
+      // Remove the cached customer list
+      const cacheKey = `customerList_${dairy_id}_${center_id}`;
+      cache.del(cacheKey);
     } catch (error) {
       connection.release();
       console.error("Error processing request: ", error);
@@ -827,16 +867,24 @@ exports.uploadExcelCustomer = async (req, res) => {
   const designation = "Customer";
   const isAdmin = "0";
 
+  if (!dairy_id) {
+    return res.status(401).json({ status: 401, message: "Unauthorized User!" });
+  }
+
   pool.getConnection((err, connection) => {
     if (err) {
       console.error("Error getting MySQL connection: ", err);
-      return res.status(500).json({ message: "Database connection error" });
+      return res
+        .status(500)
+        .json({ status: 500, message: "Database connection error!" });
     }
 
     connection.beginTransaction((err) => {
       if (err) {
         connection.release();
-        return res.status(500).json({ message: "Error starting transaction" });
+        return res
+          .status(500)
+          .json({ status: 500, message: "Error starting transaction!" });
       }
 
       try {
@@ -847,7 +895,9 @@ exports.uploadExcelCustomer = async (req, res) => {
             return connection.rollback(() => {
               connection.release();
               console.error("Error querying maxCid: ", err);
-              return res.status(500).json({ message: "Database query error" });
+              return res
+                .status(500)
+                .json({ status: 500, message: "Database query error!" });
             });
           }
 
@@ -862,15 +912,17 @@ exports.uploadExcelCustomer = async (req, res) => {
                   return connection.rollback(() => {
                     connection.release();
                     console.error("Error committing transaction: ", err);
-                    return res
-                      .status(500)
-                      .json({ message: "Error committing transaction" });
+                    return res.status(500).json({
+                      status: 500,
+                      message: "Error committing transaction",
+                    });
                   });
                 }
                 connection.release();
-                res
-                  .status(200)
-                  .json({ message: "Customers created successfully!" });
+                res.status(200).json({
+                  status: 200,
+                  message: "Customers created successfully!",
+                });
               });
             }
 
@@ -952,7 +1004,7 @@ exports.uploadExcelCustomer = async (req, res) => {
                     console.error("Error inserting into customer table: ", err);
                     return res
                       .status(500)
-                      .json({ message: "Database query error" });
+                      .json({ status: 500, message: "Database query error" });
                   });
                 }
 
@@ -986,9 +1038,10 @@ exports.uploadExcelCustomer = async (req, res) => {
                           "Error inserting into users table: ",
                           err
                         );
-                        return res
-                          .status(500)
-                          .json({ message: "Database query error" });
+                        return res.status(500).json({
+                          status: 500,
+                          message: "Database query error!",
+                        });
                       });
                     }
 
@@ -1003,11 +1056,16 @@ exports.uploadExcelCustomer = async (req, res) => {
           // Start processing customers from index 0
           processCustomerData(0);
         });
+        // Remove the cached customer list
+        const cacheKey = `customerList_${dairy_id}_${centerid}`;
+        cache.del(cacheKey);
       } catch (error) {
         connection.rollback(() => {
           connection.release();
           console.error("Error processing request: ", error);
-          return res.status(500).json({ message: "Internal server error" });
+          return res
+            .status(500)
+            .json({ status: 500, message: "Internal server error" });
         });
       }
     });
@@ -1718,7 +1776,9 @@ exports.deleteCustomer = async (req, res) => {
           if (results.affectedRows === 0) {
             return res.status(404).json({ message: "Customer not found" });
           }
-
+          // Remove the cached customer list
+          const cacheKey = `customerList_${dairy_id}_${center_id}`;
+          cache.del(cacheKey);
           return res
             .status(200)
             .json({ message: "Customer deleted successfully" });

@@ -498,16 +498,34 @@ exports.applyRateChart = async (req, res) => {
         try {
           // Step 1: Fetch All Applicable Rate Charts from the Database
           const fetchRateChartQuery = `
-            SELECT rcdate, rctypename, fat, snf, rate
-            FROM ratemaster
-            WHERE companyid = ? AND center_id = ? AND rcdate BETWEEN ? AND ?
-            ORDER BY rcdate ASC
+           SELECT rm.fat, rm.snf, rm.rate, rm.rctypename, rm.rcdate
+            FROM ratemaster AS rm
+            INNER JOIN (
+            SELECT
+              rctypename,
+              MAX(rcdate) AS max_rcdate
+            FROM
+              ratemaster
+            WHERE
+              companyid = ?
+              AND center_id = ?
+              AND rctypename IN (
+              SELECT DISTINCT rcName
+              FROM customer
+              WHERE orgid = ? AND centerid = ?
+            )
+            GROUP BY
+              rctypename
+            ) AS latest_rates ON rm.rctypename = latest_rates.rctypename
+              AND rm.rcdate = latest_rates.max_rcdate
+            WHERE
+            rm.companyid = ? AND rm.center_id = ?
           `;
 
           const rateCharts = await new Promise((resolve, reject) => {
             connection.query(
               fetchRateChartQuery,
-              [dairy_id, center_id, rcfromdate, rctodate],
+              [dairy_id, center_id, dairy_id, center_id, dairy_id, center_id],
               (err, results) => {
                 if (err) return reject(err);
                 resolve(results);

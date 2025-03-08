@@ -64,6 +64,7 @@ const MilkSankalan = () => {
     }
   }, [centerSetting]);
 
+
   useEffect(() => {
     localStorage.setItem("collCount", collCount);
     localStorage.setItem("literCount", literCount);
@@ -86,12 +87,12 @@ const MilkSankalan = () => {
     dispatch(mobilePrevLiters());
   }, []);
 
-  useEffect(() => {
-    // When the customer list is updated, store it in localStorage
-    if (customerlist.length > 0) {
-      localStorage.setItem("customerlist", JSON.stringify(customerlist));
-    }
-  }, [customerlist]);
+  // useEffect(() => {
+  //   // When the customer list is updated, store it in localStorage
+  //   if (customerlist.length > 0) {
+  //     localStorage.setItem("customerlist", JSON.stringify(customerlist));
+  //   }
+  // }, [customerlist]);
 
   // Effect to load customer list from local storage
   useEffect(() => {
@@ -340,7 +341,7 @@ const MilkSankalan = () => {
   };
 
   // Auto change AM - PM ------------------------------------------------------------------>
-  
+
   const currentHour = new Date().getHours();
   const heading =
     currentHour < 12 ? `${t("c-mrg-coll")}` : `${t("c-eve-coll")}`;

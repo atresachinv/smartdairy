@@ -59,3 +59,37 @@
     -webkit-transform: scaleY(1);
   }
 }
+
+/* <<<------------Typing Loader css ------------------------>>> */
+
+.typing-container {
+  font-size: 20px;
+  font-weight: bold;
+  font-family: "Courier New", Courier, monospace;
+  color: #333;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100px;
+  position: relative;
+}
+
+.typing-text {
+  white-space: nowrap;
+  overflow: hidden;
+  border-right: 3px solid transparent;
+}
+
+.cursor {
+  display: inline-block;
+  width: 8px;
+  height: 20px;
+  background-color: black;
+  animation: blink 0.7s infinite;
+}
+
+@keyframes blink {
+  50% {
+    opacity: 0;
+  }
+}

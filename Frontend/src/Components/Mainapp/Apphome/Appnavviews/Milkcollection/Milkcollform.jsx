@@ -29,7 +29,8 @@ const MilkColleform = ({ switchToSettings }) => {
     (state) => state.dairy.dairyData.PhoneNo || state.dairy.dairyData.mobile
   );
   const tDate = useSelector((state) => state.date.toDate);
-  const token = useSelector((state) => state.notify.fcmToken);
+  // const token = useSelector((state) => state.notify.fcmToken);
+  const milkcollRatechart = useSelector((state) => state.ratechart.rateChart);
   const centerSetting = useSelector(
     (state) => state.dairySetting.centerSetting //center settings
   );
@@ -66,6 +67,8 @@ const MilkColleform = ({ switchToSettings }) => {
 
   const [values, setValues] = useState(initialValues);
 
+console.log(customerList);
+
   // dynamic shift time set in time -------------------------------------------------------------->
   useEffect(() => {
     setValues((prevData) => ({
@@ -83,6 +86,17 @@ const MilkColleform = ({ switchToSettings }) => {
     }
   }, [centerSetting]);
 
+  // Effect to get rate chart from backend -------------------------------------------------------->
+  useEffect(() => {
+    dispatch(getRateCharts());
+  }, [dispatch]);
+
+  // effect to set rate chart --------------------------------------------------------------------->
+  useEffect(() => {
+    setMilkRatechart(milkcollRatechart);
+  }, [milkcollRatechart]);
+
+  //  handle input fields ------------------------------------------------------------------------>
   const handleInputs = (e) => {
     const { name, value } = e.target;
 
@@ -127,7 +141,7 @@ const MilkColleform = ({ switchToSettings }) => {
     }));
   };
 
-  // used for decimal input correction
+  // used for decimal input correction ---------------------------------------------------------->
   const handleInputChange = (e) => {
     const { name, value } = e.target;
 
@@ -163,7 +177,7 @@ const MilkColleform = ({ switchToSettings }) => {
     }
   };
 
-  // Effect to load customer list from local storage
+  // // Effect to load customer list from local storage ------------------------------------------>
   useEffect(() => {
     const storedCustomerList = localStorage.getItem("customerlist");
     if (storedCustomerList) {
@@ -173,25 +187,29 @@ const MilkColleform = ({ switchToSettings }) => {
     dispatch(getRateCharts());
   }, [dispatch]);
 
-  // Retrieve the stored rate chart from localStorage on component mount
-  useEffect(() => {
-    const storedRateChart = localStorage.getItem("milkcollrcharts");
-    if (storedRateChart) {
-      try {
-        const parsedRateChart = JSON.parse(storedRateChart);
-        setMilkRatechart(parsedRateChart);
-      } catch (error) {
-        console.error(
-          "Failed to parse milkcollrchart from localStorage:",
-          error
-        );
-      }
-    } else {
-      console.log("No data found in localStorage for milkcollrchart");
-    }
-  }, []);
+  // // Retrieve the stored rate chart from localStorage on component mount
+  // useEffect(() => {
+  //   const storedRateChart = localStorage.getItem("milkcollrcharts");
+  //   if (storedRateChart) {
+  //     try {
+  //       const parsedRateChart = JSON.parse(storedRateChart);
+  //       if (parsedRateChart) {
+  //         setMilkRatechart(parsedRateChart);
+  //       } else {
+  //         setMilkRatechart(milkcollRatechart);
+  //       }
+  //     } catch (error) {
+  //       console.error(
+  //         "Failed to parse milkcollrchart from localStorage:",
+  //         error
+  //       );
+  //     }
+  //   } else {
+  //     console.log("No data found in localStorage for milkcollrchart");
+  //   }
+  // }, []);
 
-  // morning evening
+  // morning evening -------------------------------------------------------------------------->
   const handleTime = () => {
     setTime((prev) => !prev);
     setValues((prevData) => ({
@@ -210,7 +228,6 @@ const MilkColleform = ({ switchToSettings }) => {
       const parsedSnf = parseFloat(snf);
       const parsedLiters = parseFloat(liters);
       const degree = (parsedFat * parsedSnf).toFixed(2);
-
       const rateEntry = milkRateChart.find(
         (entry) =>
           entry.fat === parsedFat &&

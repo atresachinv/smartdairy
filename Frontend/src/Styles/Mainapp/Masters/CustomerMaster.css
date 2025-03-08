@@ -3,14 +3,14 @@
   overflow-x: auto;
 }
 .customer-data-headings-div {
-  min-width: 1900px;
+  min-width: 1200px;
   position: sticky;
   top: 0;
   background-color: #17acc0;
   padding: 5px 0;
 }
 .customer-data-values-div {
-  min-width: 1900px;
+  min-width: 1200px;
 }
 
 .toggle-button {
@@ -113,13 +113,13 @@
     font-size: 8px;
   }
   .customer-data-headings-div {
-    min-width: 1600px;
+    min-width: 900px;
     position: sticky;
     top: 0;
     background-color: #17acc0;
   }
   .customer-data-values-div {
-    min-width: 1600px;
+    min-width: 900px;
   }
 }
 

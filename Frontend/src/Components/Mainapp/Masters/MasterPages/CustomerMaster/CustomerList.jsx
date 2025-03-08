@@ -24,6 +24,12 @@ const CustomerList = () => {
     setFilteredData(customerlist);
   }, [customerlist]);
 
+  const center_id = useSelector(
+    (state) =>
+      state.dairy.dairyData.center_id || state.dairy.dairyData.center_id
+  );
+  console.log(center_id);
+
   const downloadExcel = () => {
     if (!Array.isArray(customerlist) || customerlist.length === 0) {
       alert("No data available to export.");
@@ -83,23 +89,29 @@ const CustomerList = () => {
     XLSX.writeFile(workbook, fileName);
   };
 
+  //  save only lgoin center customer list in local storage --------------------------------------->
   useEffect(() => {
-    // When the customer list is updated, store it in localStorage
-    if (customerlist.length > 0) {
-      localStorage.setItem("customerlist", JSON.stringify(customerlist));
+    // Filter customers with centerid === 0
+    const filteredCustomers = customerlist.filter(
+      (customer) => customer.centerid === center_id
+    );
+    // Save only if there are customers with centerid === 0
+    if (filteredCustomers.length > 0) {
+      console.log(filteredCustomers);
+      localStorage.setItem("customerlist", JSON.stringify(filteredCustomers));
     }
   }, [customerlist]);
 
-  if (!customerlist || customerlist.length === 0) {
-    return <div>No customer found</div>;
-  }
+  // if (!customerlist || customerlist.length === 0) {
+  //   return <div>No customer found</div>;
+  // }
 
   // Filter customer function fillter on name , code , mobile , city
   const handleSearch = (e) => {
     const value = e.target.value.toLowerCase();
     setSearchTerm(value);
   };
-  console.log(filteredData);
+
   const debouncedFilter = useMemo(() => {
     const timeout = setTimeout(() => {
       const filtered = customerlist.filter((customer) => {
@@ -148,24 +160,24 @@ const CustomerList = () => {
           </div>
           <div className="customer-list-table w100 h1 d-flex-col hidescrollbar bg">
             <div className="customer-heading-title-scroller w100 h1 mh100 d-flex-col">
-              <div className="customer-data-headings-div  h10 d-flex center t-center sb">
+              <div className="customer-data-headings-div p10 d-flex center t-center sb">
                 <span className="f-info-text w5">{t("master:m-ccode")}</span>
                 <span className="f-info-text w25">{t("master:m-cname")}</span>
                 <span className="f-info-text w10">{t("master:m-mobile")}</span>
                 <span className="f-info-text w15">{t("master:m-addhar")}</span>
-                <span className="f-info-text w15">{t("master:m-city")}</span>
+                {/* <span className="f-info-text w15">{t("master:m-city")}</span>
                 <span className="f-info-text w15">{t("master:m-tel")}</span>
-                <span className="f-info-text w15">{t("master:m-dist")}</span>
+                <span className="f-info-text w15">{t("master:m-dist")}</span> */}
                 <span className="f-info-text w15">{t("master:m-accno")}</span>
                 <span className="f-info-text w15">{t("master:m-ifsc")}</span>
-                <span className="f-info-text w15">{t("master:m-caste")}</span>
-                <span className="f-info-text w10">{t("master:m-gender")}</span>
-                <span className="f-info-text w5">{t("master:m-age")}</span>
+                {/*<span className="f-info-text w15">{t("master:m-caste")}</span>
+                 <span className="f-info-text w10">{t("master:m-gender")}</span>
+                <span className="f-info-text w5">{t("master:m-age")}</span> 
                 <span className="f-info-text w10">{t("master:m-mno")}</span>
-                <span className="f-info-text w15">{t("master:m-mdate")}</span>
+                <span className="f-info-text w15">{t("master:m-mdate")}</span> */}
                 <span className="f-info-text w15">{t("master:m-rtype")}</span>
                 <span className="f-info-text w10">{t("master:m-mtype")}</span>
-                <span className="f-info-text w5">{t("master:m-active")}</span>
+                {/* <span className="f-info-text w5">{t("master:m-active")}</span> */}
               </div>
               {/* Show Spinner if loading, otherwise show the customer list */}
               {status === "loading" ? (
@@ -174,7 +186,7 @@ const CustomerList = () => {
                 filteredData.map((customer, index) => (
                   <div
                     key={index}
-                    className={`customer-data-values-div w100 h10 d-flex center t-center sa ${
+                    className={`customer-data-values-div w100 p10 d-flex center t-center sa ${
                       index % 2 === 0 ? "bg-light" : "bg-dark"
                     }`}
                     style={{
@@ -187,21 +199,20 @@ const CustomerList = () => {
                       {customer.Phone || customer.mobile}
                     </span>
                     <span className="text w15">{customer.cust_addhar}</span>
-                    <span className="text w15 t-start">{customer.City}</span>
+                    {/* <span className="text w15 t-start">{customer.City}</span>
                     <span className="text w15 t-start">{customer.tal}</span>
-                    <span className="text w15 t-start">{customer.dist}</span>
+                    <span className="text w15 t-start">{customer.dist}</span> */}
                     <span className="text w15  t-end">
                       {customer.cust_accno}
                     </span>
                     <span className="text w15  ">{customer.cust_ifsc}</span>
-                    <span className="text w15 t-start">{customer.caste}</span>
+                    {/* <span className="text w15 t-start">{customer.caste}</span>
                     <span className="text w10 t-start">
                       {customer.gender === 1 ? "Female" : "Male"}
                     </span>
-                    <span className="text w5">-</span>{" "}
-                    {/* Placeholder for age */}
-                    <span className="text w10 t-start">{customer.rno}</span>
-                    <span className="text w15 t-end">
+                    <span className="text w5">-</span>{" "} */}
+                    {/*<span className="text w10 t-start">{customer.rno}</span>
+                     <span className="text w15 t-end">
                       {new Date(customer.createdon).toLocaleDateString(
                         "en-GB",
                         {
@@ -210,14 +221,14 @@ const CustomerList = () => {
                           year: "numeric",
                         }
                       )}
-                    </span>
+                    </span> */}
                     <span className="text w15">{customer.rcName}</span>
                     <span className="text w10 t-start">
                       {customer.milktype === 0 ? "Cow" : "Buffalo"}
                     </span>
-                    <span className="text w5">
+                    {/* <span className="text w5">
                       {customer.isActive === 1 ? "Yes" : "No"}
-                    </span>{" "}
+                    </span>{" "} */}
                     {/* Assuming all customers are active */}
                   </div>
                 ))
