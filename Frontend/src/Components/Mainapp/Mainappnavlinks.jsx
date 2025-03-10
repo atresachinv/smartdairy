@@ -51,8 +51,8 @@ const Mainappnavlinks = ({ setselected, handleSidebar }) => {
     "master",
   ]);
   const [activeMenu, setActiveMenu] = useState(null);
-  const [userRole, setUserRole] = useState(null);
   const center_id = useSelector((state) => state.dairy.dairyData.center_id);
+  const [userRole, setUserRole] = useState(null);
   useEffect(() => {
     const myrole = localStorage.getItem("userRole");
     setUserRole(myrole);

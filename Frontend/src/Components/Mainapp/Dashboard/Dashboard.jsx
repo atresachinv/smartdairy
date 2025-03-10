@@ -201,7 +201,7 @@ const Dashboard = () => {
     );
   };
   return (
-    <div className="main-dashboard-container w100 h1 d-flex-col bg6">
+    <div className="main-dashboard-container w100 h1 d-flex-col">
       <div className="dashboard-title w100 d-flex p10 ">
         <h3 className="subtitle">{t("nv-dash")}</h3>
       </div>
@@ -288,8 +288,8 @@ const Dashboard = () => {
               </select>
             </div>
           </form>
-          <div className="dashboard-cards w100 h20 d-flex j-start sa">
-            <div className="card sb">
+          <div className="dashboard-cards w100 h15 d-flex j-start sa">
+            <div className="card h1 sb">
               <BsDatabaseAdd className="card-icon" />
               <div className="card-inner">
                 <h3 className="text">{t("nv-milk-coll")}</h3>
@@ -299,14 +299,14 @@ const Dashboard = () => {
                 </h3>
               </div>
             </div>
-            <div className="card sb">
+            <div className="card h1 sb">
               <BsPersonFill className="card-icon" />
               <div className="card-inner">
                 <h3 className="text">{t("c-customer")}</h3>
                 <h3 className="heading">{customerCount}</h3>
               </div>
             </div>
-            <div className="card sb">
+            <div className="card h1 sb">
               <TfiStatsUp className="card-icon" />
               <div className="card-inner">
                 <h3 className="text">{t("c-purch-amt")}</h3>
@@ -317,7 +317,7 @@ const Dashboard = () => {
             </div>
           </div>
           <div className="dashboard-data-charts w100 h50 d-flex a-center sa ">
-            <div className="milk-collection-chart w40 h1 d-flex-col p10 bg">
+            <div className="milk-collection-chart w40 h1 d-flex-col p10">
               <div className="chart-title w100">
                 <span className="label-text">{t("c-liter-chart")}</span>
               </div>
@@ -342,7 +342,7 @@ const Dashboard = () => {
                       domain={[0, "dataMax + 10"]}
                     />
                     <Tooltip />
-                    <Bar dataKey="totalLitres" fill="#8884d8" />
+                    <Bar dataKey="totalLitres" fill="#095bc7" />
                   </BarChart>
                 </ResponsiveContainer>
               </Suspense>
@@ -372,7 +372,7 @@ const Dashboard = () => {
                       domain={[0, "dataMax + 10"]}
                     />
                     <Tooltip />
-                    <Bar dataKey="totalAmt" fill="#ffcc99" />
+                    <Bar dataKey="totalAmt" fill="#095bc7" />
                   </BarChart>
                 </ResponsiveContainer>
               </Suspense>
@@ -381,7 +381,7 @@ const Dashboard = () => {
         </div>
         {center_id === 0 ? (
           <>
-            <div className="center-sale-details-container w100 h1 d-flex-col p10 bg5">
+            <div className="center-sale-details-outer-container w100 d-flex-col p10 bg5">
               <h3 className="heading">{t("c-center-info")} : </h3>
               <div className="center-sales-details-container w100 h1 d-flex f-wrap sb p10">
                 {centersmergedData.length > 0 ? (
@@ -389,7 +389,7 @@ const Dashboard = () => {
                     <>
                       <div
                         key={center.center_id}
-                        className="center-sales-card w45 h30 d-flex-col sb bg p10"
+                        className="center-sales-card w45 h30 d-flex-col sb bg-light-green br9 p10"
                       >
                         <div className="card-title w100 h25 d-flex sb">
                           <span className="w30 text">{t("c-centerno")} : </span>
@@ -404,19 +404,19 @@ const Dashboard = () => {
                           </span>
                         </div>
                         <div className="card-other-outer-details w100 h50 d-flex sa">
-                          <div className="card-other-details w30 h1 d-flex-col a-center sa bg5">
+                          <div className="card-other-details w30 h1 d-flex-col a-center sa br6 bg5">
                             <span className="text">{t("c-customer")}</span>
                             <span className="label-text">
                               {center.total_customers}
                             </span>
                           </div>
-                          <div className="card-other-details w30 h1 d-flex-col a-center sa bg5">
+                          <div className="card-other-details w30 h1 d-flex-col a-center sa br6 bg5">
                             <span className="text">{t("c-liters")}</span>
                             <span className="label-text">
                               {center.total_litres} {t("c-ltr")}
                             </span>
                           </div>
-                          <div className="card-other-details w30 h1 d-flex-col a-center sa bg5">
+                          <div className="card-other-details w30 h1 d-flex-col a-center sa br6 bg5">
                             <span className="text">{t("c-purch-amt")}</span>
                             <span className="label-text">
                               {center.total_amount} {t("c-rs")}
@@ -433,10 +433,10 @@ const Dashboard = () => {
                 )}
               </div>
             </div>
-            <div className="liter-sales-details-inner-container w100 h70 d-flex-col sb p10">
+            <div className="liter-sales-details-inner-container w100 h50 d-flex-col sb p10">
               <span className="heading">{t("c-anaylatics")} : </span>
               <div className="pie-chart-container w100 h1 d-flex a-center sb p10">
-                <div className="liter-sales-card w25 h90 d-flex-col sb bg-fff br6 p10 ">
+                <div className="liter-sales-card w25 h90 d-flex-col sb bg-light-skyblue br6 p10 ">
                   <ResponsiveContainer width="100%" height="100%">
                     <PieChart width={500} height={500}>
                       <Pie
@@ -458,11 +458,11 @@ const Dashboard = () => {
                       </Pie>
                     </PieChart>
                   </ResponsiveContainer>
-                  <span className="label-text p10 bg6 br6">
+                  <span className="label-text w100 h15 d-flex a-center px10 bg6 br6">
                     {t("c-liter-chart")} :
                   </span>
                 </div>
-                <div className="liter-sales-card w25 h90 d-flex-col bg-fff br6 sb p10 ">
+                <div className="liter-sales-card w25 h90 d-flex-col bg-light-skyblue br6 sb p10 ">
                   <ResponsiveContainer width="100%" height="100%">
                     <PieChart width={500} height={500}>
                       <Pie
@@ -484,15 +484,15 @@ const Dashboard = () => {
                       </Pie>
                     </PieChart>
                   </ResponsiveContainer>
-                  <span className="label-text p10 bg6 br6">
+                  <span className="label-text w100 h15 d-flex a-center px10 bg6 br6">
                     {t("c-amt-chart")} :
                   </span>
                 </div>
-                <div className="liter-sell-details w20 h1 d-flex-col a-center sb bg6 br6 p10 bg5">
+                <div className="liter-sell-details w20 h1 d-flex-col a-center bg6 br6 p10 bg5">
                   {centersmergedData.map((center, index) => (
-                    <div className="details-card w100 h50 d-flex-col center t-center">
+                    <div className="details-card w50 h25 d-flex-col center t-center">
                       <div
-                        className="w25 h30 colour-box br6"
+                        className="w30 h25 colour-box br6"
                         style={{
                           backgroundColor: COLORS[index % COLORS.length],
                         }}

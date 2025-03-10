@@ -4,6 +4,7 @@ import "jspdf-autotable";
 import axios, { all } from "axios";
 import { useSelector } from "react-redux";
 import "../../../../../Styles/InventoryReports/salesreport.css";
+import axiosInstance from "../../../../../App/axiosInstance";
 
 const SalesReport = () => {
   const [saledata, SetSaleData] = useState([]); //.. sale Data
@@ -24,10 +25,10 @@ const SalesReport = () => {
   useEffect(() => {
     const salefetchData = async () => {
       try {
-        const response = await axios.get(
-          "http://localhost:4040/smartdairy/api/stock/sale/all",
-          { fromdate, todate }
-        );
+        const response = await axiosInstance.get("/stock/sale/all", {
+          fromdate,
+          todate,
+        });
 
         SetSaleData(response.data.salesData);
       } catch (error) {
@@ -825,7 +826,6 @@ const SalesReport = () => {
     fetchItems();
   }, []);
 
- 
   // Group items by ItemGroupCode
   const groupItemsByCode = (data) => {
     const groupedData = data.reduce((acc, item) => {
@@ -1114,7 +1114,6 @@ const SalesReport = () => {
     // Save the PDF
     doc.save("ItemWiseReport.pdf");
   };
-
 
   return (
     <>

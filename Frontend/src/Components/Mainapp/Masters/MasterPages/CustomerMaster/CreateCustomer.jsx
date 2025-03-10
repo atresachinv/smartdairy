@@ -23,11 +23,11 @@ const CreateCustomer = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [customerList, setCustomerList] = useState([]);
   const toDate = useSelector((state) => state.date.toDate);
-  const custno = useSelector((state) => state.customer.maxCustNo);
+  const custno = useSelector((state) => state.customers.maxCustNo);
   const prefix = useSelector((state) => state.dairy.dairyData.prefix);
-  const createstatus = useSelector((state) => state.customer.createstatus);
-  const updatestatus = useSelector((state) => state.customer.updatestatus);
-  const excelstatus = useSelector((state) => state.customer.excelstatus);
+  const createstatus = useSelector((state) => state.customers.createstatus);
+  const updatestatus = useSelector((state) => state.customers.updatestatus);
+  const excelstatus = useSelector((state) => state.customers.excelstatus);
   const ratechartlist = useSelector((state) => state.ratechart.ratechartList);
   const [fileName, setFileName] = useState("");
   const fileInputRef = useRef(null); // for excel file input
@@ -67,7 +67,7 @@ const CreateCustomer = () => {
     h_dairyrebet: 0,
     h_transportation: 0,
   });
-
+  console.log(excelstatus, createstatus, updatestatus, custno);
   useState(() => {
     dispatch(listRateCharts());
     dispatch(getMaxCustNo());
@@ -460,14 +460,11 @@ const CreateCustomer = () => {
       const result = await dispatch(
         uploadCustomerExcel({ excelData, prefix })
       ).unwrap();
+      console.log(result);
       if (result.status === 200) {
         setExcelData([]);
         dispatch(listCustomer());
         dispatch(getMaxCustNo());
-        setFormData((prevData) => ({
-          ...prevData,
-          cust_no: custno,
-        }));
         toast.success(result.message);
       } else {
         toast.error(result.message);

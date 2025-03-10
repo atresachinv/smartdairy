@@ -28,7 +28,6 @@ const CustomerList = () => {
     (state) =>
       state.dairy.dairyData.center_id || state.dairy.dairyData.center_id
   );
-  console.log(customerlist);
 
   const downloadExcel = () => {
     if (!Array.isArray(customerlist) || customerlist.length === 0) {

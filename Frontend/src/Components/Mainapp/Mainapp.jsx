@@ -147,7 +147,7 @@ const Mainapp = () => {
           {/* <Mainappviews index={isselected} /> */}
           <Routes>
             {/* dashboard route */}
-            <Route path="dashboard/*" element={<ComingSoon />} />
+            <Route path="dashboard/*" element={<Dashboard />} />
             {/* milk purchase routes */}
             <Route path="milk/collection/*" element={<Apphome />} />
             <Route path="milk/collection/:time" element={<Milkcollection />} />
