@@ -26,6 +26,26 @@ export const getPaymentInfo = createAsyncThunk(
   }
 );
 
+// Retriving Payments Data
+export const getSalesPreport = createAsyncThunk(
+  "payment/getSalesPreport",
+  async ({ fromDate, toDate }, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.post("/stock/sale/all", {
+        fromDate,
+        toDate,
+      });
+      return response.data;
+    } catch (error) {
+      const errorMessage = error.response
+        ? error.response.data
+        : "Failed to fetch payment information.";
+      return rejectWithValue(errorMessage);
+    }
+  }
+);
+
+
 const salesSlice = createSlice({
   name: "sales",
   initialState,

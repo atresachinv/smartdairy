@@ -1730,7 +1730,7 @@ exports.allMilkCollReport = async (req, res) => {
       const dairy_table = `dailymilkentry_${dairy_id}`;
 
       const milkCollectionQuery = `
-        SELECT id, ReceiptDate,  ME,  CB,  Litres,  fat,  snf,  rate,  Amt,  cname,  rno , AccCode
+        SELECT id, userid, ReceiptDate,  ME,  CB,  Litres,  fat,  snf,  rate,  Amt,  cname,  rno , AccCode ,center_id
         FROM ${dairy_table}
         WHERE ReceiptDate BETWEEN ? AND ?
       `;
@@ -2692,3 +2692,28 @@ exports.centerReMilkReports = async (req, res) => {
     }
   });
 };
+
+// dairy dashboard summary report ------------------------------------------------------------------>
+//-------------------------------------------------------------------------------------------------->
+
+// exports.dairyDashboardSummary = async (req, res) => {
+//   const { dairy_id, center_id } = req.user;
+//   if (!dairy_id) {
+//     return res.status(401).json({ staus: 401, message: "Unauthorized User!" });
+//   }
+//   const dairy_table = `dailymilkentry_${dairy_id}`;
+//   pool.getConnection((err, connection) => {
+//     if (err) {
+//       console.error("Error getting MySQL connection: ", err);
+//       return res.status(500).json({ message: "Database connection error" });
+//     }
+//     try {
+//       const dairyMilkSummary = `
+//         SELECT * from ${dairy_table} WHERE ReceiptDate = ? `;
+//     } catch (error) {
+//       connection.release();
+//       console.error("Error processing request: ", error);
+//       return res.status(500).json({ message: "Internal server error" });
+//     }
+//   });
+// };

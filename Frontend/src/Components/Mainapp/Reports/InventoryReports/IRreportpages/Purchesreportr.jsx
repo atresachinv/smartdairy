@@ -1,4 +1,3 @@
-import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import jsPDF from "jspdf";
@@ -15,8 +14,6 @@ const Purchesreportr = () => {
   const [dealerCode, setDealerCode] = useState("");
   const [selectedDealer, setSelectedDealer] = useState("");
   const [dealerName, setDealerName] = useState("");
-  const [item, SetItem] = useState([]); //... Item Data
-  const { customerlist, loading } = useSelector((state) => state.customer);
   const [dealer, SetDealer] = useState([]); //....    delare Name data
   const [allSales, setAllSales] = useState([]); // Store all data initially
   const [filteredSales, setFilteredSales] = useState([]); // Store filtered data

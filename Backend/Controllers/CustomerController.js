@@ -434,7 +434,7 @@ exports.customerList = async (req, res) => {
               isSabhasad, rno, orgid, engName, rateChartNo, centerid, srno, cust_pincode,
               cust_addhar, cust_farmerid, cust_bankname, cust_ifsc, caste, gender, milktype, isActive, rcName
        FROM customer
-       WHERE orgid = ? AND centerid = ? AND (ctype IS NULL OR ctype = 1) AND (isdeleted IS NULL OR isdeleted = 0)`;
+       WHERE orgid = ? AND centerid = ? AND (ctype IS NULL OR ctype = 1) AND (isdeleted IS NULL OR isdeleted = 0) ORDER BY srno ASC`;
 
   pool.getConnection((err, connection) => {
     if (err) {

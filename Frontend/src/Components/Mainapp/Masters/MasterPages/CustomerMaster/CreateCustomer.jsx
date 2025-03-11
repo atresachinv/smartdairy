@@ -67,7 +67,7 @@ const CreateCustomer = () => {
     h_dairyrebet: 0,
     h_transportation: 0,
   });
-  console.log(excelstatus, createstatus, updatestatus, custno);
+  console.log(customerList);
   useState(() => {
     dispatch(listRateCharts());
     dispatch(getMaxCustNo());

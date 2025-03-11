@@ -32,6 +32,7 @@ const Dashboard = () => {
   const { t } = useTranslation("common");
   const dispatch = useDispatch();
   const date = useSelector((state) => state.date.toDate);
+  const Emplist = useSelector((state) => state.emp.emplist);
   const center_id = useSelector((state) => state.dairy.dairyData.center_id);
   const manualMaster = useSelector((state) => state.manualMasters.masterlist);
   const mastermilk = useSelector((state) => state.milkCollection.allMilkColl);
@@ -49,6 +50,10 @@ const Dashboard = () => {
   const fDate = useSelector((state) => state.date.formDate); // to fetch default date data
   const tDate = useSelector((state) => state.date.toDate); // to fetch default date data
   const [selectedDate, setSelectedDate] = useState(null);
+  const [summaryData, setSummaryData] = useState([]); //for summary data
+  const [showSummary, setShowSummary] = useState(false); //for summary data
+  const [detailData, setDetailData] = useState([]); // for detail data
+  const [showDetail, setShowDetail] = useState(false); // for detail data
   // Generate master dates based on the initial date
   useEffect(() => {
     dispatch(generateMaster(date));
@@ -200,6 +205,61 @@ const Dashboard = () => {
       </text>
     );
   };
+
+  const handlemilkUserSummary = ({ center_id, e }) => {
+    e.preventDefault();
+    setShowSummary(true);
+    setShowDetail(false);
+    const userSummary = {};
+
+    // Filter mastermilk data for the selected center_id
+    const filteredMilkData = mastermilk.filter(
+      (data) => data.center_id === center_id
+    );
+
+    filteredMilkData.forEach(({ userid, Litres, Amt }) => {
+      if (!userSummary[userid]) {
+        userSummary[userid] = {
+          totalLitres: 0,
+          totalAmt: 0,
+          emp_name: "Admin",
+          designation: "Admin",
+          userid: userid, // Assigning correct userid
+          center_id: center_id, // Ensuring center_id is set
+        };
+      }
+      userSummary[userid].totalLitres += Litres;
+      userSummary[userid].totalAmt += Amt;
+    });
+
+    // Merge employee details
+    Emplist.forEach(({ emp_mobile, emp_name, designation }) => {
+      if (userSummary[emp_mobile]) {
+        userSummary[emp_mobile].emp_name = emp_name || "Admin";
+        userSummary[emp_mobile].designation = designation || "Admin";
+      }
+    });
+
+    // Convert userSummary object to an array before setting state
+    const userSummaryArray = Object.keys(userSummary).map((key) => ({
+      userid: key,
+      ...userSummary[key],
+    }));
+
+    setSummaryData(userSummaryArray);
+  };
+
+  const handleDetailUserMilk = ({ center_id, userid, e }) => {
+    e.preventDefault();
+    setShowDetail(true);
+
+    // Filter mastermilk data for the selected center_id
+    const milkDetailes = mastermilk.filter(
+      (data) => data.center_id === center_id && data.userid === userid
+    );
+    setDetailData(milkDetailes);
+  };
+
   return (
     <div className="main-dashboard-container w100 h1 d-flex-col">
       <div className="dashboard-title w100 d-flex p10 ">
@@ -412,13 +472,29 @@ const Dashboard = () => {
                           </div>
                           <div className="card-other-details w30 h1 d-flex-col a-center sa br6 bg5">
                             <span className="text">{t("c-liters")}</span>
-                            <span className="label-text">
+                            <span
+                              className="label-text"
+                              onClick={(e) =>
+                                handlemilkUserSummary({
+                                  center_id: center.center_id,
+                                  e,
+                                })
+                              }
+                            >
                               {center.total_litres} {t("c-ltr")}
                             </span>
                           </div>
                           <div className="card-other-details w30 h1 d-flex-col a-center sa br6 bg5">
                             <span className="text">{t("c-purch-amt")}</span>
-                            <span className="label-text">
+                            <span
+                              className="label-text "
+                              onClick={(e) =>
+                                handlemilkUserSummary({
+                                  center_id: center.center_id,
+                                  e,
+                                })
+                              }
+                            >
                               {center.total_amount} {t("c-rs")}
                             </span>
                           </div>
@@ -432,6 +508,111 @@ const Dashboard = () => {
                   </div>
                 )}
               </div>
+              {showSummary && summaryData ? (
+                <div className="user-milk-summary-container w100 mh50 d-flex-col">
+                  <div className="title-and-close-btn-container w100 h10 d-flex sb px10">
+                    <span className="heading">Milk Summary</span>
+                    <span
+                      className="close-btn f-heading"
+                      onClick={(e) => setShowSummary(false)}
+                    >
+                      X
+                    </span>
+                  </div>
+                  <div className="summary-table-conatiner w100 mh60 hidescrollbar d-flex-col bg">
+                    <div className="summary-headings-div w100 p10 d-flex sb t-center sticky-top bg7">
+                      <span className="f-label-text w10">No.</span>
+                      <span className="f-label-text w30">Milk Collector</span>
+                      <span className="f-label-text w20">Designation</span>
+                      <span className="f-label-text w10">Total Liters</span>
+                      <span className="f-label-text w30">Total Amount</span>
+                    </div>
+                    {Array.isArray(summaryData) && summaryData.length > 0 ? (
+                      summaryData.map((user, index) => (
+                        <div
+                          key={index}
+                          className="summary-data-div w100 p10 d-flex sb t-center"
+                        >
+                          <span className="label-text w10">{index + 1}</span>
+                          <span className="label-text w30">
+                            {user.emp_name}
+                          </span>
+                          <span className="label-text w20">
+                            {user.designation}
+                          </span>
+                          <span className="label-text w10">
+                            {user.totalLitres}
+                          </span>
+                          <span
+                            className="label-text w30"
+                            onClick={(e) =>
+                              handleDetailUserMilk({
+                                center_id: user.center_id,
+                                userid: user.userid,
+                                e,
+                              })
+                            }
+                          >
+                            {user.totalAmt}
+                          </span>
+                        </div>
+                      ))
+                    ) : (
+                      <p>No data available</p>
+                    )}
+                  </div>
+                </div>
+              ) : (
+                <></>
+              )}
+              {showDetail && detailData ? (
+                <div className="user-milk-summary-container w100 mh50 d-flex-col my10">
+                  <div className="title-and-close-btn-container w100 h10 d-flex sb px10">
+                    <span className="heading">Detail Milk :</span>
+                    <span
+                      className="close-btn f-heading"
+                      onClick={(e) => setShowDetail(false)}
+                    >
+                      X
+                    </span>
+                  </div>
+                  <div className="summary-table-conatiner w100 mh60 hidescrollbar d-flex-col bg">
+                    <div className="summary-headings-div w100 p10 d-flex sb t-center sticky-top bg7">
+                      <span className="f-label-text w20">Date</span>
+                      <span className="f-label-text w10">Code</span>
+                      <span className="f-label-text w30">Customer</span>
+                      <span className="f-label-text w10">Liter</span>
+                      <span className="f-label-text w10">Fat</span>
+                      <span className="f-label-text w10">Snf</span>
+                      <span className="f-label-text w10">Rate</span>
+                      <span className="f-label-text w15">Amount</span>
+                    </div>
+                    {Array.isArray(summaryData) && detailData.length > 0 ? (
+                      detailData.map((milk, index) => (
+                        <div
+                          key={index}
+                          className="summary-data-div w100 p10 d-flex sb t-center"
+                        >
+                          <span className="label-text w20">
+                            {milk.ReceiptDate.slice(0, 10)}
+                          </span>
+                          <span className="label-text w10">{milk.rno}</span>
+                          <span className="label-text w30">{milk.cname}</span>
+                          <span className="label-text w10">{milk.Litres}</span>
+                          <span className="label-text w10">{milk.fat}</span>
+                          <span className="label-text w10">{milk.snf}</span>
+                          <span className="label-text w10">{milk.rate}</span>
+                          <span className="label-text w15">{milk.Amt}</span>
+                        </div>
+                      ))
+                    ) : (
+                      <p>No data available</p>
+                    )}
+                  </div>
+                </div>
+              ) : (
+                <></>
+              )}
             </div>
             <div className="liter-sales-details-inner-container w100 h50 d-flex-col sb p10">
               <span className="heading">{t("c-anaylatics")} : </span>
