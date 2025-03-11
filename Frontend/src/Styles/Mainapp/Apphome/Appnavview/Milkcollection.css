@@ -35,9 +35,9 @@
 }
 
 .milkdata-container .milkdata-data-headings {
-    position: sticky;
-    top: 0;
-  }
+  position: sticky;
+  top: 0;
+}
 
 /* milk collection list css */
 .collection-list-container {
@@ -122,10 +122,10 @@
     padding: 0 0 10px 0;
   }
   .user-details .form-div label {
-    width: 30%;
+    width: 40%;
   }
   .user-details .form-div input {
-    width: 70%;
+    width: 60%;
   }
 
   .milk-details-div {
@@ -137,10 +137,10 @@
   }
 
   .milk-details-div .milk-info .form-div label {
-    width: 30%;
+    width: 40%;
   }
   .milk-details-div .milk-info .form-div input {
-    width: 70%;
+    width: 60%;
   }
 
   .milk-col-form .form-btns {
@@ -205,13 +205,13 @@
   .form-date-div label,
   .milk-details label,
   .milk-details-div .form-div label {
-    width: 30%;
+    width: 40%;
   }
 
   .form-date-div input,
   .milk-details select,
   .milk-details-div .form-div input {
-    width: 70%;
+    width: 60%;
   }
 
   .form-setting .form-date-div,
@@ -237,12 +237,11 @@
   .select-milk-collector-conatiner .selectand-btn-div {
     width: 100%;
     margin: 5px 0;
-    justify-content: space-between ;
+    justify-content: space-between;
   }
   .collection-download-btn {
     margin-bottom: 5px;
   }
-  
 }
 /* complete mobile milk collection form */
 @media screen and (max-width: 426px) {
@@ -291,11 +290,10 @@
 }
 /* milk collection list and remaing customer */
 @media screen and (max-width: 426px) {
-  .milk-collection-list{
+  .milk-collection-list {
     min-height: fit-content;
   }
-  .milk-collection-list .title-container{
+  .milk-collection-list .title-container {
     min-height: fit-content;
   }
 }
-

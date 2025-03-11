@@ -58,7 +58,7 @@ const DairyInfo = () => {
         }
         break;
       case "auditclass":
-        if (!/^[A-Z\s]+$/.test(value)) {
+        if (!/^[\u0900-\u097Fa-zA-Z\s]+$/.test(value)) {
           errors[name] = "Invalid Audit class.";
         } else {
           delete errors[name];
@@ -73,7 +73,7 @@ const DairyInfo = () => {
         }
         break;
       case "reg_no":
-        if (!/^\d{0,19}$/.test(value)) {
+        if (!/^[a-zA-Z0-9\s]{0,19}$/.test(value)) {
           errors.reg_no = "Invalid Register number.";
         } else {
           delete errors.reg_no;
@@ -137,7 +137,7 @@ const DairyInfo = () => {
     return validationErrors;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const validationErrors = validateFields();
 
@@ -146,8 +146,12 @@ const DairyInfo = () => {
       return;
     }
     try {
-      dispatch(updateDairyDetails(formData));
-      toast.success("Dairy information updated successfully!");
+      const result = await dispatch(updateDairyDetails(formData)).unwrap();
+      if (result.status === 200) {
+        toast.success(result.message);
+      } else {
+        toast.error(result.message);
+      }
     } catch {
       toast.error(`Failed to update dairy information`);
     }
@@ -155,10 +159,13 @@ const DairyInfo = () => {
 
   return (
     <div className="dairy-main-container w100 h1 d-flex-col center sb">
-      <span className="heading-text w100 heading t-center py10">Dairy Information</span>
+      <span className="heading-text w100 heading t-center py10">
+        Dairy Information
+      </span>
       <form
         className="dairy-information-div w50 h90 d-flex-col bg p10"
-        onSubmit={handleSubmit}>
+        onSubmit={handleSubmit}
+      >
         <div className="dairy-name-div w100 h15 d-flex-col sa">
           <span className="info-text w100 ">Marathi Name : </span>
           <input
@@ -167,6 +174,7 @@ const DairyInfo = () => {
             name="marathiName"
             id="marathiName"
             placeholder="डेरीचे नाव"
+            maxlength="150"
             value={formData.marathiName} // Use formData here
             required
             onChange={handleChange}
@@ -179,6 +187,7 @@ const DairyInfo = () => {
             type="text"
             name="SocietyName"
             placeholder="Dairy Name"
+            maxlength="150"
             id="SocietyName"
             value={formData.SocietyName} // Use formData here
             required
@@ -190,9 +199,10 @@ const DairyInfo = () => {
             <span className="info-text w100 ">Register Number :</span>
             <input
               className="data w100"
-              type="number"
+              type="text"
               name="RegNo"
               id="RegNo"
+              maxlength="19"
               value={formData.RegNo}
               onChange={handleChange}
             />
@@ -217,6 +227,7 @@ const DairyInfo = () => {
               type="text"
               name="gstno"
               id="gstno"
+              maxlength="15"
               value={formData.gstno}
               onChange={handleChange}
             />
@@ -228,6 +239,7 @@ const DairyInfo = () => {
               type="text"
               name="AuditClass"
               id="AuditClass"
+              maxlength="2"
               value={formData.AuditClass}
               onChange={handleChange}
             />
@@ -241,6 +253,7 @@ const DairyInfo = () => {
               type="tel"
               name="PhoneNo"
               id="PhoneNo"
+              maxlength="11"
               value={formData.PhoneNo}
               onChange={handleChange}
             />
@@ -252,6 +265,7 @@ const DairyInfo = () => {
               type="email"
               name="email"
               id="email"
+              maxlength="30"
               value={formData.email}
               onChange={handleChange}
             />
@@ -265,6 +279,7 @@ const DairyInfo = () => {
               type="text"
               name="City" // Updated name for this input
               id="city"
+              maxlength="15"
               value={formData.City}
               onChange={handleChange}
             />
@@ -275,6 +290,7 @@ const DairyInfo = () => {
               className={`data w100 ${errors.date ? "input-error" : ""}`}
               type="text"
               name="tel" // Updated name for this input
+              maxlength="15"
               value={formData.tel}
               onChange={handleChange}
             />
@@ -288,6 +304,7 @@ const DairyInfo = () => {
               type="text"
               name="dist"
               id="dist"
+              maxlength="15"
               value={formData.dist}
               onChange={handleChange}
             />
@@ -299,6 +316,7 @@ const DairyInfo = () => {
               type="text"
               name="PinCode"
               id="PinCode"
+              maxlength="6"
               value={formData.PinCode}
               onChange={handleChange}
             />
@@ -308,7 +326,8 @@ const DairyInfo = () => {
           <button
             className="btn w50 h1"
             type="submit"
-            disabled={status === "loading"}>
+            disabled={status === "loading"}
+          >
             {status === "loading" ? "Updating..." : "Update Dairy Info"}
           </button>
         </div>

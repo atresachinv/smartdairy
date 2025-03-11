@@ -6,13 +6,9 @@ const NodeCache = require("node-cache");
 const cache = new NodeCache({});
 const axios = require("axios");
 
-// ................................................
-// Create New Dairy User...........................
-// ................................................
-
-//.................................................
-//Dairy info ......................................
-//.................................................
+//-------------------------------------------------------------------------------------------------------->
+//Dairy info --------------------------------------------------------------------------------------------->
+//-------------------------------------------------------------------------------------------------------->
 
 //v3 center_id added in data
 exports.dairyInfo = async (req, res) => {
@@ -21,7 +17,7 @@ exports.dairyInfo = async (req, res) => {
   const center_id = req.user.center_id;
 
   if (!dairy_id) {
-    return res.status(400).json({ message: "Dairy ID not found!" });
+    return res.status(401).json({ status: 401, message: "Unauthorized User!" });
   }
 
   // Construct the cache key
@@ -30,16 +26,16 @@ exports.dairyInfo = async (req, res) => {
   // Check if the data exists in the cache
   const cachedData = cache.get(cacheKey);
   if (cachedData) {
-    return res.status(200).json({
-      dairyInfo: cachedData,
-    });
+    return res.status(200).json({ status: 200, dairyInfo: cachedData });
   }
 
   // Proceed to database query if cache miss
   pool.getConnection((err, connection) => {
     if (err) {
       console.error("Error getting MySQL connection: ", err);
-      return res.status(500).json({ message: "Database connection error" });
+      return res
+        .status(500)
+        .json({ status: 500, message: "Database connection error" });
     }
 
     try {
@@ -73,34 +69,38 @@ exports.dairyInfo = async (req, res) => {
 
         if (err) {
           console.error("Error executing query: ", err);
-          return res.status(500).json({ message: "Database query error" });
+          return res
+            .status(500)
+            .json({ status: 500, message: "Database query error" });
         }
 
         if (result.length === 0) {
-          return res
-            .status(404)
-            .json({ message: "Dairy or center not found!" });
+          return res.status(404).json({
+            status: 404,
+            dairyInfo: [],
+            message: "Dairy or center not found!",
+          });
         }
 
         // Cache the result for future requests
         cache.set(cacheKey, result[0]);
 
         // Send the result as a response
-        res.status(200).json({
-          dairyInfo: result[0],
-        });
+        res.status(200).json({ status: 200, dairyInfo: result[0] });
       });
     } catch (error) {
       connection.release(); // Ensure the connection is released in case of an error
       console.error("Error processing request: ", error);
-      return res.status(500).json({ message: "Internal server error" });
+      return res
+        .status(500)
+        .json({ status: 500, message: "Internal server error" });
     }
   });
 };
 
-// ..................................................
-// update dairy details .............................
-// ..................................................
+//-------------------------------------------------------------------------------------------------------->
+// update dairy details ---------------------------------------------------------------------------------->
+//-------------------------------------------------------------------------------------------------------->
 
 //v2 function
 exports.updatedetails = async (req, res) => {
@@ -123,9 +123,7 @@ exports.updatedetails = async (req, res) => {
   const center_id = req.user.center_id;
 
   if (!dairy_id || center_id === undefined) {
-    return res
-      .status(400)
-      .json({ message: "Dairy ID or Center ID not found!" });
+    return res.status(401).json({ status: 401, message: "Unauthorized User!" });
   }
 
   const cacheKey = `dairyInfo_${dairy_id}_${center_id}`;
@@ -133,13 +131,17 @@ exports.updatedetails = async (req, res) => {
   pool.getConnection((err, connection) => {
     if (err) {
       console.error("Error getting MySQL connection: ", err);
-      return res.status(500).json({ message: "Database connection error" });
+      return res
+        .status(500)
+        .json({ status: 500, message: "Database connection error" });
     }
 
     connection.beginTransaction((err) => {
       if (err) {
         connection.release();
-        return res.status(500).json({ message: "Transaction error" });
+        return res
+          .status(500)
+          .json({ status: 500, message: "Transaction error" });
       }
 
       const updateSocietyQuery = `
@@ -176,9 +178,10 @@ exports.updatedetails = async (req, res) => {
             if (err) {
               return connection.rollback(() => {
                 connection.release();
-                res
-                  .status(500)
-                  .json({ message: "Error updating society details" });
+                res.status(500).json({
+                  status: 500,
+                  message: "Error updating society details",
+                });
               });
             }
 
@@ -203,18 +206,20 @@ exports.updatedetails = async (req, res) => {
                 if (err) {
                   return connection.rollback(() => {
                     connection.release();
-                    res
-                      .status(500)
-                      .json({ message: "Error updating center details" });
+                    res.status(500).json({
+                      status: 500,
+                      message: "Error updating center details",
+                    });
                   });
                 }
                 connection.commit((err) => {
                   if (err) {
                     return connection.rollback(() => {
                       connection.release();
-                      res
-                        .status(500)
-                        .json({ message: "Transaction commit error" });
+                      res.status(500).json({
+                        status: 500,
+                        message: "Transaction commit error",
+                      });
                     });
                   }
 
@@ -223,6 +228,7 @@ exports.updatedetails = async (req, res) => {
 
                   connection.release();
                   res.status(200).json({
+                    status: 200,
                     message:
                       "Dairy and Center information updated successfully!",
                   });
@@ -252,17 +258,19 @@ exports.updatedetails = async (req, res) => {
           (err, result) => {
             connection.release();
             if (err) {
-              return res
-                .status(500)
-                .json({ message: "Error updating center details" });
+              return res.status(500).json({
+                status: 500,
+                message: "Error updating center details",
+              });
             }
 
             // Remove cache entry after successful update
             delete cache[cacheKey];
 
-            res
-              .status(200)
-              .json({ message: "Center information updated successfully!" });
+            res.status(200).json({
+              status: 200,
+              message: "Center information updated successfully!",
+            });
           }
         );
       }
@@ -270,21 +278,24 @@ exports.updatedetails = async (req, res) => {
   });
 };
 
-// ..................................................
-// Create New center details ........................
-// ..................................................
+//-------------------------------------------------------------------------------------------------------->
+// Create New center details ----------------------------------------------------------------------------->
+//-------------------------------------------------------------------------------------------------------->
 
 exports.maxCenterId = async (req, res) => {
+  const dairy_id = req.user.dairy_id;
+
+  if (!dairy_id) {
+    return res
+      .status(401)
+      .json({ status: 401, message: "Dairy ID not found!" });
+  }
   pool.getConnection((err, connection) => {
     if (err) {
       console.error("Error getting MySQL connection: ", err);
-      return res.status(500).json({ message: "Database connection error" });
-    }
-    const dairy_id = req.user.dairy_id;
-
-    if (!dairy_id) {
-      connection.release(); // Release connection
-      return res.status(400).json({ message: "Dairy ID not found!" });
+      return res
+        .status(500)
+        .json({ status: 500, message: "Database connection error" });
     }
 
     // Query to get the maximum center_id
@@ -294,14 +305,16 @@ exports.maxCenterId = async (req, res) => {
       connection.release(); // Release the connection after the query
       if (err) {
         console.error("Error fetching max center_id: ", err);
-        return res.status(500).json({ message: "Database query error" });
+        return res
+          .status(500)
+          .json({ status: 500, message: "Database query error" });
       }
 
       // Increment the max center_id by 1, or set to 1 if no records exist
       const centerId = result[0].maxCenterid ? result[0].maxCenterid + 1 : 1;
 
       // Send the new center_id as the response
-      return res.status(200).json({ centerId });
+      return res.status(200).json({ status: 200, centerId });
     });
   });
 };
@@ -327,17 +340,18 @@ exports.createCenter = async (req, res) => {
     prefix,
   } = req.body;
 
+  const dairy_id = req.user.dairy_id;
+  const user_role = req.user.user_role;
+
+  if (!dairy_id) {
+    return res.status(401).json({ status: 401, message: "Unauthorized User!" });
+  }
   pool.getConnection(async (err, connection) => {
     if (err) {
       console.error("Error getting MySQL connection: ", err);
-      return res.status(500).json({ message: "Database connection error" });
-    }
-    const dairy_id = req.user.dairy_id;
-    const user_role = req.user.user_role;
-
-    if (!dairy_id) {
-      connection.release(); // Release connection
-      return res.status(400).json({ message: "Dairy ID not found!" });
+      return res
+        .status(500)
+        .json({ status: 500, message: "Database connection error" });
     }
 
     // const hashedPassword = await bcrypt.hash(password, 10);
@@ -382,7 +396,9 @@ exports.createCenter = async (req, res) => {
         if (err) {
           connection.release();
           console.error("Error executing createCenter query: ", err);
-          return res.status(500).json({ message: "Database query error" });
+          return res
+            .status(500)
+            .json({ status: 500, message: "Database query error" });
         }
 
         // Now create the user associated with the center
@@ -402,11 +418,15 @@ exports.createCenter = async (req, res) => {
             connection.release();
             if (err) {
               console.error("Error executing createUser query: ", err);
-              return res.status(500).json({ message: "Error creating user" });
+              return res
+                .status(500)
+                .json({ status: 500, message: "Error creating user" });
             }
 
             // Successfully created center
-            res.status(200).json({ message: "Center created successfully!" });
+            res
+              .status(200)
+              .json({ status: 200, message: "Center created successfully!" });
           }
         );
       }
@@ -414,9 +434,9 @@ exports.createCenter = async (req, res) => {
   });
 };
 
-// ..................................................
-// update center details ............................
-// ..................................................
+//-------------------------------------------------------------------------------------------------------->
+// update center details --------------------------------------------------------------------------------->
+//-------------------------------------------------------------------------------------------------------->
 
 //v2
 exports.updateCenterInfo = async (req, res) => {
@@ -438,13 +458,15 @@ exports.updateCenterInfo = async (req, res) => {
   const dairy_id = req.user.dairy_id;
 
   if (!dairy_id) {
-    return res.status(404).json({ message: "Unauthorized user!" });
+    return res.status(401).json({ status: 401, message: "Unauthorized user!" });
   }
 
   pool.getConnection((err, connection) => {
     if (err) {
       console.error("MySQL connection error: ", err);
-      return res.status(500).json({ message: "Database connection error!" });
+      return res
+        .status(500)
+        .json({ status: 500, message: "Database connection error!" });
     }
 
     try {
@@ -475,13 +497,16 @@ exports.updateCenterInfo = async (req, res) => {
           connection.release(); // Ensure connection is released after the query
           if (err) {
             console.error("Update center details query execution error!", err);
-            return res.status(500).json({ message: "Database query error!" });
+            return res
+              .status(500)
+              .json({ status: 500, message: "Database query error!" });
           }
 
           if (result.affectedRows === 0) {
-            return res
-              .status(404)
-              .json({ message: "No center data found for updating!" });
+            return res.status(404).json({
+              status: 404,
+              message: "No center data found for updating!",
+            });
           }
 
           // Invalidate the cache for this dairy_id
@@ -489,27 +514,32 @@ exports.updateCenterInfo = async (req, res) => {
           const cacheKey = `dairyInfo_${dairy_id}_${center_id}`;
           cache.del(cacheKey1, cacheKey);
 
-          res
-            .status(200)
-            .json({ message: "Center details updated successfully!" });
+          res.status(200).json({
+            status: 200,
+            message: "Center details updated successfully!",
+          });
         }
       );
     } catch (error) {
       connection.release(); // Make sure to release the connection in case of an error
       console.error("Error processing request: ", error);
-      return res.status(500).json({ message: "Internal server error" });
+      return res
+        .status(500)
+        .json({ status: 500, message: "Internal server error" });
     }
   });
 };
 
-// .............................................................
-// display perticular center details ...........................
-// .............................................................
+//-------------------------------------------------------------------------------------------------------->
+// display perticular center details --------------------------------------------------------------------->
+//-------------------------------------------------------------------------------------------------------->
 exports.getCenterDetails = async (req, res) => {
   pool.getConnection((err, connection) => {
     if (err) {
       console.error("Getting MySQL connection error", err);
-      return res.status(500).json({ message: "Database connection error!" });
+      return res
+        .status(500)
+        .json({ status: 500, message: "Database connection error!" });
     }
 
     const center_id = req.user.center_id;
@@ -523,30 +553,32 @@ exports.getCenterDetails = async (req, res) => {
         console.error("Error executing query to fetch center details", err);
         return res
           .status(500)
-          .json({ message: "Database query execution error!" });
+          .json({ status: 500, message: "Database query execution error!" });
       }
 
       // Check if there are any results
       if (result.length === 0) {
-        return res.status(404).json({ message: "No center details found!" });
+        return res
+          .status(404)
+          .json({ status: 404, message: "No center details found!" });
       }
 
       // Return center details as JSON
-      res.status(200).json({ centerinfo: result });
+      res.status(200).json({ status: 200, centerinfo: result });
     });
   });
 };
 
-// ..............................................................
-// display All centers (LIST) details ...........................
-// ..............................................................
+//-------------------------------------------------------------------------------------------------------->.
+// display All centers (LIST) details  ------------------------------------------------------------------->
+//-------------------------------------------------------------------------------------------------------->.
 
 //v2
 exports.getAllcenters = async (req, res) => {
   const dairy_id = req.user.dairy_id;
 
   if (!dairy_id) {
-    return res.status(400).json({ message: "Unauthorized User!" });
+    return res.status(401).json({ status: 401, message: "Unauthorized User!" });
   }
 
   // Check if the data is cached
@@ -554,7 +586,7 @@ exports.getAllcenters = async (req, res) => {
   const cachedData = cache.get(cacheKey);
 
   if (cachedData) {
-    return res.status(200).json({ centersDetails: cachedData });
+    return res.status(200).json({ status: 200, centersDetails: cachedData });
   }
 
   pool.getConnection((err, connection) => {
@@ -570,27 +602,35 @@ exports.getAllcenters = async (req, res) => {
         connection.release();
         if (err) {
           console.error("All center details fetch query failed!", err);
-          return res.status(500).json({ message: "Query execution failed!" });
+          return res
+            .status(500)
+            .json({ status: 500, message: "Query execution failed!" });
         }
 
         if (result.length === 0) {
-          return res.status(404).json({ message: "No center data found!" });
+          return res.status(404).json({
+            status: 404,
+            centersDetails: [],
+            message: "No center data found!",
+          });
         }
 
         // Store the result in cache
         cache.set(cacheKey, result);
-        res.status(200).json({ centersDetails: result });
+        res.status(200).json({ status: 200, centersDetails: result });
       });
     } catch (error) {
       console.error("Error processing request: ", error);
-      return res.status(500).json({ message: "Internal server error" });
+      return res
+        .status(500)
+        .json({ status: 500, message: "Internal server error" });
     }
   });
 };
 
-// ..................................................
-// master Dates ..........................
-// ..................................................
+//-------------------------------------------------------------------------------------------------------->
+// master Dates   ---------------------------------------------------------------------------------------->
+//-------------------------------------------------------------------------------------------------------->
 
 exports.masterDates = async (req, res) => {
   const { yearStart, yearEnd } = req.body;
@@ -598,7 +638,9 @@ exports.masterDates = async (req, res) => {
   pool.getConnection((err, connection) => {
     if (err) {
       console.error("Error getting MySQL connection: ", err);
-      return res.status(500).json({ message: "Database connection error" });
+      return res
+        .status(500)
+        .json({ status: 500, message: "Database connection error" });
     }
 
     try {
@@ -618,7 +660,7 @@ exports.masterDates = async (req, res) => {
           console.error("master query execution error: ", err);
           return res
             .status(500)
-            .json({ message: "master query execution error" });
+            .json({ status: 500, message: "master query execution error" });
         }
 
         // Map result to desired format
@@ -627,36 +669,40 @@ exports.masterDates = async (req, res) => {
           toDate: record.toDate,
         }));
 
-        res.status(200).json({ getMasters: formattedResult });
+        res.status(200).json({ status: 200, getMasters: formattedResult });
       });
     } catch (error) {
       console.error("Error processing request: ", error);
-      return res.status(500).json({ message: "Internal server error" });
+      return res
+        .status(500)
+        .json({ status: 500, message: "Internal server error" });
     }
   });
 };
 
-//.................................................
-// Dairy Dashboard Info........
-//.................................................
+//-------------------------------------------------------------------------------------------------------->
+// Dairy Dashboard Info ---------------------------------------------------------------------------------->
+//-------------------------------------------------------------------------------------------------------->
 
 exports.dairyDashboardInfo = async (req, res) => {
   const { toDate, fromDate } = req.body;
 
+  const dairy_id = req.user.dairy_id;
+  const user_code = req.user.user_code;
+
+  if (!dairy_id) {
+    return res.status(401).json({ status: 401, message: "Unauthorised User!" });
+  }
   pool.getConnection((err, connection) => {
     if (err) {
       console.error("Error getting MySQL connection: ", err);
-      return res.status(500).json({ message: "Database connection error" });
+      return res
+        .status(500)
+        .json({ status: 500, message: "Database connection error" });
     }
 
     try {
       // Get dairy_id from the verified token (already decoded in middleware)
-      const dairy_id = req.user.dairy_id;
-      const user_code = req.user.user_code;
-
-      if (!dairy_id) {
-        return res.status(400).json({ message: "Dairy ID not found!" });
-      }
 
       const dairy_table = `dailymilkentry_${dairy_id}`;
 
@@ -679,30 +725,40 @@ exports.dairyDashboardInfo = async (req, res) => {
           connection.release();
           if (err) {
             console.error("Error executing summary query: ", err);
-            return res.status(500).json({ message: "query execution error" });
+            return res
+              .status(500)
+              .json({ status: 500, message: "query execution error" });
           }
           const dashboardInfo = dashboardDataresult[0];
-          res.status(200).json({ fromDate, toDate, dashboardInfo });
+          res
+            .status(200)
+            .json({ status: 200, fromDate, toDate, dashboardInfo });
         }
       );
     } catch (error) {
       console.error("Error processing request: ", error);
-      return res.status(500).json({ message: "Internal server error" });
+      return res
+        .status(500)
+        .json({ status: 500, message: "Internal server error" });
     }
   });
 };
 
-// .................................................................
-// Removing all cache data..........................................
-// .................................................................
+//-------------------------------------------------------------------------------------------------------->
+// Removing all cache data ------------------------------------------------------------------------------->
+//-------------------------------------------------------------------------------------------------------->
 
 exports.clearCache = (req, res) => {
   try {
     cache.flushAll(); // Clears the entire cache
-    return res.status(200).json({ message: "All cache cleared successfully!" });
+    return res
+      .status(200)
+      .json({ status: 200, message: "All cache cleared successfully!" });
   } catch (error) {
     console.error("Error clearing cache: ", error);
-    return res.status(500).json({ message: "Error clearing cache" });
+    return res
+      .status(500)
+      .json({ status: 500, message: "Error clearing cache" });
   }
 };
 
@@ -735,65 +791,76 @@ exports.sendMessage = async (req, res) => {
 };
 
 //--------------------------------------------------------------------------------------------------------->
-// Dashboard Information  --------------------------------------------------------------------------------->
+// <<<------------------------- Dashboard Information  ------------------------------------------------>>>
 //--------------------------------------------------------------------------------------------------------->
 
-// Center wise milk Collection ---------------------------------------------------------------------------->
+//-------------------------------------------------------------------------------------------------------->
+// Center wise milk Collection --------------------------------------------------------------------------->
+//-------------------------------------------------------------------------------------------------------->
 
 exports.getCenterWiseMilkData = (req, res) => {
   const { fromDate, toDate } = req.body;
   const dairy_id = req.user.dairy_id;
   if (!dairy_id) {
     connection.release();
-    return res.status(400).json({ message: "Dairy ID not found!" });
+    return res.status(401).json({ status: 401, message: "Unathorised User!" });
   }
 
   pool.getConnection((err, connection) => {
     if (err) {
       console.error("Error getting MySQL connection: ", err);
-      return res.status(500).json({ message: "Database connection error" });
+      return res
+        .status(500)
+        .json({ status: 500, message: "Database connection error" });
     }
     const dairy_table = `dailymilkentry_${dairy_id}`;
     const getLiterAmt = `
-    SELECT center_id, 
-       SUM(litres) AS total_litres, 
-       SUM(amt) AS total_amount
-    FROM ${dairy_table}
-    WHERE ReceiptDate BETWEEN ? AND ?
-    GROUP BY center_id;
-  `;
+      SELECT center_id, 
+        SUM(litres) AS total_litres, 
+        SUM(amt) AS total_amount
+      FROM ${dairy_table}
+      WHERE ReceiptDate BETWEEN ? AND ?
+      GROUP BY center_id;
+    `;
 
     connection.query(getLiterAmt, [fromDate, toDate], (err, result) => {
       connection.release(); // Always release the connection back to the pool
 
       if (err) {
         console.error("Error executing query: ", err);
-        return res.status(500).json({ message: "Query execution error" });
+        return res
+          .status(500)
+          .json({ status: 500, message: "Query execution error" });
       }
       if (result.length === 0) {
-        return res
-          .status(404)
-          .json({ message: "Rate not found for the provided parameters." });
+        return res.status(404).json({
+          status: 404,
+          message: "Rate not found for the provided parameters.",
+        });
       }
 
-      res.status(200).json({ centerData: result });
+      res.status(200).json({ status: 200, centerData: result });
     });
   });
 };
 
+//-------------------------------------------------------------------------------------------------------->
 // Center wise customer count ---------------------------------------------------------------------------->
+//-------------------------------------------------------------------------------------------------------->
 
 exports.getCenterCustomerCount = (req, res) => {
   const dairy_id = req.user.dairy_id;
   if (!dairy_id) {
     connection.release();
-    return res.status(400).json({ message: "Dairy ID not found!" });
+    return res.status(401).json({ status: 401, message: "Unauthorised User!" });
   }
 
   pool.getConnection((err, connection) => {
     if (err) {
       console.error("Error getting MySQL connection: ", err);
-      return res.status(500).json({ message: "Database connection error" });
+      return res
+        .status(500)
+        .json({ status: 500, message: "Database connection error" });
     }
 
     const getCustCount = `
@@ -807,19 +874,26 @@ exports.getCenterCustomerCount = (req, res) => {
 
       if (err) {
         console.error("Error executing query: ", err);
-        return res.status(500).json({ message: "Query execution error" });
+        return res
+          .status(500)
+          .json({ status: 500, message: "Query execution error" });
       }
       if (result.length === 0) {
-        return res
-          .status(404)
-          .json({ message: "No Customers Available for this Dairy." });
+        return res.status(404).json({
+          custCounts: [],
+          status: 404,
+          message: "No Customers Available for this Dairy.",
+        });
       }
-      res.status(200).json({ custCounts: result });
+      res.status(200).json({ status: 200, custCounts: result });
     });
   });
 };
 
-// center wise setting
+//-------------------------------------------------------------------------------------------------------->
+// center wise setting ----------------------------------------------------------------------------------->
+//-------------------------------------------------------------------------------------------------------->
+
 exports.getCenterSetting = (req, res) => {
   const dairy_id = req.user.dairy_id;
 
@@ -857,7 +931,11 @@ exports.getCenterSetting = (req, res) => {
     });
   });
 };
-// center wise setting
+
+//-------------------------------------------------------------------------------------------------------->
+// center wise setting ----------------------------------------------------------------------------------->
+//-------------------------------------------------------------------------------------------------------->
+
 exports.getOneCenterSetting = (req, res) => {
   const dairy_id = req.user.dairy_id;
   const center_id = req.user.center_id;
@@ -865,9 +943,11 @@ exports.getOneCenterSetting = (req, res) => {
   pool.getConnection((err, connection) => {
     if (err) {
       console.error("Error getting MySQL connection: ", err);
-      return res
-        .status(500)
-        .json({ success: false, message: "Database connection error" });
+      return res.status(500).json({
+        status: 500,
+        success: false,
+        message: "Database connection error",
+      });
     }
 
     const query = `
@@ -881,22 +961,32 @@ exports.getOneCenterSetting = (req, res) => {
 
       if (err) {
         console.error("Error executing query: ", err);
-        return res
-          .status(500)
-          .json({ success: false, message: "Error fetching settings" });
+        return res.status(500).json({
+          status: 500,
+          success: false,
+          message: "Error fetching settings",
+        });
       }
 
       if (results.length === 0) {
-        return res
-          .status(200)
-          .json({ success: true, data: [], message: "Settings not found" });
+        return res.status(404).json({
+          status: 404,
+          success: true,
+          data: [],
+          message: "Settings not found",
+        });
       }
-      return res.status(200).json({ success: true, data: results });
+      return res
+        .status(200)
+        .json({ status: 200, success: true, data: results });
     });
   });
 };
 
-// center wise setting create or update
+//-------------------------------------------------------------------------------------------------------->
+// center wise setting create or update ------------------------------------------------------------------>
+//-------------------------------------------------------------------------------------------------------->
+
 exports.updateCenterSetting = (req, res) => {
   const dairy_id = req.user.dairy_id;
   const { id, center_id, ...updateData } = req.body;
@@ -904,9 +994,11 @@ exports.updateCenterSetting = (req, res) => {
   pool.getConnection((err, connection) => {
     if (err) {
       console.error("Error getting MySQL connection: ", err);
-      return res
-        .status(500)
-        .json({ success: false, message: "Database connection error" });
+      return res.status(500).json({
+        status: 500,
+        success: false,
+        message: "Database connection error",
+      });
     }
 
     if (id) {
@@ -924,6 +1016,7 @@ exports.updateCenterSetting = (req, res) => {
       if (setClause.length === 0) {
         connection.release();
         return res.status(400).json({
+          status: 400,
           success: false,
           message: "No valid fields provided for update",
         });
@@ -942,12 +1035,15 @@ exports.updateCenterSetting = (req, res) => {
 
         if (err) {
           console.error("Error executing update query: ", err);
-          return res
-            .status(500)
-            .json({ success: false, message: "Error updating settings" });
+          return res.status(500).json({
+            status: 500,
+            success: false,
+            message: "Error updating settings",
+          });
         }
 
         return res.status(200).json({
+          status: 200,
           success: true,
           message:
             results.affectedRows > 0
@@ -979,12 +1075,15 @@ exports.updateCenterSetting = (req, res) => {
 
         if (err) {
           console.error("Error executing insert query: ", err);
-          return res
-            .status(500)
-            .json({ success: false, message: "Error inserting settings" });
+          return res.status(500).json({
+            status: 500,
+            success: false,
+            message: "Error inserting settings",
+          });
         }
 
         return res.status(200).json({
+          status: 200,
           success: true,
           message: "Settings inserted successfully",
           insertedData: results,

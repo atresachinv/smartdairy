@@ -128,7 +128,8 @@ const Milksales = ({ switchToSettings }) => {
     ) {
       setValues((prev) => ({
         ...prev,
-        rem_adv: Math.max( 0,
+        rem_adv: Math.max(
+          0,
           Number(values.advance) - Number(values.credit_amt)
         ),
       }));

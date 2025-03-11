@@ -5,7 +5,7 @@ import "../../../../../Styles/Mainapp/Apphome/Appnavview/Milkcollection.css";
 import { useParams } from "react-router-dom";
 
 const Milkcollelist = () => {
-  const { t } = useTranslation(["milkcollection", "common"]);
+  const { t } = useTranslation(["milkcollection", "common", "master"]);
   const { time } = useParams();
   // Retrieve milk collection data and sort in descending order
   const milkColl = useSelector((state) => state.milkCollection.entries || [])
@@ -119,9 +119,9 @@ const Milkcollelist = () => {
       ) : (
         <div className="remaing-customer-list-container w100 h90 mh90 d-flex-col hidescrollbar">
           <div className="customer-details-heading-container w100 h10 p10 d-flex a-center t-center sb sticky-top bg1">
-            <span className="f-info-text w15">Code</span>
-            <span className="f-info-text w50">Name</span>
-            <span className="f-info-text w30">Mobile</span>
+            <span className="f-info-text w15">{t("master:m-ccode")}</span>
+            <span className="f-info-text w50">{t("master:m-cname")}</span>
+            <span className="f-info-text w30">{t("master:m-mobile")}</span>
           </div>
           {custList.length > 0 ? (
             custList.map((customer, index) => (
