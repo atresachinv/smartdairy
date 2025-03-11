@@ -1,4 +1,6 @@
 import React, { useEffect, Suspense, useState } from "react";
+import { HashLink as Link } from "react-router-hash-link";
+
 import {
   BarChart,
   Bar,
@@ -27,6 +29,7 @@ import {
 import { centersLists } from "../../../App/Features/Dairy/Center/centerSlice";
 import "../../../Styles/Mainapp/Dashbaord/Dashboard.css";
 import { getCenterSetting } from "../../../App/Features/Mainapp/Settings/dairySettingSlice";
+import { listEmployee } from "../../../App/Features/Mainapp/Masters/empMasterSlice";
 
 const Dashboard = () => {
   const { t } = useTranslation("common");
@@ -58,6 +61,7 @@ const Dashboard = () => {
   useEffect(() => {
     dispatch(generateMaster(date));
     dispatch(listCustomer());
+    dispatch(listEmployee());
   }, []);
 
   const customerCount = customerslist.length;
@@ -260,6 +264,12 @@ const Dashboard = () => {
     setDetailData(milkDetailes);
   };
 
+  const handleCloseSummary = (e) => {
+    e.preventDefault();
+    setShowSummary(false);
+    setShowDetail(false);
+  };
+
   return (
     <div className="main-dashboard-container w100 h1 d-flex-col">
       <div className="dashboard-title w100 d-flex p10 ">
@@ -353,10 +363,10 @@ const Dashboard = () => {
               <BsDatabaseAdd className="card-icon" />
               <div className="card-inner">
                 <h3 className="text">{t("nv-milk-coll")}</h3>
-                <h3 className="heading">
+                <Link smooth to="#centerdata" className="hashlink heading">
                   {totalLitres.toFixed(1)}
                   <span>{t("c-ltr")}</span>
-                </h3>
+                </Link>
               </div>
             </div>
             <div className="card h1 sb">
@@ -370,9 +380,9 @@ const Dashboard = () => {
               <TfiStatsUp className="card-icon" />
               <div className="card-inner">
                 <h3 className="text">{t("c-purch-amt")}</h3>
-                <h3 className="heading">
+                <Link smooth to="#centerdata" className="hashlink heading">
                   {totalAmt.toFixed(1) || 0} <span>{t("c-rs")}</span>
-                </h3>
+                </Link>
               </div>
             </div>
           </div>
@@ -441,7 +451,10 @@ const Dashboard = () => {
         </div>
         {center_id === 0 ? (
           <>
-            <div className="center-sale-details-outer-container w100 d-flex-col p10 bg5">
+            <div
+              id="centerdata"
+              className="center-sale-details-outer-container w100 d-flex-col p10 bg5"
+            >
               <h3 className="heading">{t("c-center-info")} : </h3>
               <div className="center-sales-details-container w100 h1 d-flex f-wrap sb p10">
                 {centersmergedData.length > 0 ? (
@@ -509,12 +522,12 @@ const Dashboard = () => {
                 )}
               </div>
               {showSummary && summaryData ? (
-                <div className="user-milk-summary-container w100 mh50 d-flex-col">
-                  <div className="title-and-close-btn-container w100 h10 d-flex sb px10">
-                    <span className="heading">Milk Summary</span>
+                <div className="user-milk-summary-container w100 h50 d-flex-col">
+                  <div className="title-and-close-btn-container w100 h10 d-flex a-center sb px10">
+                    <span className="heading w60">Milk Summary :</span>
                     <span
                       className="close-btn f-heading"
-                      onClick={(e) => setShowSummary(false)}
+                      onClick={handleCloseSummary}
                     >
                       X
                     </span>
@@ -566,9 +579,9 @@ const Dashboard = () => {
                 <></>
               )}
               {showDetail && detailData ? (
-                <div className="user-milk-summary-container w100 mh50 d-flex-col my10">
-                  <div className="title-and-close-btn-container w100 h10 d-flex sb px10">
-                    <span className="heading">Detail Milk :</span>
+                <div className="user-milk-detail-container w100 h50 d-flex-col my10">
+                  <div className="title-and-close-btn-container w100 h10 d-flex a-center sb px10">
+                    <span className="heading w60">Detail Milk :</span>
                     <span
                       className="close-btn f-heading"
                       onClick={(e) => setShowDetail(false)}
@@ -576,8 +589,8 @@ const Dashboard = () => {
                       X
                     </span>
                   </div>
-                  <div className="summary-table-conatiner w100 mh60 hidescrollbar d-flex-col bg">
-                    <div className="summary-headings-div w100 p10 d-flex sb t-center sticky-top bg7">
+                  <div className="detail-table-conatiner w100 mh60 hidescrollbar d-flex-col bg">
+                    <div className="detail-headings-div w100 p10 d-flex sb t-center sticky-top bg7">
                       <span className="f-label-text w20">Date</span>
                       <span className="f-label-text w10">Code</span>
                       <span className="f-label-text w30">Customer</span>
@@ -591,7 +604,7 @@ const Dashboard = () => {
                       detailData.map((milk, index) => (
                         <div
                           key={index}
-                          className="summary-data-div w100 p10 d-flex sb t-center"
+                          className="detail-data-div w100 p10 d-flex sb t-center"
                         >
                           <span className="label-text w20">
                             {milk.ReceiptDate.slice(0, 10)}

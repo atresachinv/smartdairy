@@ -13,6 +13,9 @@
   flex-wrap: wrap;
   margin-bottom: 20px;
 }
+.dashboard-cards .hashlink {
+  text-decoration: none;
+}
 .dashboard-cards .card > .card-title {
   font-size: 1.2rem;
   color: #333333;
@@ -218,5 +221,38 @@
   .liter-sell-details .details-card .colour-box {
     width: 20px;
     height: 20px;
+  }
+}
+/* css for milk summary data container >>>>>-------------------------------- */
+@media screen and (max-width: 426px) {
+  .summary-table-conatiner {
+    overflow-x: auto;
+  }
+  .summary-headings-div {
+    min-width: 700px;
+    position: sticky;
+    top: 0;
+    background-color: #17acc0;
+    padding: 5px 0;
+  }
+  .summary-data-div {
+    min-width: 700px;
+  }
+}
+
+/* css for detail milk data container >>>>>-------------------------------- */
+@media screen and (max-width: 426px) {
+  .detail-table-conatiner {
+    overflow-x: auto;
+  }
+  .detail-headings-div {
+    min-width: 800px;
+    position: sticky;
+    top: 0;
+    background-color: #17acc0;
+    padding: 5px 0;
+  }
+  .detail-data-div {
+    min-width: 800px;
   }
 }
