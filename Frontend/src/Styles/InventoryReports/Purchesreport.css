@@ -1,6 +1,6 @@
 /* Table Container */
 .table-container {
-  max-height: 300px; /* Adjust height as needed */
+  max-height: 400px; /* Adjust height as needed */
   overflow-y: auto; /* Enables vertical scrolling */
   overflow-x: auto; /* Enables horizontal scrolling if needed */
   border: 1px solid #ddd;
@@ -86,7 +86,7 @@ td {
   }
 }
 
-@media screen and (max-width: 320px) {
+@media screen and (max-width: 426px) {
   .fromto-date-sale-report {
     flex-direction: column;
   }
@@ -100,7 +100,8 @@ td {
   .from-to-date-purches-conta .from-salee-div input {
     width: 100px;
     font-size: x-small;
-    height: 35px;
+    height: 40px;
+    
   }
   .reports-print-buttondiv
     .fromto-date-sale-report
@@ -191,7 +192,7 @@ td {
     padding: 4px; /* Reduce padding on small screens */
   }
 }
-@media screen and (max-width: 768px) {
+/* @media screen and (max-width: 768px) {
   .fromto-date-sale-report {
     flex-direction: column;
   }
@@ -258,4 +259,4 @@ td {
     font-size: small;
     margin-bottom: 10px;
   }
-}
+} */
