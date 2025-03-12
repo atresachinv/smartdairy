@@ -13,6 +13,7 @@ const SalesReport = () => {
   const [selectedReport, setSelectedReport] = useState("");
   const [showPopup, setShowPopup] = useState(false);
   const [itemNo, setItemNo] = useState("");
+  const [isItemwiseChecked, setIsItemwiseChecked] = useState(false);
 
   const dairyname = useSelector(
     (state) =>
@@ -20,30 +21,71 @@ const SalesReport = () => {
   );
   const CityName = useSelector((state) => state.dairy.dairyData.city);
 
-  //...  Saledata Api calling
-  useEffect(() => {
-    const salefetchData = async () => {
-      try {
-        const response = await axios.get(
-          "http://localhost:4040/smartdairy/api/stock/sale/all",
-          { fromdate, todate }
-        );
+  // useEffect(() => {
+  //   const salefetchData = async () => {
+  //     // Only fetch data if both fromdate and todate are available
+  //     if (fromdate && todate) {
+  //       try {
+  //         const response = await axios.get(
+  //           "http://localhost:4040/smartdairy/api/stock/sale/all",
+  //           {
+  //             params: { fromdate, todate }, // Pass dates as query params
+  //           }
+  //         );
+  //         SetSaleData(response.data.salesData); // Set the fetched sales data
+  //       } catch (error) {
+  //         console.log(
+  //           "Error Handling:",
+  //           error.response ? error.response.data : error.message
+  //         );
+  //       }
+  //     }
+  //   };
 
-        SetSaleData(response.data.salesData);
-      } catch (error) {
-        console.log(
-          "Error Handling:",
-          error.response ? error.response.data : error.message
-        );
-      }
-    };
-
-    salefetchData();
-  }, []); // Run useEffect when fromDate or toDate changes-
+  //   // Run API call if both dates are selected, otherwise run other functionality
+  //   if (fromdate && todate) {
+  //     salefetchData();
+  //   } else {
+  //     // Handle other functionality when dates are not selected
+  //     console.log("No date selected yet. Please select a date range.");
+  //     // You can execute other code here that runs when no dates are selected
+  //   }
+  // }, [fromdate, todate]); // Depend on both dates to trigger when either changes
 
   //.... GenratePdf
 
   //....    Sale Register PDf
+
+  useEffect(() => {
+    const salefetchData = async () => {
+      // Only fetch data if both fromdate and todate are available
+      if (fromdate && todate) {
+        try {
+          const response = await axios.get(
+            "http://localhost:4040/smartdairy/api/stock/sale/all",
+            {
+              params: { fromdate, todate }, // Pass dates as query params
+            }
+          );
+          SetSaleData(response.data.salesData); // Set the fetched sales data
+        } catch (error) {
+          console.log(
+            "Error Handling:",
+            error.response ? error.response.data : error.message
+          );
+        }
+      }
+    };
+
+    // Run API call if both dates are selected, otherwise run other functionality
+    if (fromdate && todate) {
+      salefetchData();
+    } else {
+      // Handle other functionality when dates are not selected
+      console.log("No date selected yet. Please select a date range.");
+    }
+  }, [fromdate, todate]); // Depend on both dates to trigger when either changes
+
   const generateSalesReport = () => {
     const doc = new jsPDF();
 
@@ -825,7 +867,6 @@ const SalesReport = () => {
     fetchItems();
   }, []);
 
- 
   // Group items by ItemGroupCode
   const groupItemsByCode = (data) => {
     const groupedData = data.reduce((acc, item) => {
@@ -883,11 +924,142 @@ const SalesReport = () => {
     }
   };
 
+  // const renderTable = () => {
+  //   if (!selectedReport) return <p>Please select a report to display.</p>;
+
+  //   // Calculate total amount
+  //   const totalAmount = saledata.reduce(
+  //     (sum, item) => sum + (item.Amount || 0),
+  //     0
+  //   );
+
+  //   switch (selectedReport) {
+  //     case "Sale Register":
+  //       return (
+  //         <table border="1">
+  //           <thead>
+  //             <tr>
+  //               <th>Bill Date</th>
+  //               <th>Bill No</th>
+  //               <th>Customer Code</th>
+  //               <th>Customer Name</th>
+  //               <th>Amount</th>
+  //             </tr>
+  //           </thead>
+  //           <tbody>
+  //             {saledata.map((item, index) => (
+  //               <tr key={index}>
+  //                 <td>{item.BillDate?.slice(0, 10) || "N/A"}</td>
+  //                 <td>{item.BillNo || "N/A"}</td>
+  //                 <td>{item.CustCode || "N/A"}</td>
+  //                 <td>{item.CustName || "N/A"}</td>
+  //                 <td>{item.Amount ? item.Amount.toFixed(2) : "0.00"}</td>
+  //               </tr>
+  //             ))}
+  //             <tr>
+  //               <td
+  //                 colSpan="4"
+  //                 style={{ textAlign: "right", fontWeight: "bold" }}
+  //               >
+  //                 Total:
+  //               </td>
+  //               <td style={{ fontWeight: "bold" }}>{totalAmount.toFixed(2)}</td>
+  //             </tr>
+  //           </tbody>
+  //         </table>
+  //       );
+
+  //     case "Disturbed Register list":
+  //       return (
+  //         <table border="1">
+  //           <thead>
+  //             <tr>
+  //               <th>Bill Date</th>
+  //               <th>Bill No</th>
+  //               <th>Customer Code</th>
+  //               <th>Item Name</th>
+  //               <th>Qty</th>
+  //               <th>Rate</th>
+  //               <th>Amount</th>
+  //             </tr>
+  //           </thead>
+  //           <tbody>
+  //             {saledata.map((item, index) => (
+  //               <tr key={index}>
+  //                 <td>{item.BillDate?.slice(0, 10) || "N/A"}</td>
+  //                 <td>{item.BillNo || "N/A"}</td>
+  //                 <td>{item.CustCode || "N/A"}</td>
+  //                 <td>{item.ItemName || "N/A"}</td>
+  //                 <td>{item.Qty || 0}</td>
+  //                 <td>{item.Rate ? item.Rate.toFixed(2) : "0.00"}</td>
+  //                 <td>{item.Amount ? item.Amount.toFixed(2) : "0.00"}</td>
+  //               </tr>
+  //             ))}
+  //             <tr>
+  //               <td
+  //                 colSpan="6"
+  //                 style={{ textAlign: "right", fontWeight: "bold" }}
+  //               >
+  //                 Total:
+  //               </td>
+  //               <td style={{ fontWeight: "bold" }}>{totalAmount.toFixed(2)}</td>
+  //             </tr>
+  //           </tbody>
+  //         </table>
+  //       );
+
+  //     case "Customer Saleing Balance":
+  //     case "Customer Saleing Qtm Report":
+  //       return (
+  //         <table border="1">
+  //           <thead>
+  //             <tr>
+  //               <th>CN</th>
+  //               <th>Customer Name</th>
+  //               <th>Amount</th>
+  //             </tr>
+  //           </thead>
+  //           <tbody>
+  //             {saledata.map((item, index) => (
+  //               <tr key={index}>
+  //                 <td>{item.CustCode || "N/A"}</td>
+  //                 <td>{item.cust_name || "N/A"}</td>
+  //                 <td>{item.Amount ? item.Amount.toFixed(2) : "0.00"}</td>
+  //               </tr>
+  //             ))}
+  //             <tr>
+  //               <td
+  //                 colSpan="2"
+  //                 style={{ textAlign: "right", fontWeight: "bold" }}
+  //               >
+  //                 Total:
+  //               </td>
+  //               <td style={{ fontWeight: "bold" }}>{totalAmount.toFixed(2)}</td>
+  //             </tr>
+  //           </tbody>
+  //         </table>
+  //       );
+
+  //     default:
+  //       return null;
+  //   }
+  // };
+  //.......  POpup
+
   const renderTable = () => {
     if (!selectedReport) return <p>Please select a report to display.</p>;
 
+    // Filter sales data based on fromdate and todate
+    const filteredData = saledata.filter((item) => {
+      const billDate = new Date(item.BillDate); // Convert BillDate to Date object
+      const fromDate = new Date(fromdate); // Convert fromdate to Date object
+      const toDate = new Date(todate); // Convert todate to Date object
+
+      return billDate >= fromDate && billDate <= toDate; // Only include data within the selected date range
+    });
+
     // Calculate total amount
-    const totalAmount = saledata.reduce(
+    const totalAmount = filteredData.reduce(
       (sum, item) => sum + (item.Amount || 0),
       0
     );
@@ -906,15 +1078,23 @@ const SalesReport = () => {
               </tr>
             </thead>
             <tbody>
-              {saledata.map((item, index) => (
-                <tr key={index}>
-                  <td>{item.BillDate?.slice(0, 10) || "N/A"}</td>
-                  <td>{item.BillNo || "N/A"}</td>
-                  <td>{item.CustCode || "N/A"}</td>
-                  <td>{item.CustName || "N/A"}</td>
-                  <td>{item.Amount ? item.Amount.toFixed(2) : "0.00"}</td>
+              {filteredData.length === 0 ? (
+                <tr>
+                  <td colSpan="5" style={{ textAlign: "center" }}>
+                    No data available for the selected date range.
+                  </td>
                 </tr>
-              ))}
+              ) : (
+                filteredData.map((item, index) => (
+                  <tr key={index}>
+                    <td>{item.BillDate?.slice(0, 10) || "N/A"}</td>
+                    <td>{item.BillNo || "N/A"}</td>
+                    <td>{item.CustCode || "N/A"}</td>
+                    <td>{item.CustName || "N/A"}</td>
+                    <td>{item.Amount ? item.Amount.toFixed(2) : "0.00"}</td>
+                  </tr>
+                ))
+              )}
               <tr>
                 <td
                   colSpan="4"
@@ -943,17 +1123,25 @@ const SalesReport = () => {
               </tr>
             </thead>
             <tbody>
-              {saledata.map((item, index) => (
-                <tr key={index}>
-                  <td>{item.BillDate?.slice(0, 10) || "N/A"}</td>
-                  <td>{item.BillNo || "N/A"}</td>
-                  <td>{item.CustCode || "N/A"}</td>
-                  <td>{item.ItemName || "N/A"}</td>
-                  <td>{item.Qty || 0}</td>
-                  <td>{item.Rate ? item.Rate.toFixed(2) : "0.00"}</td>
-                  <td>{item.Amount ? item.Amount.toFixed(2) : "0.00"}</td>
+              {filteredData.length === 0 ? (
+                <tr>
+                  <td colSpan="7" style={{ textAlign: "center" }}>
+                    No data available for the selected date range.
+                  </td>
                 </tr>
-              ))}
+              ) : (
+                filteredData.map((item, index) => (
+                  <tr key={index}>
+                    <td>{item.BillDate?.slice(0, 10) || "N/A"}</td>
+                    <td>{item.BillNo || "N/A"}</td>
+                    <td>{item.CustCode || "N/A"}</td>
+                    <td>{item.ItemName || "N/A"}</td>
+                    <td>{item.Qty || 0}</td>
+                    <td>{item.Rate ? item.Rate.toFixed(2) : "0.00"}</td>
+                    <td>{item.Amount ? item.Amount.toFixed(2) : "0.00"}</td>
+                  </tr>
+                ))
+              )}
               <tr>
                 <td
                   colSpan="6"
@@ -979,13 +1167,21 @@ const SalesReport = () => {
               </tr>
             </thead>
             <tbody>
-              {saledata.map((item, index) => (
-                <tr key={index}>
-                  <td>{item.CustCode || "N/A"}</td>
-                  <td>{item.cust_name || "N/A"}</td>
-                  <td>{item.Amount ? item.Amount.toFixed(2) : "0.00"}</td>
+              {filteredData.length === 0 ? (
+                <tr>
+                  <td colSpan="3" style={{ textAlign: "center" }}>
+                    No data available for the selected date range.
+                  </td>
                 </tr>
-              ))}
+              ) : (
+                filteredData.map((item, index) => (
+                  <tr key={index}>
+                    <td>{item.CustCode || "N/A"}</td>
+                    <td>{item.cust_name || "N/A"}</td>
+                    <td>{item.Amount ? item.Amount.toFixed(2) : "0.00"}</td>
+                  </tr>
+                ))
+              )}
               <tr>
                 <td
                   colSpan="2"
@@ -1003,23 +1199,12 @@ const SalesReport = () => {
         return null;
     }
   };
-  //.......  POpup
-  const handleOpenPopup = () => setShowPopup(true);
-  // const handleClosePopup = () => setShowPopup(false);
-  //..... itemgroup  and
 
   const handleItemChange = (e) => {
     // const selectedItem = item.find((item) => item.ItemDesc === e.target.value);
     // setItemName(selectedItem ? selectedItem.ItemDesc : "");
     // setItemNo(selectedItem ? selectedItem.ItemCode : "");
     setItemNo(e.target.value);
-  };
-  const handleClosePopup = () => {
-    setShowPopup(false);
-    setItemNo("");
-    setItemName("");
-    setFromDate("");
-    setToDate("");
   };
 
   useEffect(() => {
@@ -1048,6 +1233,8 @@ const SalesReport = () => {
       : saledata.filter(
           (item) => item.ItemCode.toString() === itemNo.toString()
         );
+
+  //... Itemwise PDF  And PRint Function
 
   const generateItemWisePDF = () => {
     const doc = new jsPDF();
@@ -1115,119 +1302,238 @@ const SalesReport = () => {
     doc.save("ItemWiseReport.pdf");
   };
 
+  const printItemWiseReport = () => {
+    // Dairy details
+    const dairyName = dairyname; // Replace with actual dairy name
+    const cityName = CityName; // Replace with actual city name
+    const reportTitle = "Item-wise Sales Report";
+    const fromDate = fromdate; // Replace with dynamic from date
+    const toDate = todate; // Replace with dynamic to date
+
+    // Table headers
+    const tableColumn = [
+      "Item Code",
+      "Item Name",
+      "Total Quantity",
+      "Rate",
+      "Total Amount",
+    ];
+
+    // Table data
+    const tableRows = filteredDataa.map((item) => [
+      item.ItemCode,
+      item.ItemName,
+      item.Qty, // Quantity
+      item.Rate,
+      item.Amount,
+    ]);
+
+    // Calculate totals for quantity and amount
+    const totalQty = filteredDataa.reduce(
+      (sum, item) => sum + (item.Qty || 0),
+      0
+    );
+    const totalAmount = filteredDataa.reduce(
+      (sum, item) => sum + (item.Amount || 0),
+      0
+    );
+
+    // Add total row for quantity and amount
+    const totalRow = ["", "Total", totalQty, "", totalAmount.toFixed(2)];
+    tableRows.push(totalRow); // Append to the table
+
+    // Create a printable HTML content
+    const printContent = `
+    <div style="text-align: center;">
+      <h2>${dairyName}</h2>
+      <h3>${cityName}</h3>
+      <h3>${reportTitle}</h3>
+      <p>From: ${fromDate} To: ${toDate}</p>
+    </div>
+    <table border="1" cellpadding="5" cellspacing="0" style="width: 100%; border-collapse: collapse; font-size: 10px;">
+      <thead>
+        <tr>
+          ${tableColumn
+            .map(
+              (col) =>
+                `<th style="text-align: center; font-weight: bold; padding: 10px;">${col}</th>`
+            )
+            .join("")}
+        </tr>
+      </thead>
+      <tbody>
+        ${tableRows
+          .map(
+            (row) => `
+          <tr>
+            ${row
+              .map(
+                (cell) =>
+                  `<td style="text-align: center; padding: 8px;">${
+                    cell || "N/A"
+                  }</td>`
+              )
+              .join("")}
+          </tr>
+        `
+          )
+          .join("")}
+      </tbody>
+    </table>
+  `;
+
+    // Create an iframe for printing
+    const iframe = document.createElement("iframe");
+    iframe.style.position = "absolute";
+    iframe.style.width = "0";
+    iframe.style.height = "0";
+    iframe.style.border = "none";
+    document.body.appendChild(iframe);
+
+    const doc = iframe.contentWindow.document;
+    doc.open();
+    doc.write(`
+    <html>
+      <head>
+        <title>Item-wise Sales Report</title>
+        <style>
+          body { font-family: Arial, sans-serif; }
+          table { width: 100%; border-collapse: collapse; font-size: 10px; }
+          th, td { padding: 8px; text-align: left; }
+          th { background-color: #f2f2f2; font-size: 12px; }
+          td { text-align: center; font-size: 10px; }
+        </style>
+      </head>
+      <body>
+        ${printContent}
+      </body>
+    </html>
+  `);
+    doc.close();
+
+    // Print the content in the iframe
+    iframe.contentWindow.focus();
+    iframe.contentWindow.print();
+
+    // Remove the iframe after printing
+    document.body.removeChild(iframe);
+  };
+
+  //......
+  // Function to handle checkbox change
+  const handleCheckboxChange = (e) => {
+    setIsItemwiseChecked(e.target.checked);
+  };
 
   return (
     <>
       <div className="sales-report-conatiner w100 h1 d-flex-col bg ">
         <span className="heading">Sales Reports</span>
         <div className="first-half-container-sales-report w100 h40 d-flex-col">
-          <div className="sale-regsiter-reports w100 h50 d-flex a-center  ">
-            <div className="sale-register-distrubuted-reports w40 h40 a-center d-flex">
-              <span className="info-text w30">Sale Report:</span>
-              <select
-                className="data"
-                name="sale-report"
-                id="001"
-                onChange={(e) => setSelectedReport(e.target.value)}
-              >
-                <option value="">Select Report</option>
-                <option value="Sale Register">Sale Register</option>
-                <option value="Disturbed Register list">
-                  Disturbed Register
-                </option>
-                <option value="Customer Saleing Balance">
-                  Cust Saleing Balance
-                </option>
-                <option value="Customer Saleing Qtm Report">Qtm Report</option>
-              </select>
+          <div className="date-container-sales h50 w100 d-flex a-center">
+            <div className="from-and-to-date-both w50 h1 d-flex a-center">
+              <div className="from-sales-date-div w50 h1 d-flex a-center p10">
+                <span className="info-text w30">From:</span>
+                <input
+                  className="data w80"
+                  type="date"
+                  value={fromdate} // Bind fromdate state to input
+                  onChange={(e) => setFromDate(e.target.value)} // Update fromdate on change
+                />
+              </div>
+              <div className="from-sales-date-div w50 h1 d-flex a-center p10">
+                <span className="info-text w30">To:</span>
+                <input
+                  className="data w80"
+                  type="date"
+                  value={todate} // Bind todate state to input
+                  onChange={(e) => setToDate(e.target.value)} // Update todate on change
+                />
+              </div>
             </div>
-            <div className="print-button-div w30 h20 d-flex sa ">
-              {" "}
-              {selectedReport && (
-                <button className="btn " onClick={handleDownloadReport}>
-                  PDF
+
+            <div className="sale-regsiter-reports w50 h50 d-flex a-center  ">
+              <div className="sale-register-distrubuted-reports w60 h50 a-center d-flex">
+                <span className="info-text w30">Report:</span>
+                <select
+                  className="data"
+                  name="sale-report"
+                  id="001"
+                  onChange={(e) => setSelectedReport(e.target.value)}
+                >
+                  <option value="">Select Report</option>
+                  <option value="Sale Register">Sale Register</option>
+                  <option value="Disturbed Register list">
+                    Disturbed Register
+                  </option>
+                  <option value="Customer Saleing Balance">
+                    Cust Saleing Balance
+                  </option>
+                  <option value="Customer Saleing Qtm Report">
+                    Qtm Report
+                  </option>
+                </select>
+              </div>
+              <div className="print-button-div w30 h20 d-flex a-center sa ">
+                {" "}
+                {selectedReport && (
+                  <button className="btn " onClick={handleDownloadReport}>
+                    PDF
+                  </button>
+                )}
+                <button className="btn" onClick={handlePrintReport}>
+                  print
                 </button>
-              )}
-              <button className="btn" onClick={handlePrintReport}>
-                print
-              </button>
+              </div>
             </div>
           </div>
-          <div className="distributed-sale-register w100 h20 d-flex">
-            {/* Button to Open Popup */}
-            <span className="btn" onClick={handleOpenPopup}>
-              Distributed Sale Register
-            </span>
 
-            {showPopup && (
-              <div className="popup-overlay">
-                <div className="popup-content w60 h1 d-flex-col">
-                  <span className="sub-heading">Distributed Purchase</span>
-
-                  {/* Item Selection */}
-                  <div className="item-name-item-no-container w100 h20 d-flex my10">
-                    <div className="item-no-div w30 h60 d-flex a-center">
-                      <label className="info-text w50">Item No:</label>
-                      <input
-                        className="w60 data"
-                        type="text"
-                        value={itemNo}
-                        readOnly
-                      />
-                    </div>
-                    <div className="item-name-div w70 h50 d-flex a-center">
-                      <label className="info-text w60">Item Name:</label>
-                      <select className="w90 data" onChange={handleItemChange}>
-                        <option value="">Select Item</option>
-                        {item.map((item, i) => (
-                          <option key={i} value={item.ItemCode}>
-                            {item.ItemName}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                  </div>
-
-                  {/* Date Selection */}
-                  <div className="from-to-div-sales-report w100 h30 d-flex">
-                    <div className="from-date-sales w50 h1 d-flex a-center">
-                      <label className="info-text w30">From: </label>
-                      <input
-                        className="data w70"
-                        type="date"
-                        value={fromdate}
-                        onChange={(e) => setFromDate(e.target.value)}
-                      />
-                    </div>
-                    <div className="to-dates-sales w50 h1 d-flex a-center">
-                      <label className="info-text w30">To:</label>
-                      <input
-                        className="data w70"
-                        type="date"
-                        value={todate}
-                        onChange={(e) => setToDate(e.target.value)}
-                      />
-                    </div>
-                  </div>
-
-                  {/* Buttons */}
-                  <div className="popup-buttons w50 d-flex sa">
-                    <button
-                      onClick={generateItemWisePDF}
-                      className="btn report-btn"
-                    >
-                      Report
-                    </button>
-                    <button className="btn exit-btn" onClick={handleClosePopup}>
-                      Exit
-                    </button>
-                  </div>
+          {/* Checkbox to toggle itemwise data */}
+          <div className="itemwise-data-show-checkbox-div w100 h30 d-flex a-center ">
+            <div className="checkbox-container-for-sale w30 d-flex">
+              <input
+                className="w20"
+                type="checkbox"
+                checked={isItemwiseChecked}
+                onChange={handleCheckboxChange}
+              />
+              <label className="info-text">Itemwise Data</label>
+            </div>
+            {isItemwiseChecked && (
+              <div className="item-no-itemname-div w100 h20 d-flex a-center ">
+                <div className="item-no-salesdiv w30 h1 d-flex a-center">
+                  <span className="info-text w30"> No</span>
+                  <input
+                    className="w20 data"
+                    type="text"
+                    value={itemNo}
+                    readOnly
+                  />
+                </div>
+                <div className="item-name-sale-div w40 h1 d-flex a-center">
+                  <span className="info-text w40"> Name </span>
+                  <select className="w90 data" onChange={handleItemChange}>
+                    <option value="">ItemList</option>
+                    {item.map((item, i) => (
+                      <option key={i} value={item.ItemCode}>
+                        {item.ItemName}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div className="Report-show-and-Pdf-Print-Function w30 d-flex sa a-center">
+                  <button onClick={printItemWiseReport} className="w-btn">
+                    Print
+                  </button>
+                  <button onClick={generateItemWisePDF} className=" w-btn">
+                    Pdf
+                  </button>
                 </div>
               </div>
             )}
           </div>
         </div>
-        <div className="report-table w100 h60 d-flex">{renderTable()}</div>
+        <div className="report-table w100 h70 d-flex">{renderTable()}</div>
       </div>
     </>
   );

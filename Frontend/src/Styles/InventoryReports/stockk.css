@@ -1,79 +1,47 @@
-@media screen and (max-width: 320px) {
-  .first-half-span-input-div
-    .stocks-from-todate-reports-div
-    .select-report-div {
-    flex-direction: column;
-  }
-  .first-half-span-input-div
-    .stocks-from-todate-reports
-    .fromto-date-Stock-report
-    .from-sale-stock-div
-    span {
-    width: 100px;
-    
-  }
-
-  .first-half-span-input-div
-    .stocks-from-todate-reports-div
-    .select-report-div
-    .stocks-report-selact-div {
-    display: flex;
-    width: 100%;
-    margin-bottom: 10px;
-  }
-  .first-half-span-input-div
-    .stocks-from-todate-reports-div
-    .select-report-div
-    .stocks-report-selact-div
-    span {
-    width: 150px;
-    align-items: center;
-    margin-top: 10px;
-  }
-  .first-half-span-input-div
-    .stocks-from-todate-reports-div
-    .select-report-div
-    .stocks-report-selact-div
-    select {
-    width: 200px;
-    align-items: center;
-    font-size: small;
-  }
-  .first-half-span-input-div
-    .stocks-from-todate-reports-div
-    .select-report-div
-    .stoks-button-div {
-    width: 100%;
-  }
-  .first-half-span-input-div
-    .stocks-from-todate-reports-div
-    .select-report-div
-    .stoks-button-div button  {
-     margin-bottom: 10px;
-  }
-  .Stocks-reports-container .first-half-span-input-div {
-    height: 35%;
-  }
- 
-  .first-half-span-input-div .stocks-from-todate-reports-div .fromto-date-Stock-report   {
-       width: 100%;
-  }
-  .first-half-span-input-div .stocks-from-todate-reports-div .fromto-date-Stock-report .from-sale-stock-div    {
-       width: 50%;
-  }
-  .first-half-span-input-div .stocks-from-todate-reports-div .fromto-date-Stock-report .from-sale-stock-div span   {
-       width: 40px;
-       font-size: small;
-  }
-  .first-half-span-input-div .stocks-from-todate-reports-div .fromto-date-Stock-report .from-sale-stock-div input  {
-       width: 100px;
-       font-size: x-small;
-  }
-  .stocks-report-selact-div span {
-      font-size: small;
-  }
-
+/* Table Container */
+.Stock-table-container {
+  width: 100%;
+  height: 400px; /* Set height to 70% of the viewport */
+  display: flex;
+  flex-direction: column;
 }
+
+.table-wrapper {
+  width: 100%;
+  height: 100%; /* This ensures the table fills the container */
+  overflow-y: auto; /* Makes the table scrollable */
+}
+
+.stock-table {
+  width: 100%;
+  border-collapse: collapse; /* Ensures borders are collapsed */
+}
+
+.stock-table th {
+  position: sticky;
+  top: 0;
+  background-color: #a35a5a; /* Light background for the header */
+  z-index: 10; /* Makes sure the header stays above the rows */
+  padding: 10px; /* Padding to make the header cells more spacious */
+  text-align: left;
+  font-weight: bold;
+}
+
+.stock-table td {
+  padding: 10px; /* Padding for table cells */
+  text-align: left;
+  border-bottom: 1px solid #ddd; /* Border between rows */
+}
+
+.stock-table tfoot td {
+  font-weight: bold;
+  text-align: right;
+}
+
+.stock-table tfoot td:last-child {
+  text-align: left;
+}
+
 @media screen and (max-width: 768px) {
   .first-half-span-input-div
     .stocks-from-todate-reports-div
@@ -103,7 +71,6 @@
     span {
     width: 150px;
     align-items: center;
-    margin-top: 10px;
   }
   .first-half-span-input-div
     .stocks-from-todate-reports-div
@@ -123,25 +90,158 @@
   .first-half-span-input-div
     .stocks-from-todate-reports-div
     .select-report-div
-    .stoks-button-div button  {
-     margin-bottom: 10px;
+    .stoks-button-div
+    button {
+    margin-bottom: 10px;
   }
   .Stocks-reports-container .first-half-span-input-div {
     height: 35%;
   }
- 
-  .first-half-span-input-div .stocks-from-todate-reports-div .fromto-date-Stock-report   {
-       width: 100%;
+
+  .first-half-span-input-div
+    .stocks-from-todate-reports-div
+    .fromto-date-Stock-report {
+    width: 100%;
   }
-  .first-half-span-input-div .stocks-from-todate-reports-div .fromto-date-Stock-report .from-sale-stock-div    {
-       width: 50%;
+  .first-half-span-input-div
+    .stocks-from-todate-reports-div
+    .fromto-date-Stock-report
+    .from-sale-stock-div {
+    width: 50%;
   }
-  .first-half-span-input-div .stocks-from-todate-reports-div .fromto-date-Stock-report .from-sale-stock-div span   {
-       width: 40px;
+  .first-half-span-input-div
+    .stocks-from-todate-reports-div
+    .fromto-date-Stock-report
+    .from-sale-stock-div
+    span {
+    width: 40px;
+    font-size: small;
   }
-  .first-half-span-input-div .stocks-from-todate-reports-div .fromto-date-Stock-report .from-sale-stock-div input  {
-       width: 100px;
-       font-size: x-small;
+  .first-half-span-input-div
+    .stocks-from-todate-reports-div
+    .fromto-date-Stock-report
+    .from-sale-stock-div
+    input {
+    width: 100px;
+    font-size: x-small;
+  }
+  .stocks-report-selact-div span {
+    font-size: small;
+  }
+  .stocks-from-todate-reports-div .fromto-date-Stock-report span {
+    font-size: small;
+    width: 35px;
+  }
+  .stocks-from-todate-reports-div .fromto-date-Stock-report input {
+    font-size: x-small;
+    width: 110px;
+    height: 35px;
   }
 
+  .stocks-from-todate-reports-div .to-date-sale-stock-div input {
+    width: 110px;
+    height: 35px;
+  }
+}
+@media screen and (max-width: 426px) {
+  .first-half-span-input-div
+    .stocks-from-todate-reports-div
+    .select-report-div {
+    flex-direction: column;
+  }
+  .first-half-span-input-div
+    .stocks-from-todate-reports
+    .fromto-date-Stock-report
+    .from-sale-stock-div
+    span {
+    width: 100px;
+  }
+
+  .first-half-span-input-div
+    .stocks-from-todate-reports-div
+    .select-report-div
+    .stocks-report-selact-div {
+    display: flex;
+    width: 100%;
+    margin-bottom: 10px;
+  }
+  .first-half-span-input-div
+    .stocks-from-todate-reports-div
+    .select-report-div
+    .stocks-report-selact-div
+    span {
+    width: 150px;
+    align-items: center;
+  }
+  .first-half-span-input-div
+    .stocks-from-todate-reports-div
+    .select-report-div
+    .stocks-report-selact-div
+    select {
+    width: 200px;
+    align-items: center;
+    font-size: small;
+  }
+  .first-half-span-input-div
+    .stocks-from-todate-reports-div
+    .select-report-div
+    .stoks-button-div {
+    width: 100%;
+  }
+  .first-half-span-input-div
+    .stocks-from-todate-reports-div
+    .select-report-div
+    .stoks-button-div
+    button {
+    margin-bottom: 10px;
+  }
+  .Stocks-reports-container .first-half-span-input-div {
+    height: 35%;
+  }
+
+  .first-half-span-input-div
+    .stocks-from-todate-reports-div
+    .fromto-date-Stock-report {
+    width: 100%;
+  }
+  .first-half-span-input-div
+    .stocks-from-todate-reports-div
+    .fromto-date-Stock-report
+    .from-sale-stock-div {
+    width: 50%;
+  }
+  .first-half-span-input-div
+    .stocks-from-todate-reports-div
+    .fromto-date-Stock-report
+    .from-sale-stock-div
+    span {
+    width: 40px;
+    font-size: small;
+  }
+  .first-half-span-input-div
+    .stocks-from-todate-reports-div
+    .fromto-date-Stock-report
+    .from-sale-stock-div
+    input {
+    width: 100px;
+    font-size: x-small;
+  }
+  .stocks-report-selact-div span {
+    font-size: small;
+  }
+  .stocks-from-todate-reports-div .fromto-date-Stock-report span {
+    font-size: small;
+    width: 35px;
+  }
+  .stocks-from-todate-reports-div .fromto-date-Stock-report input {
+    font-size: x-small;
+    width: 110px;
+    height: 35px;
+  }
+
+  .stocks-from-todate-reports-div .to-date-sale-stock-div input {
+    width: 110px;
+    height: 35px;
+  }
+ 
 }

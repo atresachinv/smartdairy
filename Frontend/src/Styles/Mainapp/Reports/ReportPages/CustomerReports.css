@@ -1,48 +1,48 @@
-.table-container {
-  width: 100%;
-  overflow-x: auto; /* Enable horizontal scrolling */
-  overflow-y: auto; /* Enable vertical scrolling */
-  max-height: 380px; /* Adjust as needed */
+.table-container-Customer {
   position: relative;
+  overflow: auto;
 }
 
-.table-scroll-wrapper {
-  width: 100%;
+.table-scroll-wrapper-cutomer {
+  max-height: 400px; /* Adjust the max-height of the table to allow scrolling */
+  overflow-y: auto; /* Vertical scrolling */
 }
 
-.customer-table {
+.customer-table-customer-Report {
   width: 100%;
   border-collapse: collapse;
-  min-width: 800px; /* Prevents column shrinking */
 }
 
-.customer-table thead {
+.customer-table-customer-Report thead {
   position: sticky;
   top: 0;
-  background: rgb(100, 60, 60);
-  z-index: 10;
-  
+  background-color: #8b52fc; /* Set the background color */
+  z-index: 1; /* Ensure the header stays on top */
 }
 
-.customer-table th,
-.customer-table td {
-  padding: 10px;
-  border: 1px solid #ddd;
+.customer-table-customer-Report th,
+.customer-table-customer-Report td {
+  padding: 8px;
   text-align: left;
-  white-space: nowrap; /* Prevents text wrapping */
+  border: 1px solid #ddd; /* Optional: Add borders for better table appearance */
 }
 
-.customer-table tbody {
-  display: block;
-  width: 100%;
+.customer-table-customer-Report th {
+  background-color: #8b52fc; /* Set the header background color */
+  color: white; /* White text color for the header */
 }
 
-.customer-table thead tr,
-.customer-table tbody tr {
-  display: table;
-  width: 100%;
-  table-layout: fixed;
+.customer-table-customer-Report td {
+  background-color: #fff;
 }
+
+.no-data-message {
+  text-align: center;
+  font-size: 16px;
+  color: #888;
+  padding: 20px;
+}
+
 
 @media screen and (max-width: 426px) {
   .customer-master-container .middel-filter-applay-div {
@@ -59,7 +59,8 @@
   .customer-master-container
     .middel-filter-applay-div
     .dropdown-filter-checkbox-div
-    .active-not-active-data select {
+    .active-not-active-data
+    select {
     width: 120px;
   }
   .customer-master-container
@@ -91,7 +92,6 @@
     width: 100%;
     height: 50px;
   }
- 
 
   .customer-master-container
     .middel-filter-applay-div
@@ -115,9 +115,8 @@
     select {
     margin-top: 13px;
     width: 170px;
-
   }
-  .dropdown-filter-checkbox-div{
+  .dropdown-filter-checkbox-div {
     margin-bottom: 3px;
   }
   .centerwise-and-button-div {
@@ -167,7 +166,6 @@
   }
   .centerwise-and-button-div .checkboxcommission-Deposite {
     justify-content: space-around;
-  
   }
   .select-column-div {
     flex-direction: column;
@@ -177,7 +175,6 @@
     width: 300px;
     height: 10px;
     margin-bottom: 10px;
-
   }
   .select-column-div .hide-selection-selection-bar select {
     height: 30px;
@@ -190,11 +187,15 @@
   .select-column-div .selected-hide-no-column {
     width: 100%;
     overflow-x: auto;
-
   }
   .select-column-div .selected-hide-no-column select {
     width: 150px;
     height: 30px;
   }
+  .customer-table-customer-Report thead {
+  position: sticky;
+  top: 0;
+  background-color: #8b52fc; /* Set the background color */
+  z-index: 1; /* Ensure the header stays on top */
 }
-
+}
