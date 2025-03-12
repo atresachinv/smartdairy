@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import jsPDF from "jspdf";
+import "jspdf-autotable";
 import { BsCalendar3 } from "react-icons/bs";
 import Spinner from "../../Home/Spinner/Spinner";
 import { getMasterReports } from "../../../App/Features/Customers/Milk/milkMasterSlice";
@@ -18,6 +20,7 @@ import { generateMaster } from "../../../App/Features/Customers/Date/masterdateS
 const CustPayment = () => {
   const { t } = useTranslation("common");
   const dispatch = useDispatch();
+  const dairyinfo = useSelector((state) => state.dairy.dairyData);
   const date = useSelector((state) => state.date.toDate);
   const manualMaster = useSelector((state) => state.manualMasters.masterlist);
   const records = useSelector((state) => state.mMilk.mrecords);
@@ -66,10 +69,139 @@ const CustPayment = () => {
       : "0.00";
   };
 
+  // Export to PDF ------------------------------------------------->
+  const downloadPDF = () => {
+    const doc = new jsPDF();
+
+    const formatDate = selectedPeriod;
+    const fromDate = formatDate.start;
+    const toDate = formatDate.end.slice(0, 10);
+
+    const dairyName = dairyinfo.SocietyName.toUpperCase();
+    const pageWidth = doc.internal.pageSize.getWidth();
+
+    // Add dairy name
+    doc.setFontSize(16);
+    doc.setFont("helvetica", "bold");
+    const dairyTextWidth = doc.getTextWidth(dairyName);
+    const dairyXOffset = (pageWidth - dairyTextWidth) / 2;
+    doc.text(dairyName, dairyXOffset, 10);
+
+    // Add report name
+    const reportName = "Payment Summary";
+    doc.setFontSize(14);
+    const reportTextWidth = doc.getTextWidth(reportName);
+    const reportXOffset = (pageWidth - reportTextWidth) / 2;
+    doc.text(reportName, reportXOffset, 15);
+
+    // Add date range details
+    const detailsText = `Bill No: ${payment[0]?.BillNo}, From: ${fromDate}  To: ${toDate}`;
+    doc.setFontSize(10);
+    const detailsTextWidth = doc.getTextWidth(detailsText);
+    const detailsXOffset = (pageWidth - detailsTextWidth) / 2;
+    doc.text(detailsText, detailsXOffset, 20);
+
+    // Define table headers
+    const headers = [
+      ["Date", "M/E", "C/B", "Liters", "FAT", "SNF", "Rate", "Amount"],
+    ];
+
+    // Map data for table
+    const milkData = records.map((report) => [
+      new Date(report.ReceiptDate).toLocaleDateString("en-GB", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "2-digit",
+      }),
+      report.ME === 0 ? "M" : "E",
+      report.CB === 0 ? "Cow" : "Buffalo",
+      report.Litres.toFixed(1),
+      report.fat.toFixed(1),
+      report.snf.toFixed(1),
+      report.Rate.toFixed(1),
+      report.Amt.toFixed(2),
+    ]);
+
+    // Add Milk Collection Data
+    doc.autoTable({
+      startY: 25,
+      head: headers,
+      body: milkData,
+      headStyles: { halign: "center" },
+      styles: {
+        font: "helvetica",
+        fontSize: 8,
+        lineColor: [0, 0, 0],
+        lineWidth: 0.1,
+      },
+      columnStyles: {
+        3: { halign: "right" }, // Liters
+        4: { halign: "right" }, // FAT
+        5: { halign: "right" }, // SNF
+        6: { halign: "right" }, // Rate
+        7: { halign: "right" }, // Amount
+      },
+    });
+
+    // Add Deduction Details if available
+    if (subdeduction.length > 0) {
+      doc.text("Deductions", 14, doc.autoTable.previous.finalY + 10);
+      const deductionData = subdeduction.map((ded) => [
+        ded.dname,
+        ded.Amt || "N/A",
+      ]);
+
+      doc.autoTable({
+        startY: doc.autoTable.previous.finalY + 15,
+        head: [["Deduction Name", "Amount"]],
+        headStyles: { halign: "center" },
+        body: deductionData,
+        styles: {
+          font: "helvetica",
+          fontSize: 8,
+          lineColor: [0, 0, 0],
+          lineWidth: 0.1,
+        },
+        columnStyles: { 1: { halign: "right" } }, // Align amount column to left
+      });
+    }
+
+    // Add Payment Summary if available
+    if (payment.length > 0) {
+      doc.text("Payment Summary", 14, doc.autoTable.previous.finalY + 10);
+
+      const paymentDetails = [
+        ["Bill No", payment[0]?.BillNo || "N/A"],
+        ["Total Liters", payment[0]?.tliters || "N/A"],
+        ["Avg Rate", payment[0]?.arate || "N/A"],
+        ["Payment Amount", payment[0]?.pamt || "N/A"],
+        ["Total Deduction", payment[0]?.damt || "N/A"],
+        ["Net Pay", payment[0]?.namt || "0.0"],
+      ];
+
+      doc.autoTable({
+        startY: doc.autoTable.previous.finalY + 15,
+        head: [["Description", "Value"]],
+        body: paymentDetails,
+        headStyles: { halign: "center" },
+        styles: {
+          font: "helvetica",
+          fontSize: 8,
+          lineColor: [0, 0, 0],
+          lineWidth: 0.1,
+        },
+        columnStyles: { 1: { halign: "right" } }, // Align all numeric values to left
+      });
+    }
+
+    // Save PDF
+    doc.save("Milk_Report.pdf");
+  };
+
   return (
     <div className="payment-container w100 h1 d-flex-col ">
       <div className="title-select-date w100 h20 d-flex-col p10">
-        <div className="menu-title-div w70 h50 d-flex">
+        <div className="menu-title-div w70 h50 d-flex ">
           <h2 className="f-heading">{t("c-page-title-pay")}</h2>
         </div>
         <div className="custmize-report-div w100 h50 d-flex a-center sb">
@@ -78,7 +210,8 @@ const CustPayment = () => {
           </span>
           <select
             className="custom-select w80 h1 p10"
-            onChange={handleSelectChange}>
+            onChange={handleSelectChange}
+          >
             <option className="label-text w100 d-flex">
               --{t("c-select-master")}--
             </option>
@@ -86,7 +219,8 @@ const CustPayment = () => {
               <option
                 className="label-text w100 d-flex sa"
                 key={index}
-                value={index}>
+                value={index}
+              >
                 {new Date(dates.start).toLocaleDateString("en-GB", {
                   day: "2-digit",
                   month: "short", // Abbreviated month format
@@ -105,8 +239,8 @@ const CustPayment = () => {
       </div>
       <div className="payment-details-container w100 h80 mh80 d-flex-col">
         {selectedPeriod == null ? (
-          <div className="w100 h1 d-flex center">
-            <span className="heading">{t("c-no-data-avai")}</span>
+          <div className="w100 h1 d-flex sb a-center">
+            <span className="heading">{t("c-no-data-avai")}</span>{" "}
           </div>
         ) : status === "loading" ? (
           <div className="w100 h80 d-flex center">
@@ -115,6 +249,15 @@ const CustPayment = () => {
         ) : (
           // payment info
           <div className="payment-details-div w100 h90 d-flex-col hidescrollbar p10">
+            <div className="w100 h10 d-flex a-center j-end my10">
+              <button
+                type="button"
+                className="label-text color-icon w30 btn"
+                onClick={downloadPDF}
+              >
+                Download PDF
+              </button>
+            </div>
             <div className="milk-summary-container w100 d-flex-col bg py10 ">
               <span className="heading px10">{t("c-page-title-milk")} :</span>
               <div className="invoice-of-collection-div w100 d-flex-col">
@@ -128,12 +271,13 @@ const CustPayment = () => {
                   <span className="text w10">{t("c-rate")}</span>
                   <span className="text w15">{t("c-amt")}</span>
                 </div>
-                <div className="report-data-container w100 h90 d-flex-col hidescrollbar">
+                <div className="report-data-container w100 h90 mh90 d-flex-col hidescrollbar">
                   {Array.isArray(records) && records.length > 0 ? (
                     records.map((report, index) => (
                       <div
                         key={index}
-                        className="content-values-div w100 h10 d-flex center t-center sb">
+                        className="content-values-div w100 p10 d-flex center t-center sb"
+                      >
                         <span className="text w15">
                           {new Date(report.ReceiptDate).toLocaleDateString(
                             "en-GB",
@@ -180,16 +324,18 @@ const CustPayment = () => {
               <span className="heading px10">{t("c-page-title-deduct")} :</span>
               <div className="purchase-detailsitable w100 h80 mh80 d-flex-col hidescrollbar px10">
                 {subdeduction.length > 0 ? (
-                  <div className="sub-deductions w100 h50 mh40 d-flex-col sb my10">
-                    {subdeduction.map((deduction, index) => (
-                      <div key={index} className="Amount w100 h30 d-flex sb">
-                        <span className="text">{deduction.dname} :</span>
-                        <span className="info-text">
-                          {deduction.Amt || "N/A"}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
+                  <>
+                    <div className="sub-deductions w100  d-flex-col sb my10">
+                      {subdeduction.map((deduction, index) => (
+                        <div key={index} className="Amount w100 h30 d-flex sb">
+                          <span className="text">{deduction.dname} :</span>
+                          <span className="info-text">
+                            {deduction.Amt || "N/A"}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </>
                 ) : (
                   <div className="box d-flex center subheading">
                     <span className="heading">{t("c-no-data-avai")}</span>

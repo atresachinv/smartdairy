@@ -9,7 +9,7 @@ import {
 } from "../../../../../App/Features/Mainapp/Masters/rateChartSlice";
 import Spinner from "../../../../Home/Spinner/Spinner";
 
-const SaveRateChart = ({ rate }) => {
+const SaveRateChart = () => {
   const dispatch = useDispatch();
   const tDate = useSelector((state) => state.date.toDate);
   const status = useSelector((state) => state.ratechart.savercstatus);
@@ -79,72 +79,6 @@ const SaveRateChart = ({ rate }) => {
     });
     return validationErrors;
   };
-
-  //Handling Save Ratechart
-  // const handleSubmit = async (e) => {
-  //   e.preventDefault();
-
-  //   if (!ratechart) {
-  //     toast.error("Ratechart not Available!");
-  //     return;
-  //   }
-
-  //   // Validate fields before submission
-  //   const validationErrors = validateFields();
-  //   if (Object.keys(validationErrors).length) {
-  //     setErrors(validationErrors);
-  //     return;
-  //   }
-
-  //   // Ensure numerical fields are numbers
-  //   const numericRccode = parseInt(formData.rccode, 10);
-  //   // const numericRctype = parseInt(formData.rctype, 10);
-  //   const numericTime = parseInt(formData.time, 10);
-
-  //   if (isNaN(numericRccode) || isNaN(numericTime)) {
-  //     setLocalError("RCCODE, RCTYPE, and Time must be valid numbers.");
-  //     return;
-  //   }
-
-  //   if (
-  //     !formData.rcdate ||
-  //     new Date(formData.rcdate).toString() === "Invalid Date"
-  //   ) {
-  //     toast.error("Please provide a valid date.");
-  //     return;
-  //   }
-  //   if (!Array.isArray(ratechart) || ratechart.length === 0) {
-  //     toast.error("Ratechart cannot be empty.");
-  //     return;
-  //   }
-  //   // Dispatch with validated and parsed data
-  //   await dispatch(
-  //     saveRateChart({
-  //       rccode: numericRccode,
-  //       rctype: formData.rctype,
-  //       rcdate: formData.rcdate,
-  //       time: numericTime,
-  //       animal: formData.animalType,
-  //       ratechart: ratechart,
-  //     })
-  //   );
-
-  //   if (status === "succeeded") {
-  //     toast.success("Ratechart saved successfully!");
-  //     dispatch(fetchMaxRcCode());
-  //     dispatch(listRateCharts());
-  //     setFormData({
-  //       rccode: maxRcCode,
-  //       rctype: "",
-  //       time: "",
-  //       animalType: "",
-  //       rcdate: "",
-  //     });
-  //     setRate([]);
-  //   } else if (status === "failed") {
-  //     toast.error("Failed to save ratechart, Please try again!");
-  //   }
-  // };
 
   const handleSubmit = async (e) => {
     e.preventDefault();

@@ -8,6 +8,7 @@ import milksalesmr from "./Marathi/MilkSales.json";
 import inventorymr from "./Marathi/Inventory.json";
 import mastermr from "./Marathi/Masters.json";
 import puchasesalemr from "./Marathi/PurchaseSale.json";
+import ratechartmr from "./Marathi/Ratechart.json";
 
 // English
 import enTranslation from "./English/English.json";
@@ -17,6 +18,7 @@ import milksaleseg from "./English/MilkSales.json";
 import inventoryeg from "./English/Inventory.json";
 import mastereg from "./English/Masters.json";
 import puchasesaleeg from "./English/PurchaseSale.json";
+import ratecharteg from "./English/Ratechart.json";
 
 i18n.use(initReactI18next).init({
   resources: {
@@ -28,6 +30,7 @@ i18n.use(initReactI18next).init({
       inventory: inventorymr,
       master: mastermr,
       puchasesale: puchasesalemr,
+      ratechart: ratechartmr,
     },
     en: {
       translation: enTranslation,
@@ -37,6 +40,7 @@ i18n.use(initReactI18next).init({
       inventory: inventoryeg,
       master: mastereg,
       puchasesale: puchasesaleeg,
+      ratechart: ratecharteg,
     },
   },
   lng: "mr", // Default language
@@ -48,6 +52,7 @@ i18n.use(initReactI18next).init({
     "inventory",
     "master",
     "puchasesale",
+    "ratechart",
   ], // Defined namespaces
   defaultNS: "translation", // Default namespace to use if none is specified
   interpolation: {

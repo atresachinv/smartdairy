@@ -46,10 +46,10 @@ const Milkcollelist = () => {
     <div className="milk-collection-list w100 h1 d-flex-col bg">
       <div className="title-container w100 h10 d-flex a-center sb p10">
         <h2 className="heading">
-          {isRCust ? "Customer List" : t("m-coll-list")}
+          {isRCust ? t("master:m-custlist") : t("m-coll-list")}
         </h2>
         <button className="btn info-text" onClick={handleRemainingCustomers}>
-          {isRCust ? t("m-coll-list") : "Customer List"}
+          {isRCust ? t("m-coll-list") : t("master:m-custlist")}
         </button>
       </div>
 
@@ -118,7 +118,7 @@ const Milkcollelist = () => {
         </div>
       ) : (
         <div className="remaing-customer-list-container w100 h90 mh90 d-flex-col hidescrollbar">
-          <div className="customer-details-heading-container w100 h10 p10 d-flex a-center t-center sb sticky-top bg1">
+          <div className="customer-details-heading-container w100 p10 d-flex a-center t-center sb sticky-top bg1">
             <span className="f-info-text w15">{t("master:m-ccode")}</span>
             <span className="f-info-text w50">{t("master:m-cname")}</span>
             <span className="f-info-text w30">{t("master:m-mobile")}</span>

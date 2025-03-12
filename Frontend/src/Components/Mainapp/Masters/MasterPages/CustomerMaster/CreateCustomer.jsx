@@ -67,7 +67,7 @@ const CreateCustomer = () => {
     h_dairyrebet: 0,
     h_transportation: 0,
   });
-  console.log(customerList);
+
   useState(() => {
     dispatch(listRateCharts());
     dispatch(getMaxCustNo());
@@ -454,6 +454,7 @@ const CreateCustomer = () => {
       fileInputRef.current.value = ""; // Reset file input
     }
   };
+
   const handleExcelUpload = async (e) => {
     e.preventDefault();
     if (excelData && excelData.length > 0) {
@@ -473,6 +474,7 @@ const CreateCustomer = () => {
       toast.error("Please select and process an Excel file first.");
     }
   };
+
   return (
     <form
       onSubmit={handleSubmit}

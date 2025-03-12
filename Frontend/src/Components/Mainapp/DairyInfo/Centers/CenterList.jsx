@@ -1,5 +1,4 @@
 import React, { useEffect } from "react";
-import { MdOutlineEditNote, MdDelete } from "react-icons/md";
 import "../../../../Styles/Mainapp/Dairy/Center.css";
 import { useDispatch, useSelector } from "react-redux";
 import { centersLists } from "../../../../App/Features/Dairy/Center/centerSlice";

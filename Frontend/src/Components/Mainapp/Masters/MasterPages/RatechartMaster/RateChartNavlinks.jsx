@@ -4,8 +4,10 @@ import { VscSave } from "react-icons/vsc";
 import { IoIosSave } from "react-icons/io";
 import { GrUpdate } from "react-icons/gr";
 import { NavLink } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 const RateChartNavlinks = ({ isselected, setIsSelected }) => {
+  const ratechart = useSelector((state) => state.ratechart.excelRatechart);
   const ratechartnavlinks = [
     {
       name: "Add Type",
@@ -13,7 +15,7 @@ const RateChartNavlinks = ({ isselected, setIsSelected }) => {
       index: 0,
       path: "add/new-type",
     },
-    {
+    ratechart.length > 0 && {
       name: "Save",
       icon: <VscSave className="icon" />,
       index: 1,

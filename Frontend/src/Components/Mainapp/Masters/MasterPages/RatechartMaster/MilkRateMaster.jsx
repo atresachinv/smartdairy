@@ -44,6 +44,10 @@ const MilkRateMaster = () => {
   });
 
   useEffect(() => {
+    if (!fileName) {
+      dispatch(setData([]));
+      return;
+    }
     dispatch(fetchMaxRcCode());
     dispatch(fetchMaxRctype());
     dispatch(listRateCharts());
@@ -57,6 +61,7 @@ const MilkRateMaster = () => {
     const file = e.target.files[0];
 
     const fileExtension = file.name.split(".").pop().toLowerCase();
+
     if (fileExtension !== "xlsx" && fileExtension !== "xls") {
       setLocalError(
         "Please upload a valid Excel file with .xlsx or .xls extension."
@@ -77,7 +82,9 @@ const MilkRateMaster = () => {
       dispatch(setData(transformedData));
       setLocalError("");
     } catch (err) {
+      dispatch(setData([]));
       console.error("Error reading Excel file:", err);
+      toast.error("Selected excel file is not valid ratechart excel!");
       setLocalError(
         "Failed to read the Excel file. Please ensure it is properly formatted."
       );
@@ -273,8 +280,16 @@ const MilkRateMaster = () => {
                     </span>
                   </div>
                 ))
+              ) : fileName === "" || null ? (
+                <div className="box d-flex center label-text">
+                  Select a Rate Chart to display.
+                </div>
+              ) : rate.length === 0 ? (
+                <div className="box d-flex center label-text">
+                  Selected Ratechart is empty.
+                </div>
               ) : (
-                <div>Select a Rate Chart to display.</div>
+                <></>
               )}
             </div>
           </div>
