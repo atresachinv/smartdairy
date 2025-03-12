@@ -80,7 +80,6 @@ exports.createSales = (req, res) => {
               .status(500)
               .json({ success: false, message: "Error creating sale records" });
           }
-          console.log(result.affectedRows);
           res.status(201).json({
             success: true,
             message: "Sale records created successfully",
@@ -374,7 +373,6 @@ exports.updateSale = async (req, res) => {
 
 exports.fetchVehicleSales = (req, res) => {
   const { fromdate, todate } = req.query;
-  console.log(fromdate, todate);
   const { dairy_id, center_id, user_id } = req.user;
 
   if (!fromdate || !todate) {
@@ -440,7 +438,6 @@ exports.fetchVehicleSales = (req, res) => {
 
 exports.fetchAllSales = (req, res) => {
   const { fromdate, todate } = req.query;
-  console.log(fromdate, todate);
   const { dairy_id, center_id } = req.user;
 
   if (!fromdate || !todate) {
@@ -518,8 +515,6 @@ exports.getSaleStock = async (req, res) => {
     WHERE BillDate BETWEEN ? AND ?`;
 
   const queryParams = [startDate, endDate];
-  console.log(startDate);
-  console.log(endDate);
 
   if (dairy_id) {
     query += ` AND companyid = ? AND center_id=?`;
@@ -561,8 +556,6 @@ exports.getSaleStock = async (req, res) => {
 exports.getPurchaseStock = async (req, res) => {
   const { dairy_id, center_id } = req.user;
   const { ItemGroupCode } = req.query;
-  console.log(dairy_id);
-  console.log(center_id);
 
   // Get the current date
   const today = new Date();
@@ -597,7 +590,9 @@ exports.getPurchaseStock = async (req, res) => {
   pool.getConnection((err, connection) => {
     if (err) {
       console.error("Error getting MySQL connection: ", err);
-      return res.status(500).json({ message: "Database connection error" });
+      return res
+        .status(500)
+        .json({ status: 500, message: "Database connection error" });
     }
 
     // Fetch purchase data
@@ -608,13 +603,16 @@ exports.getPurchaseStock = async (req, res) => {
         console.error("Error executing query: ", err);
         return res
           .status(500)
-          .json({ message: "Error fetching purchase data", error: err });
+          .json({
+            status: 500,
+            message: "Error fetching purchase data",
+            error: err,
+          });
       }
 
-      res.status(200).json({
-        success: true,
-        purchaseData: result,
-      });
+      res
+        .status(200)
+        .json({ status: 200, success: true, purchaseData: result });
     });
   });
 };

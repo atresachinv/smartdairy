@@ -30,7 +30,7 @@ const Navigation = () => {
             <Link onClick={showNavbar} to={"#"}>
               Home
             </Link>
-            <Link onClick={showNavbar} to={"#"}>
+            <Link onClick={showNavbar} to={"/about"}>
               About
             </Link>
             <Link onClick={showNavbar} to={"#"}>

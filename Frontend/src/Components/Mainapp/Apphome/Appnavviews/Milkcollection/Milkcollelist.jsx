@@ -1,17 +1,35 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { useTranslation } from "react-i18next";
 import "../../../../../Styles/Mainapp/Apphome/Appnavview/Milkcollection.css";
+import { useParams } from "react-router-dom";
 
 const Milkcollelist = () => {
-  const { t } = useTranslation(["milkcollection", "common"]);
+  const { t } = useTranslation(["milkcollection", "common", "master"]);
+  const { time } = useParams();
   // Retrieve milk collection data and sort in descending order
   const milkColl = useSelector((state) => state.milkCollection.entries || [])
     .slice()
     .reverse();
 
   const [custList, setCustomersList] = useState({}); // to check remainning customer list
+  const [milkData, setMilkData] = useState([]); // to check remainning customer list
   const [isRCust, setIsRCust] = useState(false); // to show remainning customer list
+
+  useEffect(() => {
+    if (!milkColl || milkColl.length === 0) return; // Ensure milkColl is not empty
+
+    const ME = time === "morning" ? 0 : 1; // Determine ME based on time
+    const MilkEntries = milkColl.filter(
+      (entry) => entry.shift.toString() === ME.toString()
+    );
+    // Only update state if filtered data has changed
+    setMilkData((prevMilkData) => {
+      return JSON.stringify(prevMilkData) !== JSON.stringify(MilkEntries)
+        ? MilkEntries
+        : prevMilkData;
+    });
+  }, [milkColl, time]); // Only re-run when milkColl or time changes
 
   const handleRemainingCustomers = async (e) => {
     e.preventDefault();
@@ -23,6 +41,7 @@ const Milkcollelist = () => {
       setCustomersList([]);
     }
   };
+
   return (
     <div className="milk-collection-list w100 h1 d-flex-col bg">
       <div className="title-container w100 h10 d-flex a-center sb p10">
@@ -36,8 +55,8 @@ const Milkcollelist = () => {
 
       {!isRCust ? (
         <div className="collection-list-container w100 h90 d-flex-col hidescrollbar p10">
-          {milkColl.length > 0 ? (
-            milkColl.map((entry, i) => (
+          {milkData.length > 0 ? (
+            milkData.map((entry, i) => (
               <div
                 key={i}
                 className="collection-details w100 d-flex-col bg3 br6"
@@ -100,9 +119,9 @@ const Milkcollelist = () => {
       ) : (
         <div className="remaing-customer-list-container w100 h90 mh90 d-flex-col hidescrollbar">
           <div className="customer-details-heading-container w100 h10 p10 d-flex a-center t-center sb sticky-top bg1">
-            <span className="f-info-text w15">Code</span>
-            <span className="f-info-text w50">Name</span>
-            <span className="f-info-text w30">Mobile</span>
+            <span className="f-info-text w15">{t("master:m-ccode")}</span>
+            <span className="f-info-text w50">{t("master:m-cname")}</span>
+            <span className="f-info-text w30">{t("master:m-mobile")}</span>
           </div>
           {custList.length > 0 ? (
             custList.map((customer, index) => (

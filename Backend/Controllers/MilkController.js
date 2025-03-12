@@ -2,6 +2,7 @@ const jwt = require("jsonwebtoken");
 const dotenv = require("dotenv");
 const pool = require("../Configs/Database");
 dotenv.config({ path: "Backend/.env" });
+const util = require("util");
 
 //------------------------------------------------------------------------------------------------------------------->
 //Cusomer Details
@@ -401,6 +402,114 @@ exports.milkCollection = async (req, res) => {
 // currently working Save Milk Collection (single entry)
 //------------------------------------------------------------------------------------------------------------------->
 //v2 rctype added ----------
+// exports.milkCollectionOneEntry = async (req, res) => {
+//   const {
+//     date,
+//     code,
+//     shift,
+//     animal,
+//     liters,
+//     fat,
+//     snf,
+//     amt,
+//     rcName,
+//     degree,
+//     rate,
+//     cname,
+//     acccode,
+//   } = req.body;
+
+//   const dairy_id = req.user.dairy_id;
+//   const user_role = req.user.user_role;
+//   const center_id = req.user.center_id;
+
+//   if (
+//     !date ||
+//     !code ||
+//     !shift ||
+//     !animal ||
+//     !liters ||
+//     !fat ||
+//     !snf ||
+//     !amt ||
+//     !rcName ||
+//     !degree ||
+//     !rate ||
+//     !cname ||
+//     !acccode
+//   ) {
+//     return res
+//       .status(400)
+//       .json({ status: 400, message: "All field data Required!" });
+//   }
+//   if (!dairy_id) {
+//     return res.status(401).json({ status: 401, message: "Unauthorized User!" });
+//   }
+
+//   pool.getConnection((err, connection) => {
+//     if (err) {
+//       console.error("Error getting MySQL connection: ", err);
+//       return res
+//         .status(500)
+//         .json({ status: 500, message: "Database connection error!" });
+//     }
+
+//     try {
+//       const dairy_table = `dailymilkentry_${dairy_id}`;
+
+//       // Prepare the SQL query
+//       const milkcollection = `
+//         INSERT INTO ${dairy_table}
+//         (companyid, userid, ReceiptDate, ME, CB, Litres, fat, snf, Amt, rctype, GLCode, AccCode, Digree, rate, cname, rno, center_id)
+//         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? , ?, ?)
+//       `;
+
+//       // Execute the query
+//       connection.query(
+//         milkcollection,
+//         [
+//           dairy_id,
+//           user_role,
+//           date,
+//           shift,
+//           animal,
+//           liters,
+//           fat,
+//           snf,
+//           amt,
+//           rcName,
+//           "28", // GLCode
+//           acccode,
+//           degree,
+//           rate,
+//           cname,
+//           code,
+//           center_id,
+//         ],
+//         (err, results) => {
+//           connection.release();
+
+//           if (err) {
+//             console.error("Error executing query: ", err);
+//             return res
+//               .status(500)
+//               .json({ status: 500, message: "Query execution error!" });
+//           }
+//           res
+//             .status(200)
+//             .json({ status: 200, message: "Milk entry saved successfully!" });
+//         }
+//       );
+//     } catch (error) {
+//       connection.release();
+//       console.error("Error processing request: ", error);
+//       return res
+//         .status(500)
+//         .json({ status: 500, message: "Internal server error!" });
+//     }
+//   });
+// };
+
 exports.milkCollectionOneEntry = async (req, res) => {
   const {
     date,
@@ -416,6 +525,7 @@ exports.milkCollectionOneEntry = async (req, res) => {
     rate,
     cname,
     acccode,
+    allow,
   } = req.body;
 
   const dairy_id = req.user.dairy_id;
@@ -425,27 +535,25 @@ exports.milkCollectionOneEntry = async (req, res) => {
   if (
     !date ||
     !code ||
-    !shift ||
-    !animal ||
     !liters ||
     !fat ||
     !snf ||
     !amt ||
     !rcName ||
-    !degree ||
     !rate ||
     !cname ||
     !acccode
   ) {
     return res
       .status(400)
-      .json({ status: 400, message: "All field data Required!" });
+      .json({ status: 400, message: "All fields are required!" });
   }
+
   if (!dairy_id) {
     return res.status(401).json({ status: 401, message: "Unauthorized User!" });
   }
 
-  pool.getConnection((err, connection) => {
+  pool.getConnection(async (err, connection) => {
     if (err) {
       console.error("Error getting MySQL connection: ", err);
       return res
@@ -453,52 +561,69 @@ exports.milkCollectionOneEntry = async (req, res) => {
         .json({ status: 500, message: "Database connection error!" });
     }
 
+    const query = util.promisify(connection.query).bind(connection);
+
     try {
       const dairy_table = `dailymilkentry_${dairy_id}`;
 
-      // Prepare the SQL query
-      const milkcollection = `
-        INSERT INTO ${dairy_table} 
-        (companyid, userid, ReceiptDate, ME, CB, Litres, fat, snf, Amt, rctype, GLCode, AccCode, Digree, rate, cname, rno, center_id) 
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? , ?, ?)
-      `;
+      // If `allow` is false, check if entry already exists
+      if (!allow) {
+        const checkMilkCollectionQuery = `
+          SELECT COUNT(rno) AS count 
+          FROM ${dairy_table} 
+          WHERE companyid = ? AND center_id = ? AND ReceiptDate = ? AND ME = ? AND CB = ? AND rno = ?
+        `;
 
-      // Execute the query
-      connection.query(
-        milkcollection,
-        [
+        const existingEntry = await query(checkMilkCollectionQuery, [
           dairy_id,
-          user_role,
+          center_id,
           date,
           shift,
           animal,
-          liters,
-          fat,
-          snf,
-          amt,
-          rcName,
-          "28", // GLCode
-          acccode,
-          degree,
-          rate,
-          cname,
           code,
-          center_id,
-        ],
-        (err, results) => {
-          connection.release();
+        ]);
 
-          if (err) {
-            console.error("Error executing query: ", err);
-            return res
-              .status(500)
-              .json({ status: 500, message: "Query execution error!" });
-          }
-          res
-            .status(200)
-            .json({ status: 200, message: "Milk entry saved successfully!" });
+        if (existingEntry[0].count > 0) {
+          connection.release();
+          return res.status(400).json({
+            status: 400,
+            message: "Duplicate entry! Milk collection already exists.",
+          });
         }
-      );
+      }
+
+      // Insert milk collection entry
+      const insertMilkCollectionQuery = `
+        INSERT INTO ${dairy_table} 
+        (companyid, userid, ReceiptDate, ME, CB, Litres, fat, snf, Amt, rctype, GLCode, AccCode, Digree, rate, cname, rno, center_id) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `;
+
+      await query(insertMilkCollectionQuery, [
+        dairy_id,
+        user_role,
+        date,
+        shift,
+        animal,
+        liters,
+        fat,
+        snf,
+        amt,
+        rcName,
+        "28", // Default GLCode
+        acccode,
+        degree,
+        rate,
+        cname,
+        code,
+        center_id,
+      ]);
+
+      connection.release();
+      res.status(200).json({
+        status: 200,
+        message: "Milk entry saved successfully!",
+      });
     } catch (error) {
       connection.release();
       console.error("Error processing request: ", error);
@@ -1141,13 +1266,87 @@ exports.PreviousMilkCollectionList = async (req, res) => {
 //.........................................................
 // Save Mobile Milk Collection (single entry) .............
 
-exports.mobileMilkCollection = async (req, res) => {
-  const { code, animal, liters, cname, sample, acccode } = req.body;
+// exports.mobileMilkCollection = async (req, res) => {
+//   const { code, animal, liters, cname, sample, acccode} = req.body;
 
-  pool.getConnection((err, connection) => {
+//   pool.getConnection((err, connection) => {
+//     if (err) {
+//       console.error("Error getting MySQL connection: ", err);
+//       return res.status(500).json({ message: "Database connection error" });
+//     }
+
+//     try {
+//       const dairy_id = req.user.dairy_id;
+//       const center_id = req.user.center_id;
+//       const user = req.user.user_id;
+
+//       if (!dairy_id) {
+//         connection.release();
+//         return res.status(400).json({ message: "Dairy ID not found!" });
+//       }
+
+//       const dairy_table = `dailymilkentry_${dairy_id}`;
+
+//       // Get the current date in YYYY-MM-DD format
+//       const currentDate = new Date().toISOString().split("T")[0];
+
+//       // Get the current hour to determine AM or PM
+//       const currentHour = new Date().getHours();
+//       const time = currentHour < 12 ? 0 : 1;
+
+//       // Prepare the SQL query
+//       const milkcollection = `
+//         INSERT INTO ${dairy_table}
+//         (companyid, userid, ReceiptDate, ME, CB, Litres, GLCode, AccCode, cname, rno, Driver, SampleNo, center_id)
+//         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+//       `;
+
+//       // Execute the query
+//       connection.query(
+//         milkcollection,
+//         [
+//           dairy_id,
+//           user,
+//           currentDate,
+//           time,
+//           animal,
+//           liters,
+//           "28", // GLCode
+//           acccode,
+//           cname,
+//           code,
+//           "1",
+//           sample,
+//           center_id,
+//         ],
+//         (err, result) => {
+//           connection.release();
+
+//           if (err) {
+//             console.error("Error executing query: ", err);
+//             return res.status(500).json({ message: "Query execution error" });
+//           }
+//           res.status(200).json({ message: "Milk entry saved successfully!" });
+//         }
+//       );
+//     } catch (error) {
+//       connection.release();
+//       console.error("Error processing request: ", error);
+//       return res.status(500).json({ message: "Internal server error" });
+//     }
+//   });
+// };
+
+//v3 function ---------------------
+exports.mobileMilkCollection = async (req, res) => {
+  const { code, animal, liters, cname, sample, acccode, allow } = req.body;
+
+  pool.getConnection(async (err, connection) => {
     if (err) {
       console.error("Error getting MySQL connection: ", err);
-      return res.status(500).json({ message: "Database connection error" });
+      return res
+        .status(500)
+        .json({ status: 500, message: "Database connection error" });
     }
 
     try {
@@ -1157,57 +1356,76 @@ exports.mobileMilkCollection = async (req, res) => {
 
       if (!dairy_id) {
         connection.release();
-        return res.status(400).json({ message: "Dairy ID not found!" });
+        return res
+          .status(400)
+          .json({ status: 400, message: "Dairy ID not found!" });
       }
 
       const dairy_table = `dailymilkentry_${dairy_id}`;
-
-      // Get the current date in YYYY-MM-DD format
       const currentDate = new Date().toISOString().split("T")[0];
-
-      // Get the current hour to determine AM or PM
       const currentHour = new Date().getHours();
       const time = currentHour < 12 ? 0 : 1;
 
-      // Prepare the SQL query
-      const milkcollection = `
+      // Promisify queries
+      const query = util.promisify(connection.query).bind(connection);
+
+      // Check if entry already exists (only if allow is false)
+      if (!allow) {
+        const checkMilkCollectionQuery = `
+          SELECT COUNT(rno) AS count 
+          FROM ${dairy_table} 
+          WHERE companyid = ? AND center_id = ? AND ReceiptDate = ? AND ME = ? AND CB = ? AND rno = ?
+        `;
+
+        const existingEntry = await query(checkMilkCollectionQuery, [
+          dairy_id,
+          center_id,
+          currentDate,
+          time,
+          animal,
+          code,
+        ]);
+
+        if (existingEntry[0].count > 0) {
+          connection.release();
+          return res.status(409).json({
+            status: 409,
+            message: "Duplicate entry! Milk collection already exists.",
+          });
+        }
+      }
+
+      // Insert new milk collection entry
+      const milkCollectionQuery = `
         INSERT INTO ${dairy_table} 
         (companyid, userid, ReceiptDate, ME, CB, Litres, GLCode, AccCode, cname, rno, Driver, SampleNo, center_id)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       `;
 
-      // Execute the query
-      connection.query(
-        milkcollection,
-        [
-          dairy_id,
-          user,
-          currentDate,
-          time,
-          animal,
-          liters,
-          "28", // GLCode
-          acccode,
-          cname,
-          code,
-          "1",
-          sample,
-          center_id,
-        ],
-        (err, result) => {
-          connection.release();
+      await query(milkCollectionQuery, [
+        dairy_id,
+        user,
+        currentDate,
+        time,
+        animal,
+        liters,
+        "28", // GLCode
+        acccode,
+        cname,
+        code,
+        "1",
+        sample,
+        center_id,
+      ]);
 
-          if (err) {
-            console.error("Error executing query: ", err);
-            return res.status(500).json({ message: "Query execution error" });
-          }
-          res.status(200).json({ message: "Milk entry saved successfully!" });
-        }
-      );
+      connection.release();
+      res
+        .status(200)
+        .json({ status: 200, message: "Milk entry saved successfully!" });
     } catch (error) {
       connection.release();
-      console.error("Error processing request: ", error);
-      return res.status(500).json({ message: "Internal server error" });
+      console.error("Error processing request:", error);
+      res.status(500).json({ status: 500, message: "Internal server error" });
     }
   });
 };
@@ -1512,7 +1730,7 @@ exports.allMilkCollReport = async (req, res) => {
       const dairy_table = `dailymilkentry_${dairy_id}`;
 
       const milkCollectionQuery = `
-        SELECT id, ReceiptDate,  ME,  CB,  Litres,  fat,  snf,  rate,  Amt,  cname,  rno , AccCode
+        SELECT id, userid, ReceiptDate,  ME,  CB,  Litres,  fat,  snf,  rate,  Amt,  cname,  rno , AccCode ,center_id
         FROM ${dairy_table}
         WHERE ReceiptDate BETWEEN ? AND ?
       `;
@@ -2474,3 +2692,28 @@ exports.centerReMilkReports = async (req, res) => {
     }
   });
 };
+
+// dairy dashboard summary report ------------------------------------------------------------------>
+//-------------------------------------------------------------------------------------------------->
+
+// exports.dairyDashboardSummary = async (req, res) => {
+//   const { dairy_id, center_id } = req.user;
+//   if (!dairy_id) {
+//     return res.status(401).json({ staus: 401, message: "Unauthorized User!" });
+//   }
+//   const dairy_table = `dailymilkentry_${dairy_id}`;
+//   pool.getConnection((err, connection) => {
+//     if (err) {
+//       console.error("Error getting MySQL connection: ", err);
+//       return res.status(500).json({ message: "Database connection error" });
+//     }
+//     try {
+//       const dairyMilkSummary = `
+//         SELECT * from ${dairy_table} WHERE ReceiptDate = ? `;
+//     } catch (error) {
+//       connection.release();
+//       console.error("Error processing request: ", error);
+//       return res.status(500).json({ message: "Internal server error" });
+//     }
+//   });
+// };

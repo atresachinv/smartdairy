@@ -4,6 +4,7 @@ import "jspdf-autotable";
 import axios, { all } from "axios";
 import { useSelector } from "react-redux";
 import "../../../../../Styles/InventoryReports/salesreport.css";
+import axiosInstance from "../../../../../App/axiosInstance";
 
 const SalesReport = () => {
   const [saledata, SetSaleData] = useState([]); //.. sale Data
@@ -21,38 +22,6 @@ const SalesReport = () => {
   );
   const CityName = useSelector((state) => state.dairy.dairyData.city);
 
-  // useEffect(() => {
-  //   const salefetchData = async () => {
-  //     // Only fetch data if both fromdate and todate are available
-  //     if (fromdate && todate) {
-  //       try {
-  //         const response = await axios.get(
-  //           "http://localhost:4040/smartdairy/api/stock/sale/all",
-  //           {
-  //             params: { fromdate, todate }, // Pass dates as query params
-  //           }
-  //         );
-  //         SetSaleData(response.data.salesData); // Set the fetched sales data
-  //       } catch (error) {
-  //         console.log(
-  //           "Error Handling:",
-  //           error.response ? error.response.data : error.message
-  //         );
-  //       }
-  //     }
-  //   };
-
-  //   // Run API call if both dates are selected, otherwise run other functionality
-  //   if (fromdate && todate) {
-  //     salefetchData();
-  //   } else {
-  //     // Handle other functionality when dates are not selected
-  //     console.log("No date selected yet. Please select a date range.");
-  //     // You can execute other code here that runs when no dates are selected
-  //   }
-  // }, [fromdate, todate]); // Depend on both dates to trigger when either changes
-
-  //.... GenratePdf
 
   //....    Sale Register PDf
 
@@ -61,8 +30,8 @@ const SalesReport = () => {
       // Only fetch data if both fromdate and todate are available
       if (fromdate && todate) {
         try {
-          const response = await axios.get(
-            "http://localhost:4040/smartdairy/api/stock/sale/all",
+          const response = await axiosInstance.get(
+            "/stock/sale/all",
             {
               params: { fromdate, todate }, // Pass dates as query params
             }
@@ -74,6 +43,7 @@ const SalesReport = () => {
             error.response ? error.response.data : error.message
           );
         }
+
       }
     };
 
@@ -924,127 +894,7 @@ const SalesReport = () => {
     }
   };
 
-  // const renderTable = () => {
-  //   if (!selectedReport) return <p>Please select a report to display.</p>;
-
-  //   // Calculate total amount
-  //   const totalAmount = saledata.reduce(
-  //     (sum, item) => sum + (item.Amount || 0),
-  //     0
-  //   );
-
-  //   switch (selectedReport) {
-  //     case "Sale Register":
-  //       return (
-  //         <table border="1">
-  //           <thead>
-  //             <tr>
-  //               <th>Bill Date</th>
-  //               <th>Bill No</th>
-  //               <th>Customer Code</th>
-  //               <th>Customer Name</th>
-  //               <th>Amount</th>
-  //             </tr>
-  //           </thead>
-  //           <tbody>
-  //             {saledata.map((item, index) => (
-  //               <tr key={index}>
-  //                 <td>{item.BillDate?.slice(0, 10) || "N/A"}</td>
-  //                 <td>{item.BillNo || "N/A"}</td>
-  //                 <td>{item.CustCode || "N/A"}</td>
-  //                 <td>{item.CustName || "N/A"}</td>
-  //                 <td>{item.Amount ? item.Amount.toFixed(2) : "0.00"}</td>
-  //               </tr>
-  //             ))}
-  //             <tr>
-  //               <td
-  //                 colSpan="4"
-  //                 style={{ textAlign: "right", fontWeight: "bold" }}
-  //               >
-  //                 Total:
-  //               </td>
-  //               <td style={{ fontWeight: "bold" }}>{totalAmount.toFixed(2)}</td>
-  //             </tr>
-  //           </tbody>
-  //         </table>
-  //       );
-
-  //     case "Disturbed Register list":
-  //       return (
-  //         <table border="1">
-  //           <thead>
-  //             <tr>
-  //               <th>Bill Date</th>
-  //               <th>Bill No</th>
-  //               <th>Customer Code</th>
-  //               <th>Item Name</th>
-  //               <th>Qty</th>
-  //               <th>Rate</th>
-  //               <th>Amount</th>
-  //             </tr>
-  //           </thead>
-  //           <tbody>
-  //             {saledata.map((item, index) => (
-  //               <tr key={index}>
-  //                 <td>{item.BillDate?.slice(0, 10) || "N/A"}</td>
-  //                 <td>{item.BillNo || "N/A"}</td>
-  //                 <td>{item.CustCode || "N/A"}</td>
-  //                 <td>{item.ItemName || "N/A"}</td>
-  //                 <td>{item.Qty || 0}</td>
-  //                 <td>{item.Rate ? item.Rate.toFixed(2) : "0.00"}</td>
-  //                 <td>{item.Amount ? item.Amount.toFixed(2) : "0.00"}</td>
-  //               </tr>
-  //             ))}
-  //             <tr>
-  //               <td
-  //                 colSpan="6"
-  //                 style={{ textAlign: "right", fontWeight: "bold" }}
-  //               >
-  //                 Total:
-  //               </td>
-  //               <td style={{ fontWeight: "bold" }}>{totalAmount.toFixed(2)}</td>
-  //             </tr>
-  //           </tbody>
-  //         </table>
-  //       );
-
-  //     case "Customer Saleing Balance":
-  //     case "Customer Saleing Qtm Report":
-  //       return (
-  //         <table border="1">
-  //           <thead>
-  //             <tr>
-  //               <th>CN</th>
-  //               <th>Customer Name</th>
-  //               <th>Amount</th>
-  //             </tr>
-  //           </thead>
-  //           <tbody>
-  //             {saledata.map((item, index) => (
-  //               <tr key={index}>
-  //                 <td>{item.CustCode || "N/A"}</td>
-  //                 <td>{item.cust_name || "N/A"}</td>
-  //                 <td>{item.Amount ? item.Amount.toFixed(2) : "0.00"}</td>
-  //               </tr>
-  //             ))}
-  //             <tr>
-  //               <td
-  //                 colSpan="2"
-  //                 style={{ textAlign: "right", fontWeight: "bold" }}
-  //               >
-  //                 Total:
-  //               </td>
-  //               <td style={{ fontWeight: "bold" }}>{totalAmount.toFixed(2)}</td>
-  //             </tr>
-  //           </tbody>
-  //         </table>
-  //       );
-
-  //     default:
-  //       return null;
-  //   }
-  // };
-  //.......  POpup
+ 
 
   const renderTable = () => {
     if (!selectedReport) return <p>Please select a report to display.</p>;
@@ -1424,6 +1274,7 @@ const SalesReport = () => {
   const handleCheckboxChange = (e) => {
     setIsItemwiseChecked(e.target.checked);
   };
+
 
   return (
     <>

@@ -24,6 +24,10 @@ const MilkSankalan = () => {
     (state) => state.dairy.dairyData.PhoneNo || state.dairy.dairyData.mobile // for sms
   );
   const sankalak = useSelector((state) => state.userinfo.profile.emp_name); // for sms
+  const centerSetting = useSelector(
+    (state) => state.dairySetting.centerSetting
+  );
+  const [settings, setSettings] = useState({});
   const { customerlist, loading } = useSelector((state) => state.customer);
   const PrevLiters = useSelector((state) => state.milkCollection.PrevLiters);
   const [collCount, setCollCount] = useState(
@@ -49,13 +53,10 @@ const MilkSankalan = () => {
     sample: "",
     acccode: "",
     mobile: "",
+    allow: centerSetting.duplicateEntry === 0 ? false : true,
   };
 
   const [values, setValues] = useState(initialValues);
-  const centerSetting = useSelector(
-    (state) => state.dairySetting.centerSetting
-  );
-  const [settings, setSettings] = useState({});
 
   //set setting
   useEffect(() => {
@@ -63,7 +64,6 @@ const MilkSankalan = () => {
       setSettings(centerSetting[0]);
     }
   }, [centerSetting]);
-
 
   useEffect(() => {
     localStorage.setItem("collCount", collCount);
@@ -319,22 +319,26 @@ const MilkSankalan = () => {
 
     setIsSaving(true); // Disable button
     try {
-      dispatch(mobileMilkCollection(values));
-      setValues(initialValues);
-      toast.success("Milk Collection Saved Successfully!");
-      setCollCount(collCount + 1);
-      setLiterCount(literCount + parseFloat(values.liters));
-      if (
-        settings?.whsms !== undefined &&
-        settings?.vMillcoll !== undefined &&
-        settings.whsms === 1 &&
-        settings.vMillcoll === 1
-      ) {
-        sendMessage();
+      const result = await dispatch(mobileMilkCollection(values)).unwrap();
+      if (result.status === 200) {
+        setValues(initialValues);
+        toast.success("Milk Collection Saved Successfully!");
+        setCollCount(collCount + 1);
+        setLiterCount(literCount + parseFloat(values.liters));
+        if (
+          settings?.whsms !== undefined &&
+          settings?.vMillcoll !== undefined &&
+          settings.whsms === 1 &&
+          settings.vMillcoll === 1
+        ) {
+          sendMessage();
+        }
+        codeInputRef.current.focus(); // Focus on the code input
       }
-      codeInputRef.current.focus(); // Focus on the code input
     } catch (error) {
-      toast.error("Failed to save Milk Collection, try again!");
+      const errorMessage =
+        error?.message || "Failed to save Milk Collection, try again!";
+      toast.error(errorMessage);
     } finally {
       setIsSaving(false); // Enable button
     }

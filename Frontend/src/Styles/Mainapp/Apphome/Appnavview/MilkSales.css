@@ -25,4 +25,7 @@
   .milk-col-form .form-btns button {
     width: auto;
   }
+  .milk-details-div .milk-info .form-div select {
+    width: 60%;
+  }
 }

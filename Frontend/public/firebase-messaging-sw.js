@@ -14,6 +14,20 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const messaging = firebase.messaging();
 
+// new added code ------------------------
+self.addEventListener("install", (event) => {
+  event.waitUntil(
+    caches.keys().then((cacheNames) => {
+      return Promise.all(
+        cacheNames.map((cache) => {
+          return caches.delete(cache);
+        })
+      );
+    })
+  );
+});
+// new added code ------------------------
+
 messaging.onBackgroundMessage((payload) => {
   console.log("Received background message: ", payload);
 

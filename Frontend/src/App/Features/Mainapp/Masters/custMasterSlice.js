@@ -5,8 +5,8 @@ const initialState = {
   customerlist: [],
   maxCustNo: "",
   usedRCNO: [],
-  cliststatus: "idle",
   status: "idle",
+  cliststatus: "idle",
   createstatus: "idle",
   updatestatus: "idle",
   excelstatus: "idle",
@@ -109,8 +109,7 @@ const custMasterSlice = createSlice({
       .addCase(getMaxCustNo.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.payload;
-      })
-      // Handle createCustomer actions
+      })  // Handle createCustomer actions
       .addCase(createCustomer.pending, (state) => {
         state.createstatus = "loading";
       })
@@ -120,8 +119,7 @@ const custMasterSlice = createSlice({
       .addCase(createCustomer.rejected, (state, action) => {
         state.createstatus = "failed";
         state.error = action.payload;
-      })
-      // Handle update Customer actions
+      })   // Handle update Customer actions
       .addCase(updateCustomer.pending, (state) => {
         state.updatestatus = "loading";
       })
@@ -131,8 +129,7 @@ const custMasterSlice = createSlice({
       .addCase(updateCustomer.rejected, (state, action) => {
         state.updatestatus = "failed";
         state.error = action.payload;
-      })
-      // Handle listCustomer actions
+      }) // Handle listCustomer actions
       .addCase(listCustomer.pending, (state) => {
         state.cliststatus = "loading";
       })

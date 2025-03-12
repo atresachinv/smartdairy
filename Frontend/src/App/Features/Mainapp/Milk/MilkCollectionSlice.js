@@ -21,7 +21,7 @@ const initialState = {
 };
 
 export const saveMilkCollSetting = createAsyncThunk(
-  "milkreport/saveMilkCollSetting",
+  "milkCollection/saveMilkCollSetting",
   async ({ fromDate, toDate }, { rejectWithValue }) => {
     try {
       const response = await axiosInstance.post("/save/Milkcoll/settings", {
@@ -39,7 +39,7 @@ export const saveMilkCollSetting = createAsyncThunk(
 );
 
 export const saveMilkCollection = createAsyncThunk(
-  "milkreport/saveMilkCollection",
+  "milkCollection/saveMilkCollection",
   async ({ values }, { rejectWithValue }) => {
     try {
       const response = await axiosInstance.post("/save/milk/collection", {
@@ -56,22 +56,30 @@ export const saveMilkCollection = createAsyncThunk(
 );
 
 export const saveMilkOneEntry = createAsyncThunk(
-  "milkreport/saveMilkOneEntry",
+  "milkCollection/saveMilkOneEntry",
   async (values, { rejectWithValue }) => {
     try {
       const response = await axiosInstance.post("/save/milk/one", values);
-      return response.data;
+      return response.data; // Ensure response contains a message key
     } catch (error) {
-      const errorMessage = error.response
-        ? error.response.data
-        : "Failed to store milk collection.";
-      return rejectWithValue(errorMessage);
+      console.error(
+        "Error in saveMilkOneEntry:",
+        error.response?.data || error.message
+      );
+
+      const errorMessage =
+        error.response?.data?.message || "Failed to store milk collection.";
+      return rejectWithValue({
+        status: error.response?.status || 500,
+        message: errorMessage,
+      });
     }
   }
 );
 
+
 export const fetchTodaysMilk = createAsyncThunk(
-  "milkreport/fetchTodaysMilk",
+  "milkCollection/fetchTodaysMilk",
   async ({ date }, { rejectWithValue }) => {
     try {
       const response = await axiosInstance.get("/fetch/collection", {
@@ -92,7 +100,7 @@ export const fetchTodaysMilk = createAsyncThunk(
 //...............................................................................
 
 export const mobileMilkCollection = createAsyncThunk(
-  "milkreport/mobileMilkCollection",
+  "milkCollection/mobileMilkCollection",
   async (values, { rejectWithValue }) => {
     try {
       const response = await axiosInstance.post(
@@ -111,7 +119,7 @@ export const mobileMilkCollection = createAsyncThunk(
 
 //Mobile Milk Collection Report
 export const mobileMilkCollReport = createAsyncThunk(
-  "milkreport/mobileMilkCollReport",
+  "milkCollection/mobileMilkCollReport",
   async ({ date }, { rejectWithValue }) => {
     try {
       const response = await axiosInstance.get("/mobile/milkreport", {
@@ -129,7 +137,7 @@ export const mobileMilkCollReport = createAsyncThunk(
 
 //Mobile Milk Collection Previous Liters
 export const mobilePrevLiters = createAsyncThunk(
-  "milkreport/mobilePrevLiters",
+  "milkCollection/mobilePrevLiters",
   async ({ date }, { rejectWithValue }) => {
     try {
       const response = await axiosInstance.get("/mobile/prevliters", {
@@ -147,7 +155,7 @@ export const mobilePrevLiters = createAsyncThunk(
 
 // fetch Mobile milk collection report
 export const getMilkCollReport = createAsyncThunk(
-  "milkreport/getMilkCollReport",
+  "milkCollection/getMilkCollReport",
   async (_, { rejectWithValue }) => {
     try {
       const response = await axiosInstance.post("/dairy/Milkcoll/report");
@@ -163,7 +171,7 @@ export const getMilkCollReport = createAsyncThunk(
 
 // fetch mobile milk collection to update
 export const fetchMobileColl = createAsyncThunk(
-  "milkreport/fetchMobileColl",
+  "milkCollection/fetchMobileColl",
   async (_, { rejectWithValue }) => {
     try {
       const response = await axiosInstance.get("/fetch/mobile/collection");
@@ -179,7 +187,7 @@ export const fetchMobileColl = createAsyncThunk(
 
 //  Update MObile Milk Collection
 export const updateMobileColl = createAsyncThunk(
-  "milkreport/getMilkCollReport",
+  "milkCollection/getMilkCollReport",
   async (values, { rejectWithValue }) => {
     try {
       const response = await axiosInstance.post("/update/mobile/coll", values);
@@ -195,7 +203,7 @@ export const updateMobileColl = createAsyncThunk(
 
 // dairy milk Collection report (fillter)
 export const getAllMilkCollReport = createAsyncThunk(
-  "milkreport/getAllMilkCollReport",
+  "milkCollection/getAllMilkCollReport",
   async ({ fromDate, toDate }, { rejectWithValue }) => {
     try {
       const response = await axiosInstance.get("/milk/coll/report", {
@@ -213,7 +221,7 @@ export const getAllMilkCollReport = createAsyncThunk(
 
 //milk collector milk collection
 export const getAllMilkSankalan = createAsyncThunk(
-  "milkreport/getAllMilkSankalan",
+  "milkCollection/getAllMilkSankalan",
   async ({ fromDate, toDate }, { rejectWithValue }) => {
     try {
       const response = await axiosInstance.get("/milk/sankalan", {
@@ -231,8 +239,8 @@ export const getAllMilkSankalan = createAsyncThunk(
 
 //Completed milk collection Report
 export const completedMilkSankalan = createAsyncThunk(
-  "milkreport/completedMilkSankalan",
-  async ({ date ,time }, { rejectWithValue }) => {
+  "milkCollection/completedMilkSankalan",
+  async ({ date, time }, { rejectWithValue }) => {
     try {
       const response = await axiosInstance.get("/completed/collection/report", {
         params: { date, time }, // Use the `params` key for query parameters
@@ -286,7 +294,7 @@ const milkCollectionSlice = createSlice({
         state.status = "loading";
         state.error = null;
       })
-      .addCase(saveMilkOneEntry.fulfilled, (state) => {
+      .addCase(saveMilkOneEntry.fulfilled, (state, action) => {
         state.status = "succeeded";
       })
       .addCase(saveMilkOneEntry.rejected, (state, action) => {
@@ -393,7 +401,7 @@ const milkCollectionSlice = createSlice({
       })
       .addCase(completedMilkSankalan.fulfilled, (state, action) => {
         state.compcollstatus = "succeeded";
-        state.completedColle = action.payload; 
+        state.completedColle = action.payload;
       })
       .addCase(completedMilkSankalan.rejected, (state, action) => {
         state.compcollstatus = "failed";
