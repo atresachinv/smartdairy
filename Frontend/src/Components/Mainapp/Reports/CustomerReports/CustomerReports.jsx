@@ -45,7 +45,6 @@ const CustomerReports = () => {
   const CityName = useSelector((state) => state.dairy.dairyData.city);
 
   const columnOptions = {
-    Empty: "index+1",
     Code: "cid",
     Customer_Name: "cname",
     English_Name: "engName",
@@ -121,9 +120,10 @@ const CustomerReports = () => {
 
       if (isSabhasadFilter !== "All") {
         filtered = filtered.filter((row) => {
-          // Assuming the Buffer data contains the actual value you want to check (e.g., 1 or 0)
-          const isSabhasadValue = row.isSabhasad.data[0]; // Access the value inside the Buffer
+          // Access the first byte in the Buffer (or decode it if needed)
+          const isSabhasadValue = row.isSabhasad.data[0]; // Adjust this if necessary
 
+          // Filter based on the value of isSabhasadFilter
           return isSabhasadFilter === "Member"
             ? isSabhasadValue === 1
             : isSabhasadValue === 0;
@@ -461,9 +461,9 @@ const CustomerReports = () => {
         </div>
       </div>
 
-      <div className="table-container">
-        <div className="table-scroll-wrapper">
-          <table className="customer-table">
+      <div className="table-container-Customer">
+        <div className="table-scroll-wrapper-cutomer">
+          <table className="customer-table-customer-Report">
             <thead>
               <tr>
                 {Object.values(selectedColumns)

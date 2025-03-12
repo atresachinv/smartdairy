@@ -43,8 +43,264 @@
 .report-table tr:hover {
   background: #e0e0e0;
 }
+
+/* Popup Overlay */
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 50%;
+  height: 40%;
+  background: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+/* Popup Content */
+.popup-content {
+  background: #d8d6d6;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  width: 50%;
+  max-width: 500px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+/* Heading */
+.sub-heading {
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 15px;
+  color: #333;
+  text-align: center;
+}
+
+/* Item Selection */
+.item-name-item-no-container {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 15px;
+}
+
+.item-no-div,
+.item-name-div {
+  display: flex;
+  align-items: center;
+}
+
+.info-text {
+  font-size: 14px;
+  font-weight: 500;
+  color: #555;
+  margin-right: 8px;
+}
+
+/* Input and Select Fields */
+.data {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+  width: 100%;
+}
+
+select {
+  cursor: pointer;
+}
+
+/* Date Selection */
+.from-to-div-sales-report {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 15px;
+}
+
+.from-date-sales,
+.to-dates-sales {
+  display: flex;
+  align-items: center;
+}
+
+/* Buttons */
+.popup-buttons {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+}
+
+.btn {
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: bold;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.report-btn {
+  background: #007bff;
+  color: white;
+}
+
+.exit-btn {
+  background: #dc3545;
+  color: white;
+}
+
+.btn:hover {
+  opacity: 0.8;
+}
+
+/* Popup Animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
 /*   popup css */
-@media screen and (max-width: 321px) {
+@media screen and (max-width: 426px) {
+  .first-half-container-sales-report .from-to-date-container-sales {
+    flex-direction: column;
+  }
+  .first-half-container-sales-report
+    .from-to-date-container-sales
+    .from-and-to-date-both {
+    width: 100%;
+    height: 80px;
+  }
+  .first-half-container-sales-report
+    .from-to-date-container-sales
+    .sale-regsiter-reports {
+    width: 100%;
+    height: 80px;
+  }
+  .itemwise-data-show-checkbox-div .checkbox-container-for-sale {
+    margin-top: 30px;
+  }
+  .date-container-sales {
+    flex-direction: column;
+  }
+  .date-container-sales .from-and-to-date-both {
+    width: 100%;
+  }
+  .first-half-container-sales-report
+    .date-container-sales
+    .from-and-to-date-both
+    .from-sales-date-div
+    span {
+    font-size: small;
+  }
+  .first-half-container-sales-report
+    .date-container-sales
+    .from-and-to-date-both
+    .from-sales-date-div
+    input {
+    width: 130px;
+    font-size: small;
+  }
+  .date-container-sales .from-and-to-date-both .from-sales-date-div input {
+    width: 100px;
+    margin-right: 5px;
+  }
+  .date-container-sales .sale-regsiter-reports {
+    width: 100%;
+  }
+  .date-container-sales .sale-regsiter-reports span {
+    font-size: small;
+  }
+  .date-container-sales .sale-regsiter-reports select {
+    font-size: small;
+    margin-right: 10px;
+  }
+  .itemwise-data-show-checkbox-div {
+    flex-direction: column;
+  }
+
+  .itemwise-data-show-checkbox-div .checkbox-container-for-sale {
+    width: 100%;
+    height: 60px;
+    margin-top: 20px;
+    align-items: center;
+  }
+  .itemwise-data-show-checkbox-div .checkbox-container-for-sale input {
+    height: 15px;
+  }
+  .itemwise-data-show-checkbox-div .checkbox-container-for-sale span {
+    font-size: small;
+  }
+  .itemwise-data-show-checkbox-div .item-no-itemname-div {
+    width: 100%;
+    height: 30px;
+  }
+  .first-half-container-sales-report .sale-regsiter-reports select {
+    width: 150px;
+  }
+  .first-half-container-sales-report .itemwise-data-show-checkbox-div {
+    margin-bottom: 50px;
+  }
+
+  .first-half-container-sales-report
+    .itemwise-data-show-checkbox-div
+    .item-no-itemname-div {
+    margin-top: 3px;
+  }
+  
+  .first-half-container-sales-report
+    .itemwise-data-show-checkbox-div
+    .item-no-itemname-div .item-no-salesdiv span {
+      font-size: small;
+  }
+    .sale-regsiter-reports .print-button-div button{
+          margin-left: 20px;
+          width: 43px;
+  }
+
+  .itemwise-data-show-checkbox-div
+    .item-no-itemname-div
+    .item-no-salesdiv
+    input {
+    width: 50px;
+  }
+  .itemwise-data-show-checkbox-div .item-no-itemname-div .item-name-sale-div {
+    width: 200px;
+    margin-right: 20px;
+    
+  }
+  .itemwise-data-show-checkbox-div .item-no-itemname-div .item-name-sale-div select {
+     font-size: small;
+    
+  }
+  .itemwise-data-show-checkbox-div
+    .item-no-itemname-div
+    .item-name-sale-div
+    span {
+    margin-right: 5px;
+    font-size: small;
+  }
+  .Report-show-and-Pdf-Print-Function button {
+    margin-right: 5px;
+  }
+    .from-and-to-date-both{
+     margin-right: 20px;
+  }
+}
+/* @media screen and (max-width: 768px) {
   .sale-regsiter-reports .sale-register-distrubuted-reports {
     width: 60%;
     flex-direction: column;
@@ -53,7 +309,6 @@
   .sale-regsiter-reports .sale-register-distrubuted-reports span {
     width: 60%;
     align-items: center;
-        font-size: small;
   }
   .sale-regsiter-reports .sale-register-distrubuted-reports select {
     font-size: small;
@@ -91,81 +346,18 @@
   .from-to-div-sales-report {
     margin: 10px;
   }
-  .from-to-div-sales-report .from-date-sales  input {
+  .from-to-div-sales-report .from-date-sales input {
     width: 110px;
     font-size: x-small;
     padding: 10px;
   }
-  .from-to-div-sales-report .to-dates-sales   input {
+  .from-to-div-sales-report .to-dates-sales input {
     width: 110px;
     font-size: x-small;
-        padding: 10px;
-        margin-right: 15px;
+    padding: 10px;
+    margin-right: 15px;
   }
-     .popup-content .from-to-div-sales-report {
-       margin-right: 10px;
-  }
- 
-}
-@media screen and (max-width: 768px) {
-  .sale-regsiter-reports .sale-register-distrubuted-reports {
-    width: 60%;
-    flex-direction: column;
-    height: 100px;
-  }
-  .sale-regsiter-reports .sale-register-distrubuted-reports span {
-    width: 60%;
-    align-items: center;
-  }
-  .sale-regsiter-reports .sale-register-distrubuted-reports select {
-    font-size: small;
-    width: 2;
-  }
-  .sale-regsiter-reports .sale-register-distrubuted-reports span {
-    width: 60%;
-    align-items: center;
-  }
-  .first-half-container-sales-report
-    .sale-regsiter-reports
-    .print-button-div
-    button {
+  .popup-content .from-to-div-sales-report {
     margin-right: 10px;
   }
-  .popup-overlay {
-    width: 600px;
-  }
-  .item-name-item-no-container .item-no-div {
-    flex-direction: column;
-  }
-  .item-name-item-no-container .item-no-div label {
-    width: 100px;
-  }
-  .item-name-item-no-container .item-no-div input {
-    margin: 10px;
-  }
-  .item-name-item-no-container .item-name-div {
-    flex-direction: column;
-    height: 100px;
-  }
-  .item-name-item-no-container .item-name-div label {
-    width: 100px;
-  }
-  .from-to-div-sales-report {
-    margin: 10px;
-  }
-  .from-to-div-sales-report .from-date-sales  input {
-    width: 110px;
-    font-size: x-small;
-    padding: 10px;
-  }
-  .from-to-div-sales-report .to-dates-sales   input {
-    width: 110px;
-    font-size: x-small;
-        padding: 10px;
-        margin-right: 15px;
-  }
-     .popup-content .from-to-div-sales-report {
-       margin-right: 10px;
-  }
- 
-}
+} */

@@ -30,7 +30,6 @@ const Purchesreportr = () => {
   useEffect(() => {
     const fetchData = async () => {
       if (!fromdate || !todate) {
-        toast.error("Please select both From and To dates.");
         return;
       }
       try {
@@ -1069,7 +1068,7 @@ Total Amount:        ${totalAmount.toFixed(2)}
       <span className="heading">Purches Report</span>
       <div className="purches-report-section w100 h40   d-flex">
         <div className="reports-print-buttondiv w100 h1 d-flex-col">
-          <div className="fromto-date-sale-report w100 h50 d-flex ">
+          <div className="fromto-date-sale-report w100 h50 d-flex a-center ">
             <div className="from-to-date-purches-conta d-flex w100 h1">
               <div className="from-salee-div w60 h1 a-center d-flex  ">
                 <span className=" w20 info-text p10">From:</span>
@@ -1120,7 +1119,7 @@ Total Amount:        ${totalAmount.toFixed(2)}
             </div>
           </div>
 
-          <div className="purches-report-container w100 h50 d-flex">
+          <div className="purches-report-container w100 h50 d-flex a-center">
             <div className="purches-register-report w100 h60 d-flex a-center justify-between p-4 bg-gray-200 rounded-lg">
               <span className="w60 info-text">Purches Report:</span>
               <select
@@ -1151,14 +1150,6 @@ Total Amount:        ${totalAmount.toFixed(2)}
                 disabled={!showTable}
               >
                 Print
-              </button>
-
-              <button
-                className="btn"
-                onClick={handleClear}
-                disabled={!isClearEnabled}
-              >
-                Clear
               </button>
             </div>
           </div>
