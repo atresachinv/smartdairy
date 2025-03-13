@@ -132,11 +132,11 @@ const AddType = () => {
             />
           </div>
           <div className="select-animal-type w70 h1 a-center d-flex">
-            <label htmlFor="rctype" className="info-text w30">
+            <label htmlFor="rctype" className="info-text w35">
               {t("rc-type")} :
             </label>
             <input
-              className={`data w100 ${errors.rctype ? "input-error" : ""}`}
+              className={`data w55 ${errors.rctype ? "input-error" : ""}`}
               type="text"
               name="rctype"
               id="rctype"
@@ -145,54 +145,6 @@ const AddType = () => {
             />
           </div>
         </div>
-        {/* <div className="select-time-animal-type w100 my10 d-flex sb">
-          <div className="select-animal-type w50 h1 a-center d-flex">
-            <label htmlFor="time" className="info-text w30">
-              Time:
-            </label>
-            <select
-              className={`data w60 ${errors.time ? "input-error" : ""}`}
-              name="time"
-              id="time"
-              required
-              value={formData.time}
-              onChange={handleInput}
-            >
-              <option className="info-text" value="2">
-                Both
-              </option>
-              <option className="info-text" value="0">
-                Mornning
-              </option>
-              <option className="info-text" value="1">
-                Evenning
-              </option>
-            </select>
-          </div>
-          <div className="select-animal-type w50 h1 a-center d-flex">
-            <label htmlFor="animalType" className="info-text w50">
-              Animal :
-            </label>
-            <select
-              className="data w50 "
-              name="animalType"
-              id="animalType"
-              required
-              value={formData.animalType}
-              onChange={handleInput}
-            >
-              <option className="info-text" value="0">
-                Cow
-              </option>
-              <option className="info-text" value="1">
-                Buffalo
-              </option>
-              <option className="info-text" value="2">
-                Other
-              </option>
-            </select>
-          </div>
-        </div> */}
         <div className="button-div w100 h20 d-flex j-end">
           <button
             type="submit"

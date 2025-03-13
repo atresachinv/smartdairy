@@ -89,7 +89,6 @@ const ApplyRatechart = ({ isSet, ratechart }) => {
       setErrors(validationErrors);
       return;
     }
-    console.log(formData);
     try {
       const result = await dispatch(
         applyRateChart({
@@ -100,7 +99,6 @@ const ApplyRatechart = ({ isSet, ratechart }) => {
           ratechart: ratechart,
         })
       ).unwrap();
-      console.log(result);
       if (result.status === 200) {
         toast.success(result.message);
         setErrors({});
@@ -113,7 +111,6 @@ const ApplyRatechart = ({ isSet, ratechart }) => {
     }
   };
 
-
   return (
     <>
       <form
@@ -122,16 +119,16 @@ const ApplyRatechart = ({ isSet, ratechart }) => {
       >
         <span className="heading">{t("rc-apply-s-rc")} :</span>
         <div className="select-date-outer w100 h25 d-flex-col sb">
-          <label htmlFor="implementationDate" className="info-text w50">
+          <label htmlFor="implementationDate" className="info-text w100">
             {t("rc-apply-text")} :
           </label>
           <div className="date-container w100 h1 d-flex sb">
-            <div className="select-time w50 h1 a-center d-flex a-center sb">
+            <div className="select-time w50 h1 a-center d-flex a-center sa">
               <label htmlFor="FromDate" className="info-text w30">
-                {t("rc-from")} :
+                {t("rc-from")}:
               </label>
               <input
-                className={`data w45 ${errors.rcfromdate ? "input-error" : ""}`}
+                className={`data w65 ${errors.rcfromdate ? "input-error" : ""}`}
                 type="date"
                 name="rcfromdate"
                 id="FromDate"
@@ -143,10 +140,10 @@ const ApplyRatechart = ({ isSet, ratechart }) => {
             </div>
             <div className="select-time w50 h1 a-center d-flex a-center sa">
               <label htmlFor="toDate" className="info-text w30">
-                {t("rc-to")} :
+                {t("rc-to")}:
               </label>
               <input
-                className={`data w45 ${errors.rctodate ? "input-error" : ""}`}
+                className={`data w65 ${errors.rctodate ? "input-error" : ""}`}
                 type="date"
                 name="rctodate"
                 id="toDate"

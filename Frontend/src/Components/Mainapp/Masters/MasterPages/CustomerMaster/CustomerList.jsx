@@ -11,10 +11,10 @@ import { centersLists } from "../../../../../App/Features/Dairy/Center/centerSli
 const CustomerList = () => {
   const dispatch = useDispatch();
   const { t } = useTranslation(["master", "milkcollection", "common"]);
-  const customerlist = useSelector((state) => state.customers.customerlist);
+  const customerlist = useSelector((state) => state.customers.customerlist || []);
   const status = useSelector((state) => state.customers.cliststatus);
   const centerList = useSelector(
-    (state) => state.center.centersList.centersDetails
+    (state) => state.center.centersList.centersDetails || []
   );
 
   const center_id = useSelector(

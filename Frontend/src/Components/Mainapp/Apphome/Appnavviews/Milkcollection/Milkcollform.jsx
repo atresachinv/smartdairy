@@ -61,7 +61,7 @@ const MilkColleform = ({ switchToSettings }) => {
     mobile: "",
     allow: false,
   };
-
+  console.log(settings);
   const [values, setValues] = useState(initialValues);
   // dynamic shift time set in time And allow is updated from state -------------------------------------------------------------->
   useEffect(() => {
@@ -120,10 +120,11 @@ const MilkColleform = ({ switchToSettings }) => {
 
       // Validate the field for other errors
       const fieldError = validateField(name, value);
-      setErrors((prevErrors) => ({
-        ...prevErrors,
-        ...fieldError,
-      }));
+      setErrors((prevErrors) => {
+        const updatedErrors = { ...prevErrors, ...fieldError };
+        if (!value) delete updatedErrors[name]; // Clear error if field is empty
+        return updatedErrors;
+      });
     }
 
     setValues({ ...values, [name]: value });
