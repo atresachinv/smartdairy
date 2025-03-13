@@ -40,15 +40,14 @@ const MilkRateMaster = () => {
     animalType: 0,
     rcdate: "",
   });
-
   useEffect(() => {
+    dispatch(fetchMaxRcCode());
+    dispatch(fetchMaxRctype());
+    dispatch(listRateCharts());
     if (!fileName) {
       dispatch(setData([]));
       return;
     }
-    dispatch(fetchMaxRcCode());
-    dispatch(fetchMaxRctype());
-    dispatch(listRateCharts());
   }, [dispatch]);
 
   const handleButtonClick = () => {
