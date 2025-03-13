@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import Spinner from "../../../../Home/Spinner/Spinner";
@@ -7,8 +7,10 @@ import {
   listRateCharts,
   saveUpdatedRC,
 } from "../../../../../App/Features/Mainapp/Masters/rateChartSlice";
+import { useTranslation } from "react-i18next";
 
 const UpdateRatechart = ({ isSet, ratechart }) => {
+  const { t } = useTranslation("ratechart");
   const dispatch = useDispatch();
   const maxRcCode = useSelector((state) => state.ratechart.maxRcCode);
   const status = useSelector((state) => state.ratechart.updatestatus);
@@ -146,7 +148,7 @@ const UpdateRatechart = ({ isSet, ratechart }) => {
         className="rate-chart-setting-div w100 h1 d-flex-col my10"
         onSubmit={handleRatechartUpdate}
       >
-        <span className="heading">Update Selected Ratechart</span>
+        <span className="heading">{t("rc-update-s-rc")} :</span>
         <div className="select-time-animal-type w100 h70 d-flex sb">
           {status === "loading" ? (
             <div className="loading-ToastContainer w100 h1 d-flex center">
@@ -156,8 +158,7 @@ const UpdateRatechart = ({ isSet, ratechart }) => {
             <div className="update-rate-date-contaner w100 h1 d-flex-col">
               <div className="select-time w100 h50 a-center d-flex sb">
                 <label htmlFor="amount" className="info-text w70">
-                  Increase or decrease a specific amount from the selected rate
-                  chart :
+                  {t("rc-update-text1")} :
                 </label>
                 <input
                   className={`data w20 ${errors.amount ? "input-error" : ""}`}
@@ -171,7 +172,7 @@ const UpdateRatechart = ({ isSet, ratechart }) => {
               </div>
               <div className="select-animal-type w100 h30 a-center d-flex j-start sb">
                 <label htmlFor="newdate" className="info-text w50">
-                  New Ratechart Date :
+                  {t("rc-update-text2")} :
                 </label>
                 <input
                   className="data w40"
@@ -191,7 +192,9 @@ const UpdateRatechart = ({ isSet, ratechart }) => {
             className="btn mx10"
             disabled={status === "loading"}
           >
-            {status === "loading" ? "Updating..." : "Update Ratechart"}
+            {status === "loading"
+              ? `${t("rc-updating")}`
+              : `${t("rc-update-rc")}`}
           </button>
         </div>
       </form>

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState} from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import {
@@ -8,8 +8,10 @@ import {
   saveRateChart,
 } from "../../../../../App/Features/Mainapp/Masters/rateChartSlice";
 import Spinner from "../../../../Home/Spinner/Spinner";
+import { useTranslation } from "react-i18next";
 
 const SaveRateChart = () => {
+  const { t } = useTranslation("ratechart");
   const dispatch = useDispatch();
   const tDate = useSelector((state) => state.date.toDate);
   const status = useSelector((state) => state.ratechart.savercstatus);
@@ -84,7 +86,7 @@ const SaveRateChart = () => {
     e.preventDefault();
 
     if (!ratechart) {
-      toast.error("Ratechart not Available!");
+      toast.error(`${t("rc-not-available")}`);
       return;
     }
 
@@ -102,7 +104,7 @@ const SaveRateChart = () => {
         rcdate: formData.rcdate,
         ratechart,
       })
-    ).unwrap(); 
+    ).unwrap();
     // Show success message
     if (result.status === 200) {
       toast.success(result.message);
@@ -130,7 +132,7 @@ const SaveRateChart = () => {
         className="rate-chart-setting-div w100 h1 d-flex-col sa my10"
         onSubmit={handleSubmit}
       >
-        <span className="heading">Save Selected Ratechart</span>
+        <span className="heading">{t("rc-save-s-rc")} :</span>
         {status === "loading" ? (
           <div className="loading-ToastContainer w100 h25 d-flex center">
             <Spinner />
@@ -140,7 +142,7 @@ const SaveRateChart = () => {
             <div className="select-time-animal-type w100 h30 d-flex sb">
               <div className="select-time w25 h1 a-center d-flex ">
                 <label htmlFor="rccode" className="info-text w100">
-                  No :
+                  {t("rc-no")} :
                 </label>
                 <input
                   className="data w100 t-center"
@@ -154,7 +156,7 @@ const SaveRateChart = () => {
               </div>
               <div className="select-animal-type w70 h1 a-center d-flex">
                 <label htmlFor="rctype" className="info-text w30">
-                  Type :
+                  {t("rc-type")} :
                 </label>
                 <select
                   id="rctype"
@@ -162,7 +164,7 @@ const SaveRateChart = () => {
                   name="rctype"
                   onChange={handleInput}
                 >
-                  <option value="">-- Select Type --</option>
+                  <option value="">-- {t("rc-selete-type")} --</option>
                   {rcStatus === "loading" ? (
                     <option value="">Loading...</option>
                   ) : (
@@ -174,7 +176,7 @@ const SaveRateChart = () => {
                           </option>
                         ))
                       ) : (
-                        <option value="">No types available!</option>
+                        <option value="">{t("rc-no-type-avai")}</option>
                       )}
                     </>
                   )}
@@ -183,7 +185,7 @@ const SaveRateChart = () => {
             </div>
             <div className="select-time-animal-type w100 my10 d-flex a-center sb">
               <label htmlFor="rcdate" className="info-text w50">
-                Ratechart date :{" "}
+                {t("rc-rc-date")} :{" "}
               </label>
               <input
                 className={`data w40 ${errors.rcdate ? "input-error" : ""}`}
@@ -203,7 +205,7 @@ const SaveRateChart = () => {
             className="btn mx10"
             disabled={status === "loading"}
           >
-            {status === "loading" ? "Saving..." : "Save Ratechart"}
+            {status === "loading" ? `${t("rc-saving")}` : `${t("rc-save-rc")}`}
           </button>
         </div>
       </form>

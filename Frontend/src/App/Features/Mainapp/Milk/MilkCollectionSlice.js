@@ -62,11 +62,6 @@ export const saveMilkOneEntry = createAsyncThunk(
       const response = await axiosInstance.post("/save/milk/one", values);
       return response.data; // Ensure response contains a message key
     } catch (error) {
-      console.error(
-        "Error in saveMilkOneEntry:",
-        error.response?.data || error.message
-      );
-
       const errorMessage =
         error.response?.data?.message || "Failed to store milk collection.";
       return rejectWithValue({

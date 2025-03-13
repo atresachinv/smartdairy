@@ -16,6 +16,7 @@ import {
 import { BsDatabaseAdd, BsPersonFill } from "react-icons/bs";
 import { TfiStatsUp } from "react-icons/tfi";
 import { BsCalendar3 } from "react-icons/bs";
+import { TbMilkFilled } from "react-icons/tb";
 import { useDispatch, useSelector } from "react-redux";
 import { useTranslation } from "react-i18next";
 import { getAllMilkCollReport } from "../../../App/Features/Mainapp/Milk/MilkCollectionSlice";
@@ -30,6 +31,7 @@ import { centersLists } from "../../../App/Features/Dairy/Center/centerSlice";
 import "../../../Styles/Mainapp/Dashbaord/Dashboard.css";
 import { getCenterSetting } from "../../../App/Features/Mainapp/Settings/dairySettingSlice";
 import { listEmployee } from "../../../App/Features/Mainapp/Masters/empMasterSlice";
+import { getMasterDates } from "../../../App/Features/Customers/Date/masterSlice";
 
 const Dashboard = () => {
   const { t } = useTranslation("common");
@@ -38,6 +40,7 @@ const Dashboard = () => {
   const Emplist = useSelector((state) => state.emp.emplist);
   const center_id = useSelector((state) => state.dairy.dairyData.center_id);
   const manualMaster = useSelector((state) => state.manualMasters.masterlist);
+  const master = useSelector((state) => state.masterdates.masterlist);
   const mastermilk = useSelector((state) => state.milkCollection.allMilkColl);
   const centerList = useSelector(
     (state) => state.center.centersList.centersDetails // center list
@@ -57,6 +60,22 @@ const Dashboard = () => {
   const [showSummary, setShowSummary] = useState(false); //for summary data
   const [detailData, setDetailData] = useState([]); // for detail data
   const [showDetail, setShowDetail] = useState(false); // for detail data
+
+  //---------------------------------------------------------------------------------------------->
+  // Do Not Delete Below Commented Code ---------------------------------------------------------->
+  //---------------------------------------------------------------------------------------------->
+  // const currentYear = date.slice(0, 4);
+  // const lastYear = currentYear - 1;
+  // const yearStart = `${lastYear}-04-01`;
+  // const yearEnd = `${currentYear}-03-31`;
+  // console.log(master);
+  // useEffect(() => {
+  // dispatch(getMasterDates({ yearStart, yearEnd }));
+  // }, []);
+  //---------------------------------------------------------------------------------------------->
+  // Do Not Delete Above Commented Code ---------------------------------------------------------->
+  //---------------------------------------------------------------------------------------------->
+
   // Generate master dates based on the initial date
   useEffect(() => {
     dispatch(generateMaster(date));
@@ -64,18 +83,50 @@ const Dashboard = () => {
     dispatch(listEmployee());
   }, []);
 
+  // const totalLitres = mastermilk.reduce((acc, item) => acc + item.Litres, 0);
+  // const totalAmt = mastermilk.reduce((acc, item) => acc + item.Amt, 0);
+  // const aggregatedData = mastermilk.reduce((acc, curr) => {
+  //   const date = new Date(curr.ReceiptDate).toISOString().split("T")[0];
+  //   if (!acc[date]) {
+  //     acc[date] = { totalLitres: 0, totalAmt: 0 };
+  //   }
+  //   acc[date].totalLitres += curr.Litres;
+  //   acc[date].totalAmt += curr.Amt;
+  //   return acc;
+  // }, {});
+
+  // -------------------------------------------------------------------------------------->
+  // Round data total customers, Liters , AMount And Average Fat -------------------------->
+
   const customerCount = customerslist.length;
   const totalLitres = mastermilk.reduce((acc, item) => acc + item.Litres, 0);
   const totalAmt = mastermilk.reduce((acc, item) => acc + item.Amt, 0);
+  const totalFatValue = mastermilk.reduce(
+    (acc, item) => acc + item.Litres * item.fat,
+    0
+  );
+
+  // Calculate the average fat percentage -------------------------------------------------->
+  const avgFat = totalLitres > 0 ? totalFatValue / totalLitres : 0;
+
   const aggregatedData = mastermilk.reduce((acc, curr) => {
     const date = new Date(curr.ReceiptDate).toISOString().split("T")[0];
     if (!acc[date]) {
-      acc[date] = { totalLitres: 0, totalAmt: 0 };
+      acc[date] = { totalLitres: 0, totalAmt: 0, totalFatValue: 0 };
     }
     acc[date].totalLitres += curr.Litres;
     acc[date].totalAmt += curr.Amt;
+    acc[date].totalFatValue += curr.Litres * curr.fat;
+
     return acc;
   }, {});
+
+  // Add avgFat calculation per date
+  Object.keys(aggregatedData).forEach((date) => {
+    const data = aggregatedData[date];
+    data.avgFat =
+      data.totalLitres > 0 ? data.totalFatValue / data.totalLitres : 0;
+  });
 
   // ---------------------------------------------------------------------------------------------->
   //  Data to show in bar chart ----------------------------------------------------------------->
@@ -141,7 +192,6 @@ const Dashboard = () => {
       setSelectedDate(selectedDates);
       // Store selected master in localStorage
       localStorage.setItem("selectedMaster", JSON.stringify(selectedDates));
-
       // The dispatch is now handled by useEffect
     } else {
       // If the user selects the default option, reset selectedDate to null
@@ -380,6 +430,15 @@ const Dashboard = () => {
                 <h3 className="text">{t("c-purch-amt")}</h3>
                 <Link smooth to="#centerdata" className="hashlink heading">
                   {totalAmt.toFixed(1) || 0} <span>{t("c-rs")}</span>
+                </Link>
+              </div>
+            </div>
+            <div className="card h1 sb">
+              <TbMilkFilled className="card-icon" />
+              <div className="card-inner">
+                <h3 className="text">{t("Avg Fat")}</h3>
+                <Link smooth to="#centerdata" className="hashlink heading">
+                  {avgFat.toFixed(2) || 0}
                 </Link>
               </div>
             </div>

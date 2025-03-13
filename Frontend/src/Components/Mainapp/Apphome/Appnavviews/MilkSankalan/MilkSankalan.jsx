@@ -53,12 +53,20 @@ const MilkSankalan = () => {
     sample: "",
     acccode: "",
     mobile: "",
-    allow: centerSetting.duplicateEntry === 0 ? false : true,
+    allow: false,
   };
 
   const [values, setValues] = useState(initialValues);
 
-  //set setting
+  // allow is updated from state -------------------------------------------------------------->
+  useEffect(() => {
+    setValues((prevData) => ({
+      ...prevData,
+      allow: settings.duplicateEntry === 0 ? false : true,
+    }));
+  }, [settings]);
+
+  //set setting ------------------------------------------------------------------------------->
   useEffect(() => {
     if (centerSetting?.length > 0) {
       setSettings(centerSetting[0]);
@@ -86,13 +94,6 @@ const MilkSankalan = () => {
     dispatch(listCustomer());
     dispatch(mobilePrevLiters());
   }, []);
-
-  // useEffect(() => {
-  //   // When the customer list is updated, store it in localStorage
-  //   if (customerlist.length > 0) {
-  //     localStorage.setItem("customerlist", JSON.stringify(customerlist));
-  //   }
-  // }, [customerlist]);
 
   // Effect to load customer list from local storage ------------------------>
   useEffect(() => {
@@ -159,51 +160,6 @@ const MilkSankalan = () => {
   //.....................................................
   // Customer Info ......................................
   //.....................................................
-
-  //   const handleInputs = (e) => {
-  //     const { name, value } = e.target;
-  //
-  //     if (name === "date") {
-  //       if (value > tDate) {
-  //         // Set an error for the date field
-  //         setErrors((prevErrors) => ({
-  //           ...prevErrors,
-  //           date: "Selected date cannot be greater than the current date.",
-  //         }));
-  //         return; // Prevent updating the state if the date is invalid
-  //       } else {
-  //         // Clear the error if the date is valid
-  //         setErrors((prevErrors) => {
-  //           const { date, ...rest } = prevErrors;
-  //           return rest; // Remove date error if valid
-  //         });
-  //       }
-  //
-  //       // Update the values state
-  //       setValues((prevValues) => ({
-  //         ...prevValues,
-  //         [name]: value,
-  //       }));
-  //
-  //       // Validate the field for other errors
-  //       const fieldError = validateField(name, value);
-  //       setErrors((prevErrors) => ({
-  //         ...prevErrors,
-  //         ...fieldError,
-  //       }));
-  //     }
-  //
-  //
-  //
-  //     setValues({ ...values, [name]: value });
-  //
-  //     // Validate field and update errors state
-  //     const fieldError = validateField(name, value);
-  //     setErrors((prevErrors) => ({
-  //       ...prevErrors,
-  //       ...fieldError,
-  //     }));
-  //   };
 
   const handleInputs = (e) => {
     const { name, value } = e.target;

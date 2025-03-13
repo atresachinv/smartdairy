@@ -571,11 +571,10 @@ exports.milkCollectionOneEntry = async (req, res) => {
         const checkMilkCollectionQuery = `
           SELECT COUNT(rno) AS count 
           FROM ${dairy_table} 
-          WHERE companyid = ? AND center_id = ? AND ReceiptDate = ? AND ME = ? AND CB = ? AND rno = ?
+          WHERE center_id = ? AND ReceiptDate = ? AND ME = ? AND CB = ? AND rno = ?
         `;
 
         const existingEntry = await query(checkMilkCollectionQuery, [
-          dairy_id,
           center_id,
           date,
           shift,
@@ -595,12 +594,11 @@ exports.milkCollectionOneEntry = async (req, res) => {
       // Insert milk collection entry
       const insertMilkCollectionQuery = `
         INSERT INTO ${dairy_table} 
-        (companyid, userid, ReceiptDate, ME, CB, Litres, fat, snf, Amt, rctype, GLCode, AccCode, Digree, rate, cname, rno, center_id) 
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        (userid, ReceiptDate, ME, CB, Litres, fat, snf, Amt, rctype, GLCode, AccCode, Digree, rate, cname, rno, center_id) 
+        VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       `;
 
       await query(insertMilkCollectionQuery, [
-        dairy_id,
         user_role,
         date,
         shift,
@@ -618,7 +616,6 @@ exports.milkCollectionOneEntry = async (req, res) => {
         code,
         center_id,
       ]);
-
       connection.release();
       res.status(200).json({
         status: 200,
@@ -1601,7 +1598,8 @@ exports.fetchMobileMilkCollection = async (req, res) => {
       const milkcollReport = `
         SELECT userid, Litres, cname, rno, SampleNo , ME
         FROM ${dairy_table}
-        WHERE ReceiptDate = ?  AND center_id = ?  AND Driver = 1
+        WHERE ReceiptDate = ?  AND center_id = ?  AND Driver = 1 
+        ORDER BY id ASC
       `;
 
       // Execute the query
@@ -1732,7 +1730,7 @@ exports.allMilkCollReport = async (req, res) => {
       const milkCollectionQuery = `
         SELECT id, userid, ReceiptDate,  ME,  CB,  Litres,  fat,  snf,  rate,  Amt,  cname,  rno , AccCode ,center_id
         FROM ${dairy_table}
-        WHERE ReceiptDate BETWEEN ? AND ?
+        WHERE ReceiptDate BETWEEN ? AND ? ORDER BY ReceiptDate ASC
       `;
 
       connection.query(

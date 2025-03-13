@@ -2,12 +2,8 @@ import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import * as xlsx from "xlsx";
 import {
-  saveRateChart,
-  resetProgress,
   fetchMaxRcCode,
-  applyRateChart,
   listRateCharts,
-  fetchselectedRateChart,
   fetchRateChart,
   setData,
   deleteRatechart,
@@ -16,8 +12,10 @@ import {
 import { toast } from "react-toastify";
 import "../../../../../Styles/Mainapp/Masters/MilkRateMaster.css";
 import RateChartOptions from "./RateChartOptions";
+import { useTranslation } from "react-i18next";
 
 const MilkRateMaster = () => {
+  const { t } = useTranslation("ratechart");
   const dispatch = useDispatch();
   const tDate = useSelector((state) => state.date.toDate);
   const { status, progress } = useSelector((state) => state.ratechart);
@@ -224,7 +222,7 @@ const MilkRateMaster = () => {
         <div className="select-ratechart-container w40 h1 d-flex-col sa p10">
           <div className="select-excel-container w100 h10 d-flex a-center my10 sb">
             <span className="label-text w40">
-              {!fileName ? "Select Excel File" : `${fileName}`}
+              {!fileName ? `${t("rc-s-excel")}` : `${fileName}`}
             </span>
             <input
               ref={fileInputRef}
@@ -234,7 +232,7 @@ const MilkRateMaster = () => {
               onChange={handleExcel}
             />
             <button className="btn" onClick={handleButtonClick}>
-              Choose File
+              {t("rc-choose-file")}
             </button>
           </div>
           {localError && (
@@ -248,13 +246,11 @@ const MilkRateMaster = () => {
             </div>
           )}
           <div className="rate-chart-container w100 h90 d-flex-col bg">
-            <span className="heading p10">
-              Selected Rate Chart from Excel :{" "}
-            </span>
+            <span className="heading p10">{t("rc-s-rc-excel")} : </span>
             <div className="rate-chart-col-title w100 d-flex a-center t-center sa py10 bg1">
-              <span className="f-info-text w15">FAT</span>
-              <span className="f-info-text w10">SNF</span>
-              <span className="f-info-text w15">Rate</span>
+              <span className="f-info-text w15">{t("rc-fat")}</span>
+              <span className="f-info-text w10">{t("rc-snf")}</span>
+              <span className="f-info-text w15">{t("rc-rate")}</span>
             </div>
             <div className="rate-chart-div w100 h90 mh90 d-flex-col hidescrollbar">
               {rate.length > 0 ? (
@@ -282,11 +278,11 @@ const MilkRateMaster = () => {
                 ))
               ) : fileName === "" || null ? (
                 <div className="box d-flex center label-text">
-                  Select a Rate Chart to display.
+                  {t("rc-rc-msg1")}
                 </div>
               ) : rate.length === 0 ? (
                 <div className="box d-flex center label-text">
-                  Selected Ratechart is empty.
+                  {t("rc-rc-msg2")}
                 </div>
               ) : (
                 <></>
@@ -296,11 +292,11 @@ const MilkRateMaster = () => {
         </div>
         <div className="save-ratechart-container w45 h1 d-flex-col p10">
           <div className="previous-rate-chart-container w100 h40 d-flex-col bg my10">
-            <span className="heading p10">Previous Rate Charts : </span>
+            <span className="heading p10">{t("rc-prev-rc")} : </span>
             <div className="rate-chart-col-title w100 d-flex a-center t-center sa py10 bg1">
-              <span className="f-info-text w10">No.</span>
-              <span className="f-info-text w20">Date</span>
-              <span className="f-info-text w25">Type</span>
+              <span className="f-info-text w10">{t("rc-no")}</span>
+              <span className="f-info-text w20">{t("rc-date")}</span>
+              <span className="f-info-text w25">{t("rc-type")}</span>
             </div>
             <div className="rate-chart-div w100 h90 mh90 d-flex-col hidescrollbar">
               {ratechartlist
@@ -343,7 +339,9 @@ const MilkRateMaster = () => {
               disabled={deletercstatus === "loading"}
               onClick={deleteSelectedRateChart}
             >
-              {deletercstatus === "loading" ? "Deleting..." : "Delete"}
+              {deletercstatus === "loading"
+                ? `${t("rc-deleting-btn")}`
+                : `${t("rc-del-btn")}`}
             </button>
             <button
               type="button"
@@ -351,7 +349,7 @@ const MilkRateMaster = () => {
               disabled={status === "loading"}
               onClick={downloadRateChart}
             >
-              Download
+              {t("rc-download-btn")}
             </button>
             <button
               type="button"
@@ -359,7 +357,7 @@ const MilkRateMaster = () => {
               disabled={status === "loading"}
               onClick={ShowRatechart}
             >
-              Show
+              {t("rc-show-btn")}
             </button>
           </div>
           <div className="rate-chart-options-container w100 h50 d-flex-col sa my10">
