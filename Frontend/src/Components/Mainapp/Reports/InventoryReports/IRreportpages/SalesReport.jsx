@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
 import axios, { all } from "axios";
@@ -11,31 +11,26 @@ const SalesReport = () => {
   const [fromdate, setFromDate] = useState("");
   const [todate, setToDate] = useState("");
   const [item, SetItem] = useState([]); //... Item Data
+  const [itemName, setItemName] = useState([]); //... Item Data
   const [selectedReport, setSelectedReport] = useState("");
   const [showPopup, setShowPopup] = useState(false);
   const [itemNo, setItemNo] = useState("");
   const [isItemwiseChecked, setIsItemwiseChecked] = useState(false);
-
+  const toDates = useRef(null);
   const dairyname = useSelector(
     (state) =>
       state.dairy.dairyData.SocietyName || state.dairy.dairyData.center_name
   );
   const CityName = useSelector((state) => state.dairy.dairyData.city);
 
-
-  //....    Sale Register PDf
-
   useEffect(() => {
     const salefetchData = async () => {
       // Only fetch data if both fromdate and todate are available
       if (fromdate && todate) {
         try {
-          const response = await axiosInstance.get(
-            "/stock/sale/all",
-            {
-              params: { fromdate, todate }, // Pass dates as query params
-            }
-          );
+          const response = await axiosInstance.get("/stock/sale/all", {
+            params: { fromdate, todate },
+          });
           SetSaleData(response.data.salesData); // Set the fetched sales data
         } catch (error) {
           console.log(
@@ -56,6 +51,14 @@ const SalesReport = () => {
     }
   }, [fromdate, todate]); // Depend on both dates to trigger when either changes
 
+  // handle enter press move cursor to next refrence Input -------------------------------->
+  const handleKeyDown = (e, nextRef) => {
+    if (e.key === "Enter" && nextRef.current) {
+      e.preventDefault();
+      nextRef.current.focus();
+    }
+  };
+
   const generateSalesReport = () => {
     const doc = new jsPDF();
 
@@ -66,8 +69,8 @@ const SalesReport = () => {
     const reportName = "Sales Report";
 
     // Ensure fromDate and toDate are properly declared
-    const reportFromDate = typeof fromDate !== "undefined" ? fromDate : "N/A";
-    const reportToDate = typeof toDate !== "undefined" ? toDate : "N/A";
+    const reportFromDate = typeof fromdate !== "undefined" ? fromdate : "N/A";
+    const reportToDate = typeof todate !== "undefined" ? todate : "N/A";
 
     doc.setFontSize(16);
     doc.text(dairyName, 15, 15);
@@ -822,9 +825,7 @@ const SalesReport = () => {
   useEffect(() => {
     const fetchItems = async () => {
       try {
-        const response = await axios.get(
-          "http://localhost:4040/smartdairy/api/item/all"
-        );
+        const response = await axiosInstance.get("/item/all");
         if (response.data) {
           SetItem(response.data.itemsData);
           groupItemsByCode(response.data.itemsData);
@@ -894,167 +895,186 @@ const SalesReport = () => {
     }
   };
 
- 
-
-  const renderTable = () => {
-    if (!selectedReport) return <p>Please select a report to display.</p>;
-
-    // Filter sales data based on fromdate and todate
-    const filteredData = saledata.filter((item) => {
-      const billDate = new Date(item.BillDate); // Convert BillDate to Date object
-      const fromDate = new Date(fromdate); // Convert fromdate to Date object
-      const toDate = new Date(todate); // Convert todate to Date object
-
-      return billDate >= fromDate && billDate <= toDate; // Only include data within the selected date range
-    });
-
-    // Calculate total amount
-    const totalAmount = filteredData.reduce(
-      (sum, item) => sum + (item.Amount || 0),
-      0
+  console.log( "saledata", saledata);
+const renderTable = () => {
+  if (!selectedReport) {
+    return (
+      <table border="1" style={{ width: "100%" }}>
+        <tbody>
+          <tr>
+            <td
+              colSpan="100%"
+              style={{
+                textAlign: "center",
+                verticalAlign: "middle",
+                padding: "20px",
+                height: "200px",
+              }}
+            >
+              <p>Please select a report to display.</p>
+            </td>
+          </tr>
+        </tbody>
+      </table>
     );
+  }
 
-    switch (selectedReport) {
-      case "Sale Register":
-        return (
-          <table border="1">
-            <thead>
+  // Filter sales data based on fromdate and todate
+  const filteredData = saledata.filter((item) => {
+    const billDate = new Date(item.BillDate); // Convert BillDate to Date object
+    const fromDate = new Date(fromdate); // Convert fromdate to Date object
+    const toDate = new Date(todate); // Convert todate to Date object
+
+    return billDate >= fromDate && billDate <= toDate; // Only include data within the selected date range
+  });
+
+  // Calculate total amount
+  const totalAmount = filteredData.reduce(
+    (sum, item) => sum + (item.Amount || 0),
+    0
+  );
+
+  switch (selectedReport) {
+    case "Sale Register":
+      return (
+        <table border="1">
+          <thead>
+            <tr>
+              <th>Bill Date</th>
+              <th>Bill No</th>
+              <th>Customer Code</th>
+              <th>Customer Name</th>
+              <th>Amount</th>
+            </tr>
+          </thead>
+          <tbody>
+            {filteredData.length === 0 ? (
               <tr>
-                <th>Bill Date</th>
-                <th>Bill No</th>
-                <th>Customer Code</th>
-                <th>Customer Name</th>
-                <th>Amount</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredData.length === 0 ? (
-                <tr>
-                  <td colSpan="5" style={{ textAlign: "center" }}>
-                    No data available for the selected date range.
-                  </td>
-                </tr>
-              ) : (
-                filteredData.map((item, index) => (
-                  <tr key={index}>
-                    <td>{item.BillDate?.slice(0, 10) || "N/A"}</td>
-                    <td>{item.BillNo || "N/A"}</td>
-                    <td>{item.CustCode || "N/A"}</td>
-                    <td>{item.CustName || "N/A"}</td>
-                    <td>{item.Amount ? item.Amount.toFixed(2) : "0.00"}</td>
-                  </tr>
-                ))
-              )}
-              <tr>
-                <td
-                  colSpan="4"
-                  style={{ textAlign: "right", fontWeight: "bold" }}
-                >
-                  Total:
+                <td colSpan="5" style={{ textAlign: "center" }}>
+                  No data available for the selected date range.
                 </td>
-                <td style={{ fontWeight: "bold" }}>{totalAmount.toFixed(2)}</td>
               </tr>
-            </tbody>
-          </table>
-        );
-
-      case "Disturbed Register list":
-        return (
-          <table border="1">
-            <thead>
-              <tr>
-                <th>Bill Date</th>
-                <th>Bill No</th>
-                <th>Customer Code</th>
-                <th>Item Name</th>
-                <th>Qty</th>
-                <th>Rate</th>
-                <th>Amount</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredData.length === 0 ? (
-                <tr>
-                  <td colSpan="7" style={{ textAlign: "center" }}>
-                    No data available for the selected date range.
-                  </td>
+            ) : (
+              filteredData.map((item, index) => (
+                <tr key={index}>
+                  <td>{item.BillDate?.slice(0, 10) || "N/A"}</td>
+                  <td>{item.BillNo || "N/A"}</td>
+                  <td>{item.CustCode || "N/A"}</td>
+                  <td>{item.cust_name  || "N/A"}</td>
+                  <td>{item.Amount ? item.Amount.toFixed(2) : "0.00"}</td>
                 </tr>
-              ) : (
-                filteredData.map((item, index) => (
-                  <tr key={index}>
-                    <td>{item.BillDate?.slice(0, 10) || "N/A"}</td>
-                    <td>{item.BillNo || "N/A"}</td>
-                    <td>{item.CustCode || "N/A"}</td>
-                    <td>{item.ItemName || "N/A"}</td>
-                    <td>{item.Qty || 0}</td>
-                    <td>{item.Rate ? item.Rate.toFixed(2) : "0.00"}</td>
-                    <td>{item.Amount ? item.Amount.toFixed(2) : "0.00"}</td>
-                  </tr>
-                ))
-              )}
-              <tr>
-                <td
-                  colSpan="6"
-                  style={{ textAlign: "right", fontWeight: "bold" }}
-                >
-                  Total:
-                </td>
-                <td style={{ fontWeight: "bold" }}>{totalAmount.toFixed(2)}</td>
-              </tr>
-            </tbody>
-          </table>
-        );
+              ))
+            )}
+            <tr>
+              <td
+                colSpan="4"
+                style={{ textAlign: "right", fontWeight: "bold" }}
+              >
+                Total:
+              </td>
+              <td style={{ fontWeight: "bold" }}>{totalAmount.toFixed(2)}</td>
+            </tr>
+          </tbody>
+        </table>
+      );
 
-      case "Customer Saleing Balance":
-      case "Customer Saleing Qtm Report":
-        return (
-          <table border="1">
-            <thead>
+    case "Disturbed Register list":
+      return (
+        <table border="1">
+          <thead>
+            <tr>
+              <th>Bill Date</th>
+              <th>Bill No</th>
+              <th>Customer Code</th>
+              <th>Item Name</th>
+              <th>Qty</th>
+              <th>Rate</th>
+              <th>Amount</th>
+            </tr>
+          </thead>
+          <tbody>
+            {filteredData.length === 0 ? (
               <tr>
-                <th>CN</th>
-                <th>Customer Name</th>
-                <th>Amount</th>
+                <td colSpan="7" style={{ textAlign: "center" }}>
+                  No data available for the selected date range.
+                </td>
               </tr>
-            </thead>
-            <tbody>
-              {filteredData.length === 0 ? (
-                <tr>
-                  <td colSpan="3" style={{ textAlign: "center" }}>
-                    No data available for the selected date range.
-                  </td>
+            ) : (
+              filteredData.map((item, index) => (
+                <tr key={index}>
+                  <td>{item.BillDate?.slice(0, 10) || "N/A"}</td>
+                  <td>{item.BillNo || "N/A"}</td>
+                  <td>{item.CustCode || "N/A"}</td>
+                  <td>{item.ItemName || "N/A"}</td>
+                  <td>{item.Qty || 0}</td>
+                  <td>{item.Rate ? item.Rate.toFixed(2) : "0.00"}</td>
+                  <td>{item.Amount ? item.Amount.toFixed(2) : "0.00"}</td>
                 </tr>
-              ) : (
-                filteredData.map((item, index) => (
-                  <tr key={index}>
-                    <td>{item.CustCode || "N/A"}</td>
-                    <td>{item.cust_name || "N/A"}</td>
-                    <td>{item.Amount ? item.Amount.toFixed(2) : "0.00"}</td>
-                  </tr>
-                ))
-              )}
-              <tr>
-                <td
-                  colSpan="2"
-                  style={{ textAlign: "right", fontWeight: "bold" }}
-                >
-                  Total:
-                </td>
-                <td style={{ fontWeight: "bold" }}>{totalAmount.toFixed(2)}</td>
-              </tr>
-            </tbody>
-          </table>
-        );
+              ))
+            )}
+            <tr>
+              <td
+                colSpan="6"
+                style={{ textAlign: "right", fontWeight: "bold" }}
+              >
+                Total:
+              </td>
+              <td style={{ fontWeight: "bold" }}>{totalAmount.toFixed(2)}</td>
+            </tr>
+          </tbody>
+        </table>
+      );
 
-      default:
-        return null;
-    }
-  };
+    case "Customer Saleing Balance":
+    case "Customer Saleing Qtm Report":
+      return (
+        <table border="1">
+          <thead>
+            <tr>
+              <th>CN</th>
+              <th>Customer Name</th>
+              <th>Amount</th>
+            </tr>
+          </thead>
+          <tbody>
+            {filteredData.length === 0 ? (
+              <tr>
+                <td colSpan="3" style={{ textAlign: "center" }}>
+                  No data available for the selected date range.
+                </td>
+              </tr>
+            ) : (
+              filteredData.map((item, index) => (
+                <tr key={index}>
+                  <td>{item.CustCode || "N/A"}</td>
+                  <td>{item.cust_name || "N/A"}</td>
+                  <td>{item.Amount ? item.Amount.toFixed(2) : "0.00"}</td>
+                </tr>
+              ))
+            )}
+            <tr>
+              <td
+                colSpan="2"
+                style={{ textAlign: "right", fontWeight: "bold" }}
+              >
+                Total:
+              </td>
+              <td style={{ fontWeight: "bold" }}>{totalAmount.toFixed(2)}</td>
+            </tr>
+          </tbody>
+        </table>
+      );
+
+    default:
+      return null;
+  }
+};
+
+
 
   const handleItemChange = (e) => {
-    // const selectedItem = item.find((item) => item.ItemDesc === e.target.value);
-    // setItemName(selectedItem ? selectedItem.ItemDesc : "");
-    // setItemNo(selectedItem ? selectedItem.ItemCode : "");
     setItemNo(e.target.value);
+    setItemName(e.target.value);
   };
 
   useEffect(() => {
@@ -1275,7 +1295,6 @@ const SalesReport = () => {
     setIsItemwiseChecked(e.target.checked);
   };
 
-
   return (
     <>
       <div className="sales-report-conatiner w100 h1 d-flex-col bg ">
@@ -1289,6 +1308,7 @@ const SalesReport = () => {
                   className="data w80"
                   type="date"
                   value={fromdate} // Bind fromdate state to input
+                  onKeyDown={(e) => handleKeyDown(e, toDates)}
                   onChange={(e) => setFromDate(e.target.value)} // Update fromdate on change
                 />
               </div>
@@ -1297,6 +1317,7 @@ const SalesReport = () => {
                 <input
                   className="data w80"
                   type="date"
+                  ref={toDates}
                   value={todate} // Bind todate state to input
                   onChange={(e) => setToDate(e.target.value)} // Update todate on change
                 />
@@ -1315,7 +1336,7 @@ const SalesReport = () => {
                   <option value="">Select Report</option>
                   <option value="Sale Register">Sale Register</option>
                   <option value="Disturbed Register list">
-                    Disturbed Register
+                   Detail Sales Register
                   </option>
                   <option value="Customer Saleing Balance">
                     Cust Saleing Balance
@@ -1356,14 +1377,19 @@ const SalesReport = () => {
                   <span className="info-text w30"> No</span>
                   <input
                     className="w20 data"
-                    type="text"
-                    value={itemNo}
-                    readOnly
+                    type="number"
+                    name="itemno"
+                    value={itemNo || " "}
+                    onChange={handleItemChange}
                   />
                 </div>
                 <div className="item-name-sale-div w40 h1 d-flex a-center">
                   <span className="info-text w40"> Name </span>
-                  <select className="w90 data" onChange={handleItemChange}>
+                  <select
+                    className="w90 data"
+                    value={itemName || ""}
+                    onChange={handleItemChange}
+                  >
                     <option value="">ItemList</option>
                     {item.map((item, i) => (
                       <option key={i} value={item.ItemCode}>
