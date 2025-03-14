@@ -5,8 +5,10 @@ import {
   fetchMaxRctype,
 } from "../../../../../App/Features/Mainapp/Masters/rateChartSlice";
 import { toast } from "react-toastify";
+import { useTranslation } from "react-i18next";
 
 const AddType = () => {
+  const { t } = useTranslation("ratechart");
   const dispatch = useDispatch();
   const tDate = useSelector((state) => state.date.toDate);
   const status = useSelector((state) => state.ratechart.savercstatus);
@@ -109,7 +111,7 @@ const AddType = () => {
 
   return (
     <div className="add-milk-type w100 h1 d-flex-col">
-      <span className="heading">Add New Type : </span>
+      <span className="heading">{t("rc-add-n-type")} : </span>
       <form
         onSubmit={handleSubmit}
         className="add-type-form-container w100 90 d-flex-col"
@@ -117,7 +119,7 @@ const AddType = () => {
         <div className="select-time-animal-type w100 my10 d-flex sb">
           <div className="select-time w25 h1 a-center d-flex ">
             <label htmlFor="rccode" className="info-text w100">
-              No :
+              {t("rc-no")} :
             </label>
             <input
               className="data w100 t-center"
@@ -130,11 +132,11 @@ const AddType = () => {
             />
           </div>
           <div className="select-animal-type w70 h1 a-center d-flex">
-            <label htmlFor="rctype" className="info-text w30">
-              Type :
+            <label htmlFor="rctype" className="info-text w35">
+              {t("rc-type")} :
             </label>
             <input
-              className={`data w100 ${errors.rctype ? "input-error" : ""}`}
+              className={`data w55 ${errors.rctype ? "input-error" : ""}`}
               type="text"
               name="rctype"
               id="rctype"
@@ -143,61 +145,13 @@ const AddType = () => {
             />
           </div>
         </div>
-        {/* <div className="select-time-animal-type w100 my10 d-flex sb">
-          <div className="select-animal-type w50 h1 a-center d-flex">
-            <label htmlFor="time" className="info-text w30">
-              Time:
-            </label>
-            <select
-              className={`data w60 ${errors.time ? "input-error" : ""}`}
-              name="time"
-              id="time"
-              required
-              value={formData.time}
-              onChange={handleInput}
-            >
-              <option className="info-text" value="2">
-                Both
-              </option>
-              <option className="info-text" value="0">
-                Mornning
-              </option>
-              <option className="info-text" value="1">
-                Evenning
-              </option>
-            </select>
-          </div>
-          <div className="select-animal-type w50 h1 a-center d-flex">
-            <label htmlFor="animalType" className="info-text w50">
-              Animal :
-            </label>
-            <select
-              className="data w50 "
-              name="animalType"
-              id="animalType"
-              required
-              value={formData.animalType}
-              onChange={handleInput}
-            >
-              <option className="info-text" value="0">
-                Cow
-              </option>
-              <option className="info-text" value="1">
-                Buffalo
-              </option>
-              <option className="info-text" value="2">
-                Other
-              </option>
-            </select>
-          </div>
-        </div> */}
         <div className="button-div w100 h20 d-flex j-end">
           <button
             type="submit"
             className="btn mx10"
             disabled={status === "loading"}
           >
-            {status === "loading" ? "Adding..." : "Add Type"}
+            {status === "loading" ? `${t("rc-adding")}` : `${t("rc-add-type")}`}
           </button>
         </div>
       </form>

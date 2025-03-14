@@ -107,42 +107,42 @@ const CreateCenter = () => {
         if (!/^[\u0900-\u097Fa-zA-Z0-9\s]+$/.test(value)) {
           error[name] = "Invalid name.";
         } else {
-          delete errors.marathi_name;
+          delete errors[name];
         }
         break;
       case "center_name":
         if (!/^[a-zA-Z0-9\s]+$/.test(value)) {
           error[name] = "Invalid name.";
         } else {
-          delete errors.center_name;
+          delete errors[name];
         }
         break;
       case "auditclass":
-        if (!/^[A-Z\s]+$/.test(value)) {
+        if (!/^[a-zA-Z\s]+$/.test(value)) {
           error.auditclass = "Invalid Audit class.";
         } else {
-          delete errors.auditclass;
+          delete errors[name];
         }
         break;
       case "reg_no":
         if (!/^\d{0,19}$/.test(value)) {
           error.reg_no = "Invalid Register number.";
         } else {
-          delete errors.reg_no;
+          delete errors[name];
         }
         break;
       case "mobile":
         if (!/^\d{10}$/.test(value)) {
           error.mobile = "Invalid Mobile number.";
         } else {
-          delete errors.mobile;
+          delete errors[name];
         }
         break;
       case "email":
         if (!/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/.test(value)) {
           error.email = "Invalid email format.";
         } else {
-          delete errors.email;
+          delete errors[name];
         }
         break;
       case "city":
@@ -158,21 +158,21 @@ const CreateCenter = () => {
         if (value.length < 5) {
           error.password = "Password must be at least 5 characters.";
         } else {
-          delete errors.password;
+          delete errors[name];
         }
         break;
       case "confirm_pass":
         if (value !== formData.password) {
           error.confirm_pass = "Passwords do not match.";
         } else {
-          delete errors.confirm_pass;
+          delete errors[name];
         }
         break;
       case "pincode":
         if (!/^\d{6}$/.test(value)) {
           error.pincode = "Invalid pincode.";
         } else {
-          delete errors.pincode;
+          delete errors[name];
         }
         break;
       default:
@@ -231,16 +231,12 @@ const CreateCenter = () => {
         onSubmit={handleSubmit}
       >
         <span className="heading h10">Create New Dairy Center</span>
-        {/* Form Fields */}
         <div className="center-name-div w100 h15 d-flex-col sa">
-          <span className="info-text w100">
-            Marathi Name{" "}
-            {errors.marathi_name && (
-              <span className="text error-message">{errors.marathi_name}</span>
-            )}
-          </span>
+          <label htmlFor="marathi_name" className="info-text w100">
+            Marathi Name
+          </label>
           <input
-            className={`data w100 ${errors.date ? "input-error" : ""}`}
+            className={`data w100 ${errors.marathi_name ? "input-error" : ""}`}
             type="text"
             name="marathi_name"
             id="marathi_name"
@@ -251,14 +247,11 @@ const CreateCenter = () => {
           />
         </div>
         <div className="center-name-div w100 h15 d-flex-col sa">
-          <span className="info-text w100">
-            English Name{" "}
-            {errors.center_name && (
-              <span className="text error-message">{errors.center_name}</span>
-            )}{" "}
-          </span>
+          <label htmlFor="center_name" className="info-text w100">
+            English Name
+          </label>
           <input
-            className={`data w100 ${errors.date ? "input-error" : ""}`}
+            className={`data w100 ${errors.center_name ? "input-error" : ""}`}
             type="text"
             name="center_name"
             id="center_name"
@@ -270,9 +263,11 @@ const CreateCenter = () => {
         </div>
         <div className="center-add-data-div w100 h10 d-flex a-center sb">
           <div className="center-details-div center-data w20 d-flex-col sa">
-            <span className="info-text w100">Center No.</span>
+            <label htmlFor="center_id" className="info-text w100">
+              Center No.
+            </label>
             <input
-              className={`data w100 ${errors.date ? "input-error" : ""}`}
+              className={`data w100 ${errors.center_id ? "input-error" : ""}`}
               type="number"
               name="center_id"
               id="center_id"
@@ -283,14 +278,11 @@ const CreateCenter = () => {
             />
           </div>
           <div className="center-details-div center-data w20 d-flex-col sa">
-            <span className="info-text w100">
-              Audit Class{" "}
-              {errors.auditclass && (
-                <span className="text error-message">{errors.auditclass}</span>
-              )}
-            </span>
+            <label htmlFor="auditclass" className="info-text w100">
+              Audit Class
+            </label>
             <input
-              className={`data w100 ${errors.date ? "input-error" : ""}`}
+              className={`data w100 ${errors.auditclass ? "input-error" : ""}`}
               type="text"
               name="auditclass"
               id="auditclass"
@@ -299,14 +291,11 @@ const CreateCenter = () => {
             />
           </div>
           <div className="center-details-div center-data w20 d-flex-col sa">
-            <span className="info-text w100">
-              Register No.{" "}
-              {errors.reg_no && (
-                <span className="text error-message">{errors.reg_no}</span>
-              )}
-            </span>
+            <label htmlFor="reg_no" className="info-text w100">
+              Register No.
+            </label>
             <input
-              className={`data w100 ${errors.date ? "input-error" : ""}`}
+              className={`data w100 ${errors.reg_no ? "input-error" : ""}`}
               type="number"
               name="reg_no"
               id="reg_no"
@@ -315,14 +304,11 @@ const CreateCenter = () => {
             />
           </div>
           <div className="center-details-div center-data w30 d-flex-col sa">
-            <span className="info-text w100">
-              Register Date{" "}
-              {errors.reg_date && (
-                <span className="text error-message">{errors.reg_date}</span>
-              )}
-            </span>
+            <label htmlFor="reg_date" className="info-text w100">
+              Register Date
+            </label>
             <input
-              className={`data w100 ${errors.date ? "input-error" : ""}`}
+              className={`data w100 ${errors.reg_date ? "input-error" : ""}`}
               type="date"
               name="reg_date"
               id="reg_date"
@@ -333,14 +319,11 @@ const CreateCenter = () => {
         </div>
         <div className="center-add-data-div w100 h15 d-flex a-center sb">
           <div className="center-details-div w30 d-flex-col sa">
-            <span className="info-text">
-              Mobile{" "}
-              {errors.mobile && (
-                <span className="text error-message">{errors.mobile}</span>
-              )}
-            </span>
+            <label htmlFor="mobile" className="info-text">
+              Mobile
+            </label>
             <input
-              className={`data w100 ${errors.date ? "input-error" : ""}`}
+              className={`data w100 ${errors.mobile ? "input-error" : ""}`}
               type="text"
               name="mobile"
               id="mobile"
@@ -349,14 +332,11 @@ const CreateCenter = () => {
             />
           </div>
           <div className="center-details-div w60 d-flex-col sa">
-            <span className="info-text">
-              Email{" "}
-              {errors.email && (
-                <span className="text error-message">{errors.email}</span>
-              )}
-            </span>
+            <label htmlFor="email" className="info-text">
+              Email
+            </label>
             <input
-              className={`data w100 ${errors.date ? "input-error" : ""}`}
+              className={`data w100 ${errors.email ? "input-error" : ""}`}
               type="email"
               name="email"
               id="email"
@@ -367,14 +347,11 @@ const CreateCenter = () => {
         </div>
         <div className="center-add-data-div w100 h10 d-flex a-center sb">
           <div className="center-details-div center-data w20 d-flex-col sa">
-            <span className="info-text w100">
-              City{" "}
-              {errors.city && (
-                <span className="text error-message">{errors.city}</span>
-              )}
-            </span>
+            <lable htmlFor="city" className="info-text w100">
+              City
+            </lable>
             <input
-              className={`data w100 ${errors.date ? "input-error" : ""}`}
+              className={`data w100 ${errors.city ? "input-error" : ""}`}
               type="text"
               name="city"
               id="city"
@@ -383,14 +360,11 @@ const CreateCenter = () => {
             />
           </div>
           <div className="center-details-div center-data w25 d-flex-col sa">
-            <span className="info-text w100">
-              Tehsil{" "}
-              {errors.tehsil && (
-                <span className="text error-message">{errors.tehsil}</span>
-              )}
-            </span>
+            <label htmlFor="tehsil" className="info-text w100">
+              Tehsil
+            </label>
             <input
-              className={`data w100 ${errors.date ? "input-error" : ""}`}
+              className={`data w100 ${errors.tehsil ? "input-error" : ""}`}
               type="text"
               name="tehsil"
               id="tehsil"
@@ -399,14 +373,11 @@ const CreateCenter = () => {
             />
           </div>
           <div className="center-details-div center-data w25 d-flex-col sa">
-            <span className="info-text w100">
-              District{" "}
-              {errors.district && (
-                <span className="text error-message">{errors.district}</span>
-              )}
-            </span>
+            <label htmlFor="district" className="info-text w100">
+              District
+            </label>
             <input
-              className={`data w100 ${errors.date ? "input-error" : ""}`}
+              className={`data w100 ${errors.district ? "input-error" : ""}`}
               type="text"
               name="district"
               id="district"
@@ -415,14 +386,11 @@ const CreateCenter = () => {
             />
           </div>
           <div className="center-details-div center-data w20 d-flex-col sa">
-            <span className="info-text w100">
-              Pincode{" "}
-              {errors.pincode && (
-                <span className="text error-message">{errors.pincode}</span>
-              )}
-            </span>
+            <label htmlFor="picode" className="info-text w100">
+              Pincode
+            </label>
             <input
-              className={`data w100 ${errors.date ? "input-error" : ""}`}
+              className={`data w100 ${errors.pincode ? "input-error" : ""}`}
               type="text"
               name="pincode"
               id="pincode"
@@ -433,10 +401,17 @@ const CreateCenter = () => {
         </div>
         <div className="add-data-div w100 h10 d-flex a-center my10 sb">
           <div className="center-pass-details-div w45">
-            <span className="text w100">Password</span>
-            <div className="password-input-container w100 d-flex a-center">
+            <label htmlFor="pass" className="text w100">
+              Password
+            </label>
+            <div
+              className={`password-input-container w100 d-flex a-center ${
+                errors.password ? "input-error" : ""
+              }`}
+            >
               <input
-                className="pass w90"
+                id="pass"
+                className={`pass w90 `}
                 type={showPassword ? "text" : "password"}
                 name="password"
                 value={formData.password}
@@ -455,73 +430,26 @@ const CreateCenter = () => {
             </div>
           </div>
           <div className="center-pass-details-div w45">
-            <span className="text w100">Confirm Password</span>
-            <div className="password-input-container d-flex a-center">
+            <label htmlFor="cpass" className="text w100">
+              Confirm Password
+            </label>
+            <div
+              className={`password-input-container d-flex a-center ${
+                errors.confirm_pass ? "input-error" : ""
+              }`}
+            >
               <input
-                className="pass w90"
-                type={showPassword ? "text" : "password"}
+                id="cpass"
+                className={`pass w90`}
+                type={showCPassword ? "text" : "password"}
                 name="confirm_pass"
                 value={formData.confirm_pass}
                 onChange={handleChange}
               />
               <span
                 className="eye-icon w10 d-flex a-center"
-                onClick={() => setShowPassword(!showPassword)} // Toggle password visibility
+                onClick={() => setShowCPassword(!showCPassword)} // Toggle password visibility
               >
-                {showPassword ? (
-                  <IoMdEyeOff className="pss-eye" />
-                ) : (
-                  <IoMdEye className="pss-eye" />
-                )}
-              </span>
-            </div>
-          </div>
-          {/* <div className="data center-details-div w45 d-flex-col sa">
-            <span className="info-text w100">
-              Password{" "}
-              {errors.password && (
-                <span className="text error-message">{errors.password}</span>
-              )}
-            </span>
-            <div className="password-input-container w100 d-flex sb">
-              <input
-                className="pass w90"
-                type={showPassword ? "text" : "password"}
-                name="password"
-                id="pass"
-                onChange={handleChange}
-              />
-              <span
-                className="eye-icon w10 d-flex a-center"
-                onClick={() => setShowPassword(!showPassword)}>
-                {showPassword ? (
-                  <IoMdEyeOff className="pss-eye" />
-                ) : (
-                  <IoMdEye className="pss-eye" />
-                )}
-              </span>
-            </div>
-          </div> */}
-          {/* <div className="center-details-div w45 d-flex-col sa">
-            <span className="info-text w100">
-              Confirm Password{" "}
-              {errors.confirm_pass && (
-                <span className="text error-message">
-                  {errors.confirm_pass}
-                </span>
-              )}
-            </span>
-            <div className="password-input-container w100 d-flex sb">
-              <input
-                className="pass w90"
-                type={showCPassword ? "text" : "password"}
-                name="confirm_pass"
-                id="confirm_pass"
-                onChange={handleChange}
-              />
-              <span
-                className="eye-icon w10 d-flex a-center"
-                onClick={() => setShowCPassword(!showCPassword)}>
                 {showCPassword ? (
                   <IoMdEyeOff className="pss-eye" />
                 ) : (
@@ -529,7 +457,7 @@ const CreateCenter = () => {
                 )}
               </span>
             </div>
-          </div> */}
+          </div>
         </div>
         <button
           type="submit"

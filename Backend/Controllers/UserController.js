@@ -81,6 +81,187 @@ exports.checkUniqueusername = (req, res) => {
 // Register --------------------------------------------------------------------------------->
 //------------------------------------------------------------------------------------------->
 //v3 function to create dailymilkentry table ----------------------------------->
+// exports.userRegister = async (req, res) => {
+//   const {
+//     dairy_name,
+//     marathi_name,
+//     user_name,
+//     user_phone,
+//     user_city,
+//     user_pincode,
+//     user_password,
+//     terms,
+//     prefix,
+//     date,
+//     endDate,
+//   } = req.body;
+
+//   if (
+//     !dairy_name ||
+//     !marathi_name ||
+//     !user_name ||
+//     !user_phone ||
+//     !user_city ||
+//     !user_pincode ||
+//     !user_password ||
+//     !terms ||
+//     !prefix ||
+//     !date ||
+//     !endDate
+//   ) {
+//     return res
+//       .status(400)
+//       .json({ status: 400, message: "All fields data required!" });
+//   }
+
+//   pool.getConnection((err, connection) => {
+//     if (err) {
+//       console.error("Error getting MySQL connection: ", err);
+//       return res
+//         .status(500)
+//         .json({ status: 500, message: "Database connection error" });
+//     }
+
+//     // Query to get the maximum SocietyCode
+//     const getMaxSocietCode = `SELECT MAX(SocietyCode) AS maxCode FROM societymaster`;
+
+//     connection.query(getMaxSocietCode, (err, result) => {
+//       if (err) {
+//         connection.release();
+//         console.error("Error fetching max SocietyCode: ", err);
+//         return res
+//           .status(500)
+//           .json({ status: 500, message: "Database query error!" });
+//       }
+
+//       // Increment SocietyCode by 1
+//       const newSocietCode = result[0].maxCode ? result[0].maxCode + 1 : 1;
+//       const tableName = `dailymilkentry_${newSocietCode}`;
+
+//       // Query to insert into societymaster
+//       const createdairy = `INSERT INTO societymaster (SocietyCode, SocietyName, marathiName, PhoneNo, city, PinCode, prefix, terms, startdate, enddate) VALUES (?,?,?,?,?,?,?,?,?)`;
+
+//       connection.query(
+//         createdairy,
+//         [
+//           newSocietCode,
+//           dairy_name,
+//           marathi_name,
+//           user_phone,
+//           user_city,
+//           user_pincode,
+//           prefix,
+//           terms,
+//           date,
+//           endDate,
+//         ],
+//         (err, result) => {
+//           if (err) {
+//             connection.release();
+//             console.error("Error inserting into societymaster: ", err);
+//             return res
+//               .status(500)
+//               .json({ status: 500, message: "Database query error!" });
+//           }
+
+//           // Query to insert into centermaster
+//           const createcenter = `INSERT INTO centermaster (center_id, center_name, marathi_name, mobile, city, pincode, orgid, prefix) VALUES (?,?,?,?,?,?,?,?)`;
+
+//           connection.query(
+//             createcenter,
+//             [
+//               0,
+//               dairy_name,
+//               marathi_name,
+//               user_phone,
+//               user_city,
+//               user_pincode,
+//               newSocietCode,
+//               prefix,
+//             ],
+//             (err, result) => {
+//               if (err) {
+//                 connection.release();
+//                 console.error("Error inserting into centermaster: ", err);
+//                 return res
+//                   .status(500)
+//                   .json({ status: 500, message: "Database query error!" });
+//               }
+
+//               const designation = "Admin";
+//               const isAdmin = "1";
+
+//               // Query to insert into users
+//               const createuser = `INSERT INTO users (username, password, designation, isAdmin, SocietyCode) VALUES (?,?,?,?,?)`;
+
+//               connection.query(
+//                 createuser,
+//                 [user_name, user_password, designation, isAdmin, newSocietCode],
+//                 (err, result) => {
+//                   if (err) {
+//                     connection.release();
+//                     console.error("Error inserting into users: ", err);
+//                     return res
+//                       .status(500)
+//                       .json({ status: 500, message: "Database query error!" });
+//                   }
+
+//                   // Query to create dynamic table
+//                   const createMilkEntryTable = `
+//                     CREATE TABLE IF NOT EXISTS ${tableName} (
+//                       id INT AUTO_INCREMENT PRIMARY KEY,
+//                       center_id INT DEFAULT 0,
+//                       userid VARCHAR(120),
+//                       ReceiptDate DATE,
+//                       rno INT,
+//                       cname VARCHAR(120),
+//                       AccCode INT,
+//                       fat DECIMAL(5,2) DEFAULT 0.00,
+//                       snf DECIMAL(5,2) DEFAULT 0.00,
+//                       Digree DECIMAL(5,2) DEFAULT 0.00,
+//                       Litres DECIMAL(8,2) DEFAULT 0.00,
+//                       rate DECIMAL(8,2) DEFAULT 0.00,
+//                       Amt DECIMAL(10,2) DEFAULT 0.00,
+//                       rctype VARCHAR(50),
+//                       ME INT,
+//                       CB INT,
+//                       SampleNo INT,
+//                       Driver INT DEFAULT 0,
+//                       GLCode INT,
+//                       BillNo INT,
+//                       BillDate DATE,
+//                       UpdatedBy VARCHAR(60),
+//                       updatedOn DATE
+//                     )`;
+
+//                   connection.query(createMilkEntryTable, (err, result) => {
+//                     connection.release();
+//                     if (err) {
+//                       console.error("Error creating milk entry table: ", err);
+//                       return res.status(500).json({
+//                         status: 500,
+//                         message: "Database query error!",
+//                       });
+//                     }
+
+//                     // Success response
+//                     res.status(200).json({
+//                       status: 200,
+//                       message: "User registered successfully!",
+//                       tableName: tableName,
+//                     });
+//                   });
+//                 }
+//               );
+//             }
+//           );
+//         }
+//       );
+//     });
+//   });
+// };
+
+// saving hashed passwords ------------------------------------------------------------------>
 exports.userRegister = async (req, res) => {
   const {
     dairy_name,
@@ -95,6 +276,7 @@ exports.userRegister = async (req, res) => {
     date,
     endDate,
   } = req.body;
+
   if (
     !dairy_name ||
     !marathi_name ||
@@ -110,8 +292,10 @@ exports.userRegister = async (req, res) => {
   ) {
     return res
       .status(400)
-      .json({ status: 400, message: "All fields data required!" });
+      .json({ status: 400, message: "All fields are required!" });
   }
+
+  const hashedPassword = await bcrypt.hash(user_password, 10); // Hash password
 
   pool.getConnection((err, connection) => {
     if (err) {
@@ -121,141 +305,184 @@ exports.userRegister = async (req, res) => {
         .json({ status: 500, message: "Database connection error" });
     }
 
-    // Query to get the maximum SocietyCode
-    const getMaxSocietCode = `SELECT MAX(SocietyCode) AS maxCode FROM societymaster`;
-
-    connection.query(getMaxSocietCode, (err, result) => {
+    connection.beginTransaction((err) => {
       if (err) {
         connection.release();
-        console.error("Error fetching max SocietyCode: ", err);
         return res
           .status(500)
-          .json({ status: 500, message: "Database query error!" });
+          .json({ status: 500, message: "Transaction start error!" });
       }
 
-      // Increment SocietyCode by 1
-      const newSocietCode = result[0].maxCode ? result[0].maxCode + 1 : 1;
-      const tableName = `dailymilkentry_${newSocietCode}`;
+      const getMaxSocietyCode = `SELECT MAX(SocietyCode) AS maxCode FROM societymaster`;
 
-      // Query to insert into societymaster
-      const createdairy = `INSERT INTO societymaster (SocietyCode, SocietyName, marathiName, PhoneNo, city, PinCode, prefix, terms, startdate, enddate) VALUES (?,?,?,?,?,?,?,?,?)`;
+      connection.query(getMaxSocietyCode, (err, result) => {
+        if (err) {
+          connection.rollback(() => connection.release());
+          console.error("Error fetching max SocietyCode: ", err);
+          return res
+            .status(500)
+            .json({ status: 500, message: "Database query error!" });
+        }
 
-      connection.query(
-        createdairy,
-        [
-          newSocietCode,
-          dairy_name,
-          marathi_name,
-          user_phone,
-          user_city,
-          user_pincode,
-          prefix,
-          terms,
-          date,
-          endDate,
-        ],
-        (err, result) => {
-          if (err) {
-            connection.release();
-            console.error("Error inserting into societymaster: ", err);
-            return res
-              .status(500)
-              .json({ status: 500, message: "Database query error!" });
-          }
+        const newSocietyCode = result[0].maxCode ? result[0].maxCode + 1 : 1;
+        const tableName = `dailymilkentry_${newSocietyCode}`;
 
-          // Query to insert into centermaster
-          const createcenter = `INSERT INTO centermaster (center_id, center_name, marathi_name, mobile, city, pincode, orgid, prefix) VALUES (?,?,?,?,?,?,?,?)`;
+        const createDairyQuery = `
+          INSERT INTO societymaster 
+          (SocietyCode, SocietyName, marathiName, PhoneNo, city, PinCode, prefix, terms, startdate, enddate) 
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
-          connection.query(
-            createcenter,
-            [
-              0,
-              dairy_name,
-              marathi_name,
-              user_phone,
-              user_city,
-              user_pincode,
-              newSocietCode,
-              prefix,
-            ],
-            (err, result) => {
-              if (err) {
-                connection.release();
-                console.error("Error inserting into centermaster: ", err);
-                return res
-                  .status(500)
-                  .json({ status: 500, message: "Database query error!" });
-              }
+        connection.query(
+          createDairyQuery,
+          [
+            newSocietyCode,
+            dairy_name,
+            marathi_name,
+            user_phone,
+            user_city,
+            user_pincode,
+            prefix,
+            terms,
+            date,
+            endDate,
+          ],
+          (err) => {
+            if (err) {
+              connection.rollback(() => connection.release());
+              console.error("Error inserting into societymaster: ", err);
+              return res
+                .status(500)
+                .json({ status: 500, message: "Database query error!" });
+            }
 
-              const designation = "Admin";
-              const isAdmin = "1";
+            const createCenterQuery = `
+              INSERT INTO centermaster 
+              (center_id, center_name, marathi_name, mobile, city, pincode, orgid, prefix) 
+              VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
 
-              // Query to insert into users
-              const createuser = `INSERT INTO users (username, password, designation, isAdmin, SocietyCode) VALUES (?,?,?,?,?)`;
+            connection.query(
+              createCenterQuery,
+              [
+                0,
+                dairy_name,
+                marathi_name,
+                user_phone,
+                user_city,
+                user_pincode,
+                newSocietyCode,
+                prefix,
+              ],
+              (err) => {
+                if (err) {
+                  connection.rollback(() => connection.release());
+                  console.error("Error inserting into centermaster: ", err);
+                  return res
+                    .status(500)
+                    .json({ status: 500, message: "Database query error!" });
+                }
 
-              connection.query(
-                createuser,
-                [user_name, user_password, designation, isAdmin, newSocietCode],
-                (err, result) => {
-                  if (err) {
-                    connection.release();
-                    console.error("Error inserting into users: ", err);
-                    return res
-                      .status(500)
-                      .json({ status: 500, message: "Database query error!" });
-                  }
+                const createUserQuery = `
+                  INSERT INTO users 
+                  (username, password, designation, isAdmin, SocietyCode) 
+                  VALUES (?, ?, ?, ?, ?)`;
 
-                  // Query to create dynamic table
-                  const createMilkEntryTable = `
-                    CREATE TABLE IF NOT EXISTS ${tableName} (
-                      id INT AUTO_INCREMENT PRIMARY KEY,
-                      center_id INT DEFAULT 0,
-                      userid VARCHAR(120),
-                      ReceiptDate DATE,
-                      rno INT,
-                      cname VARCHAR(120),
-                      AccCode INT,
-                      fat DECIMAL(5,2) DEFAULT 0.00,
-                      snf DECIMAL(5,2) DEFAULT 0.00,
-                      Digree DECIMAL(5,2) DEFAULT 0.00,
-                      Litres DECIMAL(8,2) DEFAULT 0.00,
-                      rate DECIMAL(8,2) DEFAULT 0.00,
-                      Amt DECIMAL(10,2) DEFAULT 0.00,
-                      rctype VARCHAR(50),
-                      ME INT,
-                      CB INT,
-                      SampleNo INT,
-                      Driver INT DEFAULT 0,
-                      GLCode INT,
-                      BillNo INT,
-                      BillDate DATE,
-                      UpdatedBy VARCHAR(60),
-                      updatedOn DATE
-                    )`;
-
-                  connection.query(createMilkEntryTable, (err, result) => {
-                    connection.release();
+                connection.query(
+                  createUserQuery,
+                  [user_name, hashedPassword, "Admin", "1", newSocietyCode],
+                  (err) => {
                     if (err) {
-                      console.error("Error creating milk entry table: ", err);
+                      connection.rollback(() => connection.release());
+                      console.error("Error inserting into users: ", err);
                       return res.status(500).json({
                         status: 500,
                         message: "Database query error!",
                       });
                     }
 
-                    // Success response
-                    res.status(200).json({
-                      status: 200,
-                      message: "User registered successfully!",
-                      tableName: tableName,
+                    const createMilkEntryTable = `
+                      CREATE TABLE IF NOT EXISTS ${tableName} (
+                        id INT AUTO_INCREMENT PRIMARY KEY,
+                        center_id INT DEFAULT 0,
+                        userid VARCHAR(120),
+                        ReceiptDate DATE,
+                        rno INT,
+                        cname VARCHAR(120),
+                        AccCode INT,
+                        fat DECIMAL(5,2) DEFAULT 0.00,
+                        snf DECIMAL(5,2) DEFAULT 0.00,
+                        Digree DECIMAL(5,2) DEFAULT 0.00,
+                        Litres DECIMAL(8,2) DEFAULT 0.00,
+                        rate DECIMAL(8,2) DEFAULT 0.00,
+                        Amt DECIMAL(10,2) DEFAULT 0.00,
+                        rctype VARCHAR(50),
+                        ME INT,
+                        CB INT,
+                        SampleNo INT,
+                        Driver INT DEFAULT 0,
+                        GLCode INT,
+                        BillNo INT,
+                        BillDate DATE,
+                        UpdatedBy VARCHAR(60),
+                        updatedOn DATE
+                      )`;
+
+                    connection.query(createMilkEntryTable, (err) => {
+                      if (err) {
+                        connection.rollback(() => connection.release());
+                        console.error("Error creating milk entry table: ", err);
+                        return res.status(500).json({
+                          status: 500,
+                          message: "Database query error!",
+                        });
+                      }
+
+                      const saveRatesQuery = `
+                        INSERT INTO ratecharttype 
+                        (companyid, center_id, rctypeid, rctypename) 
+                        VALUES (?, ?, ?, ?)`;
+
+                      connection.query(
+                        saveRatesQuery,
+                        [newSocietyCode, 0, 1, "Cow"],
+                        (err) => {
+                          if (err) {
+                            connection.rollback(() => connection.release());
+                            console.error(
+                              "Error inserting into ratecharttype: ",
+                              err
+                            );
+                            return res.status(500).json({
+                              status: 500,
+                              message: "Database query error!",
+                            });
+                          }
+
+                          connection.commit((err) => {
+                            connection.release();
+                            if (err) {
+                              console.error("Transaction commit error: ", err);
+                              return res.status(500).json({
+                                status: 500,
+                                message: "Transaction commit error!",
+                              });
+                            }
+
+                            res.status(200).json({
+                              status: 200,
+                              message: "User registered successfully!",
+                              tableName: tableName,
+                            });
+                          });
+                        }
+                      );
                     });
-                  });
-                }
-              );
-            }
-          );
-        }
-      );
+                  }
+                );
+              }
+            );
+          }
+        );
+      });
     });
   });
 };
@@ -265,6 +492,91 @@ exports.userRegister = async (req, res) => {
 //---------------------------------------------------------------------------->
 
 // updated function with session token ------------------------>
+// exports.userLogin = async (req, res) => {
+//   const { user_id, user_password } = req.body;
+
+//   pool.getConnection((err, connection) => {
+//     if (err) {
+//       console.error("Error getting MySQL connection: ", err);
+//       return res.status(500).json({ message: "Database connection error" });
+//     }
+
+//     try {
+//       const checkUser =
+//         "SELECT username, isActive, designation, SocietyCode, pcode, center_id FROM users WHERE username = ? AND password = ?";
+
+//       connection.query(checkUser, [user_id, user_password], (err, result) => {
+//         if (err) {
+//           connection.release();
+//           return res.status(500).json({ message: "Database query error" });
+//         }
+
+//         if (result.length === 0) {
+//           connection.release();
+//           return res
+//             .status(401)
+//             .json({ message: "Invalid User ID or password!" });
+//         }
+
+//         const user = result[0];
+
+//         // Generate a new session token
+//         const sessionToken = crypto.randomBytes(32).toString("hex");
+
+//         // Generate JWT token
+//         const token = jwt.sign(
+//           {
+//             user_id: user.username,
+//             user_code: user.pcode,
+//             is_active: user.isActive,
+//             user_role: user.designation,
+//             dairy_id: user.SocietyCode,
+//             center_id: user.center_id,
+//           },
+//           process.env.SECRET_KEY,
+//           { expiresIn: "4h" }
+//         );
+
+//         // Invalidate any existing session before setting a new one
+//         const updateSession =
+//           "UPDATE users SET session_token = ? WHERE username = ?";
+//         connection.query(
+//           updateSession,
+//           [sessionToken, user.username],
+//           (err) => {
+//             connection.release();
+//             if (err) {
+//               return res
+//                 .status(500)
+//                 .json({ message: "Error updating session" });
+//             }
+
+//             // Set token in cookie
+//             res.cookie("token", token, {
+//               httpOnly: true,
+//               sameSite: "strict",
+//               maxAge: 4 * 60 * 60 * 1000, // 4 hours
+//             });
+
+//             res.status(200).json({
+//               message: "Login successful",
+//               token,
+//               user_role: user.designation,
+//               sessionToken,
+//             });
+//           }
+//         );
+//       });
+//     } catch (error) {
+//       connection.release();
+//       console.error("Error processing request: ", error);
+//       return res.status(500).json({ message: "Internal server error" });
+//     }
+//   });
+// };
+
+// updated to check hashed passwords --------------------------------------->
+
 exports.userLogin = async (req, res) => {
   const { user_id, user_password } = req.body;
 
@@ -276,11 +588,12 @@ exports.userLogin = async (req, res) => {
 
     try {
       const checkUser =
-        "SELECT username, isActive, designation, SocietyCode, pcode, center_id FROM users WHERE username = ? AND password = ?";
+        "SELECT username, password, isActive, designation, SocietyCode, pcode, center_id FROM users WHERE username = ?";
 
-      connection.query(checkUser, [user_id, user_password], (err, result) => {
+      connection.query(checkUser, [user_id], async (err, result) => {
         if (err) {
           connection.release();
+          console.error("Database query error: ", err);
           return res.status(500).json({ message: "Database query error" });
         }
 
@@ -292,6 +605,37 @@ exports.userLogin = async (req, res) => {
         }
 
         const user = result[0];
+        let isMatch = false;
+
+        // Check if the stored password is hashed
+        if (user.password.length === 60) {
+          isMatch = await bcrypt.compare(user_password, user.password);
+        } else {
+          if (user_password === user.password) {
+            isMatch = true;
+
+            // Hash the old plain password and update it in the database
+            const hashedPassword = await bcrypt.hash(user.password, 10);
+            const updatePassword =
+              "UPDATE users SET password = ? WHERE username = ?";
+            connection.query(
+              updatePassword,
+              [hashedPassword, user.username],
+              (err) => {
+                if (err) {
+                  console.error("Error updating password to hashed: ", err);
+                }
+              }
+            );
+          }
+        }
+
+        if (!isMatch) {
+          connection.release();
+          return res
+            .status(401)
+            .json({ message: "Invalid User ID or password!" });
+        }
 
         // Generate a new session token
         const sessionToken = crypto.randomBytes(32).toString("hex");
@@ -310,7 +654,7 @@ exports.userLogin = async (req, res) => {
           { expiresIn: "4h" }
         );
 
-        // Invalidate any existing session before setting a new one
+        // Update session token in database
         const updateSession =
           "UPDATE users SET session_token = ? WHERE username = ?";
         connection.query(
@@ -319,6 +663,7 @@ exports.userLogin = async (req, res) => {
           (err) => {
             connection.release();
             if (err) {
+              console.error("Error updating session: ", err);
               return res
                 .status(500)
                 .json({ message: "Error updating session" });

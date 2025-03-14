@@ -19,7 +19,7 @@ import {
 } from "./Notifications/Notification";
 import { saveFCMTokenToDB } from "./App/Features/Notifications/notificationSlice";
 import Unauthorized from "./Components/Home/Unauthorized";
-import { logoutUser } from "./App/Features/Users/authSlice";
+import { logoutUser, setLogin } from "./App/Features/Users/authSlice";
 import axiosInstance from "./App/axiosInstance";
 import Aboutus from "./Components/Home/Aboutus";
 
@@ -28,6 +28,16 @@ function App() {
   const toDate = useSelector((state) => state.date.toDate);
   const profile = useSelector((state) => state.profile.profileInfo);
   const [fcmToken, setFCMToken] = useState(null);
+
+  // check if user login or not if login continue to app -------------------------------->
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    const user = JSON.parse(localStorage.getItem("user"));
+
+    if (token && user) {
+      dispatch(setLogin({ user, token }));
+    }
+  }, [dispatch]);
 
   useEffect(() => {
     dispatch(setToDate());

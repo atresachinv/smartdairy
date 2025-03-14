@@ -4,8 +4,10 @@ import { toast } from "react-toastify";
 import { getMaxCustNo } from "../../../../../App/Features/Customers/customerSlice";
 import Spinner from "../../../../Home/Spinner/Spinner";
 import { applyRateChart } from "../../../../../App/Features/Mainapp/Masters/rateChartSlice";
+import { useTranslation } from "react-i18next";
 
 const ApplyRatechart = ({ isSet, ratechart }) => {
+  const { t } = useTranslation("ratechart");
   const dispatch = useDispatch();
   const tDate = useSelector((state) => state.date.toDate);
   const status = useSelector((state) => state.ratechart.applyrcstatus);
@@ -87,7 +89,6 @@ const ApplyRatechart = ({ isSet, ratechart }) => {
       setErrors(validationErrors);
       return;
     }
-    console.log(formData);
     try {
       const result = await dispatch(
         applyRateChart({
@@ -98,7 +99,6 @@ const ApplyRatechart = ({ isSet, ratechart }) => {
           ratechart: ratechart,
         })
       ).unwrap();
-      console.log(result);
       if (result.status === 200) {
         toast.success(result.message);
         setErrors({});
@@ -111,59 +111,24 @@ const ApplyRatechart = ({ isSet, ratechart }) => {
     }
   };
 
-  // const handleSubmit = async (e) => {
-  //   e.preventDefault();
-
-  //   // Validate fields before submission
-  //   const validationErrors = validateFields();
-  //   if (Object.keys(validationErrors).length) {
-  //     setErrors(validationErrors);
-  //     return;
-  //   }
-
-  //   if (!isSet) {
-  //     toast.error("Please Select Ratechart To Apply");
-  //     return;
-  //   }
-  //   try {
-  //     const result = await dispatch(
-  //       applyRateChart({
-  //         applydate: formData.rcdate,
-  //         custFrom: formData.fromCust,
-  //         custTo: formData.toCust,
-  //         ratechart: ratechart,
-  //       })
-  //     ).unwrap();
-  //     if (result.status === 200) {
-  //       toast.success(result.message);
-  //       setErrors({});
-  //     } else {
-  //       toast.error(result.message);
-  //     }
-  //   } catch (error) {
-  //     toast.error("An error occurred while applying the rate chart.");
-  //     console.error(error);
-  //   }
-  // };
-
   return (
     <>
       <form
-        className="rate-chart-setting-div w100 h1 d-flex-col sa my10"
+        className="rate-chart-setting-div w100 h1 d-flex-col sa"
         onSubmit={handleSubmit}
       >
-        <span className="heading">Apply Selected Ratechart</span>
-        <div className="select-date-outer w100 h25 d-flex-col sb">
-          <label htmlFor="implementationDate" className="info-text w50">
-            Rate Chart Implementation Date :
+        <span className="heading p10">{t("rc-apply-s-rc")} :</span>
+        <div className="select-date-outer w100 h30 d-flex-col sb">
+          <label htmlFor="implementationDate" className="info-text w100">
+            {t("rc-apply-text")} :
           </label>
           <div className="date-container w100 h1 d-flex sb">
-            <div className="select-time w50 h1 a-center d-flex a-center sb">
+            <div className="select-time w50 h1 a-center d-flex a-center sa">
               <label htmlFor="FromDate" className="info-text w30">
-                From :
+                {t("rc-from")}:
               </label>
               <input
-                className={`data w45 ${errors.rcfromdate ? "input-error" : ""}`}
+                className={`data w65 ${errors.rcfromdate ? "input-error" : ""}`}
                 type="date"
                 name="rcfromdate"
                 id="FromDate"
@@ -175,10 +140,10 @@ const ApplyRatechart = ({ isSet, ratechart }) => {
             </div>
             <div className="select-time w50 h1 a-center d-flex a-center sa">
               <label htmlFor="toDate" className="info-text w30">
-                To
+                {t("rc-to")}:
               </label>
               <input
-                className={`data w45 ${errors.rctodate ? "input-error" : ""}`}
+                className={`data w65 ${errors.rctodate ? "input-error" : ""}`}
                 type="date"
                 name="rctodate"
                 id="toDate"
@@ -195,12 +160,12 @@ const ApplyRatechart = ({ isSet, ratechart }) => {
             <Spinner />
           </div>
         ) : (
-          <div className="customer-count-outer w100 h25 d-flex-col">
-            <span className="info-text">Select Customers</span>
+          <div className="customer-count-outer w100 h30 d-flex-col">
+            <span className="info-text">{t("rc-s-cust")} :</span>
             <div className="customer-count w100 h1 d-flex">
               <div className="select-animal-type w40 h1 a-center d-flex">
                 <label htmlFor="fromCust" className="info-text w40">
-                  From :
+                  {t("rc-from")} :
                 </label>
                 <input
                   type="number"
@@ -214,7 +179,7 @@ const ApplyRatechart = ({ isSet, ratechart }) => {
               </div>
               <div className="select-animal-type w40 h1 a-center d-flex mx10">
                 <label htmlFor="toCust" className="info-text w40">
-                  To :
+                  {t("rc-to")} :
                 </label>
                 <input
                   type="number"
@@ -229,13 +194,15 @@ const ApplyRatechart = ({ isSet, ratechart }) => {
             </div>
           </div>
         )}
-        <div className="button-div w100 h25 d-flex j-end">
+        <div className="button-div w100 h15 d-flex j-end">
           <button
             type="submit"
             className="btn mx10"
             disabled={status === "loading"}
           >
-            {status === "loading" ? "Appling..." : "Apply Ratechart"}
+            {status === "loading"
+              ? `${t("rc-appling")}`
+              : `${t("rc-apply-rc")}`}
           </button>
         </div>
       </form>

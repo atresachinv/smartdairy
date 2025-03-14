@@ -6,28 +6,32 @@ import Spinner from "../../../../Home/Spinner/Spinner";
 import { useTranslation } from "react-i18next";
 import "../../../../../Styles/Mainapp/Masters/CustomerMaster.css";
 import { listCustomer } from "../../../../../App/Features/Mainapp/Masters/custMasterSlice";
+import { centersLists } from "../../../../../App/Features/Dairy/Center/centerSlice";
 
 const CustomerList = () => {
   const dispatch = useDispatch();
   const { t } = useTranslation(["master", "milkcollection", "common"]);
-  const customerlist = useSelector((state) => state.customers.customerlist);
+  const customerlist = useSelector((state) => state.customers.customerlist || []);
   const status = useSelector((state) => state.customers.cliststatus);
-
-  const [searchTerm, setSearchTerm] = useState("");
-  const [filteredData, setFilteredData] = useState([]);
-
-  useEffect(() => {
-    dispatch(listCustomer());
-  }, [dispatch]);
-
-  useEffect(() => {
-    setFilteredData(customerlist);
-  }, [customerlist]);
+  const centerList = useSelector(
+    (state) => state.center.centersList.centersDetails || []
+  );
 
   const center_id = useSelector(
     (state) =>
       state.dairy.dairyData.center_id || state.dairy.dairyData.center_id
   );
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filteredData, setFilteredData] = useState([]);
+
+  useEffect(() => {
+    dispatch(listCustomer());
+    dispatch(centersLists());
+  }, [dispatch]);
+
+  useEffect(() => {
+    setFilteredData(customerlist);
+  }, [customerlist]);
 
   const downloadExcel = () => {
     if (!Array.isArray(customerlist) || customerlist.length === 0) {
@@ -96,19 +100,27 @@ const CustomerList = () => {
     );
     // Save only if there are customers with centerid === 0
     if (filteredCustomers.length > 0) {
-      console.log(filteredCustomers);
       localStorage.setItem("customerlist", JSON.stringify(filteredCustomers));
     }
   }, [customerlist]);
-
-  // if (!customerlist || customerlist.length === 0) {
-  //   return <div>No customer found</div>;
-  // }
 
   // Filter customer function fillter on name , code , mobile , city
   const handleSearch = (e) => {
     const value = e.target.value.toLowerCase();
     setSearchTerm(value);
+  };
+
+  // filter customer on center --------------------------------------->
+  const handleSelectInput = (e) => {
+    const value = e.target.value;
+    if (value === "") {
+      setFilteredData(customerlist);
+      return;
+    }
+    const filtered = customerlist.filter((customer) => {
+      return customer.centerid.toString() === value;
+    });
+    setFilteredData(filtered);
   };
 
   const debouncedFilter = useMemo(() => {
@@ -150,6 +162,19 @@ const CustomerList = () => {
               value={searchTerm}
               onChange={handleSearch}
             />
+            <select
+              className="data w40"
+              name="center"
+              id=""
+              onChange={handleSelectInput}
+            >
+              <option value="">-- Select Center --</option>
+              {centerList.map((center, index) => (
+                <option key={index} value={center.center_id}>
+                  {center.center_name}
+                </option>
+              ))}
+            </select>
             <button className="btn" onClick={downloadExcel}>
               <span className="f-label-text px10">
                 {t("milkcollection:m-d-excel")}

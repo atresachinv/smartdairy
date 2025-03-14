@@ -59,18 +59,17 @@ const MilkColleform = ({ switchToSettings }) => {
     acccode: "",
     rcName: "",
     mobile: "",
-    allow: centerSetting.duplicateEntry === 0 ? false : true,
+    allow: false,
   };
-
   const [values, setValues] = useState(initialValues);
-
-  // dynamic shift time set in time -------------------------------------------------------------->
+  // dynamic shift time set in time And allow is updated from state -------------------------------------------------------------->
   useEffect(() => {
     setValues((prevData) => ({
       ...prevData,
       shift: time === "morning" ? 0 : 1,
+      allow: settings.duplicateEntry === 0 ? false : true,
     }));
-  }, [time]);
+  }, [time, settings]);
 
   //center settings ------------------------------------------------------------------------------>
 
@@ -120,10 +119,11 @@ const MilkColleform = ({ switchToSettings }) => {
 
       // Validate the field for other errors
       const fieldError = validateField(name, value);
-      setErrors((prevErrors) => ({
-        ...prevErrors,
-        ...fieldError,
-      }));
+      setErrors((prevErrors) => {
+        const updatedErrors = { ...prevErrors, ...fieldError };
+        if (!value) delete updatedErrors[name]; // Clear error if field is empty
+        return updatedErrors;
+      });
     }
 
     setValues({ ...values, [name]: value });
@@ -688,6 +688,8 @@ const MilkColleform = ({ switchToSettings }) => {
           sendMessage();
         }
         codeInputRef.current.focus();
+      } else {
+        toast.error(result.message);
       }
     } catch (error) {
       const errorMessage = error?.message || "Failed to save milk collection!";

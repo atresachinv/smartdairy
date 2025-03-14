@@ -67,24 +67,25 @@ const Mainappnavlinks = ({ setselected, handleSidebar }) => {
       role: ["admin", "super_admin", "manager"],
     },
     {
+      name: `${t("milkcollection:m-milkcoll")}`,
+      icon: <BsGridFill className="icon" />,
+      path: "milk/collection",
+      index: 20,
+      role: ["mobilecollector"],
+    },
+    {
       name: `${t("nv-milk-purchase")}`,
       icon: <TbMilk className="icon" />,
       path: "#",
       index: 1,
-      role: [
-        "admin",
-        "super_admin",
-        "manager",
-        "milkcollector",
-        "mobilecollector",
-      ],
+      role: ["admin", "super_admin", "manager", "milkcollector"],
       submenus: [
         {
           name: `${t("milkcollection:m-milkcoll")}`,
           icon: <BsGridFill className="icon" />,
           path: "milk/collection/collection/morning",
           index: 1.0,
-          role: ["admin", "manager", "mobilecollector"],
+          role: ["admin", "manager"],
         },
         {
           name: `${t("milkcollection:m-mrgcoll")}`,

@@ -1,10 +1,7 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-/* eslint-disable no-unused-vars */
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import axiosInstance from "../../../../App/axiosInstance";
 import { MdDeleteOutline } from "react-icons/md";
 import { useDispatch, useSelector, shallowEqual } from "react-redux";
-import * as XLSX from "xlsx";
 import { jsPDF } from "jspdf";
 import "jspdf-autotable";
 import { useTranslation } from "react-i18next";
@@ -29,6 +26,7 @@ const CreateCattleFeed = () => {
   );
   const [cartItem, setCartItem] = useState([]);
   const [cname, setCname] = useState("");
+  const [mobile, setMobile] = useState("");
   const [fcode, setFcode] = useState("");
   const [date, setDate] = useState("");
   const [qty, setQty] = useState(1);
@@ -84,8 +82,10 @@ const CreateCattleFeed = () => {
         (customer) => customer.srno === parseInt(fcode)
       );
       setCname(customer?.cname || "");
+      setMobile(customer?.mobile || "");
     } else {
       setCname("");
+      setMobile("");
     }
   }, [fcode, customerslist]);
 
@@ -128,7 +128,6 @@ const CreateCattleFeed = () => {
       toast.error("Invalid product selected!");
       return;
     }
-    console.log(selectedItem);
 
     if (Number(selectitemcode) > 0 && Number(qty) > 0 && Number(rate) > 0) {
       const newCartItem = {
@@ -765,8 +764,18 @@ const CreateCattleFeed = () => {
               />
             </div>
             <div className="col w80">
-              <label htmlFor="custname" className="info-text w100">
-                {t("milkcollection:m-cust-name")}:
+              <label
+                htmlFor="custname"
+                className="info-text w100 d-flex a-center sb"
+              >
+                {t("milkcollection:m-cust-name")}:{" "}
+                {userRole !== "mobilecollector" ? (
+                  <></>
+                ) : (
+                  <span className="label-text w50 d-flex j-center">
+                    {mobile}
+                  </span>
+                )}
               </label>
               <input
                 type="text"

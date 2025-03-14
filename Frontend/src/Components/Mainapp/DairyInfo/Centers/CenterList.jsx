@@ -1,5 +1,4 @@
 import React, { useEffect } from "react";
-import { MdOutlineEditNote, MdDelete } from "react-icons/md";
 import "../../../../Styles/Mainapp/Dairy/Center.css";
 import { useDispatch, useSelector } from "react-redux";
 import { centersLists } from "../../../../App/Features/Dairy/Center/centerSlice";
@@ -24,7 +23,7 @@ const CenterList = ({ onEdit }) => {
   return (
     <div className="center-list-container w100 h1 d-flex-col p10">
       <div className="center-list-div w100 h1 d-flex-col bg">
-        <div className="table-titles w100 h10 d-flex a-center t-center hidescrollbar sb">
+        <div className="table-titles w100 p10 d-flex a-center t-center hidescrollbar sb">
           <span className="label-text w5">No.</span>
           <span className="label-text w30">Center Name</span>
           <span className="label-text w15">Mobile</span>
@@ -40,7 +39,7 @@ const CenterList = ({ onEdit }) => {
           centerList.map((center, index) => (
             <div
               key={index}
-              className={`table-data w100 h10 d-flex a-center t-center hidescrollbar sb ${
+              className={`table-data w100 p10 d-flex a-center t-center hidescrollbar sb ${
                 index % 2 === 0 ? "bg-light" : "bg-dark"
               }`}
               style={{

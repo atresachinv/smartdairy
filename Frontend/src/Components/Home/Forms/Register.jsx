@@ -75,9 +75,13 @@ const Register = ({ switchToLogin }) => {
     };
     setValues(updatedValues);
 
-    // Validate the field in real-time
-    const newErrors = validateField(name, updatedValues[name]);
-    setErrors((prevErrors) => ({ ...prevErrors, ...newErrors }));
+    // Validate the field for other errors
+    const fieldError = validateField(name, value);
+    setErrors((prevErrors) => {
+      const updatedErrors = { ...prevErrors, ...fieldError };
+      if (!value) delete updatedErrors[name]; // Clear error if field is empty
+      return updatedErrors;
+    });
   };
 
   // --------------------------------------------------------------------------------------------->
@@ -234,6 +238,7 @@ const Register = ({ switchToLogin }) => {
 
     const requestData = {
       dairy_name: values.dairy_name,
+      marathi_name: values.marathi_name,
       user_name: values.user_name,
       user_phone: values.user_phone,
       user_city: values.user_city,

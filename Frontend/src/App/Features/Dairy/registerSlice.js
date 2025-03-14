@@ -16,6 +16,7 @@ export const registerUser = createAsyncThunk(
   async (
     {
       dairy_name,
+      marathi_name,
       user_name,
       user_phone,
       user_city,
@@ -31,6 +32,7 @@ export const registerUser = createAsyncThunk(
     try {
       const response = await axiosInstance.post("/register", {
         dairy_name,
+        marathi_name,
         user_name,
         user_phone,
         user_city,

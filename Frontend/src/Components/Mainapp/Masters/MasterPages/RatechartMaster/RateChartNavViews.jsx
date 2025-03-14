@@ -5,6 +5,7 @@ import ApplyRatechart from "./ApplyRatechart";
 import AddType from "./AddType";
 
 const RateChartNavViews = ({ index, isSet, ratechart }) => {
+  
   switch (index) {
     case 0:
       return <AddType isSet={isSet} ratechart={ratechart} />;
