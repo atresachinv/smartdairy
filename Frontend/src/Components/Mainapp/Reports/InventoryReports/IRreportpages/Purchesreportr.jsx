@@ -1,5 +1,4 @@
-import axios from "axios";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
@@ -15,14 +14,15 @@ const Purchesreportr = () => {
   const [dealerCode, setDealerCode] = useState("");
   const [selectedDealer, setSelectedDealer] = useState("");
   const [dealerName, setDealerName] = useState("");
-  const [item, SetItem] = useState([]); //... Item Data
-  const { customerlist, loading } = useSelector((state) => state.customer);
   const [dealer, SetDealer] = useState([]); //....    delare Name data
   const [allSales, setAllSales] = useState([]); // Store all data initially
   const [filteredSales, setFilteredSales] = useState([]); // Store filtered data
   const [selectedReport, setSelectedReport] = useState("");
   const [columns, setColumns] = useState([]);
   const [isClearEnabled, setIsClearEnabled] = useState(false);
+  const toDates = useRef(null);
+  const [isChecked, setIsChecked] = useState(false);
+
   const dairyname = useSelector(
     (state) =>
       state.dairy.dairyData.SocietyName || state.dairy.dairyData.center_name
@@ -53,6 +53,7 @@ const Purchesreportr = () => {
     fetchData();
   }, [fromdate, todate]); // Run useEffect when fromDate or toDate changes
 
+  console.log("Sales", sales);
   //---------------------------DealerWise Report --------------------------------------->>
   useEffect(() => {
     const fetchData = async () => {
@@ -72,17 +73,23 @@ const Purchesreportr = () => {
   //... Dealer Pdf
   useEffect(() => {
     const fetchAllData = async () => {
-      try {
-        const response = await axiosInstance.get("/stock/purchase/all");
-        setAllSales(response.data.purchaseData);
-      } catch (error) {
-        toast.error("Failed to fetch purchase data.");
+      // Only fetch data if both fromdate and todate are available
+      if (fromdate && todate) {
+        try {
+          const response = await axiosInstance.get("/stock/purchase/all", {
+            params: { fromdate, todate },
+          });
+          setAllSales(response.data.purchaseData);
+        } catch (error) {
+          toast.error("Failed to fetch purchase data.");
+        }
       }
     };
 
     fetchAllData();
-  }, []);
+  }, [fromdate, todate]);
 
+  
   //... handle report change
 
   const handleReportChange = (event) => {
@@ -118,6 +125,15 @@ const Purchesreportr = () => {
     setFilteredSales([]); // Clear sales data
     setShowTable(false); // Hide the table
     setIsClearEnabled(false); // Disable the Clear button
+  };
+
+  ///....
+  // handle enter press move cursor to next refrence Input -------------------------------->
+  const handleKeyDown = (e, nextRef) => {
+    if (e.key === "Enter" && nextRef.current) {
+      e.preventDefault();
+      nextRef.current.focus();
+    }
   };
 
   //.. Purches Register
@@ -1066,67 +1082,53 @@ Total Amount:        ${totalAmount.toFixed(2)}
     ],
   };
 
+  //.... Filter checkbox  COde  ANd  Name
+
+  const handleCheckboxChange = () => {
+    setIsChecked((prevState) => !prevState); // Toggle checkbox state
+  };
+
+  const handleDealerCodeeChange = (e) => {
+    setDealerCode(e.target.value);
+  };
+
+  const handleDealerNameeChange = (e) => {
+    setDealerName(e.target.value);
+  };
+
   return (
     <div className=" purches-report-container  w100 h1 d-flex-col bg ">
       <span className="heading">Purches Report</span>
       <div className="purches-report-section w100 h40   d-flex">
         <div className="reports-print-buttondiv w100 h1 d-flex-col">
           <div className="fromto-date-sale-report w100 h50 d-flex a-center ">
-            <div className="from-to-date-purches-conta d-flex w100 h1">
+            <div className="from-to-date-purches-conta d-flex w50  h1">
               <div className="from-salee-div w60 h1 a-center d-flex  ">
-                <span className=" w20 info-text p10">From:</span>
+                <span className=" w20 info-text ">From:</span>
                 <input
                   className="w60 data"
                   type="date"
+                  onKeyDown={(e) => handleKeyDown(e, toDates)}
                   value={fromdate}
                   onChange={(e) => setFromDate(e.target.value)}
                 />
               </div>
 
               <div className="from-salee-div w60 h1 a-center d-flex  ">
-                <span className=" w20 info-text p10">To:</span>
+                <span className=" w20 info-text ">To:</span>
                 <input
                   className="w60 data"
                   type="date"
+                  ref={toDates}
                   value={todate}
                   onChange={(e) => setToDate(e.target.value)}
                 />
               </div>
             </div>
-            <div className="businessman-repoer-div w100 h50 d-flex a-center">
-              <div className="filter-code-div w30 d-flex a-center">
-                <span className="w40  info-text">Code: </span>
-                <input
-                  className="w40 data"
-                  type="text"
-                  value={dealerCode}
-                  onChange={handleDealerCodeChange}
-                  placeholder="Code"
-                />
-              </div>
-              <div className="filter-name-wise-div a-center d-flex w60 a-center">
-                <span className="w30 info-text"> Name: </span>
-                <input
-                  className="w70 data"
-                  type="text"
-                  value={dealerName}
-                  onChange={handleDealerNameChange}
-                  placeholder=" Name"
-                />
-              </div>
-              <div className="button-for-pdf d-flex a-center h50 w20">
-                <button className="btn  " onClick={DealergeneratePDF}>
-                  PDF
-                </button>
-              </div>
-            </div>
-          </div>
-
-          <div className="purches-report-container w100 h50 d-flex a-center">
-            <div className="purches-register-report w100 h60 d-flex a-center justify-between p-4 bg-gray-200 rounded-lg">
-              <span className="w60 info-text">Purches Report:</span>
+            <div className="purches-register-report w50 h60 d-flex a-center justify-between p-4 bg-gray-200 rounded-lg">
+              <span className="w40 info-text">Purches Report:</span>
               <select
-                className="data w60"
+                className="data w40"
                 value={selectedReport}
                 onChange={handleReportChange}
               >
@@ -1137,17 +1139,63 @@ Total Amount:        ${totalAmount.toFixed(2)}
                 <option value="Peroid Wise">Peroid Wise</option>
               </select>
             </div>
+          </div>
 
-            <div className="purches-buttons-div w100 h60  d-flex sa">
+          <div className="purches-report-container w100 h80 d-flex a-center">
+            <div className="checkbox-for-a-filter-div w70 h40  d-flex a-center">
+              {/* Checkbox for toggling the display */}
+              <div className="item-name-code-checkbox w20 h1 d-flex">
+                <input
+                  className="w30 "
+                  type="checkbox"
+                  checked={isChecked}
+                  onChange={handleCheckboxChange}
+                />
+                <span>CodeWise</span>
+              </div>
+
+              {/* Conditionally render the input fields if the checkbox is checked */}
+              {isChecked && (
+                <div className="d-flex a-center w60">
+                  <div className="filter-code-div w40 d-flex a-center">
+                    <span className="w50 info-text">Code: </span>
+                    <input
+                      className="w50 data"
+                      type="text"
+                      value={dealerCode}
+                      onChange={handleDealerCodeChange}
+                      placeholder="Code"
+                    />
+                  </div>
+                  <div className="filter-name-wise-div a-center d-flex w60 a-center sa">
+                    <span className="w30 info-text"> Name: </span>
+                    <input
+                      className="w70 data"
+                      type="text"
+                      value={dealerName}
+                      onChange={handleDealerNameChange}
+                      placeholder=" Name"
+                    />
+                  </div>
+                  <div className="button-for-pdf d-flex a-center h50 w20">
+                    <button className="w-btn" onClick={DealergeneratePDF}>
+                      PDF
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <div className="purches-buttons-div w30 h60  d-flex sa">
               <button
-                className="btn"
+                className="w-btn"
                 onClick={handlePDFDownload}
                 disabled={!showTable}
               >
                 PDF
               </button>
               <button
-                className="btn"
+                className="w-btn"
                 type="button"
                 onClick={handlePrintt}
                 disabled={!showTable}
@@ -1162,7 +1210,7 @@ Total Amount:        ${totalAmount.toFixed(2)}
         {filteredSales.length > 0 && (
           <div className="table-container mt-4 overflow-y-auto ">
             <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50 ">
+              <thead className="bg-gray-50">
                 <tr>
                   {columns.map((col) => (
                     <th

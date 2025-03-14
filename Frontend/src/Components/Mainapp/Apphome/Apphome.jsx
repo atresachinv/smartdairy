@@ -24,15 +24,19 @@ import { getretailCustomer } from "../../../App/Features/Mainapp/Milksales/milkS
 const Apphome = () => {
   const dispatch = useDispatch();
   const customerlist = useSelector((state) => state.customers.customerlist);
-   const center_id = useSelector(
-      (state) =>
-        state.dairy.dairyData.center_id || state.dairy.dairyData.center_id
-    );
+  const center_id = useSelector(
+    (state) =>
+      state.dairy.dairyData.center_id || state.dairy.dairyData.center_id
+  );
   const date = useSelector((state) => state.date.toDate);
   const yearStart = useSelector((state) => state.date.yearStart);
   const yearEnd = useSelector((state) => state.date.yearEnd);
-
   const [isselected, setIsSelected] = useState(0);
+  const [userRole, setUserRole] = useState(null);
+  useEffect(() => {
+    const myrole = localStorage.getItem("userRole");
+    setUserRole(myrole);
+  }, []);
 
   //  save only lgoin center customer list in local storage --------------------------------------->
   useEffect(() => {
@@ -42,7 +46,6 @@ const Apphome = () => {
     );
     // Save only if there are customers with centerid === 0
     if (filteredCustomers.length > 0) {
-      console.log(filteredCustomers);
       localStorage.setItem("customerlist", JSON.stringify(filteredCustomers));
     }
   }, [customerlist]);
@@ -50,7 +53,9 @@ const Apphome = () => {
   //save customer list in local storage
   useEffect(() => {
     dispatch(listCustomer());
-    dispatch(getProfileInfo());
+    if (userRole === "mobilecollector") {
+      dispatch(getProfileInfo());
+    }
     dispatch(generateMaster(date));
     dispatch(getretailCustomer());
     if (yearStart && yearEnd) {

@@ -20,7 +20,7 @@
 .stock-table th {
   position: sticky;
   top: 0;
-  background-color: #a35a5a; /* Light background for the header */
+  background: #007bff;
   z-index: 10; /* Makes sure the header stays above the rows */
   padding: 10px; /* Padding to make the header cells more spacious */
   text-align: left;

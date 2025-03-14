@@ -113,8 +113,20 @@
   max-height: 70%;
   overflow-y: scroll;
 }
+.mh60 {
+  max-height: 60%;
+  overflow-y: scroll;
+}
 .mh50 {
   max-height: 50%;
+  overflow-y: scroll;
+}
+.mh40 {
+  max-height: 40%;
+  overflow-y: scroll;
+}
+.mh30 {
+  min-height: 30%;
   overflow-y: scroll;
 }
 
@@ -343,7 +355,7 @@
   cursor: pointer;
 }
 .f-heading {
- font-size: clamp(20px, 2vw, 22px);
+  font-size: clamp(20px, 2vw, 22px);
   font-weight: 600;
   color: #fff;
   cursor: pointer;
@@ -459,6 +471,12 @@
 .bg7 {
   background-color: #17acc0;
 }
+.bg-light-green {
+  background-color: #c2f3cf;
+}
+.bg-light-skyblue {
+  background-color: #cff3f8;
+}
 .bg-fff {
   background-color: #fff;
 }
@@ -484,6 +502,9 @@ body {
 .br6 {
   border-radius: 6px;
 }
+.br9 {
+  border-radius: 9px;
+}
 
 /* Icons */
 .color-icon {
@@ -494,7 +515,6 @@ body {
   font-size: 20px;
   color: #fff;
 }
-
 
 /* Buttons  */
 

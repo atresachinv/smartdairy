@@ -3,7 +3,7 @@ import axiosInstance from "../../axiosInstance";
 
 const initialState = {
   purchaseBill: [],
-  salesRates: [],
+  purchasedata: [],
   psummary: {},
   status: "idle",
   error: null,
@@ -23,6 +23,24 @@ export const getPurchaseBill = createAsyncThunk(
         ? error.response.data
         : "Failed to fetch Sales reports.";
       return rejectWithValue(errorMessage);
+    }
+  }
+);
+
+export const getAllPurchase = createAsyncThunk(
+  "purchase/getAllPurchase",
+  async ({ formDate, toDate }, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.get("/stock/purchase/all", {
+        params: { formDate, toDate },
+      });
+      return response.data.purchaseData;
+    } catch (error) {
+      console.error("Error fetching purchases:", error);
+
+      return rejectWithValue(
+        error.response?.data?.message || "Failed to fetch Purchase data!"
+      );
     }
   }
 );
@@ -66,19 +84,19 @@ const purchaseSlice = createSlice({
         state.loading = false;
         state.status = "failed";
         state.error = action.payload;
-      }); // Get Product Sales Rate -------------------------------->
-    // .addCase(getProductSaleRates.pending, (state) => {
-    //   state.status = "loading";
-    //   state.error = null;
-    // })
-    // .addCase(getProductSaleRates.fulfilled, (state, action) => {
-    //   state.status = "succeeded";
-    //   state.salesRates = action.payload;
-    // })
-    // .addCase(getProductSaleRates.rejected, (state, action) => {
-    //   state.status = "failed";
-    //   state.error = action.payload;
-    // });
+      }) // Get all purchase data -------------------------------->
+      .addCase(getAllPurchase.pending, (state) => {
+        state.status = "loading";
+        state.error = null;
+      })
+      .addCase(getAllPurchase.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        state.purchasedata = action.payload;
+      })
+      .addCase(getAllPurchase.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.payload;
+      });
   },
 });
 

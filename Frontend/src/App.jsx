@@ -21,6 +21,7 @@ import { saveFCMTokenToDB } from "./App/Features/Notifications/notificationSlice
 import Unauthorized from "./Components/Home/Unauthorized";
 import { logoutUser } from "./App/Features/Users/authSlice";
 import axiosInstance from "./App/axiosInstance";
+import Aboutus from "./Components/Home/Aboutus";
 
 function App() {
   const dispatch = useDispatch();
@@ -109,11 +110,20 @@ function App() {
     }
   }, [fcmToken]);
 
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.getRegistrations().then((registrations) => {
+      for (let registration of registrations) {
+        registration.update();
+      }
+    });
+  });
+
   return (
     <>
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Home />} />
+          <Route path="/about" element={<Aboutus />} />
           {/* Protected Routes admin pannel */}
           <Route element={<ProtectedRoute allowedRoles={["super_admin"]} />}>
             <Route path="/adminpanel/*" element={<AdminPannel />} />
@@ -131,14 +141,16 @@ function App() {
                   "salesman",
                 ]}
               />
-            }>
+            }
+          >
             <Route path="/mainapp/*" element={<Mainapp />} />
           </Route>
           {/* Protected Routes customer app */}
           <Route
             element={
               <ProtectedRoute allowedRoles={["super_admin", "customer"]} />
-            }>
+            }
+          >
             <Route path="/customer/dashboard/*" element={<Customers />} />
           </Route>
           {/* Unauthorized Page */}

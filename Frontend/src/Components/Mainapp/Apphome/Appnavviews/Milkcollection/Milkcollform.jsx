@@ -1,16 +1,12 @@
 import React, { useEffect, useRef, useState } from "react";
 import { BsGearFill } from "react-icons/bs";
 import { useDispatch, useSelector } from "react-redux";
-import { saveMilkCollection } from "../../../../../App/Features/Mainapp/Dairyinfo/milkCollectionSlice";
 import {
   fetchEntries,
   saveMilkOneEntry,
 } from "../../../../../App/Features/Mainapp/Milk/MilkCollectionSlice";
 import { toast } from "react-toastify";
-import {
-  fetchFCMTokens,
-  sendNewNotification,
-} from "../../../../../App/Features/Notifications/notificationSlice";
+import { fetchFCMTokens } from "../../../../../App/Features/Notifications/notificationSlice";
 import { useTranslation } from "react-i18next";
 import { getRateCharts } from "../../../../../App/Features/Mainapp/Masters/rateChartSlice";
 import "../../../../../Styles/Mainapp/Apphome/Appnavview/Milkcollection.css";
@@ -63,6 +59,7 @@ const MilkColleform = ({ switchToSettings }) => {
     acccode: "",
     rcName: "",
     mobile: "",
+    allow: centerSetting.duplicateEntry === 0 ? false : true,
   };
 
   const [values, setValues] = useState(initialValues);
@@ -185,28 +182,6 @@ const MilkColleform = ({ switchToSettings }) => {
     dispatch(getRateCharts());
   }, [dispatch]);
 
-  // // Retrieve the stored rate chart from localStorage on component mount
-  // useEffect(() => {
-  //   const storedRateChart = localStorage.getItem("milkcollrcharts");
-  //   if (storedRateChart) {
-  //     try {
-  //       const parsedRateChart = JSON.parse(storedRateChart);
-  //       if (parsedRateChart) {
-  //         setMilkRatechart(parsedRateChart);
-  //       } else {
-  //         setMilkRatechart(milkcollRatechart);
-  //       }
-  //     } catch (error) {
-  //       console.error(
-  //         "Failed to parse milkcollrchart from localStorage:",
-  //         error
-  //       );
-  //     }
-  //   } else {
-  //     console.log("No data found in localStorage for milkcollrchart");
-  //   }
-  // }, []);
-
   // morning evening -------------------------------------------------------------------------->
   const handleTime = () => {
     setTime((prev) => !prev);
@@ -320,7 +295,7 @@ const MilkColleform = ({ switchToSettings }) => {
   //
   //         await dispatch(saveMilkCollection(milkColl));
   //       }
-  //       setFullSlots(fullSlots - 1);
+  //       setFullSlots(fullSlots - 1); 
   //     }
   //   };
 
@@ -570,6 +545,114 @@ const MilkColleform = ({ switchToSettings }) => {
 
   //Handling Milk Collection  ------------------------------------------------------------------------------------->
 
+  // const handleCollection = async (e) => {
+  //   e.preventDefault();
+
+  //   // Validate fields before submission
+  //   const validationErrors = validateFields();
+  //   if (Object.keys(validationErrors).length > 0) {
+  //     setErrors(validationErrors);
+  //     return;
+  //   }
+
+  //   const result = await dispatch(saveMilkOneEntry(values)).unwrap();
+  //   console.log("result", result);
+  //   if (result.status === 200) {
+  //     const allEntries = JSON.parse(localStorage.getItem("milkentries")) || [];
+  //     const existingEntries =
+  //       JSON.parse(localStorage.getItem("milkentries")) || [];
+
+  //     await existingEntries.push(values);
+  //     localStorage.setItem("milkentries", JSON.stringify(existingEntries));
+  //     setValues(initialValues); // Reset form to initial values
+  //     setErrors({}); // Reset errors
+
+  //     // sendNotifications();
+
+  //     // toast.success(`Milk Collection of ${values.cname} saved successfully!`);
+  //     toast.success(result.message);
+
+  //     // Remove customer from custList
+  //     // setCustList((prevList) =>
+  //     //   prevList.filter((customer) => customer.srno.toString() !== values.code)
+  //     // );
+  //     removeCustomer();
+  //     if (
+  //       settings?.whsms !== undefined &&
+  //       settings?.millcoll !== undefined &&
+  //       settings.whsms === 1 &&
+  //       settings.millcoll === 1
+  //     ) {
+  //       sendMessage();
+  //     }
+  //     codeInputRef.current.focus();
+  //   } else {
+  //     toast.error(result.message);
+  //   }
+
+  //   //     if (slotCount === 20) {
+  //   //       try {
+  //   //         const allEntries =
+  //   //           JSON.parse(localStorage.getItem("milkentries")) || [];
+  //   //         console.log(allEntries);
+  //   //
+  //   //         // Send entries to backend (use an API call here)
+  //   //         await setmilkEntry(allEntries);
+  //   //         await saveMilkCollectionDB();
+  //   //
+  //   //         // Clear the entries from localStorage after sending to backend
+  //   //         await localStorage.removeItem("milkentries");
+  //   //
+  //   //         // Reset slot count
+  //   //         setSlotCount(0);
+  //   //
+  //   //         // Remove customer from custList
+  //   //         await setCustList((prevList) =>
+  //   //           prevList.filter((customer) => customer.srno !== values.code)
+  //   //         );
+  //   //       } catch (error) {
+  //   //         console.error("Error sending milk entries to backend:", error);
+  //   //       }
+  //   //     }
+  //   //
+  //   //     if (fullSlots > 0) {
+  //   //       // If all validations pass, proceed with saving to localStorage
+  //   //       const existingEntries =
+  //   //         JSON.parse(localStorage.getItem("milkentries")) || [];
+  //   //
+  //   //       existingEntries.push(values);
+  //   //       localStorage.setItem("milkentries", JSON.stringify(existingEntries));
+  //   //       console.log("saved entries", existingEntries);
+  //   //
+  //   //       setMilkCollEntry(existingEntries);
+  //   //
+  //   //       // // Remove customer from custList after saving entry to localStorage
+  //   //       // const updatedList = custList.filter(
+  //   //       //   (customer) => customer.srno !== values.code
+  //   //       // );
+  //   //       // console.log("custList");
+  //   //       // setCustList(updatedList);
+  //   //       removeCustomerFromList();
+  //   //
+  //   //       toast.success(`Milk Collection of ${values.cname} saved successfully!`);
+  //   //
+  //   //       // Increment the slot count
+  //   //       setSlotCount(slotCount + 1);
+  //   //     }
+  //   //
+  //   //     if (fullSlots === 0) {
+  //   //       await dispatch(saveMilkOneEntry(values));
+  //   //       await localStorage.removeItem("milkentries");
+  //   //
+  //   //       toast.success(`Milk Collection of ${values.cname} saved successfully!`);
+  //   //
+  //   //       // Remove customer from custList after saving the entry
+  //   //       setCustList((prevList) =>
+  //   //         prevList.filter((customer) => customer.srno !== values.code)
+  //   //       );
+  //   //     }
+  // };
+
   const handleCollection = async (e) => {
     e.preventDefault();
 
@@ -579,29 +662,22 @@ const MilkColleform = ({ switchToSettings }) => {
       setErrors(validationErrors);
       return;
     }
+
     try {
       const result = await dispatch(saveMilkOneEntry(values)).unwrap();
 
-      if (result.status === 200) {
-        const allEntries =
-          JSON.parse(localStorage.getItem("milkentries")) || [];
+      if (result?.status === 200) {
         const existingEntries =
           JSON.parse(localStorage.getItem("milkentries")) || [];
-
-        await existingEntries.push(values);
+        existingEntries.push(values);
         localStorage.setItem("milkentries", JSON.stringify(existingEntries));
-        setValues(initialValues); // Reset form to initial values
-        setErrors({}); // Reset errors
 
-        // sendNotifications();
+        setValues(initialValues); // Reset form
+        setErrors({}); // Clear errors
 
-        // toast.success(`Milk Collection of ${values.cname} saved successfully!`);
-        toast.success(result.message);
+        // Show success toast
+        toast.success(result.message || "Milk Collection saved successfully!");
 
-        // Remove customer from custList
-        // setCustList((prevList) =>
-        //   prevList.filter((customer) => customer.srno.toString() !== values.code)
-        // );
         removeCustomer();
         if (
           settings?.whsms !== undefined &&
@@ -612,74 +688,11 @@ const MilkColleform = ({ switchToSettings }) => {
           sendMessage();
         }
         codeInputRef.current.focus();
-      } else {
-        toast.error(result.message);
       }
     } catch (error) {
-      console.error("Error sending milk entries to backend:", error);
+      const errorMessage = error?.message || "Failed to save milk collection!";
+      toast.error(errorMessage);
     }
-
-    //     if (slotCount === 20) {
-    //       try {
-    //         const allEntries =
-    //           JSON.parse(localStorage.getItem("milkentries")) || [];
-    //         console.log(allEntries);
-    //
-    //         // Send entries to backend (use an API call here)
-    //         await setmilkEntry(allEntries);
-    //         await saveMilkCollectionDB();
-    //
-    //         // Clear the entries from localStorage after sending to backend
-    //         await localStorage.removeItem("milkentries");
-    //
-    //         // Reset slot count
-    //         setSlotCount(0);
-    //
-    //         // Remove customer from custList
-    //         await setCustList((prevList) =>
-    //           prevList.filter((customer) => customer.srno !== values.code)
-    //         );
-    //       } catch (error) {
-    //         console.error("Error sending milk entries to backend:", error);
-    //       }
-    //     }
-    //
-    //     if (fullSlots > 0) {
-    //       // If all validations pass, proceed with saving to localStorage
-    //       const existingEntries =
-    //         JSON.parse(localStorage.getItem("milkentries")) || [];
-    //
-    //       existingEntries.push(values);
-    //       localStorage.setItem("milkentries", JSON.stringify(existingEntries));
-    //       console.log("saved entries", existingEntries);
-    //
-    //       setMilkCollEntry(existingEntries);
-    //
-    //       // // Remove customer from custList after saving entry to localStorage
-    //       // const updatedList = custList.filter(
-    //       //   (customer) => customer.srno !== values.code
-    //       // );
-    //       // console.log("custList");
-    //       // setCustList(updatedList);
-    //       removeCustomerFromList();
-    //
-    //       toast.success(`Milk Collection of ${values.cname} saved successfully!`);
-    //
-    //       // Increment the slot count
-    //       setSlotCount(slotCount + 1);
-    //     }
-    //
-    //     if (fullSlots === 0) {
-    //       await dispatch(saveMilkOneEntry(values));
-    //       await localStorage.removeItem("milkentries");
-    //
-    //       toast.success(`Milk Collection of ${values.cname} saved successfully!`);
-    //
-    //       // Remove customer from custList after saving the entry
-    //       setCustList((prevList) =>
-    //         prevList.filter((customer) => customer.srno !== values.code)
-    //       );
-    //     }
   };
 
   return (

@@ -44,33 +44,8 @@
   background: #e0e0e0;
 }
 
-/* Popup Overlay */
-.popup-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 50%;
-  height: 40%;
-  background: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-}
 
-/* Popup Content */
-.popup-content {
-  background: #d8d6d6;
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-  width: 50%;
-  max-width: 500px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  animation: fadeIn 0.3s ease-in-out;
-}
+
 
 /* Heading */
 .sub-heading {
@@ -160,6 +135,16 @@ select {
 .btn:hover {
   opacity: 0.8;
 }
+table td {
+  vertical-align: middle; /* Ensure vertical centering of content */
+}
+
+p {
+  font-size: 16px; /* Set appropriate font size */
+  color: #888; /* Adjust the color for better visibility */
+  margin: 0; /* Remove default margins */
+}
+
 
 /* Popup Animation */
 @keyframes fadeIn {

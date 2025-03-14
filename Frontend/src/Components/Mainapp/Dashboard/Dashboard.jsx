@@ -1,4 +1,6 @@
 import React, { useEffect, Suspense, useState } from "react";
+import { HashLink as Link } from "react-router-hash-link";
+
 import {
   BarChart,
   Bar,
@@ -27,11 +29,13 @@ import {
 import { centersLists } from "../../../App/Features/Dairy/Center/centerSlice";
 import "../../../Styles/Mainapp/Dashbaord/Dashboard.css";
 import { getCenterSetting } from "../../../App/Features/Mainapp/Settings/dairySettingSlice";
+import { listEmployee } from "../../../App/Features/Mainapp/Masters/empMasterSlice";
 
 const Dashboard = () => {
   const { t } = useTranslation("common");
   const dispatch = useDispatch();
   const date = useSelector((state) => state.date.toDate);
+  const Emplist = useSelector((state) => state.emp.emplist);
   const center_id = useSelector((state) => state.dairy.dairyData.center_id);
   const manualMaster = useSelector((state) => state.manualMasters.masterlist);
   const mastermilk = useSelector((state) => state.milkCollection.allMilkColl);
@@ -49,10 +53,15 @@ const Dashboard = () => {
   const fDate = useSelector((state) => state.date.formDate); // to fetch default date data
   const tDate = useSelector((state) => state.date.toDate); // to fetch default date data
   const [selectedDate, setSelectedDate] = useState(null);
+  const [summaryData, setSummaryData] = useState([]); //for summary data
+  const [showSummary, setShowSummary] = useState(false); //for summary data
+  const [detailData, setDetailData] = useState([]); // for detail data
+  const [showDetail, setShowDetail] = useState(false); // for detail data
   // Generate master dates based on the initial date
   useEffect(() => {
     dispatch(generateMaster(date));
     dispatch(listCustomer());
+    dispatch(listEmployee());
   }, []);
 
   const customerCount = customerslist.length;
@@ -200,8 +209,69 @@ const Dashboard = () => {
       </text>
     );
   };
+
+  const handlemilkUserSummary = ({ center_id, e }) => {
+    e.preventDefault();
+    setShowSummary(true);
+    setShowDetail(false);
+    const userSummary = {};
+
+    // Filter mastermilk data for the selected center_id
+    const filteredMilkData = mastermilk.filter(
+      (data) => data.center_id === center_id
+    );
+
+    filteredMilkData.forEach(({ userid, Litres, Amt }) => {
+      if (!userSummary[userid]) {
+        userSummary[userid] = {
+          totalLitres: 0,
+          totalAmt: 0,
+          emp_name: "Admin",
+          designation: "Admin",
+          userid: userid, // Assigning correct userid
+          center_id: center_id, // Ensuring center_id is set
+        };
+      }
+      userSummary[userid].totalLitres += Litres;
+      userSummary[userid].totalAmt += Amt;
+    });
+
+    // Merge employee details
+    Emplist.forEach(({ emp_mobile, emp_name, designation }) => {
+      if (userSummary[emp_mobile]) {
+        userSummary[emp_mobile].emp_name = emp_name || "Admin";
+        userSummary[emp_mobile].designation = designation || "Admin";
+      }
+    });
+
+    // Convert userSummary object to an array before setting state
+    const userSummaryArray = Object.keys(userSummary).map((key) => ({
+      userid: key,
+      ...userSummary[key],
+    }));
+
+    setSummaryData(userSummaryArray);
+  };
+
+  const handleDetailUserMilk = ({ center_id, userid, e }) => {
+    e.preventDefault();
+    setShowDetail(true);
+
+    // Filter mastermilk data for the selected center_id
+    const milkDetailes = mastermilk.filter(
+      (data) => data.center_id === center_id && data.userid === userid
+    );
+    setDetailData(milkDetailes);
+  };
+
+  const handleCloseSummary = (e) => {
+    e.preventDefault();
+    setShowSummary(false);
+    setShowDetail(false);
+  };
+
   return (
-    <div className="main-dashboard-container w100 h1 d-flex-col bg6">
+    <div className="main-dashboard-container w100 h1 d-flex-col">
       <div className="dashboard-title w100 d-flex p10 ">
         <h3 className="subtitle">{t("nv-dash")}</h3>
       </div>
@@ -288,36 +358,36 @@ const Dashboard = () => {
               </select>
             </div>
           </form>
-          <div className="dashboard-cards w100 h20 d-flex j-start sa">
-            <div className="card sb">
+          <div className="dashboard-cards w100 h15 d-flex j-start sa">
+            <div className="card h1 sb">
               <BsDatabaseAdd className="card-icon" />
               <div className="card-inner">
                 <h3 className="text">{t("nv-milk-coll")}</h3>
-                <h3 className="heading">
+                <Link smooth to="#centerdata" className="hashlink heading">
                   {totalLitres.toFixed(1)}
                   <span>{t("c-ltr")}</span>
-                </h3>
+                </Link>
               </div>
             </div>
-            <div className="card sb">
+            <div className="card h1 sb">
               <BsPersonFill className="card-icon" />
               <div className="card-inner">
                 <h3 className="text">{t("c-customer")}</h3>
                 <h3 className="heading">{customerCount}</h3>
               </div>
             </div>
-            <div className="card sb">
+            <div className="card h1 sb">
               <TfiStatsUp className="card-icon" />
               <div className="card-inner">
                 <h3 className="text">{t("c-purch-amt")}</h3>
-                <h3 className="heading">
+                <Link smooth to="#centerdata" className="hashlink heading">
                   {totalAmt.toFixed(1) || 0} <span>{t("c-rs")}</span>
-                </h3>
+                </Link>
               </div>
             </div>
           </div>
           <div className="dashboard-data-charts w100 h50 d-flex a-center sa ">
-            <div className="milk-collection-chart w40 h1 d-flex-col p10 bg">
+            <div className="milk-collection-chart w40 h1 d-flex-col p10">
               <div className="chart-title w100">
                 <span className="label-text">{t("c-liter-chart")}</span>
               </div>
@@ -342,7 +412,7 @@ const Dashboard = () => {
                       domain={[0, "dataMax + 10"]}
                     />
                     <Tooltip />
-                    <Bar dataKey="totalLitres" fill="#8884d8" />
+                    <Bar dataKey="totalLitres" fill="#095bc7" />
                   </BarChart>
                 </ResponsiveContainer>
               </Suspense>
@@ -372,7 +442,7 @@ const Dashboard = () => {
                       domain={[0, "dataMax + 10"]}
                     />
                     <Tooltip />
-                    <Bar dataKey="totalAmt" fill="#ffcc99" />
+                    <Bar dataKey="totalAmt" fill="#095bc7" />
                   </BarChart>
                 </ResponsiveContainer>
               </Suspense>
@@ -381,7 +451,10 @@ const Dashboard = () => {
         </div>
         {center_id === 0 ? (
           <>
-            <div className="center-sale-details-container w100 h1 d-flex-col p10 bg5">
+            <div
+              id="centerdata"
+              className="center-sale-details-outer-container w100 d-flex-col p10 bg5"
+            >
               <h3 className="heading">{t("c-center-info")} : </h3>
               <div className="center-sales-details-container w100 h1 d-flex f-wrap sb p10">
                 {centersmergedData.length > 0 ? (
@@ -389,7 +462,7 @@ const Dashboard = () => {
                     <>
                       <div
                         key={center.center_id}
-                        className="center-sales-card w45 h30 d-flex-col sb bg p10"
+                        className="center-sales-card w45 h30 d-flex-col sb bg-light-green br9 p10"
                       >
                         <div className="card-title w100 h25 d-flex sb">
                           <span className="w30 text">{t("c-centerno")} : </span>
@@ -404,21 +477,37 @@ const Dashboard = () => {
                           </span>
                         </div>
                         <div className="card-other-outer-details w100 h50 d-flex sa">
-                          <div className="card-other-details w30 h1 d-flex-col a-center sa bg5">
+                          <div className="card-other-details w30 h1 d-flex-col a-center sa br6 bg5">
                             <span className="text">{t("c-customer")}</span>
                             <span className="label-text">
                               {center.total_customers}
                             </span>
                           </div>
-                          <div className="card-other-details w30 h1 d-flex-col a-center sa bg5">
+                          <div className="card-other-details w30 h1 d-flex-col a-center sa br6 bg5">
                             <span className="text">{t("c-liters")}</span>
-                            <span className="label-text">
+                            <span
+                              className="label-text"
+                              onClick={(e) =>
+                                handlemilkUserSummary({
+                                  center_id: center.center_id,
+                                  e,
+                                })
+                              }
+                            >
                               {center.total_litres} {t("c-ltr")}
                             </span>
                           </div>
-                          <div className="card-other-details w30 h1 d-flex-col a-center sa bg5">
+                          <div className="card-other-details w30 h1 d-flex-col a-center sa br6 bg5">
                             <span className="text">{t("c-purch-amt")}</span>
-                            <span className="label-text">
+                            <span
+                              className="label-text "
+                              onClick={(e) =>
+                                handlemilkUserSummary({
+                                  center_id: center.center_id,
+                                  e,
+                                })
+                              }
+                            >
                               {center.total_amount} {t("c-rs")}
                             </span>
                           </div>
@@ -432,11 +521,116 @@ const Dashboard = () => {
                   </div>
                 )}
               </div>
+              {showSummary && summaryData ? (
+                <div className="user-milk-summary-container w100 h50 d-flex-col">
+                  <div className="title-and-close-btn-container w100 h10 d-flex a-center sb px10">
+                    <span className="heading w60">Milk Summary :</span>
+                    <span
+                      className="close-btn f-heading"
+                      onClick={handleCloseSummary}
+                    >
+                      X
+                    </span>
+                  </div>
+                  <div className="summary-table-conatiner w100 mh60 hidescrollbar d-flex-col bg">
+                    <div className="summary-headings-div w100 p10 d-flex sb t-center sticky-top bg7">
+                      <span className="f-label-text w10">No.</span>
+                      <span className="f-label-text w30">Milk Collector</span>
+                      <span className="f-label-text w20">Designation</span>
+                      <span className="f-label-text w10">Total Liters</span>
+                      <span className="f-label-text w30">Total Amount</span>
+                    </div>
+                    {Array.isArray(summaryData) && summaryData.length > 0 ? (
+                      summaryData.map((user, index) => (
+                        <div
+                          key={index}
+                          className="summary-data-div w100 p10 d-flex sb t-center"
+                        >
+                          <span className="label-text w10">{index + 1}</span>
+                          <span className="label-text w30">
+                            {user.emp_name}
+                          </span>
+                          <span className="label-text w20">
+                            {user.designation}
+                          </span>
+                          <span className="label-text w10">
+                            {user.totalLitres}
+                          </span>
+                          <span
+                            className="label-text w30"
+                            onClick={(e) =>
+                              handleDetailUserMilk({
+                                center_id: user.center_id,
+                                userid: user.userid,
+                                e,
+                              })
+                            }
+                          >
+                            {user.totalAmt}
+                          </span>
+                        </div>
+                      ))
+                    ) : (
+                      <p>No data available</p>
+                    )}
+                  </div>
+                </div>
+              ) : (
+                <></>
+              )}
+              {showDetail && detailData ? (
+                <div className="user-milk-detail-container w100 h50 d-flex-col my10">
+                  <div className="title-and-close-btn-container w100 h10 d-flex a-center sb px10">
+                    <span className="heading w60">Detail Milk :</span>
+                    <span
+                      className="close-btn f-heading"
+                      onClick={(e) => setShowDetail(false)}
+                    >
+                      X
+                    </span>
+                  </div>
+                  <div className="detail-table-conatiner w100 mh60 hidescrollbar d-flex-col bg">
+                    <div className="detail-headings-div w100 p10 d-flex sb t-center sticky-top bg7">
+                      <span className="f-label-text w20">Date</span>
+                      <span className="f-label-text w10">Code</span>
+                      <span className="f-label-text w30">Customer</span>
+                      <span className="f-label-text w10">Liter</span>
+                      <span className="f-label-text w10">Fat</span>
+                      <span className="f-label-text w10">Snf</span>
+                      <span className="f-label-text w10">Rate</span>
+                      <span className="f-label-text w15">Amount</span>
+                    </div>
+                    {Array.isArray(summaryData) && detailData.length > 0 ? (
+                      detailData.map((milk, index) => (
+                        <div
+                          key={index}
+                          className="detail-data-div w100 p10 d-flex sb t-center"
+                        >
+                          <span className="label-text w20">
+                            {milk.ReceiptDate.slice(0, 10)}
+                          </span>
+                          <span className="label-text w10">{milk.rno}</span>
+                          <span className="label-text w30">{milk.cname}</span>
+                          <span className="label-text w10">{milk.Litres}</span>
+                          <span className="label-text w10">{milk.fat}</span>
+                          <span className="label-text w10">{milk.snf}</span>
+                          <span className="label-text w10">{milk.rate}</span>
+                          <span className="label-text w15">{milk.Amt}</span>
+                        </div>
+                      ))
+                    ) : (
+                      <p>No data available</p>
+                    )}
+                  </div>
+                </div>
+              ) : (
+                <></>
+              )}
             </div>
-            <div className="liter-sales-details-inner-container w100 h70 d-flex-col sb p10">
+            <div className="liter-sales-details-inner-container w100 h50 d-flex-col sb p10">
               <span className="heading">{t("c-anaylatics")} : </span>
               <div className="pie-chart-container w100 h1 d-flex a-center sb p10">
-                <div className="liter-sales-card w25 h90 d-flex-col sb bg-fff br6 p10 ">
+                <div className="liter-sales-card w25 h90 d-flex-col sb bg-light-skyblue br6 p10 ">
                   <ResponsiveContainer width="100%" height="100%">
                     <PieChart width={500} height={500}>
                       <Pie
@@ -458,11 +652,11 @@ const Dashboard = () => {
                       </Pie>
                     </PieChart>
                   </ResponsiveContainer>
-                  <span className="label-text p10 bg6 br6">
+                  <span className="label-text w100 h15 d-flex a-center px10 bg6 br6">
                     {t("c-liter-chart")} :
                   </span>
                 </div>
-                <div className="liter-sales-card w25 h90 d-flex-col bg-fff br6 sb p10 ">
+                <div className="liter-sales-card w25 h90 d-flex-col bg-light-skyblue br6 sb p10 ">
                   <ResponsiveContainer width="100%" height="100%">
                     <PieChart width={500} height={500}>
                       <Pie
@@ -484,15 +678,15 @@ const Dashboard = () => {
                       </Pie>
                     </PieChart>
                   </ResponsiveContainer>
-                  <span className="label-text p10 bg6 br6">
+                  <span className="label-text w100 h15 d-flex a-center px10 bg6 br6">
                     {t("c-amt-chart")} :
                   </span>
                 </div>
-                <div className="liter-sell-details w20 h1 d-flex-col a-center sb bg6 br6 p10 bg5">
+                <div className="liter-sell-details w20 h1 d-flex-col a-center bg6 br6 p10 bg5">
                   {centersmergedData.map((center, index) => (
-                    <div className="details-card w100 h50 d-flex-col center t-center">
+                    <div className="details-card w50 h25 d-flex-col center t-center">
                       <div
-                        className="w25 h30 colour-box br6"
+                        className="w30 h25 colour-box br6"
                         style={{
                           backgroundColor: COLORS[index % COLORS.length],
                         }}

@@ -1,8 +1,24 @@
 /* dashboard cards css */
+.main-dashboard-container {
+  background-color: #f4f6f9;
+}
+
+.center-sale-details-outer-container {
+  height: fit-content;
+}
+
 .dashboard-cards {
   width: 100%;
   display: flex;
   flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+.dashboard-cards .hashlink {
+  text-decoration: none;
+}
+.dashboard-cards .card > .card-title {
+  font-size: 1.2rem;
+  color: #333333;
 }
 .months-selector {
   padding: 5px 10px;
@@ -18,18 +34,19 @@
 }
 .card {
   width: 20%;
-  height: 80px;
+  /* height: 80px; */
   padding: 10px;
   display: flex;
   align-items: center;
   justify-content: space-around;
-  border-radius: 6px;
-  background-color: #fcfcfc;
+  border-radius: 8px;
+  /* box-shadow: 0px 2px 3px -1px rgba(0, 0, 0, 0.9); */
+  background-color: #c2f3cf;
   cursor: pointer;
 }
-.card > .card-icon {
-  font-size: 20px;
-  color: blueviolet;
+.card .card-icon {
+  font-size: 50px;
+  color: #095bc7;
 }
 
 .dashboard-scrll-container {
@@ -37,10 +54,26 @@
   overflow-y: scroll;
 }
 
-.milk-collection-chart {
+.dashboard-scrll-container .milk-collection-chart {
   cursor: pointer;
+  border-radius: 8px;
+  background-color: #cff3f8;
 }
 
+.liter-sales-details-inner-container .liter-sell-details .details-card {
+  margin-bottom: 15px;
+}
+
+.user-milk-summary-container .title-and-close-btn-container .close-btn {
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border-radius: 6px;
+  background-color: blue;
+}
 /* dashboard cards css end */
 
 /* <<----------------------------css for dashboard navlinks ---------------------------->> */
@@ -63,6 +96,7 @@
 
 @media screen and (max-width: 426px) {
   .selection-container {
+    min-height: auto;
     flex-direction: column;
   }
 
@@ -81,7 +115,7 @@
     width: 100%;
   }
   .dashboard-cards {
-    height: 40%;
+    min-height: fit-content;
     margin-top: 10px;
     padding: 0;
     display: flex;
@@ -91,6 +125,9 @@
     width: 40%;
     height: 50px;
     margin-bottom: 10px;
+  }
+  .card .card-icon {
+    font-size: 30px;
   }
   .dashboard-scrll-container .selection-container {
     width: 100%;
@@ -143,15 +180,16 @@
 }
 /* css for center information data container >>>>>-------------------------------- */
 @media screen and (max-width: 426px) {
-  .dashboard-scrll-container .center-sale-details-container {
+  .dashboard-scrll-container .center-sale-details-outer-container {
     min-height: fit-content;
   }
-  .center-sale-details-container .center-sales-details-container {
+  .center-sale-details-outer-container .center-sales-details-container {
     min-height: fit-content;
     flex-direction: column;
   }
-  .center-sale-details-container .center-sales-card {
+  .center-sale-details-outer-container .center-sales-card {
     width: 100%;
+    margin-bottom: 20px;
   }
 }
 /* css for piechart information data container >>>>>-------------------------------- */
@@ -183,5 +221,38 @@
   .liter-sell-details .details-card .colour-box {
     width: 20px;
     height: 20px;
+  }
+}
+/* css for milk summary data container >>>>>-------------------------------- */
+@media screen and (max-width: 426px) {
+  .summary-table-conatiner {
+    overflow-x: auto;
+  }
+  .summary-headings-div {
+    min-width: 700px;
+    position: sticky;
+    top: 0;
+    background-color: #17acc0;
+    padding: 5px 0;
+  }
+  .summary-data-div {
+    min-width: 700px;
+  }
+}
+
+/* css for detail milk data container >>>>>-------------------------------- */
+@media screen and (max-width: 426px) {
+  .detail-table-conatiner {
+    overflow-x: auto;
+  }
+  .detail-headings-div {
+    min-width: 800px;
+    position: sticky;
+    top: 0;
+    background-color: #17acc0;
+    padding: 5px 0;
+  }
+  .detail-data-div {
+    min-width: 800px;
   }
 }

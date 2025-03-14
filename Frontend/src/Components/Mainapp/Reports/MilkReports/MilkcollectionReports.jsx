@@ -32,6 +32,13 @@ const MilkcollectionReports = () => {
   const [selectedME, setSelectedME] = useState(null);
   const [sumreport, setSumreport] = useState(false); //...sum avravge sate
   const [selectedDate, setSelectedDate] = useState(null);
+  const [selectedCenterId, setSelectedCenterId] = useState("");
+  const [centerData, setCenterData] = useState([]); //..
+  const [item, setitem] = useState([]); //..
+
+  const centerList = useSelector(
+    (state) => state.center.centersList.centersDetails
+  );
 
   useEffect(() => {
     setCollectionData(data);
@@ -639,14 +646,45 @@ const MilkcollectionReports = () => {
   const handleMilkTypeChange = (e) => setSelectedMilkType(e.target.value);
   const handleShiftChange = (e) => setSelectedME(e.target.value);
 
+  //...... centerwise data
+  // Handle center change
+  // Handle center selection change
+  const handleCenterChange = (e) => {
+    setSelectedCenterId(e.target.value); // Update selected center ID
+  };
+
+  // Filter data based on selected center
+  const getFilteredData = (data) => {
+    if (!selectedCenterId) return data; // If no center is selected, return all data
+    return data.filter(
+      (item) => item.center_id.toString() === selectedCenterId
+    ); // Filter by selected center ID
+  };
+
+  // Effect to update filtered data when selectedCenterId changes
+  useEffect(() => {
+    const filteredSummaryData = getFilteredData(summaryData);
+    const filteredMilkData = getFilteredData(filteredData);
+
+    // Update center data state with filtered data
+    setCenterData({
+      summaryData: filteredSummaryData,
+      milkData: filteredMilkData,
+    });
+  }, [selectedCenterId, summaryData, filteredData]); // Re-run when selectedCenterId or data changes
+
+  // Log the filtered data for debugging
+  console.log(centerData);
+  console.log("Selected Center ID:", selectedCenterId);
+
   return (
     <>
       <div className="Milkcollection-container w100 h1 d-flex-col sb">
         <span className="heading px10"> Milk Collection Report</span>
         <div className="fillter-data-container w100 h30 d-flex-col sb">
-          <div className="master-and-buttons-div w100 d-flex sb">
-            <div className="master-hide-show-chackbox-div w60 d-flex sb">
-              <div className="custmize-report-div w65 h1 px10 d-flex a-center sb">
+          <div className="master-and-buttons-div w100  d-flex sb">
+            <div className="master-hide-show-chackbox-div w70 d-flex sb">
+              <div className="custmize-report-div w50 h1 px10 d-flex a-center sb">
                 <span className="cl-icon w20 h1 d-flex center info-text">
                   <BsCalendar3 />
                 </span>
@@ -676,16 +714,27 @@ const MilkcollectionReports = () => {
                   ))}
                 </select>
               </div>
-              <div className="fillter-checkbox-container w35 h1 d-flex a-center">
-                <input
-                  type="checkbox"
-                  className="filter-check w20 h40"
-                  onClick={handleCheckboxChange}
-                />
-                <span className="info-text w70">Apply Filters</span>
+              <div className="daswada-filter-container d-flex w40 a-center sa  ">
+                <div className="milk-type-div w60 h1 d-flex a-center sb ">
+                  <input
+                    type="checkbox"
+                    className="filter-check w30 h40"
+                    onClick={handleSumAvgChange}
+                  />
+                  <span className="info-text w70">Daswada</span>
+                </div>
+
+                <div className="fillter-checkbox-container w60 h1 d-flex a-center">
+                  <input
+                    type="checkbox"
+                    className="filter-check w30 h40"
+                    onClick={handleCheckboxChange}
+                  />
+                  <span className="info-text w70">Filters</span>
+                </div>
               </div>
             </div>
-            <div className="download-option-btn-div w35 h1 d-flex j-center sa">
+            <div className="download-option-btn-div w30 h1 d-flex j-center sa">
               <button className="w-btn text" onClick={handlePrint}>
                 Print
               </button>
@@ -697,10 +746,33 @@ const MilkcollectionReports = () => {
               </button>
             </div>
           </div>
-          <div className="fitter-hide-show-container w100 d-flex-col sa">
+
+          <div className="fitter-hide-show-container w100   d-flex-col sa">
             {isChecked && (
               <div className="heided-conatiner-div w100 h1 d-flex-col sa">
-                <div className="fillter-conditions-div w100 h1 d-flex sb">
+                <div className="fillter-conditions-div w100 h80 d-flex  a-center  px10 sb">
+                  <div className="centerwisee-data-show w40 h1 d-flex a-center ">
+                    <span className="info-text w20">Center:</span>
+                    <select
+                      className="data w70 my10 "
+                      name="selection"
+                      id="001"
+                      onChange={handleCenterChange}
+                    >
+                      <option value="">Select Center</option>
+                      {centerList && centerList.length > 0 ? (
+                        centerList.map((center, index) => (
+                          <option key={index} value={center.center_id}>
+                            {center.name || center.center_name}
+                          </option>
+                        ))
+                      ) : (
+                        <option value="" disabled>
+                          No Centers Available
+                        </option>
+                      )}
+                    </select>
+                  </div>
                   <div className="custmoer-number-no w45 h50 d-flex a-center px10 sb">
                     <label htmlFor="code" className="info-text w30">
                       Customer :
@@ -725,7 +797,9 @@ const MilkcollectionReports = () => {
                       />
                     </div>
                   </div>
-                  <div className="days-selection-div w45 h50 h1 d-flex center px10 sb">
+                </div>
+                <div className="fillter-conditions-div1 w100 h50  d-flex px10 sb">
+                  <div className="days-selection-div w40  h1 d-flex center px10 ">
                     <label htmlFor="daywise" className="info-text w30">
                       Day wise :
                     </label>
@@ -746,8 +820,6 @@ const MilkcollectionReports = () => {
                     </select>
                     {/* </div> */}
                   </div>
-                </div>
-                <div className="fillter-conditions-div1 w100 h50 d-flex px10 sb">
                   <div className="filter-condition-divs w30  h1 d-flex center sb">
                     <label htmlFor="animal" className="info-text w40">
                       Milk Type :
@@ -769,12 +841,13 @@ const MilkcollectionReports = () => {
                       </option>
                     </select>
                   </div>
-                  <div className="filter-condition-divs w30 h1 d-flex center sb">
+
+                  <div className="filter-condition-divs w30 h1 d-flex center ">
                     <label htmlFor="milktype" className="info-text w30">
                       Shift Wise :
                     </label>
                     <select
-                      className="data w50"
+                      className="data w60"
                       name="milktype"
                       id="milktype"
                       onChange={handleShiftChange}
@@ -789,16 +862,6 @@ const MilkcollectionReports = () => {
                         Evening
                       </option>
                     </select>
-                  </div>
-                  <div className="filter-condition-divs w20 h1 d-flex center">
-                    <div className="milk-type-div w100 h1 d-flex a-center sb">
-                      <input
-                        type="checkbox"
-                        className="filter-check w20 h40"
-                        onClick={handleSumAvgChange}
-                      />
-                      <span className="info-text w80">Daswada Report :</span>
-                    </div>
                   </div>
                 </div>
               </div>
@@ -836,13 +899,15 @@ const MilkcollectionReports = () => {
               )}
             </div>
 
+            {/* Display filtered data based on sumreport */}
             {sumreport ? (
               <>
                 {status === "loading" ? (
                   <Spinner />
-                ) : summaryData && summaryData.length > 0 ? (
+                ) : centerData.summaryData &&
+                  centerData.summaryData.length > 0 ? (
                   <>
-                    {summaryData.map((customer, index) => (
+                    {centerData.summaryData.map((customer, index) => (
                       <div
                         key={index}
                         className={`milkdata-div w100 h10 d-flex center t-center sa ${
@@ -872,23 +937,26 @@ const MilkcollectionReports = () => {
                         </span>
                       </div>
                     ))}
-
-                    {/* Total Row Using .slice() */}
+                    {/* Total Row */}
                     <div className="milkdata-div w100 h10 d-flex center t-center sa bg-total">
                       <span className="w10 text t-center font-bold">Total</span>
                       <span className="w25 text t-start"></span>
                       <span className="w5 text t-center"></span>
                       <span className="w5 text t-center"></span>
                       <span className="w10 text t-end font-bold">
-                        {summaryData
-                          .slice(0, summaryData.length)
-                          .reduce((sum, item) => sum + (item.Liters || 0), 0)}
+                        {centerData.summaryData
+                          .reduce((sum, item) => sum + (item.Liters || 0), 0)
+                          .toString()
+                          .slice(0, Math.max(0, item.indexOf(".")) + 3)}{" "}
+                        {/* Adjusted to slice after decimal */}
                       </span>
                       <span className="w10 text t-center"></span>
                       <span className="w10 text t-end font-bold">
-                        {summaryData
-                          .slice(0, summaryData.length)
-                          .reduce((sum, item) => sum + (item.Amt || 0), 0)}
+                        {centerData.summaryData
+                          .reduce((sum, item) => sum + (item.Amt || 0), 0)
+                          .toString()
+                          .slice(0, Math.min(item.indexOf("."), 3))}{" "}
+                
                       </span>
                       <span className="w10 text t-center"></span>
                     </div>
@@ -901,9 +969,9 @@ const MilkcollectionReports = () => {
               <>
                 {status === "loading" ? (
                   <Spinner />
-                ) : filteredData && filteredData.length > 0 ? (
+                ) : centerData.milkData && centerData.milkData.length > 0 ? (
                   <>
-                    {filteredData.map((customer, index) => (
+                    {centerData.milkData.map((customer, index) => (
                       <div
                         key={index}
                         className={`milkdata-div w100 h10 d-flex center t-center sa ${
@@ -935,16 +1003,14 @@ const MilkcollectionReports = () => {
                         </span>
                       </div>
                     ))}
-
-                    {/* Total Row Using .slice() */}
+                    {/* Total Row */}
                     <div className="milkdata-div w100 h10 d-flex center t-center sa bg-total">
                       <span className="w10 text t-center font-bold">Total</span>
                       <span className="w5 text t-center"></span>
                       <span className="w5 text t-center"></span>
                       <span className="w25 text t-start"></span>
                       <span className="w5 text t-end font-bold">
-                        {filteredData
-
+                        {centerData.milkData
                           .reduce((sum, item) => sum + (item.Litres || 0), 0)
                           .toFixed(2)}
                       </span>
@@ -952,9 +1018,9 @@ const MilkcollectionReports = () => {
                       <span className="w5 text t-center"></span>
                       <span className="w10 text t-center"></span>
                       <span className="w5 text t-end font-bold">
-                        {filteredData
-                          .slice(0, filteredData.length)
-                          .reduce((sum, item) => sum + (item.Amt || 0), 0)}
+                        {centerData.milkData
+                          .reduce((sum, item) => sum + (item.Amt || 0), 0)
+                          .toFixed(2)}
                       </span>
                       <span className="w5 text t-center"></span>
                     </div>
