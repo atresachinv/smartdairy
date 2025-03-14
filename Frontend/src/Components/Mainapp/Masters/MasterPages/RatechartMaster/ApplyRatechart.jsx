@@ -114,7 +114,7 @@ const ApplyRatechart = ({ isSet, ratechart }) => {
   return (
     <>
       <form
-        className="rate-chart-setting-div w100 h1 d-flex-col sa br"
+        className="rate-chart-setting-div w100 h1 d-flex-col sa"
         onSubmit={handleSubmit}
       >
         <span className="heading p10">{t("rc-apply-s-rc")} :</span>

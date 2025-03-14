@@ -422,7 +422,10 @@ exports.createCenter = async (req, res) => {
                 .status(500)
                 .json({ status: 500, message: "Error creating user" });
             }
+            // Invalidate the cache for this dairy_id
+            const cacheKey = `centers_${dairy_id}_${center_id}`;
 
+            cache.del(cacheKey);
             // Successfully created center
             res
               .status(200)
@@ -510,7 +513,7 @@ exports.updateCenterInfo = async (req, res) => {
           }
 
           // Invalidate the cache for this dairy_id
-          const cacheKey1 = `centers_${dairy_id}`;
+          const cacheKey1 = `centers_${dairy_id}_${center_id}`;
           const cacheKey = `dairyInfo_${dairy_id}_${center_id}`;
           cache.del(cacheKey1, cacheKey);
 
@@ -575,14 +578,14 @@ exports.getCenterDetails = async (req, res) => {
 
 //v2
 exports.getAllcenters = async (req, res) => {
-  const dairy_id = req.user.dairy_id;
+  const { dairy_id, center_id } = req.user;
 
   if (!dairy_id) {
     return res.status(401).json({ status: 401, message: "Unauthorized User!" });
   }
 
   // Check if the data is cached
-  const cacheKey = `centers_${dairy_id}`;
+  const cacheKey = `centers_${dairy_id}_${center_id}`;
   const cachedData = cache.get(cacheKey);
 
   if (cachedData) {

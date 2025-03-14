@@ -55,7 +55,7 @@ const CreateCenter = () => {
     prefix: prefixString,
   };
   const [formData, setFormData] = useState(initialValues);
-  console.log(formData.password, formData.confirm_pass);
+
   useEffect(() => {
     const generatePrefix = () => {
       const alphabets = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -195,7 +195,7 @@ const CreateCenter = () => {
 
     const validationErrors = {};
     fieldsToValidate.forEach((field) => {
-      const fieldError = validateField(field, values[field]);
+      const fieldError = validateField(field, formData[field]);
       if (Object.keys(fieldError).length > 0) {
         validationErrors[field] = fieldError[field];
       }
