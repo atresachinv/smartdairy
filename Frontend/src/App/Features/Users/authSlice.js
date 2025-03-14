@@ -98,20 +98,23 @@ const authSlice = createSlice({
   name: "auth",
   initialState: {
     userRole: "",
-    user: {},
+    // user: {},
     username: "",
     dairyname: "",
-    token: null,
-    isAuthenticated: false,
+    // token: null,
+    // isAuthenticated: false,
+    user: JSON.parse(localStorage.getItem("user")) || null,
+    token: localStorage.getItem("token") || null,
+    isAuthenticated: !!localStorage.getItem("token"),
     loading: false,
     status: "idle",
     error: null,
   },
   reducers: {
-    setLogin: (state, action) => {
-      state.isAuthenticated = true;
-      state.userRole = action.payload.userRole; // Save userRole to state
-    },
+    // setLogin: (state, action) => {
+    //   state.isAuthenticated = true;
+    //   state.userRole = action.payload.userRole; // Save userRole to state
+    // },
     // logout: (state) => {
     //   state.userRole = null;
     //   state.isAuthenticated = false;
@@ -119,13 +122,33 @@ const authSlice = createSlice({
     //   localStorage.removeItem("user_password");
     //   localStorage.removeItem("rememberMe");
     // },
+    // setUser: (state, action) => {
+    //   state.user = action.payload.user || {};
+    //   state.token = action.payload.token || null;
+    // },
+    // logout: (state) => {
+    //   state.user = null;
+    //   state.token = null;
+    // },
+    setLogin: (state, action) => {
+      const { user, token } = action.payload;
+      state.user = user;
+      state.token = token;
+      state.isAuthenticated = true;
+      localStorage.setItem("user", JSON.stringify(user));
+      localStorage.setItem("token", token);
+    },
     setUser: (state, action) => {
-      state.user = action.payload.user || {};
-      state.token = action.payload.token || null;
+      state.user = action.payload.user;
+      localStorage.setItem("user", JSON.stringify(action.payload.user));
     },
     logout: (state) => {
       state.user = null;
       state.token = null;
+      state.isAuthenticated = false;
+      localStorage.removeItem("user");
+      localStorage.removeItem("token");
+      localStorage.removeItem("sessionToken");
     },
   },
   extraReducers: (builder) => {
@@ -186,5 +209,5 @@ const authSlice = createSlice({
   },
 });
 
-export const { setUser, setLogin, logout } = authSlice.actions;
+export const { setLogin, setUser, logout } = authSlice.actions;
 export default authSlice.reducer;

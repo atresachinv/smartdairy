@@ -61,7 +61,6 @@ const MilkColleform = ({ switchToSettings }) => {
     mobile: "",
     allow: false,
   };
-  console.log(settings);
   const [values, setValues] = useState(initialValues);
   // dynamic shift time set in time And allow is updated from state -------------------------------------------------------------->
   useEffect(() => {

@@ -1263,77 +1263,6 @@ exports.PreviousMilkCollectionList = async (req, res) => {
 //.........................................................
 // Save Mobile Milk Collection (single entry) .............
 
-// exports.mobileMilkCollection = async (req, res) => {
-//   const { code, animal, liters, cname, sample, acccode} = req.body;
-
-//   pool.getConnection((err, connection) => {
-//     if (err) {
-//       console.error("Error getting MySQL connection: ", err);
-//       return res.status(500).json({ message: "Database connection error" });
-//     }
-
-//     try {
-//       const dairy_id = req.user.dairy_id;
-//       const center_id = req.user.center_id;
-//       const user = req.user.user_id;
-
-//       if (!dairy_id) {
-//         connection.release();
-//         return res.status(400).json({ message: "Dairy ID not found!" });
-//       }
-
-//       const dairy_table = `dailymilkentry_${dairy_id}`;
-
-//       // Get the current date in YYYY-MM-DD format
-//       const currentDate = new Date().toISOString().split("T")[0];
-
-//       // Get the current hour to determine AM or PM
-//       const currentHour = new Date().getHours();
-//       const time = currentHour < 12 ? 0 : 1;
-
-//       // Prepare the SQL query
-//       const milkcollection = `
-//         INSERT INTO ${dairy_table}
-//         (companyid, userid, ReceiptDate, ME, CB, Litres, GLCode, AccCode, cname, rno, Driver, SampleNo, center_id)
-//         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-//       `;
-
-//       // Execute the query
-//       connection.query(
-//         milkcollection,
-//         [
-//           dairy_id,
-//           user,
-//           currentDate,
-//           time,
-//           animal,
-//           liters,
-//           "28", // GLCode
-//           acccode,
-//           cname,
-//           code,
-//           "1",
-//           sample,
-//           center_id,
-//         ],
-//         (err, result) => {
-//           connection.release();
-
-//           if (err) {
-//             console.error("Error executing query: ", err);
-//             return res.status(500).json({ message: "Query execution error" });
-//           }
-//           res.status(200).json({ message: "Milk entry saved successfully!" });
-//         }
-//       );
-//     } catch (error) {
-//       connection.release();
-//       console.error("Error processing request: ", error);
-//       return res.status(500).json({ message: "Internal server error" });
-//     }
-//   });
-// };
-
 //v3 function ---------------------
 exports.mobileMilkCollection = async (req, res) => {
   const { code, animal, liters, cname, sample, acccode, allow } = req.body;
@@ -1371,11 +1300,10 @@ exports.mobileMilkCollection = async (req, res) => {
         const checkMilkCollectionQuery = `
           SELECT COUNT(rno) AS count 
           FROM ${dairy_table} 
-          WHERE companyid = ? AND center_id = ? AND ReceiptDate = ? AND ME = ? AND CB = ? AND rno = ?
+          WHERE center_id = ? AND ReceiptDate = ? AND ME = ? AND CB = ? AND rno = ?
         `;
 
         const existingEntry = await query(checkMilkCollectionQuery, [
-          dairy_id,
           center_id,
           currentDate,
           time,
@@ -1395,12 +1323,11 @@ exports.mobileMilkCollection = async (req, res) => {
       // Insert new milk collection entry
       const milkCollectionQuery = `
         INSERT INTO ${dairy_table} 
-        (companyid, userid, ReceiptDate, ME, CB, Litres, GLCode, AccCode, cname, rno, Driver, SampleNo, center_id)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        (userid, ReceiptDate, ME, CB, Litres, GLCode, AccCode, cname, rno, Driver, SampleNo, center_id)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       `;
 
       await query(milkCollectionQuery, [
-        dairy_id,
         user,
         currentDate,
         time,
@@ -1662,7 +1589,7 @@ exports.updateMobileCollection = async (req, res) => {
       const updatemilkcollection = `
          UPDATE ${dairy_table}
           SET  fat = ?,  snf = ?,  Amt = ?,  GLCode = ?,  AccCode = ?,  Digree = ?,  rate = ?,  updatedOn = ?,  UpdatedBy = ? , Driver = 2 
-          WHERE  companyid = ? AND  center_id = ? AND  rno = ? AND  SampleNo = ? 
+          WHERE center_id = ? AND  rno = ? AND  SampleNo = ? 
       `;
 
       // Execute the query
@@ -1678,7 +1605,6 @@ exports.updateMobileCollection = async (req, res) => {
           rate,
           currentDate,
           user_role,
-          dairy_id,
           center_id,
           code,
           sample,
@@ -1864,12 +1790,12 @@ exports.todaysMilkCollReport = async (req, res) => {
         SELECT 
           ReceiptDate, ME, CB, Litres, fat, snf, rate, Amt, cname, rno
         FROM ${dairy_table}
-        WHERE companyid = ? AND center_id = ? AND ReceiptDate = ?
+        WHERE center_id = ? AND ReceiptDate = ?
       `;
 
       connection.query(
         todaysMilkQuery,
-        [dairy_id, center_id, date],
+        [ center_id, date],
         (err, results) => {
           connection.release();
 
@@ -1930,7 +1856,7 @@ exports.custWiseMilkCReort = async (req, res) => {
       `,
     };
 
-    const queryParams = [formDate, toDate, dairy_id, center_id];
+    const queryParams = [fromDate, toDate, dairy_id, center_id];
 
     Promise.all([
       connection.query(queries.morning, queryParams),

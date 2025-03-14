@@ -141,7 +141,7 @@ const MilkSankalan = () => {
         rateChartNo: customer.rateChartNo,
       }));
     } else {
-      setValues((prev) => ({ ...prev, cname: "" })); // Clear cname if not found
+      setValues((prev) => ({ ...prev, cname: "", mobile: "" })); // Clear cname if not found
     }
   };
 
@@ -247,7 +247,6 @@ const MilkSankalan = () => {
     try {
       const response = await axiosInstance.post("/send-message", requestBody);
       toast.success("Whatsapp message send successfully...");
-      console.log("Response:", response.data);
     } catch (error) {
       toast.error("Error in whatsapp message sending...");
       console.error("Error sending message:", error);
@@ -301,7 +300,6 @@ const MilkSankalan = () => {
   };
 
   // Auto change AM - PM ------------------------------------------------------------------>
-
   const currentHour = new Date().getHours();
   const heading =
     currentHour < 12 ? `${t("c-mrg-coll")}` : `${t("c-eve-coll")}`;
@@ -388,9 +386,13 @@ const MilkSankalan = () => {
             />
           </div>
           <div className="form-div user-name w70  px10">
-            <label htmlFor="cname" className="info-text">
-              {t("milkcollection:m-cust-name")}
-              <span className="req">*</span>{" "}
+            <label htmlFor="cname" className="info-text w100 d-flex a-center">
+              <span className="w40 info-text">
+                {t("milkcollection:m-cust-name")} <span className="req">*</span>
+              </span>
+              <span className="label-text w50 d-flex j-end">
+                {values.mobile}
+              </span>
             </label>
             <input
               id="cname"

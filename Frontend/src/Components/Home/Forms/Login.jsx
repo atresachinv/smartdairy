@@ -3,11 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { IoMdEye, IoMdEyeOff } from "react-icons/io";
 import { toast } from "react-toastify";
 import axios from "axios";
-import { useDispatch} from "react-redux";
-import {
-  setLogin,
-  setUser,
-} from "../../../App/Features/Users/authSlice";
+import { useDispatch } from "react-redux";
+import { setLogin, setUser } from "../../../App/Features/Users/authSlice";
 import Spinner from "../Spinner/Spinner";
 import axiosInstance from "../../../App/axiosInstance";
 import "../../../Styles/Home/Forms.css";
@@ -53,6 +50,69 @@ const Login = ({ switchToRegister, switchToOptSend }) => {
   axios.defaults.baseURL = import.meta.env.VITE_BASE_URI;
   axios.defaults.withCredentials = true;
 
+  // const handleLogin = (e) => {
+  //   e.preventDefault();
+  //   setIsSaving(true);
+  //   axiosInstance
+  //     .post("/login", values)
+  //     .then((res) => {
+  //       const { user_role, sessionToken, token } = res.data;
+
+  //       if (sessionToken) {
+  //         console.log("session Token from login", sessionToken);
+  //         localStorage.setItem("sessionToken", sessionToken);
+  //       }
+
+  //       // Handle Remember Me
+  //       if (rememberMe) {
+  //         localStorage.setItem("user_id", values.user_id);
+  //         localStorage.setItem("user_password", values.user_password);
+  //         localStorage.setItem("rememberMe", "true");
+  //       } else {
+  //         localStorage.removeItem("user_id");
+  //         localStorage.removeItem("user_password");
+  //         localStorage.removeItem("rememberMe");
+  //       }
+
+  //       // Save userRole in Redux & Local Storage
+  //       const userRole = user_role.toLowerCase();
+  //       dispatch(setLogin({ userRole }));
+  //       localStorage.setItem("userRole", userRole);
+  //       dispatch(setUser({ user: { role: user_role }, token }));
+  //       // Redirect based on user_role
+  //       switch (userRole) {
+  //         case "customer":
+  //           navigate("/customer/dashboard");
+  //           break;
+  //         case "admin":
+  //         case "manager":
+  //         case "milkcollector":
+  //         case "mobilecollector":
+  //         case "salesman":
+  //           navigate("/mainapp/dashboard");
+  //           break;
+  //         case "super_admin":
+  //           navigate("/adminpanel");
+  //           break;
+  //         default:
+  //           toast.error("Unexpected user type!");
+  //           return;
+  //       }
+
+  //       toast.success("Login Successful");
+  //     })
+  //     .catch((err) => {
+  //       if (err.response) {
+  //         toast.error(err.response.data.message);
+  //       } else {
+  //         toast.error("An error occurred during login.");
+  //       }
+  //     })
+  //     .finally(() => {
+  //       setIsSaving(false);
+  //     });
+  // };
+
   const handleLogin = (e) => {
     e.preventDefault();
     setIsSaving(true);
@@ -62,10 +122,8 @@ const Login = ({ switchToRegister, switchToOptSend }) => {
         const { user_role, sessionToken, token } = res.data;
 
         if (sessionToken) {
-          console.log("session Token from login", sessionToken);
           localStorage.setItem("sessionToken", sessionToken);
         }
-
         // Handle Remember Me
         if (rememberMe) {
           localStorage.setItem("user_id", values.user_id);
@@ -77,12 +135,14 @@ const Login = ({ switchToRegister, switchToOptSend }) => {
           localStorage.removeItem("rememberMe");
         }
 
-        // Save userRole in Redux & Local Storage
         const userRole = user_role.toLowerCase();
-        dispatch(setLogin({ userRole }));
         localStorage.setItem("userRole", userRole);
-        dispatch(setUser({ user: { role: user_role }, token }));
-        // Redirect based on user_role
+        const user = { role: user_role };
+
+        // Save in Redux & LocalStorage
+        dispatch(setLogin({ user, token }));
+
+        // Redirect based on role
         switch (userRole) {
           case "customer":
             navigate("/customer/dashboard");
@@ -181,7 +241,8 @@ const Login = ({ switchToRegister, switchToOptSend }) => {
             <button
               disabled
               onClick={switchToOptSend}
-              className="info-text swith-form-button">
+              className="info-text swith-form-button"
+            >
               Forget Password?
             </button>
           </h2>

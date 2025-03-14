@@ -63,13 +63,35 @@ import SellRateMaster from "./Inventory/InventroyPages/Stocks/SellRate/SellRateM
 import ExpiredProductsMaster from "./Inventory/InventroyPages/Stocks/ExpiredProduct/ExpiredProductsMaster";
 import DashboardTabs from "./Dashboard/DashboardTabs/DashboardTabs";
 import ComingSoon from "./ComingSoon";
+import MilkSankalan from "./Apphome/Appnavviews/MilkSankalan/MilkSankalan";
 
 const Mainapp = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const dairy_id = useSelector((state) => state.dairy.dairyData.SocietyCode);
   const [openSidebar, setOpenSidebar] = useState(false); //fuctional sidebar
+  const [userRole, setUserRole] = useState(null);
+  useEffect(() => {
+    const myrole = localStorage.getItem("userRole");
+    setUserRole(myrole);
+  }, []);
 
+
+  const allowedRoutes = {
+    super_admin: [
+      "dashboard",
+      "milk/collection/*",
+      "inventory/*",
+      "reports/*",
+      "settings/*",
+    ],
+    admin: ["dashboard", "milk/collection/*", "inventory/*"],
+    milkcollector: ["milk/collection/*", "milk/customer/master/*"],
+    mobilecollector: ["vehicle/milk/collection/*"],
+    salesman: ["milk/retail/sales", "milk/retail/sales-report"],
+  };
+
+  const userRoutes = allowedRoutes[userRole] || [];
   // handle open close sidebar ---------------------------------------------------------->
   const handleSidebar = () => {
     setOpenSidebar(!openSidebar);
@@ -147,9 +169,14 @@ const Mainapp = () => {
           {/* <Mainappviews index={isselected} /> */}
           <Routes>
             {/* dashboard route */}
-            <Route path="dashboard/*" element={<Dashboard />} />
+            {userRoutes.includes("dashboard") && (
+              <Route path="dashboard/*" element={<Dashboard />} />
+            )}
+            {/* <Route path="dashboard/*" element={<Dashboard />} /> */}
             {/* milk purchase routes */}
-            <Route path="milk/collection/*" element={<Apphome />} />
+            {userRoutes.includes("vehicle/milk/collection/*") && (
+              <Route path="vehicle/milk/collection/*" element={<Apphome />} />
+            )}
             <Route path="milk/collection/:time" element={<Milkcollection />} />
             <Route path="milk/collection/:time" element={<Milkcollection />} />
             <Route
