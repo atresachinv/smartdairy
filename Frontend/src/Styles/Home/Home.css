@@ -13,6 +13,7 @@
   background-position: center;
   background-repeat: no-repeat;
   background-size: contain;
+  background-blend-mode: color-burn;
 }
 
 .nointernet-screen .first-text {

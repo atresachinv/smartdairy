@@ -69,7 +69,7 @@ const Mainappnavlinks = ({ setselected, handleSidebar }) => {
     {
       name: `${t("milkcollection:m-milkcoll")}`,
       icon: <BsGridFill className="icon" />,
-      path: "vehicle/milk/collection",
+      path: "milk/collection",
       index: 20,
       role: ["mobilecollector"],
     },

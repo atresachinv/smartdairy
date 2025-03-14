@@ -76,7 +76,6 @@ const Mainapp = () => {
     setUserRole(myrole);
   }, []);
 
-
   const allowedRoutes = {
     super_admin: [
       "dashboard",
@@ -177,6 +176,7 @@ const Mainapp = () => {
             {userRoutes.includes("vehicle/milk/collection/*") && (
               <Route path="vehicle/milk/collection/*" element={<Apphome />} />
             )}
+            <Route path="milk/collection/*" element={<Apphome />} />
             <Route path="milk/collection/:time" element={<Milkcollection />} />
             <Route path="milk/collection/:time" element={<Milkcollection />} />
             <Route

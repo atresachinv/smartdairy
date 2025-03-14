@@ -114,11 +114,11 @@ const ApplyRatechart = ({ isSet, ratechart }) => {
   return (
     <>
       <form
-        className="rate-chart-setting-div w100 h1 d-flex-col sa my10"
+        className="rate-chart-setting-div w100 h1 d-flex-col sa br"
         onSubmit={handleSubmit}
       >
-        <span className="heading">{t("rc-apply-s-rc")} :</span>
-        <div className="select-date-outer w100 h25 d-flex-col sb">
+        <span className="heading p10">{t("rc-apply-s-rc")} :</span>
+        <div className="select-date-outer w100 h30 d-flex-col sb">
           <label htmlFor="implementationDate" className="info-text w100">
             {t("rc-apply-text")} :
           </label>
@@ -160,7 +160,7 @@ const ApplyRatechart = ({ isSet, ratechart }) => {
             <Spinner />
           </div>
         ) : (
-          <div className="customer-count-outer w100 h25 d-flex-col">
+          <div className="customer-count-outer w100 h30 d-flex-col">
             <span className="info-text">{t("rc-s-cust")} :</span>
             <div className="customer-count w100 h1 d-flex">
               <div className="select-animal-type w40 h1 a-center d-flex">
@@ -194,7 +194,7 @@ const ApplyRatechart = ({ isSet, ratechart }) => {
             </div>
           </div>
         )}
-        <div className="button-div w100 h25 d-flex j-end">
+        <div className="button-div w100 h15 d-flex j-end">
           <button
             type="submit"
             className="btn mx10"
