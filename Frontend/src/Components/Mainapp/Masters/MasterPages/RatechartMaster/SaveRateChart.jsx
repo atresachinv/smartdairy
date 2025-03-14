@@ -164,7 +164,7 @@ const SaveRateChart = () => {
                   name="rctype"
                   onChange={handleInput}
                 >
-                  <option value="">-- {t("rc-selete-type")} --</option>
+                  <option value="">-- {t("rc-select-rctype")} --</option>
                   {rcStatus === "loading" ? (
                     <option value="">Loading...</option>
                   ) : (
