@@ -501,20 +501,14 @@ exports.fetchAllSales = (req, res) => {
 exports.getSaleStock = async (req, res) => {
   const dairy_id = req.user.dairy_id;
   const center_id = req.user.center_id;
-  const { ItemGroupCode } = req.query;
-  // Get the current date
-  const today = new Date();
-  const year = today.getFullYear();
-  const startYear = today.getMonth() >= 3 ? year : year - 1; // If before April, take previous year
-  const startDate = `${startYear}-04-01`; // Financial year starts from April 1st
-  const endDate = today.toISOString().split("T")[0]; // Today's date in YYYY-MM-DD format
+  const { ItemGroupCode, fromdate, todate } = req.query;
 
   let query = `
     SELECT * 
     FROM salesmaster 
     WHERE BillDate BETWEEN ? AND ?`;
 
-  const queryParams = [startDate, endDate];
+  const queryParams = [fromdate, todate];
 
   if (dairy_id) {
     query += ` AND companyid = ? AND center_id=?`;
@@ -555,21 +549,14 @@ exports.getSaleStock = async (req, res) => {
 //get all purchase data to start date is 1/04/YYYY to today date
 exports.getPurchaseStock = async (req, res) => {
   const { dairy_id, center_id } = req.user;
-  const { ItemGroupCode } = req.query;
-
-  // Get the current date
-  const today = new Date();
-  const year = today.getFullYear();
-  const startYear = today.getMonth() >= 3 ? year : year - 1;
-  const startDate = `${startYear}-04-01`;
-  const endDate = today.toISOString().split("T")[0];
+  const { ItemGroupCode, fromdate, todate } = req.query;
 
   let query = `
     SELECT * 
     FROM PurchaseMaster 
     WHERE purchasedate BETWEEN ? AND ?`;
 
-  const queryParams = [startDate, endDate];
+  const queryParams = [fromdate, todate];
 
   // Ensure dairy_id and center_id are included
   if (dairy_id) {
@@ -601,15 +588,12 @@ exports.getPurchaseStock = async (req, res) => {
 
       if (err) {
         console.error("Error executing query: ", err);
-        return res
-          .status(500)
-          .json({
-            status: 500,
-            message: "Error fetching purchase data",
-            error: err,
-          });
+        return res.status(500).json({
+          status: 500,
+          message: "Error fetching purchase data",
+          error: err,
+        });
       }
-
       res
         .status(200)
         .json({ status: 200, success: true, purchaseData: result });

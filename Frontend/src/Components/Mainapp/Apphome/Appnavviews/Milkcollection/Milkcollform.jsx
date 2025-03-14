@@ -295,7 +295,7 @@ const MilkColleform = ({ switchToSettings }) => {
   //
   //         await dispatch(saveMilkCollection(milkColl));
   //       }
-  //       setFullSlots(fullSlots - 1);
+  //       setFullSlots(fullSlots - 1); 
   //     }
   //   };
 
