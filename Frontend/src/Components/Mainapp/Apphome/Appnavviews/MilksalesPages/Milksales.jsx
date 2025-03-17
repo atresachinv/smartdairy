@@ -302,20 +302,6 @@ const Milksales = ({ switchToSettings }) => {
               ref={codeInputRef}
             />
           </div>
-          {/* <div className="form-div w50 px10">
-            <label htmlFor="cname" className="info-text">
-              Customer name
-            </label>
-            <input
-              className={`data ${errors.cname ? "input-error" : ""}`}
-              type="text"
-              placeholder={`${t("m-cust-name")}`}
-              name="cname"
-              id="cname"
-              value={values.cname || ""}
-              onChange={handleInputs}
-            />
-          </div> */}
           <div className="form-div w50 px10" style={{ position: "relative" }}>
             <label htmlFor="cname" className="info-text">
               {t("m-cust-name")}
@@ -327,17 +313,14 @@ const Milksales = ({ switchToSettings }) => {
                   : ""
               }`}
               type="text"
-              placeholder="Enter customer name"
+              placeholder={`${t("m-cust-name")}`}
               name="cname"
               id="cname"
               value={values.cname || ""}
               onChange={handleInputChange}
               onFocus={() => values.cname && setShowDropdown(true)}
-              // autoComplete="off"
               list="customer-list"
             />
-
-            {/* Autocomplete Dropdown */}
             <datalist id="customer-list">
               {retailCustomers.map((customer) => (
                 <option key={customer.code} value={customer.cust_name} />

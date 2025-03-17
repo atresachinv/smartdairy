@@ -424,7 +424,6 @@ exports.createCenter = async (req, res) => {
             }
             // Invalidate the cache for this dairy_id
             const cacheKey = `centers_${dairy_id}_${center_id}`;
-
             cache.del(cacheKey);
             // Successfully created center
             res
@@ -585,12 +584,12 @@ exports.getAllcenters = async (req, res) => {
   }
 
   // Check if the data is cached
-  const cacheKey = `centers_${dairy_id}_${center_id}`;
-  const cachedData = cache.get(cacheKey);
+  // const cacheKey = `centers_${dairy_id}_${center_id}`;
+  // const cachedData = cache.get(cacheKey);
 
-  if (cachedData) {
-    return res.status(200).json({ status: 200, centersDetails: cachedData });
-  }
+  // if (cachedData) {
+  //   return res.status(200).json({ status: 200, centersDetails: cachedData });
+  // }
 
   pool.getConnection((err, connection) => {
     if (err) {
@@ -619,7 +618,7 @@ exports.getAllcenters = async (req, res) => {
         }
 
         // Store the result in cache
-        cache.set(cacheKey, result);
+        // cache.set(cacheKey, result);
         res.status(200).json({ status: 200, centersDetails: result });
       });
     } catch (error) {
@@ -1093,5 +1092,229 @@ exports.updateCenterSetting = (req, res) => {
         });
       });
     }
+  });
+};
+
+// <<<<<<<<<----------------------------- Sangha ---------------------------->>>>>>>>>>>>
+
+//-------------------------------------------------------------------------------------------------------->
+// Add new milk sangha ----------------------------------------------------------------------------------->
+//-------------------------------------------------------------------------------------------------------->
+
+exports.createMilkSangha = (req, res) => {
+  const { dairy_id, center_id, user_id } = req.user;
+  const { code, sanghaname, marathiname } = req.body;
+  if (!dairy_id) {
+    return res.status(401).json({ status: 401, message: "Unauthorized User!" });
+  }
+
+  if ((!code, !sanghaname, !marathiname)) {
+    return res
+      .status(400)
+      .json({ status: 400, message: "All fields data required!" });
+  }
+
+  const date = new Date().toISOString().slice(0, 10);
+
+  const insertQuery = `
+        INSERT INTO sangh_master 
+        (dairy_id, center_id, code, sangha_name , marathi_name, createdon, createdby)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
+      `;
+
+  pool.getConnection((err, connection) => {
+    if (err) {
+      console.error("Error getting MySQL connection: ", err);
+      return res.status(500).json({
+        status: 500,
+        message: "Database connection error",
+      });
+    }
+
+    connection.query(
+      insertQuery,
+      [dairy_id, center_id, code, sanghaname, marathiname, date, user_id],
+      (err, result) => {
+        connection.release();
+
+        if (err) {
+          console.error("Error executing insert query: ", err);
+          return res.status(500).json({
+            status: 500,
+            message: "Error Adding new Sangha!",
+          });
+        }
+
+        return res.status(200).json({
+          status: 200,
+          message: "Sangha Added successfully!",
+        });
+      }
+    );
+  });
+};
+//-------------------------------------------------------------------------------------------------------->
+// update milk sangha ------------------------------------------------------------------------------------>
+//-------------------------------------------------------------------------------------------------------->
+
+exports.updateMilkSangha = (req, res) => {
+  const { dairy_id, user_id } = req.user;
+  const { id, sanghaname, marathiname } = req.body;
+
+  if (!dairy_id) {
+    return res.status(401).json({ status: 401, message: "Unauthorized User!" });
+  }
+
+  if ((!code, !sanghaname, !marathiname)) {
+    return res
+      .status(400)
+      .json({ status: 400, message: "All fields data required!" });
+  }
+
+  const date = new Date().toISOString().slice(0, 10);
+
+  const insertQuery = `
+        UPDATE sangh_master 
+        SET  sangha_name = ? , marathi_name = ? , updatedon = ? , updatedby = ?
+        WHERE id = ?
+      `;
+
+  pool.getConnection((err, connection) => {
+    if (err) {
+      console.error("Error getting MySQL connection: ", err);
+      return res.status(500).json({
+        status: 500,
+        message: "Database connection error",
+      });
+    }
+
+    connection.query(
+      insertQuery,
+      [sanghaname, marathiname, date, user_id, id],
+      (err, result) => {
+        connection.release();
+
+        if (err) {
+          console.error("Error executing updating query: ", err);
+          return res.status(500).json({
+            status: 500,
+            message: "Error Updating Sangha Details!",
+          });
+        }
+
+        return res.status(200).json({
+          status: 200,
+          message: "Sangha Updated successfully!",
+        });
+      }
+    );
+  });
+};
+//-------------------------------------------------------------------------------------------------------->
+// milk sangha list -------------------------------------------------------------------------------------->
+//-------------------------------------------------------------------------------------------------------->
+
+exports.listMilkSangha = (req, res) => {
+  const { dairy_id, center_id } = req.user;
+
+  if (!dairy_id) {
+    return res.status(401).json({ status: 401, message: "Unauthorized User!" });
+  }
+
+  let fetchQuery;
+  let queryParams;
+
+  if (center_id !== 0) {
+    fetchQuery = `
+      SELECT code, sangh_name, marathi_name
+      FROM sangh_master
+      WHERE dairy_id = ?
+    `;
+    queryParams = [dairy_id];
+  } else {
+    fetchQuery = `
+      SELECT code, sangh_name, marathi_name
+      FROM sangh_master
+      WHERE dairy_id = ? AND center_id = ?
+    `;
+    queryParams = [dairy_id, center_id];
+  }
+
+  pool.getConnection((err, connection) => {
+    if (err) {
+      console.error("Error getting MySQL connection: ", err);
+      return res.status(500).json({
+        status: 500,
+        message: "Database connection error",
+      });
+    }
+
+    connection.query(fetchQuery, queryParams, (err, result) => {
+      connection.release();
+
+      if (err) {
+        console.error("Error executing fetch sangha list query: ", err);
+        return res.status(500).json({
+          status: 500,
+          message: "Error fetching Sangha list!",
+        });
+      }
+
+      return res.status(200).json({
+        status: 200,
+        sanghaList: result,
+      });
+    });
+  });
+};
+
+//-------------------------------------------------------------------------------------------------------->
+// delete milk sangha ------------------------------------------------------------------------------------>
+//-------------------------------------------------------------------------------------------------------->
+
+exports.deleteMilkSangha = (req, res) => {
+  const { dairy_id } = req.user;
+  const { id } = req.body;
+
+  if (!dairy_id) {
+    return res.status(401).json({ status: 401, message: "Unauthorized User!" });
+  }
+
+  if (!id) {
+    return res
+      .status(400)
+      .json({ status: 400, message: "Id required to delete!" });
+  }
+
+  const deleteQuery = `
+        delete * FROM sangh_master 
+        WHERE id = ?
+      `;
+
+  pool.getConnection((err, connection) => {
+    if (err) {
+      console.error("Error getting MySQL connection: ", err);
+      return res.status(500).json({
+        status: 500,
+        message: "Database connection error",
+      });
+    }
+
+    connection.query(deleteQuery, [id], (err, result) => {
+      connection.release();
+
+      if (err) {
+        console.error("Error executing delete sangha query: ", err);
+        return res.status(500).json({
+          status: 500,
+          message: "Error in deleting Sangha!",
+        });
+      }
+
+      return res.status(200).json({
+        status: 200,
+        message: "Sangha Deleted successfully!",
+      });
+    });
   });
 };

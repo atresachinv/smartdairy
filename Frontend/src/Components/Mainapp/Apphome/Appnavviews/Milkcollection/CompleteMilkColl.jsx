@@ -686,7 +686,7 @@ const CompleteMilkColl = () => {
               className={`data ${errors.cname ? "input-error" : ""}`}
               type="text"
               required
-              placeholder="smartdairy user"
+              placeholder={`${t("m-cust-name")}`}
               name="cname"
               id="cname"
               value={values.cname}

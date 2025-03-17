@@ -16,6 +16,10 @@ const {
   getCenterSetting,
   updateCenterSetting,
   getOneCenterSetting,
+  createMilkSangha,
+  updateMilkSangha,
+  listMilkSangha,
+  deleteMilkSangha,
 } = require("../Controllers/DairyController");
 const router = express.Router();
 
@@ -40,5 +44,11 @@ router
 router
   .route("/dashboard/centers/customer-count")
   .post(verifyToken, getCenterCustomerCount);
+
+// Sangha routes ----------------------------------------------------------------------------------->
+router.route("/create/sangha").post(verifyToken, createMilkSangha);
+router.route("/update/sangha").post(verifyToken, updateMilkSangha);
+router.route("/list/sangha").get(verifyToken, listMilkSangha);
+router.route("/delete/sangha").post(verifyToken, deleteMilkSangha);
 
 module.exports = router;
