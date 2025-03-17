@@ -7,6 +7,71 @@
   min-width: 1141px !important;
 }
 
+.dealerModel {
+  position: fixed;
+  z-index: 101;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.dealerModel .modal-content {
+  background-color: #ffffff;
+  max-height: 90%;
+  border-radius: 12px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  overflow: auto;
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.dealerModel .modal-content h2 {
+  /* font-size: 1.5rem; Slightly larger heading */
+  margin-bottom: 10px;
+  color: #333; /* Darker text for better readability */
+  text-align: center;
+}
+
+.dealerModel .modal-content label {
+  /* font-size: 1rem; */
+  color: #555;
+  margin-bottom: 5px;
+}
+
+.dealerModel .modal-content button {
+  padding: 10px 20px;
+  /* font-size: 1rem; */
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.dealerModel .modal-content button:last-child {
+  background-color: #007bff;
+  color: white;
+  margin-left: 10px;
+}
+
+.dealerModel .modal-content button:last-child:hover {
+  background-color: #0056b3;
+}
+
+.dealerModel .modal-content button:first-child {
+  background-color: #f8f9fa;
+  color: #333;
+}
+
+.dealerModel .modal-content button:first-child:hover {
+  background-color: #e2e6ea;
+}
+
 @media screen and (max-width: 426px) {
   .create-dealer-container {
     min-height: auto;
@@ -24,6 +89,6 @@
     flex-direction: row;
   }
   .minSize {
-    padding: 15px!important;
+    padding: 15px !important;
   }
 }

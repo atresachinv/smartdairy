@@ -104,7 +104,7 @@ const DairySettings = () => {
   return (
     <div className="dairy-settings-page w100 h1 d-flex-col">
       <span className="heading p10 w100 d-flex j-center">Dairy Settings</span>
-      
+
       <div className="h1 w100 d-flex j-center ">
         <div className="mx5 my5 w90 d-flex-col bg center">
           {[...centerList]
@@ -113,14 +113,14 @@ const DairySettings = () => {
               <>
                 <div
                   key={center.center_id}
-                  className="w50 h10 d-flex px10 sa dairy-settings-page-main-item"
+                  className="w50 h10  d-flex px10 sa dairy-settings-page-main-item"
                 >
-                  <div className="px10 w10 label-text">{center.center_id}</div>
+                  <div className="px10w10 info-text">{center.center_id}</div>
                   <div className="w80">
-                    <div className="label-text">
+                    <div className="info-text">
                       {center.marathi_name || center.center_name}
                     </div>
-                    <div className="label-text">{center.city}</div>
+                    {/* <div className="info-text">{center.city}</div> */}
                   </div>
                   <div className="w10">
                     <IoSettingsOutline
@@ -151,7 +151,7 @@ const DairySettings = () => {
               {/* Autonomous Centre Radio Buttons */}
               <div className="dairyModelContent my10 w100">
                 <label>Autonomous Centre</label>
-                <div className="d-flex j-center a-center w30">
+                <div className="d-flex j-center a-center  ">
                   <div className="px10">
                     <input
                       type="radio"
@@ -176,7 +176,7 @@ const DairySettings = () => {
               {/* WhatsApp Message Radio Buttons */}
               <div className="dairyModelContent my10 w100">
                 <label>WhatsApp Message</label>
-                <div className="d-flex j-center a-center w30">
+                <div className="d-flex j-center a-center  ">
                   <div className="px10">
                     <input
                       type="radio"
@@ -201,7 +201,7 @@ const DairySettings = () => {
               {/* Allow Duplicate Milk Entry Radio Buttons */}
               <div className="dairyModelContent my10 w100">
                 <label>Allow Duplicate Milk Entry</label>
-                <div className="d-flex j-center a-center w30">
+                <div className="d-flex j-center a-center  ">
                   <div className="px10">
                     <input
                       type="radio"
@@ -224,7 +224,7 @@ const DairySettings = () => {
               </div>
               <div className="dairyModelContent my10 w100">
                 <label>Allow Print</label>
-                <div className="d-flex j-center a-center w30">
+                <div className="d-flex j-center a-center  ">
                   <div className="px10">
                     <input
                       type="radio"
