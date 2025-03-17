@@ -700,61 +700,61 @@ const CattleSaleList = () => {
                 </h4>
               </div>
               <div className=" w100">
-              <div className="sales-table-container w100">
-                <table className="sales-table1">
-                  <thead className="bg1 w100">
-                  <tr>
-                    {/* <th>{t("ps-srNo")}</th> */}
-                    <th>{t("ps-itm-name")}</th>
-                    <th>{t("ps-rate")}</th>
-                    <th>{t("ps-qty")}</th>
-                    <th>{t("ps-amt")}</th>
-                    <th>Action</th>
-                  </tr>
-                  </thead>
-                  <tbody>
-                    {viewItems.map((item, i) => (
-                      <tr key={i}>
-                        {/* <td>{i + 1}</td> */}
-                        <td>{handleFindItemName(item.ItemCode)}</td>
-                        <td className="w15"> {item.Rate}</td>
-
-                        <td className="w15">{item.Qty}</td>
-                        <td>{item.Amount}</td>
-                        <td>
-                          <FaRegEdit
-                            size={15}
-                            className="table-icon"
-                            title="Update Item details"
-                            onClick={() => handleEditClick(item)}
-                          />
-                          <MdDeleteOutline
-                            onClick={() => handleDeleteItem(item?.saleid)}
-                            size={15}
-                            title="Delete the Item"
-                            className="table-icon "
-                            style={{ color: "red" }}
-                          />
-                        </td>
+                <div className="sales-table-container w100">
+                  <table className="sales-table1">
+                    <thead className="bg1 w100">
+                      <tr>
+                        {/* <th>{t("ps-srNo")}</th> */}
+                        <th>{t("ps-itm-name")}</th>
+                        <th>{t("ps-rate")}</th>
+                        <th>{t("ps-qty")}</th>
+                        <th>{t("ps-amt")}</th>
+                        <th>Action</th>
                       </tr>
-                    ))}
-                    <tr>
-                      {/* <td></td> */}
-                      <td></td>
-                      <td></td>
-                      <td>
-                        <b> {t("ps-ttl-amt")}</b>
-                      </td>
-                      <td>
-                        {(viewItems || []).reduce(
-                          (acc, item) => acc + (item.Amount || 0),
-                          0
-                        )}
-                      </td>
-                      <td></td>
-                    </tr>
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody>
+                      {viewItems.map((item, i) => (
+                        <tr key={i}>
+                          {/* <td>{i + 1}</td> */}
+                          <td>{handleFindItemName(item.ItemCode)}</td>
+                          <td className="w15"> {item.Rate}</td>
+
+                          <td className="w15">{item.Qty}</td>
+                          <td>{item.Amount}</td>
+                          <td>
+                            <FaRegEdit
+                              size={15}
+                              className="table-icon"
+                              title="Update Item details"
+                              onClick={() => handleEditClick(item)}
+                            />
+                            <MdDeleteOutline
+                              onClick={() => handleDeleteItem(item?.saleid)}
+                              size={15}
+                              title="Delete the Item"
+                              className="table-icon "
+                              style={{ color: "red" }}
+                            />
+                          </td>
+                        </tr>
+                      ))}
+                      <tr>
+                        {/* <td></td> */}
+                        <td></td>
+                        <td></td>
+                        <td>
+                          <b> {t("ps-ttl-amt")}</b>
+                        </td>
+                        <td>
+                          {(viewItems || []).reduce(
+                            (acc, item) => acc + (item.Amount || 0),
+                            0
+                          )}
+                        </td>
+                        <td></td>
+                      </tr>
+                    </tbody>
+                  </table>
                 </div>
               </div>
             </div>
@@ -765,10 +765,11 @@ const CattleSaleList = () => {
           <div className="modal">
             <div className="saleModal-content">
               <h2> {t("ps-up-sale-item")}</h2>
-              <label>
+              <label className="info-text">
                 {t("ps-rect-no")} :
                 <input
                   type="number"
+                  className="data"
                   value={editSale?.ReceiptNo}
                   onChange={(e) =>
                     setEditSale({ ...editSale, ReceiptNo: e.target.value })
@@ -776,10 +777,11 @@ const CattleSaleList = () => {
                   onFocus={(e) => e.target.select()}
                 />
               </label>
-              <label>
+              <label className="info-text">
                 {t("ps-qty")}:
                 <input
                   type="number"
+                  className="data"
                   value={editSale?.Qty}
                   onChange={(e) =>
                     setEditSale({ ...editSale, Qty: e.target.value })
@@ -787,9 +789,10 @@ const CattleSaleList = () => {
                   onFocus={(e) => e.target.select()}
                 />
               </label>
-              <label>
+              <label className="info-text">
                 {t("ps-rate")}:
                 <input
+                  className="data"
                   type="number"
                   value={editSale?.Rate}
                   onFocus={(e) => e.target.select()}
@@ -798,10 +801,11 @@ const CattleSaleList = () => {
                   }
                 />
               </label>
-              <label>
+              <label className="info-text">
                 {t("ps-amt")}:
                 <input
                   type="number"
+                  className="data"
                   value={handleAmountCalculation()}
                   disabled
                 />
@@ -811,7 +815,13 @@ const CattleSaleList = () => {
                   {" "}
                   {t("ps-cancel")}
                 </button>
-                <button onClick={handleSaveChanges}> {t("ps-update")}</button>
+                <button
+                  onClick={handleSaveChanges}
+                  style={{ marginLeft: "10px" }}
+                >
+                  {" "}
+                  {t("ps-update")}
+                </button>
               </div>
             </div>
           </div>

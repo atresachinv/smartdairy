@@ -701,13 +701,12 @@ const ReturnListDeliveryStock = () => {
             </div>
             <div className=" d-flex sb mx15 px15 deal-info-name">
               <label className="info-text">
-                Emp code :{" "}
+                code :
                 <span className="info-text">
                   {updatelist[0]?.to_user || ""}
                 </span>
               </label>
               <label className="info-text mx15 px10">
-                Emp Name :{" "}
                 <span className="info-text">
                   {findEmpName(
                     updatelist[0]?.to_user,
@@ -732,9 +731,9 @@ const ReturnListDeliveryStock = () => {
                     {updatelist.map((item, i) => (
                       <tr key={i}>
                         {/* <td>{i + 1}</td> */}
-                        <td className="w15">{i + 1}</td>
-                        <td> {item.ItemName}</td>
-                        <td className="w15">{item.Qty}</td>
+                        <td className="w15 info-text">{i + 1}</td>
+                        <td className="info-text"> {item.ItemName}</td>
+                        <td className="w15 info-text">{item.Qty}</td>
                         {/* <td>{i}</td> */}
                       </tr>
                     ))}
@@ -743,9 +742,9 @@ const ReturnListDeliveryStock = () => {
                       <td></td>
                       {/* <td></td> */}
                       <td>
-                        <b> {t("ps-ttl-amt")}</b>
+                        <b className="info-text"> {t("ps-ttl-amt")}</b>
                       </td>
-                      <td>
+                      <td className="info-text">
                         {(updatelist || []).reduce(
                           (acc, item) => acc + (item.Qty || 0),
                           0

@@ -12,6 +12,7 @@ import { useTranslation } from "react-i18next";
 import { jsPDF } from "jspdf";
 import { useSelector } from "react-redux";
 import { TbSortAscending2, TbSortDescending2 } from "react-icons/tb";
+import "./Dealer.css";
 
 const DealersList = () => {
   const { t } = useTranslation(["puchasesale", "common"]);
@@ -415,15 +416,16 @@ const DealersList = () => {
         </div>
       </div>
       {isModalOpen && (
-        <div className="pramod modal ">
-          <div className="modal-content minSize">
+        <div className=" dealerModel ">
+          <div className="modal-content">
             <h2>{t("ps-up-deal-detail")}</h2>
             <div className="row d-flex  ">
-              <label>
+              <label className="info-text">
                 {t("ps-dealer-name")}
                 <input
                   type="text"
                   id="cname"
+                  className="data"
                   value={editSale?.cname}
                   onFocus={(e) => e.target.select()}
                   onChange={(e) =>
@@ -434,10 +436,11 @@ const DealersList = () => {
                   }
                 />
               </label>
-              <label style={{ marginLeft: "10px" }}>
+              <label className="info-text" style={{ marginLeft: "10px" }}>
                 {t("ps-mono")}
                 <input
                   type="number"
+                  className="data"
                   id="phono"
                   value={editSale?.Phone}
                   onFocus={(e) => e.target.select()}
@@ -450,11 +453,12 @@ const DealersList = () => {
                 />
               </label>
             </div>
-            <div className="row d-flex my10">
-              <label>
+            <div className="row d-flex my10 ">
+              <label className="info-text">
                 {t("ps-city")}
                 <input
                   type="text"
+                  className="data"
                   id="city"
                   value={editSale?.City}
                   onFocus={(e) => e.target.select()}
@@ -466,10 +470,11 @@ const DealersList = () => {
                   }
                 />
               </label>
-              <label style={{ marginLeft: "10px" }}>
+              <label style={{ marginLeft: "10px" }} className="info-text">
                 {t("ps-dist")}
                 <input
                   type="text"
+                  className="data"
                   id="dist"
                   onFocus={(e) => e.target.select()}
                   value={editSale?.dist}
@@ -482,12 +487,13 @@ const DealersList = () => {
                 />
               </label>
             </div>
-            <label>
+            <label className="info-text">
               {t("ps-ifsc")}
               <input
                 type="text"
                 id="ifsc"
                 value={editSale?.cust_ifsc}
+                className="data"
                 onFocus={(e) => e.target.select()}
                 onKeyDown={(e) =>
                   handleKeyPress(e, document.getElementById("acno"))
@@ -497,11 +503,12 @@ const DealersList = () => {
                 }
               />
             </label>
-            <label>
+            <label className="info-text">
               {t("ps-ac-no")}
               <input
                 id="acno"
                 type="number"
+                className="data"
                 value={editSale?.cust_accno}
                 onFocus={(e) => e.target.select()}
                 onChange={(e) =>
@@ -509,7 +516,7 @@ const DealersList = () => {
                 }
               />
             </label>
-            <div>
+            <div  >
               <button onClick={() => setIsModalOpen(false)}>
                 {t("ps-cancel")}
               </button>

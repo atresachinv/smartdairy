@@ -16,6 +16,7 @@ import { NavLink } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { FaDownload } from "react-icons/fa6";
 import { jsPDF } from "jspdf";
+import "../expiredProduct.css";
 
 const CattleSaleList = () => {
   const { t } = useTranslation(["puchasesale", "common"]);
@@ -634,8 +635,8 @@ const CattleSaleList = () => {
         </div>
         {/* show invoice */}
         {isInvoiceOpen && viewItems.length > 0 && (
-          <div className="pramod modal ">
-            <div className="modal-content invoiceModel">
+          <div className="expiredModel ">
+            <div className="modal-content ">
               <div className="d-flex sb">
                 <h2> Invoice Details</h2>
                 <IoClose
@@ -654,76 +655,79 @@ const CattleSaleList = () => {
                 </div>
               </div>
               <div className=" d-flex sb mx15 px15 invoiceModelInfo"></div>
-              <div className="modal-content w100  ">
-                <div className="sales-table-container w100">
-                  <table className="sales-table w100 ">
-                    <thead className="bg1">
-                      <tr>
-                        <th>{t("ps-srNo")}</th>
-                        <th>{t("ps-itm-name")}</th>
-                        <th>{t("ps-rate")}</th>
-                        <th>{t("ps-qty")}</th>
-                        <th>{t("ps-amt")}</th>
-                        <th>Action</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {viewItems.map((item, i) => (
-                        <tr key={i}>
-                          <td>{i + 1}</td>
-                          <td>{handleFindItemName(item.ItemCode)}</td>
-                          <td className="w15"> {item.Rate}</td>
+              {/* <div className="modal-content w100  "> */}
+              <div className="sales-table-container w100">
+                <table className="sales-table w100 ">
+                  <thead className="bg1">
+                    <tr>
+                      <th>{t("ps-srNo")}</th>
+                      <th>{t("ps-itm-name")}</th>
+                      <th>{t("ps-rate")}</th>
+                      <th>{t("ps-qty")}</th>
+                      <th>{t("ps-amt")}</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {viewItems.map((item, i) => (
+                      <tr key={i}>
+                        <td className="info-text">{i + 1}</td>
+                        <td className="info-text">
+                          {handleFindItemName(item.ItemCode)}
+                        </td>
+                        <td className="w15 info-text"> {item.Rate}</td>
 
-                          <td className="w15">{item.Qty}</td>
-                          <td>{item.Amount}</td>
-                          <td>
-                            <FaRegEdit
-                              size={15}
-                              className="table-icon"
-                              title="Update Item details"
-                              onClick={() => handleEditClick(item)}
-                            />
-                            <MdDeleteOutline
-                              onClick={() => handleDeleteItem(item?.saleid)}
-                              size={15}
-                              title="Delete the Item"
-                              className="table-icon "
-                              style={{ color: "red" }}
-                            />
-                          </td>
-                        </tr>
-                      ))}
-                      <tr>
-                        <td></td>
-                        <td></td>
-                        <td></td>
+                        <td className="w15 info-text">{item.Qty}</td>
+                        <td className="info-text">{item.Amount}</td>
                         <td>
-                          <b> {t("ps-ttl-amt")}</b>
+                          <FaRegEdit
+                            size={19}
+                            className="table-icon"
+                            title="Update Item details"
+                            onClick={() => handleEditClick(item)}
+                          />
+                          <MdDeleteOutline
+                            onClick={() => handleDeleteItem(item?.saleid)}
+                            size={20}
+                            title="Delete the Item"
+                            className="table-icon "
+                            style={{ color: "red" }}
+                          />
                         </td>
-                        <td>
-                          {(viewItems || []).reduce(
-                            (acc, item) => acc + (item.Amount || 0),
-                            0
-                          )}
-                        </td>
-                        <td></td>
                       </tr>
-                    </tbody>
-                  </table>
-                </div>
+                    ))}
+                    <tr>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td>
+                        <b> {t("ps-ttl-amt")}</b>
+                      </td>
+                      <td>
+                        {(viewItems || []).reduce(
+                          (acc, item) => acc + (item.Amount || 0),
+                          0
+                        )}
+                      </td>
+                      <td></td>
+                    </tr>
+                  </tbody>
+                </table>
               </div>
+              {/* </div> */}
             </div>
           </div>
         )}
         {/* its used for edit item */}
         {isModalOpen && (
-          <div className="modal sale">
+          <div className="expiredModel">
             <div className="modal-content">
               <h2> {t("ps-up-sale-item")}</h2>
-              <label>
+              <label className="info-text">
                 {t("ps-rect-no")} :
                 <input
                   type="number"
+                  className="data"
                   value={editSale?.ReceiptNo}
                   onChange={(e) =>
                     setEditSale({ ...editSale, ReceiptNo: e.target.value })
@@ -731,9 +735,10 @@ const CattleSaleList = () => {
                   onFocus={(e) => e.target.select()}
                 />
               </label>
-              <label>
+              <label className="info-text">
                 {t("ps-qty")}:
                 <input
+                  className="data"
                   type="number"
                   value={editSale?.Qty}
                   onChange={(e) =>
@@ -742,9 +747,10 @@ const CattleSaleList = () => {
                   onFocus={(e) => e.target.select()}
                 />
               </label>
-              <label>
+              <label className="info-text">
                 {t("ps-rate")}:
                 <input
+                  className="data"
                   type="number"
                   value={editSale?.Rate}
                   onFocus={(e) => e.target.select()}
@@ -753,9 +759,10 @@ const CattleSaleList = () => {
                   }
                 />
               </label>
-              <label>
+              <label className="info-text">
                 {t("ps-amt")}:
                 <input
+                  className="data"
                   type="number"
                   value={handleAmountCalculation()}
                   disabled

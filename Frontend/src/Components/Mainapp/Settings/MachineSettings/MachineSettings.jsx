@@ -87,156 +87,162 @@ const MachineSettings = () => {
     <div className="dairy-settings-page w100 h1 d-flex-col">
       <span className="heading p10 w100 d-flex j-center"> Settings</span>
       <div className="h1 w100 d-flex j-center ">
-        <div className="mx5 my5 w90 d-flex-col bg center p10">
-          {/* Printer Selection */}
-          <div className="w90 d-flex j-center px10 settings-page-main-item">
-            <div className="w60 d-flex px10">Select Printer</div>
-            <div className="w40 d-flex">
-              {["A4", "58mm", "80mm"].map((label, index) => (
-                <div key={index} className="px5 settings-page-printer-item">
+        <div className="w90 d-flex-col bg center">
+          <div className="w100 machineContainer">
+            {/* Printer Selection */}
+            <div className="w90 d-flex j-center px10 settings-page-main-item">
+              <div className="w60 d-flex px10 info-text">Select Printer</div>
+              <div className="w40 d-flex">
+                {["A4", "58mm", "80mm"].map((label, index) => (
+                  <div key={index} className="px5 settings-page-printer-item">
+                    <input
+                      type="radio"
+                      name="pType"
+                      checked={settings.pType === index}
+                      onChange={() => handleChange("pType", index)}
+                    />
+                    <label className="info-text px10 settings-page-printer-item">
+                      {label}
+                    </label>
+                  </div>
+                ))}
+              </div>
+            </div>
+            {/* Sale WhatsApp Message */}
+            <div className="w90 d-flex j-center p10 settings-page-main-item">
+              <div className="w60 d-flex px10 info-text">
+                Sale WhatsApp Message
+              </div>
+              <div className="w40 d-flex">
+                <div>
                   <input
                     type="radio"
-                    name="pType"
-                    checked={settings.pType === index}
-                    onChange={() => handleChange("pType", index)}
+                    name="salesms"
+                    checked={settings.salesms}
+                    onChange={() => handleChange("salesms", true)}
                   />
-                  <label className="info-text px10 settings-page-printer-item">
-                    {label}
-                  </label>
+                  <label className="info-text px10">Yes</label>
                 </div>
-              ))}
-            </div>
-          </div>
-          {/* Sale WhatsApp Message */}
-          <div className="w90 d-flex j-center p10 settings-page-main-item">
-            <div className="w60 d-flex px10">Sale WhatsApp Message</div>
-            <div className="w40 d-flex">
-              <div>
-                <input
-                  type="radio"
-                  name="salesms"
-                  checked={settings.salesms}
-                  onChange={() => handleChange("salesms", true)}
-                />
-                <label className="info-text px10">Yes</label>
-              </div>
-              <div className="px5">
-                <input
-                  type="radio"
-                  name="salesms"
-                  checked={!settings.salesms}
-                  onChange={() => handleChange("salesms", false)}
-                />
-                <label className="info-text px10">No</label>
+                <div className="px5">
+                  <input
+                    type="radio"
+                    name="salesms"
+                    checked={!settings.salesms}
+                    onChange={() => handleChange("salesms", false)}
+                  />
+                  <label className="info-text px10">No</label>
+                </div>
               </div>
             </div>
-          </div>
-          {/* Vehicle Sale WhatsApp Message */}
-          <div className="w90 d-flex j-center px10 settings-page-main-item">
-            <div className="w60 d-flex px10">Vehicle Sale WhatsApp Message</div>
-            <div className="w40 d-flex">
-              <div>
-                <input
-                  type="radio"
-                  name="vSalesms"
-                  checked={settings.vSalesms}
-                  onChange={() => handleChange("vSalesms", true)}
-                />
-                <label className="info-text px10">Yes</label>
+            {/* Vehicle Sale WhatsApp Message */}
+            <div className="w90 d-flex j-center px10 settings-page-main-item">
+              <div className="w60 d-flex px10 info-text">
+                Vehicle Sale WhatsApp Message
               </div>
-              <div className="px5">
-                <input
-                  type="radio"
-                  name="vSalesms"
-                  checked={!settings.vSalesms}
-                  onChange={() => handleChange("vSalesms", false)}
-                />
-                <label className="info-text px10">No</label>
-              </div>
-            </div>
-          </div>
-          {/* Milk Collection WhatsApp Message */}
-          <div className="w90 d-flex j-center p10 settings-page-main-item">
-            <div className="w60 d-flex px10">
-              Milk Collection WhatsApp Message
-            </div>
-            <div className="w40 d-flex">
-              <div>
-                <input
-                  type="radio"
-                  name="millcoll"
-                  checked={settings.millcoll}
-                  onChange={() => handleChange("millcoll", true)}
-                />
-                <label className="info-text px10">Yes</label>
-              </div>
-              <div className="px5">
-                <input
-                  type="radio"
-                  name="millcoll"
-                  checked={!settings.millcoll}
-                  onChange={() => handleChange("millcoll", false)}
-                />
-                <label className="info-text px10">No</label>
+              <div className="w40 d-flex">
+                <div>
+                  <input
+                    type="radio"
+                    name="vSalesms"
+                    checked={settings.vSalesms}
+                    onChange={() => handleChange("vSalesms", true)}
+                  />
+                  <label className="info-text px10">Yes</label>
+                </div>
+                <div className="px5">
+                  <input
+                    type="radio"
+                    name="vSalesms"
+                    checked={!settings.vSalesms}
+                    onChange={() => handleChange("vSalesms", false)}
+                  />
+                  <label className="info-text px10">No</label>
+                </div>
               </div>
             </div>
-          </div>
-          {/* Vehicle Milk Collection WhatsApp Message */}
-          <div className="w90 d-flex j-center px10 settings-page-main-item">
-            <div className="w60 d-flex px10">
-              Vehicle Milk Collection WhatsApp Message
-            </div>
-            <div className="w40 d-flex">
-              <div>
-                <input
-                  type="radio"
-                  name="vMillcoll"
-                  checked={settings.vMillcoll}
-                  onChange={() => handleChange("vMillcoll", true)}
-                />
-                <label className="info-text px10">Yes</label>
+            {/* Milk Collection WhatsApp Message */}
+            <div className="w90 d-flex j-center p10 settings-page-main-item">
+              <div className="w60 d-flex px10 info-text">
+                Milk Collection WhatsApp Message
               </div>
-              <div className="px5">
-                <input
-                  type="radio"
-                  name="vMillcoll"
-                  checked={!settings.vMillcoll}
-                  onChange={() => handleChange("vMillcoll", false)}
-                />
-                <label className="info-text px10">No</label>
-              </div>
-            </div>
-          </div>
-          {/* Complete Milk Collection WhatsApp Message */}
-          <div className="w90 d-flex j-center p10 settings-page-main-item">
-            <div className="w60 d-flex px10">
-              Complete Milk Collection WhatsApp Message
-            </div>
-            <div className="w40 d-flex">
-              <div>
-                <input
-                  type="radio"
-                  name="cmillcoll"
-                  checked={settings.cmillcoll}
-                  onChange={() => handleChange("cmillcoll", true)}
-                />
-                <label className="info-text px10">Yes</label>
-              </div>
-              <div className="px5">
-                <input
-                  type="radio"
-                  name="cmillcoll"
-                  checked={!settings.cmillcoll}
-                  onChange={() => handleChange("cmillcoll", false)}
-                />
-                <label className="info-text px10">No</label>
+              <div className="w40 d-flex">
+                <div>
+                  <input
+                    type="radio"
+                    name="millcoll"
+                    checked={settings.millcoll}
+                    onChange={() => handleChange("millcoll", true)}
+                  />
+                  <label className="info-text px10">Yes</label>
+                </div>
+                <div className="px5">
+                  <input
+                    type="radio"
+                    name="millcoll"
+                    checked={!settings.millcoll}
+                    onChange={() => handleChange("millcoll", false)}
+                  />
+                  <label className="info-text px10">No</label>
+                </div>
               </div>
             </div>
-          </div>
-          <div className="w90 d-flex j-end p25">
-            <button className="w-btn" onClick={() => handleOnsave()}>
-              Save
-            </button>
+            {/* Vehicle Milk Collection WhatsApp Message */}
+            <div className="w90 d-flex j-center px10 settings-page-main-item">
+              <div className="w60 d-flex px10 info-text">
+                Vehicle Milk Collection WhatsApp Message
+              </div>
+              <div className="w40 d-flex">
+                <div>
+                  <input
+                    type="radio"
+                    name="vMillcoll"
+                    checked={settings.vMillcoll}
+                    onChange={() => handleChange("vMillcoll", true)}
+                  />
+                  <label className="info-text px10">Yes</label>
+                </div>
+                <div className="px5">
+                  <input
+                    type="radio"
+                    name="vMillcoll"
+                    checked={!settings.vMillcoll}
+                    onChange={() => handleChange("vMillcoll", false)}
+                  />
+                  <label className="info-text px10">No</label>
+                </div>
+              </div>
+            </div>
+            {/* Complete Milk Collection WhatsApp Message */}
+            <div className="w90 d-flex j-center p10 settings-page-main-item">
+              <div className="w60 d-flex px10 info-text">
+                Complete Milk Collection WhatsApp Message
+              </div>
+              <div className="w40 d-flex">
+                <div>
+                  <input
+                    type="radio"
+                    name="cmillcoll"
+                    checked={settings.cmillcoll}
+                    onChange={() => handleChange("cmillcoll", true)}
+                  />
+                  <label className="info-text px10">Yes</label>
+                </div>
+                <div className="px5">
+                  <input
+                    type="radio"
+                    name="cmillcoll"
+                    checked={!settings.cmillcoll}
+                    onChange={() => handleChange("cmillcoll", false)}
+                  />
+                  <label className="info-text px10">No</label>
+                </div>
+              </div>
+            </div>
+            <div className="w90 d-flex j-end p25">
+              <button className="w-btn" onClick={() => handleOnsave()}>
+                Save
+              </button>
+            </div>
           </div>
         </div>
       </div>
