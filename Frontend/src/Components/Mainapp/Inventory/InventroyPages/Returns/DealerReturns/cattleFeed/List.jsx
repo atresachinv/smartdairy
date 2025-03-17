@@ -13,6 +13,7 @@ import { FaDownload } from "react-icons/fa6";
 import jsPDF from "jspdf";
 import { useSelector } from "react-redux";
 import { TbSortAscending2, TbSortDescending2 } from "react-icons/tb";
+import "../DealerReturns.css";
 
 const List = () => {
   const { t } = useTranslation(["puchasesale", "common"]);
@@ -573,7 +574,7 @@ const List = () => {
       </div>
       {/* show invoice */}
       {isInvoiceOpen && viewItems.length > 0 && (
-        <div className="pramod modal">
+        <div className=" returnModal">
           <div className="modal-content">
             <div className="d-flex sb deal-info">
               <h2> {t("ps-InvoiceDetails")}</h2>
@@ -601,52 +602,52 @@ const List = () => {
               </h4>
               <h4 className="mx15">{viewItems[0]?.dealerName || ""}</h4>
             </div>
-            <div className="modal-content w100  ">
-              <div className="sales-table-container w100">
-                <table className="sales-table w100 ">
-                  <thead className="bg1">
-                    <tr>
-                      <th className="f-info-text"> {t("ps-srNo")}</th>
-                      <th className="f-info-text"> {t("ps-itm-name")}</th>
-                      <th className="f-info-text"> {t("ps-rate")}</th>
-                      <th className="f-info-text"> {t("ps-qty")}</th>
-                      <th className="f-info-text"> {t("ps-amt")}</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {viewItems.map((item, i) => (
-                      <tr key={i}>
-                        <td>{i + 1}</td>
-                        <td>{item.itemname}</td>
-                        <td className="w15"> {item.rate}</td>
+            {/* <div className="modal-content w100  "> */}
+            <div className="sales-table-container w100">
+              <table className="sales-table w100 ">
+                <thead className="bg1">
+                  <tr>
+                    <th className="f-info-text"> {t("ps-srNo")}</th>
+                    <th className="f-info-text"> {t("ps-itm-name")}</th>
+                    <th className="f-info-text"> {t("ps-rate")}</th>
+                    <th className="f-info-text"> {t("ps-qty")}</th>
+                    <th className="f-info-text"> {t("ps-amt")}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {viewItems.map((item, i) => (
+                    <tr key={i}>
+                      <td className="info-text">{i + 1}</td>
+                      <td className="info-text">{item.itemname}</td>
+                      <td className="w15 info-text"> {item.rate}</td>
 
-                        <td className="w15">{item.qty}</td>
-                        <td>{item.amount}</td>
-                      </tr>
-                    ))}
-                    <tr>
-                      <td></td>
-                      <td></td>
-                      <td></td>
-                      <td>
-                        <b> {t("ps-ttl-amt")}</b>
-                      </td>
-                      <td>
-                        {(viewItems || []).reduce(
-                          (acc, item) => acc + (item.amount || 0),
-                          0
-                        )}
-                      </td>
+                      <td className="w15 info-text">{item.qty}</td>
+                      <td className="info-text">{item.amount}</td>
                     </tr>
-                  </tbody>
-                </table>
-              </div>
+                  ))}
+                  <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td>
+                      <b className="info-text"> {t("ps-ttl-amt")}</b>
+                    </td>
+                    <td className="info-text">
+                      {(viewItems || []).reduce(
+                        (acc, item) => acc + (item.amount || 0),
+                        0
+                      )}
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
-            {/* <div className="d-flex my15 j-end">
+          </div>
+          {/* <div className="d-flex my15 j-end">
                       <button className="btn">Update</button>
                     </div> */}
-          </div>
         </div>
+        // </div>
       )}
     </div>
   );

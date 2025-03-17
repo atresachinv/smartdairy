@@ -472,16 +472,17 @@ const StockList = () => {
         </div>
       </div>
       {isModalOpen && (
-        <div className="pramod modal">
-          <div className="modal-content forMin">
+        <div className="startingModal">
+          <div className="modal-content ">
             <h2>{t("ps-stockProductDetail")}</h2>
-            <label>
+            <label className="info-text">
               {t("ps-itm-name")}: {editSale?.ItemCode}&nbsp;{editSale?.ItemName}
             </label>
-            <label>
+            <label className="info-text">
               {t("ps-rate")}:
               <input
                 type="text"
+                className="data"
                 value={editSale?.ItemRate}
                 onChange={(e) =>
                   setEditSale({ ...editSale, ItemRate: e.target.value })
@@ -489,9 +490,10 @@ const StockList = () => {
                 onFocus={(e) => e.target.select()}
               />
             </label>
-            <label>
+            <label className="info-text">
               {t("ps-qty")}:
               <input
+                className="data"
                 type="text"
                 value={editSale?.ItemQty}
                 onFocus={(e) => e.target.select()}
@@ -500,10 +502,11 @@ const StockList = () => {
                 }
               />
             </label>{" "}
-            <label>
+            <label className="info-text">
               {t("ps-sale-rate")}:
               <input
                 type="text"
+                className="data"
                 value={editSale?.SaleRate}
                 onFocus={(e) => e.target.select()}
                 onChange={(e) =>

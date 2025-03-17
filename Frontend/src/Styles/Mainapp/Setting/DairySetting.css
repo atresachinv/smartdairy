@@ -1,6 +1,6 @@
 .dairyModel {
   position: fixed;
-  top: 40%;
+  top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   width: 100%;
@@ -38,9 +38,16 @@
 .dairyModelContent {
   width: 100%;
   display: flex;
-  justify-content: space-around;
+  justify-content: space-between;
 }
-
+.machineContainer {
+  overflow-y: auto;
+  overflow-x: hidden;
+  height: auto;
+}
+.settings-page-main-item {
+  display: flex;
+}
 /*--------Mobile Screen CSS-------*/
 
 @media screen and (max-width: 426px) {

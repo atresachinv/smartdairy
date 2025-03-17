@@ -683,79 +683,82 @@ const List = () => {
                 </span>
               </label>
             </div>
-            <div className="modal-content w100  ">
-              <div className="sales-table-container w100">
-                <table className="sales-table w100 ">
-                  <thead className="bg1">
-                    <tr>
-                      {/* <th className="f-info-text"> {t("ps-srNo")}</th> */}
-                      <th className="f-info-text"> {t("ps-itm-name")}</th>
-                      <th className="f-info-text"> {t("ps-rate")}</th>
-                      <th className="f-info-text"> {t("ps-sale-rate")}</th>
-                      <th className="f-info-text"> {t("ps-qty")}</th>
-                      <th className="f-info-text"> {t("ps-amt")}</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {updatelist.map((item, i) => (
-                      <tr key={i}>
-                        {/* <td>{i + 1}</td> */}
-                        <td>{item.itemname}</td>
-                        <td className="w20">
-                          <input
-                            name="rate"
-                            type="number"
-                            value={item.rate}
-                            onFocus={handleFocus}
-                            onChange={(e) =>
-                              handleItemChange(i, "rate", e.target.value)
-                            }
-                          />
-                        </td>
-                        <td className="w20">
-                          <input
-                            name="sale"
-                            type="number"
-                            value={item.salerate}
-                            onFocus={handleFocus}
-                            onChange={(e) =>
-                              handleItemChange(i, "salerate", e.target.value)
-                            }
-                          />
-                        </td>
-                        <td className="w20">
-                          <input
-                            name="qty"
-                            type="number"
-                            value={item.qty}
-                            onFocus={handleFocus}
-                            onChange={(e) =>
-                              handleItemChange(i, "qty", e.target.value)
-                            }
-                          />
-                        </td>
-                        <td>{item.rate * item.qty}</td>
-                      </tr>
-                    ))}
-                    <tr>
-                      {/* <td></td> */}
-                      <td></td>
-                      <td></td>
-                      <td></td>
-                      <td>
-                        <b> {t("ps-ttl-amt")}</b>
+            {/* <div className="modal-content w100  "> */}
+            <div className="sales-table-container w100">
+              <table className="sales-table w100 ">
+                <thead className="bg1">
+                  <tr>
+                    {/* <th className="f-info-text"> {t("ps-srNo")}</th> */}
+                    <th className="f-info-text"> {t("ps-itm-name")}</th>
+                    <th className="f-info-text"> {t("ps-rate")}</th>
+                    <th className="f-info-text"> {t("ps-sale-rate")}</th>
+                    <th className="f-info-text"> {t("ps-qty")}</th>
+                    <th className="f-info-text"> {t("ps-amt")}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {updatelist.map((item, i) => (
+                    <tr key={i}>
+                      {/* <td>{i + 1}</td> */}
+                      <td className="info-text">{item.itemname}</td>
+                      <td className="w20">
+                        <input
+                          name="rate"
+                          type="number"
+                          className="data"
+                          value={item.rate}
+                          onFocus={handleFocus}
+                          onChange={(e) =>
+                            handleItemChange(i, "rate", e.target.value)
+                          }
+                        />
                       </td>
-                      <td>
-                        {(updatelist || []).reduce(
-                          (acc, item) => acc + (item.amount || 0),
-                          0
-                        )}
+                      <td className="w20">
+                        <input
+                          name="sale"
+                          type="number"
+                          className="data"
+                          value={item.salerate}
+                          onFocus={handleFocus}
+                          onChange={(e) =>
+                            handleItemChange(i, "salerate", e.target.value)
+                          }
+                        />
                       </td>
+                      <td className="w20">
+                        <input
+                          name="qty"
+                          type="number"
+                          className="data"
+                          value={item.qty}
+                          onFocus={handleFocus}
+                          onChange={(e) =>
+                            handleItemChange(i, "qty", e.target.value)
+                          }
+                        />
+                      </td>
+                      <td>{item.rate * item.qty}</td>
                     </tr>
-                  </tbody>
-                </table>
-              </div>
+                  ))}
+                  <tr>
+                    {/* <td></td> */}
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td>
+                      <b> {t("ps-ttl-amt")}</b>
+                    </td>
+                    <td>
+                      {(updatelist || []).reduce(
+                        (acc, item) => acc + (item.amount || 0),
+                        0
+                      )}
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
+            {/* </div> */}
             <div className="d-flex my15 j-end">
               <button className="btn" onClick={handleUpdate}>
                 {t("ps-update")}

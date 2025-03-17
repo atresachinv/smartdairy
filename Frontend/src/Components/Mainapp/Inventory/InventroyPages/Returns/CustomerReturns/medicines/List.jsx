@@ -625,13 +625,13 @@ const MedList = () => {
         </div>
         {/* show invoice */}
         {isInvoiceOpen && viewItems.length > 0 && (
-          <div className="pramod modal">
+          <div className=" returnModal">
             <div className="modal-content">
               <div className="d-flex sb deal-info">
-                <h2> {t("ps-InvoiceDetails")} </h2>
+                <h2> {t("ps-InvoiceDetails")}</h2>
                 <IoClose
                   style={{ cursor: "pointer" }}
-                  size={25}
+                  className="icon"
                   onClick={() => setIsInvoiceOpen(false)}
                 />
               </div>
@@ -654,63 +654,62 @@ const MedList = () => {
                   {handleFindCustName(viewItems[0]?.CustCode) || ""}
                 </h4>
               </div>
-              <div className="modal-content w100  ">
-                <div className="sales-table-container w100">
-                  <table className="sales-table w100 ">
-                    <thead className="bg1">
-                      <tr>
-                        <th>{t("ps-srNo")}</th>
-                        <th>{t("ps-itm-name")}</th>
-                        <th>{t("ps-rate")}</th>
-                        <th>{t("ps-qty")}</th>
-                        <th>{t("ps-amt")}</th>
-                        <th>Action</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {viewItems.map((item, i) => (
-                        <tr key={i}>
-                          <td>{i + 1}</td>
-                          <td>{handleFindItemName(item.ItemCode)}</td>
-                          <td className="w15"> {item.Rate}</td>
-
-                          <td className="w15">{item.Qty}</td>
-                          <td>{item.Amount}</td>
-                          <td>
-                            <MdDeleteOutline
-                              onClick={() => handleDeleteItem(item?.saleid)}
-                              size={15}
-                              title="Delete the Item"
-                              className="table-icon "
-                              style={{ color: "red" }}
-                            />
-                          </td>
-                        </tr>
-                      ))}
-                      <tr>
-                        <td></td>
-                        <td></td>
-                        <td></td>
+              {/* <div className="modal-content w100  "> */}
+              <div className="sales-table-container w100">
+                <table className="sales-table w100 ">
+                  <thead className="bg1">
+                    <tr>
+                      <th className="f-info-text"> {t("ps-srNo")}</th>
+                      <th className="f-info-text"> {t("ps-itm-name")}</th>
+                      <th className="f-info-text"> {t("ps-rate")}</th>
+                      <th className="f-info-text"> {t("ps-qty")}</th>
+                      <th className="f-info-text"> {t("ps-amt")}</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {viewItems.map((item, i) => (
+                      <tr key={i}>
+                        <td className="info-text">{i + 1}</td>
+                        <td>{handleFindItemName(item.ItemCode)}</td>
+                        <td className="w15"> {item.Rate}</td>
+                        <td className="w15">{item.Qty}</td>
+                        <td>{item.Amount}</td>
                         <td>
-                          <b> {t("ps-ttl-amt")}</b>
+                          <MdDeleteOutline
+                            onClick={() => handleDeleteItem(item?.saleid)}
+                            size={15}
+                            title="Delete the Item"
+                            className="table-icon "
+                            style={{ color: "red" }}
+                          />
                         </td>
-                        <td>
-                          {(viewItems || []).reduce(
-                            (acc, item) => acc + (item.Amount || 0),
-                            0
-                          )}
-                        </td>
-                        <td></td>
                       </tr>
-                    </tbody>
-                  </table>
-                </div>
+                    ))}
+                    <tr>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td>
+                        <b className="info-text"> {t("ps-ttl-amt")}</b>
+                      </td>
+                      <td className="info-text">
+                        {(viewItems || []).reduce(
+                          (acc, item) => acc + (item.Amount || 0),
+                          0
+                        )}
+                      </td>
+                      <td></td>
+                    </tr>
+                  </tbody>
+                </table>
               </div>
-              {/* <div className="d-flex my15 j-end">
-                <button className="btn">Update</button>
-              </div> */}
             </div>
+            {/* <div className="d-flex my15 j-end">
+                            <button className="btn">Update</button>
+                          </div> */}
           </div>
+          // </div>
         )}
       </div>
     </div>
