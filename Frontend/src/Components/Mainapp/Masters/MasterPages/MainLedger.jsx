@@ -7,14 +7,26 @@ const MainLedger = () => {
       <div className="GL-master-div w60 h30 d-flex-col ">
         <div className="gl-master-inside-div h70 w100">
           <div className="first-span-input w100 h30  d-flex center my10">
-            <span className="w20 d-flex info-text">Gl number:</span>
+            <span className="w20 d-flex info-text">No:</span>
             <input className="w50 d-flex data " type="text" />
-            <input className="w10 h50 checkbox" type="checkbox" />
-            <span className="info-text w20">user Define</span>
+          </div>
+          <div className="first-span-input w100 h30  d-flex center my10">
+            <span className="w20 d-flex info-text">No:</span>
+            <input className="w50 d-flex data " type="text" />
           </div>
           <div className="gl-name-div w100 h30 d-flex center my10">
-            <span className=" w20 info-text ">Gl Name:</span>
+            <span className=" w20 info-text ">Ledger Name:</span>
             <input className="w50 data" type="text" />
+            <input className="w10 h50 checkbox" type="checkbox" />
+            <span className="info-text w20">user Define</span>
+            <input className="w10 h50 checkbox" type="checkbox" />
+            <span className=" w20 info-text">Pot khate</span>
+          </div>
+          <div className="gl-name-div w100 h30 d-flex center my10">
+            <span className=" w20 info-text ">Ledger Name:</span>
+            <input className="w50 data" type="text" />
+            <input className="w10 h50 checkbox" type="checkbox" />
+            <span className="info-text w20">user Define</span>
             <input className="w10 h50 checkbox" type="checkbox" />
             <span className=" w20 info-text">Pot khate</span>
           </div>

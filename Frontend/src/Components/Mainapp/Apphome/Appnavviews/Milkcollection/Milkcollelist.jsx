@@ -11,7 +11,7 @@ const Milkcollelist = () => {
   const milkColl = useSelector((state) => state.milkCollection.entries || [])
     .slice()
     .reverse();
-
+  console.log(milkColl)
   const [custList, setCustomersList] = useState({}); // to check remainning customer list
   const [milkData, setMilkData] = useState([]); // to check remainning customer list
   const [isRCust, setIsRCust] = useState(false); // to show remainning customer list

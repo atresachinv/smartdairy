@@ -11,7 +11,9 @@ import { centersLists } from "../../../../../App/Features/Dairy/Center/centerSli
 const CustomerList = () => {
   const dispatch = useDispatch();
   const { t } = useTranslation(["master", "milkcollection", "common"]);
-  const customerlist = useSelector((state) => state.customers.customerlist || []);
+  const customerlist = useSelector(
+    (state) => state.customers.customerlist || []
+  );
   const status = useSelector((state) => state.customers.cliststatus);
   const centerList = useSelector(
     (state) => state.center.centersList.centersDetails || []
@@ -201,7 +203,7 @@ const CustomerList = () => {
                 <span className="f-info-text w15">{t("master:m-mdate")}</span> */}
                 <span className="f-info-text w15">{t("master:m-rtype")}</span>
                 <span className="f-info-text w10">{t("master:m-mtype")}</span>
-                {/* <span className="f-info-text w5">{t("master:m-active")}</span> */}
+                <span className="f-info-text w5">{t("Id")}</span>
               </div>
               {/* Show Spinner if loading, otherwise show the customer list */}
               {status === "loading" ? (
@@ -250,10 +252,7 @@ const CustomerList = () => {
                     <span className="text w10 t-start">
                       {customer.milktype === 0 ? "Cow" : "Buffalo"}
                     </span>
-                    {/* <span className="text w5">
-                      {customer.isActive === 1 ? "Yes" : "No"}
-                    </span>{" "} */}
-                    {/* Assuming all customers are active */}
+                    <span className="text w5">{customer.fax}</span>
                   </div>
                 ))
               ) : (

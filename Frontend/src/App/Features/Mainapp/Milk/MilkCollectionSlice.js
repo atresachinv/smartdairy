@@ -72,7 +72,6 @@ export const saveMilkOneEntry = createAsyncThunk(
   }
 );
 
-
 export const fetchTodaysMilk = createAsyncThunk(
   "milkCollection/fetchTodaysMilk",
   async ({ date }, { rejectWithValue }) => {
@@ -407,9 +406,5 @@ const milkCollectionSlice = createSlice({
 
 export const { setEntries, addEntry } = milkCollectionSlice.actions;
 
-export const fetchEntries = () => (dispatch) => {
-  const allEntries = JSON.parse(localStorage.getItem("milkentries")) || [];
-  dispatch(setEntries(allEntries));
-};
-
+  
 export default milkCollectionSlice.reducer;

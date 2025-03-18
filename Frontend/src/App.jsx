@@ -22,12 +22,13 @@ import Unauthorized from "./Components/Home/Unauthorized";
 import { logoutUser, setLogin } from "./App/Features/Users/authSlice";
 import axiosInstance from "./App/axiosInstance";
 import Aboutus from "./Components/Home/Aboutus";
+import FingerprintJS from "@fingerprintjs/fingerprintjs";
 
 function App() {
   const dispatch = useDispatch();
   const toDate = useSelector((state) => state.date.toDate);
   const profile = useSelector((state) => state.profile.profileInfo);
-  const [fcmToken, setFCMToken] = useState(null);
+  // const [fcmToken, setFCMToken] = useState(null);
 
   // check if user login or not if login continue to app -------------------------------->
   useEffect(() => {
@@ -49,84 +50,93 @@ function App() {
     }
   }, [dispatch, toDate]);
 
+  const getFingerprint = async () => {
+    const fp = await FingerprintJS.load();
+    const result = await fp.get();
+    console.log("Fingerprint ID:", result.visitorId);
+    return result.visitorId;
+  };
+
+  getFingerprint();
+
   // Firebase Messaging ....................
 
   // Foreground Firebase Messaging ..............
-  onMessageListener()
-    .then((payload) => {
-      toast(
-        <>
-          <strong className="noti-title">{payload.notification.title}</strong>
-          <p>{payload.notification.body}</p>
-        </>,
-        {
-          autoClose: 3500,
-        }
-      );
-    })
-    .catch((err) => console.error("Error in onMessageListener:", err));
+  // onMessageListener()
+  //   .then((payload) => {
+  //     toast(
+  //       <>
+  //         <strong className="noti-title">{payload.notification.title}</strong>
+  //         <p>{payload.notification.body}</p>
+  //       </>,
+  //       {
+  //         autoClose: 3500,
+  //       }
+  //     );
+  //   })
+  //   .catch((err) => console.error("Error in onMessageListener:", err));
 
-  if ("serviceWorker" in navigator) {
-    window.addEventListener("load", () => {
-      navigator.serviceWorker
-        .register("/firebase-messaging-sw.js")
-        .then((registration) => {
-          console.log(
-            "Service Worker registered with scope:",
-            registration.scope
-          );
-        })
-        .catch((error) => {
-          console.error("Service Worker registration failed:", error);
-        });
-    });
-  }
+  // if ("serviceWorker" in navigator) {
+  //   window.addEventListener("load", () => {
+  //     navigator.serviceWorker
+  //       .register("/firebase-messaging-sw.js")
+  //       .then((registration) => {
+  //         console.log(
+  //           "Service Worker registered with scope:",
+  //           registration.scope
+  //         );
+  //       })
+  //       .catch((error) => {
+  //         console.error("Service Worker registration failed:", error);
+  //       });
+  //   });
+  // }
 
-  useEffect(() => {
-    const fetchFCMToken = async () => {
-      try {
-        const token = await requestForToken();
-        if (token) {
-          setFCMToken(token);
+  // useEffect(() => {
+  //   const fetchFCMToken = async () => {
+  //     try {
+  //       const token = await requestForToken();
+  //       if (token) {
+  //         setFCMToken(token);
 
-          // Check if the user is logged in before storing the token
-          if (profile?.srno) {
-            dispatch(saveFCMTokenToDB({ token, cust_no: profile.srno }));
-            localStorage.setItem("fcmToken", token); // Store in localStorage
-          }
-        } else {
-          console.warn("No FCM token returned!");
-        }
-      } catch (err) {
-        console.error(
-          err.message === "Notification not granted!"
-            ? "User declined Notification permission!"
-            : "Error fetching FCM token.",
-          err
-        );
-      }
-    };
+  //         // Check if the user is logged in before storing the token
+  //         if (profile?.srno) {
+  //           dispatch(saveFCMTokenToDB({ token, cust_no: profile.srno }));
+  //           localStorage.setItem("fcmToken", token); // Store in localStorage
+  //         }
+  //       } else {
+  //         console.warn("No FCM token returned!");
+  //       }
+  //     } catch (err) {
+  //       console.error(
+  //         err.message === "Notification not granted!"
+  //           ? "User declined Notification permission!"
+  //           : "Error fetching FCM token.",
+  //         err
+  //       );
+  //     }
+  //   };
 
-    // Only fetch the token if the user is logged in and the token is not stored
-    if (profile?.srno && !localStorage.getItem("fcmToken")) {
-      fetchFCMToken();
-    }
-  }, [profile?.srno]); // Runs when the user logs in
+  //   // Only fetch the token if the user is logged in and the token is not stored
+  //   if (profile?.srno && !localStorage.getItem("fcmToken")) {
+  //     fetchFCMToken();
+  //   }
+  // }, [profile?.srno]); // Runs when the user logs in
 
-  useEffect(() => {
-    // When the customer list is updated, store it in localStorage
-    if (!fcmToken) {
-      localStorage.setItem("fcmtoken", JSON.stringify("yes"));
-    }
-  }, [fcmToken]);
+  // useEffect(() => {
+  //   // When the customer list is updated, store it in localStorage
+  //   if (!fcmToken) {
+  //     localStorage.setItem("fcmtoken", JSON.stringify("yes"));
+  //   }
+  // }, [fcmToken]);
 
-  window.addEventListener("load", () => {
-    navigator.serviceWorker.getRegistrations().then((registrations) => {
-      for (let registration of registrations) {
-        registration.update();
-      }
-    });
-  });
+  // window.addEventListener("load", () => {
+  //   navigator.serviceWorker.getRegistrations().then((registrations) => {
+  //     for (let registration of registrations) {
+  //       registration.update();
+  //     }
+  //   });
+  // });
 
   return (
     <>

@@ -147,11 +147,18 @@ export const getTransferedMilk = createAsyncThunk(
 // Transfer Milk Customer To Customer ---------->
 export const transferTOCustomer = createAsyncThunk(
   "payment/transferTOCustomer",
-  async ({ fromDate, toDate }, { rejectWithValue }) => {
+  async (
+    { ucode, ucname, uacccode, fromDate, toDate, records },
+    { rejectWithValue }
+  ) => {
     try {
       const response = await axiosInstance.patch("/transfer/milk-to/customer", {
+        ucode,
+        ucname,
+        uacccode,
         fromDate,
         toDate,
+        records,
       });
       return response.data;
     } catch (error) {

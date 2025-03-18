@@ -214,8 +214,17 @@ exports.deleteSelectedMilkRecord = async (req, res) => {
 
   // Validate request body
   if (!records || records.length === 0) {
-    return res.status(400).json({ message: "Records are required!" });
+    return res
+      .status(400)
+      .json({ status: 400, message: "Records are required!" });
   }
+  const dairy_id = req.user.dairy_id;
+
+  if (!dairy_id) {
+    return res.status(401).json({ status: 401, message: "Unauthorized User!" });
+  }
+
+  const dairy_table = `dailymilkentry_${dairy_id}`;
 
   pool.getConnection(async (err, connection) => {
     if (err) {
@@ -224,15 +233,6 @@ exports.deleteSelectedMilkRecord = async (req, res) => {
     }
 
     try {
-      const dairy_id = req.user.dairy_id;
-
-      if (!dairy_id) {
-        connection.release();
-        return res.status(400).json({ message: "Dairy ID not found!" });
-      }
-
-      const dairy_table = `dailymilkentry_${dairy_id}`;
-
       // Create a query to update multiple records at once
       const placeholders = records.map(() => "?").join(", ");
 
@@ -277,15 +277,15 @@ exports.deleteSelectedMilkRecord = async (req, res) => {
 exports.getMilkTrasferToCustomer = async (req, res) => {
   try {
     const { code, fromDate, toDate } = req.query;
-    console.log("Received Query Params:", req.query);
 
     const { dairy_id, center_id } = req.user;
     if (!dairy_id) {
-      return res.status(400).json({ message: "Dairy ID not found!" });
+      return res
+        .status(400)
+        .json({ status: 4001, message: "Unauthorized User!" });
     }
 
     const dairy_table = `dailymilkentry_${dairy_id}`;
-    console.log("Querying Table:", dairy_table);
 
     pool.getConnection((err, connection) => {
       if (err) {
@@ -311,8 +311,6 @@ exports.getMilkTrasferToCustomer = async (req, res) => {
               .status(500)
               .json({ message: "Query execution error", error: err.message });
           }
-
-          console.log("Result Length:", result.length);
 
           if (result.length === 0) {
             return res.status(200).json({
@@ -338,7 +336,6 @@ exports.getMilkTrasferToCustomer = async (req, res) => {
 exports.getTrasferedMilk = async (req, res) => {
   try {
     const { code, fromDate, toDate } = req.query;
-    console.log("Received Query Params:", req.query);
 
     const { dairy_id, center_id } = req.user;
     if (!dairy_id) {
@@ -346,7 +343,6 @@ exports.getTrasferedMilk = async (req, res) => {
     }
 
     const dairy_table = `dailymilkentry_${dairy_id}`;
-    console.log("Querying Table:", dairy_table);
 
     pool.getConnection((err, connection) => {
       if (err) {
@@ -373,8 +369,6 @@ exports.getTrasferedMilk = async (req, res) => {
               .json({ message: "Query execution error", error: err.message });
           }
 
-          console.log("Result Length:", result.length);
-
           if (result.length === 0) {
             return res.status(200).json({
               message: "No records found!",
@@ -397,59 +391,90 @@ exports.getTrasferedMilk = async (req, res) => {
 // ----------------------------------------------------------------------------------->
 
 exports.milkTrasferToCustomer = async (req, res) => {
-  const { record } = req.body;
+  const { ucode, ucname, uacccode, fromDate, toDate, records } = req.body;
+  const dairy_id = req.user.dairy_id;
+  const user_role = req.user.user_role;
+
+  if (!dairy_id || !user_role) {
+    return res.status(401).json({ status: 401, message: "Unauthorized User!" });
+  }
 
   // Validate request body
-  if (!record) {
-    return res.status(400).json({ message: "record are required!" });
+  if (
+    !ucode ||
+    !ucname ||
+    !uacccode ||
+    !fromDate ||
+    !toDate ||
+    !records ||
+    !Array.isArray(records) ||
+    records.length === 0
+  ) {
+    return res.status(400).json({
+      status: 400,
+      message: "Milk collection data is required to milk transfer!",
+    });
   }
 
   pool.getConnection((err, connection) => {
     if (err) {
       console.error("Error getting MySQL connection: ", err);
-      return res.status(500).json({ message: "Database connection error" });
+      return res
+        .status(500)
+        .json({ status: 500, message: "Database connection error!" });
     }
 
     try {
-      const dairy_id = req.user.dairy_id;
-      const user_role = req.user.user_role;
-
-      if (!dairy_id) {
-        connection.release();
-        return res.status(400).json({ message: "Dairy ID not found!" });
-      }
-
-      // const currentDate =
       const dairy_table = `dailymilkentry_${dairy_id}`;
+      const currentDate = new Date();
 
       const updateRecordQuery = `
-        UPDATE  AccCode , cname , rno UpdatedBy, updatedOn
-        FROM ${dairy_table}
-        WHERE id = ? AND rno = ?
+        UPDATE ${dairy_table} 
+        SET AccCode = ?, cname = ?, rno = ?, UpdatedBy = ?, updatedOn = ? 
+        WHERE id = ?
       `;
-      connection.query(
-        updateRecordQuery,
-        [date, code, time, user_role, currentDate],
-        (err, result) => {
-          connection.release(); // Always release the connection
-          if (err) {
-            console.error("Error executing query: ", err);
-            return res.status(500).json({ message: "Query execution error" });
+
+      const updatePromises = records.map((record) => {
+        return new Promise((resolve, reject) => {
+          const { id } = record;
+          if (!id) {
+            return reject("Invalid record format");
           }
 
-          if (result.length === 0) {
-            return res.status(404).json({ message: "No records found!" });
-          }
+          connection.query(
+            updateRecordQuery,
+            [uacccode, ucname, ucode, user_role, currentDate, id],
+            (err, result) => {
+              if (err) {
+                console.error("Error executing query: ", err);
+                return reject("Query execution error");
+              }
+              resolve(result);
+            }
+          );
+        });
+      });
 
-          // Return the results
+      Promise.all(updatePromises)
+        .then(() => {
+          connection.release();
+          res.status(200).json({
+            status: 200,
+            message: "Milk Collection Transfered successfully!",
+          });
+        })
+        .catch((error) => {
+          connection.release();
           res
-            .status(200)
-            .json({ message: "Selected Record updated successfully!" });
-        }
-      );
+            .status(500)
+            .json({ status: 500, message: "Error updating records", error });
+        });
     } catch (error) {
+      connection.release();
       console.error("Error processing request: ", error);
-      return res.status(500).json({ message: "Internal server error" });
+      return res
+        .status(500)
+        .json({ status: 500, message: "Internal server error" });
     }
   });
 };
@@ -461,9 +486,18 @@ exports.milkTrasferToCustomer = async (req, res) => {
 exports.milkTrasferToDates = async (req, res) => {
   const { record } = req.body;
 
+  const { dairy_id, user_role } = req.user;
+
   // Validate request body
-  if (!record) {
-    return res.status(400).json({ message: "record are required!" });
+  if (!record || !Array.isArray(record) || record.length === 0) {
+    return res
+      .status(400)
+      .json({ message: "Records are required and should be an array!" });
+  }
+
+  if (!dairy_id) {
+    connection.release();
+    return res.status(400).json({ message: "Dairy ID not found!" });
   }
 
   pool.getConnection((err, connection) => {
@@ -473,46 +507,47 @@ exports.milkTrasferToDates = async (req, res) => {
     }
 
     try {
-      const dairy_id = req.user.dairy_id;
-      const user_role = req.user.user_role;
-      const center_id = req.user.center_id;
-
-      if (!dairy_id) {
-        connection.release();
-        return res.status(400).json({ message: "Dairy ID not found!" });
-      }
-
       // const currentDate =
       const dairy_table = `dailymilkentry_${dairy_id}`;
 
       const updateRecordQuery = `
-        UPDATE  Litres , fat , snf, rate, Amt , UpdatedBy, updatedOn
-        FROM ${dairy_table}
-        WHERE ReceiptDate = ? AND rno = ? AND ME = ?
-
+        UPDATE ${dairy_table} 
+        SET ReceiptDate = ?, ME = ? , UpdatedBy = ?, updatedOn = ? 
+        WHERE id = ? AND ReceiptDate = ? AND  rno BETWEEN ? AND ?
       `;
 
-      connection.query(
-        updateRecordQuery,
-        [date, code, time, user_role, currentDate],
-        (err, result) => {
-          connection.release(); // Always release the connection
-          if (err) {
-            console.error("Error executing query: ", err);
-            return res.status(500).json({ message: "Query execution error" });
+      const updatePromises = records.map((record) => {
+        return new Promise((resolve, reject) => {
+          const { id, rno, AccCode, cname } = record;
+          if (!id || !rno || !AccCode || !cname) {
+            return reject("Invalid record format");
           }
 
-          if (result.length === 0) {
-            return res.status(404).json({ message: "No records found!" });
-          }
+          connection.query(
+            updateRecordQuery,
+            [AccCode, cname, rno, user_role, currentDate, id, rno],
+            (err, result) => {
+              if (err) {
+                console.error("Error executing query: ", err);
+                return reject("Query execution error");
+              }
+              resolve(result);
+            }
+          );
+        });
+      });
 
-          // Return the results
-          res
-            .status(200)
-            .json({ message: "Selected Record updated successfully!" });
-        }
-      );
+      Promise.all(updatePromises)
+        .then(() => {
+          connection.release();
+          res.status(200).json({ message: "Records updated successfully!" });
+        })
+        .catch((error) => {
+          connection.release();
+          res.status(500).json({ message: "Error updating records", error });
+        });
     } catch (error) {
+      connection.release();
       console.error("Error processing request: ", error);
       return res.status(500).json({ message: "Internal server error" });
     }

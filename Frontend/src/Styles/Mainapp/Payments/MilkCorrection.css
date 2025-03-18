@@ -4,3 +4,74 @@
   padding: 10px;
   background: #ddbbb5;
 }
+.milk-correction-data-container .morning-milk-correction-data,
+.milk-correction-data-container .evening-milk-correction-data {
+  width: 49%;
+}
+
+@media screen and (max-width: 426px) {
+  .milk-correction-container {
+    min-height: auto;
+  }
+  .milk-correction-container .milk-collection-date-fillter-container {
+    min-height: fit-content;
+    flex-direction: column;
+  }
+  .milk-collection-date-fillter-container .form-customer-details-container {
+    width: 100%;
+    min-height: 100px;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+  .form-customer-details-container .custmize-report-div {
+    width: 80%;
+  }
+  .form-customer-details-container .customer-details-container {
+    width: 100%;
+  }
+  .customer-details-container .btn-code-container {
+    width: 30%;
+  }
+  .customer-details-container .cust_name {
+    width: 60%;
+  }
+  .milk-collection-date-fillter-container .data-fillter-container {
+    width: 100%;
+    min-height: fit-content;
+  }
+  .data-fillter-container .fillter-selection-container {
+    margin-top: 10px;
+  }
+  .data-fillter-container .fillter-selection-container .checkbx {
+    width: 20%;
+    height: auto;
+  }
+  .milk-correction-data-container {
+    width: 100%;
+    min-height: fit-content;
+    flex-direction: column-reverse;
+    padding: 10px;
+  }
+
+  .milk-correction-inner-container {
+    width: 100%;
+    overflow-x: auto;
+    min-height: fit-content;
+    flex-direction: column;
+  }
+  .milk-correction-inner-container .morning-milk-correction-data,
+  .milk-correction-inner-container .evening-milk-correction-data {
+    min-width: 700px;
+    min-height: 450px;
+    margin-bottom: 10px;
+  }
+  .milk-correction-data-container .action-btn-container {
+    width: 100%;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-around;
+  }
+}
+
+/* Milk correction css end */

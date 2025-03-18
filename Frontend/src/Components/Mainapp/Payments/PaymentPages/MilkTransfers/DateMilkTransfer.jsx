@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { toast } from "react-toastify";
 import { useDispatch, useSelector } from "react-redux";
 import { listCustomer } from "../../../../../App/Features/Customers/customerSlice";
 
@@ -148,15 +149,11 @@ const DateMilkTransfer = () => {
 
   // ------------------------------------------------------------------->
   // Milk copy to database function ------------------------------------>
-  const handleMilkTransferToShift = (e) => {
+  const handleMilkTransferToShift = async (e) => {
     e.preventDefault();
-    dispatch(transferToShift({ values }));
-    if (status === "succeeded") {
-      toast.success(
-        `Milk Collection Transfer to ${
-          values.updatetime.toString() === "0" ? "Morning" : "Evening"
-        }  Successfully!`
-      );
+    const result = await dispatch(transferToShift({ values })).unwrap();
+    if (result.status === 200) {
+      toast.success(result.message);
     } else {
       toast.error(`Milk Collection Transfer to failed, try again! `);
     }
@@ -165,7 +162,8 @@ const DateMilkTransfer = () => {
   return (
     <form
       onSubmit={handleMilkTransferToShift}
-      className="shift-wise-milk-transfer-container w100 h1 d-flex-col a-center ">
+      className="shift-wise-milk-transfer-container w100 h1 d-flex-col a-center "
+    >
       <span className="heading p10">Transfer Shift Wise Milk Collection</span>
       <div className="milk-date-transfer-container w50 h90 d-flex-col sa bg p10">
         <span className="sub-heading t-center">From This Date</span>
@@ -303,7 +301,8 @@ const DateMilkTransfer = () => {
           <button
             type="submit"
             className="w-btn m10"
-            disabled={status === "loading"}>
+            disabled={status === "loading"}
+          >
             {status === "loading" ? "Transfering..." : "Transfer"}
           </button>
         </div>

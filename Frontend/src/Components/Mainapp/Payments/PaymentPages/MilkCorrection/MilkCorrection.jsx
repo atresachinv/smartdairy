@@ -1,4 +1,3 @@
-// MilkCorrection;
 import React, { useEffect, useState } from "react";
 import {
   BsCalendar3,
@@ -21,11 +20,13 @@ import {
   transferTOMorning,
   updateMilkData,
 } from "../../../../../App/Features/Payments/paymentSlice";
+import "../../../../../Styles/Mainapp/Payments/MilkCorrection.css";
 
 const MilkCorrection = () => {
   const { t } = useTranslation(["common", "milkcollection"]);
   const dispatch = useDispatch();
   const date = useSelector((state) => state.date.toDate);
+
   const manualMaster = useSelector((state) => state.manualMasters.masterlist);
   const data = useSelector((state) => state.milkCollection.allMilkColl);
   //Local State
@@ -394,13 +395,15 @@ const MilkCorrection = () => {
             </span>
             <select
               className="custom-select label-text w80 "
-              onChange={handleSelectChange}>
+              onChange={handleSelectChange}
+            >
               <option>--{t("c-select-master")}--</option>
               {manualMaster.map((dates, index) => (
                 <option
                   className="label-text w100 d-flex  sa"
                   key={index}
-                  value={index}>
+                  value={index}
+                >
                   {new Date(dates.start).toLocaleDateString("en-GB", {
                     day: "2-digit",
                     month: "short", // Abbreviated month format
@@ -422,7 +425,7 @@ const MilkCorrection = () => {
                 <BsChevronDoubleLeft className="icon " />
               </button>
               <input
-                className="data w45 t-center"
+                className="data w45 t-center mx5"
                 type="text"
                 value={currentIndex || ""}
                 name="code"
@@ -435,7 +438,7 @@ const MilkCorrection = () => {
               </button>
             </div>
             <input
-              className="data w50 mx10"
+              className="cust_name data w50 mx10"
               type="text"
               name=""
               id=""
@@ -445,240 +448,257 @@ const MilkCorrection = () => {
             />
           </div>
         </div>
-        <div className="data-fillter-container w20 h1 d-flex-col">
+        <div className="data-fillter-container w50 h1 d-flex-col">
           <div className="fillter-selection-container w100 h25 d-flex a-center sb">
-            <input className="data w10 h70" type="checkbox" name="" id="" />
-            <span className="info-text w80">Misplaced Milk Collection</span>
+            <input
+              className="checkbx data w5 h70"
+              type="checkbox"
+              name="mmc"
+              id="mmc"
+            />
+            <span className="label-text w90">Misplaced Milk Collection</span>
           </div>
           <div className="fillter-selection-container w100 h25 d-flex a-center sb">
-            <input className="data w10 h70" type="checkbox" name="" id="" />
-            <span className="info-text w80">
+            <input
+              className="checkbx data w5 h70"
+              type="checkbox"
+              name="mmic"
+              id="mmic"
+            />
+            <span className="label-text w90">
               Misplaced Milk To Inactive Customer
             </span>
           </div>
         </div>
       </div>
-      <div className="milk-collection-data-container w100 h80 d-flex sa">
-        <div className="morning-milk-collection-data w40 h1 mh100 hidescrollbar d-flex-col bg">
-          <div className="collection-heading-container w100 h10 d-flex a-center bg7 sticky-top sa">
-            <span className="f-info-text w10">Edit</span>
-            <span className="f-info-text w20">Date</span>
-            <span className="f-info-text w10">Liters</span>
-            <span className="f-info-text w10">Fat</span>
-            <span className="f-info-text w10">Deg</span>
-            <span className="f-info-text w10">Snf</span>
-            <span className="f-info-text w10">Rate</span>
-            <span className="f-info-text w15">Amount</span>
-          </div>
-          {morningData.length > 0 ? (
-            morningData.map((milk, index) => (
-              <div
-                key={index}
-                className={`collection-data-container w100 h10 d-flex a-center t-center sb`}
-                style={{
-                  backgroundColor:
-                    selectedMorningItems.includes(milk.id) ||
-                    editmrgIndex === index
-                      ? "#f7bb79"
-                      : index % 2 === 0
-                      ? "#faefe3"
-                      : "#fff",
-                }}
-                onClick={() => handleSelectItem("morning", milk.id)}>
-                <span className="text w10 t-center d-flex a-center sa">
+      <div className="milk-correction-data-container w100 h80 d-flex sa">
+        <div className="milk-correction-inner-container w100 h1 d-flex sa">
+          <div className="morning-milk-correction-data  h1 mh100 hidescrollbar d-flex-col bg">
+            <div className="correction-heading-container w100 h10 d-flex a-center t-center bg7 sticky-top sa">
+              <span className="f-info-text w10">Edit</span>
+              <span className="f-info-text w20">Date</span>
+              <span className="f-info-text w10">Liters</span>
+              <span className="f-info-text w10">Fat</span>
+              <span className="f-info-text w10">Deg</span>
+              <span className="f-info-text w10">Snf</span>
+              <span className="f-info-text w10">Rate</span>
+              <span className="f-info-text w15">Amount</span>
+            </div>
+            {morningData.length > 0 ? (
+              morningData.map((milk, index) => (
+                <div
+                  key={index}
+                  className={`correction-data-container w100 h10 d-flex a-center t-center sb`}
+                  style={{
+                    backgroundColor:
+                      selectedMorningItems.includes(milk.id) ||
+                      editmrgIndex === index
+                        ? "#f7bb79"
+                        : index % 2 === 0
+                        ? "#faefe3"
+                        : "#fff",
+                  }}
+                  onClick={() => handleSelectItem("morning", milk.id)}
+                >
+                  <span className="text w10 t-center d-flex a-center sa">
+                    {editmrgIndex === index ? (
+                      <FaSave
+                        className="color-icon"
+                        onClick={() => handleSaveData(milk)}
+                      />
+                    ) : (
+                      <FaEdit
+                        className="color-icon"
+                        onClick={() => handleEditMrgClick(index, milk)}
+                      />
+                    )}
+                  </span>
+                  <span className="text w20 t-start">
+                    {milk.ReceiptDate.slice(0, 10)}
+                  </span>
                   {editmrgIndex === index ? (
-                    <FaSave
-                      className="color-icon"
-                      onClick={() => handleSaveData(milk)}
-                    />
+                    <>
+                      <span className="text w10 d-flex center">
+                        <input
+                          className="data w100 t-center"
+                          type="text"
+                          value={editedData.liters}
+                          onChange={(e) =>
+                            handleEditedDataChange("liters", e.target.value)
+                          }
+                        />
+                      </span>
+                      <span className="text w10">
+                        <input
+                          className="data w100 d-flex center t-center"
+                          type="text"
+                          value={editedData.fat}
+                          onChange={(e) =>
+                            handleEditedDataChange("fat", e.target.value)
+                          }
+                        />
+                      </span>
+                      <span className="text w10">{milk.degree || 0}</span>
+                      <span className="text w10">
+                        <input
+                          className="data w100 h1 d-flex center t-center"
+                          type="text"
+                          value={editedData.snf}
+                          onChange={(e) =>
+                            handleEditedDataChange("snf", e.target.value)
+                          }
+                        />
+                      </span>
+                      <span className="text w10">{editedData.rate}</span>
+                      <span className="text w15">{editedData.amt}</span>
+                    </>
                   ) : (
-                    <FaEdit
-                      className="color-icon"
-                      onClick={() => handleEditMrgClick(index, milk)}
-                    />
+                    <>
+                      <span className="text w10">{milk.Litres}</span>
+                      <span className="text w10">{milk.fat}</span>
+                      <span className="text w10">{milk.degree || 0}</span>
+                      <span className="text w10">{milk.snf}</span>
+                      <span className="text w10">{milk.rate}</span>
+                      <span className="text w15">{milk.Amt}</span>
+                    </>
                   )}
-                </span>
-                <span className="text w20 t-start">
-                  {milk.ReceiptDate.slice(0, 10)}
-                </span>
-                {editmrgIndex === index ? (
-                  <>
-                    <span className="text w10 d-flex center">
-                      <input
-                        className="data w100 t-center"
-                        type="text"
-                        value={editedData.liters}
-                        onChange={(e) =>
-                          handleEditedDataChange("liters", e.target.value)
-                        }
-                      />
-                    </span>
-                    <span className="text w10">
-                      <input
-                        className="data w100 d-flex center t-center"
-                        type="text"
-                        value={editedData.fat}
-                        onChange={(e) =>
-                          handleEditedDataChange("fat", e.target.value)
-                        }
-                      />
-                    </span>
-                    <span className="text w10">{milk.degree || 0}</span>
-                    <span className="text w10">
-                      <input
-                        className="data w100 h1 d-flex center t-center"
-                        type="text"
-                        value={editedData.snf}
-                        onChange={(e) =>
-                          handleEditedDataChange("snf", e.target.value)
-                        }
-                      />
-                    </span>
-                    <span className="text w10">{editedData.rate}</span>
-                    <span className="text w15">{editedData.amt}</span>
-                  </>
-                ) : (
-                  <>
-                    <span className="text w10">{milk.Litres}</span>
-                    <span className="text w10">{milk.fat}</span>
-                    <span className="text w10">{milk.degree || 0}</span>
-                    <span className="text w10">{milk.snf}</span>
-                    <span className="text w10">{milk.rate}</span>
-                    <span className="text w15">{milk.Amt}</span>
-                  </>
-                )}
+                </div>
+              ))
+            ) : (
+              <div className="no-records w100 h1 d-flex center">
+                <span className="label-text">{t("common:c-no-data-avai")}</span>
               </div>
-            ))
-          ) : (
-            <div className="no-records w100 h1 d-flex center">
-              <span className="label-text">{t("common:c-no-data-avai")}</span>
-            </div>
-          )}
-        </div>
-        <div className="evening-milk-collection-data w40 h1 mh100 hidescrollbar d-flex-col bg">
-          <div className="collection-heading-container w100 h10 d-flex a-center bg7 sticky-top  sa">
-            <span className="f-info-text w10">Edit</span>
-            <span className="f-info-text w20">Date</span>
-            <span className="f-info-text w10">Liters</span>
-            <span className="f-info-text w10">Fat</span>
-            <span className="f-info-text w10">Deg</span>
-            <span className="f-info-text w10">Snf</span>
-            <span className="f-info-text w10">Rate</span>
-            <span className="f-info-text w15">Amount</span>
+            )}
           </div>
-          {eveningData.length > 0 ? (
-            eveningData.map((milk, index) => (
-              <div
-                key={index}
-                className={`collection-data-container w100 h10 d-flex a-center t-center sb ${
-                  index % 2 === 0 ? "bg-light" : "bg-dark"
-                }`}
-                style={{
-                  backgroundColor:
-                    selectedEveningItems.includes(milk.id) ||
-                    editeveIndex === index
-                      ? "#f7bb79"
-                      : index % 2 === 0
-                      ? "#faefe3"
-                      : "#fff",
-                }}
-                onClick={() => handleSelectItem("evening", milk.id)}>
-                <span className="text w10 t-center d-flex a-center sa">
-                  {editeveIndex === index ? (
-                    <FaSave
-                      className="color-icon"
-                      onClick={(e) => {
-                        e.stopPropagation(); // Prevent row click event
-                        handleSaveData(milk);
-                      }}
-                    />
-                  ) : (
-                    <FaEdit
-                      className="color-icon"
-                      onClick={(e) => {
-                        e.stopPropagation(); // Prevent row click event
-                        handleEditEveClick(index, milk);
-                      }}
-                    />
-                  )}
-                </span>
-                <span className="text w20 t-start">
-                  {milk.ReceiptDate.slice(0, 10)}
-                </span>
-                {editeveIndex === index ? (
-                  <>
-                    <span className="text w10 d-flex center">
-                      <input
-                        className="data w100 t-center"
-                        type="text"
-                        value={editedData.liters}
-                        onClick={(e) => e.stopPropagation()} // Prevent row click event
-                        onChange={(e) =>
-                          handleEditedDataChange("liters", e.target.value)
-                        }
-                      />
-                    </span>
-                    <span className="text w10">
-                      <input
-                        className="data w100 d-flex center t-center"
-                        type="text"
-                        value={editedData.fat}
-                        onClick={(e) => e.stopPropagation()} // Prevent row click event
-                        onChange={(e) =>
-                          handleEditedDataChange("fat", e.target.value)
-                        }
-                      />
-                    </span>
-                    <span className="text w10">{milk.degree || 0}</span>
-                    <span className="text w10">
-                      <input
-                        className="data w100 h1 d-flex center t-center"
-                        type="text"
-                        value={editedData.snf}
-                        onClick={(e) => e.stopPropagation()} // Prevent row click event
-                        onChange={(e) =>
-                          handleEditedDataChange("snf", e.target.value)
-                        }
-                      />
-                    </span>
-                    <span className="text w10">{editedData.rate}</span>
-                    <span className="text w15">{editedData.amt}</span>
-                  </>
-                ) : (
-                  <>
-                    <span className="text w10">{milk.Litres}</span>
-                    <span className="text w10">{milk.fat}</span>
-                    <span className="text w10">{milk.degree || 0}</span>
-                    <span className="text w10">{milk.snf}</span>
-                    <span className="text w10">{milk.rate}</span>
-                    <span className="text w15">{milk.Amt}</span>
-                  </>
-                )}
-              </div>
-            ))
-          ) : (
-            <div className="no-records w100 h1 d-flex center">
-              <span className="label-text">{t("common:c-no-data-avai")}</span>
+          <div className="evening-milk-correction-data  h1 mh100 hidescrollbar d-flex-col bg">
+            <div className="correction-heading-container w100 h10 d-flex a-center t-center bg7 sticky-top  sa">
+              <span className="f-info-text w10">Edit</span>
+              <span className="f-info-text w20">Date</span>
+              <span className="f-info-text w10">Liters</span>
+              <span className="f-info-text w10">Fat</span>
+              <span className="f-info-text w10">Deg</span>
+              <span className="f-info-text w10">Snf</span>
+              <span className="f-info-text w10">Rate</span>
+              <span className="f-info-text w15">Amount</span>
             </div>
-          )}
+            {eveningData.length > 0 ? (
+              eveningData.map((milk, index) => (
+                <div
+                  key={index}
+                  className={`correction-data-container w100 h10 d-flex a-center t-center sb ${
+                    index % 2 === 0 ? "bg-light" : "bg-dark"
+                  }`}
+                  style={{
+                    backgroundColor:
+                      selectedEveningItems.includes(milk.id) ||
+                      editeveIndex === index
+                        ? "#f7bb79"
+                        : index % 2 === 0
+                        ? "#faefe3"
+                        : "#fff",
+                  }}
+                  onClick={() => handleSelectItem("evening", milk.id)}
+                >
+                  <span className="text w10 t-center d-flex a-center sa">
+                    {editeveIndex === index ? (
+                      <FaSave
+                        className="color-icon"
+                        onClick={(e) => {
+                          e.stopPropagation(); // Prevent row click event
+                          handleSaveData(milk);
+                        }}
+                      />
+                    ) : (
+                      <FaEdit
+                        className="color-icon"
+                        onClick={(e) => {
+                          e.stopPropagation(); // Prevent row click event
+                          handleEditEveClick(index, milk);
+                        }}
+                      />
+                    )}
+                  </span>
+                  <span className="text w20 t-start">
+                    {milk.ReceiptDate.slice(0, 10)}
+                  </span>
+                  {editeveIndex === index ? (
+                    <>
+                      <span className="text w10 d-flex center">
+                        <input
+                          className="data w100 t-center"
+                          type="text"
+                          value={editedData.liters}
+                          onClick={(e) => e.stopPropagation()} // Prevent row click event
+                          onChange={(e) =>
+                            handleEditedDataChange("liters", e.target.value)
+                          }
+                        />
+                      </span>
+                      <span className="text w10">
+                        <input
+                          className="data w100 d-flex center t-center"
+                          type="text"
+                          value={editedData.fat}
+                          onClick={(e) => e.stopPropagation()} // Prevent row click event
+                          onChange={(e) =>
+                            handleEditedDataChange("fat", e.target.value)
+                          }
+                        />
+                      </span>
+                      <span className="text w10">{milk.degree || 0}</span>
+                      <span className="text w10">
+                        <input
+                          className="data w100 h1 d-flex center t-center"
+                          type="text"
+                          value={editedData.snf}
+                          onClick={(e) => e.stopPropagation()} // Prevent row click event
+                          onChange={(e) =>
+                            handleEditedDataChange("snf", e.target.value)
+                          }
+                        />
+                      </span>
+                      <span className="text w10">{editedData.rate}</span>
+                      <span className="text w15">{editedData.amt}</span>
+                    </>
+                  ) : (
+                    <>
+                      <span className="text w10">{milk.Litres}</span>
+                      <span className="text w10">{milk.fat}</span>
+                      <span className="text w10">{milk.degree || 0}</span>
+                      <span className="text w10">{milk.snf}</span>
+                      <span className="text w10">{milk.rate}</span>
+                      <span className="text w15">{milk.Amt}</span>
+                    </>
+                  )}
+                </div>
+              ))
+            ) : (
+              <div className="no-records w100 h1 d-flex center">
+                <span className="label-text">{t("common:c-no-data-avai")}</span>
+              </div>
+            )}
+          </div>
         </div>
         <div className="action-btn-container w10 h1 d-flex-col">
           <button
             type="button"
             className="btn"
-            onClick={handleTransferToMorning}>
+            onClick={handleTransferToMorning}
+          >
             Transfer To Morning
           </button>
           <button
             type="button"
             className="btn my10"
-            onClick={handleTransferToEvening}>
+            onClick={handleTransferToEvening}
+          >
             Transfer To Evening
           </button>
           <button
             type="button"
             className="danger-btn"
-            onClick={handleDeleteRecord}>
+            onClick={handleDeleteRecord}
+          >
             Delete
           </button>
         </div>

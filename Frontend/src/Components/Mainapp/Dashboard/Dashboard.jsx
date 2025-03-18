@@ -101,32 +101,50 @@ const Dashboard = () => {
   const customerCount = customerslist.length;
   const totalLitres = mastermilk.reduce((acc, item) => acc + item.Litres, 0);
   const totalAmt = mastermilk.reduce((acc, item) => acc + item.Amt, 0);
+  const avgRate = totalAmt / totalLitres;
   const totalFatValue = mastermilk.reduce(
     (acc, item) => acc + item.Litres * item.fat,
+    0
+  );
+  const totalSNFValue = mastermilk.reduce(
+    (acc, item) => acc + item.Litres * item.snf,
     0
   );
 
   // Calculate the average fat percentage -------------------------------------------------->
   const avgFat = totalLitres > 0 ? totalFatValue / totalLitres : 0;
+  const avgSNF = totalLitres > 0 ? totalSNFValue / totalLitres : 0;
 
   const aggregatedData = mastermilk.reduce((acc, curr) => {
     const date = new Date(curr.ReceiptDate).toISOString().split("T")[0];
+
     if (!acc[date]) {
-      acc[date] = { totalLitres: 0, totalAmt: 0, totalFatValue: 0 };
+      acc[date] = {
+        totalLitres: 0,
+        totalAmt: 0,
+        totalFatValue: 0,
+        totalSNFValue: 0,
+      };
     }
+
     acc[date].totalLitres += curr.Litres;
     acc[date].totalAmt += curr.Amt;
     acc[date].totalFatValue += curr.Litres * curr.fat;
+    acc[date].totalSNFValue += curr.Litres * curr.snf; // Adding SNF calculation
 
     return acc;
   }, {});
 
-  // Add avgFat calculation per date
+  // Add avgFat and avgSNF calculation per date
   Object.keys(aggregatedData).forEach((date) => {
     const data = aggregatedData[date];
     data.avgFat =
       data.totalLitres > 0 ? data.totalFatValue / data.totalLitres : 0;
+    data.avgSNF =
+      data.totalLitres > 0 ? data.totalSNFValue / data.totalLitres : 0;
   });
+
+  console.log(aggregatedData);
 
   // ---------------------------------------------------------------------------------------------->
   //  Data to show in bar chart ----------------------------------------------------------------->
@@ -320,10 +338,21 @@ const Dashboard = () => {
     setShowDetail(false);
   };
 
+  // send app link to whatsapp ------------------------------------------------------------------------>
+  const shareOnWhatsApp = () => {
+    const message = encodeURIComponent(
+      "Download smartdairy app click here: https://play.google.com/store/apps/details?id=com.vsi.smart.dairy1"
+    );
+    window.open(`https://wa.me/?text=${message}`, "_blank");
+  };
+
   return (
     <div className="main-dashboard-container w100 h1 d-flex-col">
-      <div className="dashboard-title w100 d-flex p10 ">
-        <h3 className="subtitle">{t("nv-dash")}</h3>
+      <div className="dashboard-title w100 d-flex p10 sb">
+        <h3 className="subtitle">{t("nv-dash")}</h3>{" "}
+        <button type="button" className="btn" onClick={shareOnWhatsApp}>
+          Shere App
+        </button>
       </div>
       <div className="dashboard-scrll-container w100 h1 mh100 hidescrollbar ">
         <div className="Milk-sale-details-container w100 hidescrollbar">
@@ -406,39 +435,58 @@ const Dashboard = () => {
               )}
             </span>
           </form>
-          <div className="dashboard-cards w100 h15 d-flex j-start sa">
+          <div className="dashboard-cards w100 h15 d-flex j-start f-wrap sa">
+            <div className="card h1 sb">
+              <BsPersonFill className="card-icon" />
+              <div className="card-inner">
+                <h3 className="card-title">{t("c-customer")}</h3>
+                <h3 className="label-text">{customerCount}</h3>
+              </div>
+            </div>
             <div className="card h1 sb">
               <BsDatabaseAdd className="card-icon" />
               <div className="card-inner">
-                <h3 className="text">{t("nv-milk-coll")}</h3>
-                <Link smooth to="#centerdata" className="hashlink heading">
+                <h3 className="card-title">{t("nv-milk-coll")}</h3>
+                <Link smooth to="#centerdata" className="hashlink label-text">
                   {totalLitres.toFixed(1)}
                   <span>{t("c-ltr")}</span>
                 </Link>
               </div>
             </div>
+
             <div className="card h1 sb">
-              <BsPersonFill className="card-icon" />
+              <TbMilkFilled className="card-icon" />
               <div className="card-inner">
-                <h3 className="text">{t("c-customer")}</h3>
-                <h3 className="heading">{customerCount}</h3>
-              </div>
-            </div>
-            <div className="card h1 sb">
-              <TfiStatsUp className="card-icon" />
-              <div className="card-inner">
-                <h3 className="text">{t("c-purch-amt")}</h3>
-                <Link smooth to="#centerdata" className="hashlink heading">
-                  {totalAmt.toFixed(1) || 0} <span>{t("c-rs")}</span>
+                <h3 className="card-title">{t("Avg Fat")}</h3>
+                <Link smooth to="#centerdata" className="hashlink label-text">
+                  {avgFat.toFixed(2) || 0}
                 </Link>
               </div>
             </div>
             <div className="card h1 sb">
               <TbMilkFilled className="card-icon" />
               <div className="card-inner">
-                <h3 className="text">{t("Avg Fat")}</h3>
-                <Link smooth to="#centerdata" className="hashlink heading">
-                  {avgFat.toFixed(2) || 0}
+                <h3 className="card-title">{t("Avg Snf")}</h3>
+                <Link smooth to="#centerdata" className="hashlink label-text">
+                  {avgSNF.toFixed(2) || 0}
+                </Link>
+              </div>
+            </div>
+            <div className="card h1 sb">
+              <TbMilkFilled className="card-icon" />
+              <div className="card-inner">
+                <h3 className="card-title">{t("Avg Rate")}</h3>
+                <Link smooth to="#centerdata" className="hashlink label-text">
+                  {avgRate.toFixed(2) || 0}
+                </Link>
+              </div>
+            </div>
+            <div className="card h1 sb">
+              <TfiStatsUp className="card-icon" />
+              <div className="card-inner">
+                <h3 className="card-title">{t("c-purch-amt")}</h3>
+                <Link smooth to="#centerdata" className="hashlink label-text">
+                  {totalAmt.toFixed(1) || 0} <span>{t("c-rs")}</span>
                 </Link>
               </div>
             </div>
@@ -580,7 +628,9 @@ const Dashboard = () => {
               {showDetail && detailData ? (
                 <div className="user-milk-detail-container w100 h50 d-flex-col my10">
                   <div className="title-and-close-btn-container w100 h10 d-flex a-center sb px10">
-                    <span className="heading w60">Detail Milk :</span>
+                    <span className="heading w60">
+                      Milk Collection Details :
+                    </span>
                     <span
                       className="close-btn f-heading"
                       onClick={(e) => setShowDetail(false)}
