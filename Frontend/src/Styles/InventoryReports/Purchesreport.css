@@ -1,6 +1,6 @@
 /* Table Container */
 .table-container {
-  max-height: 500px; /* Adjust height as needed */
+  max-height: 400px; /* Adjust height as needed */
   overflow-y: auto; /* Enables vertical scrolling */
   overflow-x: auto; /* Enables horizontal scrolling if needed */
   border: 1px solid #ddd;
@@ -65,6 +65,12 @@ td {
   border-bottom: 1px solid #ddd;
   text-align: left;
 }
+.filter-code-div input {
+  margin-right: 10px;
+}
+.filter-name-wise-div input{
+  margin-right: 10px;
+}
 
 /* Responsive Design */
 @media (max-width: 768px) {
@@ -74,7 +80,7 @@ td {
 
   table {
     width: 100%;
-    display: block;
+
     overflow-x: auto;
     white-space: nowrap;
   }
@@ -87,7 +93,6 @@ td {
 }
 
 @media screen and (max-width: 426px) {
-  
   .fromto-date-sale-report {
     flex-direction: column;
   }
@@ -226,12 +231,12 @@ td {
   .purches-report-container .codewisefilter-div .filter-code-div input {
     font-size: small;
     width: 70px;
-        margin-right: 5px;
+    margin-right: 5px;
   }
   .purches-report-container .codewisefilter-div .filter-name-wise-div span {
     font-size: small;
   }
-  .purches-report-container .codewisefilter-div .filter-name-wise-div input{
+  .purches-report-container .codewisefilter-div .filter-name-wise-div input {
     font-size: small;
     width: 110px;
     margin-right: 5px;
@@ -248,6 +253,29 @@ td {
     letter-spacing: 0.8px;
     text-align: left;
     border-bottom: 2px solid #ddd;
+  }
+  .purches-report-section .checkbox-for-a-filter-div .item-name-code-checkbox {
+    width: 50%;
+    margin-bottom: 5px;
+  }
+  .checkbox-for-a-filter-div .codewise-filter-div {
+    width: 100%;
+  }
+  .checkbox-for-a-filter-div .codewise-filter-div .filter-code-div span {
+    font-size: small;
+  }
+  .checkbox-for-a-filter-div .codewise-filter-div .filter-code-div input {
+    font-size: small;
+    margin-right: 10px;
+    width: 70px;
+  }
+  .checkbox-for-a-filter-div .codewise-filter-div .filter-name-wise-div span {
+    font-size: small;
+  }
+  .checkbox-for-a-filter-div .codewise-filter-div .filter-name-wise-div input {
+    font-size: small;
+    margin-right: 10px;
+    width: 100px;
   }
 }
 /* @media screen and (max-width: 768px) {

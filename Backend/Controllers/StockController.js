@@ -4,24 +4,28 @@ const pool = require("../Configs/Database");
 exports.getSaleStock = async (req, res) => {
   const dairy_id = req.user.dairy_id;
   const center_id = req.user.center_id;
-  const { ItemGroupCode } = req.query;
+  const {ItemGroupCode, fromdate, todate } = req.query;
   // Get the current date
-  const today = new Date();
-  const year = today.getFullYear();
-  const startYear = today.getMonth() >= 3 ? year : year - 1; // If before April, take previous year
-  const startDate = `${startYear}-04-01`; // Financial year starts from April 1st
-  const endDate = today.toISOString().split("T")[0]; // Today's date in YYYY-MM-DD format
+
 
   let query = `
-    SELECT * 
+    SELECT companyid,
+            userid,
+            saleid,
+            BillNo,
+            ItemCode,
+            BillDate,
+            Qty,
+            Rate,
+            Amount,
+            CustCode,
+            cust_name, ItemGroupCode, createdby, ItemName, center_id
     FROM salesmaster 
     WHERE BillDate BETWEEN ? AND ?`;
 
-  const queryParams = [startDate, endDate];
-  console.log(startDate);
-  console.log(endDate);
+  const queryParams = [fromdate, todate];
 
-  if (dairy_id && center_id) {
+  if (dairy_id ) {
     query += ` AND companyid = ? AND center_id=?`;
     queryParams.push(dairy_id, center_id);
   } else {
@@ -77,7 +81,7 @@ exports.getPurchaseStock = async (req, res) => {
   const queryParams = [startDate, endDate];
 
   // Ensure dairy_id and center_id are included
-  if (dairy_id && center_id) {
+  if (dairy_id) {
     query += ` AND dairy_id = ? AND center_id = ?`;
     queryParams.push(dairy_id, center_id);
   } else {
