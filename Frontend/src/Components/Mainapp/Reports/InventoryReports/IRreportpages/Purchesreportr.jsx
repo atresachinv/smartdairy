@@ -89,7 +89,6 @@ const Purchesreportr = () => {
     fetchAllData();
   }, [fromdate, todate]);
 
-  
   //... handle report change
 
   const handleReportChange = (event) => {
@@ -162,7 +161,7 @@ const Purchesreportr = () => {
 
     const tableRows = sales.map((item) => [
       item.purchasedate ? item.purchasedate.slice(0, 10) : "", // Extract YYYY-MM-DD
-      item.billno,
+      item.receiptno,
       item.dealerCode,
       item.dealerName,
       item.amount,
@@ -226,7 +225,7 @@ DATE        BILL NO     DEALER        AMOUNT
     // Add Table Data with optimized spacing
     sales.forEach((item) => {
       const date = item.purchasedate ? item.purchasedate.slice(2, 10) : "N/A";
-      const billNo = (item.billno || "").toString().padEnd(10, " ");
+      const billNo = (item.receiptno || "").toString().padEnd(10, " ");
       const dealer = (item.dealerName || "").substring(0, 12).padEnd(14, " ");
       const amount = (item.amount || 0).toFixed(2).padStart(8, " ");
 
@@ -320,7 +319,7 @@ DATE       BILL   DEALER   AMOUNT
     // Add Summary Table Data
     sales.forEach((item) => {
       const date = item.purchasedate ? item.purchasedate.slice(2, 10) : "N/A";
-      const billNo = (item.billno || "").toString().padEnd(6, " ");
+      const billNo = (item.receiptno || "").toString().padEnd(6, " ");
       const dealer = (item.dealerName || "").substring(0, 6).padEnd(7, " ");
       const amount = (item.amount || 0).toFixed(2).padStart(6, " ");
 
@@ -421,7 +420,7 @@ Grand Total:      ${grandTotal.toFixed(2)}
     ];
 
     const summaryRows = (sales || []).map((item) => [
-      item.billno || "N/A",
+      item.receiptno || "N/A",
       item.purchasedate ? item.purchasedate.slice(0, 10) : "N/A",
       item.dealerCode || "N/A",
       item.dealerName || "N/A",
@@ -706,7 +705,7 @@ Total Amount:        ${totalAmount.toFixed(2)}
           sale.itemname,
           sale.dealerName,
           sale.qty,
-          sale.billno,
+          sale.receiptno,
           sale.rate,
           sale.amount,
         ]),
@@ -881,7 +880,7 @@ Total Amount:        ${totalAmount.toFixed(2)}
       item.purchaseDate || "N/A",
       item.dealerName || "N/A",
       item.qty || 0,
-      item.billNo || "N/A",
+      item.receiptno || "N/A",
       item.rate || 0,
       item.amount || 0,
     ]);
@@ -984,7 +983,13 @@ Total Amount:        ${totalAmount.toFixed(2)}
       const tableRows = salesData.map((row) => {
         const amount = parseFloat(row.amount) || 0;
         totalAmountPerDate += amount;
-        return [row.itemname, row.qty, row.billno, row.rate, amount.toFixed(2)];
+        return [
+          row.itemname,
+          row.qty,
+          row.receiptno,
+          row.rate,
+          amount.toFixed(2),
+        ];
       });
 
       // Add subtotal row for this date
@@ -1052,8 +1057,9 @@ Total Amount:        ${totalAmount.toFixed(2)}
       { header: "Item Name", accessor: "itemname" },
       { header: "Dealer Name", accessor: "dealerName" },
       { header: "Quantity", accessor: "qty" },
-      { header: "Bill No", accessor: "billno" },
+      { header: "Bill No", accessor: "receiptno" },
       { header: "Rate", accessor: "rate" },
+
       { header: "Amount", accessor: "amount" },
     ],
     "Distrubuted Purches": [
@@ -1070,13 +1076,13 @@ Total Amount:        ${totalAmount.toFixed(2)}
     ],
     "Dealername Wise": [
       { header: "Dealer Name", accessor: "dealerName" },
-      { header: "Bill No", accessor: "billno" },
+      { header: "Bill No", accessor: "receiptno" },
       { header: "Date", accessor: "purchasedate" },
       { header: "Total Amount", accessor: "amount" },
     ],
     "Peroid Wise": [
       { header: "Date", accessor: "purchasedate" },
-      { header: "Bill No", accessor: "billno" },
+      { header: "Bill No", accessor: "receiptno" },
       { header: "Dealer Name", accessor: "dealerName" },
       { header: "Total Amount", accessor: "amount" },
     ],
@@ -1156,11 +1162,11 @@ Total Amount:        ${totalAmount.toFixed(2)}
 
               {/* Conditionally render the input fields if the checkbox is checked */}
               {isChecked && (
-                <div className="d-flex a-center w60">
-                  <div className="filter-code-div w40 d-flex a-center">
+                <div className="codewise-filter-div d-flex a-center w60">
+                  <div className="filter-code-div w40 d-flex a-center ">
                     <span className="w50 info-text">Code: </span>
                     <input
-                      className="w50 data"
+                      className="w60 data"
                       type="text"
                       value={dealerCode}
                       onChange={handleDealerCodeChange}
@@ -1206,9 +1212,9 @@ Total Amount:        ${totalAmount.toFixed(2)}
           </div>
         </div>
       </div>
-      <div className="container mx-auto p-4 h60 w100 ">
+      <div className="container mx-auto p-4 h60 w100">
         {filteredSales.length > 0 && (
-          <div className="table-container mt-4 overflow-y-auto ">
+          <div className="table-container mt-4 overflow-y-auto">
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
@@ -1222,7 +1228,7 @@ Total Amount:        ${totalAmount.toFixed(2)}
                   ))}
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-200 bg">
+              <tbody className="bg-white divide-y divide-gray-200">
                 {filteredSales.map((sale, index) => (
                   <tr key={index} className="hover:bg-gray-100">
                     {columns.map((col) => (
@@ -1249,12 +1255,12 @@ Total Amount:        ${totalAmount.toFixed(2)}
                         ? filteredSales.reduce(
                             (sum, sale) => sum + (sale.quantity || 0),
                             0
-                          )
+                          ) // Sum up all quantities
                         : col.accessor === "amount"
                         ? filteredSales.reduce(
                             (sum, sale) => sum + (sale.amount || 0),
                             0
-                          )
+                          ) // Sum up all amounts
                         : index === 0
                         ? "Total"
                         : ""}

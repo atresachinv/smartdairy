@@ -380,88 +380,35 @@ const MilkcollectionReports = () => {
     );
   });
 
-  const handlePrint = () => {
-    // Ensure dairyinfo and filteredData are properly populated
-    const dairyName = dairyinfo?.SocietyName?.toUpperCase() || "";
-    const reportName = "Milk Collection Report";
+function printReport() {
+  const dataToExport = sumreport ? summaryData : filteredData;
 
-    const formatDate = selectedDate;
-    const fromDate = formatDate.start;
-    const toDate = formatDate.end.slice(0, 10);
+  if (!dataToExport || dataToExport.length === 0) {
+    alert("No data available to print!");
+    return;
+  }
 
-    const detailsText = `From: ${fromDate}  To: ${toDate}`;
+  const formatDate = selectedDate;
+  const fromDate = formatDate.start;
+  const toDate = formatDate.end.slice(0, 10);
 
-    // Create a new window for printing
-    const printWindow = window.open("", "_blank");
+  const dairyName = dairyinfo.SocietyName.toUpperCase(); // Replace with actual dairy name
+  const reportName = sumreport
+    ? "Milk Collection Summary Report"
+    : "Milk Collection Detailed Report";
 
-    // Define table headers and rows based on sumreport
-    const isSummaryReport = sumreport; // Assuming sumreport is available in your context
-    const headers = isSummaryReport
-      ? `
-      <th>Code</th>
-      <th>Name</th>
-      <th>AVG Fat</th>
-      <th>AVG SNF</th>
-      <th>Liters</th>
-      <th>AVG Rate</th>
-      <th>Total Amount</th>
-      <th>C/B</th>
-    `
-      : `
-      <th>Date</th>
-      <th>Shift</th>
-      <th>Code</th>
-      <th>Name</th>
-      <th>Liters</th>
-      <th>Fat</th>
-      <th>SNF</th>
-      <th>Rate</th>
-      <th>Amount</th>
-      <th>C/B</th>
-    `;
+  // Open a new window for printing
+  const printWindow = window.open("", "_blank");
 
-    const rows = filteredData
-      .map((row) => {
-        if (isSummaryReport) {
-          return `
-          <tr>
-            <td>${row.code}</td>
-            <td class="left-align">${row.cname}</td>
-            <td class="right-align">${row.avgFat || row.fat}</td>
-            <td class="right-align">${row.avgSNF || row.snf}</td>
-            <td class="right-align">${row.Liters}</td>
-            <td class="right-align">${row.avgRate || row.rate}</td>
-            <td class="right-align">${row.totalAmt || row.Amt}</td>
-            <td class="left-align">${row.CB === 0 ? "C" : "B"}</td>
-          </tr>
-        `;
-        } else {
-          return `
-          <tr>
-            <td>${row.ReceiptDate.slice(2, 10)}</td>
-            <td class="center-text">${row.ME === 0 ? "M" : "E"}</td>
-            <td>${row.rno}</td>
-            <td class="left-align">${row.cname}</td>
-            <td class="right-align">${row.Litres}</td>
-            <td class="right-align">${row.fat}</td>
-            <td class="right-align">${row.snf}</td>
-            <td class="right-align">${row.rate}</td>
-            <td class="right-align">${row.Amt.toFixed(2)}</td>
-            <td class="center-text">${row.CB === 0 ? "C" : "B"}</td>
-          </tr>
-        `;
-        }
-      })
-      .join("");
-
-    // Ensure content is loaded before printing
-    printWindow.document.write(`
+  // Generate report header HTML
+  const headerHTML = `
     <html>
       <head>
-        <title>Print</title>
+        <title>${reportName}</title>
         <style>
           body {
             font-family: Arial, sans-serif;
+            margin: 20px;
           }
           h1 {
             text-align: center;
@@ -504,28 +451,266 @@ const MilkcollectionReports = () => {
       <body>
         <h1>${dairyName}</h1>
         <h2>${reportName}</h2>
-        <p>${detailsText}</p>
-        <table>
-          <thead>
-            <tr>
-              ${headers}
-            </tr>
-          </thead>
-          <tbody>
-            ${rows}
-          </tbody>
-        </table>
-      </body>
-    </html>
-  `);
+        <p>From: ${fromDate}  To: ${toDate}</p>
+  `;
 
-    // Close document, wait for rendering to finish, then print
-    printWindow.document.close();
-    printWindow.onload = function () {
-      printWindow.print();
-      printWindow.close();
-    };
+  // Create table headers and rows based on the report type
+  const tableHeader = sumreport
+    ? `
+        <tr>
+          <th>Code</th>
+          <th>Liters</th>
+          <th>Fat</th>
+          <th>Snf</th>
+          <th>Name</th>
+          <th>Rate</th>
+          <th>Amount</th>
+          <th>C/B</th>
+        </tr>
+      `
+    : `
+        <tr>
+          <th>Date</th>
+          <th>Shift</th>
+          <th>Code</th>
+          <th>Liters</th>
+          <th>Fat</th>
+          <th>Snf</th>
+          <th>Name</th>
+          <th>Rate</th>
+          <th>Amount</th>
+          <th>C/B</th>
+        </tr>
+      `;
+
+  const tableRows = dataToExport
+    .map((row) => {
+      return sumreport
+        ? `
+          <tr>
+            <td>${row.code}</td>
+            <td class="right-align">${row.Liters}</td>
+            <td class="right-align">${row.avgFat || row.fat}</td>
+            <td class="right-align">${row.avgSNF || row.snf}</td>
+            <td class="left-align">${row.cname.toUpperCase()}</td>
+            <td class="right-align">${row.avgRate || row.rate}</td>
+            <td class="right-align">${row.totalAmt || row.Amt}</td>
+            <td class="center-text">${row.CB === 0 ? "C" : "B"}</td>
+          </tr>
+        `
+        : `
+          <tr>
+            <td>${row.ReceiptDate.slice(0, 10)}</td>
+            <td class="center-text">${row.ME === 0 ? "M" : "E"}</td>
+            <td>${row.rno}</td>
+            <td class="right-align">${row.Litres}</td>
+            <td class="right-align">${row.fat}</td>
+            <td class="right-align">${row.snf}</td>
+            <td class="left-align">${row.cname.toUpperCase()}</td>
+            <td class="right-align">${row.rate}</td>
+            <td class="right-align">${row.Amt.toFixed(2)}</td>
+            <td class="center-text">${row.CB === 0 ? "C" : "B"}</td>
+          </tr>
+        `;
+    })
+    .join("");
+
+  // Calculate the total amount
+  const totalAmount = sumreport
+    ? calculateTotalAmountSummary(summaryData)
+    : calculateTotalAmountFiltered(filteredData);
+
+  // Add a row for the total amount
+  const totalRow = sumreport
+    ? `
+      <tr>
+        <td colspan="6" class="right-align"><strong>Total</strong></td>
+        <td class="right-align"><strong>${totalAmount.toFixed(2)}</strong></td>
+        <td></td>
+      </tr>
+    `
+    : `
+      <tr>
+        <td colspan="8" class="right-align"><strong>Total</strong></td>
+        <td class="right-align"><strong>${totalAmount.toFixed(2)}</strong></td>
+        <td></td>
+      </tr>
+    `;
+
+  // Generate the final HTML for the table
+  const tableHTML = `
+    <table>
+      <thead>
+        ${tableHeader}
+      </thead>
+      <tbody>
+        ${tableRows}
+        ${totalRow}
+      </tbody>
+    </table>
+  `;
+
+  // Combine header, table, and footer HTML
+  const finalHTML = headerHTML + tableHTML + "</body></html>";
+
+  // Write the content to the print window
+  printWindow.document.write(finalHTML);
+
+  // Ensure the content is fully loaded before printing
+  printWindow.document.close();
+  printWindow.onload = function () {
+    printWindow.print();
+    printWindow.close();
   };
+}
+
+
+  // const handlePrint = () => {
+  //   // Ensure dairyinfo and filteredData are properly populated
+  //   const dairyName = dairyinfo?.SocietyName?.toUpperCase() || "";
+  //   const reportName = "Milk Collection Report";
+
+  //   const formatDate = selectedDate;
+  //   const fromDate = formatDate.start;
+  //   const toDate = formatDate.end.slice(0, 10);
+
+  //   const detailsText = `From: ${fromDate}  To: ${toDate}`;
+
+  //   // Create a new window for printing
+  //   const printWindow = window.open("", "_blank");
+
+  //   // Define table headers and rows based on sumreport
+  //   const isSummaryReport = sumreport; // Assuming sumreport is available in your context
+  //   const headers = isSummaryReport
+  //     ? `
+  //     <th>Code</th>
+  //     <th>Name</th>
+  //     <th>AVG Fat</th>
+  //     <th>AVG SNF</th>
+  //     <th>Liters</th>
+  //     <th>AVG Rate</th>
+  //     <th>Total Amount</th>
+  //     <th>C/B</th>
+  //   `
+  //     : `
+  //     <th>Date</th>
+  //     <th>Shift</th>
+  //     <th>Code</th>
+  //     <th>Name</th>
+  //     <th>Liters</th>
+  //     <th>Fat</th>
+  //     <th>SNF</th>
+  //     <th>Rate</th>
+  //     <th>Amount</th>
+  //     <th>C/B</th>
+  //   `;
+
+  //   const rows = filteredData
+  //     .map((row) => {
+  //       if (isSummaryReport) {
+  //         return `
+  //         <tr>
+  //           <td>${row.code}</td>
+  //           <td class="left-align">${row.cname}</td>
+  //           <td class="right-align">${row.avgFat || row.fat}</td>
+  //           <td class="right-align">${row.avgSNF || row.snf}</td>
+  //           <td class="right-align">${row.Liters}</td>
+  //           <td class="right-align">${row.avgRate || row.rate}</td>
+  //           <td class="right-align">${row.totalAmt || row.Amt}</td>
+  //           <td class="left-align">${row.CB === 0 ? "C" : "B"}</td>
+  //         </tr>
+  //       `;
+  //       } else {
+  //         return `
+  //         <tr>
+  //           <td>${row.ReceiptDate.slice(2, 10)}</td>
+  //           <td class="center-text">${row.ME === 0 ? "M" : "E"}</td>
+  //           <td>${row.rno}</td>
+  //           <td class="left-align">${row.cname}</td>
+  //           <td class="right-align">${row.Litres}</td>
+  //           <td class="right-align">${row.fat}</td>
+  //           <td class="right-align">${row.snf}</td>
+  //           <td class="right-align">${row.rate}</td>
+  //           <td class="right-align">${row.Amt.toFixed(2)}</td>
+  //           <td class="center-text">${row.CB === 0 ? "C" : "B"}</td>
+  //         </tr>
+  //       `;
+  //       }
+  //     })
+  //     .join("");
+
+  //   // Ensure content is loaded before printing
+  //   printWindow.document.write(`
+  //   <html>
+  //     <head>
+  //       <title>Print</title>
+  //       <style>
+  //         body {
+  //           font-family: Arial, sans-serif;
+  //         }
+  //         h1 {
+  //           text-align: center;
+  //           font-size: 18px;
+  //           color: black;
+  //         }
+  //         h2 {
+  //           text-align: center;
+  //           font-size: 14px;
+  //         }
+  //         p {
+  //           text-align: center;
+  //           font-size: 12px;
+  //           color: black;
+  //         }
+  //         table {
+  //           width: 100%;
+  //           border-collapse: collapse;
+  //           margin-top: 20px;
+  //         }
+  //         th, td {
+  //           border: 1px solid #ddd;
+  //           padding: 8px;
+  //           text-align: left;
+  //         }
+  //         th {
+  //           background-color: #f2f2f2;
+  //         }
+  //         .left-align {
+  //           text-align: left;
+  //         }
+  //         .right-align {
+  //           text-align: right;
+  //         }
+  //         .center-text {
+  //           text-align: center;
+  //         }
+  //       </style>
+  //     </head>
+  //     <body>
+  //       <h1>${dairyName}</h1>
+  //       <h2>${reportName}</h2>
+  //       <p>${detailsText}</p>
+  //       <table>
+  //         <thead>
+  //           <tr>
+  //             ${headers}
+  //           </tr>
+  //         </thead>
+  //         <tbody>
+  //           ${rows}
+  //         </tbody>
+  //       </table>
+  //     </body>
+  //   </html>
+  // `);
+
+  //   // Close document, wait for rendering to finish, then print
+  //   printWindow.document.close();
+  //   printWindow.onload = function () {
+  //     printWindow.print();
+  //     printWindow.close();
+  //   };
+  // };
 
   // ------------------------------------------------------------->
   // Generating Daswada Reports ---------------------------------->
@@ -657,8 +842,8 @@ const MilkcollectionReports = () => {
   const getFilteredData = (data) => {
     if (!selectedCenterId) return data; // If no center is selected, return all data
     return data.filter(
-      (item) => item.center_id.toString() === selectedCenterId
-    ); // Filter by selected center ID
+      (item) => item.center_id && item.center_id.toString() === selectedCenterId
+    ); // Filter by selected center ID, ensuring center_id is defined
   };
 
   // Effect to update filtered data when selectedCenterId changes
@@ -735,7 +920,7 @@ const MilkcollectionReports = () => {
               </div>
             </div>
             <div className="download-option-btn-div w30 h1 d-flex j-center sa">
-              <button className="w-btn text" onClick={handlePrint}>
+              <button className="w-btn text" onClick={printReport}>
                 Print
               </button>
               <button className="w-btn text" onClick={exportToPDF}>
@@ -876,11 +1061,11 @@ const MilkcollectionReports = () => {
                 <>
                   <span className="w10 f-info-text">Code</span>
                   <span className="w25 f-info-text">Name</span>
-                  <span className="w5 f-info-text">AVG Fat</span>
+                  <span className="w5 f-info-text">AVG FAT</span>
                   <span className="w5 f-info-text">AVG SNF</span>
                   <span className="w10 f-info-text">Liters</span>
                   <span className="w10 f-info-text">AVG Rate</span>
-                  <span className="w10 f-info-text">Total Amount</span>
+                  <span className="w10 f-info-text"> Amount</span>
                   <span className="w10 f-info-text">C/B</span>
                 </>
               ) : (
@@ -890,7 +1075,7 @@ const MilkcollectionReports = () => {
                   <span className="w5 f-label-text">Code</span>
                   <span className="w25 f-label-text">Name</span>
                   <span className="w5 f-label-text">Liters</span>
-                  <span className="w5 f-label-text">Fat</span>
+                  <span className="w5 f-label-text">FAT</span>
                   <span className="w5 f-label-text">SNF</span>
                   <span className="w10 f-label-text">Rate/ltr</span>
                   <span className="w5 f-label-text">Amount</span>
@@ -937,6 +1122,7 @@ const MilkcollectionReports = () => {
                         </span>
                       </div>
                     ))}
+
                     {/* Total Row */}
                     <div className="milkdata-div w100 h10 d-flex center t-center sa bg-total">
                       <span className="w10 text t-center font-bold">Total</span>
@@ -945,18 +1131,20 @@ const MilkcollectionReports = () => {
                       <span className="w5 text t-center"></span>
                       <span className="w10 text t-end font-bold">
                         {centerData.summaryData
-                          .reduce((sum, item) => sum + (item.Liters || 0), 0)
-                          .toString()
-                          .slice(0, Math.max(0, item.indexOf(".")) + 3)}{" "}
-                        {/* Adjusted to slice after decimal */}
+                          .reduce(
+                            (sum, item) => sum + (parseFloat(item.Liters) || 0),
+                            0
+                          )
+                          .toFixed(2)}{" "}
                       </span>
                       <span className="w10 text t-center"></span>
                       <span className="w10 text t-end font-bold">
                         {centerData.summaryData
-                          .reduce((sum, item) => sum + (item.Amt || 0), 0)
-                          .toString()
-                          .slice(0, Math.min(item.indexOf("."), 3))}{" "}
-                
+                          .reduce(
+                            (sum, item) => sum + (parseFloat(item.Amt) || 0),
+                            0
+                          )
+                          .toFixed(2)}{" "}
                       </span>
                       <span className="w10 text t-center"></span>
                     </div>
@@ -1003,6 +1191,7 @@ const MilkcollectionReports = () => {
                         </span>
                       </div>
                     ))}
+
                     {/* Total Row */}
                     <div className="milkdata-div w100 h10 d-flex center t-center sa bg-total">
                       <span className="w10 text t-center font-bold">Total</span>
@@ -1011,7 +1200,10 @@ const MilkcollectionReports = () => {
                       <span className="w25 text t-start"></span>
                       <span className="w5 text t-end font-bold">
                         {centerData.milkData
-                          .reduce((sum, item) => sum + (item.Litres || 0), 0)
+                          .reduce(
+                            (sum, item) => sum + (parseFloat(item.Litres) || 0),
+                            0
+                          )
                           .toFixed(2)}
                       </span>
                       <span className="w5 text t-center"></span>
@@ -1019,7 +1211,10 @@ const MilkcollectionReports = () => {
                       <span className="w10 text t-center"></span>
                       <span className="w5 text t-end font-bold">
                         {centerData.milkData
-                          .reduce((sum, item) => sum + (item.Amt || 0), 0)
+                          .reduce(
+                            (sum, item) => sum + (parseFloat(item.Amt) || 0),
+                            0
+                          )
                           .toFixed(2)}
                       </span>
                       <span className="w5 text t-center"></span>

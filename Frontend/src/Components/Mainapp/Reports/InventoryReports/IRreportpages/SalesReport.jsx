@@ -38,7 +38,6 @@ const SalesReport = () => {
             error.response ? error.response.data : error.message
           );
         }
-
       }
     };
 
@@ -91,7 +90,7 @@ const SalesReport = () => {
     // Ensure 'saledata' is an array
     const tableRows = (Array.isArray(saledata) ? saledata : []).map((item) => [
       item.BillDate ? item.BillDate.slice(0, 10) : "N/A", // Format date (YYYY-MM-DD)
-      item.BillNo || "N/A",
+      item.receiptno || "N/A",
       item.CustCode || "N/A",
       item.CustName || "N/A",
       item.Amount ? item.Amount.toFixed(2) : "0.00",
@@ -131,8 +130,8 @@ const SalesReport = () => {
     const reportName = "Sales Report";
 
     // Ensure fromDate and toDate are properly declared
-    const reportFromDate = typeof fromDate !== "undefined" ? fromDate : "N/A";
-    const reportToDate = typeof toDate !== "undefined" ? toDate : "N/A";
+    const reportFromDate = typeof fromdate !== "undefined" ? fromdate : "N/A";
+    const reportToDate = typeof todate !== "undefined" ? todate : "N/A";
 
     // Ensure 'saledata' is an array
     const tableRows = (Array.isArray(saledata) ? saledata : []).map(
@@ -665,7 +664,7 @@ const SalesReport = () => {
     doc.text(`From: ${fromdate}  To: ${todate}`, 15, 45); // Date Range
 
     // ************** Table Headers **************
-    const tableColumn = ["CN", "Customer Name", "Amount"];
+    const tableColumn = ["Code", "Customer Name", "Qty", "Amount"];
 
     // Ensure 'saledata' is an array
     const sales = Array.isArray(saledata) ? saledata : [];
@@ -676,8 +675,9 @@ const SalesReport = () => {
     // Process sales data
     sales.forEach((item) => {
       const row = [
-        item.cn || "N/A",
+        item.CustCode || "N/A",
         item.cust_name || "N/A",
+        item.Qty || "N/A",
         item.Amount ? item.Amount.toFixed(2) : "0.00",
       ];
       tableRows.push(row);
@@ -727,6 +727,7 @@ const SalesReport = () => {
     <tr>
       <td>${item.CustCode || "N/A"}</td>
       <td>${item.cust_name || "N/A"}</td>
+         <td>${item.Qty || "N/A"}</td>
       <td>${item.Amount ? item.Amount.toFixed(2) : "0.00"}</td>
     </tr>`;
       grandTotal += item.Amount || 0;
@@ -800,8 +801,9 @@ const SalesReport = () => {
           <table>
             <thead>
               <tr>
-                <th>CN</th>
+                <th>Code</th>
                 <th>Customer</th>
+                <th>Qty</th>
                 <th>Amt</th>
               </tr>
             </thead>
@@ -895,182 +897,219 @@ const SalesReport = () => {
     }
   };
 
-  console.log( "saledata", saledata);
-const renderTable = () => {
-  if (!selectedReport) {
-    return (
-      <table border="1" style={{ width: "100%" }}>
-        <tbody>
-          <tr>
-            <td
-              colSpan="100%"
-              style={{
-                textAlign: "center",
-                verticalAlign: "middle",
-                padding: "20px",
-                height: "200px",
-              }}
-            >
-              <p>Please select a report to display.</p>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+  console.log("saledata", saledata);
+  const renderTable = () => {
+    if (!selectedReport) {
+      return (
+        <table border="1" style={{ width: "100%" }}>
+          <tbody>
+            <tr>
+              <td
+                colSpan="100%"
+                style={{
+                  textAlign: "center",
+                  verticalAlign: "middle",
+                  padding: "20px",
+                  height: "200px",
+                }}
+              >
+                <p>Please select a report to display.</p>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      );
+    }
+
+    // Filter sales data based on fromdate and todate
+    const filteredData = saledata.filter((item) => {
+      const billDate = new Date(item.BillDate); // Convert BillDate to Date object
+      const fromDate = new Date(fromdate); // Convert fromdate to Date object
+      const toDate = new Date(todate); // Convert todate to Date object
+
+      return billDate >= fromDate && billDate <= toDate; // Only include data within the selected date range
+    });
+
+    // Calculate total amount
+    const totalAmount = filteredData.reduce(
+      (sum, item) => sum + (item.Amount || 0),
+      0
     );
-  }
 
-  // Filter sales data based on fromdate and todate
-  const filteredData = saledata.filter((item) => {
-    const billDate = new Date(item.BillDate); // Convert BillDate to Date object
-    const fromDate = new Date(fromdate); // Convert fromdate to Date object
-    const toDate = new Date(todate); // Convert todate to Date object
-
-    return billDate >= fromDate && billDate <= toDate; // Only include data within the selected date range
-  });
-
-  // Calculate total amount
-  const totalAmount = filteredData.reduce(
-    (sum, item) => sum + (item.Amount || 0),
-    0
-  );
-
-  switch (selectedReport) {
-    case "Sale Register":
-      return (
-        <table border="1">
-          <thead>
-            <tr>
-              <th>Bill Date</th>
-              <th>Bill No</th>
-              <th>Customer Code</th>
-              <th>Customer Name</th>
-              <th>Amount</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredData.length === 0 ? (
+    switch (selectedReport) {
+      case "Sale Register":
+        return (
+          <table border="1">
+            <thead>
               <tr>
-                <td colSpan="5" style={{ textAlign: "center" }}>
-                  No data available for the selected date range.
-                </td>
+                <th>Bill Date</th>
+                <th>Bill No</th>
+                <th>Customer Code</th>
+                <th>Customer Name</th>
+                <th>Amount</th>
               </tr>
-            ) : (
-              filteredData.map((item, index) => (
-                <tr key={index}>
-                  <td>{item.BillDate?.slice(0, 10) || "N/A"}</td>
-                  <td>{item.BillNo || "N/A"}</td>
-                  <td>{item.CustCode || "N/A"}</td>
-                  <td>{item.cust_name  || "N/A"}</td>
-                  <td>{item.Amount ? item.Amount.toFixed(2) : "0.00"}</td>
+            </thead>
+            <tbody>
+              {filteredData.length === 0 ? (
+                <tr>
+                  <td colSpan="5" style={{ textAlign: "center" }}>
+                    No data available for the selected date range.
+                  </td>
                 </tr>
-              ))
-            )}
-            <tr>
-              <td
-                colSpan="4"
-                style={{ textAlign: "right", fontWeight: "bold" }}
-              >
-                Total:
-              </td>
-              <td style={{ fontWeight: "bold" }}>{totalAmount.toFixed(2)}</td>
-            </tr>
-          </tbody>
-        </table>
-      );
-
-    case "Disturbed Register list":
-      return (
-        <table border="1">
-          <thead>
-            <tr>
-              <th>Bill Date</th>
-              <th>Bill No</th>
-              <th>Customer Code</th>
-              <th>Item Name</th>
-              <th>Qty</th>
-              <th>Rate</th>
-              <th>Amount</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredData.length === 0 ? (
+              ) : (
+                filteredData.map((item, index) => (
+                  <tr key={index}>
+                    <td>{item.BillDate?.slice(0, 10) || "N/A"}</td>
+                    <td>{item.BillNo || "N/A"}</td>
+                    <td>{item.CustCode || "N/A"}</td>
+                    <td>{item.cust_name || "N/A"}</td>
+                    <td>{item.Amount ? item.Amount.toFixed(2) : "0.00"}</td>
+                  </tr>
+                ))
+              )}
               <tr>
-                <td colSpan="7" style={{ textAlign: "center" }}>
-                  No data available for the selected date range.
+                <td
+                  colSpan="4"
+                  style={{ textAlign: "right", fontWeight: "bold" }}
+                >
+                  Total:
                 </td>
+                <td style={{ fontWeight: "bold" }}>{totalAmount.toFixed(2)}</td>
               </tr>
-            ) : (
-              filteredData.map((item, index) => (
-                <tr key={index}>
-                  <td>{item.BillDate?.slice(0, 10) || "N/A"}</td>
-                  <td>{item.BillNo || "N/A"}</td>
-                  <td>{item.CustCode || "N/A"}</td>
-                  <td>{item.ItemName || "N/A"}</td>
-                  <td>{item.Qty || 0}</td>
-                  <td>{item.Rate ? item.Rate.toFixed(2) : "0.00"}</td>
-                  <td>{item.Amount ? item.Amount.toFixed(2) : "0.00"}</td>
-                </tr>
-              ))
-            )}
-            <tr>
-              <td
-                colSpan="6"
-                style={{ textAlign: "right", fontWeight: "bold" }}
-              >
-                Total:
-              </td>
-              <td style={{ fontWeight: "bold" }}>{totalAmount.toFixed(2)}</td>
-            </tr>
-          </tbody>
-        </table>
-      );
+            </tbody>
+          </table>
+        );
 
-    case "Customer Saleing Balance":
-    case "Customer Saleing Qtm Report":
-      return (
-        <table border="1">
-          <thead>
-            <tr>
-              <th>CN</th>
-              <th>Customer Name</th>
-              <th>Amount</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredData.length === 0 ? (
+      case "Disturbed Register list":
+        return (
+          <table border="1">
+            <thead>
               <tr>
-                <td colSpan="3" style={{ textAlign: "center" }}>
-                  No data available for the selected date range.
-                </td>
+                <th>Bill Date</th>
+                <th>Bill No</th>
+                <th>Customer Code</th>
+                <th>Item Name</th>
+                <th>Qty</th>
+                <th>Rate</th>
+                <th>Amount</th>
               </tr>
-            ) : (
-              filteredData.map((item, index) => (
-                <tr key={index}>
-                  <td>{item.CustCode || "N/A"}</td>
-                  <td>{item.cust_name || "N/A"}</td>
-                  <td>{item.Amount ? item.Amount.toFixed(2) : "0.00"}</td>
+            </thead>
+            <tbody>
+              {filteredData.length === 0 ? (
+                <tr>
+                  <td colSpan="7" style={{ textAlign: "center" }}>
+                    No data available for the selected date range.
+                  </td>
                 </tr>
-              ))
-            )}
-            <tr>
-              <td
-                colSpan="2"
-                style={{ textAlign: "right", fontWeight: "bold" }}
-              >
-                Total:
-              </td>
-              <td style={{ fontWeight: "bold" }}>{totalAmount.toFixed(2)}</td>
-            </tr>
-          </tbody>
-        </table>
-      );
+              ) : (
+                filteredData.map((item, index) => (
+                  <tr key={index}>
+                    <td>{item.BillDate?.slice(0, 10) || "N/A"}</td>
+                    <td>{item.BillNo || "N/A"}</td>
+                    <td>{item.CustCode || "N/A"}</td>
+                    <td>{item.ItemName || "N/A"}</td>
+                    <td>{item.Qty || 0}</td>
+                    <td>{item.Rate ? item.Rate.toFixed(2) : "0.00"}</td>
+                    <td>{item.Amount ? item.Amount.toFixed(2) : "0.00"}</td>
+                  </tr>
+                ))
+              )}
+              <tr>
+                <td
+                  colSpan="6"
+                  style={{ textAlign: "right", fontWeight: "bold" }}
+                >
+                  Total:
+                </td>
+                <td style={{ fontWeight: "bold" }}>{totalAmount.toFixed(2)}</td>
+              </tr>
+            </tbody>
+          </table>
+        );
 
-    default:
-      return null;
-  }
-};
+      case "Customer Saleing Balance":
+        return (
+          <table border="1">
+            <thead>
+              <tr>
+                <th>CN</th>
+                <th>Customer Name</th>
+                <th>Amount</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredData.length === 0 ? (
+                <tr>
+                  <td colSpan="3" style={{ textAlign: "center" }}>
+                    No data available for the selected date range.
+                  </td>
+                </tr>
+              ) : (
+                filteredData.map((item, index) => (
+                  <tr key={index}>
+                    <td>{item.CustCode || "N/A"}</td>
+                    <td>{item.cust_name || "N/A"}</td>
+                    <td>{item.Amount ? item.Amount.toFixed(2) : "0.00"}</td>
+                  </tr>
+                ))
+              )}
+              <tr>
+                <td
+                  colSpan="2"
+                  style={{ textAlign: "right", fontWeight: "bold" }}
+                >
+                  Total:
+                </td>
+                <td style={{ fontWeight: "bold" }}>{totalAmount.toFixed(2)}</td>
+              </tr>
+            </tbody>
+          </table>
+        );
+      case "Customer Saleing Qtm Report":
+        return (
+          <table border="1">
+            <thead>
+              <tr>
+                <th>CN</th>
+                <th>Customer Name</th>
+                <th>Qty</th>
+                <th>Amount</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredData.length === 0 ? (
+                <tr>
+                  <td colSpan="3" style={{ textAlign: "center" }}>
+                    No data available for the selected date range.
+                  </td>
+                </tr>
+              ) : (
+                filteredData.map((item, index) => (
+                  <tr key={index}>
+                    <td>{item.CustCode || "N/A"}</td>
+                    <td>{item.cust_name || "N/A"}</td>
+                    <td>{item.Qty || 0}</td>
+                    <td>{item.Amount ? item.Amount.toFixed(2) : "0.00"}</td>
+                  </tr>
+                ))
+              )}
+              <tr>
+                <td
+                  colSpan="2"
+                  style={{ textAlign: "right", fontWeight: "bold" }}
+                >
+                  Total:
+                </td>
+                <td style={{ fontWeight: "bold" }}>{totalAmount.toFixed(2)}</td>
+              </tr>
+            </tbody>
+          </table>
+        );
 
-
+      default:
+        return null;
+    }
+  };
 
   const handleItemChange = (e) => {
     setItemNo(e.target.value);
@@ -1336,7 +1375,7 @@ const renderTable = () => {
                   <option value="">Select Report</option>
                   <option value="Sale Register">Sale Register</option>
                   <option value="Disturbed Register list">
-                   Detail Sales Register
+                    Detail Sales Register
                   </option>
                   <option value="Customer Saleing Balance">
                     Cust Saleing Balance

@@ -42,7 +42,7 @@
   text-align: left;
 }
 
-@media screen and (max-width: 768px) {
+/* @media screen and (max-width: 768px) {
   .first-half-span-input-div
     .stocks-from-todate-reports-div
     .select-report-div {
@@ -142,7 +142,7 @@
     width: 110px;
     height: 35px;
   }
-}
+} */
 @media screen and (max-width: 426px) {
   .first-half-span-input-div
     .stocks-from-todate-reports-div
@@ -156,6 +156,9 @@
     span {
     width: 100px;
   }
+.stocks-from-todate-reports-div .fromto-date-Stock-report .fromdate-sale-stock-div span {
+    margin-right: 10px;
+  }
 
   .first-half-span-input-div
     .stocks-from-todate-reports-div
@@ -243,5 +246,4 @@
     width: 110px;
     height: 35px;
   }
- 
 }

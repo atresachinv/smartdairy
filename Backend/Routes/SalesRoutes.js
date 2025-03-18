@@ -25,7 +25,5 @@ router.route("/sale/update").put(verifyToken, updateSale);
 router.route("/vehicle-sales").get(verifyToken, fetchVehicleSales);
 router.route("/admin/all-sales").get(verifyToken, fetchAllSales);
 
-router.route("/stock/sale/all").get(verifyToken, getSaleStock);
-router.route("/stock/purchase/all").get(verifyToken, getPurchaseStock);
 
 module.exports = router;

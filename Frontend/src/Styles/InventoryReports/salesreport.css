@@ -184,12 +184,16 @@ p {
   .date-container-sales .from-and-to-date-both {
     width: 100%;
   }
+  .first-half-container-sales-report {
+
+  }
   .first-half-container-sales-report
     .date-container-sales
     .from-and-to-date-both
     .from-sales-date-div
     span {
     font-size: small;
+    margin-right: 5px;
   }
   .first-half-container-sales-report
     .date-container-sales
