@@ -16,6 +16,11 @@ const {
   getCenterSetting,
   updateCenterSetting,
   getOneCenterSetting,
+  createMilkSangha,
+  updateMilkSangha,
+  listMilkSangha,
+  deleteMilkSangha,
+  saveMessage,
 } = require("../Controllers/DairyController");
 const router = express.Router();
 
@@ -30,6 +35,7 @@ router.route("/update/centerdetails").post(verifyToken, updateCenterInfo);
 router.route("/center/details").post(verifyToken, getCenterDetails);
 router.route("/all/centerdetails").post(verifyToken, getAllcenters);
 router.route("/send-message").post(verifyToken, sendMessage); //send whats app message
+router.route("/save-message").post(verifyToken, saveMessage); //save whats app message
 router.route("/center/setting").post(verifyToken, getCenterSetting);
 router.route("/center/setting/one").post(verifyToken, getOneCenterSetting);
 router.route("/center/update-setting").post(verifyToken, updateCenterSetting);
@@ -40,5 +46,11 @@ router
 router
   .route("/dashboard/centers/customer-count")
   .post(verifyToken, getCenterCustomerCount);
+
+// Sangha routes ----------------------------------------------------------------------------------->
+router.route("/create/sangha").post(verifyToken, createMilkSangha);
+router.route("/update/sangha").post(verifyToken, updateMilkSangha);
+router.route("/list/sangha").get(verifyToken, listMilkSangha);
+router.route("/delete/sangha").post(verifyToken, deleteMilkSangha);
 
 module.exports = router;

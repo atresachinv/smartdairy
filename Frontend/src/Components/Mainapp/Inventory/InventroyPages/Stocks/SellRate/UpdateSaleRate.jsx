@@ -5,6 +5,7 @@ import Swal from "sweetalert2";
 import { useEffect, useState } from "react";
 import axiosInstance from "../../../../../../App/axiosInstance";
 import { useTranslation } from "react-i18next";
+import "./SellRate.css";
 
 const UpdateSaleRate = () => {
   const { t } = useTranslation(["puchasesale", "common"]);
@@ -288,29 +289,30 @@ const UpdateSaleRate = () => {
         </div>
       </div>
       {isModalOpen && (
-        <div className="pramod modal">
-          <div className="modal-content forMin">
+        <div className="updateSellModal">
+          <div className="modal-content ">
             <h2 className="my10"> {t("ps-update-Product")}</h2>
             <b>
               <div className="d-flex w100 sb">
-                <label>
+                <label className="info-text">
                   {" "}
                   {t("ps-itm-name")}: {editSale?.itemname}
                 </label>
-                <label>
+                <label className="info-text">
                   {" "}
                   {t("ps-rate")}: {editSale?.rate}
                 </label>
-                <label>
+                <label className="info-text">
                   {" "}
                   {t("ps-qty")}: {editSale?.qty}
                 </label>
               </div>
             </b>
-            <label>
+            <label className="info-text">
               {t("ps-sale-rate")}:
               <input
                 type="text"
+                className="data"
                 value={editSale?.salerate}
                 onChange={(e) =>
                   setEditSale({ ...editSale, salerate: e.target.value })

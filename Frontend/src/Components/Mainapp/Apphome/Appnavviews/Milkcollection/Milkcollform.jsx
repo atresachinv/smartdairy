@@ -2,8 +2,8 @@ import React, { useEffect, useRef, useState } from "react";
 import { BsGearFill } from "react-icons/bs";
 import { useDispatch, useSelector } from "react-redux";
 import {
-  fetchEntries,
   saveMilkOneEntry,
+  setEntries,
 } from "../../../../../App/Features/Mainapp/Milk/MilkCollectionSlice";
 import { toast } from "react-toastify";
 import { fetchFCMTokens } from "../../../../../App/Features/Notifications/notificationSlice";
@@ -23,6 +23,13 @@ const MilkColleform = ({ switchToSettings }) => {
   );
   const dairyphone = useSelector(
     (state) => state.dairy.dairyData.PhoneNo || state.dairy.dairyData.mobile
+  );
+  const dairyid = useSelector(
+    (state) => state.dairy.dairyData.SocietyCode || state.dairy.dairyData.orgid
+  );
+  const centerid = useSelector(
+    (state) =>
+      state.dairy.dairyData.center_id || state.dairy.dairyData.center_id
   );
   const tDate = useSelector((state) => state.date.toDate);
   // const token = useSelector((state) => state.notify.fcmToken);
@@ -295,7 +302,7 @@ const MilkColleform = ({ switchToSettings }) => {
   //
   //         await dispatch(saveMilkCollection(milkColl));
   //       }
-  //       setFullSlots(fullSlots - 1); 
+  //       setFullSlots(fullSlots - 1);
   //     }
   //   };
 
@@ -528,6 +535,16 @@ const MilkColleform = ({ switchToSettings }) => {
     }
   };
 
+  // const shareOnWhatsApp = async () => {
+  //   // const phoneNumber = `91${values.mobile}`;
+  //   const phoneNumber = `8669340801`;
+  //   const message = encodeURIComponent(
+  //     "Check out this amazing app! Download it here: https://play.google.com/store/apps/details?id=com.yourapp.package"
+  //   );
+
+  //   window.open(`https://wa.me/${phoneNumber}?text=${message}`, "_blank");
+  // };
+
   // handle enter press move cursor to next refrence Input -------------------------------->
   const handleKeyDown = (e, nextRef) => {
     if (e.key === "Enter" && nextRef.current) {
@@ -653,6 +670,12 @@ const MilkColleform = ({ switchToSettings }) => {
   //   //     }
   // };
 
+  const fetchEntries = () => (dispatch) => {
+    const allEntries =
+      JSON.parse(localStorage.getItem(`milk_${dairyid}_${centerid}`)) || [];
+    dispatch(setEntries(allEntries));
+  };
+
   const handleCollection = async (e) => {
     e.preventDefault();
 
@@ -665,12 +688,15 @@ const MilkColleform = ({ switchToSettings }) => {
 
     try {
       const result = await dispatch(saveMilkOneEntry(values)).unwrap();
-
       if (result?.status === 200) {
         const existingEntries =
-          JSON.parse(localStorage.getItem("milkentries")) || [];
+          JSON.parse(localStorage.getItem(`milk_${dairyid}_${centerid}`)) || [];
         existingEntries.push(values);
-        localStorage.setItem("milkentries", JSON.stringify(existingEntries));
+        localStorage.setItem(
+          `milk_${dairyid}_${centerid}`,
+          JSON.stringify(existingEntries)
+        );
+        fetchEntries();
 
         setValues(initialValues); // Reset form
         setErrors({}); // Clear errors

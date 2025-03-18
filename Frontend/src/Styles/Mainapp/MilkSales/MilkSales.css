@@ -17,9 +17,38 @@
   transform: translate(-50%, -50%);
   background-color: #75737357;
 }
-.heading-and-close-btn-container .span-btn{
+.heading-and-close-btn-container .span-btn {
   color: #fff;
   background-color: #2f37af;
   padding: 10px;
   border-radius: 8px;
 }
+
+/* <<<<--------------------------- Create Milk Sangha CSS ------------------------>>>> */
+
+@media screen and (max-width: 426px) {
+  .create-sangh-container {
+    min-height: auto;
+  }
+  .create-sangha-form-container {
+    min-height: fit-content;
+  }
+  .create-sangha-form-container .sangha-details-form-inner-container {
+    flex-direction: column;
+    min-height: fit-content;
+    align-items: flex-start;
+  }
+  .sangha-details-form-inner-container .details-div {
+    width: 20%;
+  }
+  .sangha-details-form-inner-container .sangha-details-div {
+    width: 100%;
+  }
+  .sangha-details-form-inner-container .button-container {
+    width: 100%;
+  }
+  .sangha-details-form-inner-container .button-container button {
+    width: 50%;
+  }
+}
+/* <<<<--------------------------- Create Milk Sangha CSS End------------------------>>>> */

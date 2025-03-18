@@ -38,7 +38,7 @@ const CustomerMilkTransfer = () => {
     updatecode: "",
     updatecname: "",
     acccode: "",
-    formDate: "",
+    fromDate: "",
     toDate: "",
   };
 
@@ -254,7 +254,7 @@ const CustomerMilkTransfer = () => {
 
   const fetchCustomerMilkRecords = (e) => {
     e.preventDefault();
-    if (!values.code || !values.cname || !values.formDate || !values.toDate) {
+    if (!values.code || !values.cname || !values.fromDate || !values.toDate) {
       toast.error("Please Fill All Fields!");
       return;
     }
@@ -267,18 +267,20 @@ const CustomerMilkTransfer = () => {
     dispatch(
       getMilkToTransfer({
         code: values.code,
-        fromDate: values.formDate,
+        fromDate: values.fromDate,
         toDate: values.toDate,
       })
     );
   };
 
-  const UpdateCustomerMilkRecords = (e) => {
+  const UpdateCustomerMilkRecords = async (e) => {
     e.preventDefault();
+
     if (!values.updatecode || !values.updatecname || !values.acccode) {
-      toast.error("Please Fill All Fields!");
+      toast.error("Please enter customer code to transfer milk!");
       return;
     }
+
     // Validate fields before submission
     const validationErrors = validateFields();
     if (Object.keys(validationErrors).length > 0) {
@@ -287,24 +289,39 @@ const CustomerMilkTransfer = () => {
     }
 
     try {
-      dispatch(
+      const result = await dispatch(
         transferTOCustomer({
-          code: values.code,
-          cname: values.cname,
-          formDate: values.formDate,
+          ucode: values.updatecode,
+          ucname: values.updatecname,
+          uacccode: values.acccode,
+          fromDate: values.fromDate, // Fixed typo (was formDate)
           toDate: values.toDate,
+          records: MilkData || [], // Ensure MilkData is not undefined
         })
-      );
-      dispatch(
-        getTransferedMilk({
-          code: values.updatecode,
-          fromDate: values.formDate,
-          toDate: values.toDate,
-        })
-      );
-      toast.success(`Milk Collection Transfer to ${values.updatecname}`);
+      ).unwrap();
+
+      if (result?.status === 200) {
+        dispatch(
+          getMilkToTransfer({
+            code: values.code,
+            fromDate: values.fromDate,
+            toDate: values.toDate,
+          })
+        );
+        dispatch(
+          getTransferedMilk({
+            code: values.updatecode,
+            fromDate: values.fromDate,
+            toDate: values.toDate,
+          })
+        );
+        toast.success(result?.message);
+      } else {
+        toast.error(result?.message || "Milk transfer failed.");
+      }
     } catch (error) {
-      toast.error("Failed to transfer milk collection!");
+      console.error("Milk transfer error:", error);
+      toast.error(error?.message || "Failed to transfer milk collection!");
     }
   };
 
@@ -317,7 +334,8 @@ const CustomerMilkTransfer = () => {
         <div className="customer-details-container w100 h20 d-flex sb">
           <form
             onSubmit={fetchCustomerMilkRecords}
-            className="from-cutsomer-details w45 h1 d-flex-col">
+            className="from-cutsomer-details w45 h1 d-flex-col"
+          >
             <div className="from-customer-details-container w100 h50 d-flex a-center sb">
               <label htmlFor="code" className="label-text px10">
                 Customer
@@ -360,8 +378,8 @@ const CustomerMilkTransfer = () => {
               <input
                 className="data w30 mx10"
                 type="date"
-                value={values.formDate || ""}
-                name="formDate"
+                value={values.fromDate || ""}
+                name="fromDate"
                 placeholder="code"
                 onChange={handleInputs}
                 max={tDate}
@@ -382,7 +400,8 @@ const CustomerMilkTransfer = () => {
               <button
                 type="submit"
                 className="btn"
-                disabled={milkStatus === "loading"}>
+                disabled={milkStatus === "loading"}
+              >
                 {milkStatus === "loading" ? "SHOW..." : "SHOW"}
               </button>
             </div>
@@ -436,7 +455,8 @@ const CustomerMilkTransfer = () => {
                   className={`collection-data-container w100 h10 d-flex a-center t-center sb`}
                   style={{
                     backgroundColor: index % 2 === 0 ? "#faefe3" : "#fff",
-                  }}>
+                  }}
+                >
                   <span className="text w5">{milk.ME === 0 ? "M" : "E"}</span>
                   <span className="text w20 t-start">
                     {milk.ReceiptDate.slice(0, 10) || ""}
@@ -489,7 +509,8 @@ const CustomerMilkTransfer = () => {
                   className={`collection-data-container w100 h10 d-flex a-center t-center sb`}
                   style={{
                     backgroundColor: index % 2 === 0 ? "#faefe3" : "#fff",
-                  }}>
+                  }}
+                >
                   <span className="text w5">{milk.ME === 0 ? "M" : "E"}</span>
                   <span className="text w20 t-start">
                     {milk.ReceiptDate.slice(0, 10) || ""}

@@ -757,10 +757,11 @@ const GrocerySaleList = () => {
           <div className="modal">
             <div className="saleModal-content">
               <h2> {t("ps-up-sale-item")}</h2>
-              <label>
+              <label className="info-text">
                 {t("ps-rect-no")} :
                 <input
                   type="number"
+                  className="data"
                   value={editSale?.ReceiptNo}
                   onChange={(e) =>
                     setEditSale({ ...editSale, ReceiptNo: e.target.value })
@@ -768,10 +769,11 @@ const GrocerySaleList = () => {
                   onFocus={(e) => e.target.select()}
                 />
               </label>
-              <label>
+              <label className="info-text">
                 {t("ps-qty")}:
                 <input
                   type="number"
+                  className="data"
                   value={editSale?.Qty}
                   onChange={(e) =>
                     setEditSale({ ...editSale, Qty: e.target.value })
@@ -779,9 +781,10 @@ const GrocerySaleList = () => {
                   onFocus={(e) => e.target.select()}
                 />
               </label>
-              <label>
+              <label className="info-text">
                 {t("ps-rate")}:
                 <input
+                  className="data"
                   type="number"
                   value={editSale?.Rate}
                   onFocus={(e) => e.target.select()}
@@ -790,10 +793,11 @@ const GrocerySaleList = () => {
                   }
                 />
               </label>
-              <label>
+              <label className="info-text">
                 {t("ps-amt")}:
                 <input
                   type="number"
+                  className="data"
                   value={handleAmountCalculation()}
                   disabled
                 />
@@ -803,7 +807,13 @@ const GrocerySaleList = () => {
                   {" "}
                   {t("ps-cancel")}
                 </button>
-                <button onClick={handleSaveChanges}> {t("ps-update")}</button>
+                <button
+                  onClick={handleSaveChanges}
+                  style={{ marginLeft: "10px" }}
+                >
+                  {" "}
+                  {t("ps-update")}
+                </button>
               </div>
             </div>
           </div>

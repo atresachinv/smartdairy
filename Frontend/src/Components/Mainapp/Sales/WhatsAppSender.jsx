@@ -1,4 +1,7 @@
 import axiosInstance from "../../../App/axiosInstance";
+import { saveMessage } from "../../../App/Features/Mainapp/Dairyinfo/smsSlice";
+import { store } from "../../../App/Store";
+import { toast } from "react-toastify";
 
 export const sendMessage = async ({
   to,
@@ -36,12 +39,26 @@ export const sendMessage = async ({
   };
 
   try {
-    // console.log(requestBody);
-    const response = await axiosInstance.post("/send-message", requestBody); // ✅ Remove JSON.stringify()
-    toast.success("Whatsapp message send successfully...");
-    // console.log("Response:", response.data);
+    const response = await axiosInstance.post("/send-message", requestBody);
+    if (response?.data.success) {
+      toast.success("WhatsApp message sent successfully...");
+      // Save message in database
+      const smsData = {
+        smsStatus: "Sent",
+        mono: to,
+        custCode: cName.split("-")[0],
+        rNo: rctNo,
+        smsText: requestBody,
+      };
+
+      store.dispatch(saveMessage(smsData));
+    } else if (response.status === 200) {
+      toast.error(response.data.message);
+    } else {
+      toast.error("Don't sent WhatsApp message...");
+    }
   } catch (error) {
-    toast.error("Error in whatsapp message sending...");
+    toast.error("Error in WhatsApp message sending...");
     console.error("Error sending message:", error);
   }
 };

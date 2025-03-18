@@ -16,6 +16,13 @@ const Sidebar = ({ setselected, handleSidebar }) => {
   const { t } = useTranslation(["common"]);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const dairyid = useSelector(
+    (state) => state.dairy.dairyData.SocietyCode || state.dairy.dairyData.orgid
+  );
+  const centerid = useSelector(
+    (state) =>
+      state.dairy.dairyData.center_id || state.dairy.dairyData.center_id
+  );
 
   axios.defaults.baseURL = import.meta.env.VITE_BASE_URI;
   axios.defaults.withCredentials = true;
@@ -26,7 +33,7 @@ const Sidebar = ({ setselected, handleSidebar }) => {
     try {
       await axiosInstance.post("/logout");
       localStorage.removeItem("customerlist");
-      localStorage.removeItem("milkentries");
+      localStorage.removeItem(`milk_${dairyid}_${centerid}`);
       localStorage.removeItem("milkcollrcharts");
       localStorage.removeItem("colldata");
 

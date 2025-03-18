@@ -1,4 +1,4 @@
-.startingModal {
+.expiredModel {
   position: fixed;
   z-index: 101;
   left: 0;
@@ -10,7 +10,7 @@
   align-items: center;
   justify-content: center;
 }
-.startingModal .modal-content {
+.expiredModel .modal-content {
   background-color: #ffffff;
   max-height: 90%;
   border-radius: 12px;
@@ -21,20 +21,21 @@
   flex-direction: column;
   gap: 3px;
 }
-.startingModal .modal-content h2 {
+
+.expiredModel .modal-content h2 {
   /* font-size: 1.5rem; Slightly larger heading */
   margin-bottom: 10px;
   color: #333; /* Darker text for better readability */
   text-align: center;
 }
 
-.startingModal .modal-content label {
+.expiredModel .modal-content label {
   /* font-size: 1rem; */
   color: #555;
   margin-bottom: 5px;
 }
 
-.startingModal .modal-content button {
+.expiredModel .modal-content button {
   padding: 10px 20px;
   /* font-size: 1rem; */
   border: none;
@@ -43,31 +44,27 @@
   transition: background-color 0.2s;
 }
 
-.startingModal .modal-content button:last-child {
+.expiredModel .modal-content button:last-child {
   background-color: #007bff;
   color: white;
   margin-left: 10px;
 }
 
-.startingModal .modal-content button:last-child:hover {
+.expiredModel .modal-content button:last-child:hover {
   background-color: #0056b3;
 }
 
-.startingModal .modal-content button:first-child {
+.expiredModel .modal-content button:first-child {
   background-color: #f8f9fa;
   color: #333;
 }
 
-.startingModal .modal-content button:first-child:hover {
+.expiredModel .modal-content button:first-child:hover {
   background-color: #e2e6ea;
 }
 
 @media screen and (max-width: 426px) {
-  .startingStock .startingStockForm {
-    width: 100%;
+  .expiredModel .modal-content {
+    /* width: 100%; */
   }
-
-  /* .startingModal .modal-content {
-    padding: 0px !important;
-  } */
 }

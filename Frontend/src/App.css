@@ -342,60 +342,58 @@
   cursor: pointer;
 }
 .subtitle {
-  font-size: clamp(20px, 3vw, 22px);
+  font-size: clamp(18px, 3vw, 20px);
   font-weight: 700;
   color: #7235ed;
   cursor: pointer;
 }
 
 .heading {
-  font-size: clamp(20px, 2vw, 22px);
+  font-size: clamp(18px, 2vw, 20px);
   font-weight: 600;
   color: #7235ed;
   cursor: pointer;
 }
 .f-heading {
-  font-size: clamp(20px, 2vw, 22px);
-  font-weight: 600;
+  font-size: clamp(18px, 2vw, 20px);
+  font-weight: 500;
   color: #fff;
   cursor: pointer;
 }
 .sub-heading {
-  font-size: clamp(10px, 2vw, 16px);
+  font-size: clamp(16px, 2vw, 18px);
   font-weight: 500;
   color: #0e0e0e;
   cursor: pointer;
 }
 .labeltext {
-  font-size: clamp(18px, 2vw, 20px);
+  font-size: clamp(16px, 2vw, 18px);
   font-weight: 400;
   color: #10062c;
   cursor: pointer;
 }
 
 .f-label-text {
-  font-size: clamp(18px, 2vw, 20px);
+  font-size: clamp(16px, 2vw, 18px);
   font-weight: 400;
   color: #fff;
   cursor: pointer;
 }
 .label-text {
-  font-size: clamp(18px, 2vw, 16px);
+  font-size: clamp(16px, 3vw, 18px);
   font-weight: 400;
   color: #083b64;
   cursor: pointer;
 }
 
 .info-text {
-  font-size: clamp(18px, 2vw, 20px);
+  font-size: clamp(16px, 2vw, 18px);
   font-weight: 300;
-  /* margin-top: 5px; */
 }
 .f-info-text {
-  font-size: clamp(18px, 2vw, 20px);
+  font-size: clamp(16px, 2vw, 18px);
   font-weight: 400;
   color: #ffffff;
-  /* margin-top: 5px; */
 }
 
 .text {

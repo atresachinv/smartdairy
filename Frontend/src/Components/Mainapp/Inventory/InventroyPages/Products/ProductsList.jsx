@@ -420,13 +420,14 @@ const ProductsList = () => {
         </div>
       </div>
       {isModalOpen && (
-        <div className="pramod modal">
-          <div className="modal-content forMin">
+        <div className=" productModel">
+          <div className="modal-content">
             <h2>{t("ps-up-pro-det")}</h2>
-            <label>
+            <label className="info-text">
               {t("ps-itm-name")}
               <input
                 type="text"
+                className="data"
                 value={editSale?.ItemName}
                 onChange={(e) =>
                   setEditSale({ ...editSale, ItemName: e.target.value })
@@ -434,10 +435,11 @@ const ProductsList = () => {
                 onFocus={(e) => e.target.select()}
               />
             </label>
-            <label>
+            <label className="info-text">
               {t("ps-desc")}
               <input
                 type="text"
+                className="data"
                 value={editSale?.ItemDesc}
                 onFocus={(e) => e.target.select()}
                 onChange={(e) =>

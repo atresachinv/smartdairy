@@ -1,5 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-/* eslint-disable no-unused-vars */
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
@@ -7,7 +5,6 @@ import Spinner from "../../../../Home/Spinner/Spinner";
 import {
   createEmp,
   findEmp,
-  listEmployee,
   updateEmp,
 } from "../../../../../App/Features/Mainapp/Masters/empMasterSlice";
 import "../../../../../Styles/Mainapp/Masters/EmpMaster.css";
@@ -201,13 +198,6 @@ const CreateEmployee = () => {
         ...prevData,
         [name]: value,
       }));
-
-      // Field-level validation on input change
-      // const fieldError = validateField(name, value);
-      // setErrors((prevErrors) => ({
-      //   ...prevErrors,
-      //   ...fieldError,
-      // }));
       const fieldError = validateField(name, value);
       setErrors((prevErrors) => {
         const updatedErrors = { ...prevErrors, ...fieldError };
