@@ -768,27 +768,150 @@ exports.clearCache = (req, res) => {
 // Whats app  message send--------------------------------------------------------------------------------->
 //--------------------------------------------------------------------------------------------------------->
 
-exports.sendMessage = async (req, res) => {
+exports.sendMessage = (req, res) => {
+  const dairy_id = req.user.dairy_id;
+  const center_id = req.user.center_id;
+
+  pool.getConnection((err, connection) => {
+    if (err) {
+      console.error("Error getting MySQL connection: ", err);
+      return res.status(500).json({
+        success: false,
+        status: 500,
+        message: "Database connection error",
+      });
+    }
+
+    try {
+      // Get rows from sms_history_master
+      connection.query(
+        `SELECT * FROM sms_history_master WHERE center_id=? AND dairy_id=?`,
+        [center_id, dairy_id],
+        (err, result) => {
+          if (err) {
+            console.error("Error getting rows from sms_history_master: ", err);
+            connection.release();
+            return res.status(500).json({
+              success: false,
+              status: 500,
+              message: "query execution error sms_history_master",
+            });
+          }
+
+          // Get the total balance from smsRechargeMaster
+          connection.query(
+            `SELECT SUM(balance) as total_balance FROM smsRechargeMaster WHERE center_id=? AND dairy_id=?`,
+            [center_id, dairy_id],
+            async (err, result1) => {
+              connection.release();
+
+              if (err) {
+                console.error(
+                  "Error getting balance from smsRechargeMaster: ",
+                  err
+                );
+                return res.status(500).json({
+                  success: false,
+                  status: 500,
+                  message: "query execution error smsRechargeMaster",
+                });
+              }
+
+              const rowCount = result.length;
+              const totalBalance =
+                result1[0] && result1[0].total_balance !== null
+                  ? result1[0].total_balance
+                  : 10;
+
+              // Compare row count with total balance to decide further action
+              if (rowCount < totalBalance) {
+                try {
+                  const response = await axios.post(
+                    "https://partnersv1.pinbot.ai/v3/560504630471076/messages",
+                    req.body,
+                    {
+                      headers: {
+                        apikey: "0a4a47a3-d03c-11ef-bb5a-02c8a5e042bd",
+                        "Content-Type": "application/json",
+                      },
+                    }
+                  );
+                  return res.json({ success: true, res: response.data }); // Return the response from the API call
+                } catch (error) {
+                  console.error("Error sending message:", error.message);
+                  return res.status(500).json({
+                    success: false,
+                    error: error.message,
+                  });
+                }
+              } else {
+                // Log additional details for better debugging
+                console.log(
+                  `Low Balance: Row Count = ${rowCount}, Total Balance = ${totalBalance}`
+                );
+                return res.status(200).json({
+                  success: false,
+                  message: "Your balance is low",
+                });
+              }
+            }
+          );
+        }
+      );
+    } catch (error) {
+      console.error("Error in try block:", error.message);
+      res.status(500).json({ success: false, error: error.message });
+    }
+  });
+};
+
+//--------------------------------------------------------------------------------------------------------->
+// save Whats app  message --------------------------------------------------------------------------------->
+//--------------------------------------------------------------------------------------------------------->
+
+exports.saveMessage = async (req, res) => {
+  const dairy_id = req.user.dairy_id;
+  const center_id = req.user.center_id;
+  const { smsStatus, mono, custCode, rNo, smsText } = req.body;
+
   try {
-    const response = await axios.post(
-      "https://partnersv1.pinbot.ai/v3/560504630471076/messages",
-      req.body,
-      {
-        headers: {
-          apikey: "0a4a47a3-d03c-11ef-bb5a-02c8a5e042bd",
-          "Content-Type": "application/json",
-        },
+    const query = `
+      INSERT INTO sms_history_master 
+      (center_id, dairy_id, smsStatus, mono, custCode, rNo, smsText) 
+      VALUES (?, ?, ?, ?, ?, ?, ?)`;
+
+    const values = [
+      center_id,
+      dairy_id,
+      smsStatus,
+      mono,
+      custCode,
+      rNo,
+      JSON.stringify(smsText), // Store as JSON string
+    ];
+
+    pool.getConnection((err, connection) => {
+      if (err) {
+        console.error("Database connection error: ", err);
+        return res
+          .status(500)
+          .json({ status: 500, message: "Database connection error" });
       }
-    );
-    res.json(response.data);
+
+      connection.query(query, values, (err, result) => {
+        connection.release();
+        if (err) {
+          console.error("Error saving SMS record:", err);
+          return res
+            .status(500)
+            .json({ success: false, message: "Error saving SMS record" });
+        }
+        res.json({ success: true, message: "Message saved successfully" });
+      });
+    });
   } catch (error) {
-    console.error(
-      "Error Details:",
-      error.response ? error.response.data : error.message
-    );
-    res
-      .status(500)
-      .json({ error: error.response ? error.response.data : error.message });
+    console.error("Error saving message:", error);
+    res.status(500).json({ success: false, error: "Internal server error" });
   }
 };
 
