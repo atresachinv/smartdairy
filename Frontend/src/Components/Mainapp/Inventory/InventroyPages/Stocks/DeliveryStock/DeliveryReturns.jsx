@@ -22,6 +22,7 @@ const DeliveryReturns = () => {
   const [cartItem, setCartItem] = useState([]);
   const [cname, setCname] = useState("");
   const [fcode, setFcode] = useState("");
+  const [mono, setMono] = useState("");
   const [date, setDate] = useState("");
   const [qty, setQty] = useState(1);
   const [selectitemcode, setSelectitemcode] = useState(0);
@@ -34,7 +35,8 @@ const DeliveryReturns = () => {
       state.dairy.dairyData.SocietyName || state.dairy.dairyData.center_name
   );
   const [selected, setSelected] = useState(2);
-
+  const centerID = useSelector((state) => state.dairy.dairyData.center_id);
+  const [filterEmpList, setFilterEmpList] = useState([]);
   const { emplist } = useSelector((state) => state.emp);
   const centerList = useSelector(
     (state) => state.center.centersList.centersDetails
@@ -81,6 +83,7 @@ const DeliveryReturns = () => {
         saledate: `${date} 00:00:00`,
         Qty: Number(qty),
         to_user: fcode,
+        emp_mobile: mono,
         itemgroupcode: selectedItem.ItemGroupCode,
         deliver_to: Number(selected),
         cn: 1,
@@ -118,6 +121,7 @@ const DeliveryReturns = () => {
     setCname("");
     setQty(1);
     setSelectitemcode(0);
+    setMono("");
   };
 
   //handle to save server
@@ -140,24 +144,40 @@ const DeliveryReturns = () => {
       }
     }
   };
+  //filter list emp to center
+  useEffect(() => {
+    // Filter the list based on center_id
+    const filteredList = emplist.filter(
+      (item) => Number(item.center_id) === Number(centerID)
+    );
+    setFilterEmpList(filteredList);
+  }, [emplist, centerID]);
 
   // Set customer code based on cname
   useEffect(() => {
-    if (selected === 2 && emplist.length > 0) {
-      const customer = emplist.find((item) => item.emp_name === cname);
-      if (customer && fcode !== customer.emp_id) setFcode(customer.emp_id);
+    if (selected === 2 && filterEmpList.length > 0) {
+      const customer = filterEmpList.find((item) => item.emp_name === cname);
+      if (customer && fcode !== customer.emp_id) {
+        setFcode(customer.emp_id);
+        setMono(customer.emp_mobile);
+      }
     } else if (selected === 1 && centerList.length > 0) {
       const customer = centerList.find((item) => item.center_name === cname);
       if (customer && fcode !== customer.center_id)
         setFcode(customer.center_id);
     }
-  }, [cname, emplist, centerList, selected]);
+  }, [cname, filterEmpList, centerList, selected]);
 
   // Set customer name based on fcode
   useEffect(() => {
-    if (selected === 2 && emplist.length > 0) {
-      const customer = emplist.find((item) => item.emp_id === parseInt(fcode));
-      if (customer && cname !== customer.emp_name) setCname(customer.emp_name);
+    if (selected === 2 && filterEmpList.length > 0) {
+      const customer = filterEmpList.find(
+        (item) => item.emp_id === parseInt(fcode)
+      );
+      if (customer && cname !== customer.emp_name) {
+        setCname(customer.emp_name);
+        setMono(customer.emp_mobile);
+      }
     } else if (selected === 1 && centerList.length > 0) {
       const customer = centerList.find(
         (item) => item.center_id === parseInt(fcode)
@@ -165,7 +185,7 @@ const DeliveryReturns = () => {
       if (customer && cname !== customer.center_name)
         setCname(customer.center_name);
     }
-  }, [fcode, emplist, centerList, selected]);
+  }, [fcode, filterEmpList, centerList, selected]);
 
   // Function to handle printing the invoice --------------------------------------->
   //   const handlePrint = () => {
@@ -610,8 +630,8 @@ const DeliveryReturns = () => {
                       .map((emp, index) => (
                         <option key={index} value={emp.center_name} />
                       ))
-                  : emplist &&
-                    emplist
+                  : filterEmpList &&
+                    filterEmpList
                       .filter((emp) =>
                         emp.emp_name.toLowerCase().includes(cname.toLowerCase())
                       )

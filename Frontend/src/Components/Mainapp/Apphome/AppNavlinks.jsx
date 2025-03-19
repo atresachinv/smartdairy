@@ -66,14 +66,21 @@ const AppNavlinks = ({ isselected, setIsSelected }) => {
       icon: <BsFileTextFill className="icon" />,
       index: 5,
       path: "vehicle/sales",
-      role: ["super_admin", "milkcollector", "mobilecollector"],
+      role: ["super_admin", "mobilecollector"],
     },
     {
       name: `${t("m-sales-report")}`,
       icon: <BsFileTextFill className="icon" />,
       index: 6,
       path: "vehicle/sales/report",
-      role: ["super_admin", "milkcollector", "mobilecollector"],
+      role: ["super_admin", "mobilecollector"],
+    },
+    {
+      name: `${t("stock")}`,
+      icon: <BsFileTextFill className="icon" />,
+      index: 7,
+      path: "vehicle/stock/report",
+      role: ["super_admin", "mobilecollector"],
     },
     // {
     //   name: `${t("m-sale-report")}`,
