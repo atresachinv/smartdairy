@@ -20,6 +20,7 @@ import AdminSalesReports from "./Appnavviews/MilkSankalan/AdminSalesReports";
 import Milksales from "./Appnavviews/MilksalesPages/Milksales";
 import MilksalesReport from "./Appnavviews/MilksalesPages/MilksalesReport";
 import { getretailCustomer } from "../../../App/Features/Mainapp/Milksales/milkSalesSlice";
+import StockReport from "./Appnavviews/Sales/StockReport";
 
 const Apphome = () => {
   const dispatch = useDispatch();
@@ -80,6 +81,7 @@ const Apphome = () => {
           />
           <Route path="vehicle/sales" element={<CreateCattleFeed />} />
           <Route path="vehicle/sales/report" element={<SalesReports />} />
+          <Route path="vehicle/stock/report" element={<StockReport />} />
           <Route path="admin/sales/report" element={<AdminSalesReports />} />
           <Route path="retail/milk-sales" element={<Milksales />} />
           <Route path="retail/sale-report" element={<MilksalesReport />} />

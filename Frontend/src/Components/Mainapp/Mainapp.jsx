@@ -64,6 +64,7 @@ import ExpiredProductsMaster from "./Inventory/InventroyPages/Stocks/ExpiredProd
 import DashboardTabs from "./Dashboard/DashboardTabs/DashboardTabs";
 import ComingSoon from "./ComingSoon";
 import MilkSankalan from "./Apphome/Appnavviews/MilkSankalan/MilkSankalan";
+import { getCenterSetting } from "../../App/Features/Mainapp/Settings/dairySettingSlice";
 
 const Mainapp = () => {
   const dispatch = useDispatch();
@@ -111,6 +112,7 @@ const Mainapp = () => {
     dispatch(centerDetails());
     dispatch(centersLists());
     dispatch(listCustomer());
+    dispatch(getCenterSetting());
     dispatch(fetchDairyInfo());
     dispatch(maxCenterId(dairy_id));
   }, []);

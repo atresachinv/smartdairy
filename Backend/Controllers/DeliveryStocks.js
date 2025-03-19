@@ -68,12 +68,13 @@ exports.createDeliverStock = async (req, res) => {
           newBillNo, // Assign same bill number to all items
           item.rctno,
           item.deliver_to,
+          item.emp_mobile,
         ]);
 
         // Insert multiple rows
         connection.query(
           `INSERT INTO delivery_stocks 
-          (dairy_id, center_id, itemgroupcode, ItemCode, ItemName, Qty, cn, saledate, to_user, salerate, saleby, billno,rctno,deliver_to) 
+          (dairy_id, center_id, itemgroupcode, ItemCode, ItemName, Qty, cn, saledate, to_user, salerate, saleby, billno,rctno,deliver_to,emp_mobile) 
           VALUES ?`,
           [values],
           (err, insertResult) => {
@@ -133,6 +134,63 @@ exports.getDeliverStocks = async (req, res) => {
     if (role && role === "salesman") {
       query += `AND saleby=? `;
       queryParams.push(user_id);
+    }
+
+    // Dynamically add other filters
+    Object.keys(filters).forEach((key) => {
+      if (filters[key]) {
+        query += ` AND ${key} LIKE ?`;
+        queryParams.push(`%${filters[key]}%`);
+      }
+    });
+
+    // Sorting by sale date (latest first)
+    query += " ORDER BY saledate DESC";
+
+    // Execute Query
+    connection.query(query, queryParams, (err, results) => {
+      connection.release();
+      if (err) {
+        console.error("Error fetching delivery stocks: ", err);
+        return res
+          .status(500)
+          .json({ success: false, message: "Error fetching data" });
+      }
+
+      res.status(200).json({
+        success: true,
+        message: "Delivery stocks fetched successfully",
+        data: results,
+      });
+    });
+  });
+};
+
+// Get user Delivery Stocks with Date Range Filter
+exports.getUserDeliverStocks = async (req, res) => {
+  const { dairy_id, center_id, user_id } = req.user;
+  // console.log(user_id);
+  const { from_date, to_date, ...filters } = req.query;
+  const today = new Date().toISOString().split("T")[0];
+
+  pool.getConnection((err, connection) => {
+    if (err) {
+      console.error("Error getting MySQL connection: ", err);
+      return res
+        .status(500)
+        .json({ success: false, message: "Database connection error" });
+    }
+
+    // Base Query
+    let query = `SELECT * FROM delivery_stocks WHERE dairy_id = ? AND emp_mobile=? AND deliver_to=? `;
+    let queryParams = [dairy_id, user_id, 2];
+
+    if (from_date && to_date) {
+      query += ` AND saledate BETWEEN ? AND ?`;
+      queryParams.push(from_date, to_date);
+    } else {
+      query += ` AND saledate = ?`;
+      queryParams.push(today);
     }
 
     // Dynamically add other filters
