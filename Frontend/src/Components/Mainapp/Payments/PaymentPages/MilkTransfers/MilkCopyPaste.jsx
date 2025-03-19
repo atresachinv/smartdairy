@@ -7,11 +7,11 @@ import { toast } from "react-toastify";
 const MilkCopyPaste = () => {
   const dispatch = useDispatch();
   const tDate = useSelector((state) => state.date.toDate); // today's date
+  const status = useSelector((state) => state.payment.copyCollstatus);
   const [customerList, setCustomerList] = useState([]); // customerlist
   const [currentDate, setCurrentDate] = useState(""); //current date
   const [updatedDate, setUpdatedDate] = useState(""); //updated date
   const [errors, setErrors] = useState({});
-
   // ------------------------------------------------------------------->
   // form Data --------------------------------------------------------->
   const initialValues = {
@@ -149,16 +149,45 @@ const MilkCopyPaste = () => {
 
   // ------------------------------------------------------------------->
   // Milk copy to database function ------------------------------------>
-  const handleMilkCopy = (e) => {
+
+  const handleMilkCopy = async (e) => {
     e.preventDefault();
-    dispatch(copyCollection({ values }));
-    toast.success("Milk Collection Copy Successfully!");
+    try {
+      const result = await dispatch(
+        copyCollection({
+          currentdate: values.currentdate,
+          updatedate: values.updatedate,
+          fromCode: values.fromCode,
+          toCode: values.toCode,
+          time: values.time,
+          updatetime: values.updatetime,
+        })
+      ).unwrap();
+
+      if (result?.status === 200) {
+        setValues({
+          currentdate: tDate,
+          updatedate: tDate,
+          fromCode: 1,
+          toCode: customerList.length,
+          time: 2,
+          updatetime: 2,
+        });
+        toast.success("Milk Collection Copy Successfully!");
+      } else {
+        toast.error("Failed to copy paste milk collection");
+      }
+    } catch (error) {
+      console.error("Copy Milk Collection Error:", error);
+      toast.error(error?.message || "Something went wrong!");
+    }
   };
 
   return (
     <form
       onSubmit={handleMilkCopy}
-      className="shift-wise-milk-transfer-container w100 h1 d-flex-col a-center ">
+      className="shift-wise-milk-transfer-container w100 h1 d-flex-col a-center "
+    >
       <span className="heading p10">Copy And Transfer Milk Collection</span>
       <div className="milk-date-transfer-container w50 h90 d-flex-col sa bg p10">
         <span className="subheading t-center">Copy From</span>
@@ -288,8 +317,12 @@ const MilkCopyPaste = () => {
           <button type="reset" className="w-btn m10">
             Cancel
           </button>
-          <button type="submit" className="w-btn m10">
-            Transfer
+          <button
+            type="submit"
+            className="w-btn m10"
+            disabled={status === "loading"}
+          >
+            {status === "loading" ? "Transfering..." : "Transfer"}
           </button>
         </div>
       </div>

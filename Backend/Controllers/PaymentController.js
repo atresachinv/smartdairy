@@ -334,16 +334,15 @@ exports.getMilkTrasferToCustomer = async (req, res) => {
 // ----------------------------------------------------------------------------------->
 
 exports.getTrasferedMilk = async (req, res) => {
+  const { code, fromDate, toDate } = req.query;
+
+  const { dairy_id, center_id } = req.user;
+  if (!dairy_id) {
+    return res.status(400).json({ message: "Dairy ID not found!" });
+  }
+  const dairy_table = `dailymilkentry_${dairy_id}`;
+
   try {
-    const { code, fromDate, toDate } = req.query;
-
-    const { dairy_id, center_id } = req.user;
-    if (!dairy_id) {
-      return res.status(400).json({ message: "Dairy ID not found!" });
-    }
-
-    const dairy_table = `dailymilkentry_${dairy_id}`;
-
     pool.getConnection((err, connection) => {
       if (err) {
         console.error("Error getting MySQL connection:", err);
@@ -392,9 +391,8 @@ exports.getTrasferedMilk = async (req, res) => {
 
 exports.milkTrasferToCustomer = async (req, res) => {
   const { ucode, ucname, uacccode, fromDate, toDate, records } = req.body;
-  const dairy_id = req.user.dairy_id;
-  const user_role = req.user.user_role;
-
+  const { dairy_id, center_id, user_role } = req.user;
+  console.log("hello from cust transfer");
   if (!dairy_id || !user_role) {
     return res.status(401).json({ status: 401, message: "Unauthorized User!" });
   }
@@ -428,6 +426,7 @@ exports.milkTrasferToCustomer = async (req, res) => {
       const dairy_table = `dailymilkentry_${dairy_id}`;
       const currentDate = new Date();
 
+      // Step 1: Update records
       const updateRecordQuery = `
         UPDATE ${dairy_table} 
         SET AccCode = ?, cname = ?, rno = ?, UpdatedBy = ?, updatedOn = ? 
@@ -457,17 +456,47 @@ exports.milkTrasferToCustomer = async (req, res) => {
 
       Promise.all(updatePromises)
         .then(() => {
-          connection.release();
-          res.status(200).json({
-            status: 200,
-            message: "Milk Collection Transfered successfully!",
-          });
+          // Step 2: Remove duplicate entries (keeping the latest one)
+          const deleteDuplicateQuery = `
+              DELETE FROM ${dairy_table}
+              WHERE id NOT IN (
+                  SELECT * FROM (
+                      SELECT MIN(id) 
+                      FROM ${dairy_table} 
+                      WHERE center_id = ? AND ReceiptDate BETWEEN ? AND ?
+                      GROUP BY ReceiptDate, rno, ME, CB
+                  ) AS temp_table
+              ) 
+              AND ReceiptDate BETWEEN ? AND ?;
+          `;
+
+          connection.query(
+            deleteDuplicateQuery,
+            [center_id, fromDate, toDate, fromDate, toDate],
+            (err, deleteResult) => {
+              connection.release();
+              if (err) {
+                console.error("Error deleting duplicates: ", err);
+                return res
+                  .status(500)
+                  .json({ message: "Error removing duplicate records" });
+              }
+
+              return res.status(200).json({
+                status: 200,
+                message:
+                  "Milk Collection Transferred to customer successfully!",
+              });
+            }
+          );
         })
         .catch((error) => {
           connection.release();
-          res
-            .status(500)
-            .json({ status: 500, message: "Error updating records", error });
+          res.status(500).json({
+            status: 500,
+            message: "Error updating records",
+            error,
+          });
         });
     } catch (error) {
       connection.release();
@@ -484,72 +513,134 @@ exports.milkTrasferToCustomer = async (req, res) => {
 // ----------------------------------------------------------------------------------->
 
 exports.milkTrasferToDates = async (req, res) => {
-  const { record } = req.body;
-
-  const { dairy_id, user_role } = req.user;
+  const { date, updatedate, fromCode, toCode } = req.body;
+  const { dairy_id, center_id, user_role } = req.user;
 
   // Validate request body
-  if (!record || !Array.isArray(record) || record.length === 0) {
-    return res
-      .status(400)
-      .json({ message: "Records are required and should be an array!" });
+  if (!date || !updatedate || !fromCode || !toCode) {
+    return res.status(400).json({
+      status: 400,
+      message: "All field data required!",
+    });
   }
 
-  if (!dairy_id) {
-    connection.release();
-    return res.status(400).json({ message: "Dairy ID not found!" });
+  if (!dairy_id || !user_role) {
+    return res.status(401).json({ status: 401, message: "Unauthorized User!" });
   }
 
   pool.getConnection((err, connection) => {
     if (err) {
       console.error("Error getting MySQL connection: ", err);
-      return res.status(500).json({ message: "Database connection error" });
+      return res
+        .status(500)
+        .json({ status: 500, message: "Database connection error" });
     }
 
     try {
-      // const currentDate =
       const dairy_table = `dailymilkentry_${dairy_id}`;
+      const currentDate = new Date();
 
-      const updateRecordQuery = `
-        UPDATE ${dairy_table} 
-        SET ReceiptDate = ?, ME = ? , UpdatedBy = ?, updatedOn = ? 
-        WHERE id = ? AND ReceiptDate = ? AND  rno BETWEEN ? AND ?
+      // Step 1: Fetch records that need to be updated
+      const fetchRecordQuery = `
+        SELECT id, ReceiptDate, rno, ME, CB 
+        FROM ${dairy_table} 
+        WHERE ReceiptDate = ? AND rno BETWEEN ? AND ?
       `;
 
-      const updatePromises = records.map((record) => {
-        return new Promise((resolve, reject) => {
-          const { id, rno, AccCode, cname } = record;
-          if (!id || !rno || !AccCode || !cname) {
-            return reject("Invalid record format");
+      connection.query(
+        fetchRecordQuery,
+        [date, fromCode, toCode],
+        (err, records) => {
+          if (err) {
+            console.error("Error fetching records: ", err);
+            connection.release();
+            return res
+              .status(500)
+              .json({ status: 500, message: "Error fetching records" });
           }
 
-          connection.query(
-            updateRecordQuery,
-            [AccCode, cname, rno, user_role, currentDate, id, rno],
-            (err, result) => {
-              if (err) {
-                console.error("Error executing query: ", err);
-                return reject("Query execution error");
-              }
-              resolve(result);
-            }
-          );
-        });
-      });
+          if (records.length === 0) {
+            connection.release();
+            return res
+              .status(404)
+              .json({ status: 404, message: "No records found!" });
+          }
 
-      Promise.all(updatePromises)
-        .then(() => {
-          connection.release();
-          res.status(200).json({ message: "Records updated successfully!" });
-        })
-        .catch((error) => {
-          connection.release();
-          res.status(500).json({ message: "Error updating records", error });
-        });
+          // Step 2: Update records with new ReceiptDate
+          const updateRecordQuery = `
+          UPDATE ${dairy_table} 
+          SET ReceiptDate = ?, UpdatedBy = ?, updatedOn = ? 
+          WHERE id = ?
+        `;
+
+          const updatePromises = records.map((record) => {
+            return new Promise((resolve, reject) => {
+              connection.query(
+                updateRecordQuery,
+                [updatedate, user_role, currentDate, record.id],
+                (err, result) => {
+                  if (err) {
+                    console.error("Error executing update query: ", err);
+                    return reject("Query execution error");
+                  }
+                  resolve(result);
+                }
+              );
+            });
+          });
+
+          Promise.all(updatePromises)
+            .then(() => {
+              // Step 3: Remove duplicate entries, keeping the latest one
+              const deleteDuplicateQuery = `
+              DELETE FROM ${dairy_table}
+              WHERE id NOT IN (
+                SELECT id FROM (
+                  SELECT MIN(id) AS id 
+                  FROM ${dairy_table} 
+                  WHERE center_id = ? AND  ReceiptDate = ?
+                  GROUP BY ReceiptDate, rno, ME, CB
+                ) AS temp_table
+              ) AND ReceiptDate = ?
+            `;
+
+              connection.query(
+                deleteDuplicateQuery,
+                [center_id, updatedate, updatedate],
+                (err, deleteResult) => {
+                  connection.release();
+                  if (err) {
+                    console.error("Error deleting duplicates: ", err);
+                    return res.status(500).json({
+                      status: 500,
+                      message: "Error removing duplicate records",
+                    });
+                  }
+
+                  res.status(200).json({
+                    status: 200,
+                    message:
+                      "Milk collection records transferred successfully!",
+                  });
+                }
+              );
+            })
+            .catch((error) => {
+              connection.release();
+              res.status(500).json({
+                status: 500,
+                message: "Error updating records",
+                error,
+              });
+            });
+        }
+      );
     } catch (error) {
       connection.release();
       console.error("Error processing request: ", error);
-      return res.status(500).json({ message: "Internal server error" });
+      return res
+        .status(500)
+        .json({ status: 500, message: "Internal server error" });
     }
   });
 };
@@ -559,86 +650,162 @@ exports.milkTrasferToDates = async (req, res) => {
 // ----------------------------------------------------------------------------------->
 
 exports.milkTrasferToShift = async (req, res) => {
-  const { record } = req.body;
-
+  const { currentdate, updatedate, fromCode, toCode, time, updatetime } =
+    req.body;
+  const { dairy_id, center_id, user_role } = req.user;
   // Validate request body
-  if (!record) {
-    return res.status(400).json({ message: "record are required!" });
+  if (!currentdate || !updatedate || !fromCode || !toCode) {
+    return res.status(400).json({
+      status: 400,
+      message: "All field data required!",
+    });
+  }
+
+  if (!dairy_id || !user_role) {
+    return res.status(401).json({ status: 401, message: "Unauthorized User!" });
   }
 
   pool.getConnection((err, connection) => {
     if (err) {
       console.error("Error getting MySQL connection: ", err);
-      return res.status(500).json({ message: "Database connection error" });
+      return res
+        .status(500)
+        .json({ status: 500, message: "Database connection error" });
     }
 
     try {
-      const dairy_id = req.user.dairy_id;
-      const user_role = req.user.user_role;
-      const center_id = req.user.center_id;
-
-      if (!dairy_id) {
-        connection.release();
-        return res.status(400).json({ message: "Dairy ID not found!" });
-      }
-
-      // const currentDate =
       const dairy_table = `dailymilkentry_${dairy_id}`;
+      const nowdate = new Date();
 
-      const updateRecordQuery = `
-        UPDATE  ReceiptDate = ? , ME =? , UpdatedBy , updatedOn
-        FROM ${dairy_table}
-        WHERE companyid = ? AND center_id = ? AND ReceiptDate = ? AND ME = ? AND rno IN ()
-
+      // Step 1: Fetch records that need to be updated
+      const fetchRecordQuery = `
+        SELECT id, ReceiptDate, ME, CB, rno 
+        FROM ${dairy_table} 
+        WHERE ReceiptDate = ? AND ME = ? AND rno BETWEEN ? AND ?
       `;
 
       connection.query(
-        updateRecordQuery,
-        [
-          updatedate,
-          updatetime,
-          user_role,
-          currentDate,
-          dairy_id,
-          center_id,
-          date,
-          time,
-          fromCode,
-          toCode,
-        ],
-        (err, result) => {
-          connection.release(); // Always release the connection
+        fetchRecordQuery,
+        [currentdate, time, fromCode, toCode],
+        (err, records) => {
           if (err) {
-            console.error("Error executing query: ", err);
-            return res.status(500).json({ message: "Query execution error" });
+            console.error("Error fetching records: ", err);
+            connection.release();
+            return res
+              .status(500)
+              .json({ status: 500, message: "Error fetching records" });
           }
 
-          if (result.length === 0) {
-            return res.status(404).json({ message: "No records found!" });
+          if (records.length === 0) {
+            connection.release();
+            return res
+              .status(404)
+              .json({ status: 404, message: "No records found!" });
           }
 
-          // Return the results
-          res
-            .status(200)
-            .json({ message: "Selected Record updated successfully!" });
+          // Step 2: Update records with new date and ME
+          const updateRecordQuery = `
+          UPDATE ${dairy_table} 
+          SET ReceiptDate = ?, ME = ?, UpdatedBy = ?, updatedOn = ? 
+          WHERE id = ?
+        `;
+
+          const updatePromises = records.map((record) => {
+            return new Promise((resolve, reject) => {
+              connection.query(
+                updateRecordQuery,
+                [updatedate, updatetime, user_role, nowdate, record.id],
+                (err, result) => {
+                  if (err) {
+                    console.error("Error executing update query: ", err);
+                    return reject("Query execution error");
+                  }
+                  resolve(result);
+                }
+              );
+            });
+          });
+
+          Promise.all(updatePromises)
+            .then(() => {
+              // Step 3: Remove duplicate entries, keeping only the latest one
+              const deleteDuplicateQuery = `
+              DELETE FROM ${dairy_table}
+              WHERE id NOT IN (
+                SELECT id FROM (
+                  SELECT MIN(id) AS id 
+                  FROM ${dairy_table} 
+                  WHERE center_id = ? AND ReceiptDate = ? 
+                  GROUP BY ReceiptDate, rno, ME, CB
+                ) AS temp_table
+              ) AND ReceiptDate = ?
+            `;
+
+              connection.query(
+                deleteDuplicateQuery,
+                [center_id, updatedate, updatedate],
+                (err, deleteResult) => {
+                  connection.release();
+                  if (err) {
+                    console.error("Error deleting duplicates: ", err);
+                    return res.status(500).json({
+                      status: 500,
+                      message: "Error removing duplicate records",
+                    });
+                  }
+
+                  res.status(200).json({
+                    status: 200,
+                    message: "Milk records transferred to shift successfully!",
+                    updatedRecords: records.length,
+                    deletedDuplicates: deleteResult.affectedRows,
+                  });
+                }
+              );
+            })
+            .catch((error) => {
+              connection.release();
+              res.status(500).json({
+                status: 500,
+                message: "Error transferring records!",
+                error,
+              });
+            });
         }
       );
     } catch (error) {
+      connection.release();
       console.error("Error processing request: ", error);
-      return res.status(500).json({ message: "Internal server error" });
+      return res
+        .status(500)
+        .json({ status: 500, message: "Internal server error" });
     }
   });
 };
+
 // ----------------------------------------------------------------------------------->
 // COPY MILK COLLECTION -------------------------------------------------------------->
 // ----------------------------------------------------------------------------------->
 
 exports.copyMilkCollection = async (req, res) => {
-  const { values } = req.body;
+  const { currentdate, updatedate, fromCode, toCode, time, updatetime } =
+    req.body;
+  const { dairy_id, center_id, user_id } = req.user;
 
   // Validate request body
-  if (!values || !values.currentdate || !values.updatedate || !values.time) {
-    return res.status(400).json({ message: "Required data is missing!" });
+  if (
+    !currentdate ||
+    !updatedate ||
+    !fromCode ||
+    !toCode ||
+    !time ||
+    !updatetime
+  ) {
+    return res.status(400).json({ message: "All field data required!" });
+  }
+
+  if (!dairy_id) {
+    return res.status(401).json({ status: 401, message: "Unauthorized User!" });
   }
 
   pool.getConnection((err, connection) => {
@@ -646,31 +813,23 @@ exports.copyMilkCollection = async (req, res) => {
       console.error("Error getting MySQL connection: ", err);
       return res.status(500).json({ message: "Database connection error" });
     }
+
     try {
-      const dairy_id = req.user.dairy_id;
-      const center_id = req.user.center_id;
-
-      if (!dairy_id) {
-        connection.release();
-        return res.status(400).json({ message: "Dairy ID not found!" });
-      }
-
       const dairy_table = `dailymilkentry_${dairy_id}`;
-      const { currentdate, updatetime, fromCode, toCode, updatedate, time } =
-        values;
 
       // Step 1: Select records based on currentdate, time (ME), and customers (rno)
       const selectRecordQuery = `
-        SELECT Litres, fat, snf, rate, Amt, AccCode, cname, rno, ME
+        SELECT Litres, fat, snf, rate, Amt, AccCode, cname, rno, ME, CB
         FROM ${dairy_table}
-        WHERE companyid = ? AND center_id = ? AND ReceiptDate = ? 
-          AND rno BETWEEN ? AND ? AND ME ${time === 2 ? "IN (0, 1)" : "= ?"}  
+        WHERE center_id = ? AND ReceiptDate = ? 
+          AND rno BETWEEN ? AND ? 
+          AND ME ${time === 2 ? "IN (0, 1)" : "= ?"}
       `;
 
       const selectParams =
         time === 2
-          ? [dairy_id, center_id, currentdate, fromCode, toCode]
-          : [dairy_id, center_id, currentdate, fromCode, toCode, time];
+          ? [center_id, currentdate, fromCode, toCode]
+          : [center_id, currentdate, fromCode, toCode, time];
 
       connection.query(selectRecordQuery, selectParams, (err, results) => {
         if (err) {
@@ -684,18 +843,18 @@ exports.copyMilkCollection = async (req, res) => {
           return res.status(404).json({ message: "No records found!" });
         }
 
-        // Step 2: Insert new records into the same table with updated fields
+        // Step 2: Insert new records with updated ReceiptDate
         const insertRecordQuery = `
             INSERT INTO ${dairy_table} 
-            (companyid, userid, ReceiptDate, ME, Litres, Amt, AccCode, fat, snf, rate, cname, rno, center_id) 
+            (userid, ReceiptDate, ME, CB, Litres, Amt, AccCode, fat, snf, rate, cname, rno, center_id) 
             VALUES ?
         `;
 
         const insertData = results.map((record) => [
-          dairy_id,
-          req.user.user_id,
+          user_id,
           updatedate,
           time === 2 ? record.ME : updatetime,
+          record.CB,
           record.Litres,
           record.Amt,
           record.AccCode,
@@ -707,22 +866,52 @@ exports.copyMilkCollection = async (req, res) => {
           center_id,
         ]);
 
-        // Execute the query with flattened data
         connection.query(insertRecordQuery, [insertData], (err, result) => {
-          connection.release();
           if (err) {
             console.error("Error inserting records: ", err);
+            connection.release();
             return res.status(500).json({ message: "Error inserting records" });
           }
+
           if (result.affectedRows === 0) {
-            return res.status(200).json({
-              message: "No Records Found to Copy!",
-            });
+            connection.release();
+            return res
+              .status(200)
+              .json({ message: "No Records Found to Copy!" });
           }
-          return res.status(200).json({
-            message: "Records copied and updated successfully!",
-            affectedRows: result.affectedRows,
-          });
+
+          // Step 3: Remove old duplicates for the same `updatedate`, `rno`, `ME`, `CB`
+          const deleteDuplicateQuery = `
+              DELETE FROM ${dairy_table}
+              WHERE id NOT IN (
+                  SELECT * FROM (
+                      SELECT MIN(id) 
+                      FROM ${dairy_table} 
+                      WHERE center_id = ? AND ReceiptDate = ?
+                      GROUP BY ReceiptDate, rno, ME, CB
+                  ) AS temp_table
+              ) 
+              AND ReceiptDate = ?;
+          `;
+
+          connection.query(
+            deleteDuplicateQuery,
+            [center_id, updatedate, updatedate],
+            (err, deleteResult) => {
+              connection.release();
+              if (err) {
+                console.error("Error deleting duplicates: ", err);
+                return res
+                  .status(500)
+                  .json({ message: "Error removing duplicate records" });
+              }
+
+              return res.status(200).json({
+                status: 200,
+                message: "Records copied and duplicates removed successfully!",
+              });
+            }
+          );
         });
       });
     } catch (error) {
@@ -738,64 +927,78 @@ exports.copyMilkCollection = async (req, res) => {
 // ----------------------------------------------------------------------------------->
 
 exports.deleteMilkCollection = async (req, res) => {
-  const { fromDate, toDate, fromCode, toCode, time } = req.body;
+  const { values } = req.body;
+  const dairy_id = req.user?.dairy_id;
 
   // Validate request body
-  if (!fromDate || !toDate || !fromCode || !toCode || !time) {
-    return res.status(400).json({ message: "All input fields are required!" });
+  if (!values || Object.keys(values).length === 0) {
+    return res.status(400).json({
+      status: 400,
+      message: "All fields data required!",
+    });
   }
-  const dairy_id = req.user.dairy_id;
-  console.log("dairy_id", dairy_id);
+
+  if (!dairy_id) {
+    return res.status(401).json({
+      status: 401,
+      message: "Unauthorized User!",
+    });
+  }
+
   pool.getConnection((err, connection) => {
     if (err) {
       console.error("Error getting MySQL connection: ", err);
       return res.status(500).json({ message: "Database connection error" });
     }
-    console.log("hiii2");
+
     try {
-      const dairy_id = req.user?.dairy_id;
-      console.log("hiii3");
-      if (!dairy_id) {
-        connection.release();
-        return res.status(400).json({ message: "Dairy ID not found!" });
+      const dairy_table = `dailymilkentry_${dairy_id}`;
+      const { fromDate, toDate, fromCode, toCode, time } = values;
+
+      let deleteQuery;
+      let queryParams;
+
+      if (time === 2) {
+        deleteQuery = `
+          DELETE FROM ${dairy_table}
+          WHERE ReceiptDate BETWEEN ? AND ? 
+          AND rno BETWEEN ? AND ? 
+          AND ME IN (0, 1)
+        `;
+        queryParams = [fromDate, toDate, fromCode, toCode];
+      } else if (time !== undefined) {
+        deleteQuery = `
+          DELETE FROM ${dairy_table}
+          WHERE ReceiptDate BETWEEN ? AND ? 
+          AND rno BETWEEN ? AND ? 
+          AND ME = ?
+        `;
+        queryParams = [fromDate, toDate, fromCode, toCode, time];
+      } else {
+        return res.status(400).json({ message: "Invalid time value!" });
       }
 
-      const dairy_table = `dailymilkentry_${dairy_id}`;
-      const deleteQuery = `
-        DELETE  FROM ${dairy_table}
-        WHERE 
-          ReceiptDate BETWEEN ? AND ? 
-          AND rno BETWEEN ? AND ? 
-          AND ME ${time === 2 ? "IN (0, 1)" : "= ?"}
-      `;
-      console.log("hiii4");
-      const queryParams =
-        time === 2
-          ? [fromDate, toDate, fromCode, toCode]
-          : [fromDate, toDate, fromCode, toCode, time];
-
       connection.query(deleteQuery, queryParams, (err, result) => {
-        connection.release();
+        connection.release(); // Release connection after query execution
 
         if (err) {
-          console.error("Error executing query: ", err);
+          console.error("Error executing delete query: ", err);
           return res.status(500).json({ message: "Query execution error" });
         }
 
         if (result.affectedRows === 0) {
-          return res
-            .status(200)
-            .json({ message: "No records found to delete!" });
+          return res.status(200).json({
+            status: 201,
+            message: "No records found to delete!",
+          });
         }
-        console.log("deletedRows:", result.affectedRows);
 
         res.status(200).json({
+          status: 200,
           message: "Records deleted successfully!",
-          deletedRows: result.affectedRows,
         });
       });
     } catch (error) {
-      connection.release();
       console.error("Error processing request: ", error);
       return res.status(500).json({ message: "Internal server error" });
     }

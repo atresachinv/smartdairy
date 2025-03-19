@@ -31,14 +31,7 @@ const CustomerNavlinks = ({ isselected, setIsSelected }) => {
             setIsSelected(index);
           }}
         >
-          <NavLink
-            to={button.path}
-            className={({ isActive }) =>
-              isActive
-                ? "sub-navlinks f-label-text selected"
-                : "sub-navlinks f-label-text"
-            }
-          >
+          <NavLink to={button.path} className={"sub-navlinks f-label-text"}>
             {button.icon}
             <span>{button.name}</span>
           </NavLink>

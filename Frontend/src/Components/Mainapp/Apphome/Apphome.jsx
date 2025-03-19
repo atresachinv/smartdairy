@@ -83,7 +83,6 @@ const Apphome = () => {
           <Route path="admin/sales/report" element={<AdminSalesReports />} />
           <Route path="retail/milk-sales" element={<Milksales />} />
           <Route path="retail/sale-report" element={<MilksalesReport />} />
-          {/* <Route path="*" element={<Milkcollection />} /> */}
         </Routes>
       </div>
     </div>

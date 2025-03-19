@@ -8,7 +8,7 @@ const initialState = {
   status: "idle",
   getMilkstatus: "idle",
   transferedMilkstatus: "idle",
-  transtatus: "idle",
+  transtodatestatus: "idle",
   copyCollstatus: "idle",
   deleteCollstatus: "idle",
   transferCollshiftstatus: "idle",
@@ -173,11 +173,13 @@ export const transferTOCustomer = createAsyncThunk(
 // Transfer Milk Date To Date ------------------>
 export const transferTODate = createAsyncThunk(
   "payment/transferTODate",
-  async ({ fromDate, toDate }, { rejectWithValue }) => {
+  async ({ date, updatedate, fromCode, toCode }, { rejectWithValue }) => {
     try {
       const response = await axiosInstance.patch("/transfer/milk-to/date", {
-        fromDate,
-        toDate,
+        date,
+        updatedate,
+        fromCode,
+        toCode,
       });
       return response.data;
     } catch (error) {
@@ -210,16 +212,24 @@ export const deleteMilkRecord = createAsyncThunk(
 // Copy milk collection ------------------>
 export const copyCollection = createAsyncThunk(
   "payment/copyCollection",
-  async ({ values }, { rejectWithValue }) => {
+  async (
+    { currentdate, updatedate, fromCode, toCode, time, updatetime },
+    { rejectWithValue }
+  ) => {
     try {
-      const response = await axiosInstance.put("/copy-milk", {
-        values,
+      const response = await axiosInstance.put("/milk/copy-paste", {
+        currentdate,
+        updatedate,
+        fromCode,
+        toCode,
+        time,
+        updatetime,
       });
       return response.data;
     } catch (error) {
       const errorMessage = error.response
         ? error.response.data
-        : "Failed to update milk records!.";
+        : "Failed to copy paste milk records!.";
       return rejectWithValue(errorMessage);
     }
   }
@@ -228,12 +238,12 @@ export const copyCollection = createAsyncThunk(
 // Delete milk collection ------------------>
 export const deleteCollection = createAsyncThunk(
   "payment/deleteCollection",
-  async ({ values }, { rejectWithValue }) => {
+  async (values, { rejectWithValue }) => {
     try {
       const response = await axiosInstance.delete(
         "/milk/correction/delete-milk",
         {
-          data: { values },
+          data: values,
         }
       );
       return response.data;
@@ -247,10 +257,18 @@ export const deleteCollection = createAsyncThunk(
 
 export const transferToShift = createAsyncThunk(
   "payment/transferToShift",
-  async ({ values }, { rejectWithValue }) => {
+  async (
+    { currentdate, updatedate, fromCode, toCode, time, updatetime },
+    { rejectWithValue }
+  ) => {
     try {
       const response = await axiosInstance.patch("/transfer-milk/to-shift", {
-        values,
+        currentdate,
+        updatedate,
+        fromCode,
+        toCode,
+        time,
+        updatetime,
       });
       return response.data;
     } catch (error) {
@@ -352,14 +370,14 @@ const paymentSlice = createSlice({
         state.error = action.payload;
       }) // transfer to date ------------------------------------------->
       .addCase(transferTODate.pending, (state) => {
-        state.status = "loading";
+        state.transtodatestatus = "loading";
         state.error = null;
       })
       .addCase(transferTODate.fulfilled, (state, action) => {
-        state.status = "succeeded";
+        state.transtodatestatus = "succeeded";
       })
       .addCase(transferTODate.rejected, (state, action) => {
-        state.status = "failed";
+        state.transtodatestatus = "failed";
         state.error = action.payload;
       }) // delete milk record ------------------------------------------->
       .addCase(deleteMilkRecord.pending, (state) => {

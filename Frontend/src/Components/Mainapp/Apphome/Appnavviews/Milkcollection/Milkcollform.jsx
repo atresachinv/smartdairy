@@ -50,7 +50,7 @@ const MilkColleform = ({ switchToSettings }) => {
   const fatRef = useRef(null);
   const snfRef = useRef(null);
   const submitbtn = useRef(null);
-
+  console.log("collection time", time);
   const initialValues = {
     date: changedDate || tDate,
     code: "",
