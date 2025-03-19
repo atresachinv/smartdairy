@@ -11,7 +11,7 @@ const form_type = {
   settings: "settings",
 };
 
-const CollectionSettingForm = () => {
+const CollectionSettingForm = ({time}) => {
   const dispatch = useDispatch();
   const [currentForm, setCurrentForm] = useState(form_type.collection);
   const switchToColl = () => setCurrentForm(form_type.collection);
@@ -28,7 +28,7 @@ const CollectionSettingForm = () => {
   return (
     <div className="forms-container-div w100 h1 d-flex center">
       {currentForm === form_type.collection && (
-        <MilkCollform switchToSettings={switchToSettings} />
+        <MilkCollform switchToSettings={switchToSettings} time={time} />
       )}
       {currentForm === form_type.settings && (
         <CollSettings switchToColl={switchToColl} />

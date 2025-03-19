@@ -21,6 +21,7 @@ import Milksales from "./Appnavviews/MilksalesPages/Milksales";
 import MilksalesReport from "./Appnavviews/MilksalesPages/MilksalesReport";
 import { getretailCustomer } from "../../../App/Features/Mainapp/Milksales/milkSalesSlice";
 import StockReport from "./Appnavviews/Sales/StockReport";
+import AppNavViews from "./AppNavviews";
 
 const Apphome = () => {
   const dispatch = useDispatch();
@@ -32,7 +33,15 @@ const Apphome = () => {
   const date = useSelector((state) => state.date.toDate);
   const yearStart = useSelector((state) => state.date.yearStart);
   const yearEnd = useSelector((state) => state.date.yearEnd);
-  const [isselected, setIsSelected] = useState(0);
+  const [isselected, setIsselected] = useState(
+    localStorage.getItem("apphomepath") || "collection/:time"
+  );
+
+  // Update localStorage whenever isselected changes
+  useEffect(() => {
+    localStorage.setItem("apphomepath", isselected);
+  }, [isselected]);
+
   const [userRole, setUserRole] = useState(null);
   useEffect(() => {
     const myrole = localStorage.getItem("userRole");
@@ -67,11 +76,19 @@ const Apphome = () => {
   return (
     <div className="app-home-container w100 h1">
       <div className="header-nav w100 h10 d-flex a-center">
-        <AppNavlinks isselected={isselected} setIsSelected={setIsSelected} />
+        <AppNavlinks isselected={isselected} setIsSelected={setIsselected} />
       </div>
       <div className="apphome-nav-views w100 h90 d-flex center">
-        <Routes>
-          <Route path="collection/:time" element={<Milkcollection />} />
+        <AppNavViews index={isselected} />
+        {/* <Routes>
+          <Route
+            path="collection/morning"
+            element={<Milkcollection time={"morning"} />}
+          />
+          <Route
+            path="collection/evening"
+            element={<Milkcollection time={"evening"} />}
+          />
           <Route path="vehicle/collection" element={<MilkSankalan />} />
           <Route path="complete/collection" element={<CompleteMilkColl />} />
           <Route path="collection/reports" element={<SankalanReport />} />
@@ -85,7 +102,7 @@ const Apphome = () => {
           <Route path="admin/sales/report" element={<AdminSalesReports />} />
           <Route path="retail/milk-sales" element={<Milksales />} />
           <Route path="retail/sale-report" element={<MilksalesReport />} />
-        </Routes>
+        </Routes> */}
       </div>
     </div>
   );

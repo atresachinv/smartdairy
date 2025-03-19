@@ -13,9 +13,9 @@ import "../../../../../Styles/Mainapp/Apphome/Appnavview/Milkcollection.css";
 import axiosInstance from "../../../../../App/axiosInstance";
 import { useParams } from "react-router-dom";
 
-const MilkColleform = ({ switchToSettings }) => {
+const MilkColleform = ({ switchToSettings , time }) => {
   const dispatch = useDispatch();
-  const { time } = useParams();
+  // const { time } = useParams();
   const { t } = useTranslation(["milkcollection", "common"]);
   const dairyname = useSelector(
     (state) =>
@@ -50,7 +50,7 @@ const MilkColleform = ({ switchToSettings }) => {
   const fatRef = useRef(null);
   const snfRef = useRef(null);
   const submitbtn = useRef(null);
-  console.log("collection time", time);
+  
   const initialValues = {
     date: changedDate || tDate,
     code: "",

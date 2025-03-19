@@ -136,16 +136,16 @@ const AppNavlinks = ({ isselected, setIsSelected }) => {
         <li
           key={index}
           className={`home-nav-item d-flex a-center ${
-            isselected === button.index ? "selected" : ""
+            isselected === button.path ? "selected" : ""
           }`}
-          onClick={() => setIsSelected(button.index)}
+          onClick={() => setIsSelected(button.path)}
         >
           <NavLink to={button.path} className={"sub-navlinks f-label-text"}>
             <span>{button.icon}</span>
             {button.name}
           </NavLink>
 
-          {button.submenus && dropdownVisible && (
+          {/* {button.submenus && dropdownVisible && (
             <ul className="dropdown-menu">
               {button.submenus.map((submenu, subIndex) => (
                 <li key={subIndex}>
@@ -159,7 +159,7 @@ const AppNavlinks = ({ isselected, setIsSelected }) => {
                 </li>
               ))}
             </ul>
-          )}
+          )} */}
         </li>
       ))}
     </>

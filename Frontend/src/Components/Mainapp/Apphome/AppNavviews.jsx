@@ -12,13 +12,12 @@ import AdminSalesReports from "./Appnavviews/MilkSankalan/AdminSalesReports";
 import SalesReports from "./Appnavviews/MilkSankalan/SalesReports";
 
 const AppNavViews = ({ index }) => {
-  console.log(index);
   switch (index) {
-    case `collection/:time`:
-      return <Milkcollection />;
+    case "collection/morning":
+      return <Milkcollection time={"morning"} />;
       break;
-    case "collection/:time":
-      return <Milkcollection />;
+    case "collection/evening":
+      return <Milkcollection time={"evening"} />;
       break;
     case "vehicle/collection":
       return <MilkSankalan />;
