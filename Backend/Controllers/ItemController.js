@@ -2,7 +2,7 @@ const pool = require("../Configs/Database");
 
 //get all items
 exports.getAllItems = async (req, res) => {
-  const { ...dynamicFields } = req.query; // Capture dynamic fields from query parameters
+  const { autoCenter, ...dynamicFields } = req.query; // Capture dynamic fields from query parameters
   const { dairy_id: companyid, center_id } = req.user; // Get the company id from the user's session or request
 
   pool.getConnection((err, connection) => {
@@ -12,8 +12,8 @@ exports.getAllItems = async (req, res) => {
     }
 
     try {
-      let query = `SELECT * FROM itemmaster WHERE companyid = ? AND center_id=?`; // Base query with companyid,center_id condition
-      const queryParams = [companyid, center_id]; // Add companyid,center_id to the query parameters
+      let query = `SELECT * FROM itemmaster WHERE companyid = ? `;
+      const queryParams = [companyid];
 
       // Append dynamic filters
       for (const [field, value] of Object.entries(dynamicFields)) {
@@ -23,6 +23,13 @@ exports.getAllItems = async (req, res) => {
         }
       }
 
+      if (autoCenter === 1) {
+        query += " AND center_id = ?";
+        queryParams.push(center_id);
+      } else if (center_id > 0) {
+        query += " AND (center_id = 0 OR center_id = ?)";
+        queryParams.push(center_id);
+      }
       connection.query(query, queryParams, (err, result) => {
         connection.release();
         if (err) {
@@ -468,7 +475,7 @@ exports.createMasterGrpItem = async (req, res) => {
 
 //get max Itemcode on based companyid (from dairy_id) and center_id
 exports.getMaxItemCode = async (req, res) => {
-  // Extract companyid (from dairy_id) and center_id from req.user
+  const { autoCenter } = req.query; // Capture dynamic fields from query parameters
   const { dairy_id: companyid, center_id } = req.user;
 
   // Validate required fields
@@ -488,28 +495,38 @@ exports.getMaxItemCode = async (req, res) => {
         .json({ success: false, message: "Database connection error" });
     }
 
+    let getMaxItemCodeQuery = `SELECT MAX(ItemCode) AS maxItemCode FROM itemmaster WHERE companyid = ? `;
+
+    let queryParams = [companyid];
+
+    if (autoCenter === 1) {
+      // Only fetch the max ItemCode for the specific center
+      getMaxItemCodeQuery += " AND center_id = ?";
+      queryParams.push(center_id);
+    } else if (center_id > 0) {
+      // Fetch the max ItemCode for either centerid = 0 (global) or the user's center
+      getMaxItemCodeQuery += " AND (center_id = 0 OR center_id = ?)";
+      queryParams.push(center_id);
+    }
+
     // Fetch max ItemCode from itemmaster
-    connection.query(
-      "SELECT MAX(ItemCode) AS maxItemCode FROM itemmaster WHERE companyid = ? AND center_id = ?",
-      [companyid, center_id],
-      (err, result) => {
-        connection.release();
+    connection.query(getMaxItemCodeQuery, queryParams, (err, result) => {
+      connection.release();
 
-        if (err) {
-          console.error("Error fetching max ItemCode: ", err);
-          return res.status(500).json({
-            success: false,
-            message: "Error fetching max ItemCode",
-          });
-        }
-
-        const maxItemCode = result[0]?.maxItemCode || 0;
-
-        return res.status(200).json({
-          success: true,
-          maxItemCode: maxItemCode,
+      if (err) {
+        console.error("Error fetching max ItemCode: ", err);
+        return res.status(500).json({
+          success: false,
+          message: "Error fetching max ItemCode",
         });
       }
-    );
+
+      const maxItemCode = result[0]?.maxItemCode || 0;
+
+      return res.status(200).json({
+        success: true,
+        maxItemCode: maxItemCode,
+      });
+    });
   });
 };

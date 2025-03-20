@@ -67,6 +67,9 @@
 }
 
 @media screen and (max-width: 426px) {
+  #selectItemgrpName {
+    display: none;
+  }
   .download-print-pdf-excel-container {
     min-height: fit-content;
     flex-direction: column;

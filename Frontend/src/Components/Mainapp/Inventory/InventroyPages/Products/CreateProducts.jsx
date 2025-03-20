@@ -3,6 +3,7 @@ import axiosInstance from "../../../../../App/axiosInstance";
 import { toast } from "react-toastify";
 import "./Product.css";
 import { useTranslation } from "react-i18next";
+import { useSelector } from "react-redux";
 
 const CreateProducts = () => {
   const { t } = useTranslation(["puchasesale", "common"]);
@@ -16,6 +17,20 @@ const CreateProducts = () => {
     ManufacturerName: "",
   });
   const [itemlist, setItemList] = useState([]);
+
+  const centerSetting = useSelector(
+    (state) => state.dairySetting.centerSetting
+  );
+  const [settings, setSettings] = useState({});
+  const autoCenter = settings?.autoCenter;
+
+  //set setting
+  useEffect(() => {
+    if (centerSetting?.length > 0) {
+      setSettings(centerSetting[0]);
+    }
+  }, [centerSetting]);
+
   //hanlde on change data
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -106,7 +121,9 @@ const CreateProducts = () => {
   useEffect(() => {
     const fetchMaxItemCode = async () => {
       try {
-        const res = await axiosInstance.get("/item/maxcode");
+        const res = await axiosInstance.get(
+          `/item/maxcode?autoCenter=${autoCenter}`
+        );
 
         if (res.data.success) {
           setFormData({
@@ -118,13 +135,17 @@ const CreateProducts = () => {
         console.error("Failed to fetch max item code:", error);
       }
     };
-    fetchAllItems();
-    fetchMaxItemCode();
-  }, []);
+    if (settings?.autoCenter !== undefined) {
+      fetchAllItems();
+      fetchMaxItemCode();
+    }
+  }, [settings]);
 
   const fetchAllItems = async () => {
     try {
-      const { data } = await axiosInstance.get("/item/all");
+      const { data } = await axiosInstance.get(
+        `/item/all?autoCenter=${autoCenter}`
+      );
       setItemList(data.itemsData || []);
     } catch (error) {
       console.error("Failed to fetch items.", error);

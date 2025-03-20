@@ -11,8 +11,9 @@ import { FaRegEdit } from "react-icons/fa";
 import { toast } from "react-toastify";
 import Swal from "sweetalert2";
 import { jsPDF } from "jspdf";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { TbSortAscending2, TbSortDescending2 } from "react-icons/tb";
+import { centersLists } from "../../../../../App/Features/Dairy/Center/centerSlice";
 
 const ProductsList = () => {
   const { t } = useTranslation(["puchasesale", "common"]);
@@ -28,6 +29,31 @@ const ProductsList = () => {
       state.dairy.dairyData.SocietyName ||
       state.dairy.dairyData.center_name
   );
+  const dispatch = useDispatch();
+  const centerId = useSelector((state) => state.dairy.dairyData.center_id);
+  const centerSetting = useSelector(
+    (state) => state.dairySetting.centerSetting
+  );
+  const [settings, setSettings] = useState({});
+  const autoCenter = settings?.autoCenter;
+  const [filteredData, setFilteredData] = useState([]);
+  const centerList = useSelector(
+    (state) => state.center.centersList.centersDetails || []
+  );
+  //set setting
+  useEffect(() => {
+    if (centerSetting?.length > 0) {
+      setSettings(centerSetting[0]);
+    }
+  }, [centerSetting]);
+  useEffect(() => {
+    dispatch(centersLists());
+  }, [dispatch]);
+
+  useEffect(() => {
+    setFilteredData(productList);
+  }, [productList]);
+
   //open modal to edit product
   const handleEditClick = (id) => {
     setEditSale(id);
@@ -126,12 +152,14 @@ const ProductsList = () => {
     const fetchProductList = async () => {
       setLoading(true);
       try {
-        const response = await axiosInstance.get("/item/all", {
-          params: { ItemGroupCode: filter },
-        });
+        const response = await axiosInstance.get(
+          `/item/all?autoCenter=${autoCenter}`,
+          {
+            params: { ItemGroupCode: filter },
+          }
+        );
         let products = response?.data?.itemsData || [];
-        // Sort products by ItemCode
-        products.sort((a, b) => a.ItemCode - b.ItemCode);
+
         setProductList(products);
         setLoading(false);
       } catch (error) {
@@ -141,8 +169,10 @@ const ProductsList = () => {
         setLoading(false);
       }
     };
-    fetchProductList();
-  }, [filter]);
+    if (settings?.autoCenter !== undefined) {
+      fetchProductList();
+    }
+  }, [filter, settings]);
 
   //handle delete
   const handleDelete = async (ItemCode) => {
@@ -270,6 +300,20 @@ const ProductsList = () => {
     setSortKey(key); // Update the sorted column
   };
 
+  // filter items on center --------------------------------------->
+  const handleSelectInput = (e) => {
+    const value = e.target.value;
+    if (value === "") {
+      setFilteredData(productList);
+      return;
+    }
+    const filtered = productList.filter((dealer) => {
+      return dealer.centerid.toString() === value;
+    });
+    setFilteredData(filtered);
+    // console.log(filteredData);
+  };
+
   return (
     <div className="product-list-container w100 h1 d-flex-col p10">
       <div className="download-print-pdf-excel-container w100 h10 d-flex sb">
@@ -277,8 +321,25 @@ const ProductsList = () => {
           {t("ps-nv-pro-list")}
         </span>
         <div className="group-code-and-button-div w100 h1  d-flex sb">
-          <div className="d-flex w40 a-center">
-            <label htmlFor="seletgrop" className="w30">
+          {centerId > 0 ? (
+            <></>
+          ) : (
+            <select
+              className="data w30 a-center  my5 mx5"
+              name="center"
+              id=""
+              onChange={handleSelectInput}
+            >
+              <option value=""> Select Center </option>
+              {centerList.map((center, index) => (
+                <option key={index} value={center.center_id}>
+                  {center.center_name}
+                </option>
+              ))}
+            </select>
+          )}
+          <div className="d-flex w40 a-center px15">
+            <label id="selectItemgrpName" htmlFor="seletgrop" className="w30">
               {t("ps-sel-grp")}
             </label>
             <select
@@ -379,8 +440,8 @@ const ProductsList = () => {
           </div>
           {loading ? (
             <Spinner />
-          ) : productList.length > 0 ? (
-            productList.map((product, index) => (
+          ) : filteredData.length > 0 ? (
+            filteredData.map((product, index) => (
               <div
                 key={index}
                 className={`sales-data-values-div w100 p10 d-flex center t-center sa ${
