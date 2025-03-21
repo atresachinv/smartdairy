@@ -286,6 +286,13 @@ const Mainappnavlinks = ({ setselected, handleSidebar }) => {
           path: "master/bank",
           role: ["admin", "super_admin", "manager"],
         },
+        {
+          name: `${t("Deduction Master")}`,
+          icon: <MdDomainAdd className="icon" />,
+          index: 5.6,
+          path: "master/deductions",
+          role: ["admin", "super_admin", "manager"],
+        },
       ],
     },
     {

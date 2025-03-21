@@ -1,4 +1,3 @@
-
 import React, { useEffect, useRef, useState } from "react";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
@@ -77,12 +76,6 @@ const Stocksreport = () => {
     }
   };
 
-  // Example of how you might call this function in an event handler:
-  // <form onSubmit={salefetchData}>
-  //   {/* Your form elements here */}
-  //   <button type="submit">Fetch Sales Data</button>
-  // </form>;
-
   // Process the purchase and sale data to create all stock data
   useEffect(() => {
     console.log("All Data", sales, saledata);
@@ -130,6 +123,7 @@ const Stocksreport = () => {
   };
 
   // Generate PDF report
+
   const generateStockReportPDF = () => {
     if (
       !dairyname ||
@@ -141,19 +135,43 @@ const Stocksreport = () => {
 
     const doc = new jsPDF();
 
-    // Set up the document font and header information
-    doc.setFontSize(14);
-    doc.text(dairyname, 14, 10); // Add dairy name at position (14, 10)
-    doc.text(CityName, 14, 18); // Add city name at position (14, 18)
+    // Set font size for dairy name
+    doc.setFontSize(20);
 
-    doc.setFontSize(16);
-    doc.text(
-      `${itemGroupMapping[selectedStock] || "All Stock"} Report`,
-      60,
-      28
-    );
+    // Calculate the width of the dairy name text to center it
+    const dairyNameWidth = doc.getTextWidth(dairyname);
+    const pageWidth = doc.internal.pageSize.width; // Get the page width
+    const xPositionDairy = (pageWidth - dairyNameWidth) / 2; // Center the dairy name horizontally
+
+    // Y position for dairy name, near the top with some margin
+    const yPositionDairy = 20; // 20 units from the top of the page
+
+    // Add dairy name centered at the top of the page
+    doc.text(dairyname, xPositionDairy, yPositionDairy);
+
+    // Calculate the width of the city name text to center it
+    const cityNameWidth = doc.getTextWidth(CityName);
+    const xPositionCity = (pageWidth - cityNameWidth) / 2; // Center the city name horizontally
+
+    // Y position for city name, below the dairy name
+    const yPositionCity = yPositionDairy + 10; // 10 units below the dairy name
+
+    // Add city name centered below the dairy name
     doc.setFontSize(12);
-    doc.text(`From: ${fromdate} To: ${todate}`, 14, 36);
+    doc.text(CityName, xPositionCity, yPositionCity);
+
+    // Set font size for report heading
+    doc.setFontSize(16);
+
+    // Center the report heading
+    const heading = `${itemGroupMapping[selectedStock] || "All Stock"} Report`;
+    const headingWidth = doc.getTextWidth(heading); // Get width of the heading
+    const xPositionHeading = (pageWidth - headingWidth) / 2; // Calculate X position to center the text
+    doc.text(heading, xPositionHeading, 40); // 40 units down from top
+
+    // Set font size for the date range
+    doc.setFontSize(12);
+    doc.text(`From: ${fromdate} To: ${todate}`, 14, 50); // Position it after the heading
 
     // Define the columns for the table
     const columns = [
@@ -179,7 +197,7 @@ const Stocksreport = () => {
       (sum, item) => sum + item.purchasedQty,
       0
     );
-    const totalSoldQty = tableData.reduce((sum, item) => sum + item.Qty, 0);
+    const totalSoldQty = tableData.reduce((sum, item) => sum + item.soldQty, 0); // Fix to use soldQty instead of Qty
     const totalRemainingQty = tableData.reduce(
       (sum, item) => sum + item.remainingquantity,
       0
@@ -195,13 +213,13 @@ const Stocksreport = () => {
           "",
           "Total",
           totalPurchasedQty,
-          totalSoldQty,
+          totalSoldQty, // Display total sold quantity
           totalRemainingQty,
           "",
           `₹ ${totalAmount.toFixed(2)}`,
         ],
       ],
-      startY: 45,
+      startY: 60, // Start the table after the report details
     });
 
     // Save the PDF with a dynamic file name
@@ -405,7 +423,7 @@ const Stocksreport = () => {
       {/* Table for displaying all or filtered stock */}
       <div className="Stock-table-container w100 h70 d-flex-col">
         <div className="table-wrapper w100 h1">
-          <table className="stock-table w100 h90">
+          <table className="stock-table  w100 h90">
             <thead>
               <tr>
                 <th>Item Code</th>

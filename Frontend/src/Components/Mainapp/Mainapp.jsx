@@ -64,6 +64,7 @@ import ExpiredProductsMaster from "./Inventory/InventroyPages/Stocks/ExpiredProd
 import DashboardTabs from "./Dashboard/DashboardTabs/DashboardTabs";
 import ComingSoon from "./ComingSoon";
 import MilkSankalan from "./Apphome/Appnavviews/MilkSankalan/MilkSankalan";
+import DeductionMaster from "./Masters/MasterPages/DeductionMaster/DeductionMaster";
 
 const Mainapp = () => {
   const dispatch = useDispatch();
@@ -234,6 +235,7 @@ const Mainapp = () => {
             {/* <Route path="master/customer/*" element={<CustomersMaster />} /> */}
             <Route path="master/employee/*" element={<EmployeeMaster />} />
             <Route path="master/bank/*" element={<BankMaster />} />
+            <Route path="master/deductions/*" element={<DeductionMaster />} />
             {/* <Route path="master/ratechart/*" element={<MilkRateMaster />} /> */}
             {/* purchase routes */}
             <Route path="purchase/cattlefeed/*" element={<PurchaseMaster />} />
