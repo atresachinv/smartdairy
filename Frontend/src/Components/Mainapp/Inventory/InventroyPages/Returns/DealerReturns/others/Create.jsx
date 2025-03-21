@@ -31,11 +31,26 @@ const CreateDealerOth = () => {
       state.dairy.dairyData.SocietyName || state.dairy.dairyData.center_name
   );
 
+  const centerSetting = useSelector(
+    (state) => state.dairySetting.centerSetting
+  );
+  const [settings, setSettings] = useState({});
+  const autoCenter = settings?.autoCenter;
+
+  //set setting
+  useEffect(() => {
+    if (centerSetting?.length > 0) {
+      setSettings(centerSetting[0]);
+    }
+  }, [centerSetting]);
+
   // Fetch all items for the add to returns
   useEffect(() => {
     const fetchAllItems = async () => {
       try {
-        const { data } = await axiosInstance.get("/item/all?ItemGroupCode=4");
+        const { data } = await axiosInstance.get(
+          `/item/all?ItemGroupCode=4&autoCenter=${autoCenter}`
+        );
         if (data.itemsData) {
           setItemList(data.itemsData);
         } else {
@@ -45,14 +60,18 @@ const CreateDealerOth = () => {
         console.error("Error fetching items:", error);
       }
     };
-    fetchAllItems();
-  }, []);
+    if (settings?.autoCenter !== undefined) {
+      fetchAllItems();
+    }
+  }, [settings]);
 
   // Fetch all dealer from API
   useEffect(() => {
     const fetchDealerList = async () => {
       try {
-        const response = await axiosInstance.post("/dealer");
+        const response = await axiosInstance.post(
+          `/dealer?autoCenter=${autoCenter}`
+        );
         let customers = response?.data?.customerList || [];
         customers.sort((a, b) => new Date(b.createdon) - new Date(a.createdon));
         setDealerList(customers);
@@ -60,8 +79,10 @@ const CreateDealerOth = () => {
         toast.error("Failed to fetch Dealer. Please try again.");
       }
     };
-    fetchDealerList();
-  }, []);
+    if (settings?.autoCenter !== undefined) {
+      fetchDealerList();
+    }
+  }, [settings]);
 
   // Set customer name on the dealer code
   useEffect(() => {
