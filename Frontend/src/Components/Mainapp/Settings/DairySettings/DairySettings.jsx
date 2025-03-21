@@ -94,7 +94,7 @@ const DairySettings = () => {
         duplicateEntry: settings.duplicateEntry ? 1 : 0,
         center_id: center.center_id,
       };
-      dispatch(updateDairySettings(data));
+      await dispatch(updateDairySettings(data));
       dispatch(getCenterSetting());
       handleModelColse();
     }

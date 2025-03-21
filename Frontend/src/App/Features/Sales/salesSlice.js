@@ -13,10 +13,10 @@ const initialState = {
 
 export const getProductSaleRates = createAsyncThunk(
   "sales/getProductSaleRates",
-  async (groupCode, { rejectWithValue }) => {
+  async ({ groupCode, autoCenter }, { rejectWithValue }) => {
     try {
       const response = await axiosInstance.get("/sales-rate", {
-        params: { groupCode },
+        params: { groupCode, autoCenter },
       });
       return response.data.saleRates;
     } catch (error) {

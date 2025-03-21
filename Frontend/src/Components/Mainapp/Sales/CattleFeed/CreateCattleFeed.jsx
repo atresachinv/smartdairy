@@ -50,7 +50,7 @@ const CreateCattleFeed = () => {
     (state) => state.dairySetting.centerSetting
   );
   const [settings, setSettings] = useState({});
-
+  const autoCenter = settings?.autoCenter;
   //set setting
   useEffect(() => {
     if (centerSetting?.length > 0) {
@@ -66,9 +66,13 @@ const CreateCattleFeed = () => {
 
   //get all products and sale rate
   useEffect(() => {
-    dispatch(getAllProducts());
-    dispatch(getProductSaleRates(1));
-  }, [dispatch]);
+    if (settings?.autoCenter !== undefined) {
+      dispatch(getAllProducts(autoCenter));
+      dispatch(
+        getProductSaleRates({ groupCode: 1, autoCenter: settings.autoCenter })
+      );
+    }
+  }, [settings]);
 
   // set today date
   useEffect(() => {

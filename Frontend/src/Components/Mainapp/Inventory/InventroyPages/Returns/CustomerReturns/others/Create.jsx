@@ -33,11 +33,25 @@ const OthCreate = () => {
   );
   const [filteredProducts, setFilterProducts] = useState([]);
 
+  const centerSetting = useSelector(
+    (state) => state.dairySetting.centerSetting
+  );
+  const [settings, setSettings] = useState({});
+  const autoCenter = settings?.autoCenter;
+  //set setting
+  useEffect(() => {
+    if (centerSetting?.length > 0) {
+      setSettings(centerSetting[0]);
+    }
+  }, [centerSetting]);
+
   // Fetch all items for the add to returns
   useEffect(() => {
     const fetchAllItems = async () => {
       try {
-        const { data } = await axiosInstance.get("/item/all?ItemGroupCode=4"); //change in other group item
+        const { data } = await axiosInstance.get(
+          `/item/all?ItemGroupCode=4&autoCenter=${autoCenter}`
+        ); //change in other group item
         if (data.itemsData) {
           setItemList(data.itemsData);
         } else {
@@ -47,9 +61,10 @@ const OthCreate = () => {
         console.error("Error fetching items:", error);
       }
     };
-    fetchAllItems();
-  }, []);
-
+    if (settings?.autoCenter !== undefined) {
+      fetchAllItems();
+    }
+  }, [settings]);
   // Set customer name and ID based on the farmer code
   useEffect(() => {
     if (customerslist.length > 0 && fcode) {
@@ -402,6 +417,7 @@ const OthCreate = () => {
                 name="fname"
                 className="data w100"
                 list="farmer-list"
+                autoComplete="off"
                 onFocus={handleFocus}
                 value={cname}
                 onChange={(e) => setCname(e.target.value)}

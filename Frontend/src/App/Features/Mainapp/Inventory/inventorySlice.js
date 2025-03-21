@@ -13,9 +13,11 @@ const initialState = {
 // get max customer no
 export const getAllProducts = createAsyncThunk(
   "inventory/getAllProducts",
-  async (_, { rejectWithValue }) => {
+  async (autoCenter, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.get("/all/products");
+      const response = await axiosInstance.get(
+        `/all/products?autoCenter=${autoCenter}`
+      );
       return response.data.productData;
     } catch (error) {
       return rejectWithValue(error.response?.data || error.message);

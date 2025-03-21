@@ -872,7 +872,7 @@ exports.deletePurchase = async (req, res) => {
 // -------------------------------------------------------------------------------------->
 
 exports.getAllProductSaleRate = async (req, res) => {
-  const { groupCode } = req.query;
+  const { groupCode, autoCenter } = req.query;
   const dairy_id = req.user.dairy_id;
   const center_id = req.user.center_id;
   const user_role = req.user.user_role;
@@ -889,50 +889,61 @@ exports.getAllProductSaleRate = async (req, res) => {
     }
 
     try {
-      let getSaleRateQuery;
-      let queryParams;
+      let centerCondition = "";
+      let queryParams = [dairy_id];
 
+      if (autoCenter === 1) {
+        centerCondition = "AND center_id = ?";
+        queryParams.push(center_id);
+      } else if (center_id > 0) {
+        centerCondition = "AND (center_id = 0 OR center_id = ?)";
+        queryParams.push(0, center_id);
+      }
+
+      // Query for mobilecollector
       if (user_role === "mobilecollector") {
-        // Query for mobilecollector
         getSaleRateQuery = `
-          SELECT pm.purchaseid, pm.itemcode, pm.itemname, pm.qty, pm.salerate, pm.purchasedate
-          FROM PurchaseMaster AS pm
-          INNER JOIN (
-            SELECT itemcode, MAX(purchasedate) AS max_purchasedate
-            FROM PurchaseMaster
-            WHERE dairy_id = ? AND center_id = ? AND cn=0
-            GROUP BY itemcode
-          ) AS latest_sales
-          ON pm.itemcode = latest_sales.itemcode AND pm.purchasedate = latest_sales.max_purchasedate
-          WHERE pm.dairy_id = ? AND pm.center_id = ? AND cn=0
-          ORDER BY pm.itemcode;
-        `;
+    SELECT pm.purchaseid, pm.itemcode, pm.itemname, pm.qty, pm.salerate, pm.purchasedate
+    FROM PurchaseMaster AS pm
+    INNER JOIN (
+      SELECT itemcode, MAX(purchasedate) AS max_purchasedate
+      FROM PurchaseMaster
+      WHERE dairy_id = ? ${centerCondition} AND cn = 0
+      GROUP BY itemcode
+    ) AS latest_sales
+    ON pm.itemcode = latest_sales.itemcode AND pm.purchasedate = latest_sales.max_purchasedate
+    WHERE pm.dairy_id = ? ${centerCondition} AND pm.cn = 0
+    ORDER BY pm.itemcode;
+  `;
 
-        queryParams = [dairy_id, center_id, dairy_id, center_id];
+        queryParams.push(dairy_id);
+        if (autoCenter === 1) {
+          queryParams.push(center_id);
+        } else if (center_id > 0) {
+          queryParams.push(0, center_id);
+        }
       } else {
         // Query for other roles
         getSaleRateQuery = `
-          SELECT pm.purchaseid, pm.itemcode, pm.itemname, pm.qty, pm.salerate, pm.purchasedate
-          FROM PurchaseMaster AS pm
-          INNER JOIN (
-            SELECT itemcode, MAX(purchasedate) AS max_purchasedate
-            FROM PurchaseMaster
-            WHERE dairy_id = ? AND center_id = ? AND itemgroupcode = ? AND cn=0
-            GROUP BY itemcode
-          ) AS latest_sales
-          ON pm.itemcode = latest_sales.itemcode AND pm.purchasedate = latest_sales.max_purchasedate
-          WHERE pm.dairy_id = ? AND pm.center_id = ? AND pm.itemgroupcode = ? AND pm.cn=0
-          ORDER BY pm.itemcode;
-        `;
+    SELECT pm.purchaseid, pm.itemcode, pm.itemname, pm.qty, pm.salerate, pm.purchasedate
+    FROM PurchaseMaster AS pm
+    INNER JOIN (
+      SELECT itemcode, MAX(purchasedate) AS max_purchasedate
+      FROM PurchaseMaster
+      WHERE dairy_id = ? ${centerCondition} AND itemgroupcode = ? AND cn = 0
+      GROUP BY itemcode
+    ) AS latest_sales
+    ON pm.itemcode = latest_sales.itemcode AND pm.purchasedate = latest_sales.max_purchasedate
+    WHERE pm.dairy_id = ? ${centerCondition} AND pm.itemgroupcode = ? AND pm.cn = 0
+    ORDER BY pm.itemcode;
+  `;
 
-        queryParams = [
-          dairy_id,
-          center_id,
-          groupCode,
-          dairy_id,
-          center_id,
-          groupCode,
-        ];
+        queryParams.push(groupCode, dairy_id, groupCode);
+        if (autoCenter === 1) {
+          queryParams.push(center_id);
+        } else if (center_id > 0) {
+          queryParams.push(0, center_id);
+        }
       }
 
       // Execute the query
