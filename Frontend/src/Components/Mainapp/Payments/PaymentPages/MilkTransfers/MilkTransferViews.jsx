@@ -4,22 +4,23 @@ import DateMilkTransfer from "./DateMilkTransfer";
 import ShiftMilkTransfer from "./ShiftMilkTransfer";
 import MilkCopyPaste from "./MilkCopyPaste";
 import DeleteCollection from "./DeleteCollection";
+import { Route, Routes } from "react-router-dom";
 
 const MilkTransferViews = ({ index }) => {
   switch (index) {
-    case 0:
+    case "to-customer":
       return <CustomerMilkTransfer />;
       break;
-    case 1:
+    case "to-date":
       return <DateMilkTransfer />;
       break;
-    case 2:
+    case "to-shift":
       return <ShiftMilkTransfer />;
       break;
-    case 3:
+    case "copy-paste":
       return <MilkCopyPaste />;
       break;
-    case 4:
+    case "delete-collection":
       return <DeleteCollection />;
       break;
     default:

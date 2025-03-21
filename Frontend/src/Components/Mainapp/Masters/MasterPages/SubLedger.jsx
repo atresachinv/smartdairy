@@ -1,192 +1,418 @@
-import React from "react";
-// import "../../../../Styles/Mainapp/Masters/Subledger.css";
+import React, { useEffect, useState } from "react";
+import "../../../../Styles/Mainapp/Masters/Subledger.css";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  createSubLedger,
+  getMaxSLCode,
+  listSubLedger,
+} from "../../../../App/Features/Mainapp/Masters/ledgerSlice";
+
 const SubLedger = () => {
+  const dispatch = useDispatch();
+  const tdate = useSelector((state) => state.date.toDate);
+  const maxSlCode = useSelector((state) => state.ledger.maxcodesl);
+  const MainLedgers = useSelector((state) => state.ledger.mledgerlist);
+  const [errors, setErrors] = useState({});
+
+  console.log(maxSlCode);
+
+  const [formData, setFormData] = useState({
+    date: tdate,
+    code: "",
+    groupcode: "",
+    groupname: "",
+    eng_name: "",
+    marathi_name: "",
+    sanghahead: "",
+    perltramt: "",
+    subAcc: "",
+    vcsms: "",
+  });
+
+  useEffect(() => {
+    dispatch(getMaxSLCode());
+    // dispatch(listSubLedger());
+  }, [dispatch]);
+
+  useEffect(() => {
+    setFormData((prevData) => ({
+      ...prevData,
+      code: maxSlCode,
+      date: tdate,
+    }));
+  }, [maxSlCode]);
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+
+    const fieldError = validateField(name, value);
+    setErrors((prevErrors) => {
+      const updatedErrors = { ...prevErrors, ...fieldError };
+      if (!value) delete updatedErrors[name]; // Clear error if field is empty
+      return updatedErrors;
+    });
+  };
+
+  const validateField = (name, value) => {
+    let error = {};
+
+    switch (name) {
+      case "code":
+        if (!/^\d+$/.test(value.toString())) {
+          error[name] = "Invalid ledger code.";
+        } else {
+          delete errors[name];
+        }
+        break;
+
+      case "marathi_name":
+        if (!/^[\u0900-\u097F\sA-Za-z]+$/.test(value)) {
+          error[name] = "Invalid marathi name.";
+        } else {
+          delete errors[name];
+        }
+        break;
+
+      case "eng_name":
+        if (!/^[a-zA-Z\s]+$/.test(value)) {
+          error[name] = "Invalid english name.";
+        } else {
+          delete errors[name];
+        }
+        break;
+
+      default:
+        break;
+    }
+
+    return error;
+  };
+
+  const validateFields = () => {
+    const fieldsToValidate = ["code", "marathi_name", "eng_name", "category"];
+    const validationErrors = {};
+    fieldsToValidate.forEach((field) => {
+      const fieldError = validateField(field, formData[field]);
+      Object.assign(validationErrors, fieldError);
+    });
+    return validationErrors;
+  };
+
+  const handleFrom = async (e) => {
+    e.preventDefault();
+    // Validate fields before submission
+    const validationErrors = validateFields();
+    if (Object.keys(validationErrors).length) {
+      setErrors(validationErrors);
+      return;
+    }
+    if (!formData.date) {
+      toast.error("Please refresh your page!");
+    }
+    const result = await dispatch(createSubLedger(formData)).unwrap();
+    if (result?.status === 200) {
+      const result = await dispatch(getMaxSLCode()).unwrap();
+      const res = await dispatch(listSubLedger()).unwrap();
+
+      setFormData({
+        eng_name: "",
+        marathi_name: "",
+        category: "",
+      });
+
+      setFormData((prevData) => ({
+        ...prevData,
+        date: tdate,
+      }));
+
+      toast.success("New Main Ledger Created Successfully!");
+    } else {
+      toast.error("failed to create new ledger!");
+    }
+  };
+
   return (
-    <div className="khatavni-master-container w100 h1">
-      <div className="khmaster-outer-div w100 h1">
-        <span className="heading">Khatavni Master</span>
-        <div className="kh-inside-div w100 h40 d-flex ">
-          <div className="kh-first-div  d-flex-col h70 sa w70 bg ">
-            <div className="khnumber-span-div w100  d-flex ">
-              <div className="khnumber-div w40 d-flex-col">
-                <span className=" w50 label-text">GL-Number:</span>
-                <input className="data w60" type="text" />
-              </div>
-              <div className="div-user-define w30 d-flex center">
-                <input className="w20" type="checkbox" />
-                <span className="label-text w80">User Define </span>
-              </div>
-              <div className="main-khtavni-number  w100 d-flex ">
-                <div className="gl-number w50 d-flex-col center ">
-                  <span className=" w50 label-text">MGlNumber:</span>
-                  <input className="data w70" type="text" />
-                </div>
-                <div className="div-drop w60 d-flex-col center my10">
-                  <select className="data w60" name="drop" id="1">
-                    <option value="option1"></option>
-                  </select>
-                </div>
-              </div>
+    <div className="sub-ledger-container w100 h1 d-flex-col p10">
+      <h2 className="heading py10">Ledger Master :</h2>
+      <form className="ledger-master-form-container w100 h30 d-flex">
+        <div className="ledger-info-contsiner w60 h1 d-flex-col sa">
+          <div className="ledger-no-group-container w100 h20 d-flex sb">
+            <div className="ledger-no-div w15 d-flex a-center sb">
+              <label htmlFor="ledger-no" className="label-text w20">
+                No.
+              </label>
+              <input
+                id="ledger-no"
+                type="number"
+                className="data w65"
+                value={formData.code || ""}
+              />
             </div>
-            <div className="gl-name-eng-marathi-div d-flex w100 ">
-              <div className="kh-name-div w50 d-flex-col">
-                <span className=" w30 label-text ">Gl Name:</span>
-                <input className="data w80" type="text" placeholder=" मराठी " />
-              </div>
-              <div className="uniocode-div w50 d-flex-col ">
-                <span className="w30 label-text">Gl Name:</span>
+            <div className="ledger-group-div w80 d-flex a-center sb">
+              <label htmlFor="ledger-gno" className="label-text w25">
+                Select Group :
+              </label>
+              <input id="ledger-gno" type="number" className="data w15" />
+              <input id="ledger-name" type="text" className="data w50" />
+            </div>
+          </div>
+          <div className="ledger-names-div w100 h40 d-flex sb">
+            <div className="le-name-div w45 h1 d-flex-col sb">
+              <label htmlFor="" className="label-text w100">
+                Enter English Name :
+              </label>
+              <input type="text" name="" id="" className="data w100" />
+            </div>
+            <div className="le-name-div w45 d-flex-col sb">
+              <label htmlFor="" className="label-text w100">
+                Enter Marathi Name :
+              </label>
+              <input type="text" name="" id="" className="data w100" />
+            </div>
+          </div>
+          <div className="ledger-names-div w100 h40 d-flex-col sb">
+            <span className="label-text w100">
+              Sangha Milk Sales Deduction and Dairy Bank Cheque Head :
+            </span>
+            <div className="sangha-sale-settings-div w100 h80 d-flex sb">
+              <div className="le-name-div w15 d-flex a-center sb">
                 <input
-                  className="data w80"
+                  type="radio"
+                  name="sanghahead"
+                  id="nayes"
+                  className="w25 h50"
+                />
+                <label htmlFor="nayes" className="info-text t-center w70">
+                  N/A
+                </label>
+              </div>
+              <div className="le-name-div w20 d-flex a-center sb">
+                <input
+                  type="radio"
+                  name="sanghahead"
+                  id="milksales"
+                  className="w25 h50"
+                />
+                <label htmlFor="milksales" className="info-text t-center w70">
+                  Milk Sales
+                </label>
+              </div>
+              <div className="le-name-div w25 d-flex a-center sb">
+                <input
+                  type="radio"
+                  name="sanghahead"
+                  id="salescheque"
+                  className="w25 h50"
+                />
+                <label htmlFor="salescheque" className="info-text t-center w75">
+                  Sales Cheque
+                </label>
+              </div>
+              <div className="perltr_amt-div w30 d-flex a-center sb">
+                <label htmlFor="perltr" className="label-text w40">
+                  Per/ltr :
+                </label>
+                <input
                   type="text"
-                  placeholder=" English "
+                  name="perltr"
+                  id="perltr"
+                  className="data w60 h1"
                 />
               </div>
             </div>
-            <div className="Gl-and-bank-div w100 d-flex  bg ">
-              <div className="gl-type  d-flex w40 d-flex-col ">
-                <span className="label-text">GL_Type</span>
-                <div className="dropdown-gltype-section w100">
-                  <select className="data w80" name="gl-type" id="21">
-                    <option value="gl-type label-text">
-                      Sub Account Activate
-                    </option>
-                    <option value="gl-type label-text">
-                      Sub Account not Activate
-                    </option>
-                  </select>
-                </div>
-              </div>
-              <div className="check-bank-div d-flex-col w40">
-                <span className="label-text"> Dairy Bank check </span>
-                <div className="Milk-sealing-div d-flex w100 ">
-                  <select className="w100 data" name="1" id="e">
-                    <option value="f">N/A</option>
-                    <option value="f">Milk Saling</option>
-                    <option value="f">Dairy Milk Saling Check</option>
-                  </select>
-                  <div className="singal-dropdown d-flex w50">
-                    <select className=" w100 data" name="1" id="11">
-                      <option value="we"></option>
-                    </select>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div className="khh-second-div w30 h50 bg ">
-            <div className="gl-side-Accound-id w100 d-flex-col">
-              <span className="label-text">GL- SIDE:</span>
-              <div className="div-GlSide-div w100 sa d-flex ">
-                <select className="data  w90" name="gltypr" id="1">
-                  <option value="">Shtaver</option>
-                  <option value="">Deni</option>
-                  <option value="">Income</option>
-                  <option value="">Expence</option>
-                </select>
-              </div>
-              <span className="label-text">Accound-Id</span>
-              <div className="div-GlSide-div d-flex w100 my10 sa">
-                <select className="data w90" name="Accound id" id="1">
-                  <option value="AQcc">Other</option>
-                  <option value="AQcc">Purches</option>
-                  <option value="AQcc"> Saling</option>
-                  <option value="AQcc"> Shares</option>
-                </select>
-              </div>
-            </div>
-            <div className="bank-new-customer-div w100 d-flex-col">
-              <div className="Bank-Multistate-div d-flex-col sb w100 ">
-                <span className="label-text">Bank Multistate</span>
-                <div className="span-bank d-flex w100 sa">
-                  <select className="data w90" name="Bank" id="1">
-                    <option value="BAnk"> Bank </option>
-                    <option value="BAnk"> Multistate </option>
-                  </select>
-                </div>
-              </div>
-              <span className="label-text one-man">New -Customer:</span>
-              <div className="div-GlSide-div d-flex w100 sa my10">
-                <select className="data w90" name="Accound id" id="1">
-                  <option value="AQcc">Manufacturer</option>
-                  <option value="AQcc">Supplyer</option>
-                  <option value="AQcc">Dairy</option>
-                  <option value="AQcc"> Employee</option>
-                  <option value="AQcc">Other</option>
-                </select>
-              </div>
-            </div>
-
-            <div className="Bank-Multistate-div d-flex-col sb w100 bg ">
-              <div className="span-bank d-flex w90 sa ">
-                <span className="w60 label-text">Sms Voucher Sms</span>
-                <select className="data w40" name="vovucher" id="1">
-                  <option value="Yes">Yes</option>
-                  <option value="No"> No</option>
-                </select>
-              </div>
-            </div>
-            <div className="Bank-Multistate-div d-flex-col sb w100 ">
-              <span className="label-text">Deparmernt wise Profit Loss</span>
-              <div className="span-bank d-flex w90 sa ">
-                <span className="w60 label-text">Section:</span>
-                <select className="data w40" name="vovucher" id="1">
-                  <option value="Yes">Yes</option>
-                  <option value="No"> No</option>
-                </select>
-              </div>
-            </div>
           </div>
         </div>
-        <div className="buttons-divv d-flex w70 h15 bg ">
-          <div className="inside-buttons-div d-flex w100 h10 sa">
-            <button className="btn">SAVE </button>
-            <button className="btn">UPDATE </button>
-            <button className="btn">DELETE </button>
-            <button className="btn"> CLEAR </button>
-            <button className="btn">CLOSE </button>{" "}
-            <button className="btn ">Bs Check</button>
-          </div>
-        </div>
-        <div className="tables-section-continer w100  br h30 d-flex-col bg ">
-          <div className="tables-heading-div d-flex w100 h10">
-            <span className="w20">Ledger No</span>
-            <span className="w20">Ledger Name</span>
-            <span className="w20">Income-Expencive</span>
-            <span className="w20">Active-Deactive</span>
-            <span className="w20">Income-Expencive</span>
-            <span className="w20">Group</span>
-            <span className="w20">Group Code</span>
-          </div>
-          <div className="table-data-section-in-subledger w100 sa d-flex h90 mh90 hidescrollbar">
-            <div className="tables-data-section-div w100 h10 sa d-flex">
-              <span className="w20">01</span>
-              <span className="w20">Ledger Name</span>
-              <span className="w20">Income-Expencive</span>
-              <span className="w20">Active-Deactive</span>
-              <span className="w20">Income-Expencive</span>
-              <span className="w20">Group</span>
-              <span className="w20">Group Code</span>
+        <div className="ledger-settings-contsiner w40 h1 d-flex-col px10 sb">
+          {/* <div className="ledger-other-settings-div w100 h30 d-flex-col sb">
+            <span className="label-text w100 py10">General Ledger Side :</span>
+            <div className="sangha-sale-settings-div w100 h50 d-flex sb">
+              <div className="le-name-div w20 d-flex a-center sb">
+                <input
+                  type="radio"
+                  name="glside"
+                  id="assets"
+                  className="w25 h70"
+                />
+                <label htmlFor="assets" className="info-text t-center w70">
+                  Assets
+                </label>
+              </div>
+              <div className="le-name-div w25 d-flex a-center sb">
+                <input
+                  type="radio"
+                  name="glside"
+                  id="liabilities"
+                  className="w25 h70"
+                />
+                <label htmlFor="liabilities" className="info-text t-center w75">
+                  Liabilities
+                </label>
+              </div>
+              <div className="le-name-div w20 d-flex a-center sb">
+                <input
+                  type="radio"
+                  name="glside"
+                  id="income"
+                  className="w25 h70"
+                />
+                <label htmlFor="income" className="info-text t-center w70">
+                  Income
+                </label>
+              </div>
+              <div className="le-name-div w25 d-flex a-center sb">
+                <input
+                  type="radio"
+                  name="glside"
+                  id="expenses"
+                  className="w25 h70"
+                />
+                <label htmlFor="expenses" className="info-text t-center w70">
+                  Expenses
+                </label>
+              </div>
             </div>
           </div>
+          <div className="ledger-other-settings-div w100 h30 d-flex-col sb">
+            <span className="label-text w100 py10">Account Id :</span>
+            <div className="sangha-sale-settings-div w100 h50 d-flex sb">
+              <div className="le-name-div w20 d-flex a-center sb">
+                <input
+                  type="radio"
+                  name="accid"
+                  id="others"
+                  className="w25 h70"
+                />
+                <label htmlFor="others" className="info-text t-center w70">
+                  Others
+                </label>
+              </div>
+              <div className="le-name-div w25 d-flex a-center sb">
+                <input
+                  type="radio"
+                  name="accid"
+                  id="purchase"
+                  className="w25 h70"
+                />
+                <label htmlFor="purchase" className="info-text t-center w70">
+                  Purchase
+                </label>
+              </div>
+              <div className="le-name-div w20 h1 d-flex a-center sb">
+                <input
+                  type="radio"
+                  name="accid"
+                  id="sales"
+                  className="w25 h70"
+                />
+                <label htmlFor="sales" className="info-text t-center w75">
+                  Sales
+                </label>
+              </div>
+              <div className="le-name-div w20 h1 d-flex a-center sb">
+                <input
+                  type="radio"
+                  name="accid"
+                  id="shares"
+                  className="w25 h70"
+                />
+                <label htmlFor="shares" className="info-text t-center w70">
+                  Shares
+                </label>
+              </div>
+            </div>
+          </div> */}
+          <div className="ledger-subacc-div w100 h20 d-flex a-center sb">
+            <label htmlFor="" className="label-text w50 ">
+              Sub Accounts ?
+            </label>
+            <div className="ledger-name-inner-div w40 h1 d-flex sb">
+              <div className="le-name-div w50 d-flex a-center sb">
+                <input
+                  type="radio"
+                  name="subacc"
+                  id="acyes"
+                  className="w50 h40"
+                />
+                <label htmlFor="acyes" className="info-text w50">
+                  Yes
+                </label>
+              </div>
+              <div className="le-name-div w50 d-flex a-center sb">
+                <input
+                  type="radio"
+                  name="subacc"
+                  id="acno"
+                  className="w50 h40"
+                />
+                <label htmlFor="acno" className="info-text w50">
+                  NO
+                </label>
+              </div>
+            </div>
+          </div>
+          <div className="ledger-sms-settings-div w100 h20 d-flex a-center sb">
+            <label htmlFor="" className="label-text w50 ">
+              Send Voucher sms :
+            </label>
+            <div className="ledger-name-inner-div w40 h1 d-flex sb">
+              <div className="le-name-div w50 d-flex a-center sb">
+                <input
+                  type="radio"
+                  name="vcsms"
+                  id="acyes"
+                  className="w50 h40"
+                />
+                <label htmlFor="acyes" className="info-text w50">
+                  Yes
+                </label>
+              </div>
+              <div className="le-name-div w50 d-flex a-center sb">
+                <input
+                  type="radio"
+                  name="vcsms"
+                  id="acno"
+                  className="w50 h40"
+                />
+                <label htmlFor="acno" className="info-text w50">
+                  NO
+                </label>
+              </div>
+            </div>
+          </div>
+          <div className="ledger-buttons-div w100 h40 d-flex a-center j-end">
+            <button className="w-btn">Edit</button>
+            <button className="w-btn mx10">Cancel</button>
+            <button className="w-btn">Save</button>
+          </div>
         </div>
-
-        <div className="ending-side-span-inputt w100 h10 d-flex bg">
-          <div className=" serach-group-div d-flex  h20 w40">
-            <span className="w40 label-text">Search Group:</span>
-            <select className="data w20" name="1" id="01">
-              <option value=""></option>
-              <option value=""></option>
-            </select>
+      </form>
+      <div className="ledgers-list-container w100 h70 d-flex-col">
+        <label htmlFor="listtitle" className="heading">
+          Ledger List :
+        </label>
+        <div className="ledgers-list-inner-container w100 h90 mh90 hidescrollbar d-flex-col bg">
+          <div className="ledger-list-headers-div w100 p10 d-flex t-center sb sticky-top bg7">
+            <span className="f-label-text w10">Le.No.</span>
+            <span className="f-label-text w30">Name</span>
+            <span className="f-label-text w20">Inc/Exp</span>
+            <span className="f-label-text w20">Sub Acc.</span>
+            <span className="f-label-text w20">Pur/Sales</span>
+            <span className="f-label-text w15">Group Code</span>
+            <span className="f-label-text w30">Group Name</span>
           </div>
-          <div className=" serach-group-div d-flex h30 w40">
-            <span className="w40 label-text">Search:</span>
-            <select className="data w20" name="1" id="01">
-              <option value=""></option>
-              <option value=""></option>
-            </select>
-          </div>
-          <div className="buttons-div-section w30 h10">
-            <button className="btn">Cancel</button>
+          <div className="ledger-list-data-div w100 p10 d-flex sb">
+            <span className="info-text w10">Le.No.</span>
+            <span className="info-text w30">Name</span>
+            <span className="info-text w20">Inc/Exp</span>
+            <span className="info-text w20">Sub Acc.</span>
+            <span className="info-text w20">Pur/Sales</span>
+            <span className="info-text w15">Group Code</span>
+            <span className="info-text w30">Group Name</span>
           </div>
         </div>
       </div>

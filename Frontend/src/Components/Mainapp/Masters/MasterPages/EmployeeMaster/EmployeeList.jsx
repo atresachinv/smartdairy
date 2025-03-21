@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { listEmployee } from "../../../../../App/Features/Mainapp/Masters/empMasterSlice";
-import "../../../../../Styles/Common.css";
+import "../../../../../Styles/Mainapp/Masters/EmpMaster.css";
 import { useTranslation } from "react-i18next";
 
 const EmployeeList = () => {

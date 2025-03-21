@@ -22,6 +22,7 @@ const AddDeliveryStock = () => {
   const [cartItem, setCartItem] = useState([]);
   const [cname, setCname] = useState("");
   const [fcode, setFcode] = useState("");
+  const [mono, setMono] = useState("");
   const [date, setDate] = useState("");
   const [qty, setQty] = useState(1);
   const [selectitemcode, setSelectitemcode] = useState();
@@ -33,17 +34,35 @@ const AddDeliveryStock = () => {
     (state) =>
       state.dairy.dairyData.SocietyName || state.dairy.dairyData.center_name
   );
+  const centerID = useSelector((state) => state.dairy.dairyData.center_id);
   const [selected, setSelected] = useState(2);
+  const [selectedCenter, setSelectedCenter] = useState("");
   const { emplist } = useSelector((state) => state.emp);
+  const [filterEmpList, setFilterEmpList] = useState([]);
   const centerList = useSelector(
     (state) => state.center.centersList.centersDetails
   );
+
+  const centerSetting = useSelector(
+    (state) => state.dairySetting.centerSetting
+  );
+  const [settings, setSettings] = useState({});
+  const autoCenter = settings?.autoCenter;
+  //set setting
+  useEffect(() => {
+    if (centerSetting?.length > 0) {
+      setSettings(centerSetting[0]);
+    }
+  }, [centerSetting]);
+
   //get all
   useEffect(() => {
-    dispatch(getAllProducts());
+    if (settings?.autoCenter !== undefined) {
+      dispatch(getAllProducts(autoCenter));
+    }
     dispatch(listEmployee());
     dispatch(centersLists());
-  }, [dispatch]);
+  }, [settings]);
 
   // set today date
   useEffect(() => {
@@ -80,6 +99,7 @@ const AddDeliveryStock = () => {
         saledate: `${date} 00:00:00`,
         Qty: Number(qty),
         to_user: fcode,
+        emp_mobile: mono,
         itemgroupcode: selectedItem.ItemGroupCode,
         deliver_to: Number(selected),
         cn: 0,
@@ -117,6 +137,7 @@ const AddDeliveryStock = () => {
     setQty(1);
     setCname("");
     setSelectitemcode(0);
+    setMono("");
   };
 
   //handle to save server
@@ -140,31 +161,55 @@ const AddDeliveryStock = () => {
     }
   };
 
+  //filter list emp to center
+  useEffect(() => {
+    // Filter the list based on center_id
+    if (selected === 1) {
+      const filteredList = emplist.filter(
+        (item) => Number(item.center_id) === Number(selectedCenter)
+      );
+
+      setFilterEmpList(filteredList);
+    } else {
+      const filteredList = emplist.filter(
+        (item) => Number(item.center_id) === Number(centerID)
+      );
+      setFilterEmpList(filteredList);
+    }
+  }, [emplist, centerID, selectedCenter, selected]);
+
   // Set customer code based on cname
   useEffect(() => {
-    if (selected === 2 && emplist.length > 0) {
-      const customer = emplist.find((item) => item.emp_name === cname);
-      if (customer && fcode !== customer.emp_id) setFcode(customer.emp_id);
-    } else if (selected === 1 && centerList.length > 0) {
-      const customer = centerList.find((item) => item.center_name === cname);
-      if (customer && fcode !== customer.center_id)
-        setFcode(customer.center_id);
+    if (filterEmpList && filterEmpList.length > 0) {
+      const customer = filterEmpList.find((item) => item.emp_name === cname);
+      if (customer && fcode !== customer.emp_id) {
+        setFcode(customer.emp_id);
+        setMono(customer.emp_mobile);
+      }
+      if (!customer) {
+        setFcode("");
+        setMono("");
+      }
     }
-  }, [cname, emplist, centerList, selected]);
+  }, [cname, filterEmpList, centerList, selected]);
 
   // Set customer name based on fcode
   useEffect(() => {
-    if (selected === 2 && emplist.length > 0) {
-      const customer = emplist.find((item) => item.emp_id === parseInt(fcode));
-      if (customer && cname !== customer.emp_name) setCname(customer.emp_name);
-    } else if (selected === 1 && centerList.length > 0) {
-      const customer = centerList.find(
-        (item) => item.center_id === parseInt(fcode)
+    if (filterEmpList && filterEmpList.length > 0) {
+      const customer = filterEmpList.find(
+        (item) => item.emp_id === parseInt(fcode)
       );
-      if (customer && cname !== customer.center_name)
-        setCname(customer.center_name);
+      if (customer && cname !== customer.emp_name) {
+        setCname(customer.emp_name);
+        setMono(customer.emp_mobile);
+      }
+
+      if (!customer) {
+        setCname("");
+        setMono("");
+      }
     }
-  }, [fcode, emplist, centerList, selected]);
+  }, [fcode, filterEmpList, centerList, selected]);
 
   // Function to handle printing the invoice --------------------------------------->
   const handlePrint = () => {
@@ -490,6 +535,13 @@ const AddDeliveryStock = () => {
     setFcode("");
   };
 
+  const handleSelectCenter = (id) => {
+    setSelectedCenter(id);
+    setCname("");
+    setFcode("");
+    setMono("");
+  };
+
   return (
     <div className="add-cattlefeed-sale-container w100 h1 d-flex-col sa">
       <span className="heading p10">Add Delivery Stock </span>
@@ -529,7 +581,7 @@ const AddDeliveryStock = () => {
               />
             </div>
           </div>
-          <div className="sales-details w100 h20 d-flex a-center sb ">
+          <div className="sales-details w100   d-flex a-center sb ">
             <div className="col w70 d-flex a-center ">
               <label htmlFor="date" className="info-text w100">
                 Deliver To :
@@ -542,6 +594,7 @@ const AddDeliveryStock = () => {
                     value={1}
                     checked={selected === 1}
                     onChange={(e) => handleRation(e.target.value)}
+                    disabled={centerID !== 0}
                   />
                   <label htmlFor="" className="info-text  px10 ">
                     Center
@@ -563,6 +616,35 @@ const AddDeliveryStock = () => {
               </div>
             </div>
           </div>
+
+          <div className="sale-details w100  d-flex a-center j-center ">
+            <div className="w80 d-flex h1 center my5">
+              <label htmlFor="custname" className="info-text w70">
+                Select Center:
+              </label>
+
+              <select
+                className="data w100"
+                name="center"
+                id=""
+                // onChange={handleSelectInput}
+                disabled={selected === 2}
+                value={selectedCenter}
+                onChange={(e) => handleSelectCenter(e.target.value)}
+              >
+                <option value="">Select Center</option>
+                {centerList &&
+                  centerList
+                    .filter((item) => item.center_id !== centerID)
+                    .map((center, index) => (
+                      <option key={index} value={center.center_id}>
+                        {center.center_name}
+                      </option>
+                    ))}
+              </select>
+            </div>
+          </div>
+
           <div className="sale-details w100 h20 d-flex a-center sb ">
             <div className="col w20 ">
               <label htmlFor="code" className="info-text w100">
@@ -575,6 +657,7 @@ const AddDeliveryStock = () => {
                 className="data w100"
                 onFocus={handleFocus}
                 value={fcode}
+                autoComplete="off"
                 onChange={(e) => setFcode(e.target.value)}
                 min="0"
                 onKeyDown={(e) =>
@@ -591,6 +674,7 @@ const AddDeliveryStock = () => {
                 name="fname"
                 id="custname"
                 list="farmer-list"
+                autoComplete="off"
                 className="data w100"
                 value={cname}
                 onChange={(e) => setCname(e.target.value)}
@@ -600,25 +684,14 @@ const AddDeliveryStock = () => {
                 }
               />
               <datalist id="farmer-list">
-                {selected === 1
-                  ? centerList &&
-                    centerList
-                      .filter((emp) =>
-                        emp.center_name
-                          .toLowerCase()
-                          .includes(cname.toLowerCase())
-                      )
-                      .map((emp, index) => (
-                        <option key={index} value={emp.center_name} />
-                      ))
-                  : emplist &&
-                    emplist
-                      .filter((emp) =>
-                        emp.emp_name.toLowerCase().includes(cname.toLowerCase())
-                      )
-                      .map((emp, index) => (
-                        <option key={index} value={emp.emp_name} />
-                      ))}
+                {filterEmpList &&
+                  filterEmpList
+                    .filter((emp) =>
+                      emp.emp_name.toLowerCase().includes(cname.toLowerCase())
+                    )
+                    .map((emp, index) => (
+                      <option key={index} value={emp.emp_name} />
+                    ))}
               </datalist>
             </div>
           </div>

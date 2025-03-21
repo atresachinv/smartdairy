@@ -150,24 +150,35 @@ const ShiftMilkTransfer = () => {
 
   // ------------------------------------------------------------------->
   // Milk copy to database function ------------------------------------>
-  const handleMilkTransferToShift = (e) => {
+  const handleMilkTransferToShift = async (e) => {
     e.preventDefault();
-    dispatch(transferToShift({ values }));
-    if (status === "succeeded") {
-      toast.success(
-        `Milk Collection Transfer to ${
-          values.updatetime.toString() === "0" ? "Morning" : "Evening"
-        }  Successfully!`
-      );
-    } else {
-      toast.error(`Milk Collection Transfer to failed, try again! `);
+    try {
+      const result = await dispatch(
+        transferToShift({
+          currentdate: values.currentdate,
+          updatedate: values.updatedate,
+          fromCode: values.fromCode,
+          toCode: values.toCode,
+          time: values.time,
+          updatetime: values.updatetime,
+        })
+      ).unwrap();
+      if (result?.status === 200) {
+        toast.success(result.message);
+      } else {
+        toast.error(`Milk Collection Transfer to shift failed, try again! `);
+      }
+    } catch (error) {
+      console.error("Milk Collection transfer to shift Error:", error);
+      toast.error(error?.message || "Something went wrong!");
     }
   };
 
   return (
     <form
       onSubmit={handleMilkTransferToShift}
-      className="shift-wise-milk-transfer-container w100 h1 d-flex-col a-center ">
+      className="shift-wise-milk-transfer-container w100 h1 d-flex-col a-center "
+    >
       <span className="heading p10">Transfer Shift Wise Milk Collection</span>
       <div className="milk-date-transfer-container w50 h90 d-flex-col sa bg p10">
         <span className="sub-heading t-center">From This Date</span>
@@ -305,7 +316,8 @@ const ShiftMilkTransfer = () => {
           <button
             type="submit"
             className="w-btn m10"
-            disabled={status === "loading"}>
+            disabled={status === "loading"}
+          >
             {status === "loading" ? "Transfering..." : "Transfer"}
           </button>
         </div>

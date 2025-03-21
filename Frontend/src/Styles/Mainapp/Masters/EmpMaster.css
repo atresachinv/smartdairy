@@ -32,3 +32,44 @@
     width: 100%;
   }
 }
+
+/* <<<<<<--------------- Employee List css start ----------->>>>>>>*/
+.data-heading-div {
+  border-radius: 8px 8px 0 0;
+}
+
+@media screen and (max-width: 426px) {
+  .emp-list-container {
+    min-height: auto;
+  }
+  .title-div {
+    min-height: fit-content;
+    flex-direction: column;
+  }
+  .title-div span {
+    width: 100%;
+  }
+  .title-div .filter-emp-by-center {
+    width: 100%;
+  }
+  .title-div .filter-emp-by-center .label-text {
+    width: 40%;
+  }
+  .title-div .filter-emp-by-center .data {
+    width: 60%;
+  }
+  .emp-data-list-container {
+    overflow-x: auto;
+  }
+  .emp-data-heading-div {
+    min-width: 800px;
+    position: sticky;
+    top: 0;
+    background-color: #17acc0;
+    padding: 5px 0;
+  }
+  .emp-data-list-div {
+    min-width: 800px;
+  }
+}
+/* <<<<<<--------------- Employee List css end ----------->>>>>>>*/

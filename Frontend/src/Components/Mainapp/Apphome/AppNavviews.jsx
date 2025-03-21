@@ -6,26 +6,45 @@ import CompleteMilkColl from "./Appnavviews/Milkcollection/CompleteMilkColl";
 import UpdateCollection from "./Appnavviews/Milkcollection/UpdateCollection";
 import MilkCollectorsReports from "./Appnavviews/Milkcollection/MilkCollectorsReports";
 import CreateCattleFeed from "../Sales/CattleFeed/CreateCattleFeed";
+import MilksalesReport from "./Appnavviews/MilksalesPages/MilksalesReport";
+import Milksales from "./Appnavviews/MilksalesPages/Milksales";
+import AdminSalesReports from "./Appnavviews/MilkSankalan/AdminSalesReports";
+import SalesReports from "./Appnavviews/MilkSankalan/SalesReports";
 
 const AppNavViews = ({ index }) => {
   switch (index) {
-    case 0:
-      return <Milkcollection />;
+    case "collection/morning":
+      return <Milkcollection times={"morning"} />;
       break;
-    case 1:
+    case "collection/evening":
+      return <Milkcollection times={"evening"} />;
+      break;
+    case "vehicle/collection":
       return <MilkSankalan />;
       break;
-    case 2:
+    case "complete/collection":
       return <CompleteMilkColl />;
       break;
-    case 3:
+    case "collection/reports":
       return <SankalanReport />;
       break;
-    case 4:
+    case "vehicle/collection/reports":
       return <MilkCollectorsReports />;
       break;
-    case 5:
+    case "vehicle/sales":
       return <CreateCattleFeed />;
+      break;
+    case "vehicle/sales/report":
+      return <SalesReports />;
+      break;
+    case "admin/sales/report":
+      return <AdminSalesReports />;
+      break;
+    case "retail/milk-sales":
+      return <Milksales />;
+      break;
+    case "retail/sale-report":
+      return <MilksalesReport />;
       break;
 
     default:

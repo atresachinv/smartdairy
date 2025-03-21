@@ -13,7 +13,7 @@ import "../../../../../Styles/Mainapp/Apphome/Appnavview/Milkcollection.css";
 import axiosInstance from "../../../../../App/axiosInstance";
 import { useParams } from "react-router-dom";
 
-const MilkColleform = ({ switchToSettings }) => {
+const MilkColleform = ({ switchToSettings, times }) => {
   const dispatch = useDispatch();
   const { time } = useParams();
   const { t } = useTranslation(["milkcollection", "common"]);
@@ -73,10 +73,10 @@ const MilkColleform = ({ switchToSettings }) => {
   useEffect(() => {
     setValues((prevData) => ({
       ...prevData,
-      shift: time === "morning" ? 0 : 1,
+      shift: times === "morning" ? 0 : time === "morning" ?  0 : 1,
       allow: settings.duplicateEntry === 0 ? false : true,
     }));
-  }, [time, settings]);
+  }, [time, times, settings]);
 
   //center settings ------------------------------------------------------------------------------>
 

@@ -33,11 +33,25 @@ const MedCreate = () => {
   );
   const [filteredProducts, setFilterProducts] = useState([]);
 
+  const centerSetting = useSelector(
+    (state) => state.dairySetting.centerSetting
+  );
+  const [settings, setSettings] = useState({});
+  const autoCenter = settings?.autoCenter;
+  //set setting
+  useEffect(() => {
+    if (centerSetting?.length > 0) {
+      setSettings(centerSetting[0]);
+    }
+  }, [centerSetting]);
+
   // Fetch all items for the add to returns
   useEffect(() => {
     const fetchAllItems = async () => {
       try {
-        const { data } = await axiosInstance.get("/item/all?ItemGroupCode=2"); //change in other group item
+        const { data } = await axiosInstance.get(
+          `/item/all?ItemGroupCode=2&autoCenter=${autoCenter}`
+        ); //change in other group item
         if (data.itemsData) {
           setItemList(data.itemsData);
         } else {
@@ -47,8 +61,10 @@ const MedCreate = () => {
         console.error("Error fetching items:", error);
       }
     };
-    fetchAllItems();
-  }, []);
+    if (settings?.autoCenter !== undefined) {
+      fetchAllItems();
+    }
+  }, [settings]);
 
   // Set customer name and ID based on the farmer code
   useEffect(() => {

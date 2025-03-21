@@ -31,8 +31,7 @@ router.route("/purchase/all").get(verifyToken, getAllPurchases);
 router.route("/purchase/update").put(verifyToken, updatePurchase);
 router.route("/sales-rate").get(verifyToken, getAllProductSaleRate);
 router
-.route("/purchase/delete/:purchaseid")
-.delete(verifyToken, deletePurchase);
-
+  .route("/purchase/delete/:purchaseid")
+  .delete(verifyToken, deletePurchase);
 
 module.exports = router;

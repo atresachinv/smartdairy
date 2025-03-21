@@ -119,7 +119,7 @@ const DeleteCollection = () => {
 
   // ------------------------------------------------------------------->
   // Delete Milk Collection function ------------------------------------>
-  const handleMilkCollectionDelete = (e) => {
+  const handleMilkCollectionDelete = async (e) => {
     e.preventDefault();
     // Validate fields before submission
     const validationErrors = validateFields();
@@ -127,24 +127,32 @@ const DeleteCollection = () => {
       setErrors(validationErrors);
       return;
     }
-    console.log(values);
 
-    dispatch(deleteCollection({ values }));
-    toast.success("Milk Collection Deleted Successfully!");
-    // const handler = setTimeout(() => {
-    //   if (status === "success") {
-    //     toast.success("Milk Collection Deleted Successfully!");
-    //   } else {
-    //     toast.error("Error in Milk Collection Delete, Try again!");
-    //   }
-    // }, 600);
-    // return () => clearTimeout(handler);
+    try {
+      const result = await dispatch(deleteCollection({ values })).unwrap();
+      if (result?.status === 200) {
+        setValues({
+          fromDate: tDate,
+          toDate: tDate,
+          fromCode: 1,
+          toCode: customerList.length,
+          time: 2,
+        });
+        toast.success("Milk Collection Deleted Successfully!");
+      } else {
+        toast.error("Failed to delete milk collection!");
+      }
+    } catch (error) {
+      console.error("Milk transfer error:", error);
+      toast.error(error?.message || "Failed to delete milk collection!");
+    }
   };
 
   return (
     <form
       onSubmit={handleMilkCollectionDelete}
-      className="delete-milk-collection-container w100 h1 d-flex-col a-center ">
+      className="delete-milk-collection-container w100 h1 d-flex-col a-center "
+    >
       <span className="heading p10">Delete Milk Collection</span>
       <div className="milk-date-delete-container w50 h50 d-flex-col bg p10">
         {/* <span className="sub-heading t-center">From This Date</span> */}
@@ -243,8 +251,12 @@ const DeleteCollection = () => {
           </div>
         </div>
         <div className="btn-container w100 h10 d-flex j-end">
-          <button type="submit" className="w-btn m10">
-            Delete
+          <button
+            type="submit"
+            className="w-btn m10"
+            disabled={status === "loading"}
+          >
+            {status === "loading" ? "Deleting..." : "Delete"}
           </button>
         </div>
       </div>

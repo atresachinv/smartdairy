@@ -1,0 +1,85 @@
+/* <<<<<<------------- ledger group css start -------------->>>>>>> */
+@media screen and (max-width: 769px) {
+  .main-glmaster-container .ledger-group-master-div {
+    width: 100%;
+    min-height: fit-content;
+  }
+  .ledger-group-master-div {
+    min-height: fit-content;
+  }
+  .ledger-group-master-div .ledger-name-container {
+    min-height: fit-content;
+    flex-direction: column;
+  }
+  .ledger-group-master-div .gl-master-inside-div {
+    margin-bottom: 10px;
+  }
+  .gl-master-inside-div .first-span-input {
+    width: 30%;
+  }
+  .gl-master-inside-div .first-span-input span {
+    width: 25%;
+  }
+  .gl-master-inside-div .first-span-input input {
+    width: 60%;
+  }
+  .gl-master-inside-div .select-category-container {
+    width: 62%;
+  }
+  .ledger-name-container .ledger-name-div {
+    width: 100%;
+    margin-bottom: 10px;
+  }
+
+  .main-glmaster-container .ledger-group-table-conatiner {
+    width: 100%;
+    overflow-x: auto;
+  }
+  .ledger-group-table-conatiner .ledger-headers-div,
+  .ledger-group-table-conatiner .ledger-data-div {
+    min-width: 700px;
+  }
+}
+
+@media screen and (max-width: 426px) {
+  .main-glmaster-container .ledger-group-master-div {
+    width: 100%;
+    min-height: fit-content;
+  }
+  .ledger-group-master-div {
+    min-height: fit-content;
+  }
+  .ledger-group-master-div .ledger-name-container {
+    min-height: fit-content;
+    flex-direction: column;
+  }
+  .ledger-group-master-div .gl-master-inside-div {
+    margin-bottom: 10px;
+  }
+  .gl-master-inside-div .first-span-input {
+    width: 30%;
+  }
+  .gl-master-inside-div .first-span-input span {
+    width: 25%;
+  }
+  .gl-master-inside-div .first-span-input input {
+    width: 60%;
+  }
+  .gl-master-inside-div .select-category-container {
+    width: 62%;
+  }
+  .ledger-name-container .ledger-name-div {
+    width: 100%;
+    margin-bottom: 10px;
+  }
+
+  .main-glmaster-container .ledger-group-table-conatiner {
+    width: 100%;
+    overflow-x: auto;
+  }
+  .ledger-group-table-conatiner .ledger-headers-div,
+  .ledger-group-table-conatiner .ledger-data-div {
+    min-width: 700px;
+  }
+}
+/* <<<<<<------------- ledger group css end -------------->>>>>>> */

@@ -66,14 +66,21 @@ const AppNavlinks = ({ isselected, setIsSelected }) => {
       icon: <BsFileTextFill className="icon" />,
       index: 5,
       path: "vehicle/sales",
-      role: ["super_admin", "milkcollector", "mobilecollector"],
+      role: ["super_admin", "mobilecollector"],
     },
     {
       name: `${t("m-sales-report")}`,
       icon: <BsFileTextFill className="icon" />,
       index: 6,
       path: "vehicle/sales/report",
-      role: ["super_admin", "milkcollector", "mobilecollector"],
+      role: ["super_admin", "mobilecollector"],
+    },
+    {
+      name: `${t("stock")}`,
+      icon: <BsFileTextFill className="icon" />,
+      index: 7,
+      path: "vehicle/stock/report",
+      role: ["super_admin", "mobilecollector"],
     },
     // {
     //   name: `${t("m-sale-report")}`,
@@ -129,16 +136,16 @@ const AppNavlinks = ({ isselected, setIsSelected }) => {
         <li
           key={index}
           className={`home-nav-item d-flex a-center ${
-            isselected === button.index ? "selected" : ""
+            isselected === button.path ? "selected" : ""
           }`}
-          onClick={() => setIsSelected(button.index)}
+          onClick={() => setIsSelected(button.path)}
         >
           <NavLink to={button.path} className={"sub-navlinks f-label-text"}>
             <span>{button.icon}</span>
             {button.name}
           </NavLink>
 
-          {button.submenus && dropdownVisible && (
+          {/* {button.submenus && dropdownVisible && (
             <ul className="dropdown-menu">
               {button.submenus.map((submenu, subIndex) => (
                 <li key={subIndex}>
@@ -152,7 +159,7 @@ const AppNavlinks = ({ isselected, setIsSelected }) => {
                 </li>
               ))}
             </ul>
-          )}
+          )} */}
         </li>
       ))}
     </>

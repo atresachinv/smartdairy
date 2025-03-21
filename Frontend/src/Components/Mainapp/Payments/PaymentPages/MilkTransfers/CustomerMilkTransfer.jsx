@@ -27,7 +27,6 @@ const CustomerMilkTransfer = () => {
   const milkStatus = useSelector((state) => state.payment.getMilkstatus);
   const tranStatus = useSelector((state) => state.payment.transferedMilkstatus);
   const [customerList, setCustomerList] = useState([]);
-  const [custList, setCustList] = useState({});
   const [changedDate, setChangedDate] = useState("");
   const [errors, setErrors] = useState({});
 
@@ -43,8 +42,7 @@ const CustomerMilkTransfer = () => {
   };
 
   const [values, setValues] = useState(initialValues);
-  console.log("form values", values);
-  console.log("milk data", MilkData);
+ 
 
   const handleInputs = (e) => {
     const { name, value } = e.target;
@@ -220,6 +218,7 @@ const CustomerMilkTransfer = () => {
       setValues((prev) => ({ ...prev, updatecname: "" }));
       return;
     }
+
     // Ensure the code is a string for comparison
     const customer = customerList.find(
       (customer) => customer.srno.toString() === code
@@ -280,48 +279,46 @@ const CustomerMilkTransfer = () => {
       toast.error("Please enter customer code to transfer milk!");
       return;
     }
-
     // Validate fields before submission
     const validationErrors = validateFields();
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
       return;
     }
-
     try {
       const result = await dispatch(
         transferTOCustomer({
           ucode: values.updatecode,
           ucname: values.updatecname,
           uacccode: values.acccode,
-          fromDate: values.fromDate, // Fixed typo (was formDate)
+          fromDate: values.fromDate,
           toDate: values.toDate,
           records: MilkData || [], // Ensure MilkData is not undefined
         })
       ).unwrap();
 
       if (result?.status === 200) {
-        dispatch(
+        const res = await dispatch(
           getMilkToTransfer({
             code: values.code,
             fromDate: values.fromDate,
             toDate: values.toDate,
           })
-        );
-        dispatch(
+        ).unwrap();
+        const result = await dispatch(
           getTransferedMilk({
             code: values.updatecode,
             fromDate: values.fromDate,
             toDate: values.toDate,
           })
-        );
+        ).unwrap();
         toast.success(result?.message);
       } else {
-        toast.error(result?.message || "Milk transfer failed.");
+        toast.error("Failed milk transferd to customer!");
       }
     } catch (error) {
       console.error("Milk transfer error:", error);
-      toast.error(error?.message || "Failed to transfer milk collection!");
+      toast.error(error?.message || "Failed to transfer milk collection to customer!");
     }
   };
 
@@ -394,7 +391,7 @@ const CustomerMilkTransfer = () => {
                 id="toDate"
                 value={values.toDate || ""}
                 max={tDate}
-                min={values.formDate}
+                min={values.fromDate}
                 onChange={handleInputs}
               />
               <button

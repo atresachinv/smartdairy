@@ -1,16 +1,22 @@
 import React, { useEffect, useState } from "react";
+import { Route, Routes } from "react-router-dom";
 import MilkTransferNavlinks from "./MilkTransferNavlinks";
-import MilkTransferViews from "./MilkTransferViews";
+import CustomerMilkTransfer from "./CustomerMilkTransfer";
+import DeleteCollection from "./DeleteCollection";
+import MilkCopyPaste from "./MilkCopyPaste";
+import ShiftMilkTransfer from "./ShiftMilkTransfer";
+import DateMilkTransfer from "./DateMilkTransfer";
 import "../../../../../Styles/Mainapp/Payments/MilkCorrection.css";
+import MilkTransferViews from "./MilkTransferViews";
 
 const MilkTransfer = () => {
   const [isselected, setIsSelected] = useState(
-    parseInt(localStorage.getItem("milktransferTabIndex")) || 0
+    localStorage.getItem("milktransferLastPath") || "to-customer"
   );
 
   // Update localStorage whenever isselected changes
   useEffect(() => {
-    localStorage.setItem("milktransferTabIndex", isselected);
+    localStorage.setItem("milktransferLastPath", isselected);
   }, [isselected]);
 
   return (
@@ -23,6 +29,13 @@ const MilkTransfer = () => {
       </div>
       <div className="milk-correction-nav-views-conatainer w100 h90 d-flex-col center">
         <MilkTransferViews index={isselected} />
+        {/* <Routes>
+          <Route path="to-customer" element={<CustomerMilkTransfer />} />
+          <Route path="to-date" element={<DateMilkTransfer />} />
+          <Route path="to-shift" element={<ShiftMilkTransfer />} />
+          <Route path="copy-paste" element={<MilkCopyPaste />} />
+          <Route path="delete-collection" element={<DeleteCollection />} />
+        </Routes> */}
       </div>
     </div>
   );

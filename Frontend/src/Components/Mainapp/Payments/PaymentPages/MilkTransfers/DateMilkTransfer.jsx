@@ -2,11 +2,15 @@ import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { useDispatch, useSelector } from "react-redux";
 import { listCustomer } from "../../../../../App/Features/Customers/customerSlice";
+import { transferTODate } from "../../../../../App/Features/Payments/paymentSlice";
 
 const DateMilkTransfer = () => {
   const dispatch = useDispatch();
   const tDate = useSelector((state) => state.date.toDate); // today's date
   const status = useSelector((state) => state.payment.transferCollshiftstatus); // today's date
+  const transdatestatus = useSelector(
+    (state) => state.payment.transtodatestatus
+  ); // today's date
   const [customerList, setCustomerList] = useState([]); // customerlist
   const [currentDate, setCurrentDate] = useState(""); //current date
   const [updatedDate, setUpdatedDate] = useState(""); //updated date
@@ -19,10 +23,11 @@ const DateMilkTransfer = () => {
     updatedate: updatedDate || tDate,
     fromCode: 1 || "",
     toCode: "",
-    time: 0,
-    updatetime: 0,
+    // time: 0,
+    // updatetime: 0,
   };
   const [values, setValues] = useState(initialValues);
+  console.log(">>>>>>>>>>>>>>>>>", values);
 
   useEffect(() => {
     setValues((prevFormData) => ({
@@ -151,11 +156,25 @@ const DateMilkTransfer = () => {
   // Milk copy to database function ------------------------------------>
   const handleMilkTransferToShift = async (e) => {
     e.preventDefault();
-    const result = await dispatch(transferToShift({ values })).unwrap();
-    if (result.status === 200) {
-      toast.success(result.message);
-    } else {
-      toast.error(`Milk Collection Transfer to failed, try again! `);
+    try {
+      const result = await dispatch(
+        transferTODate({
+          date: values.currentdate,
+          updatedate: values.updatedate,
+          fromCode: values.fromCode,
+          toCode: values.toCode,
+        })
+      ).unwrap();
+      if (result.status === 200) {
+        toast.success(result.message);
+      } else {
+        toast.error(`failed Transfer milk Collection to date, try again! `);
+      }
+    } catch (error) {
+      console.error("Milk transfer error:", error);
+      toast.error(
+        error?.message || "Failed to transfer milk collection to date!"
+      );
     }
   };
 
@@ -202,7 +221,7 @@ const DateMilkTransfer = () => {
               onChange={handleInputs}
             />
           </div>
-          <div className="customer-codes-container w100  d-flex  a-center sb">
+          {/* <div className="customer-codes-container w100  d-flex  a-center sb">
             <span className="w20 label-text px10">Time</span>
             {/* <input
               className="w20 h1"
@@ -219,7 +238,7 @@ const DateMilkTransfer = () => {
               value={2}>
               All
             </label> */}
-            <input
+          {/*<input
               className="w20 h1"
               type="radio"
               name="time"
@@ -242,7 +261,7 @@ const DateMilkTransfer = () => {
             <label htmlFor="eve" className="info-text px10">
               Evening
             </label>
-          </div>
+          </div> */}
         </div>
         <span className="sub-heading t-center">To This Date</span>
         <div className="transfer-dates-container w100 h40 d-flex-col sa bg3 br6 p10">
@@ -255,9 +274,9 @@ const DateMilkTransfer = () => {
             max={tDate}
             onChange={handleInputs}
           />
-          <div className="customer-codes-container w100  d-flex  a-center sb">
+          {/*<div className="customer-codes-container w100  d-flex  a-center sb">
             <span className="w20 label-text px10">Time</span>
-            {/* <input
+             <input
               className="w20 h1"
               type="radio"
               name="updatetime"
@@ -269,7 +288,7 @@ const DateMilkTransfer = () => {
             <label htmlFor="all" className="info-text px10">
               All
             </label> */}
-            <input
+          {/* <input
               className="w20 h1"
               type="radio"
               name="updatetime"
@@ -292,7 +311,7 @@ const DateMilkTransfer = () => {
             <label htmlFor="eve" className="info-text px10">
               Evening
             </label>
-          </div>
+          </div> */}
         </div>
         <div className="btn-container w100 h10 d-flex j-end">
           <button type="reset" className="w-btn m10">
@@ -301,9 +320,9 @@ const DateMilkTransfer = () => {
           <button
             type="submit"
             className="w-btn m10"
-            disabled={status === "loading"}
+            disabled={transdatestatus === "loading"}
           >
-            {status === "loading" ? "Transfering..." : "Transfer"}
+            {transdatestatus === "loading" ? "Transfering..." : "Transfer"}
           </button>
         </div>
       </div>
