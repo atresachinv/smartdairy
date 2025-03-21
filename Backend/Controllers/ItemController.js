@@ -65,6 +65,7 @@ exports.getAllItems = async (req, res) => {
 //------------------------------------------------------------------------------>
 
 exports.getAllProducts = async (req, res) => {
+  const { autoCenter } = req.query;
   pool.getConnection((err, connection) => {
     if (err) {
       console.error("Error getting MySQL connection: ", err);
@@ -74,9 +75,20 @@ exports.getAllProducts = async (req, res) => {
     const center_id = req.user.center_id;
 
     try {
-      const query = `SELECT  ItemGroupCode, ItemCode, ItemName FROM itemmaster WHERE companyid = ? AND center_id = ?`;
+      const query = `SELECT  ItemGroupCode, ItemCode, ItemName FROM itemmaster WHERE companyid = ? `;
+      let queryParams = [dairy_id];
 
-      connection.query(query, [dairy_id, center_id], (err, result) => {
+      if (autoCenter === 1) {
+        // If autoCenter is enabled, fetch only for the specific center
+        query += " AND center_id = ?";
+        queryParams.push(center_id);
+      } else if (center_id > 0) {
+        // If autoCenter is disabled, fetch items for both global (center_id = 0) and the specific center
+        query += " AND (center_id = 0 OR center_id = ?)";
+        queryParams.push(center_id);
+      }
+
+      connection.query(query, queryParams, (err, result) => {
         connection.release();
         if (err) {
           console.error("Error executing query: ", err);

@@ -4,6 +4,7 @@ import { toast } from "react-toastify";
 import axiosInstance from "../../../../../../App/axiosInstance";
 import { useTranslation } from "react-i18next";
 import "./Stock.css";
+import { useSelector } from "react-redux";
 
 // Function to get the current date
 const getTodaysDate = () => {
@@ -30,19 +31,35 @@ const CreateStock = () => {
     salerate: 0,
   });
   const [errors, setErrors] = useState({});
+  const centerSetting = useSelector(
+    (state) => state.dairySetting.centerSetting
+  );
+  const [settings, setSettings] = useState({});
+  const autoCenter = settings?.autoCenter;
+
+  //set setting
+  useEffect(() => {
+    if (centerSetting?.length > 0) {
+      setSettings(centerSetting[0]);
+    }
+  }, [centerSetting]);
 
   // Fetch all items from API
   useEffect(() => {
     const fetchAllItems = async () => {
       try {
-        const { data } = await axiosInstance.get("/item/all");
+        const { data } = await axiosInstance.get(
+          `/item/all?autoCenter=${autoCenter}`
+        );
         setItemList(data.itemsData || []);
       } catch (error) {
         console.error("Failed to fetch items.", error);
       }
     };
-    fetchAllItems();
-  }, []);
+    if (settings?.autoCenter !== undefined) {
+      fetchAllItems();
+    }
+  }, [settings]);
 
   // Set today's date on mount
   useEffect(() => {

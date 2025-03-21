@@ -6,6 +6,7 @@ import { toast } from "react-toastify";
 import { useTranslation } from "react-i18next";
 import Swal from "sweetalert2";
 import "../../../../Styles/Mainapp/Purchase/Purchase.css";
+import { useSelector } from "react-redux";
 const Create = () => {
   const { t } = useTranslation(["puchasesale", "milkcollection", "common"]);
   const [cartItem, setCartItem] = useState([]);
@@ -25,24 +26,43 @@ const Create = () => {
   const [sellrate, setSellrate] = useState(0);
   const [errors, setErrors] = useState({});
 
+  const centerSetting = useSelector(
+    (state) => state.dairySetting.centerSetting
+  );
+  const [settings, setSettings] = useState({});
+  const autoCenter = settings?.autoCenter;
+
+  //set setting
+  useEffect(() => {
+    if (centerSetting?.length > 0) {
+      setSettings(centerSetting[0]);
+    }
+  }, [centerSetting]);
+
   // Fetch all items from API GRP wise
   useEffect(() => {
     const fetchAllItems = async () => {
       try {
-        const { data } = await axiosInstance.get("/item/all?ItemGroupCode=4");
+        const { data } = await axiosInstance.get(
+          `/item/all?ItemGroupCode=4&autoCenter=${autoCenter}`
+        );
         setItemList(data.itemsData || []);
       } catch (error) {
         toast.error("Failed to fetch items. Please try again.");
       }
     };
-    fetchAllItems();
-  }, []);
+    if (settings?.autoCenter !== undefined) {
+      fetchAllItems();
+    }
+  }, [settings]);
 
   // Fetch all dealer from API
   useEffect(() => {
     const fetchDealerList = async () => {
       try {
-        const response = await axiosInstance.post("/dealer");
+        const response = await axiosInstance.post(
+          `/dealer?autoCenter=${autoCenter}`
+        );
         let customers = response?.data?.customerList || [];
         customers.sort((a, b) => new Date(b.createdon) - new Date(a.createdon));
         setDealerList(customers);
@@ -50,8 +70,10 @@ const Create = () => {
         toast.error("Failed to fetch Dealer. Please try again.");
       }
     };
-    fetchDealerList();
-  }, []);
+    if (settings?.autoCenter !== undefined) {
+      fetchDealerList();
+    }
+  }, [settings]);
 
   // Set today's date
   useEffect(() => {
