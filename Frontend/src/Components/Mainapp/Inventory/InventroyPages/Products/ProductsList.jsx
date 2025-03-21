@@ -307,11 +307,10 @@ const ProductsList = () => {
       setFilteredData(productList);
       return;
     }
-    const filtered = productList.filter((dealer) => {
-      return dealer.centerid.toString() === value;
+    const filtered = productList.filter((item) => {
+      return item.center_id.toString() === value;
     });
     setFilteredData(filtered);
-    // console.log(filteredData);
   };
 
   return (
@@ -331,11 +330,14 @@ const ProductsList = () => {
               onChange={handleSelectInput}
             >
               <option value=""> Select Center </option>
-              {centerList.map((center, index) => (
-                <option key={index} value={center.center_id}>
-                  {center.center_name}
-                </option>
-              ))}
+              {centerList &&
+                [...centerList]
+                  .sort((a, b) => a.center_id - b.center_id)
+                  .map((center, index) => (
+                    <option key={index} value={center.center_id}>
+                      {center.center_name}
+                    </option>
+                  ))}
             </select>
           )}
           <div className="d-flex w40 a-center px15">

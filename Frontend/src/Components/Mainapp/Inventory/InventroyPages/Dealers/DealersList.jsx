@@ -61,15 +61,14 @@ const DealersList = () => {
   // filter delaers on center --------------------------------------->
   const handleSelectInput = (e) => {
     const value = e.target.value;
-    if (value === "") {
+    if (value !== "") {
+      const filtered = dealerList.filter((dealer) => {
+        return dealer.centerid.toString() === value;
+      });
+      setFilteredData(filtered);
+    } else {
       setFilteredData(dealerList);
-      return;
     }
-    const filtered = dealerList.filter((dealer) => {
-      return dealer.centerid.toString() === value;
-    });
-    setFilteredData(filtered);
-    // console.log(filteredData);
   };
 
   //open to edit item
@@ -341,11 +340,14 @@ const DealersList = () => {
               onChange={handleSelectInput}
             >
               <option value="">-- Select Center --</option>
-              {centerList.map((center, index) => (
-                <option key={index} value={center.center_id}>
-                  {center.center_name}
-                </option>
-              ))}
+              {centerList &&
+                [...centerList]
+                  .sort((a, b) => a.center_id - b.center_id)
+                  .map((center, index) => (
+                    <option key={index} value={center.center_id}>
+                      {center.center_name}
+                    </option>
+                  ))}
             </select>
           )}
           <button
