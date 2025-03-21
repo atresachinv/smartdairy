@@ -1223,6 +1223,7 @@ exports.downloadExcelFormat = async (req, res) => {
 exports.getMaxDealNo = async (req, res) => {
   const dairy_id = req.user.dairy_id;
   const centerid = req.user.center_id;
+  const { autoCenter } = req.query;
 
   pool.getConnection((err, connection) => {
     if (err) {
@@ -1231,10 +1232,19 @@ exports.getMaxDealNo = async (req, res) => {
     }
 
     try {
-      const query =
-        "SELECT MAX(srno) AS maxCustNo FROM customer WHERE orgid = ? AND centerid = ? AND ctype=?";
+      let query =
+        "SELECT MAX(srno) AS maxCustNo FROM customer WHERE orgid = ? AND ctype = ?";
+      let queryParams = [dairy_id, 2];
 
-      connection.query(query, [dairy_id, centerid, 2], (error, results) => {
+      if (autoCenter === 1) {
+        query += " AND centerid = ?";
+        queryParams.push(centerid);
+      } else if (centerid > 0) {
+        query += " AND (centerid = 0 OR centerid = ?)";
+        queryParams.push(centerid);
+      }
+
+      connection.query(query, queryParams, (error, results) => {
         // Release connection after query execution
         connection.release();
 
@@ -1391,6 +1401,10 @@ exports.createDealer = async (req, res) => {
 //-------------------------------------------------------------------------------------------->
 
 exports.dealerList = async (req, res) => {
+  const dairy_id = req.user.dairy_id;
+  const center_id = req.user.center_id;
+  const { autoCenter } = req.query;
+
   pool.getConnection((err, connection) => {
     if (err) {
       console.error("Error getting MySQL connection: ", err);
@@ -1398,20 +1412,29 @@ exports.dealerList = async (req, res) => {
     }
 
     try {
-      const dairy_id = req.user.dairy_id;
-      const center_id = req.user.center_id;
       // Check for unauthorized access
       if (!dairy_id) {
         connection.release();
         return res.status(400).json({ message: "Unauthorized User!" });
       }
 
-      const getCustList = `
-        SELECT * FROM customer
-        WHERE orgid = ? AND centerid = ? AND ctype=2 AND (isdeleted IS NULL OR isdeleted != 1);
-      `;
+      let getCustList = `SELECT * FROM customer WHERE orgid = ? AND ctype = 2 AND (isdeleted IS NULL OR isdeleted != 1) `;
 
-      connection.query(getCustList, [dairy_id, center_id], (err, result) => {
+      let queryParams = [dairy_id];
+
+      if (autoCenter === 1) {
+        // Only fetch customers from the user's specific center
+        getCustList += " AND centerid = ?";
+        queryParams.push(center_id);
+      } else if (center_id > 0) {
+        // Fetch customers from centerid = 0 (global) or the user's center
+        getCustList += " AND (centerid = 0 OR centerid = ?)";
+        queryParams.push(center_id);
+      }
+
+      getCustList += " ORDER BY centerid ASC";
+
+      connection.query(getCustList, queryParams, (err, result) => {
         connection.release(); // Always release the connection after query execution
 
         if (err) {

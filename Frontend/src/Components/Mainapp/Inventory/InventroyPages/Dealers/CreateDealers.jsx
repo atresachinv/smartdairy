@@ -37,10 +37,24 @@ const CreateDealers = () => {
     }));
   }, [city, dist, PinCode]);
 
+  const centerSetting = useSelector(
+    (state) => state.dairySetting.centerSetting
+  );
+  const [settings, setSettings] = useState({});
+  const autoCenter = settings?.autoCenter;
+  //set setting
+  useEffect(() => {
+    if (centerSetting?.length > 0) {
+      setSettings(centerSetting[0]);
+    }
+  }, [centerSetting]);
+
   //get max dealer no
   const getMaxDealer = async () => {
     try {
-      const { data } = await axiosInstance.post("/dealer/maxdealno");
+      const { data } = await axiosInstance.post(
+        `/dealer/maxdealno?autoCenter=${autoCenter}`
+      );
       setCustno(data.cust_no);
     } catch (error) {
       console.error("Error fetching items:", error);
@@ -49,7 +63,9 @@ const CreateDealers = () => {
 
   const fetchDealerList = async () => {
     try {
-      const response = await axiosInstance.post("/dealer");
+      const response = await axiosInstance.post(
+        `/dealer?autoCenter=${autoCenter}`
+      );
       let customers = response?.data?.customerList || [];
       setDealerList(customers);
     } catch (error) {
@@ -58,9 +74,11 @@ const CreateDealers = () => {
   };
 
   useEffect(() => {
-    getMaxDealer();
-    fetchDealerList();
-  }, []);
+    if (settings?.autoCenter !== undefined) {
+      getMaxDealer();
+      fetchDealerList();
+    }
+  }, [settings]);
 
   useEffect(() => {
     if (custno) {

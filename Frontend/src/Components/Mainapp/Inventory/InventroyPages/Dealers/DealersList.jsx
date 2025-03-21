@@ -10,9 +10,10 @@ import { toast } from "react-toastify";
 import Swal from "sweetalert2";
 import { useTranslation } from "react-i18next";
 import { jsPDF } from "jspdf";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { TbSortAscending2, TbSortDescending2 } from "react-icons/tb";
 import "./Dealer.css";
+import { centersLists } from "../../../../../App/Features/Dairy/Center/centerSlice";
 
 const DealersList = () => {
   const { t } = useTranslation(["puchasesale", "common"]);
@@ -22,6 +23,7 @@ const DealersList = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [sortOrder, setSortOrder] = useState("desc");
   const [sortKey, setSortKey] = useState("");
+  const dispatch = useDispatch();
 
   const dairyInfo = useSelector(
     (state) =>
@@ -29,6 +31,46 @@ const DealersList = () => {
       state.dairy.dairyData.SocietyName ||
       state.dairy.dairyData.center_name
   );
+  const [filteredData, setFilteredData] = useState([]);
+  const centerList = useSelector(
+    (state) => state.center.centersList.centersDetails || []
+  );
+
+  const centerSetting = useSelector(
+    (state) => state.dairySetting.centerSetting
+  );
+  const [settings, setSettings] = useState({});
+  const autoCenter = settings?.autoCenter;
+  const centerId = useSelector((state) => state.dairy.dairyData.center_id);
+
+  //set setting
+  useEffect(() => {
+    if (centerSetting?.length > 0) {
+      setSettings(centerSetting[0]);
+    }
+  }, [centerSetting]);
+
+  useEffect(() => {
+    dispatch(centersLists());
+  }, [dispatch]);
+
+  useEffect(() => {
+    setFilteredData(dealerList);
+  }, [dealerList]);
+
+  // filter delaers on center --------------------------------------->
+  const handleSelectInput = (e) => {
+    const value = e.target.value;
+    if (value !== "") {
+      const filtered = dealerList.filter((dealer) => {
+        return dealer.centerid.toString() === value;
+      });
+      setFilteredData(filtered);
+    } else {
+      setFilteredData(dealerList);
+    }
+  };
+
   //open to edit item
   const handleEditClick = (id) => {
     setEditSale(id);
@@ -57,8 +99,8 @@ const DealersList = () => {
         cust_accno: editSale.cust_accno,
       };
       // console.log(updateCust);
-      if (dealerList) {
-        const foundname = dealerList.filter(
+      if (filteredData) {
+        const foundname = filteredData.filter(
           (item) =>
             (item.id !== editSale.id &&
               item.cname.toLowerCase().trim() ===
@@ -75,7 +117,7 @@ const DealersList = () => {
         const res = await axiosInstance.patch("/update/dealer", updateCust);
         if (res?.data?.success) {
           toast.success("Dealers updated successfully");
-          setDealerList((prevCust) => {
+          setFilteredData((prevCust) => {
             return prevCust.map((item) => {
               if (item.id === editSale.id) {
                 return { ...item, ...editSale };
@@ -94,13 +136,13 @@ const DealersList = () => {
 
   //download excel file
   const downloadExcel = () => {
-    if (dealerList.length === 0) {
+    if (filteredData.length === 0) {
       toast.warn("No data available to download.");
       return;
     }
 
     // Map dealerList to create a formatted array of objects
-    const formattedData = dealerList.map((customer, index) => ({
+    const formattedData = filteredData.map((customer, index) => ({
       "Sr No": index + 1,
       Code: customer.srno,
       "Dealer Name": customer.cname,
@@ -128,10 +170,10 @@ const DealersList = () => {
     const fetchDealerList = async () => {
       setLoading(true);
       try {
-        const response = await axiosInstance.post("/dealer");
+        const response = await axiosInstance.post(
+          `/dealer?autoCenter=${autoCenter}`
+        );
         let customers = response?.data?.customerList || [];
-        // Sort customers by createdon in descending order (newest first)
-        customers.sort((a, b) => new Date(b.createdon) - new Date(a.createdon));
         setDealerList(customers);
         setLoading(false);
       } catch (error) {
@@ -140,8 +182,10 @@ const DealersList = () => {
         toast.error("There was an error fetching the dealer list.");
       }
     };
-    fetchDealerList();
-  }, []);
+    if (settings?.autoCenter !== undefined) {
+      fetchDealerList();
+    }
+  }, [settings]);
 
   //handle delete with api
   const handleDelete = async (cid) => {
@@ -161,7 +205,7 @@ const DealersList = () => {
         const res = await axiosInstance.post("/delete/customer", { cid }); // Replace with your actual API URL
         toast.success(res?.data?.message);
 
-        setDealerList((prevSales) =>
+        setFilteredData((prevSales) =>
           prevSales.filter((sale) => sale.cid !== cid)
         );
       } catch (error) {
@@ -182,7 +226,7 @@ const DealersList = () => {
   };
   //download PDF
   const downloadPdf = () => {
-    if (dealerList.length === 0) {
+    if (filteredData.length === 0) {
       toast.warn("No data available to export.");
       return;
     }
@@ -201,7 +245,7 @@ const DealersList = () => {
       "A/C No",
       "IFSC",
     ];
-    const rows = dealerList.map((item, index) => [
+    const rows = filteredData.map((item, index) => [
       index + 1,
       item.srno,
       item.cname,
@@ -267,7 +311,7 @@ const DealersList = () => {
 
   //sort
   const sortDealers = (key) => {
-    const sortedList = [...dealerList].sort((a, b) => {
+    const sortedList = [...filteredData].sort((a, b) => {
       if (sortOrder === "asc") {
         return a[key] > b[key] ? 1 : -1;
       } else {
@@ -275,7 +319,7 @@ const DealersList = () => {
       }
     });
 
-    setDealerList(sortedList);
+    setFilteredData(sortedList);
     setSortOrder(sortOrder === "asc" ? "desc" : "asc");
     setSortKey(key); // Update the sorted column
   };
@@ -286,7 +330,26 @@ const DealersList = () => {
           {t("ps-nv-dealer-list")}
         </span>
         <div className="group-code-and-button-div w100 h1 d-flex sb">
-          <div></div>
+          {centerId > 0 ? (
+            <div></div>
+          ) : (
+            <select
+              className="data w40 my5"
+              name="center"
+              id=""
+              onChange={handleSelectInput}
+            >
+              <option value="">-- Select Center --</option>
+              {centerList &&
+                [...centerList]
+                  .sort((a, b) => a.center_id - b.center_id)
+                  .map((center, index) => (
+                    <option key={index} value={center.center_id}>
+                      {center.center_name}
+                    </option>
+                  ))}
+            </select>
+          )}
           <button
             className="btn sales-dates-container-mobile-btn"
             onClick={downloadExcel}
@@ -373,8 +436,8 @@ const DealersList = () => {
           {/* Show Spinner if loading, otherwise show the customer list */}
           {loading ? (
             <Spinner />
-          ) : dealerList.length > 0 ? (
-            dealerList.map((customer, index) => (
+          ) : filteredData.length > 0 ? (
+            filteredData.map((customer, index) => (
               <div
                 key={index}
                 className={`data-values-div w100 h10 d-flex forDWidth center t-center sa ${
@@ -516,7 +579,7 @@ const DealersList = () => {
                 }
               />
             </label>
-            <div  >
+            <div>
               <button onClick={() => setIsModalOpen(false)}>
                 {t("ps-cancel")}
               </button>

@@ -48,6 +48,7 @@ const CreateOthers = () => {
     (state) => state.dairySetting.centerSetting
   );
   const [settings, setSettings] = useState({});
+  const autoCenter = settings?.autoCenter;
 
   //set setting
   useEffect(() => {
@@ -64,9 +65,13 @@ const CreateOthers = () => {
 
   //get all products and sale rate
   useEffect(() => {
-    dispatch(getAllProducts());
-    dispatch(getProductSaleRates(4));
-  }, [dispatch]);
+    if (settings?.autoCenter !== undefined) {
+      dispatch(getAllProducts(autoCenter));
+      dispatch(
+        getProductSaleRates({ groupCode: 4, autoCenter: settings.autoCenter })
+      );
+    }
+  }, [settings]);
 
   // set today date
   useEffect(() => {
