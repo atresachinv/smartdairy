@@ -34,6 +34,7 @@ import inventoryReducer from "./Features/Mainapp/Inventory/inventorySlice";
 import accessReducer from "./Features/Admin/SuperAdmin/accessSlice"; //super-admin
 import settingsReducer from "./Features/Mainapp/Settings/dairySettingSlice"; //super-admin
 import sanghaReducer from "./Features/Mainapp/Sangha/sanghaSlice"; //super-admin
+import ledgerReducer from "./Features/Mainapp/Masters/ledgerSlice"; //super-admin
 
 import smsReducer from "./Features/Mainapp/Dairyinfo/smsSlice";
 
@@ -74,5 +75,6 @@ export const store = configureStore({
     access: accessReducer,
     dairySetting: settingsReducer,
     smsHistory: smsReducer,
+    ledger: ledgerReducer,
   },
 });

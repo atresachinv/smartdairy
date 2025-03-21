@@ -14,10 +14,10 @@ import SalesReports from "./Appnavviews/MilkSankalan/SalesReports";
 const AppNavViews = ({ index }) => {
   switch (index) {
     case "collection/morning":
-      return <Milkcollection time={"morning"} />;
+      return <Milkcollection times={"morning"} />;
       break;
     case "collection/evening":
-      return <Milkcollection time={"evening"} />;
+      return <Milkcollection times={"evening"} />;
       break;
     case "vehicle/collection":
       return <MilkSankalan />;
