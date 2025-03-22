@@ -18,7 +18,11 @@ const DeductionRateDetails = () => {
               <option value=""></option>
               <option value=""></option>
             </select>
-            <select className="bigestdiv w35 data" name="deduction-name" id="001">
+            <select
+              className="bigestdiv w35 data"
+              name="deduction-name"
+              id="001"
+            >
               <option value=""></option>
               <option value=""></option>
               <option value=""></option>
