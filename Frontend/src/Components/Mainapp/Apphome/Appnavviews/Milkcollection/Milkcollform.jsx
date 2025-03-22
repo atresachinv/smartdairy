@@ -54,7 +54,7 @@ const MilkColleform = ({ switchToSettings, times }) => {
   const initialValues = {
     date: changedDate || tDate,
     code: "",
-    shift: 0,
+    shift: "",
     animal: 0,
     liters: "",
     fat: "",
@@ -68,15 +68,16 @@ const MilkColleform = ({ switchToSettings, times }) => {
     mobile: "",
     allow: false,
   };
+
   const [values, setValues] = useState(initialValues);
   // dynamic shift time set in time And allow is updated from state -------------------------------------------------------------->
   useEffect(() => {
     setValues((prevData) => ({
       ...prevData,
-      shift: times === "morning" ? 0 : time === "morning" ?  0 : 1,
+      shift: times === "morning" ? 0 : time === "morning" ? 0 : 1,
       allow: settings.duplicateEntry === 0 ? false : true,
     }));
-  }, [time, times, settings]);
+  }, [time, times, values.shift, settings]);
 
   //center settings ------------------------------------------------------------------------------>
 
@@ -685,7 +686,12 @@ const MilkColleform = ({ switchToSettings, times }) => {
       setErrors(validationErrors);
       return;
     }
-
+  
+    setValues((prevData) => ({
+      ...prevData,
+      shift: times === "morning" ? 0 : time === "morning" ? 0 : 1,
+    }));
+   
     try {
       const result = await dispatch(saveMilkOneEntry(values)).unwrap();
       if (result?.status === 200) {
@@ -699,8 +705,9 @@ const MilkColleform = ({ switchToSettings, times }) => {
         fetchEntries();
 
         setValues(initialValues); // Reset form
-        setErrors({}); // Clear errors
 
+        setErrors({}); // Clear errors
+        
         // Show success toast
         toast.success(result.message || "Milk Collection saved successfully!");
 

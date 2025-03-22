@@ -9,7 +9,7 @@ const Milkcollection = ({ times }) => {
           <CollectionSettingForm times={times} />
         </div>
         <div className="milk-coll-list-div w40 h1 mx10">
-          <Milkcollelist />
+          <Milkcollelist times={times} />
         </div>
       </div>
     </div>

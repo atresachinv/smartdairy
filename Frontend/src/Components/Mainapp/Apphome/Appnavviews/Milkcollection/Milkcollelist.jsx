@@ -4,14 +4,14 @@ import { useTranslation } from "react-i18next";
 import "../../../../../Styles/Mainapp/Apphome/Appnavview/Milkcollection.css";
 import { useParams } from "react-router-dom";
 
-const Milkcollelist = () => {
+const Milkcollelist = ({ times }) => {
   const { t } = useTranslation(["milkcollection", "common", "master"]);
   const { time } = useParams();
   // Retrieve milk collection data and sort in descending order
   const milkColl = useSelector((state) => state.milkCollection.entries || [])
     .slice()
     .reverse();
-  console.log(milkColl)
+  console.log(milkColl);
   const [custList, setCustomersList] = useState({}); // to check remainning customer list
   const [milkData, setMilkData] = useState([]); // to check remainning customer list
   const [isRCust, setIsRCust] = useState(false); // to show remainning customer list
@@ -19,7 +19,7 @@ const Milkcollelist = () => {
   useEffect(() => {
     if (!milkColl || milkColl.length === 0) return; // Ensure milkColl is not empty
 
-    const ME = time === "morning" ? 0 : 1; // Determine ME based on time
+    const ME = times === "morning" ? 0 : time === "morning" ? 0 : 1; // Determine ME based on time
     const MilkEntries = milkColl.filter(
       (entry) => entry.shift.toString() === ME.toString()
     );

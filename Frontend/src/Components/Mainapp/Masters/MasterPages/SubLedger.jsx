@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import "../../../../Styles/Mainapp/Masters/Subledger.css";
 import { useDispatch, useSelector } from "react-redux";
 import Spinner from "../../../Home/Spinner/Spinner";
 import {
@@ -10,6 +9,7 @@ import {
   updateSubLedger,
 } from "../../../../App/Features/Mainapp/Masters/ledgerSlice";
 import { toast } from "react-toastify";
+import "../../../../Styles/Mainapp/Masters/Subledger.css";
 
 const SubLedger = () => {
   const dispatch = useDispatch();
@@ -37,11 +37,12 @@ const SubLedger = () => {
     vcsms: "0",
   });
   console.log(SubLedgers);
-  // useEffect(() => {
-  //   dispatch(getMaxSLCode());
-  //   dispatch(listMainLedger());
-  //   dispatch(listSubLedger());
-  // }, [dispatch]);
+
+  useEffect(() => {
+    dispatch(getMaxSLCode());
+    dispatch(listMainLedger());
+    dispatch(listSubLedger());
+  }, [dispatch]);
 
   useEffect(() => {
     setFormData((prevData) => ({
@@ -66,13 +67,19 @@ const SubLedger = () => {
   };
 
   const handleInputChange = (e) => {
-    const { name, value } = e.target;
+    const { name, type, value } = e.target;
 
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
-
+    if (type === "radio") {
+      setFormData((prevData) => ({
+        ...prevData,
+        [name]: parseInt(value, 10), // For radio buttons, set the value as integer
+      }));
+    } else {
+      setFormData((prevData) => ({
+        ...prevData,
+        [name]: value,
+      }));
+    }
     const fieldError = validateField(name, value);
     setErrors((prevErrors) => {
       const updatedErrors = { ...prevErrors, ...fieldError };
@@ -189,6 +196,22 @@ const SubLedger = () => {
     }
   };
 
+  // Function to reset form after success
+  const resetForm = () => {
+    setFormData((prevData) => ({
+      ...prevData,
+      date: tdate,
+      groupcode: "",
+      groupname: "",
+      eng_name: "",
+      marathi_name: "",
+      sanghahead: "0",
+      perltramt: "",
+      subAcc: "0",
+      vcsms: "0",
+    }));
+  };
+
   useEffect(() => {
     if (isEditing) {
       const handler = setTimeout(() => {
@@ -211,6 +234,7 @@ const SubLedger = () => {
     }
     if (!formData.date) {
       toast.error("Please refresh your page!");
+      return;
     }
 
     try {
@@ -218,20 +242,7 @@ const SubLedger = () => {
         const result = await dispatch(updateSubLedger(formData)).unwrap();
         if (result?.status === 200) {
           await dispatch(listSubLedger()).unwrap();
-
-          setFormData((prevData) => ({
-            ...prevData,
-            date: tdate,
-            groupcode: "",
-            groupname: "",
-            eng_name: "",
-            marathi_name: "",
-            sanghahead: "0",
-            perltramt: "",
-            subAcc: "0",
-            vcsms: "0",
-          }));
-
+          resetForm();
           toast.success("Sub ledger updated successfully!");
         } else {
           toast.error("Failed to update ledger!");
@@ -241,20 +252,7 @@ const SubLedger = () => {
         if (result?.status === 200) {
           await dispatch(getMaxSLCode()).unwrap();
           await dispatch(listSubLedger()).unwrap();
-
-          setFormData((prevData) => ({
-            ...prevData,
-            date: tdate,
-            groupcode: "",
-            groupname: "",
-            eng_name: "",
-            marathi_name: "",
-            sanghahead: "0",
-            perltramt: "",
-            subAcc: "0",
-            vcsms: "0",
-          }));
-
+          resetForm();
           toast.success("New sub ledger created successfully!");
         } else {
           toast.error("Failed to create new ledger!");
@@ -399,19 +397,23 @@ const SubLedger = () => {
                   Sales Cheque
                 </label>
               </div>
-              <div className="perltr_amt-div w30 d-flex a-center sb">
-                <label htmlFor="perltr" className="label-text w40">
-                  Per/ltr :
-                </label>
-                <input
-                  type="text"
-                  name="perltramt"
-                  id="perltr"
-                  value={formData.perltramt}
-                  onChange={handleInputChange}
-                  className="data w60"
-                />
-              </div>
+              {formData.sanghahead.toString() !== "0" ? (
+                <div className="perltr_amt-div w30 d-flex a-center sb">
+                  <label htmlFor="perltr" className="label-text w40">
+                    Per/ltr :
+                  </label>
+                  <input
+                    type="text"
+                    name="perltramt"
+                    id="perltr"
+                    value={formData.perltramt}
+                    onChange={handleInputChange}
+                    className="data w60"
+                  />
+                </div>
+              ) : (
+                <></>
+              )}
             </div>
           </div>
         </div>
@@ -586,18 +588,28 @@ const SubLedger = () => {
           </div>
           <div className="ledger-buttons-div w100 h40 d-flex a-center j-end">
             <button type="button" className="w-btn" onClick={handleEditClick}>
-              Edit
+              {isEditing ? "Save" : "Edit"}
             </button>
             <button type="reset" className="w-btn mx10">
               Cancel
             </button>
-            <button
-              type="submit"
-              className="w-btn"
-              disabled={createStatus === "lodaing"}
-            >
-              {createStatus === "lodaing" ? "Saving..." : "Save"}
-            </button>
+            {isEditing ? (
+              <button
+                type="submit"
+                className="w-btn"
+                disabled={createStatus === "lodaing"}
+              >
+                {updateStatus === "lodaing" ? "Updating..." : "Update"}
+              </button>
+            ) : (
+              <button
+                type="submit"
+                className="w-btn"
+                disabled={createStatus === "lodaing"}
+              >
+                {createStatus === "lodaing" ? "Saving..." : "Save"}
+              </button>
+            )}
           </div>
         </div>
       </form>

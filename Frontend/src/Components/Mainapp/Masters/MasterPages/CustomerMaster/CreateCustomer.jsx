@@ -531,8 +531,7 @@ const CreateCustomer = () => {
             </div>
             {isMember && (
               <div className="toggle-inputs-div w60 h50 d-flex-col sb">
-                <label htmlFor=""
-                  className="info-text w100 px10">
+                <label htmlFor="member_date" className="info-text w100 px10">
                   {t("m-mdate")}Membership Date
                 </label>
                 <input

@@ -7,12 +7,14 @@
     flex-direction: column;
   }
   .ledger-master-form-container .ledger-info-contsiner {
-    min-height: fit-content;
+    min-height: 60%;
     width: 100%;
+    margin-bottom: 10px;
   }
   .ledger-master-form-container .ledger-settings-contsiner {
-    min-height: fit-content;
+    min-height: 40%;
     width: 100%;
+    margin-bottom: 10px;
   }
   .ledgers-list-container {
     min-height: 70%;

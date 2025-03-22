@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import "../../../../Styles/Mainapp/Masters/Mainledger.css";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import Spinner from "../../../Home/Spinner/Spinner";
@@ -8,6 +7,7 @@ import {
   getMaxMLCode,
   listMainLedger,
 } from "../../../../App/Features/Mainapp/Masters/ledgerSlice";
+import "../../../../Styles/Mainapp/Masters/Mainledger.css";
 const MainLedger = () => {
   const dispatch = useDispatch();
   const tdate = useSelector((state) => state.date.toDate);
@@ -34,8 +34,6 @@ const MainLedger = () => {
       date: tdate,
     }));
   }, [maxMlCode]);
-
-  
 
   const validateField = (name, value) => {
     let error = {};

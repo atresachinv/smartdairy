@@ -96,7 +96,7 @@ export const updateSubLedger = createAsyncThunk(
   "ledgers/updateSubLedger",
   async (formData, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.post("/update/sub/ledger", formData);
+      const response = await axiosInstance.put("/update/sub/ledger", formData);
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || error.message);

@@ -306,7 +306,7 @@ exports.createSubLedger = async (req, res) => {
 // Update sub Ledger
 // ----------------------------------------------------------------------------->
 exports.updateSubLedger = async (req, res) => {
-  const formData = req.query;
+  const formData = req.body;
   const { dairy_id, user_id } = req.user;
 
   if (!dairy_id) {
@@ -331,6 +331,19 @@ exports.updateSubLedger = async (req, res) => {
     subAcc,
     vcsms,
   } = formData;
+
+  console.log(
+    date,
+    id,
+    groupcode,
+    groupname,
+    eng_name,
+    marathi_name,
+    sanghahead,
+    perltramt,
+    subAcc,
+    vcsms
+  );
 
   pool.getConnection((err, connection) => {
     if (err) {
