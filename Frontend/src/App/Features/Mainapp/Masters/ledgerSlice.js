@@ -71,7 +71,7 @@ export const getMaxSLCode = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const response = await axiosInstance.get("/sub/ledger/maxcode");
-      return response.data;
+      return response.data.maxSubGLCode;
     } catch (error) {
       return rejectWithValue(error.response?.data || error.message);
     }
@@ -107,9 +107,9 @@ export const updateSubLedger = createAsyncThunk(
 // list sub ledgers
 export const listSubLedger = createAsyncThunk(
   "ledgers/listSubLedger",
-  async (formData, { rejectWithValue }) => {
+  async (_, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.post("/list/sub/ledger", formData);
+      const response = await axiosInstance.get("/list/sub/ledger");
       return response.data.subLedgerList;
     } catch (error) {
       return rejectWithValue(error.response?.data || error.message);

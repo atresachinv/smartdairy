@@ -32,10 +32,9 @@ const MilkcollectionReports = () => {
   const [selectedME, setSelectedME] = useState(null);
   const [sumreport, setSumreport] = useState(false); //...sum avravge sate
   const [selectedDate, setSelectedDate] = useState(null);
-  const [selectedCenterId, setSelectedCenterId] = useState("");
+  const [selectedCenterId, setSelectedCenterId] = useState("0");
   const [centerData, setCenterData] = useState([]); //..
   const [item, setitem] = useState([]); //..
-
   const centerList = useSelector(
     (state) => state.center.centersList.centersDetails
   );
@@ -380,28 +379,28 @@ const MilkcollectionReports = () => {
     );
   });
 
-function printReport() {
-  const dataToExport = sumreport ? summaryData : filteredData;
+  function printReport() {
+    const dataToExport = sumreport ? summaryData : filteredData;
 
-  if (!dataToExport || dataToExport.length === 0) {
-    alert("No data available to print!");
-    return;
-  }
+    if (!dataToExport || dataToExport.length === 0) {
+      alert("No data available to print!");
+      return;
+    }
 
-  const formatDate = selectedDate;
-  const fromDate = formatDate.start;
-  const toDate = formatDate.end.slice(0, 10);
+    const formatDate = selectedDate;
+    const fromDate = formatDate.start;
+    const toDate = formatDate.end.slice(0, 10);
 
-  const dairyName = dairyinfo.SocietyName.toUpperCase(); // Replace with actual dairy name
-  const reportName = sumreport
-    ? "Milk Collection Summary Report"
-    : "Milk Collection Detailed Report";
+    const dairyName = dairyinfo.SocietyName.toUpperCase(); // Replace with actual dairy name
+    const reportName = sumreport
+      ? "Milk Collection Summary Report"
+      : "Milk Collection Detailed Report";
 
-  // Open a new window for printing
-  const printWindow = window.open("", "_blank");
+    // Open a new window for printing
+    const printWindow = window.open("", "_blank");
 
-  // Generate report header HTML
-  const headerHTML = `
+    // Generate report header HTML
+    const headerHTML = `
     <html>
       <head>
         <title>${reportName}</title>
@@ -454,9 +453,9 @@ function printReport() {
         <p>From: ${fromDate}  To: ${toDate}</p>
   `;
 
-  // Create table headers and rows based on the report type
-  const tableHeader = sumreport
-    ? `
+    // Create table headers and rows based on the report type
+    const tableHeader = sumreport
+      ? `
         <tr>
           <th>Code</th>
           <th>Liters</th>
@@ -468,7 +467,7 @@ function printReport() {
           <th>C/B</th>
         </tr>
       `
-    : `
+      : `
         <tr>
           <th>Date</th>
           <th>Shift</th>
@@ -483,10 +482,10 @@ function printReport() {
         </tr>
       `;
 
-  const tableRows = dataToExport
-    .map((row) => {
-      return sumreport
-        ? `
+    const tableRows = dataToExport
+      .map((row) => {
+        return sumreport
+          ? `
           <tr>
             <td>${row.code}</td>
             <td class="right-align">${row.Liters}</td>
@@ -498,7 +497,7 @@ function printReport() {
             <td class="center-text">${row.CB === 0 ? "C" : "B"}</td>
           </tr>
         `
-        : `
+          : `
           <tr>
             <td>${row.ReceiptDate.slice(0, 10)}</td>
             <td class="center-text">${row.ME === 0 ? "M" : "E"}</td>
@@ -512,24 +511,24 @@ function printReport() {
             <td class="center-text">${row.CB === 0 ? "C" : "B"}</td>
           </tr>
         `;
-    })
-    .join("");
+      })
+      .join("");
 
-  // Calculate the total amount
-  const totalAmount = sumreport
-    ? calculateTotalAmountSummary(summaryData)
-    : calculateTotalAmountFiltered(filteredData);
+    // Calculate the total amount
+    const totalAmount = sumreport
+      ? calculateTotalAmountSummary(summaryData)
+      : calculateTotalAmountFiltered(filteredData);
 
-  // Add a row for the total amount
-  const totalRow = sumreport
-    ? `
+    // Add a row for the total amount
+    const totalRow = sumreport
+      ? `
       <tr>
         <td colspan="6" class="right-align"><strong>Total</strong></td>
         <td class="right-align"><strong>${totalAmount.toFixed(2)}</strong></td>
         <td></td>
       </tr>
     `
-    : `
+      : `
       <tr>
         <td colspan="8" class="right-align"><strong>Total</strong></td>
         <td class="right-align"><strong>${totalAmount.toFixed(2)}</strong></td>
@@ -537,8 +536,8 @@ function printReport() {
       </tr>
     `;
 
-  // Generate the final HTML for the table
-  const tableHTML = `
+    // Generate the final HTML for the table
+    const tableHTML = `
     <table>
       <thead>
         ${tableHeader}
@@ -550,20 +549,19 @@ function printReport() {
     </table>
   `;
 
-  // Combine header, table, and footer HTML
-  const finalHTML = headerHTML + tableHTML + "</body></html>";
+    // Combine header, table, and footer HTML
+    const finalHTML = headerHTML + tableHTML + "</body></html>";
 
-  // Write the content to the print window
-  printWindow.document.write(finalHTML);
+    // Write the content to the print window
+    printWindow.document.write(finalHTML);
 
-  // Ensure the content is fully loaded before printing
-  printWindow.document.close();
-  printWindow.onload = function () {
-    printWindow.print();
-    printWindow.close();
-  };
-}
-
+    // Ensure the content is fully loaded before printing
+    printWindow.document.close();
+    printWindow.onload = function () {
+      printWindow.print();
+      printWindow.close();
+    };
+  }
 
   // const handlePrint = () => {
   //   // Ensure dairyinfo and filteredData are properly populated
@@ -840,9 +838,9 @@ function printReport() {
 
   // Filter data based on selected center
   const getFilteredData = (data) => {
-    if (!selectedCenterId) return data; // If no center is selected, return all data
+    if (!selectedCenterId) return data;
     return data.filter(
-      (item) => item.center_id && item.center_id.toString() === selectedCenterId
+      (item) => item.center_id.toString() === selectedCenterId.toString()
     ); // Filter by selected center ID, ensuring center_id is defined
   };
 
@@ -857,10 +855,6 @@ function printReport() {
       milkData: filteredMilkData,
     });
   }, [selectedCenterId, summaryData, filteredData]); // Re-run when selectedCenterId or data changes
-
-  // Log the filtered data for debugging
-  console.log(centerData);
-  console.log("Selected Center ID:", selectedCenterId);
 
   return (
     <>
@@ -944,7 +938,6 @@ function printReport() {
                       id="001"
                       onChange={handleCenterChange}
                     >
-                      <option value="">Select Center</option>
                       {centerList && centerList.length > 0 ? (
                         centerList.map((center, index) => (
                           <option key={index} value={center.center_id}>
