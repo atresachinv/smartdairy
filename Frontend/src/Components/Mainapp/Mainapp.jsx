@@ -66,6 +66,7 @@ import ComingSoon from "./ComingSoon";
 import MilkSankalan from "./Apphome/Appnavviews/MilkSankalan/MilkSankalan";
 import { getCenterSetting } from "../../App/Features/Mainapp/Settings/dairySettingSlice";
 import DeductionMaster from "./Masters/MasterPages/DeductionMaster/DeductionMaster";
+import BankReportMaster from "./Reports/BankReports/BankReportMaster";
 
 const Mainapp = () => {
   const dispatch = useDispatch();
@@ -237,7 +238,7 @@ const Mainapp = () => {
             {/* <Route path="master/customer/*" element={<CustomersMaster />} /> */}
             <Route path="master/employee/*" element={<EmployeeMaster />} />
             <Route path="master/bank/*" element={<BankMaster />} />
-            <Route path="master/deductions/*" element={<DeductionMaster/>} />
+            <Route path="master/deductions/*" element={<DeductionMaster />} />
             {/* <Route path="master/ratechart/*" element={<MilkRateMaster />} /> */}
             {/* purchase routes */}
             <Route path="purchase/cattlefeed/*" element={<PurchaseMaster />} />
@@ -263,6 +264,7 @@ const Mainapp = () => {
             <Route path="reports/inventory/*" element={<InventoryRports />} />
             <Route path="reports/sales/*" element={<ComingSoon />} />
             <Route path="reports/payment/*" element={<PaymentReports />} />
+            <Route path="reports/bank/*" element={<BankReportMaster />} />
             {/* payment routes */}
             <Route
               path="payment/milk-correction/*"

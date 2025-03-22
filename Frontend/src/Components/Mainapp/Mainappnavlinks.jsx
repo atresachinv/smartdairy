@@ -354,6 +354,13 @@ const Mainappnavlinks = ({ setselected, handleSidebar }) => {
           path: "reports/payment",
           role: ["admin", "super_admin", "manager"],
         },
+        {
+          name: `${t("Bank Report")}`,
+          icon: <FaFileInvoiceDollar className="icon" />,
+          index: 6.7,
+          path: "reports/bank",
+          role: ["admin", "super_admin", "manager"],
+        },
       ],
     },
     {

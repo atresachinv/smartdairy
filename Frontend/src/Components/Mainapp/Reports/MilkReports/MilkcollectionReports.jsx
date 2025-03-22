@@ -865,9 +865,9 @@ function printReport() {
   return (
     <>
       <div className="Milkcollection-container w100 h1 d-flex-col sb">
-        <span className="heading px10"> Milk Collection Report</span>
-        <div className="fillter-data-container w100 h30 d-flex-col sb">
-          <div className="master-and-buttons-div w100  d-flex sb">
+        <span className="heading px10 "> Milk Collection Report</span>
+        <div className="fillter-data-container w100 h30 d-flex-col ">
+          <div className="master-and-buttons-div w100 h30  d-flex sb">
             <div className="master-hide-show-chackbox-div w70 d-flex sb">
               <div className="custmize-report-div w50 h1 px10 d-flex a-center sb">
                 <span className="cl-icon w20 h1 d-flex center info-text">
@@ -932,7 +932,7 @@ function printReport() {
             </div>
           </div>
 
-          <div className="fitter-hide-show-container w100   d-flex-col sa">
+          <div className="fitter-hide-show-container w100 h30  d-flex-col sa">
             {isChecked && (
               <div className="heided-conatiner-div w100 h1 d-flex-col sa">
                 <div className="fillter-conditions-div w100 h80 d-flex  a-center  px10 sb">
@@ -1053,8 +1053,8 @@ function printReport() {
             )}
           </div>
         </div>
-        <div className="Milk-collection-report-container w100 h70 d-flex-col bg">
-          <span className="heading p10">Milk Collection</span>
+        <div className="Milk-collection-report-container w100 h60 d-flex-col bg">
+          <span className="heading  px10">Milk Collection</span>
           <div className="Milk-report-heading w100 h1 mh100 d-flex-col hidescrollbar">
             <div className="milkdata-headings-div w100 h10 py10 d-flex center t-center sa bg1">
               {sumreport ? (

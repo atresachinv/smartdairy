@@ -1,6 +1,118 @@
-.deduction-name-div  select.smallselect-div {
- margin-right: 10px;
+.deduction-name-div select.smallselect-div {
+  margin-right: 10px;
 }
-.deduction-name-div  select.bigestdiv {
- margin-right: 10px;
+.deduction-name-div {
+  margin-bottom: 10px;
+}
+.deduction-name-div select.bigestdiv {
+  margin-right: 10px;
+}
+.Deduction-details-button {
+  margin-top: 10px;
+}
+.table-heading-deduction-details {
+  background: #007bff;
+  color: white;
+  position: sticky;
+  top: 0;
+  height: 20px;
+  z-index: 10;
+  margin-top: 20px;
+}
+.table-heading-deduction-details span {
+  font-size: 14px;
+  position: static;
+  color: aliceblue;
+  letter-spacing: 0.8px;
+  text-align: left;
+  border-bottom: 2px solid #ddd;
+  transition: background 0.2s ease-in-out;
+}
+@media screen and (max-width: 426px) {
+  .deduction-name-div .label-text {
+    width: 120px;
+  }
+  .deduction-details-first-half-div .deduction-code-and-date {
+    width: 100%;
+  }
+  .deduction-details-first-half-div
+    .deduction-code-and-date
+    .deduction-code-div {
+    width: 40%;
+  }
+  .deduction-details-first-half-div
+    .deduction-code-and-date
+    .deduction-code-date-div {
+    width: 60%;
+  }
+  .deduction-details-first-half-div
+    .deduction-code-and-date
+    .deduction-code-date-div
+    input {
+    width: 150px;
+  }
+  .deduction-details-first-half-div .radio-buttonsdeductiona-deatilas {
+    width: 100%;
+  }
+  .deduction-details-first-half-div .radio-buttonsdeductiona-deatilas .as-per-liter-deduction-div {
+    width: 180px;
+  }
+  .deduction-details-first-half-div .radio-buttonsdeductiona-deatilas .Pymentwise-deduction-div {
+    margin-right: 20px;
+  }
+   .deduction-details-first-half-div  .Rate-typecontainer-div {
+        width: 100%;
+  }
+   .deduction-details-first-half-div  .deduction-rate-div {
+       
+        margin-left: 20px;
+  }
+   .deduction-details-first-half-div  .deduction-rate-div span {
+       width: 50px;
+       
+  }
+}
+@media screen and (max-width: 768px) {
+  .deduction-name-div .label-text {
+    width: 120px;
+  }
+  .deduction-details-first-half-div .deduction-code-and-date {
+    width: 100%;
+  }
+  .deduction-details-first-half-div
+    .deduction-code-and-date
+    .deduction-code-div {
+    width: 40%;
+  }
+  .deduction-details-first-half-div
+    .deduction-code-and-date
+    .deduction-code-date-div {
+    width: 60%;
+  }
+  .deduction-details-first-half-div
+    .deduction-code-and-date
+    .deduction-code-date-div
+    input {
+    width: 150px;
+  }
+  .deduction-details-first-half-div .radio-buttonsdeductiona-deatilas {
+    width: 100%;
+  }
+  .deduction-details-first-half-div .radio-buttonsdeductiona-deatilas .as-per-liter-deduction-div {
+    width: 180px;
+  }
+  .deduction-details-first-half-div .radio-buttonsdeductiona-deatilas .Pymentwise-deduction-div {
+    margin-right: 20px;
+  }
+   .deduction-details-first-half-div  .Rate-typecontainer-div {
+        width: 100%;
+  }
+   .deduction-details-first-half-div  .deduction-rate-div {
+       
+        margin-left: 20px;
+  }
+   .deduction-details-first-half-div  .deduction-rate-div span {
+       width: 50px;
+       
+  }
 }
