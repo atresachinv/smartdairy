@@ -2,10 +2,12 @@ import React, { useEffect, useState } from "react";
 import "../../../../../Styles/DeductionReport/Deduction.css";
 import Select from "react-select";
 import { useDispatch, useSelector } from "react-redux";
-import listSubLedger from "../../../../../App/Features/Mainapp/Masters/ledgerSlice";
 import { toast } from "react-toastify";
 import axiosInstance from "../../../../../App/axiosInstance";
 import { getDeductionMaster } from "../../../../../App/Features/Deduction/deductionSlice";
+import { FaRegEdit } from "react-icons/fa";
+import { MdDeleteOutline } from "react-icons/md";
+import { listSubLedger } from "../../../../../App/Features/Mainapp/Masters/ledgerSlice";
 
 const DeductionHead = () => {
   const dispatch = useDispatch();
@@ -23,13 +25,13 @@ const DeductionHead = () => {
   });
 
   const deductionData = useSelector((state) => state.deduction.deductionData);
-  // const sledgerlist = useSelector((state) => state.ledger.sledgerlist);
+  const sledgerlist = useSelector((state) => state.ledger.sledgerlist);
 
-  const sledgerlist = [
-    { id: 1, name: "sLedger1" },
-    { id: 2, name: "sLedger2" },
-    { id: 3, name: "sLedger3" },
-  ];
+  // const sledgerlist = [
+  //   { id: 1, name: "sLedger1" },
+  //   { id: 2, name: "sLedger2" },
+  //   { id: 3, name: "sLedger3" },
+  // ];
 
   const centerSetting = useSelector(
     (state) => state.dairySetting.centerSetting
@@ -43,18 +45,19 @@ const DeductionHead = () => {
     }
 
     dispatch(getDeductionMaster());
+    dispatch(listSubLedger());
     // dispatch(listSubLedger());
   }, [centerSetting]);
 
   //option list show only name
   const options = sledgerlist.map((i) => ({
-    value: i.id,
-    label: i.name,
+    value: i.lno,
+    label: i.marathi_name,
   }));
   //option list show only id
   const options2 = sledgerlist.map((i) => ({
-    value: i.id,
-    label: i.id,
+    value: i.lno,
+    label: i.lno,
   }));
 
   // handle Select Change
@@ -77,35 +80,27 @@ const DeductionHead = () => {
       return;
     }
     if (!isEdit) {
-      const item = deductionData.find(
-        (item) => item.PriorityNo === formData.PriorityNo
-      );
-      if (item) {
-        toast.warn("This are deduction already exist");
-        return;
-      } else {
-        try {
-          const res = await axiosInstance.post("/create-deduction", formData);
-          if (res?.data?.success) {
-            toast.success("Successfully save the deduction");
-            setFormData({
-              id: 0,
-              DeductionId: 0,
-              DeductionName: "",
-              GLCode: 0,
-              Active: "N",
-              PriorityNo: 0,
-              GLCodeCR: 0,
-              deductionNameeng: "",
-              show_outstanding: 0,
-            });
-            getMaxDDid();
-            dispatch(getDeductionMaster());
-          }
-        } catch (error) {
-          console.error(error);
-          toast.error("Error to server");
+      try {
+        const res = await axiosInstance.post("/create-deduction", formData);
+        if (res?.data?.success) {
+          toast.success("Successfully save the deduction");
+          setFormData({
+            id: 0,
+            DeductionId: 0,
+            DeductionName: "",
+            GLCode: 0,
+            Active: "N",
+            PriorityNo: 0,
+            GLCodeCR: 0,
+            deductionNameeng: "",
+            show_outstanding: 0,
+          });
+          getMaxDDid();
+          dispatch(getDeductionMaster());
         }
+      } catch (error) {
+        console.error(error);
+        toast.error("Error to server");
       }
 
       // console.log(formData);
@@ -135,16 +130,8 @@ const DeductionHead = () => {
   };
 
   //handel Edit
-  const handleEdit = (e) => {
-    e.preventDefault();
-    if (!formData.PriorityNo) {
-      toast.warn("Please enter  Deduction No");
-      return;
-    }
-
-    const item = deductionData.find(
-      (item) => Number(item.DeductionId) === Number(formData.PriorityNo)
-    );
+  const handleEdit = (id) => {
+    const item = deductionData.find((item) => Number(item.id) === Number(id));
 
     if (!item) {
       toast.warn("Do Not found deductions");
@@ -163,13 +150,35 @@ const DeductionHead = () => {
     });
     setIsEdit(true);
   };
+  //handle delete
+  const handleDeleteItem = async (id) => {
+    if (!id) {
+      toast.error("Not identify id");
+      return;
+    }
+    // console.log("handle delete");
+    try {
+      const res = await axiosInstance.delete(`/delete-deduction?id=${id}`);
+      if (res?.data?.success) {
+        toast.success("Successfully delete the deduction");
+        dispatch(getDeductionMaster());
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("Error to server");
+    }
+  };
+
   //get max Deduction id
   const getMaxDDid = async () => {
     try {
       const res = await axiosInstance.post(
         `/getmax-deductions?autoCenter=${autoCenter}`
       );
-      setFormData({ ...formData, DeductionId: res.data.maxDeductionId });
+      setFormData((prevFormData) => ({
+        ...prevFormData,
+        DeductionId: res.data.maxDeductionId,
+      }));
     } catch (error) {
       console.log(error);
       // toast.error("Error to server");
@@ -183,7 +192,8 @@ const DeductionHead = () => {
   }, [settings]);
 
   //handle clear
-  const handleClear = () => {
+  const handleClear = (e) => {
+    e.preventDefault();
     setFormData({
       DeductionName: "",
       GLCode: 0,
@@ -193,6 +203,7 @@ const DeductionHead = () => {
       deductionNameeng: "",
       show_outstanding: 0,
     });
+    getMaxDDid();
   };
 
   return (
@@ -377,12 +388,12 @@ const DeductionHead = () => {
             <button type="submit" className="w-btn" onClick={handleSubmit}>
               {!isEdit ? "Save" : "Update"}
             </button>
-            <button type="button" className="w-btn" onClick={handleEdit}>
+            {/* <button type="button" className="w-btn" onClick={handleEdit}>
               Edit
-            </button>
-            <button type="button" className="w-btn">
+            </button> */}
+            {/* <button type="button" className="w-btn">
               Delete
-            </button>
+            </button> */}
             <button type="reset" className="w-btn" onClick={handleClear}>
               Cancel
             </button>
@@ -390,16 +401,23 @@ const DeductionHead = () => {
         </div>
         <div className="Deductionhead-table-section-container w100 h60 d-flex-col">
           <div className="Deductionhead-table-heading-container w100  h20 d-flex sa a-center">
-            <span className="">Code</span>
+            <span className="">Edit</span>
             <span className="">Deduction Code</span>
             <span className="">Deduction Name</span>
             <span className="">GL Number</span>
             <span className="">GL Name</span>
+            <span className="">Action</span>
           </div>
           {deductionData &&
             deductionData.map((item) => (
               <div className="w100  h20 d-flex sa a-center" key={item.id}>
-                <span className="">{item.DeductionId}</span>
+                <span
+                  className=""
+                  onClick={() => handleEdit(item.id)}
+                  style={{ cursor: "pointer" }}
+                >
+                  <FaRegEdit />
+                </span>
                 <span className="">{item.PriorityNo}</span>
                 <span className="">{item.DeductionName}</span>
                 <span className="">{item.GLCode}</span>
@@ -408,6 +426,14 @@ const DeductionHead = () => {
                     sledgerlist.find((item) => item.GLCode === item.GLCode)
                       ?.name) ||
                     "Not Found"}
+                </span>
+                <span className="">
+                  <MdDeleteOutline
+                    size={20}
+                    className="table-icon"
+                    style={{ color: "red" }}
+                    onClick={() => handleDeleteItem(item.id)}
+                  />
                 </span>
               </div>
             ))}
