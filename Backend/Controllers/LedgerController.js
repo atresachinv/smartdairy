@@ -4,7 +4,7 @@ const pool = require("../Configs/Database");
 // get max main ledger code
 // ----------------------------------------------------------------------------->
 exports.maxMainLCode = async (req, res) => {
-  const { dairy_id } = req.user;
+  const { dairy_id, center_id } = req.user;
 
   if (!dairy_id) {
     return res.status(401).json({ status: 401, message: "Unauthorized User!" });
@@ -19,9 +19,10 @@ exports.maxMainLCode = async (req, res) => {
     }
 
     try {
-      const query = "SELECT MAX(code) AS maxMainGL FROM mainglmaster";
+      const query =
+        "SELECT MAX(code) AS maxMainGL FROM mainglmaster WHERE dairy_id = ? AND center_id = ?";
 
-      connection.query(query, [], (error, results) => {
+      connection.query(query, [dairy_id, center_id], (error, results) => {
         // Release connection after query execution
         connection.release();
 
@@ -179,7 +180,7 @@ exports.fetchAllMainLedger = async (req, res) => {
 
     try {
       const fetchQuery = `
-        SELECT code, gl_name, gl_marathi_name, gl_category FROM mainglmaster 
+        SELECT code, gl_name, gl_marathi_name, gl_category FROM mainglmaster WHERE dairy_id = ? AND center_id = ?
       `;
 
       connection.query(fetchQuery, [dairy_id, center_id], (err, result) => {
@@ -219,12 +220,29 @@ exports.fetchAllMainLedger = async (req, res) => {
 // ----------------------------------------------------------------------------->
 
 exports.createSubLedger = async (req, res) => {
-  const {} = req.query;
-  const { dairy_id, center_id } = req.user;
-
-  if (!dairy_id) {
+  const formData = req.body;
+  const { dairy_id, center_id, user_id } = req.user;
+  if (!dairy_id || !user_id) {
     return res.status(401).json({ status: 401, message: "Unauthorized User!" });
   }
+  if (!formData) {
+    return res
+      .status(400)
+      .json({ status: 400, message: "All field data required!" });
+  }
+
+  const {
+    date,
+    code,
+    groupcode,
+    groupname,
+    eng_name,
+    marathi_name,
+    sanghahead,
+    perltramt,
+    subAcc,
+    vcsms,
+  } = formData;
 
   pool.getConnection((err, connection) => {
     if (err) {
@@ -237,24 +255,42 @@ exports.createSubLedger = async (req, res) => {
     try {
       const insertquery = `
       INSERT INTO subledgermaster 
-      (lno, group_code, group_name, ledger_name, marathi_name, subacc, sangha_head, per_ltr_amt, vcsms, createdon, createdby)
-      VALUES (?, ?, ?, ?, ? , ?, ?, ?, ?, ?, ?)
+      (lno, dairy_id, center_id, group_code, group_name, ledger_name, marathi_name, subacc, sangha_head, per_ltr_amt, vcsms, createdon, createdby)
+      VALUES (?, ?, ?, ?, ? , ?, ?, ?, ?, ?, ?, ?, ?)
       `;
 
-      connection.query(insertquery, [dairy_id, center_id], (err, result) => {
-        connection.release();
-        if (err) {
-          console.error("Error executing query: ", err);
-          return res
-            .status(500)
-            .json({ status: 500, message: "Database query error!" });
-        }
+      connection.query(
+        insertquery,
+        [
+          code,
+          dairy_id,
+          center_id,
+          groupcode,
+          groupname,
+          eng_name,
+          marathi_name,
+          subAcc,
+          sanghahead,
+          perltramt,
+          vcsms,
+          date,
+          user_id,
+        ],
+        (err, result) => {
+          connection.release();
+          if (err) {
+            console.error("Error executing query: ", err);
+            return res
+              .status(500)
+              .json({ status: 500, message: "Database query error!" });
+          }
 
-        res.status(200).json({
-          status: 200,
-          message: "Sub ledger created successfully!",
-        });
-      });
+          res.status(200).json({
+            status: 200,
+            message: "Sub ledger created successfully!",
+          });
+        }
+      );
     } catch (error) {
       console.error("Error while fetching items: ", error);
       return res.status(500).json({
@@ -270,43 +306,78 @@ exports.createSubLedger = async (req, res) => {
 // Update sub Ledger
 // ----------------------------------------------------------------------------->
 exports.updateSubLedger = async (req, res) => {
-  const {} = req.query;
-  const { dairy_id, center_id } = req.user;
+  const formData = req.query;
+  const { dairy_id, user_id } = req.user;
+
   if (!dairy_id) {
     return res.status(401).json({ status: 401, message: "Unauthorized User!" });
   }
+
+  if (!formData) {
+    return res
+      .status(400)
+      .json({ status: 400, message: "All field data required!" });
+  }
+
+  const {
+    date,
+    id,
+    groupcode,
+    groupname,
+    eng_name,
+    marathi_name,
+    sanghahead,
+    perltramt,
+    subAcc,
+    vcsms,
+  } = formData;
+
   pool.getConnection((err, connection) => {
     if (err) {
       console.error("Error getting MySQL connection: ", err);
-      return res.status(500).json({ message: "Database connection error" });
+      return res
+        .status(500)
+        .json({ status: 500, message: "Database connection error" });
     }
 
     try {
-      let updatequery = `UPDATE subledgermaster SET (group_code, group_name, ledger_name, marathi_name, subacc, sangha_head, per_ltr_amt, vcsms, updatedon, updatedby) WHERE id=?`;
+      let updatequery = `UPDATE subledgermaster 
+      SET group_code = ?, group_name = ?, ledger_name = ?, marathi_name = ?, subacc = ?, sangha_head = ?, per_ltr_amt = ?, vcsms = ?, updatedon = ?, updatedby = ?
+      WHERE id=?`;
 
-      connection.query(updatequery, [], (err, result) => {
-        connection.release();
-        if (err) {
-          console.error("Error executing query: ", err);
-          return res.status(500).json({ message: "Database query error" });
-        }
+      connection.query(
+        updatequery,
+        [
+          groupcode,
+          groupname,
+          eng_name,
+          marathi_name,
+          subAcc,
+          sanghahead,
+          perltramt,
+          vcsms,
+          date,
+          user_id,
+          id,
+        ],
+        (err, result) => {
+          connection.release();
+          if (err) {
+            console.error("Error executing query: ", err);
+            return res
+              .status(500)
+              .json({ status: 500, message: "Database query error" });
+          }
 
-        if (result.length === 0) {
-          return res.status(200).json({
-            message: "No items found matching criteria!",
-            itemsData: result || [],
+          res.status(200).json({
+            status: 200,
+            message: "Sub Ledger information updated successfully!",
           });
         }
-
-        res.status(200).json({
-          total: result.length, // Return total number of items
-          itemsData: result,
-        });
-      });
+      );
     } catch (error) {
-      console.error("Error while fetching items: ", error);
       return res.status(500).json({
-        success: false,
+        status: 500,
         message: "Error while fetching items",
         error: error.message,
       });
@@ -361,9 +432,7 @@ exports.deleteSubLedger = async (req, res) => {
 // List all sub Ledger
 // ----------------------------------------------------------------------------->
 exports.fetchAllSubLedger = async (req, res) => {
-  const {} = req.query;
   const { dairy_id, center_id } = req.user;
-
   if (!dairy_id) {
     return res.status(401).json({ status: 401, message: "Unauthorized User!" });
   }
@@ -378,9 +447,9 @@ exports.fetchAllSubLedger = async (req, res) => {
 
     try {
       let fetchquery = `
-      SELECT lno, group_code, group_name, ledger_name, marathi_name, subacc, sangha_head, per_ltr_amt, vcsms
+      SELECT id, lno, group_code, group_name, ledger_name, marathi_name, subacc, sangha_head, per_ltr_amt, vcsms
       FROM subledgermaster
-      WHERE companyid = ? AND center_id = ?
+      WHERE dairy_id = ? AND center_id = ?
       `;
 
       connection.query(fetchquery, [dairy_id, center_id], (err, result) => {

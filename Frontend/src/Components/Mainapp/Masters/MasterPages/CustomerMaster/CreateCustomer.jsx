@@ -361,7 +361,7 @@ const CreateCustomer = () => {
       return;
     }
 
-    // try {
+    try {
     if (isEditing) {
       // Update existing customer in DB
       const result = await dispatch(updateCustomer(formData)).unwrap();
@@ -372,7 +372,6 @@ const CreateCustomer = () => {
         toast.error(result.message);
       }
     } else {
-      console.log(formData);
       // Create new customer
       const result = await dispatch(createCustomer(formData)).unwrap();
       if (result.status === 200) {
@@ -385,9 +384,9 @@ const CreateCustomer = () => {
       }
     }
     // Reset the form after fetching the new cust_no
-    // } catch (error) {
-    //   toast.error("Failed to create Customer. Please try again.");
-    // }
+    } catch (error) {
+      toast.error("Failed to create Customer. Please try again.");
+    }
   };
 
   //----------------------------------------------------------------------------------->
@@ -532,9 +531,10 @@ const CreateCustomer = () => {
             </div>
             {isMember && (
               <div className="toggle-inputs-div w60 h50 d-flex-col sb">
-                <span className="info-text w100 px10">
+                <label htmlFor=""
+                  className="info-text w100 px10">
                   {t("m-mdate")}Membership Date
-                </span>
+                </label>
                 <input
                   className={`data w100 ${errors.cust_no ? "input-error" : ""}`}
                   type="date"

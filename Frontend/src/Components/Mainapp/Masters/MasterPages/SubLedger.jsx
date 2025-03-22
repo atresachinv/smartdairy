@@ -1,38 +1,47 @@
 import React, { useEffect, useState } from "react";
 import "../../../../Styles/Mainapp/Masters/Subledger.css";
 import { useDispatch, useSelector } from "react-redux";
+import Spinner from "../../../Home/Spinner/Spinner";
 import {
-  createSubLedger,
   getMaxSLCode,
+  createSubLedger,
+  listMainLedger,
   listSubLedger,
+  updateSubLedger,
 } from "../../../../App/Features/Mainapp/Masters/ledgerSlice";
+import { toast } from "react-toastify";
 
 const SubLedger = () => {
   const dispatch = useDispatch();
   const tdate = useSelector((state) => state.date.toDate);
   const maxSlCode = useSelector((state) => state.ledger.maxcodesl);
   const MainLedgers = useSelector((state) => state.ledger.mledgerlist);
+  const SubLedgers = useSelector((state) => state.ledger.sledgerlist);
+  const createStatus = useSelector((state) => state.ledger.cslStatus);
+  const updateStatus = useSelector((state) => state.ledger.updatecslStatus);
+  const listStatus = useSelector((state) => state.ledger.listcslStatus);
   const [errors, setErrors] = useState({});
-
-  console.log(maxSlCode);
+  const [isEditing, setIsEditing] = useState(false);
 
   const [formData, setFormData] = useState({
+    id: "",
     date: tdate,
     code: "",
     groupcode: "",
     groupname: "",
     eng_name: "",
     marathi_name: "",
-    sanghahead: "",
+    sanghahead: "0",
     perltramt: "",
-    subAcc: "",
-    vcsms: "",
+    subAcc: "0",
+    vcsms: "0",
   });
-
-  useEffect(() => {
-    dispatch(getMaxSLCode());
-    // dispatch(listSubLedger());
-  }, [dispatch]);
+  console.log(SubLedgers);
+  // useEffect(() => {
+  //   dispatch(getMaxSLCode());
+  //   dispatch(listMainLedger());
+  //   dispatch(listSubLedger());
+  // }, [dispatch]);
 
   useEffect(() => {
     setFormData((prevData) => ({
@@ -41,6 +50,20 @@ const SubLedger = () => {
       date: tdate,
     }));
   }, [maxSlCode]);
+
+  // handle edit click ---------------------------------------------------------->
+
+  const handleEditClick = () => {
+    setIsEditing((prev) => !prev);
+    if (!isEditing) {
+      setFormData((prevData) => ({
+        ...prevData,
+        cust_no: "",
+      }));
+    } else {
+      resetForm();
+    }
+  };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -103,6 +126,81 @@ const SubLedger = () => {
     return validationErrors;
   };
 
+  // Function to find ledger by code or name
+  const findLedgerByInput = (key, value) => {
+    let ledger;
+    if (key === "groupcode") {
+      ledger = MainLedgers.find(
+        (ledger) => ledger.code.toString() === value.toString()
+      );
+    } else if (key === "groupname") {
+      ledger = MainLedgers.find(
+        (ledger) => ledger.gl_name.toLowerCase() === value.toLowerCase()
+      );
+    }
+
+    if (ledger) {
+      setFormData((prev) => ({
+        ...prev,
+        groupcode: ledger.code,
+        groupname: ledger.gl_name,
+      }));
+    } else {
+      setFormData((prev) => ({
+        ...prev,
+        [key]: value, // Keep the current input while searching
+      }));
+    }
+  };
+
+  // Handle input changes for both code and name
+  const handleLedgerInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value, // Update the current field
+    }));
+
+    setTimeout(() => findLedgerByInput(name, value), 300); // Debounce the search
+  };
+
+  const findLedgerbyCode = (code) => {
+    if (isEditing) {
+      const ledger = SubLedgers.find(
+        (ledger) => ledger.lno.toString() === code.toString()
+      );
+      if (ledger) {
+        setFormData((prev) => ({
+          ...prev,
+          id: ledger.id,
+          date: tdate,
+          groupcode: ledger.group_code,
+          groupname: ledger.group_name,
+          eng_name: ledger.ledger_name,
+          marathi_name: ledger.marathi_name,
+          sanghahead: ledger.sangha_head,
+          perltramt: ledger.per_ltr_amt,
+          subAcc: ledger.subacc,
+          vcsms: ledger.vcsms,
+        }));
+      } else {
+        toast.error("Sub Ledger not found!");
+      }
+    }
+  };
+
+  useEffect(() => {
+    if (isEditing) {
+      const handler = setTimeout(() => {
+        if (formData.code.length >= 1) {
+          // Adjust length as necessary
+          findLedgerbyCode(formData.code);
+        }
+      }, 500);
+      return () => clearTimeout(handler);
+    }
+  }, [formData.code, isEditing]);
+
   const handleFrom = async (e) => {
     e.preventDefault();
     // Validate fields before submission
@@ -114,32 +212,71 @@ const SubLedger = () => {
     if (!formData.date) {
       toast.error("Please refresh your page!");
     }
-    const result = await dispatch(createSubLedger(formData)).unwrap();
-    if (result?.status === 200) {
-      const result = await dispatch(getMaxSLCode()).unwrap();
-      const res = await dispatch(listSubLedger()).unwrap();
 
-      setFormData({
-        eng_name: "",
-        marathi_name: "",
-        category: "",
-      });
+    try {
+      if (isEditing) {
+        const result = await dispatch(updateSubLedger(formData)).unwrap();
+        if (result?.status === 200) {
+          await dispatch(listSubLedger()).unwrap();
 
-      setFormData((prevData) => ({
-        ...prevData,
-        date: tdate,
-      }));
+          setFormData((prevData) => ({
+            ...prevData,
+            date: tdate,
+            groupcode: "",
+            groupname: "",
+            eng_name: "",
+            marathi_name: "",
+            sanghahead: "0",
+            perltramt: "",
+            subAcc: "0",
+            vcsms: "0",
+          }));
 
-      toast.success("New Main Ledger Created Successfully!");
-    } else {
-      toast.error("failed to create new ledger!");
+          toast.success("Sub ledger updated successfully!");
+        } else {
+          toast.error("Failed to update ledger!");
+        }
+      } else {
+        const result = await dispatch(createSubLedger(formData)).unwrap();
+        if (result?.status === 200) {
+          await dispatch(getMaxSLCode()).unwrap();
+          await dispatch(listSubLedger()).unwrap();
+
+          setFormData((prevData) => ({
+            ...prevData,
+            date: tdate,
+            groupcode: "",
+            groupname: "",
+            eng_name: "",
+            marathi_name: "",
+            sanghahead: "0",
+            perltramt: "",
+            subAcc: "0",
+            vcsms: "0",
+          }));
+
+          toast.success("New sub ledger created successfully!");
+        } else {
+          toast.error("Failed to create new ledger!");
+        }
+      }
+    } catch (error) {
+      console.error("Error creating sub ledger:", error);
+      toast.error(error?.message || "Something went wrong!");
     }
   };
 
   return (
-    <div className="sub-ledger-container w100 h1 d-flex-col p10">
+    <div
+      className={`sub-ledger-container w100 h1 d-flex-col p10  ${
+        isEditing ? "edit-bg" : ""
+      }`}
+    >
       <h2 className="heading py10">Ledger Master :</h2>
-      <form className="ledger-master-form-container w100 h30 d-flex">
+      <form
+        onSubmit={handleFrom}
+        className={`ledger-master-form-container w100 h30 d-flex`}
+      >
         <div className="ledger-info-contsiner w60 h1 d-flex-col sa">
           <div className="ledger-no-group-container w100 h20 d-flex sb">
             <div className="ledger-no-div w15 d-flex a-center sb">
@@ -149,7 +286,9 @@ const SubLedger = () => {
               <input
                 id="ledger-no"
                 type="number"
+                name="code"
                 className="data w65"
+                onChange={handleInputChange}
                 value={formData.code || ""}
               />
             </div>
@@ -157,22 +296,60 @@ const SubLedger = () => {
               <label htmlFor="ledger-gno" className="label-text w25">
                 Select Group :
               </label>
-              <input id="ledger-gno" type="number" className="data w15" />
-              <input id="ledger-name" type="text" className="data w50" />
+              <input
+                id="ledger-gno"
+                type="number"
+                name="groupcode"
+                value={formData.groupcode}
+                className="data w15"
+                onChange={handleLedgerInputChange}
+              />
+              <input
+                id="ledger-name"
+                type="text"
+                name="groupname"
+                value={formData.groupname || ""}
+                className="data w50"
+                list="ledger-options"
+                onChange={handleLedgerInputChange}
+              />
+              <datalist id="ledger-options">
+                {MainLedgers.filter((ledger) =>
+                  ledger.gl_name
+                    .toLowerCase()
+                    .includes(formData.groupname.toLowerCase())
+                ).map((ledger, index) => (
+                  <option key={index} value={ledger.gl_name} />
+                ))}
+              </datalist>
             </div>
           </div>
           <div className="ledger-names-div w100 h40 d-flex sb">
             <div className="le-name-div w45 h1 d-flex-col sb">
-              <label htmlFor="" className="label-text w100">
+              <label htmlFor="slename" className="label-text w100">
                 Enter English Name :
               </label>
-              <input type="text" name="" id="" className="data w100" />
+              <input
+                className="data w100"
+                type="text"
+                name="eng_name"
+                id="slename"
+                value={formData.eng_name}
+                onChange={handleInputChange}
+              />
             </div>
             <div className="le-name-div w45 d-flex-col sb">
-              <label htmlFor="" className="label-text w100">
+              <label htmlFor="slmname" className="label-text w100">
                 Enter Marathi Name :
               </label>
-              <input type="text" name="" id="" className="data w100" />
+              <input
+                className="data w100"
+                type="text"
+                name="marathi_name"
+                value={formData.marathi_name}
+                id="slmname"
+                onChange={handleInputChange}
+              />
             </div>
           </div>
           <div className="ledger-names-div w100 h40 d-flex-col sb">
@@ -185,6 +362,9 @@ const SubLedger = () => {
                   type="radio"
                   name="sanghahead"
                   id="nayes"
+                  value="0"
+                  checked={formData.sanghahead === 0}
+                  onChange={handleInputChange}
                   className="w25 h50"
                 />
                 <label htmlFor="nayes" className="info-text t-center w70">
@@ -196,6 +376,9 @@ const SubLedger = () => {
                   type="radio"
                   name="sanghahead"
                   id="milksales"
+                  value="1"
+                  checked={formData.sanghahead === 1}
+                  onChange={handleInputChange}
                   className="w25 h50"
                 />
                 <label htmlFor="milksales" className="info-text t-center w70">
@@ -207,6 +390,9 @@ const SubLedger = () => {
                   type="radio"
                   name="sanghahead"
                   id="salescheque"
+                  value="2"
+                  checked={formData.sanghahead === 2}
+                  onChange={handleInputChange}
                   className="w25 h50"
                 />
                 <label htmlFor="salescheque" className="info-text t-center w75">
@@ -219,9 +405,11 @@ const SubLedger = () => {
                 </label>
                 <input
                   type="text"
-                  name="perltr"
+                  name="perltramt"
                   id="perltr"
-                  className="data w60 h1"
+                  value={formData.perltramt}
+                  onChange={handleInputChange}
+                  className="data w60"
                 />
               </div>
             </div>
@@ -334,23 +522,29 @@ const SubLedger = () => {
               <div className="le-name-div w50 d-flex a-center sb">
                 <input
                   type="radio"
-                  name="subacc"
-                  id="acyes"
+                  name="subAcc"
+                  id="acno"
                   className="w50 h40"
+                  value="0"
+                  checked={formData.subAcc === 0}
+                  onChange={handleInputChange}
                 />
-                <label htmlFor="acyes" className="info-text w50">
-                  Yes
+                <label htmlFor="acno" className="info-text w50">
+                  NO
                 </label>
               </div>
               <div className="le-name-div w50 d-flex a-center sb">
                 <input
                   type="radio"
-                  name="subacc"
-                  id="acno"
+                  name="subAcc"
+                  id="acyes"
                   className="w50 h40"
+                  value="1"
+                  checked={formData.subAcc === 1}
+                  onChange={handleInputChange}
                 />
-                <label htmlFor="acno" className="info-text w50">
-                  NO
+                <label htmlFor="acyes" className="info-text w50">
+                  Yes
                 </label>
               </div>
             </div>
@@ -362,32 +556,48 @@ const SubLedger = () => {
             <div className="ledger-name-inner-div w40 h1 d-flex sb">
               <div className="le-name-div w50 d-flex a-center sb">
                 <input
-                  type="radio"
-                  name="vcsms"
-                  id="acyes"
                   className="w50 h40"
-                />
-                <label htmlFor="acyes" className="info-text w50">
-                  Yes
-                </label>
-              </div>
-              <div className="le-name-div w50 d-flex a-center sb">
-                <input
                   type="radio"
                   name="vcsms"
                   id="acno"
-                  className="w50 h40"
+                  value="0"
+                  checked={formData.vcsms === 0}
+                  onChange={handleInputChange}
                 />
                 <label htmlFor="acno" className="info-text w50">
                   NO
                 </label>
               </div>
+              <div className="le-name-div w50 d-flex a-center sb">
+                <input
+                  className="w50 h40"
+                  type="radio"
+                  name="vcsms"
+                  id="acyes"
+                  value="1"
+                  checked={formData.vcsms === 1}
+                  onChange={handleInputChange}
+                />
+                <label htmlFor="acyes" className="info-text w50">
+                  Yes
+                </label>
+              </div>
             </div>
           </div>
           <div className="ledger-buttons-div w100 h40 d-flex a-center j-end">
-            <button className="w-btn">Edit</button>
-            <button className="w-btn mx10">Cancel</button>
-            <button className="w-btn">Save</button>
+            <button type="button" className="w-btn" onClick={handleEditClick}>
+              Edit
+            </button>
+            <button type="reset" className="w-btn mx10">
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className="w-btn"
+              disabled={createStatus === "lodaing"}
+            >
+              {createStatus === "lodaing" ? "Saving..." : "Save"}
+            </button>
           </div>
         </div>
       </form>
@@ -399,21 +609,39 @@ const SubLedger = () => {
           <div className="ledger-list-headers-div w100 p10 d-flex t-center sb sticky-top bg7">
             <span className="f-label-text w10">Le.No.</span>
             <span className="f-label-text w30">Name</span>
-            <span className="f-label-text w20">Inc/Exp</span>
-            <span className="f-label-text w20">Sub Acc.</span>
-            <span className="f-label-text w20">Pur/Sales</span>
-            <span className="f-label-text w15">Group Code</span>
-            <span className="f-label-text w30">Group Name</span>
+            <span className="f-label-text w15">Code</span>
+            <span className="f-label-text w30">Main Ladger</span>
+            <span className="f-label-text w20">Vc. SMS</span>
           </div>
-          <div className="ledger-list-data-div w100 p10 d-flex sb">
-            <span className="info-text w10">Le.No.</span>
-            <span className="info-text w30">Name</span>
-            <span className="info-text w20">Inc/Exp</span>
-            <span className="info-text w20">Sub Acc.</span>
-            <span className="info-text w20">Pur/Sales</span>
-            <span className="info-text w15">Group Code</span>
-            <span className="info-text w30">Group Name</span>
-          </div>
+          {listStatus === "loading" ? (
+            <Spinner />
+          ) : SubLedgers.length === 0 ? (
+            <div className="box d-flex center">
+              <span className="lebel-text">Record not found!</span>
+            </div>
+          ) : (
+            <>
+              {SubLedgers.map((ledger, index) => (
+                <div
+                  className="ledger-list-data-div w100 t-center p10 d-flex sb"
+                  style={{
+                    backgroundColor: index % 2 === 0 ? "#faefe3" : "#fff",
+                  }}
+                >
+                  <span className="info-text w10">{ledger.lno}</span>
+                  <span className="info-text t-start w30">
+                    {ledger.ledger_name}
+                  </span>
+                  {/* <span className="info-text w20">{ledger.subacc}</span> */}
+                  <span className="info-text w15">{ledger.group_code}</span>
+                  <span className="info-text t-start w30">
+                    {ledger.group_name}
+                  </span>
+                  <span className="info-text w20">{ledger.vcsms}</span>
+                </div>
+              ))}
+            </>
+          )}
         </div>
       </div>
     </div>

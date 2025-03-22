@@ -21,6 +21,9 @@ const CustomerMilkTransfer = () => {
   const { t } = useTranslation(["common", "milkcollection"]);
   const tDate = useSelector((state) => state.date.toDate);
   const MilkData = useSelector((state) => state.payment.customerMilkData);
+  const customerlist = useSelector(
+    (state) => state.customers.customerlist || []
+  );
   const transferedMilk = useSelector(
     (state) => state.payment.transferedMilkData || []
   );
@@ -42,7 +45,6 @@ const CustomerMilkTransfer = () => {
   };
 
   const [values, setValues] = useState(initialValues);
- 
 
   const handleInputs = (e) => {
     const { name, value } = e.target;
@@ -318,7 +320,9 @@ const CustomerMilkTransfer = () => {
       }
     } catch (error) {
       console.error("Milk transfer error:", error);
-      toast.error(error?.message || "Failed to transfer milk collection to customer!");
+      toast.error(
+        error?.message || "Failed to transfer milk collection to customer!"
+      );
     }
   };
 
@@ -359,11 +363,11 @@ const CustomerMilkTransfer = () => {
                 onFocus={handleFocus}
               />
               <datalist id="customer-list">
-                {customerList
+                {customerlist
                   .filter((customer) =>
                     customer.cname
-                      .toLowerCase()
-                      .includes(values.cname.toLowerCase())
+                      ?.toLowerCase()
+                      .includes(values.cname?.toLowerCase() || "")
                   )
                   .map((customer, index) => (
                     <option key={index} value={customer.cname} />
