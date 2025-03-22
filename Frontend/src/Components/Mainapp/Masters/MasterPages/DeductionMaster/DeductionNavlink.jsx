@@ -1,8 +1,8 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
-import { NavLink} from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import { SiElasticstack } from "react-icons/si";
-const DeductionNavlink = ({ isselected, setIsSelected, userRole }) => {
+const DeductionNavlink = ({ isselected, setIsSelected }) => {
   const { t } = useTranslation(["milkcollection", "inventory"]);
 
   const dnavlinks = [
@@ -21,7 +21,6 @@ const DeductionNavlink = ({ isselected, setIsSelected, userRole }) => {
       role: ["super_admin", "admin"],
     },
   ];
-
 
   return (
     <>

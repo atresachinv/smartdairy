@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import DeductionNavlink from "./DeductionNavlink";
 import DeductionRateDetails from "./DeductionRateDetails";
-import DeductionHead from "./Deductionhead";
+import DeductionHead from "./DeductionHead";
 import { Route, Routes } from "react-router-dom";
 
 const DeductionMaster = () => {

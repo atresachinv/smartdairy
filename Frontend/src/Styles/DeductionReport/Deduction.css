@@ -28,7 +28,7 @@
   letter-spacing: 0.8px;
   text-align: left;
   border-bottom: 2px solid #ddd;
-  transition: background 0.2s ease-in-out;
+  transition: 0.2s ease-in-out;
 }
 .select-input-deduction-div select {
   margin-right: 10px;
@@ -123,31 +123,30 @@
   .nave-acc-no-div {
     width: 250px;
     margin-bottom: 0px;
-        height: 43px;
+    height: 43px;
   }
   .name-acc-contsiner-div {
     flex-direction: column;
     margin-bottom: 60px;
     height: 60px;
   }
-   .name-acc-contsiner-div .select-input-deduction-div {
-        display: flex;
-        margin-left: 30px;
+  .name-acc-contsiner-div .select-input-deduction-div {
+    display: flex;
+    margin-left: 30px;
   }
-  
-   .name-acc-contsiner-div .select-input-deduction-div select {
-       width: 110px;
+
+  .name-acc-contsiner-div .select-input-deduction-div select {
+    width: 110px;
   }
-   .name-acc-contsiner-div .select-input-deduction-div input {
-       width: 70px;
+  .name-acc-contsiner-div .select-input-deduction-div input {
+    width: 70px;
   }
-  .deduction-button-div{
-    padding-bottom:25px ;
+  .deduction-button-div {
+    padding-bottom: 25px;
   }
-  .deduction-button-div button{
+  .deduction-button-div button {
     height: 30px;
   }
-  
 }
 @media screen and (max-width: 768px) {
   .Deduction-head-container .deduction-head-span-input-half-div {
@@ -238,29 +237,28 @@
   .nave-acc-no-div {
     width: 250px;
     margin-bottom: 0px;
-        height: 43px;
+    height: 43px;
   }
   .name-acc-contsiner-div {
     flex-direction: column;
     margin-bottom: 60px;
     height: 60px;
   }
-   .name-acc-contsiner-div .select-input-deduction-div {
-        display: flex;
-        margin-left: 30px;
+  .name-acc-contsiner-div .select-input-deduction-div {
+    display: flex;
+    margin-left: 30px;
   }
-  
-   .name-acc-contsiner-div .select-input-deduction-div select {
-       width: 110px;
+
+  .name-acc-contsiner-div .select-input-deduction-div select {
+    width: 110px;
   }
-   .name-acc-contsiner-div .select-input-deduction-div input {
-       width: 70px;
+  .name-acc-contsiner-div .select-input-deduction-div input {
+    width: 70px;
   }
-  .deduction-button-div{
-    padding-bottom:25px ;
+  .deduction-button-div {
+    padding-bottom: 25px;
   }
-  .deduction-button-div button{
+  .deduction-button-div button {
     height: 30px;
   }
-  
 }
