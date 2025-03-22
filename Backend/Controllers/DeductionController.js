@@ -59,6 +59,44 @@ exports.getAllDeductions = async (req, res) => {
     });
   });
 };
+exports.getDeductionsDid = async (req, res) => {
+  const { dairy_id, center_id } = req.user;
+  const { autoCenter } = req.query;
+
+  pool.getConnection((err, connection) => {
+    if (err) {
+      return res
+        .status(500)
+        .json({ success: false, message: "Database connection error" });
+    }
+
+    let query = `SELECT MAX(DeductionId) AS DeductionId FROM deductionmaster WHERE orgid = ?`;
+    let queryParams = [dairy_id];
+
+    // Add center_id filter based on autoCenter and center_id conditions
+    if (autoCenter === "1") {
+      query += " AND center_id = ?";
+      queryParams.push(center_id);
+    } else if (center_id > 0) {
+      query += " AND (center_id = 0 OR center_id = ?)";
+      queryParams.push(center_id);
+    }
+
+    connection.query(query, queryParams, (err, result) => {
+      connection.release();
+      if (err) {
+        console.error("Error executing query: ", err);
+        return res
+          .status(500)
+          .json({ success: false, message: "Database query error" });
+      }
+
+      const maxDeductionId = result[0]?.DeductionId || 0;
+
+      return res.status(200).json({ maxDeductionId: maxDeductionId + 1 });
+    });
+  });
+};
 
 //create deduction
 exports.createDeduction = async (req, res) => {
@@ -72,7 +110,6 @@ exports.createDeduction = async (req, res) => {
     GLCodeCR,
     deductionNameeng,
     show_outstanding,
-    mar_name,
   } = req.body;
 
   pool.getConnection((err, connection) => {
@@ -86,8 +123,8 @@ exports.createDeduction = async (req, res) => {
     // Insert query
     const query = `
       INSERT INTO deductionmaster 
-      (orgid, center_id, DeductionId, DeductionName, GLCode,  Active, PriorityNo, GLCodeCR, deductionNameeng, show_outstanding, mar_name) 
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+      (orgid, center_id, DeductionId, DeductionName, GLCode,  Active, PriorityNo, GLCodeCR, deductionNameeng, show_outstanding) 
+      VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
     // Query parameters
     const queryParams = [
@@ -101,7 +138,6 @@ exports.createDeduction = async (req, res) => {
       GLCodeCR,
       deductionNameeng,
       show_outstanding,
-      mar_name,
     ];
 
     connection.query(query, queryParams, (err, result) => {
@@ -129,7 +165,6 @@ exports.createDeduction = async (req, res) => {
           GLCodeCR,
           deductionNameeng,
           show_outstanding,
-          mar_name,
         },
       });
     });
@@ -138,7 +173,7 @@ exports.createDeduction = async (req, res) => {
 
 //update deduction record
 exports.updateDynamicFields = async (req, res) => {
-  const { dairy_id, center_id } = req.user;
+  const { dairy_id } = req.user;
   const { id, ...dynamicFields } = req.body;
 
   // Ensure that dynamicFields is not empty
@@ -148,7 +183,6 @@ exports.updateDynamicFields = async (req, res) => {
       message: "No fields provided for update",
     });
   }
-  console.log(dynamicFields);
 
   // Create the SET part of the SQL query dynamically
   const updates = Object.keys(dynamicFields)
@@ -159,7 +193,7 @@ exports.updateDynamicFields = async (req, res) => {
   const values = Object.values(dynamicFields);
 
   // Final SQL query for updating
-  const query = `UPDATE deductionmaster SET ${updates} WHERE id = ? AND orgid = ? AND center_id = ?`;
+  const query = `UPDATE deductionmaster SET ${updates} WHERE id = ? AND orgid = ? `;
 
   pool.getConnection((err, connection) => {
     if (err) {
@@ -169,32 +203,29 @@ exports.updateDynamicFields = async (req, res) => {
         message: "Database connection error",
       });
     }
+    console.log(id, dairy_id);
+    connection.query(query, [...values, id, dairy_id], (err, result) => {
+      connection.release();
 
-    connection.query(
-      query,
-      [...values, id, dairy_id, center_id],
-      (err, result) => {
-        connection.release();
+      if (err) {
+        console.error("Error executing query: ", err);
+        return res
+          .status(500)
+          .json({ message: "Error updating item in the database" });
+      }
 
-        if (err) {
-          console.error("Error executing query: ", err);
-          return res
-            .status(500)
-            .json({ message: "Error updating item in the database" });
-        }
-
-        if (result.affectedRows === 0) {
-          return res
-            .status(404)
-            .json({ message: "Deduction not found or no changes made." });
-        }
-
-        res.status(200).json({
+      if (result.affectedRows === 0) {
+        return res.status(404).json({
           success: true,
-          message: "Deduction updated successfully",
+          message: "Deduction not found or no changes made.",
         });
       }
-    );
+
+      res.status(200).json({
+        success: true,
+        message: "Deduction updated successfully",
+      });
+    });
   });
 };
 

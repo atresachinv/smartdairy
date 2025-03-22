@@ -5,6 +5,7 @@ const initialState = {
   deductionInfo: {},
   subdeductions: [],
   alldeductionInfo: [],
+  deductionData: [],
   status: "idle",
   deductionstatus: "idle",
   error: null,
@@ -47,6 +48,22 @@ export const getPaymentsDeductionInfo = createAsyncThunk(
   }
 );
 
+//get all Deduction
+export const getDeductionMaster = createAsyncThunk(
+  "deduction/getDeductionMaster",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.post("/deductions");
+      return response.data.DeductionData;
+    } catch (error) {
+      const errorMessage = error.response
+        ? error.response.data
+        : "Failed to fetch deduction information.";
+      return rejectWithValue(errorMessage);
+    }
+  }
+);
+
 const deductionSlice = createSlice({
   name: "deduction",
   initialState,
@@ -80,6 +97,18 @@ const deductionSlice = createSlice({
       })
       .addCase(getPaymentsDeductionInfo.rejected, (state, action) => {
         state.deductionstatus = "failed";
+        state.error = action.payload;
+      })
+      .addCase(getDeductionMaster.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getDeductionMaster.fulfilled, (state, action) => {
+        state.loading = false;
+        state.deductionData = action.payload;
+      })
+      .addCase(getDeductionMaster.rejected, (state, action) => {
+        state.loading = false;
         state.error = action.payload;
       });
   },

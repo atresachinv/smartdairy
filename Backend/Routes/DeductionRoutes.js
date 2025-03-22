@@ -10,12 +10,14 @@ const {
   createDeductionDetails,
   updateDynamicFieldsDetails,
   deleteDeductionsDetails,
+  getDeductionsDid,
 } = require("../Controllers/DeductionController");
 
 const router = express.Router();
 
 // Deduction routes
 router.route("/deductions").post(verifyToken, getAllDeductions);
+router.route("/getmax-deductions").post(verifyToken, getDeductionsDid);
 router.route("/create-deduction").post(verifyToken, createDeduction);
 router.route("/update-deduction").patch(verifyToken, updateDynamicFields);
 router.route("/delete-deduction").delete(verifyToken, deleteDeductions);
