@@ -1,0 +1,266 @@
+.deduction-no-and-checkbox-div {
+  margin-bottom: 5px;
+}
+.deduction-name-eng-and-marathi {
+  margin-bottom: 5px;
+}
+.nave-acc-no-div select {
+  margin-right: 8px;
+}
+.Deposite-acc-no-div select {
+  margin-right: 8px;
+}
+.nave-acc-no-jama-Acc-no {
+  margin-bottom: 10px;
+}
+.Deductionhead-table-heading-container {
+  background: #007bff;
+  color: white;
+  position: sticky;
+  top: 0;
+  height: 40px;
+  z-index: 10;
+}
+.Deductionhead-table-heading-container span {
+  font-size: 14px;
+  position: static;
+
+  letter-spacing: 0.8px;
+  text-align: left;
+  border-bottom: 2px solid #ddd;
+  transition: background 0.2s ease-in-out;
+}
+.select-input-deduction-div select {
+  margin-right: 10px;
+}
+
+@media screen and (max-width: 426px) {
+  .Deduction-head-container .deduction-head-span-input-half-div {
+    height: 50%;
+  }
+  .deduction-head-span-input-half-div .deduction-no-and-checkbox-div {
+    flex-direction: column;
+  }
+  .deduction-head-span-input-half-div
+    .deduction-no-and-checkbox-div
+    .deduction-code-milk-payment-div {
+    width: 100%;
+  }
+  .deduction-no-and-checkbox-div
+    .deduction-code-milk-payment-div
+    .deduction-number-div
+    span {
+    width: 200px;
+  }
+  .deduction-no-and-checkbox-div
+    .deduction-code-milk-payment-div
+    .deduction-number-div
+    input {
+    width: 70px;
+    margin-right: 10px;
+  }
+  .deduction-head-span-input-half-div
+    .deduction-no-and-checkbox-div
+    .code-number-div
+    span {
+    width: 100px;
+  }
+  .deduction-head-span-input-half-div
+    .deduction-no-and-checkbox-div
+    .code-number-div
+    input {
+    width: 100px;
+  }
+  .deduction-head-span-input-half-div
+    .deduction-no-and-checkbox-div
+    .checkbox-payment-bill-all-deduction {
+    width: 100%;
+  }
+  .deduction-head-span-input-half-div
+    .deduction-no-and-checkbox-div
+    .checkbox-payment-bill-all-deduction
+    .Milk-pyment-Show-Stop-div
+    span {
+    width: 250px;
+  }
+  .deduction-head-span-input-half-div
+    .deduction-no-and-checkbox-div
+    .checkbox-payment-bill-all-deduction
+    .Milk-pyment-Show-Stop-div
+    input {
+    width: 30%;
+  }
+  .deduction-name-eng-and-marathi {
+    height: 90px;
+  }
+  .deduction-name-eng-and-marathi .Marathi-name-deduction-div {
+    height: 90px;
+    flex-direction: column;
+    margin-top: 10px;
+  }
+  .deduction-name-eng-and-marathi .Marathi-name-deduction-div span {
+    width: 90px;
+  }
+  .deduction-name-eng-and-marathi .Marathi-name-deduction-div input {
+    width: 180px;
+  }
+  .deduction-name-eng-and-marathi .English-name-deduction-div {
+    height: 90px;
+    flex-direction: column;
+    margin-top: 10px;
+  }
+  .deduction-name-eng-and-marathi .English-name-deduction-div span {
+    width: 150px;
+  }
+  .deduction-name-eng-and-marathi .English-name-deduction-div input {
+    width: 180px;
+  }
+  .nave-acc-no-div {
+    height: 90px;
+    flex-direction: column;
+    margin-bottom: 30px;
+  }
+  .nave-acc-no-div {
+    width: 250px;
+    margin-bottom: 0px;
+        height: 43px;
+  }
+  .name-acc-contsiner-div {
+    flex-direction: column;
+    margin-bottom: 60px;
+    height: 60px;
+  }
+   .name-acc-contsiner-div .select-input-deduction-div {
+        display: flex;
+        margin-left: 30px;
+  }
+  
+   .name-acc-contsiner-div .select-input-deduction-div select {
+       width: 110px;
+  }
+   .name-acc-contsiner-div .select-input-deduction-div input {
+       width: 70px;
+  }
+  .deduction-button-div{
+    padding-bottom:25px ;
+  }
+  .deduction-button-div button{
+    height: 30px;
+  }
+  
+}
+@media screen and (max-width: 768px) {
+  .Deduction-head-container .deduction-head-span-input-half-div {
+    height: 50%;
+  }
+  .deduction-head-span-input-half-div .deduction-no-and-checkbox-div {
+    flex-direction: column;
+  }
+  .deduction-head-span-input-half-div
+    .deduction-no-and-checkbox-div
+    .deduction-code-milk-payment-div {
+    width: 100%;
+  }
+  .deduction-no-and-checkbox-div
+    .deduction-code-milk-payment-div
+    .deduction-number-div
+    span {
+    width: 200px;
+  }
+  .deduction-no-and-checkbox-div
+    .deduction-code-milk-payment-div
+    .deduction-number-div
+    input {
+    width: 70px;
+    margin-right: 10px;
+  }
+  .deduction-head-span-input-half-div
+    .deduction-no-and-checkbox-div
+    .code-number-div
+    span {
+    width: 100px;
+  }
+  .deduction-head-span-input-half-div
+    .deduction-no-and-checkbox-div
+    .code-number-div
+    input {
+    width: 100px;
+  }
+  .deduction-head-span-input-half-div
+    .deduction-no-and-checkbox-div
+    .checkbox-payment-bill-all-deduction {
+    width: 100%;
+  }
+  .deduction-head-span-input-half-div
+    .deduction-no-and-checkbox-div
+    .checkbox-payment-bill-all-deduction
+    .Milk-pyment-Show-Stop-div
+    span {
+    width: 250px;
+  }
+  .deduction-head-span-input-half-div
+    .deduction-no-and-checkbox-div
+    .checkbox-payment-bill-all-deduction
+    .Milk-pyment-Show-Stop-div
+    input {
+    width: 30%;
+  }
+  .deduction-name-eng-and-marathi {
+    height: 90px;
+  }
+  .deduction-name-eng-and-marathi .Marathi-name-deduction-div {
+    height: 90px;
+    flex-direction: column;
+    margin-top: 10px;
+  }
+  .deduction-name-eng-and-marathi .Marathi-name-deduction-div span {
+    width: 90px;
+  }
+  .deduction-name-eng-and-marathi .Marathi-name-deduction-div input {
+    width: 180px;
+  }
+  .deduction-name-eng-and-marathi .English-name-deduction-div {
+    height: 90px;
+    flex-direction: column;
+    margin-top: 10px;
+  }
+  .deduction-name-eng-and-marathi .English-name-deduction-div span {
+    width: 150px;
+  }
+  .deduction-name-eng-and-marathi .English-name-deduction-div input {
+    width: 180px;
+  }
+  .nave-acc-no-div {
+    height: 90px;
+    flex-direction: column;
+    margin-bottom: 30px;
+  }
+  .nave-acc-no-div {
+    width: 250px;
+    margin-bottom: 0px;
+        height: 43px;
+  }
+  .name-acc-contsiner-div {
+    flex-direction: column;
+    margin-bottom: 60px;
+    height: 60px;
+  }
+   .name-acc-contsiner-div .select-input-deduction-div {
+        display: flex;
+        margin-left: 30px;
+  }
+  
+   .name-acc-contsiner-div .select-input-deduction-div select {
+       width: 110px;
+  }
+   .name-acc-contsiner-div .select-input-deduction-div input {
+       width: 70px;
+  }
+  .deduction-button-div{
+    padding-bottom:25px ;
+  }
+  .deduction-button-div button{
+    height: 30px;
+  }
+  
+}
