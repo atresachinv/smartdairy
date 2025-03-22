@@ -1140,7 +1140,10 @@ Total Amount:        ${totalAmount.toFixed(2)}
               >
                 <option value="">Select Report</option>
                 <option value="Purches Register">Purches Register</option>
-                <option value="Distrubuted Purches">Distrubuted Purches</option>
+                <option value="Distrubuted Purches">
+                  {" "}
+                  Distributed Purches
+                </option>
                 <option value="Dealername Wise">Dealername Wise</option>
                 <option value="Peroid Wise">Peroid Wise</option>
               </select>

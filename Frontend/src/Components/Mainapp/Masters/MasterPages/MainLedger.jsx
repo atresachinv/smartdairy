@@ -1,16 +1,39 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "../../../../Styles/Mainapp/Masters/Mainledger.css";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
+import Spinner from "../../../Home/Spinner/Spinner";
+import {
+  createMainLedger,
+  getMaxMLCode,
+  listMainLedger,
+} from "../../../../App/Features/Mainapp/Masters/ledgerSlice";
 const MainLedger = () => {
   const dispatch = useDispatch();
+  const tdate = useSelector((state) => state.date.toDate);
+  const maxMlCode = useSelector((state) => state.ledger.maxcodeml);
+  const MainLedgers = useSelector((state) => state.ledger.mledgerlist);
+  const status = useSelector((state) => state.ledger.cmlStatus);
   const [errors, setErrors] = useState({});
   const [formData, setFormData] = useState({
+    date: tdate,
     code: "",
     eng_name: "",
     marathi_name: "",
     category: "",
   });
+  useEffect(() => {
+    dispatch(getMaxMLCode());
+    dispatch(listMainLedger());
+  }, [dispatch]);
+
+  useEffect(() => {
+    setFormData((prevData) => ({
+      ...prevData,
+      code: maxMlCode,
+      date: tdate,
+    }));
+  }, [maxMlCode]);
 
   const validateField = (name, value) => {
     let error = {};
@@ -55,7 +78,6 @@ const MainLedger = () => {
       category: category,
     }));
   };
-  // console.log(formData);
   const handleInputChange = (e) => {
     const { name, value } = e.target;
 
@@ -81,10 +103,45 @@ const MainLedger = () => {
     });
     return validationErrors;
   };
+
   const handleLedgerCreate = async (e) => {
     e.preventDefault();
-    toast.success("saved");
-    console.log(formData);
+    // Validate fields before submission
+    const validationErrors = validateFields();
+    if (Object.keys(validationErrors).length) {
+      setErrors(validationErrors);
+      return;
+    }
+    if (!formData.date) {
+      toast.error("Please refresh your page!");
+    }
+    const result = await dispatch(
+      createMainLedger({
+        date: formData.date,
+        code: formData.code,
+        eng_name: formData.eng_name,
+        marathi_name: formData.marathi_name,
+        category: formData.category,
+      })
+    ).unwrap();
+    if (result?.status === 200) {
+      const result = await dispatch(getMaxMLCode()).unwrap();
+      const res = await dispatch(listMainLedger()).unwrap();
+      setFormData({
+        eng_name: "",
+        marathi_name: "",
+        category: "",
+      });
+
+      setFormData((prevData) => ({
+        ...prevData,
+        date: tdate,
+      }));
+
+      toast.success("New Main Ledger Created Successfully!");
+    } else {
+      toast.error("failed to create new ledger!");
+    }
   };
   return (
     <div className="main-glmaster-container w100 h1 d-flex-col center p10">
@@ -97,7 +154,7 @@ const MainLedger = () => {
           <div className="first-span-input w15 d-flex a-center sb">
             <span className="w30 label-text">No.</span>
             <input
-              className="w60 data"
+              className={`w60 data ${errors.code ? "input-error" : ""}`}
               type="text"
               name="code"
               required
@@ -109,15 +166,18 @@ const MainLedger = () => {
             <select
               name="category"
               id="category"
-              className="data"
+              className={`data ${errors.category ? "input-error" : ""}`}
               value={formData.category}
               required
               onChange={handleSelectChange}
             >
               <option value="">-- Select Category --</option>
-              <option value="business-ledger">व्यापारी पत्रक</option>
+              <option value="1">व्यापारी पत्रक</option>
+              <option value="2">नफा - तोटा</option>
+              <option value="3">ताळेबंद</option>
+              {/* <option value="business-ledger">व्यापारी पत्रक</option>
               <option value="loss-gain">नफा - तोटा</option>
-              <option value="balance-sheet">ताळेबंद</option>
+              <option value="balance-sheet">ताळेबंद</option> */}
             </select>
           </div>
         </div>
@@ -125,7 +185,7 @@ const MainLedger = () => {
           <div className="ledger-name-div w50 d-flex a-center se">
             <span className="w35 label-text">English Name:</span>
             <input
-              className="w60 data"
+              className={`w60 data ${errors.eng_name ? "input-error" : ""}`}
               type="text"
               name="eng_name"
               required
@@ -136,7 +196,7 @@ const MainLedger = () => {
           <div className="ledger-name-div w50 d-flex a-center se">
             <span className="w35 label-text">Marathi Name:</span>
             <input
-              className="w60 data"
+              className={`w60 data ${errors.marathi_name ? "input-error" : ""}`}
               type="text"
               name="marathi_name"
               value={formData.marathi_name}
@@ -148,27 +208,51 @@ const MainLedger = () => {
           <button type="reset" className="w-btn mx10">
             Cancel
           </button>
-          <button type="submit" className="w-btn">
-            Save
+          <button type="submit" className="w-btn" disabled>
+            {status === "loading" ? "Saving..." : "Save"}
           </button>
         </div>
       </form>
 
       <div className="ledger-group-table-conatiner w70 h1 mh100 hidescrollbar d-flex-col bg">
-        <div className="ledger-headers-div  w100 h10 d-flex a-center t-center sa bg7 sticky-top br6">
+        <div className="ledger-headers-div  w100 p10 d-flex a-center t-center sa bg7 sticky-top br6">
           <span className="f-label-text w10">No.</span>
           <span className="f-label-text w30">Ledger Name</span>
           <span className="f-label-text w30">Marathi Name</span>
           <span className="f-label-text w20">Category</span>
-          <span className="f-label-text w15">Type</span>
         </div>
-        <div className="ledger-data-div  w100 h10 d-flex a-center t-center sa">
-          <span className="info-text w10">No.</span>
-          <span className="info-text w30">Ledger Name</span>
-          <span className="info-text w30">Marathi Name</span>
-          <span className="info-text w20">Category</span>
-          <span className="info-text w15">Type</span>
-        </div>
+        {status === "loading" ? (
+          <Spinner />
+        ) : MainLedgers.length === 0 ? (
+          <div className="box d-flex center">
+            <span className="lebel-text">Record not found!</span>
+          </div>
+        ) : (
+          <>
+            {MainLedgers.map((ledger, index) => (
+              <div
+                key={index}
+                className="ledger-data-div w100 p10 d-flex a-center t-center sa"
+                style={{
+                  backgroundColor: index % 2 === 0 ? "#faefe3" : "#fff",
+                }}
+              >
+                <span className="info-text w10">{index + 1}</span>
+                <span className="info-text t-start w30">{ledger.gl_name}</span>
+                <span className="info-text t-start w30">
+                  {ledger.gl_marathi_name}
+                </span>
+                <span className="info-text t-start w20">
+                  {ledger.gl_category === 1
+                    ? "व्यापारी पत्रक"
+                    : ledger.gl_category === 2
+                    ? "नफा - तोटा"
+                    : "ताळेबंद"}
+                </span>
+              </div>
+            ))}
+          </>
+        )}
       </div>
     </div>
   );
