@@ -231,9 +231,8 @@ exports.updateDynamicFields = async (req, res) => {
 
 //delete deductionmaster
 exports.deleteDeductions = async (req, res) => {
-  const { dairy_id, center_id } = req.user;
+  const { dairy_id } = req.user;
   const { id } = req.query;
-
   pool.getConnection((err, connection) => {
     if (err) {
       console.error("Error getting MySQL connection: ", err);
@@ -247,8 +246,8 @@ exports.deleteDeductions = async (req, res) => {
         .json({ message: "Missing required parameter: id" });
     }
 
-    let query = `DELETE FROM deductionmaster WHERE orgid = ? AND center_id=? AND id=?`;
-    let queryParams = [dairy_id, center_id, id];
+    let query = `DELETE FROM deductionmaster WHERE orgid = ? AND id=?`;
+    let queryParams = [dairy_id, id];
 
     connection.query(query, queryParams, (err, result) => {
       connection.release();
