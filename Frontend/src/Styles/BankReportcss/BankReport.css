@@ -1,0 +1,348 @@
+.report-old-bank button {
+  width: 200px;
+  height: 40px;
+  border: none;
+  border-radius: 10px;
+  background-color: rgb(156, 156, 204);
+}
+.report-old-bank button {
+  margin-bottom: 10px;
+  height: 30px;
+  width: 150px;
+}
+@media screen and (max-width: 320px) {
+  .date-from-to-bank .from-date-bank-div span {
+    width: 60px;
+  }
+  .date-from-to-bank .from-date-bank-div {
+    width: 40%;
+  }
+  .bank-first-container .date-from-to-bank .from-date-bank-div span {
+    width: 30px;
+  }
+  .bank-first-container .date-from-to-bank .from-date-bank-div input {
+    width: 80px;
+    margin-right: 10px;
+  }
+  .date-from-to-bank .bank-to-date-div {
+    width: 40%;
+    margin-right: 10px;
+  }
+  .bank-first-container .date-from-to-bank .bank-to-date-div span {
+    width: 100px;
+  }
+  .bank-first-container .date-from-to-bank .bank-to-date-div input {
+    width: 80px;
+    margin-right: 10px;
+  }
+  .date-from-to-bank .report-show-button button {
+    width: 60px;
+    font-size: xx-small;
+  }
+  .checkbox-side-div .refresh-button-container {
+    width: 20%;
+  }
+  .refresh-button-container button {
+    font-size: xx-small;
+    width: 45px;
+  }
+  .checkbox-side-div .amt-checkbox-div {
+    width: 30%;
+  }
+  .checkbox-side-div .amt-checkbox-div span {
+    width: 100px;
+  }
+  .checkbox-side-div .centerwise-checkbox-div span {
+    width: 30%;
+    width: 100px;
+  }
+  .checkbox-side-div .customerwise-checkbox-div {
+    width: 30%;
+  }
+  .bank-selection-div-container
+    .a-list-button-and-report-div
+    .button-section-div
+    .report-old-bank
+    button {
+    height: 30px;
+    font-size: xx-small;
+  }
+  .checkbox-side-div .refresh-button-container {
+    width: 60px;
+  }
+  .hide-from-to-code .from-date-bank-div {
+    width: 50%;
+  }
+  .hide-from-to-code .bank-to-date-code-div {
+    width: 50%;
+  }
+  .bank-register-container
+    .bank-first-container
+    .checkbox-side-div
+    .hide-from-to-code {
+    height: 40%;
+  }
+  .date-from-to-bank .from-date-bank-div input {
+    width: 95px;
+    font-size: xx-small;
+    height: 30px;
+  }
+  .date-from-to-bank .bank-to-date-div span {
+    width: 50px;
+  }
+  .date-from-to-bank .bank-to-date-div input {
+    width: 95px;
+    font-size: xx-small;
+    height: 30px;
+  }
+  .checkbox-side-div {
+    padding: 5px;
+  }
+  .bank-first-container .checkbox-side-div {
+    height: 30%;
+  }
+  .bank-register-container .bank-first-container {
+    height: 25%;
+  }
+  .toggle-buttons-div .bank-data-div {
+    width: 30%;
+  }
+  .toggle-buttons-div .bank-data-div button {
+    width: 60px;
+    margin-left: 10px;
+    font-size: x-small;
+  }
+  .toggle-buttons-div .report-show-button {
+    width: 60px;
+  }
+  .toggle-buttons-div .report-show-button button {
+    width: 60px;
+    margin-left: 10px;
+    font-size: x-small;
+  }
+  .bankwise-list-container .list-and-all-banks-div .collected-list-checkbox {
+    justify-content: space-evenly;
+  }
+  .bankwise-list-container .bank-code-div {
+    width: 100%;
+  }
+  .bankwise-list-container .bank-code-div .bank-textfield-div {
+    width: 40%;
+    justify-content: space-around;
+  }
+  .bankwise-list-container .bank-code-div .bank-textfield-div input {
+    width: 40px;
+  }
+  .bankwise-list-container .bank-code-div .bank-textfield-div span {
+    margin-right: 10px;
+  }
+  .bankwise-list-container .bank-code-div .textfield-div {
+    width: 60%;
+    height: 69%;
+  }
+  .bankwise-list-container .bank-code-div .textfield-div input {
+    width: 150px;
+  }
+  .bank-selection-div-container
+    .a-list-button-and-report-div
+    .dropdown-bank-div
+    select {
+    width: 100px;
+    font-size: xx-small;
+  }
+
+  .bank-selection-div-container .bankwise-payment-list .report-old-bank button {
+    width: 180px;
+    font-size: xx-small;
+    height: 30px;
+  }
+  .bank-selection-div-container .a-list-button-and-report-div {
+    height: 80%;
+  }
+  .bank-selection-div-container
+    .dropdown-for-bank-reprots
+    .bank-reprts-dropdown {
+    width: 100%;
+    flex-direction: column;
+  }
+  .bank-selection-div-container
+    .dropdown-for-bank-reprots
+    .bank-reprts-dropdown
+    span {
+    width: 100px;
+  }
+  .bank-selection-div-container
+    .dropdown-for-bank-reprots
+    .bank-reprts-dropdown
+    select {
+    width: 150px;
+  }
+}
+@media screen and (max-width: 768px) {
+  .date-from-to-bank .from-date-bank-div span {
+    width: 60px;
+  }
+  .date-from-to-bank .from-date-bank-div {
+    width: 40%;
+  }
+  .bank-first-container .date-from-to-bank .from-date-bank-div span {
+    width: 30px;
+  }
+  .bank-first-container .date-from-to-bank .from-date-bank-div input {
+    width: 80px;
+    margin-right: 10px;
+  }
+  .date-from-to-bank .bank-to-date-div {
+    width: 40%;
+    margin-right: 10px;
+  }
+  .bank-first-container .date-from-to-bank .bank-to-date-div span {
+    width: 100px;
+  }
+  .bank-first-container .date-from-to-bank .bank-to-date-div input {
+    width: 80px;
+    margin-right: 10px;
+  }
+  .date-from-to-bank .report-show-button button {
+    width: 60px;
+    font-size: xx-small;
+  }
+  .checkbox-side-div .refresh-button-container {
+    width: 20%;
+  }
+  .refresh-button-container button {
+    font-size: xx-small;
+    width: 45px;
+  }
+  .checkbox-side-div .amt-checkbox-div {
+    width: 30%;
+  }
+  .checkbox-side-div .centerwise-checkbox-div {
+    width: 30%;
+  }
+  .checkbox-side-div .customerwise-checkbox-div {
+    width: 30%;
+  }
+  .checkbox-side-div .refresh-button-container {
+    width: 60px;
+  }
+  .hide-from-to-code .from-date-bank-div {
+    width: 50%;
+  }
+  .hide-from-to-code .bank-to-date-code-div {
+    width: 50%;
+  }
+  .bank-selection-div-container
+    .a-list-button-and-report-div
+    .button-section-div
+    .report-old-bank
+    button {
+    height: 30px;
+    font-size: xx-small;
+  }
+  .bank-register-container
+    .bank-first-container
+    .checkbox-side-div
+    .hide-from-to-code {
+    height: 40%;
+  }
+  .date-from-to-bank .from-date-bank-div input {
+    width: 95px;
+    font-size: xx-small;
+    height: 30px;
+  }
+  .date-from-to-bank .bank-to-date-div span {
+    width: 50px;
+  }
+  .date-from-to-bank .bank-to-date-div input {
+    width: 95px;
+    font-size: xx-small;
+    height: 30px;
+  }
+  .checkbox-side-div {
+    padding: 5px;
+  }
+  .bank-first-container .checkbox-side-div {
+    height: 30%;
+  }
+  .bank-register-container .bank-first-container {
+    height: 25%;
+  }
+  .toggle-buttons-div .bank-data-div {
+    width: 30%;
+  }
+  .toggle-buttons-div .bank-data-div button {
+    width: 60px;
+    margin-left: 10px;
+    font-size: x-small;
+  }
+  .toggle-buttons-div .report-show-button {
+    width: 60px;
+  }
+  .toggle-buttons-div .report-show-button button {
+    width: 60px;
+    margin-left: 10px;
+    font-size: x-small;
+  }
+  .bankwise-list-container .list-and-all-banks-div .collected-list-checkbox {
+    justify-content: space-evenly;
+  }
+  .bankwise-list-container .bank-code-div {
+    width: 100%;
+  }
+  .bankwise-list-container .bank-code-div .bank-textfield-div {
+    width: 40%;
+    justify-content: space-around;
+  }
+  .bankwise-list-container .bank-code-div .bank-textfield-div input {
+    width: 40px;
+  }
+  .bankwise-list-container .bank-code-div .bank-textfield-div span {
+    margin-right: 10px;
+  }
+  .bankwise-list-container .bank-code-div .textfield-div {
+    width: 60%;
+    height: 69%;
+  }
+  .bankwise-list-container .bank-code-div .textfield-div input {
+    width: 150px;
+  }
+  .bank-selection-div-container
+    .a-list-button-and-report-div
+    .dropdown-bank-div
+    select {
+    margin-right: 30px;
+    font-size: xx-small;
+  }
+  .bank-selection-div-container
+    .a-list-button-and-report-div
+    .button-section-div {
+    margin-left: 10 px;
+  }
+  .bank-selection-div-container .bankwise-payment-list .report-old-bank button {
+    width: 180px;
+    font-size: xx-small;
+    height: 30px;
+  }
+  .bank-selection-div-container .a-list-button-and-report-div {
+    height: 80%;
+  }
+  .bank-selection-div-container
+    .dropdown-for-bank-reprots
+    .bank-reprts-dropdown {
+    width: 100%;
+    flex-direction: column;
+  }
+  .bank-selection-div-container
+    .dropdown-for-bank-reprots
+    .bank-reprts-dropdown
+    span {
+    width: 100px;
+  }
+  .bank-selection-div-container
+    .dropdown-for-bank-reprots
+    .bank-reprts-dropdown
+    select {
+    width: 150px;
+  }
+}
