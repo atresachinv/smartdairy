@@ -49,7 +49,6 @@ const DeductionRateDetails = () => {
   //option list show only name
   const options = deductionData.map((item) => ({
     DeductionId: item.DeductionId,
-    GLCode: item.GLCode,
     value: item.DeductionId,
     label: `${item.DeductionName}`,
     GLCode: item.GLCode,
