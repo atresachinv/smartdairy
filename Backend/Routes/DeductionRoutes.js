@@ -11,6 +11,7 @@ const {
   updateDynamicFieldsDetails,
   deleteDeductionsDetails,
   getDeductionsDid,
+  getDedDetailDid,
 } = require("../Controllers/DeductionController");
 
 const router = express.Router();
@@ -23,6 +24,7 @@ router.route("/update-deduction").patch(verifyToken, updateDynamicFields);
 router.route("/delete-deduction").delete(verifyToken, deleteDeductions);
 
 //deduction details routes
+router.route("/getmax-ded-details").post(verifyToken, getDedDetailDid);
 router.route("/deduction-details").post(verifyToken, getAllDeductionsDetails);
 router
   .route("/create-deduction-details")

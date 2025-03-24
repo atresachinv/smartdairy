@@ -26,6 +26,7 @@ const DeductionMaster = () => {
         {/* <AppNavviews index={isselected} /> */}
         <Routes>
           <Route path="deduction/head" element={<DeductionHead />} />
+          <Route path="*" element={<DeductionHead />} />
           <Route path="deduction/details" element={<DeductionRateDetails />} />
         </Routes>
       </div>
