@@ -203,7 +203,7 @@ exports.updateDynamicFields = async (req, res) => {
         message: "Database connection error",
       });
     }
-    console.log(id, dairy_id);
+
     connection.query(query, [...values, id, dairy_id], (err, result) => {
       connection.release();
 
@@ -337,8 +337,15 @@ exports.getAllDeductionsDetails = async (req, res) => {
 //get create deduction details
 exports.createDeductionDetails = async (req, res) => {
   const { dairy_id, center_id } = req.user;
-  const { DeductionId, GLCode, RatePerLitre, ApplyDate, FixedVariable, LP } =
-    req.body;
+  const {
+    DDId,
+    DeductionId,
+    GLCode,
+    RatePerLitre,
+    ApplyDate,
+    FixedVariable,
+    LP,
+  } = req.body;
 
   pool.getConnection((err, connection) => {
     if (err) {
@@ -349,15 +356,17 @@ exports.createDeductionDetails = async (req, res) => {
     }
 
     // Insert query
+
     const query = `
       INSERT INTO DeductionDetails 
-      (dairy_id, center_id, DeductionId, GLCode, RatePerLitre, ApplyDate, FixedVariable, LP ) 
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
+      (dairy_id, center_id,DDId, DeductionId, GLCode, RatePerLitre, ApplyDate, FixedVariable, LP ) 
+      VALUES (?, ?,?, ?, ?, ?, ?, ?, ?)`;
 
     // Query parameters
     const queryParams = [
       dairy_id,
       center_id,
+      DDId,
       DeductionId,
       GLCode,
       RatePerLitre,
@@ -378,11 +387,12 @@ exports.createDeductionDetails = async (req, res) => {
 
       res.status(201).json({
         success: true,
-        message: "Deduction record created successfully",
+        message: "Deduction details record created successfully",
         deduction: {
           DDid: result.insertId, // Auto-generated ID of the inserted row
           dairy_id,
           center_id,
+          DDId,
           DeductionId,
           GLCode,
           RatePerLitre,
@@ -397,28 +407,11 @@ exports.createDeductionDetails = async (req, res) => {
 
 //get update deduction details
 exports.updateDynamicFieldsDetails = async (req, res) => {
-  const { dairy_id, center_id } = req.user;
-  const { DDId, ...dynamicFields } = req.body;
-
-  // Ensure that dynamicFields is not empty
-  if (Object.keys(dynamicFields).length === 0) {
-    return res.status(400).json({
-      success: false,
-      message: "No fields provided for update",
-    });
-  }
-  console.log(dynamicFields);
-
-  // Create the SET part of the SQL query dynamically
-  const updates = Object.keys(dynamicFields)
-    .map((field) => `${field} = ?`)
-    .join(", ");
-
-  // Get the values of the fields to be updated
-  const values = Object.values(dynamicFields);
+  const { dairy_id } = req.user;
+  const { id, LP, FixedVariable, RatePerLitre } = req.body;
 
   // Final SQL query for updating
-  const query = `UPDATE DeductionDetails SET ${updates} WHERE DDId = ? AND dairy_id = ? AND center_id = ?`;
+  const query = `UPDATE DeductionDetails SET LP=?, FixedVariable=?, RatePerLitre=?  WHERE id = ? AND dairy_id = ? `;
 
   pool.getConnection((err, connection) => {
     if (err) {
@@ -431,7 +424,7 @@ exports.updateDynamicFieldsDetails = async (req, res) => {
 
     connection.query(
       query,
-      [...values, DDId, dairy_id, center_id],
+      [LP, FixedVariable, RatePerLitre, id, dairy_id],
       (err, result) => {
         connection.release();
 
@@ -443,14 +436,14 @@ exports.updateDynamicFieldsDetails = async (req, res) => {
         }
 
         if (result.affectedRows === 0) {
-          return res
-            .status(404)
-            .json({ message: "Deduction not found or no changes made." });
+          return res.status(404).json({
+            message: "Deduction details not found or no changes made.",
+          });
         }
 
         res.status(200).json({
           success: true,
-          message: "Deduction updated successfully",
+          message: "Deduction details updated successfully",
         });
       }
     );
@@ -459,28 +452,11 @@ exports.updateDynamicFieldsDetails = async (req, res) => {
 
 //get delete deduction details
 exports.deleteDeductionsDetails = async (req, res) => {
-  const { dairy_id, center_id } = req.user;
-  const { DDId, ...dynamicFields } = req.body;
-
-  // Ensure that dynamicFields is not empty
-  if (Object.keys(dynamicFields).length === 0) {
-    return res.status(400).json({
-      success: false,
-      message: "No fields provided for update",
-    });
-  }
-  //   console.log(dynamicFields);
-
-  // Create the SET part of the SQL query dynamically
-  const updates = Object.keys(dynamicFields)
-    .map((field) => `${field} = ?`)
-    .join(", ");
-
-  // Get the values of the fields to be updated
-  const values = Object.values(dynamicFields);
+  const { dairy_id } = req.user;
+  const { id } = req.query;
 
   // Final SQL query for updating
-  const query = `UPDATE DeductionDetails SET ${updates} WHERE DDId = ? AND dairy = ? AND center_id = ?`;
+  const query = `delete from DeductionDetails WHERE id = ? AND dairy_id = ? `;
 
   pool.getConnection((err, connection) => {
     if (err) {
@@ -491,30 +467,65 @@ exports.deleteDeductionsDetails = async (req, res) => {
       });
     }
 
-    connection.query(
-      query,
-      [...values, DDId, dairy_id, center_id],
-      (err, result) => {
-        connection.release();
+    connection.query(query, [id, dairy_id], (err, result) => {
+      connection.release();
 
-        if (err) {
-          console.error("Error executing query: ", err);
-          return res
-            .status(500)
-            .json({ message: "Error updating item in the database" });
-        }
-
-        if (result.affectedRows === 0) {
-          return res
-            .status(404)
-            .json({ message: "Deduction not found or no changes made." });
-        }
-
-        res.status(200).json({
-          success: true,
-          message: "Deduction updated successfully",
-        });
+      if (err) {
+        console.error("Error executing query: ", err);
+        return res
+          .status(500)
+          .json({ message: "Error updating item in the database" });
       }
-    );
+
+      if (result.affectedRows === 0) {
+        return res
+          .status(404)
+          .json({ message: "Deduction details not found or no changes made." });
+      }
+
+      res.status(200).json({
+        success: true,
+        message: "Deduction details  updated successfully",
+      });
+    });
+  });
+};
+
+exports.getDedDetailDid = async (req, res) => {
+  const { dairy_id, center_id } = req.user;
+  const { autoCenter } = req.query;
+
+  pool.getConnection((err, connection) => {
+    if (err) {
+      return res
+        .status(500)
+        .json({ success: false, message: "Database connection error" });
+    }
+
+    let query = `SELECT MAX(DDId) AS DDId FROM DeductionDetails WHERE dairy_id = ?`;
+    let queryParams = [dairy_id];
+
+    // Add center_id filter based on autoCenter and center_id conditions
+    if (autoCenter === "1") {
+      query += " AND center_id = ?";
+      queryParams.push(center_id);
+    } else if (center_id > 0) {
+      query += " AND (center_id = 0 OR center_id = ?)";
+      queryParams.push(center_id);
+    }
+
+    connection.query(query, queryParams, (err, result) => {
+      connection.release();
+      if (err) {
+        console.error("Error executing query: ", err);
+        return res
+          .status(500)
+          .json({ success: false, message: "Database query error" });
+      }
+
+      const maxDeductionId = result[0]?.DDId || 0;
+
+      return res.status(200).json({ maxDDId: maxDeductionId + 1 });
+    });
   });
 };

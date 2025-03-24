@@ -8,6 +8,7 @@ import { getDeductionMaster } from "../../../../../App/Features/Deduction/deduct
 import { FaRegEdit } from "react-icons/fa";
 import { MdDeleteOutline } from "react-icons/md";
 import { listSubLedger } from "../../../../../App/Features/Mainapp/Masters/ledgerSlice";
+import Swal from "sweetalert2";
 
 const DeductionHead = () => {
   const dispatch = useDispatch();
@@ -105,27 +106,38 @@ const DeductionHead = () => {
 
       // console.log(formData);
     } else {
-      try {
-        const res = await axiosInstance.patch("/update-deduction", formData);
-        if (res?.data?.success) {
-          toast.success("Update Successfully");
-          setFormData({
-            DeductionId: 0,
-            DeductionName: "",
-            GLCode: 0,
-            Active: "N",
-            PriorityNo: "",
-            GLCodeCR: 0,
-            deductionNameeng: "",
-            show_outstanding: 0,
-          });
-          getMaxDDid();
-          dispatch(getDeductionMaster());
-          setIsEdit(false);
+      const result = await Swal.fire({
+        title: "Confirm Updation?",
+        text: "Are you sure you want to Update this?",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes, Update it!",
+      });
+      if (result.isConfirmed) {
+        try {
+          const res = await axiosInstance.patch("/update-deduction", formData);
+          if (res?.data?.success) {
+            toast.success("Update Successfully");
+            setFormData({
+              DeductionId: 0,
+              DeductionName: "",
+              GLCode: 0,
+              Active: "N",
+              PriorityNo: "",
+              GLCodeCR: 0,
+              deductionNameeng: "",
+              show_outstanding: 0,
+            });
+            getMaxDDid();
+            dispatch(getDeductionMaster());
+            setIsEdit(false);
+          }
+        } catch (error) {
+          console.error(error);
+          toast.error("Error to server");
         }
-      } catch (error) {
-        console.error(error);
-        toast.error("Error to server");
       }
     }
   };
@@ -158,15 +170,26 @@ const DeductionHead = () => {
       return;
     }
     // console.log("handle delete");
-    try {
-      const res = await axiosInstance.delete(`/delete-deduction?id=${id}`);
-      if (res?.data?.success) {
-        toast.success("Successfully delete the deduction");
-        dispatch(getDeductionMaster());
+    const result = await Swal.fire({
+      title: "Confirm Delete?",
+      text: "Are you sure you want to Delete this?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, Delete it!",
+    });
+    if (result.isConfirmed) {
+      try {
+        const res = await axiosInstance.delete(`/delete-deduction?id=${id}`);
+        if (res?.data?.success) {
+          toast.success("Successfully delete the deduction");
+          dispatch(getDeductionMaster());
+        }
+      } catch (error) {
+        console.error(error);
+        toast.error("Error to server");
       }
-    } catch (error) {
-      console.error(error);
-      toast.error("Error to server");
     }
   };
 
