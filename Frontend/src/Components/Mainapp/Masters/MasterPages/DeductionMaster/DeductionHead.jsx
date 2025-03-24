@@ -90,7 +90,7 @@ const DeductionHead = () => {
             DeductionName: "",
             GLCode: 0,
             Active: "N",
-            PriorityNo: 0,
+            PriorityNo: "",
             GLCodeCR: 0,
             deductionNameeng: "",
             show_outstanding: 0,
@@ -114,13 +114,14 @@ const DeductionHead = () => {
             DeductionName: "",
             GLCode: 0,
             Active: "N",
-            PriorityNo: 0,
+            PriorityNo: "",
             GLCodeCR: 0,
             deductionNameeng: "",
             show_outstanding: 0,
           });
           getMaxDDid();
           dispatch(getDeductionMaster());
+          setIsEdit(false);
         }
       } catch (error) {
         console.error(error);
@@ -204,6 +205,7 @@ const DeductionHead = () => {
       show_outstanding: 0,
     });
     getMaxDDid();
+    setIsEdit(false);
   };
 
   return (
@@ -424,7 +426,7 @@ const DeductionHead = () => {
                 <span className="">
                   {(sledgerlist &&
                     sledgerlist.find((item) => item.GLCode === item.GLCode)
-                      ?.name) ||
+                      ?.marathi_name) ||
                     "Not Found"}
                 </span>
                 <span className="">

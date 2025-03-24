@@ -838,10 +838,16 @@ const MilkcollectionReports = () => {
 
   // Filter data based on selected center
   const getFilteredData = (data) => {
-    if (!selectedCenterId) return data;
-    return data.filter(
-      (item) => item.center_id.toString() === selectedCenterId.toString()
-    ); // Filter by selected center ID, ensuring center_id is defined
+    if (dairyinfo.center_id === 0) {
+      if (!selectedCenterId) return data; // Return all data if no center is selected
+      return data.filter(
+        (item) => Number(item.center_id) === Number(selectedCenterId)
+      ); // Filter by selected center ID
+    } else if (dairyinfo.center_id > 0) {
+      return data.filter(
+        (item) => Number(item.center_id) === Number(dairyinfo.center_id)
+      ); // Filter by dairyinfo center ID
+    }
   };
 
   // Effect to update filtered data when selectedCenterId changes
@@ -938,17 +944,25 @@ const MilkcollectionReports = () => {
                       id="001"
                       onChange={handleCenterChange}
                     >
-                      {centerList && centerList.length > 0 ? (
-                        centerList.map((center, index) => (
-                          <option key={index} value={center.center_id}>
-                            {center.name || center.center_name}
-                          </option>
-                        ))
-                      ) : (
-                        <option value="" disabled>
-                          No Centers Available
-                        </option>
-                      )}
+                      {centerList &&
+                        centerList.length > 0 &&
+                        centerList.map((center, index) => {
+                          if (dairyinfo.center_id === 0) {
+                            return (
+                              <option key={index} value={center.center_id}>
+                                {center.name || center.center_name}
+                              </option>
+                            );
+                          } else if (dairyinfo.center_id === center.center_id) {
+                            return (
+                              <option key={index} value={center.center_id}>
+                                {center.name || center.center_name}
+                              </option>
+                            );
+                          } else {
+                            return null;
+                          }
+                        })}
                     </select>
                   </div>
                   <div className="custmoer-number-no w45 h50 d-flex a-center px10 sb">
