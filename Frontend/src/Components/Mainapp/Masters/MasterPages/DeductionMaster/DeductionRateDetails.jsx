@@ -303,7 +303,7 @@ const DeductionRateDetails = () => {
                 value={formData.DDId}
               />
             </div>
-            <div className="deduction-code-date-div w40 d-flex h1 a-center">
+            <div className="deduction-code-date-div w60 d-flex h1 a-center">
               <span className="label-text w30 ">लागू दिनांक :</span>
               <input
                 className="data w50"
@@ -331,7 +331,7 @@ const DeductionRateDetails = () => {
                   })
                 }
               />
-              <span className="label-text">प्रती लीटर प्रमाणे</span>
+              <span className="label-text">प्रती लीटर </span>
             </div>
             <div className="Pymentwise-deduction-div w30 d-flex h1 a-center">
               <input
@@ -347,7 +347,7 @@ const DeductionRateDetails = () => {
                   })
                 }
               />
-              <span className="label-text">प्रती पेमेंट प्रमाणे</span>
+              <span className="label-text">प्रती पेमेंट </span>
             </div>
             <div className="as-per-liter-deduction-div w30 d-flex h1 a-center">
               <input
@@ -364,7 +364,7 @@ const DeductionRateDetails = () => {
                 }
               />
               <span className="label-text">
-                माल विक्री प्रमाणे/जमा-नावे प्रमाणे
+                माल विक्री 
               </span>
             </div>
           </div>
