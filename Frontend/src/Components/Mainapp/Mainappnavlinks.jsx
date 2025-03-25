@@ -244,6 +244,15 @@ const Mainappnavlinks = ({ setselected, handleSidebar }) => {
       index: 4,
       path: "accounts",
       role: ["admin", "super_admin", "manager"],
+      submenus: [
+        {
+          name: `${t("व्यवहार भरणे")}`,
+          icon: <FaFileInvoice className="icon" />,
+          index: 4.1,
+          path: "accounts/credit",
+          role: ["admin", "super_admin", "manager"],
+        },
+      ],
     },
     {
       name: `${t("nv-master")}`,
@@ -357,7 +366,7 @@ const Mainappnavlinks = ({ setselected, handleSidebar }) => {
         {
           name: `${t("Bank Report")}`,
           icon: <FaFileInvoiceDollar className="icon" />,
-          index: 6.7,
+          index: 6.8,
           path: "reports/bank",
           role: ["admin", "super_admin", "manager"],
         },
