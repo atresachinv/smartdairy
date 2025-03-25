@@ -7,6 +7,7 @@ import { useTranslation } from "react-i18next";
 import Select from "react-select";
 import { getDeductionDetails } from "../../../../../App/Features/Deduction/deductionSlice";
 import { listSubLedger } from "../../../../../App/Features/Mainapp/Masters/ledgerSlice";
+import "../../../../../Styles/DedeutionName/DedeutionName.css";
 
 const DedeutionName = () => {
   const [formData, setFormData] = useState({
@@ -134,7 +135,7 @@ const DedeutionName = () => {
     <div className="dedeutionName-container w100 h1 d-flex-col">
       <span className="heading p10">कपात नावे भरणे</span>
       <div className="dedeutionName-form  d-flex-col mx10 px10 bg">
-        <div className="    d-flex  my10 sb">
+        <div className="mannual-master-div d-flex w100 h20  my10 sb">
           <select
             className="custom-select label-text w30 "
             onChange={handleSelectChange}
@@ -161,13 +162,13 @@ const DedeutionName = () => {
             ))}
           </select>
 
-          <div className="    d-flex">
-            <span className="info-text">Batch No</span>
+          <div className="deduction-name-batch-no    d-flex a-center">
+            <span className="info-text w50">Batch No:</span>
             <input type="text" className="data   h1" />
           </div>
         </div>
-        <div className="w100     d-flex my10">
-          <div className="w100 d-flex">
+        <div className="deduction-name-kapat w100 h20 d-flex m10 a-center">
+          <div className=" deduction-kpat-div w100 h1 d-flex a-center">
             <span className="info-text">कपात </span>
             <Select
               options={options}
@@ -187,9 +188,9 @@ const DedeutionName = () => {
             />
           </div>
         </div>
-        <div className=" sb   d-flex my10">
-          <div className="w90 d-flex">
-            <span className="info-text">उत्पादक क्रमांक </span>
+        <div className=" utpadak-no-span-container sb  w100 h20  d-flex a-center ">
+          <div className="  utpadak-no-div w90 h1 d-flex a-center">
+            <span className="info-text w20">उत्पादक क्रमांक </span>
             <Select
               options={custOptions}
               className=" w20"
@@ -223,18 +224,13 @@ const DedeutionName = () => {
               onChange={handleCustSelectChange}
             />
           </div>
-          <div className=" d-flex">
-            <span className="info-text">रक्कम </span>
-            <input type="text" className="data " />
-          </div>
-          <div className=" d-flex">
-            <button className="w-btn mx10">Add</button>
-            <button className="w-btn ">Delete</button>
+          <div className=" amount-deduction-name-div d-flex a-center">
+            <input type="text" className="data " placeholder="रक्कम" />
           </div>
         </div>
       </div>
-      <div className="m10 d-flex-col h1 bg">
-        <div className="d-flex   my5">
+      <div className=" jama-deal-gl-table-container w100 h20    d-flex-col h1 bg">
+        <div className="   jama-deal-gl-div d-flex a-center my5">
           <span className="info-text p10  ">जमा व्यवहार खतावणी नं. </span>
           <Select
             options={slegOptions}
@@ -266,7 +262,9 @@ const DedeutionName = () => {
             value={slegOptions1.find((option) => option.value === formData.lno)}
             onChange={handleSlegSelectChange}
           />
+          <button className="w-btn mx10">Add</button>
         </div>
+        {/* <div className="Add-deleate-deduction-name-div d-flex"></div> */}
         <hr className="my15" />
         <div className="dedeutionName-custom-table d-flex mx5">
           <table className="dedeutionNamecustom">

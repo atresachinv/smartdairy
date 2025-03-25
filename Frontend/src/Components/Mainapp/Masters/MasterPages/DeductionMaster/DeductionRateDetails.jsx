@@ -363,9 +363,7 @@ const DeductionRateDetails = () => {
                   })
                 }
               />
-              <span className="label-text">
-                माल विक्री 
-              </span>
+              <span className="label-text">माल विक्री</span>
             </div>
           </div>
           <div className="Rate-typecontainer-div w80 h20 d-flex a-center">
@@ -424,14 +422,14 @@ const DeductionRateDetails = () => {
         </div>
         <div className="Deduction-details-table-container-div w100 h60 d-flex-col ">
           <div className="table-heading-deduction-details w100 d-flex h10 sa">
-            <span className="label-text ">Edit </span>
-            <span className="label-text ">कपात </span>
-            <span className="label-text ">खतावणी </span>
-            <span className="label-text ">दर </span>
-            <span className="label-text ">लागू दिनांक </span>
-            <span className="label-text ">दर प्रकार </span>
-            <span className="label-text ">दर प्रती </span>
-            <span className="label-text ">Action </span>
+            <span className="info-text  ">Edit </span>
+            <span className="info-text ">कपात </span>
+            <span className="info-text ">खतावणी </span>
+            <span className="info-text  ">दर </span>
+            <span className="info-text ">लागू दिनांक </span>
+            <span className="info-text ">दर प्रकार </span>
+            <span className="info-text ">दर प्रती </span>
+            <span className="info-text ">Action </span>
           </div>
           {deductionDetails ? (
             deductionDetails.map((item) => (
@@ -446,18 +444,18 @@ const DeductionRateDetails = () => {
                 >
                   <FaRegEdit />
                 </span>
-                <span className="label-text ">
+                <span className="info-text ">
                   {findDeduction(item.DeductionId)}
                 </span>
-                <span className="label-text ">{findLedger(item.GLCode)}</span>
-                <span className="label-text ">{item.RatePerLitre}</span>
-                <span className="label-text ">
+                <span className="info-text ">{findLedger(item.GLCode)}</span>
+                <span className="info-text w5 ">{item.RatePerLitre}</span>
+                <span className="info-text ">
                   {item.ApplyDate.substring(0, 10)}
                 </span>
-                <span className="label-text ">
+                <span className="info-text">
                   {Number(item.FixedVariable) === 0 ? "एक दर " : "Round Amt"}
                 </span>
-                <span className="label-text ">
+                <span className="info-text ">
                   {Number(item.LP) === 0
                     ? "प्रती लीटर प्रमाणे"
                     : Number(item.LP) === 1
