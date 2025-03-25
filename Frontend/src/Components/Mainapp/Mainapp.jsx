@@ -67,6 +67,7 @@ import MilkSankalan from "./Apphome/Appnavviews/MilkSankalan/MilkSankalan";
 import { getCenterSetting } from "../../App/Features/Mainapp/Settings/dairySettingSlice";
 import DeductionMaster from "./Masters/MasterPages/DeductionMaster/DeductionMaster";
 import BankReportMaster from "./Reports/BankReports/BankReportMaster";
+import DedeutionName from "./Payments/PaymentPages/DedeutionName/DedeutionName";
 
 const Mainapp = () => {
   const dispatch = useDispatch();
@@ -270,7 +271,8 @@ const Mainapp = () => {
               path="payment/milk-correction/*"
               element={<MilkCorrection />}
             />
-            <Route path="payment/milk-transfer/*" element={<MilkTransfer />} />
+            <Route path="payment/milk-transfer/*" element={<MilkTransfer />} />{" "}
+            <Route path="payment/fill-name/*" element={<DedeutionName />} />
             <Route
               path="payment/add-deductions/*"
               element={<PayDeductions />}
