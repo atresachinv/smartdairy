@@ -272,7 +272,7 @@ const DeductionHead = () => {
                     })
                   }
                 />
-                <span className="label-text w100">शिल्लक दाखवणे बंद करा</span>
+                <span className="label-text w100">शिल्लक दाखवणे बंद</span>
               </div>
               <div className="All-Deduction-Div w50 h1 d-flex a-center">
                 <input
@@ -287,14 +287,14 @@ const DeductionHead = () => {
                   }
                 />
                 <span className="label-text w100">
-                  संपूर्ण कपात (डे. स. क.)
+                  संपूर्ण कपात 
                 </span>
               </div>
             </div>
           </div>
           <div className="deduction-name-eng-and-marathi  w100 h25 d-flex a-center">
             <div className="Marathi-name-deduction-div d-flex w50 h1 a-center">
-              <span className="label-text w30">कपात मराठी नाव :</span>
+              <span className="label-text w30">कपात मराठी नाव:</span>
               <input
                 className="data w60"
                 type="text"
@@ -319,7 +319,7 @@ const DeductionHead = () => {
           <div className="nave-acc-no-jama-Acc-no w100 d-flex h20 a-center">
             <div className="name-acc-contsiner-div w50 d-flex h1 ">
               <div className="nave-acc-no-div w40 d-flex h1 a-center p10">
-                <span className="label-text w80">नावे खाते क्र. :</span>
+                <span className="label-text w80">नावे खाते क्र:</span>
               </div>
               <div className="select-input-deduction-div w60 d-flex">
                 <Select
@@ -365,9 +365,9 @@ const DeductionHead = () => {
 
             <div className="name-acc-contsiner-div w50 d-flex h1 ">
               <div className="nave-acc-no-div w40 d-flex h1 a-center p10">
-                <span className="label-text w80">जमा खाते क्र. </span>
+                <span className="label-text w80">जमा खाते क्र:</span>
               </div>
-              <div className="select-input-deduction-div w60 d-flex">
+              <div className="select-input-deduction-jama-div w60 d-flex">
                 <Select
                   options={options2}
                   className="w30 mx5"
@@ -425,7 +425,7 @@ const DeductionHead = () => {
           </div>
         </div>
         <div className="Deductionhead-table-section-container w100 h60 d-flex-col">
-          <div className="Deductionhead-table-heading-container w100  h20 d-flex sa a-center">
+          <div className="Deductionhead-table-heading-container w100  h10 d-flex sa a-center">
             <span className="">Edit</span>
             <span className="">Deduction Code</span>
             <span className="">Deduction Name</span>
