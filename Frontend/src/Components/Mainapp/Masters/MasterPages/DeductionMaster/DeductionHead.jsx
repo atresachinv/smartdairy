@@ -286,9 +286,7 @@ const DeductionHead = () => {
                     })
                   }
                 />
-                <span className="label-text w100">
-                  संपूर्ण कपात 
-                </span>
+                <span className="label-text w100">संपूर्ण कपात</span>
               </div>
             </div>
           </div>
@@ -427,8 +425,8 @@ const DeductionHead = () => {
         <div className="Deductionhead-table-section-container w100 h60 d-flex-col">
           <div className="Deductionhead-table-heading-container w100  h10 d-flex sa a-center">
             <span className="">Edit</span>
-            <span className="">Deduction Code</span>
-            <span className="">Deduction Name</span>
+            <span className=""> Code</span>
+            <span className=""> Name</span>
             <span className="">GL Number</span>
             <span className="">GL Name</span>
             <span className="">Action</span>

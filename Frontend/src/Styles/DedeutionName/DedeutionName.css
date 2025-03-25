@@ -1,0 +1,88 @@
+@media screen and (max-width: 426px) {
+  .mannual-master-div .custom-select {
+    width: 60%;
+    font-size: small;
+  }
+
+  .mannual-master-div .deduction-name-batch-no {
+    width: 40%;
+  }
+  .mannual-master-div .deduction-name-batch-no span {
+    width: 120px;
+    font-size: small;
+    margin-left: 10px;
+  }
+  .deduction-name-kapat .deduction-kpat-div span {
+    width: 90px;
+  }
+  .deduction-name-kapat .deduction-kpat-div .mx5 {
+    width: 220px;
+  }
+  .utpadak-no-span-container .utpadak-no-div {
+    width: 70%;
+  }
+  .utpadak-no-span-container .utpadak-no-div .w20 {
+    width: 150px;
+    font-size: small;
+  }
+  .utpadak-no-span-container .utpadak-no-div .mx10 {
+    width: 180px;
+    font-size: small;
+  }
+
+  .amount-deduction-name-div {
+    flex-direction: column;
+    width: 30%;
+  }
+  .jama-deal-gl-table-container .jama-deal-gl-div span {
+    font-size: small;
+  }
+  .jama-deal-gl-table-container .jama-deal-gl-div .w10{
+    width: 100px;
+  }
+
+}
+@media screen and (max-width: 768px) {
+  .mannual-master-div .custom-select {
+    width: 60%;
+    font-size: small;
+  }
+
+  .mannual-master-div .deduction-name-batch-no {
+    width: 40%;
+  }
+  .mannual-master-div .deduction-name-batch-no span {
+    width: 120px;
+    font-size: small;
+    margin-left: 10px;
+  }
+  .deduction-name-kapat .deduction-kpat-div span {
+    width: 90px;
+  }
+  .deduction-name-kapat .deduction-kpat-div .mx5 {
+    width: 220px;
+  }
+  .utpadak-no-span-container .utpadak-no-div {
+    width: 70%;
+  }
+  .utpadak-no-span-container .utpadak-no-div .w20 {
+    width: 150px;
+    font-size: small;
+  }
+  .utpadak-no-span-container .utpadak-no-div .mx10 {
+    width: 180px;
+    font-size: small;
+  }
+
+  .amount-deduction-name-div {
+    flex-direction: column;
+    width: 30%;
+  }
+  .jama-deal-gl-table-container .jama-deal-gl-div span {
+    font-size: small;
+  }
+  .jama-deal-gl-table-container .jama-deal-gl-div .w10{
+    width: 100px;
+  }
+
+}
