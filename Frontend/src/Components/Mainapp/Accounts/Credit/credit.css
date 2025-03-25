@@ -1,0 +1,41 @@
+.Credit-container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.credit-form,
+.credit-table {
+  padding: 10px;
+  border-radius: 8px;
+}
+
+.credit-table .table-container {
+  overflow-x: auto; /* Enables horizontal scrolling */
+  width: 100%; /* Ensures the container spans the full width */
+  margin-top: 10px;
+}
+
+.credit-table .table-container .table {
+  width: 100%; /* Ensures the table occupies full width */
+  border-collapse: collapse; /* Removes space between table cells */
+}
+
+.credit-table .table-container .table th,
+.credit-table .table-container .table td {
+  border: 1px solid #ccc;
+  text-align: center;
+  padding: 8px;
+  white-space: nowrap; /* Prevents text wrapping */
+}
+
+.credit-table .table-container .table th {
+  font-weight: bold;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .credit-form .row {
+    flex-direction: row;
+  }
+}
