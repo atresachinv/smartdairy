@@ -68,6 +68,7 @@ import { getCenterSetting } from "../../App/Features/Mainapp/Settings/dairySetti
 import DeductionMaster from "./Masters/MasterPages/DeductionMaster/DeductionMaster";
 import BankReportMaster from "./Reports/BankReports/BankReportMaster";
 import DedeutionName from "./Payments/PaymentPages/DedeutionName/DedeutionName";
+import Credit from "./Accounts/Credit/Credit";
 
 const Mainapp = () => {
   const dispatch = useDispatch();
@@ -233,6 +234,7 @@ const Mainapp = () => {
             />
             {/* accounts routes */}
             <Route path="accounts" element={<ComingSoon />} />
+            <Route path="accounts/credit" element={<Credit />} />
             {/* master routes */}
             <Route path="master/main-ledger/*" element={<MainLedger />} />
             <Route path="master/sub-ledger/*" element={<SubLedger />} />
