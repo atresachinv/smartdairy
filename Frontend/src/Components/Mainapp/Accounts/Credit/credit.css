@@ -39,3 +39,61 @@
     flex-direction: row;
   }
 }
+
+@media screen and (max-width: 426px) {
+  .credit-form .row .Deal-date-div {
+    display: flow;
+  }
+  .credit-form .row .Deal-date-div input {
+    width: 170px;
+  }
+  .credit-form .row .Batch {
+    display: flow;
+    width: 150px;
+  }
+  .credit-form .row .Batch span {
+    margin-left: 10px;
+  }
+  .deal-container .Deal-typr-div span {
+    width: 130px;
+
+    align-items: center;
+  }
+  .deal-container .Deal-typr-div select {
+    width: 160px;
+    height: 35px;
+    margin-top: 10px;
+  }
+
+  .deal-container .bill-no-div span {
+    width: 120px;
+  }
+  .deal-container .bill-no-div input {
+    width: 110px;
+  }
+
+  .bill-type-check-container .bill-type-div span {
+    width: 90px;
+  }
+  .bill-type-check-container .bill-type-div select {
+    width: 90px;
+  }
+  .bill-type-check-container .bill-number-div span {
+    width: 80px;
+  }
+  .bill-type-check-container .bill-number-div input {
+    width: 80px;
+  }
+  .credit-form .utpadak-number-container {
+    flex-direction: column;
+  }
+  .utpadak-number-container .utpadak-number-div {
+    width: 100%;
+  }
+  .utpadak-number-container .utpadak-number-div .w20 {
+    width: 120px;
+  }
+  .utpadak-number-container .Amount-button-container {
+    width: 100%;
+  }
+}
