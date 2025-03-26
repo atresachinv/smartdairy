@@ -212,9 +212,9 @@ exports.listAllRCTypes = async (req, res) => {
   });
 };
 
-//.........................................................
-// Save Rate Chart ........................................
-//.........................................................
+//-------------------------------------------------------------------------------->
+// Save Rate Chart --------------------------------------------------------------->
+//-------------------------------------------------------------------------------->
 
 //v2 function
 exports.saveRateChart = async (req, res) => {
@@ -312,153 +312,10 @@ exports.saveRateChart = async (req, res) => {
   });
 };
 
-//.................................................
-//Apply rate chart ................................
-//.................................................
-
-//v1 function
-// exports.applyRateChart = async (req, res) => {
-//   const { applydate, custFrom, custTo, ratechart } = req.body;
-
-//   const dairy_id = req.user.dairy_id;
-//   const center_id = req.user.center_id;
-
-//   if (!dairy_id) {
-//     return res.status(401).json({status: 401, message: "Unauthorized User!" });
-//   }
-
-//   if (!applydate || !custFrom || !custTo || !ratechart) {
-//     return res
-//       .status(400)
-//       .json({ message: "All information required to apply ratechart!" });
-//   }
-
-//   const dairy_table = `dailymilkentry_${dairy_id}`;
-
-//   pool.getConnection(async (err, connection) => {
-//     if (err) {
-//       console.error("Error getting MySQL connection: ", err);
-//       return res
-//         .status(500)
-//         .json({ status: 500, message: "Database connection error" });
-//     }
-
-//     try {
-//       // Start transaction
-//       connection.beginTransaction(async (err) => {
-//         if (err) {
-//           connection.release();
-//           console.error("Error starting transaction: ", err);
-//           return res
-//             .status(500)
-//             .json({ status: 500, message: "Transaction error" });
-//         }
-
-//         try {
-//           // Fetch milk collection data
-//           const fetchCollectionQuery = `
-//             SELECT id, litres, fat, snf
-//             FROM ${dairy_table}
-//             WHERE center_id = ? AND ReceiptDate >= ? AND rno BETWEEN ? AND ?
-//           `;
-
-//           const milkEntries = await new Promise((resolve, reject) => {
-//             connection.query(
-//               fetchCollectionQuery,
-//               [center_id, applydate, custFrom, custTo],
-//               (err, results) => {
-//                 if (err) return reject(err);
-//                 resolve(results);
-//               }
-//             );
-//           });
-
-//           if (milkEntries.length === 0) {
-//             throw new Error("No milk entries found!");
-//           }
-
-//           // Prepare updates based on ratechart
-//           const updates = milkEntries.map((entry) => {
-//             const { id, litres, fat, snf } = entry;
-
-//             // Find matching rate from the ratechart
-//             const rateRecord = ratechart.find(
-//               (record) =>
-//                 parseFloat(record.fat.toFixed(1)) ===
-//                   parseFloat(fat.toFixed(1)) &&
-//                 parseFloat(record.snf.toFixed(1)) === parseFloat(snf.toFixed(1))
-//             );
-
-//             if (!rateRecord) {
-//               throw new Error(
-//                 `No matching rate found for FAT: ${fat}, SNF: ${snf}`
-//               );
-//             }
-
-//             const rate = parseFloat(rateRecord.rate.toFixed(2));
-//             const amt = parseFloat((litres * rate).toFixed(2));
-
-//             return { id, rate, amt };
-//           });
-
-//           // Update the records in the database
-//           for (const update of updates) {
-//             await new Promise((resolve, reject) => {
-//               const updateQuery = `
-//                 UPDATE ${dairy_table}
-//                 SET rate = ?, Amt = ?
-//                 WHERE id = ?
-//               `;
-
-//               connection.query(
-//                 updateQuery,
-//                 [update.rate, update.amt, update.id],
-//                 (err, result) => {
-//                   if (err) return reject(err);
-//                   resolve(result);
-//                 }
-//               );
-//             });
-//           }
-
-//           // Commit transaction
-//           connection.commit((err) => {
-//             if (err) {
-//               connection.rollback(() => connection.release());
-//               console.error("Error committing transaction: ", err);
-//               return res
-//                 .status(500)
-//                 .json({ status: 500, message: "Transaction commit error" });
-//             }
-
-//             connection.release();
-//             res.status(200).json({
-//               status: 200,
-//               message:
-//                 "Ratechart applied and dairy milk data updated successfully!",
-//             });
-//           });
-//         } catch (error) {
-//           connection.rollback(() => connection.release());
-//           console.error("Transaction rolled back due to error: ", error);
-//           res.status(500).json({
-//             status: 500,
-//             message: "Transaction failed",
-//             error: error.message,
-//           });
-//         }
-//       });
-//     } catch (error) {
-//       connection.release();
-//       console.error("Error: ", error);
-//       return res
-//         .status(500)
-//         .json({ status: 500, message: "Server error", error: error.message });
-//     }
-//   });
-// };
-
-//v2 function
+//-------------------------------------------------------------------------------->
+//Apply rate chart --------------------------------------------------------------->
+//-------------------------------------------------------------------------------->
+//v3 function
 exports.applyRateChart = async (req, res) => {
   const { rcfromdate, rctodate, custFrom, custTo } = req.body;
   const dairy_id = req.user.dairy_id;
@@ -471,7 +328,7 @@ exports.applyRateChart = async (req, res) => {
   if (!rcfromdate || !rctodate || !custFrom || !custTo) {
     return res.status(400).json({
       status: 400,
-      message: "All information required to apply ratechart!",
+      message: "All information required to apply rate chart!",
     });
   }
 
@@ -501,25 +358,17 @@ exports.applyRateChart = async (req, res) => {
            SELECT rm.fat, rm.snf, rm.rate, rm.rctypename, rm.rcdate
             FROM ratemaster AS rm
             INNER JOIN (
-            SELECT
-              rctypename,
-              MAX(rcdate) AS max_rcdate
-            FROM
-              ratemaster
-            WHERE
-              companyid = ?
-              AND center_id = ?
+              SELECT rctypename, MAX(rcdate) AS max_rcdate
+              FROM ratemaster
+              WHERE companyid = ? AND center_id = ? 
               AND rctypename IN (
-              SELECT DISTINCT rcName
-              FROM customer
-              WHERE orgid = ? AND centerid = ?
-            )
-            GROUP BY
-              rctypename
-            ) AS latest_rates ON rm.rctypename = latest_rates.rctypename
-              AND rm.rcdate = latest_rates.max_rcdate
-            WHERE
-            rm.companyid = ? AND rm.center_id = ?
+                SELECT DISTINCT rcName FROM customer WHERE orgid = ? AND centerid = ?
+              )
+              GROUP BY rctypename
+            ) AS latest_rates 
+            ON rm.rctypename = latest_rates.rctypename 
+            AND rm.rcdate = latest_rates.max_rcdate
+            WHERE rm.companyid = ? AND rm.center_id = ?
           `;
 
           const rateCharts = await new Promise((resolve, reject) => {
@@ -532,6 +381,13 @@ exports.applyRateChart = async (req, res) => {
               }
             );
           });
+
+          if (rateCharts.length === 0) {
+            throw new Error(
+              "No rate charts found for the given company and center!"
+            );
+          }
+
           // Step 2: Fetch Milk Collection Data in the Date Range
           const fetchCollectionQuery = `
             SELECT id, litres, fat, snf, ReceiptDate, rctype
@@ -556,29 +412,33 @@ exports.applyRateChart = async (req, res) => {
             );
           }
 
-          // Step 3: Identify correct ratechart for each milk entry
+          // Step 3: Identify correct rate chart for each milk entry
           const updates = milkEntries.map((entry) => {
             const { id, litres, fat, snf, ReceiptDate, rctype } = entry;
             const entryDate = new Date(ReceiptDate);
+
             // Find the latest applicable rate chart
             const applicableRateChart = rateCharts
-              .filter(
-                (chart) =>
-                  chart.rcdate >= entryDate &&
+              .filter((chart) => {
+                const chartDate = new Date(chart.rcdate);
+                return (
+                  chartDate.getTime() <= entryDate.getTime() && // Correct Date Comparison
                   chart.rctypename === rctype &&
                   parseFloat(chart.fat.toFixed(1)) ===
                     parseFloat(fat.toFixed(1)) &&
                   parseFloat(chart.snf.toFixed(1)) ===
                     parseFloat(snf.toFixed(1))
-              )
-              .sort((a, b) => new Date(b.rcdate) - new Date(a.rcdate))[0];
+                );
+              })
+              .sort((a, b) => new Date(b.rcdate) - new Date(a.rcdate))[0]; // Get the latest rate chart
 
-            let rate = 0;
-            let amt = 0;
-            if (applicableRateChart) {
-              rate = parseFloat(applicableRateChart.rate.toFixed(2));
-              amt = parseFloat((litres * rate).toFixed(2));
+            if (!applicableRateChart) {
+              return { id, rate: 0, amt: 0 }; // Keep rate 0 if no match found
             }
+
+            let rate = parseFloat(applicableRateChart.rate.toFixed(2));
+            let amt = parseFloat((litres * rate).toFixed(2));
+
             return { id, rate, amt };
           });
 
@@ -616,7 +476,7 @@ exports.applyRateChart = async (req, res) => {
             res.status(200).json({
               status: 200,
               message:
-                "Ratechart applied successfully, and dairy milk data updated!",
+                "Rate chart applied successfully, and dairy milk data updated!",
             });
           });
         } catch (error) {
@@ -639,9 +499,9 @@ exports.applyRateChart = async (req, res) => {
   });
 };
 
-// .............................................................................
-// Updating selected Ratechart .................................................
-// .............................................................................
+// -------------------------------------------------------------------------------->
+// Updating selected Ratechart ---------------------------------------------------->
+// -------------------------------------------------------------------------------->
 
 //v2 function
 exports.updateSelectedRateChart = async (req, res) => {
@@ -746,9 +606,9 @@ exports.updateSelectedRateChart = async (req, res) => {
   });
 };
 
-// .............................................................................
-// Save Updated Ratechart ......................................................
-// .............................................................................
+// -------------------------------------------------------------------------------->
+// Save Updated Ratechart --------------------------------------------------------->
+// -------------------------------------------------------------------------------->
 
 exports.saveUpdatedRC = async (req, res) => {
   const { ratechart, rccode, rctype, animal, time } = req.body;

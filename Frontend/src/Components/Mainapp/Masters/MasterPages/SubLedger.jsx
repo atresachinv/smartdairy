@@ -350,7 +350,7 @@ const SubLedger = () => {
               />
             </div>
           </div>
-          <div className="ledger-names-div w100 h40 d-flex-col sb">
+          <div className="ledger-head-div w100 h40 d-flex-col sb">
             <span className="label-text w100">
               Sangha Milk Sales Deduction and Dairy Bank Cheque Head :
             </span>

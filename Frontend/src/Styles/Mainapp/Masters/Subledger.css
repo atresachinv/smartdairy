@@ -7,9 +7,23 @@
     flex-direction: column;
   }
   .ledger-master-form-container .ledger-info-contsiner {
-    min-height: 60%;
+    min-height: fit-content;
     width: 100%;
     margin-bottom: 10px;
+  }
+  .ledger-info-contsiner .ledger-no-group-container {
+    width: 100%;
+    min-height: fit-content;
+    flex-direction: column;
+  }
+  .ledger-no-group-container .ledger-no-div {
+    width: 30%;
+  }
+  .ledger-no-group-container .ledger-group-div {
+    width: 100%;
+  }
+  .ledger-info-contsiner .ledger-head-div {
+    flex-direction: column;
   }
   .ledger-master-form-container .ledger-settings-contsiner {
     min-height: 40%;

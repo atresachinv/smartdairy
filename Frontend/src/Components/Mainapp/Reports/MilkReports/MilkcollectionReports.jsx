@@ -34,7 +34,6 @@ const MilkcollectionReports = () => {
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedCenterId, setSelectedCenterId] = useState("0");
   const [centerData, setCenterData] = useState([]); //..
-  const [item, setitem] = useState([]); //..
   const centerList = useSelector(
     (state) => state.center.centersList.centersDetails
   );
@@ -271,7 +270,7 @@ const MilkcollectionReports = () => {
       alert("No data available to export!");
       return;
     }
-
+    const reportDate = selectedDay || selectedDate.end.slice(0, 10);
     const formatDate = (dateString) => {
       const date = new Date(dateString);
       const day = String(date.getDate()).padStart(2, "0");
@@ -297,7 +296,7 @@ const MilkcollectionReports = () => {
 
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, "sheet1");
-    XLSX.writeFile(workbook, "milk-collection-report.xlsx");
+    XLSX.writeFile(workbook, `milk-collection-report_${reportDate}.xlsx`);
   };
 
   const PrintComponent = forwardRef((props, ref) => {
@@ -759,9 +758,9 @@ const MilkcollectionReports = () => {
     if (!sumreport) {
       setFilteredData(collectionData);
     } else {
-      setSummaryData(aggregateCustomerData(data));
+      setSummaryData(aggregateCustomerData(centerData.milkData));
     }
-  }, [sumreport]);
+  }, [sumreport, data]);
 
   // >>>>>>>---------------------->
   // Day filter ----
@@ -1068,9 +1067,9 @@ const MilkcollectionReports = () => {
                 <>
                   <span className="w10 f-info-text">Code</span>
                   <span className="w25 f-info-text">Name</span>
+                  <span className="w10 f-info-text">Liters</span>
                   <span className="w5 f-info-text">AVG FAT</span>
                   <span className="w5 f-info-text">AVG SNF</span>
-                  <span className="w10 f-info-text">Liters</span>
                   <span className="w10 f-info-text">AVG Rate</span>
                   <span className="w10 f-info-text"> Amount</span>
                   <span className="w10 f-info-text">C/B</span>
@@ -1096,10 +1095,9 @@ const MilkcollectionReports = () => {
               <>
                 {status === "loading" ? (
                   <Spinner />
-                ) : centerData.summaryData &&
-                  centerData.summaryData.length > 0 ? (
+                ) : summaryData && summaryData.length > 0 ? (
                   <>
-                    {centerData.summaryData.map((customer, index) => (
+                    {summaryData.map((customer, index) => (
                       <div
                         key={index}
                         className={`milkdata-div w100 h10 d-flex center t-center sa ${
@@ -1115,11 +1113,11 @@ const MilkcollectionReports = () => {
                         <span className="w25 text t-start">
                           {customer.cname}
                         </span>
-                        <span className="w5 text t-center">{customer.fat}</span>
-                        <span className="w5 text t-center">{customer.snf}</span>
-                        <span className="w10 text t-end">
+                        <span className="w10 text t-center">
                           {customer.Liters}
                         </span>
+                        <span className="w5 text t-center">{customer.fat}</span>
+                        <span className="w5 text t-center">{customer.snf}</span>
                         <span className="w10 text t-center">
                           {customer.rate}
                         </span>
@@ -1134,19 +1132,19 @@ const MilkcollectionReports = () => {
                     <div className="milkdata-div w100 h10 d-flex center t-center sa bg-total">
                       <span className="w10 text t-center font-bold">Total</span>
                       <span className="w25 text t-start"></span>
-                      <span className="w5 text t-center"></span>
-                      <span className="w5 text t-center"></span>
-                      <span className="w10 text t-end font-bold">
-                        {centerData.summaryData
+                      <span className="w10 text t-center font-bold">
+                        {summaryData
                           .reduce(
                             (sum, item) => sum + (parseFloat(item.Liters) || 0),
                             0
                           )
                           .toFixed(2)}{" "}
                       </span>
+                      <span className="w5 text t-center"></span>
+                      <span className="w5 text t-center"></span>
                       <span className="w10 text t-center"></span>
                       <span className="w10 text t-end font-bold">
-                        {centerData.summaryData
+                        {summaryData
                           .reduce(
                             (sum, item) => sum + (parseFloat(item.Amt) || 0),
                             0
