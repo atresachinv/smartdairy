@@ -104,7 +104,7 @@ const CattleSaleList = () => {
         SetLoadings(false);
         console.error("Error fetching sales:", error);
       }
-    };
+    }; 
 
     fetchSales();
   }, []);

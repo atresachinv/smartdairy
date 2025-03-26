@@ -12,6 +12,7 @@ import { getRateCharts } from "../../../../../App/Features/Mainapp/Masters/rateC
 import "../../../../../Styles/Mainapp/Apphome/Appnavview/Milkcollection.css";
 import axiosInstance from "../../../../../App/axiosInstance";
 import { useParams } from "react-router-dom";
+import { listCustomer } from "../../../../../App/Features/Mainapp/Masters/custMasterSlice";
 
 const MilkColleform = ({ switchToSettings, times }) => {
   const dispatch = useDispatch();
@@ -33,6 +34,9 @@ const MilkColleform = ({ switchToSettings, times }) => {
   );
   const tDate = useSelector((state) => state.date.toDate);
   // const token = useSelector((state) => state.notify.fcmToken);
+  const customerlist = useSelector(
+    (state) => state.customers.customerlist || []
+  );
   const milkcollRatechart = useSelector((state) => state.ratechart.rateChart);
   const centerSetting = useSelector(
     (state) => state.dairySetting.centerSetting //center settings
@@ -91,6 +95,7 @@ const MilkColleform = ({ switchToSettings, times }) => {
   // Effect to get rate chart from backend -------------------------------------------------------->
   useEffect(() => {
     dispatch(getRateCharts());
+    dispatch(listCustomer());
   }, [dispatch]);
 
   // effect to set rate chart --------------------------------------------------------------------->
@@ -270,7 +275,7 @@ const MilkColleform = ({ switchToSettings, times }) => {
       return;
     }
     // Ensure the code is a string for comparison
-    const customer = customerList.find(
+    const customer = customerlist.find(
       (customer) => customer.srno.toString() === code
     );
     if (customer) {
@@ -686,12 +691,12 @@ const MilkColleform = ({ switchToSettings, times }) => {
       setErrors(validationErrors);
       return;
     }
-  
+
     setValues((prevData) => ({
       ...prevData,
       shift: times === "morning" ? 0 : time === "morning" ? 0 : 1,
     }));
-   
+
     try {
       const result = await dispatch(saveMilkOneEntry(values)).unwrap();
       if (result?.status === 200) {
@@ -707,7 +712,7 @@ const MilkColleform = ({ switchToSettings, times }) => {
         setValues(initialValues); // Reset form
 
         setErrors({}); // Clear errors
-        
+
         // Show success toast
         toast.success(result.message || "Milk Collection saved successfully!");
 

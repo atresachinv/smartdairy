@@ -375,7 +375,6 @@ exports.updateEmployee = async (req, res) => {
 //v2
 exports.deleteEmployee = async (req, res) => {
   const { emp_id } = req.body;
-
   const dairy_id = req.user.dairy_id;
   const center_id = req.user.center_id;
 
@@ -438,6 +437,111 @@ exports.deleteEmployee = async (req, res) => {
     }
   });
 };
+
+// exports.deleteEmployee = async (req, res) => {
+//   const { emp_id, mobile } = req.body;
+//   const { dairy_id, center_id } = req.user;
+
+//   if (!emp_id || !mobile) {
+//     return res
+//       .status(400)
+//       .json({ status: 400, message: "Employee ID and mobile are required!" });
+//   }
+//   if (!dairy_id) {
+//     return res.status(401).json({ status: 401, message: "Unauthorized User!" });
+//   }
+
+//   pool.getConnection((err, connection) => {
+//     if (err) {
+//       return res
+//         .status(500)
+//         .json({ status: 500, message: "Database connection error" });
+//     }
+
+//     try {
+//       const dairy_table = `dailymilkentry_${dairy_id}`;
+
+//       // **Step 1: Check if employee has milk collection records**
+//       const checkMilkEntryQuery = `
+//         SELECT COUNT(*) AS count FROM ${dairy_table}
+//         WHERE center_id = ? AND userid = ?
+//       `;
+
+//       connection.query(
+//         checkMilkEntryQuery,
+//         [center_id, mobile],
+//         (error, results) => {
+//           if (error) {
+//             connection.release();
+//             console.error("Error checking milk collection records: ", error);
+//             return res.status(500).json({
+//               status: 500,
+//               message: "Database error while checking records",
+//             });
+//           }
+
+//           const entryCount = results[0].count;
+//           if (entryCount === 0) {
+//             // Proceed with deleting the employee
+//             const deleteEmpQuery = `
+//               DELETE FROM employeemaster
+//               WHERE dairy_id = ? AND center_id = ? AND emp_id = ?
+//         `;
+
+//             connection.query(
+//               deleteEmpQuery,
+//               [dairy_id, center_id, emp_id],
+//               (deleteError, deleteResults) => {
+//                 connection.release();
+
+//                 if (deleteError) {
+//                   console.error("Error deleting employee: ", deleteError);
+//                   return res.status(500).json({
+//                     status: 500,
+//                     message: "Error deleting employee",
+//                   });
+//                 }
+
+//                 if (deleteResults.affectedRows === 0) {
+//                   return res
+//                     .status(404)
+//                     .json({ status: 404, message: "Employee not found" });
+//                 }
+
+//                 // **Step 3: Clear cached employee list properly**
+//                 const cacheKey = `employeeList_${dairy_id}_${center_id}`;
+//                 console.log("Deleting cache for key:", cacheKey);
+//                 if (cache.has(cacheKey)) {
+//                   cache.del(cacheKey);
+//                   console.log("Cache deleted successfully");
+//                 } else {
+//                   console.log("Cache key not found");
+//                 }
+
+//                 return res.status(200).json({
+//                   status: 200,
+//                   message: "Employee deleted successfully",
+//                 });
+//               }
+//             );
+//           } else {
+//             return res.status(400).json({
+//               status: 400,
+//               message:
+//                 "Employee has milk collection records. Cannot be deleted!",
+//             });
+//           }
+//         }
+//       );
+//     } catch (error) {
+//       connection.release();
+//       console.error("Error processing request: ", error);
+//       return res
+//         .status(500)
+//         .json({ status: 500, message: "Internal server error" });
+//     }
+//   });
+// };
 
 //.................................................................
 // Employee List (Admin Route) ....................................
