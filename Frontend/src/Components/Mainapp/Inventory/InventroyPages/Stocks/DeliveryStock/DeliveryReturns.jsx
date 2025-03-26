@@ -797,7 +797,7 @@ const DeliveryReturns = () => {
                 {cartItem.length > 0 ? (
                   <div className="sales-total-headings-row w100 h10 d-flex a-center sb">
                     <span className=" w5"></span>
-                    <span className="label-text w10">Total :</span>
+                    <span className="label-text w15 ">एकूण :</span>
                     <span className="label-text w10 t-end">
                       {cartItem.reduce((acc, item) => acc + item.Qty, 0)}
                     </span>

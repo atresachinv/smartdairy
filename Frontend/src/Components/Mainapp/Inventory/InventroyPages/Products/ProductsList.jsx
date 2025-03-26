@@ -370,7 +370,7 @@ const ProductsList = () => {
             <FaDownload />
           </button>
           <button
-            className="btn sales-dates-container-mobile-btn"
+            className="btn sales-dates-container-mobile-btn mx5"
             onClick={downloadPdf}
           >
             <span className="f-label-text px10">PDF</span>
