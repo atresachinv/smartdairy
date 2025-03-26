@@ -50,20 +50,20 @@ const Credit = () => {
 
   return (
     <div className="Credit-container w100 h1 d-flex-col">
-      <span className="heading p10">व्यवहार भरणे</span>
+      <span className=" heading p10">व्यवहार भरणे</span>
       <div className="credit-form d-flex-col mx10 px10 bg">
-        <div className="row d-flex my10 sb">
-          <div className="d-flex">
+        <div className="row d-flex w100 h20  sb a-center ">
+          <div className=" Deal-date-div d-flex a-center">
             <span className="info-text w70">व्यवहार दिनांक</span>
             <input type="date" className="data" />
           </div>
-          <div className="d-flex">
-            <span className="info-text">Batch No</span>
+          <div className=" Batch No-div d-flex a-center">
+            <span className="info-text w40 ">Batch No:</span>
             <input type="text" className="data h1" />
           </div>
         </div>
-        <div className="row w100 d-flex my10 sb">
-          <div className="w50 d-flex">
+        <div className="deal-container row w100 d-flex my10  sb a-center">
+          <div className=" Deal-typr-div  w50 h1 d-flex">
             <span className="info-text w50">व्यवहार प्रकार</span>
             <select className="data w40">
               <option value=""> </option>
@@ -71,13 +71,13 @@ const Credit = () => {
               <option value="1">रोख </option>
             </select>
           </div>
-          <div className="w50 d-flex mx15">
+          <div className=" bill-no-div w50 d-flex mx15 a-center">
             <span className="info-text">चलन नंबर</span>
             <input type="text" className="data w30" />
           </div>
         </div>
-        <div className="row w100 d-flex my10 sb">
-          <div className="w50 d-flex">
+        <div className="  bill-type-check-container row w100 d-flex my10 sb a-center">
+          <div className=" bill-type-div w50 d-flex a-center ">
             <span className="info-text w50">पावती प्रकार</span>
             <select className="data w40">
               <option value=""> </option>
@@ -85,13 +85,15 @@ const Credit = () => {
               <option value="1">कार्यालय चलन </option>
             </select>
           </div>
-          <div className="w50 d-flex mx15">
+          <div className=" bill-number-div w50 d-flex mx15 a-center">
             <span className="info-text">पावती नं.</span>
             <input type="text" className="data w30" />
           </div>
         </div>
-        <div className="row sb d-flex my10">
-          <div className="w90 d-flex">
+        <div className=" utpadak-number-container w100 h20
+            row sb d-flex my10"
+        >
+          <div className=" utpadak-number-div w70 d-flex a-center ">
             <span className="info-text">उत्पादक क्रमांक</span>
             <Select
               options={custOptions}
@@ -126,13 +128,15 @@ const Credit = () => {
               onChange={handleCustSelectChange}
             />
           </div>
-          <div className="d-flex">
-            <span className="info-text">रक्कम</span>
-            <input type="text" className="data" />
-          </div>
-          <div className=" d-flex">
-            <button className="w-btn mx10">Add</button>
-            <button className="w-btn">Delete</button>
+          <div className="Amount-button-container w30 h1  d-flex">
+            <div className=" Amountt-div d-flex a-center w60 ">
+              <span className="info-text">रक्कम</span>
+              <input type="text" className="data" />
+            </div>
+            <div className=" credit-add-delete-button w40 d-flex a-center">
+              <button className="w-btn mx10">Add</button>
+              <button className="w-btn">Delete</button>
+            </div>
           </div>
         </div>
       </div>
