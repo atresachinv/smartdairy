@@ -6,16 +6,33 @@ import "./credit.css";
 import { useDispatch, useSelector } from "react-redux";
 import { listSubLedger } from "../../../../App/Features/Mainapp/Masters/ledgerSlice";
 import { listCustomer } from "../../../../App/Features/Customers/customerSlice";
-const Credit = () => {
+const TransferCredit = () => {
   const [customerList, setCustomerList] = useState([]);
   const dispatch = useDispatch();
   const [formData, setFormData] = useState({
     srno: "",
-    DeductionId: "",
-    DeductionId2: "",
+    GLCode: "",
+    VoucherDate: "",
+    BatchNo: "",
+    Vtype: "",
+    InstrType: "",
   });
+
   const sledgerlist = useSelector((state) => state.ledger.sledgerlist);
 
+  // set today date
+  useEffect(() => {
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      VoucherDate: getTodaysDate(),
+    }));
+  }, []);
+
+  //gett todays date------------>
+  const getTodaysDate = () => {
+    const today = new Date();
+    return today.toISOString().split("T")[0];
+  };
   // Get master dates and list customer
   useEffect(() => {
     dispatch(listCustomer());
@@ -65,26 +82,46 @@ const Credit = () => {
   return (
     <div className="Credit-container w100 h1 d-flex-col">
       <div className="Credit-container-scroll d-flex-col w100">
-        <span className=" heading p10">व्यवहार भरणे</span>
+        <span className=" heading p10">ट्रान्सफर चलन</span>
         <div className="credit-all-form d-flex w100 ">
           <div className="credit-form d-flex-col mx10 p10 bg">
             <div className="row d-flex w100  sb a-center ">
               <div className="w80  Deal-date-div d-flex a-center">
                 <span className="info-text  ">व्यवहार दिनांक</span>
-                <input type="date" className="data w60 " />
+                <input
+                  type="date"
+                  className="data w50 "
+                  value={formData.VoucherDate}
+                  onChange={(e) =>
+                    setFormData({ ...formData, VoucherDate: e.target.value })
+                  }
+                />
               </div>
               <div className="Batch No-div d-flex a-center mx10 sb">
                 <span className="info-text   ">Batch No:</span>
-                <input type="text" className="data w50" />
+                <input
+                  type="text"
+                  className="data w50"
+                  value={formData.BatchNo}
+                  onChange={(e) =>
+                    setFormData({ ...formData, BatchNo: e.target.value })
+                  }
+                />
               </div>
             </div>
             <div className="deal-container row w100 d-flex my5  sb a-center">
               <div className=" Deal-typr-div  w40  d-flex a-center">
                 <span className="info-text w50">व्यवहार प्रकार</span>
-                <select className="data w50">
+                <select
+                  className="data w50"
+                  value={formData.Vtype}
+                  onChange={(e) =>
+                    setFormData({ ...formData, Vtype: e.target.value })
+                  }
+                >
                   <option value=""> Select</option>
-                  <option value="0">ट्रान्सफर </option>
-                  <option value="1">रोख </option>
+                  <option value="1">नावे</option>
+                  <option value="4">जमा</option>
                 </select>
               </div>
               <div className=" bill-no-div w50 d-flex mx15 a-center sb">
@@ -95,10 +132,16 @@ const Credit = () => {
             <div className="  bill-type-check-container row w100 d-flex my5 sb a-center">
               <div className=" bill-type-div w50 d-flex a-center  ">
                 <span className="info-text w50">पावती प्रकार</span>
-                <select className="data w50">
+                <select
+                  className="data w50"
+                  value={formData.InstrType}
+                  onChange={(e) =>
+                    setFormData({ ...formData, InstrType: e.target.value })
+                  }
+                >
                   <option value="">select</option>
                   <option value="0">चेक </option>
-                  <option value="1">कार्यालय चलन </option>
+                  <option value="1">व्हॉउचर </option>
                 </select>
               </div>
               <div className=" bill-number-div w50 d-flex mx15 a-center sb">
@@ -110,7 +153,7 @@ const Credit = () => {
               className="w100  
             row sb d-flex my5"
             >
-              <span className="info-text ">नावे खतावणी</span>
+              <span className="info-text ">खतावणी नं.</span>
               <Select
                 options={options2}
                 className=" w20"
@@ -123,10 +166,10 @@ const Credit = () => {
                   }),
                 }}
                 value={options2.find(
-                  (option) => option.value === formData.DeductionId
+                  (option) => option.value === formData.GLCode
                 )}
                 onChange={(selectedOption) =>
-                  handleSelectChange(selectedOption, "DeductionId")
+                  handleSelectChange(selectedOption, "GLCode")
                 }
               />
               <Select
@@ -141,55 +184,14 @@ const Credit = () => {
                   }),
                 }}
                 value={options.find(
-                  (option) => option.value === formData.DeductionId
+                  (option) => option.value === formData.GLCode
                 )}
                 onChange={(selectedOption) =>
-                  handleSelectChange(selectedOption, "DeductionId")
+                  handleSelectChange(selectedOption, "GLCode")
                 }
               />
             </div>
-            <div
-              className="  w100  
-            row sb d-flex my5"
-            >
-              <span className="info-text ">जमा खतावणी</span>
-              <Select
-                options={options2}
-                className=" w20"
-                placeholder=""
-                isSearchable
-                styles={{
-                  menu: (provided) => ({
-                    ...provided,
-                    zIndex: 200,
-                  }),
-                }}
-                value={options2.find(
-                  (option) => option.value === formData.DeductionId2
-                )}
-                onChange={(selectedOption) =>
-                  handleSelectChange(selectedOption, "DeductionId2")
-                }
-              />
-              <Select
-                options={options}
-                className=" mx10 w50"
-                placeholder=""
-                isSearchable
-                styles={{
-                  menu: (provided) => ({
-                    ...provided,
-                    zIndex: 200,
-                  }),
-                }}
-                value={options.find(
-                  (option) => option.value === formData.DeductionId2
-                )}
-                onChange={(selectedOption) =>
-                  handleSelectChange(selectedOption, "DeductionId2")
-                }
-              />
-            </div>
+
             <div className=" w100  row sb d-flex my5">
               <span className="info-text">खाते क्र.</span>
               <Select
@@ -251,7 +253,7 @@ const Credit = () => {
             </div>
           </div>
           <div className="credit-batchTally d-flex-col mx5  bg ">
-            <div className="m10 p10 br">
+            <div className="m10 p10 bg-light-skyblue">
               बॅच टॅलि
               <div className="d-flex a-center ">
                 <span className="w50 info-text">नावे </span>
@@ -266,7 +268,7 @@ const Credit = () => {
                 <span className="w50 req info-text">{0} </span>
               </div>
             </div>
-            <div className="m10 p10 br">
+            <div className="m10 p10 bg-light-green">
               चेक/डी.डी. माहिती
               <div className="d-flex a-center ">
                 <span className="w50 info-text"> चेक/डी.डी.</span>
@@ -328,4 +330,4 @@ const Credit = () => {
   );
 };
 
-export default Credit;
+export default TransferCredit;
