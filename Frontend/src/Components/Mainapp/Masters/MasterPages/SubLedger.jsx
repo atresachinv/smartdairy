@@ -36,7 +36,6 @@ const SubLedger = () => {
     subAcc: "0",
     vcsms: "0",
   });
-  console.log(SubLedgers);
 
   useEffect(() => {
     dispatch(getMaxSLCode());
@@ -291,7 +290,7 @@ const SubLedger = () => {
               />
             </div>
             <div className="ledger-group-div w80 d-flex a-center sb">
-              <label htmlFor="ledger-gno" className="label-text w25">
+              <label htmlFor="ledger-gno" className="ledger-gtxt label-text w25">
                 Select Group :
               </label>
               <input
@@ -355,7 +354,7 @@ const SubLedger = () => {
               Sangha Milk Sales Deduction and Dairy Bank Cheque Head :
             </span>
             <div className="sangha-sale-settings-div w100 h80 d-flex sb">
-              <div className="le-name-div w15 d-flex a-center sb">
+              <div className="ss-div w15 d-flex a-center sb">
                 <input
                   type="radio"
                   name="sanghahead"
@@ -369,7 +368,7 @@ const SubLedger = () => {
                   N/A
                 </label>
               </div>
-              <div className="le-name-div w20 d-flex a-center sb">
+              <div className="ss-div w20 d-flex a-center sb">
                 <input
                   type="radio"
                   name="sanghahead"
@@ -383,7 +382,7 @@ const SubLedger = () => {
                   Milk Sales
                 </label>
               </div>
-              <div className="le-name-div w25 d-flex a-center sb">
+              <div className="ss-div w25 d-flex a-center sb">
                 <input
                   type="radio"
                   name="sanghahead"
@@ -520,7 +519,7 @@ const SubLedger = () => {
             <label htmlFor="" className="label-text w50 ">
               Sub Accounts ?
             </label>
-            <div className="ledger-name-inner-div w40 h1 d-flex sb">
+            <div className="subacc-setting-div w40 h1 d-flex sb">
               <div className="le-name-div w50 d-flex a-center sb">
                 <input
                   type="radio"
@@ -532,7 +531,7 @@ const SubLedger = () => {
                   onChange={handleInputChange}
                 />
                 <label htmlFor="acno" className="info-text w50">
-                  NO
+                  No
                 </label>
               </div>
               <div className="le-name-div w50 d-flex a-center sb">
@@ -555,7 +554,7 @@ const SubLedger = () => {
             <label htmlFor="" className="label-text w50 ">
               Send Voucher sms :
             </label>
-            <div className="ledger-name-inner-div w40 h1 d-flex sb">
+            <div className="sms-setting-div w40 h1 d-flex sb">
               <div className="le-name-div w50 d-flex a-center sb">
                 <input
                   className="w50 h40"
@@ -567,7 +566,7 @@ const SubLedger = () => {
                   onChange={handleInputChange}
                 />
                 <label htmlFor="acno" className="info-text w50">
-                  NO
+                  No
                 </label>
               </div>
               <div className="le-name-div w50 d-flex a-center sb">

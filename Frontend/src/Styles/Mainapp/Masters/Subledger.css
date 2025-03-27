@@ -22,15 +22,65 @@
   .ledger-no-group-container .ledger-group-div {
     width: 100%;
   }
-  .ledger-info-contsiner .ledger-head-div {
+  .ledger-group-div .ledger-gtxt {
+    width: 33%;
+  }
+  .ledger-group-div #ledger-gno {
+    width: 15%;
+  }
+  .ledger-group-div #ledger-name {
+    width: 47%;
+  }
+
+  .ledger-info-contsiner .ledger-names-div {
+    min-height: fit-content;
     flex-direction: column;
   }
+  .ledger-names-div .le-name-div {
+    width: 100%;
+  }
+
+  .ledger-info-contsiner .ledger-head-div {
+    min-height: fit-content;
+    flex-direction: column;
+  }
+  .ledger-head-div .sangha-sale-settings-div {
+    min-height: fit-content;
+    flex-wrap: wrap;
+  }
+  .sangha-sale-settings-div .ss-div {
+    width: 45%;
+  }
+  .sangha-sale-settings-div .perltr_amt-div {
+    width: 45%;
+  }
   .ledger-master-form-container .ledger-settings-contsiner {
-    min-height: 40%;
+    width: 100%;
+    min-height: fit-content;
+    margin-bottom: 10px;
+  }
+  .ledger-settings-contsiner .ledger-subacc-div,
+  .ledger-settings-contsiner .ledger-sms-settings-div {
+    min-height: fit-content;
     width: 100%;
     margin-bottom: 10px;
   }
+  .ledger-subacc-div .subacc-setting-div,
+  .ledger-sms-settings-div .sms-setting-div {
+    width: 50%;
+  }
+  .ledger-buttons-div {
+    margin-bottom: 10px;
+  }
+
   .ledgers-list-container {
     min-height: 70%;
+  }
+  .ledgers-list-inner-container {
+    overflow-x: auto;
+  }
+  .ledger-list-headers-div,
+  .ledger-list-data-div {
+    min-width: 700px;
   }
 }

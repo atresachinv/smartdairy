@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import Spinner from "../../../../Home/Spinner/Spinner";
@@ -8,14 +8,33 @@ import {
   updateEmp,
 } from "../../../../../App/Features/Mainapp/Masters/empMasterSlice";
 import "../../../../../Styles/Mainapp/Masters/EmpMaster.css";
+import { useTranslation } from "react-i18next";
 
 const CreateEmployee = () => {
+  const { t } = useTranslation(["master", "common"]);
   const dispatch = useDispatch();
   const toDate = useSelector((state) => state.date.toDate);
+  const updateStatus = useSelector((state) => state.emp.updateStatus);
+  const createStatus = useSelector((state) => state.emp.createStatus);
   const empData = useSelector((state) => state.emp.employee);
   const [isEditing, setIsEditing] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState({});
+  const codeRef = useRef(null);
+  const mnameRef = useRef(null);
+  const enameRef = useRef(null);
+  const mobileRef = useRef(null);
+  const designationRef = useRef(null);
+  const salRef = useRef(null);
+  const cityRef = useRef(null);
+  const telRef = useRef(null);
+  const stateRef = useRef(null);
+  const pinRef = useRef(null);
+  const bankRef = useRef(null);
+  const bankacRef = useRef(null);
+  const bankifscRef = useRef(null);
+  const passRef = useRef(null);
+  const cpassRef = useRef(null);
+  const submitbtn = useRef(null);
 
   const [formData, setFormData] = useState({
     date: toDate,
@@ -130,24 +149,40 @@ const CreateEmployee = () => {
   };
 
   const validateFields = () => {
-    const fieldsToValidate = [
-      "marathi_name",
-      "emp_name",
-      "mobile",
-      "designation",
-      "city",
-      "tehsil",
-      "district",
-      "pincode",
-      "salary",
-      "password",
-      "confirm_pass",
-    ];
+    const fieldsToValidate = isEditing
+      ? [
+          "marathi_name",
+          "emp_name",
+          "designation",
+          "city",
+          "tehsil",
+          "district",
+          "pincode",
+          "salary",
+        ]
+      : [
+          "marathi_name",
+          "emp_name",
+          "mobile",
+          "designation",
+          "city",
+          "tehsil",
+          "district",
+          "pincode",
+          "salary",
+          "password",
+          "confirm_pass",
+        ];
+
     const validationErrors = {};
     fieldsToValidate.forEach((field) => {
       const fieldError = validateField(field, formData[field]);
-      Object.assign(validationErrors, fieldError);
+      if (Object.keys(fieldError).length > 0) {
+        validationErrors[field] = fieldError[field];
+      }
     });
+
+    setErrors(validationErrors);
     return validationErrors;
   };
 
@@ -207,6 +242,13 @@ const CreateEmployee = () => {
     }
   };
 
+  // handle enter press move cursor to next refrence Input -------------------------------->
+  const handleKeyDown = (e, nextRef) => {
+    if (e.key === "Enter" && nextRef.current) {
+      e.preventDefault();
+      nextRef.current.focus();
+    }
+  };
   // ................................................................................
 
   useEffect(() => {
@@ -226,7 +268,7 @@ const CreateEmployee = () => {
         bankIFSC: empData.emp_ifsc || "",
       }));
     }
-  }, [empData]);
+  }, [isEditing, empData]);
 
   useEffect(() => {
     if (isEditing) {
@@ -244,40 +286,41 @@ const CreateEmployee = () => {
 
   // .................................................................................
 
-  const handleEmployee = (e) => {
+  const handleEmployee = async (e) => {
     e.preventDefault();
-
+    // Validate fields before submission
     const validationErrors = validateFields();
     if (Object.keys(validationErrors).length) {
       setErrors(validationErrors);
       return;
     }
 
-    try {
-      setIsLoading(true);
-      if (isEditing) {
-        dispatch(updateEmp(formData));
+    if (isEditing) {
+      const response = await dispatch(updateEmp(formData)).unwrap();
+
+      if (response?.status === 200) {
         toast.success("Employee Updated Successfully!");
       } else {
-        dispatch(createEmp(formData));
-        toast.success("Employee Created Successfully!");
+        toast.error("Failed to update employee!");
       }
-    } catch (error) {
-      toast.error("An error occurred. Please try again.");
-      console.error("Error in employee submission:", error);
-    } finally {
-      // Reset loading state
-      setIsLoading(false);
+    } else {
+      const response = await dispatch(createEmp(formData)).unwrap();
+      if (response?.status === 200) {
+        toast.success("Employee Created Successfully!");
+      } else {
+        toast.error("Failed to create employee!");
+      }
     }
   };
 
   return (
-    <>
+    <div className="emp-create-update-container w100 h1 d-flex-col center">
       <form
         onSubmit={handleEmployee}
-        className={`create-emp-container w60 h90 d-flex sa ${
+        className={`create-emp-container w60 h1 d-flex sa ${
           isEditing ? "edit-bg" : "bg"
-        }`}>
+        }`}
+      >
         <div className="emp-details-container w100 h1 d-flex-col sb">
           <div className="tilte-container w100 d-flex a-center sb p10">
             <span className="heading">
@@ -299,13 +342,15 @@ const CreateEmployee = () => {
                   id="ecode"
                   onChange={handleInputChange}
                   value={formData.code || ""}
+                  onKeyDown={(e) => handleKeyDown(e, mnameRef)}
+                  ref={codeRef}
                 />
               </div>
             </div>
           ) : (
             ""
           )}
-          <div className="emp-div emp-details-div w100 d-flex sa">
+          <div className="emp-name-details-div w100 d-flex sa">
             <div className="details-div w50 d-flex-col a-center px10">
               <label htmlFor="mname" className="info-text w100">
                 Marathi Name<span className="req">*</span>{" "}
@@ -320,6 +365,8 @@ const CreateEmployee = () => {
                 id="mname"
                 onChange={handleInputChange}
                 value={formData.marathi_name || ""}
+                onKeyDown={(e) => handleKeyDown(e, enameRef)}
+                ref={mnameRef}
               />
             </div>
             <div className="details-div w50 d-flex-col a-center px10">
@@ -334,15 +381,17 @@ const CreateEmployee = () => {
                 id="engname"
                 value={formData.emp_name || ""}
                 onChange={handleInputChange}
+                onKeyDown={(e) => handleKeyDown(e, mobileRef)}
+                ref={enameRef}
               />
             </div>
           </div>
 
-          <div className="emp-div emp-details-div w100 d-flex sb">
+          <div className="emp-mds-details-div w100 d-flex sb">
             {isEditing ? (
               ""
             ) : (
-              <div className="details-div w25 d-flex-col a-center px10">
+              <div className="mobile-details-div w25 d-flex-col a-center px10">
                 <label htmlFor="mobile" className="info-text w100">
                   Mobile<span className="req">*</span>
                 </label>
@@ -354,11 +403,13 @@ const CreateEmployee = () => {
                   id="mobile"
                   onChange={handleInputChange}
                   value={formData.mobile || ""}
+                  onKeyDown={(e) => handleKeyDown(e, designationRef)}
+                  ref={mobileRef}
                 />
               </div>
             )}
 
-            <div className="details-div w40 d-flex-col a-center px10">
+            <div className="desig-details-div w40 d-flex-col a-center px10">
               <label htmlFor="designation" className="info-text w100">
                 Designation<span className="req">*</span>{" "}
               </label>
@@ -367,14 +418,17 @@ const CreateEmployee = () => {
                 name="designation"
                 id="designation"
                 onChange={handleInputChange}
-                value={formData.designation || ""}>
+                value={formData.designation || ""}
+                onKeyDown={(e) => handleKeyDown(e, salRef)}
+                ref={designationRef}
+              >
                 <option value="manager">Manager</option>
                 <option value="milkcollector">Milk Collector</option>
                 <option value="mobilecollector">Mobile Milk Collector</option>
                 <option value="salesman">Stock Keeper</option>
               </select>
             </div>
-            <div className="details-div w30 d-flex-col a-center px10">
+            <div className="sal-details-div w30 d-flex-col a-center px10">
               <label htmlFor="salary" className="info-text w100 ">
                 Salary<span className="req">*</span>
               </label>
@@ -386,11 +440,13 @@ const CreateEmployee = () => {
                 id="salary"
                 onChange={handleInputChange}
                 value={formData.salary || ""}
+                onKeyDown={(e) => handleKeyDown(e, cityRef)}
+                ref={salRef}
               />
             </div>
           </div>
-          <div className="emp-div address-details-div w100 d-flex-col sb">
-            <span className="info-text px10">Address Details :</span>
+          <div className="address-details-div w100 d-flex-col sb">
+            <span className="label-text px10">Address Details :</span>
             <div className="Address-details w100 h1 d-flex sb">
               <div className="details-div w25 d-flex-col a-center px10">
                 <label htmlFor="city" className="info-text w100 ">
@@ -404,6 +460,8 @@ const CreateEmployee = () => {
                   id="city"
                   onChange={handleInputChange}
                   value={formData.city || ""}
+                  onKeyDown={(e) => handleKeyDown(e, telRef)}
+                  ref={cityRef}
                 />
               </div>
               <div className="details-div w30 d-flex-col a-center px10">
@@ -418,6 +476,8 @@ const CreateEmployee = () => {
                   id="tehsil"
                   onChange={handleInputChange}
                   value={formData.tehsil || ""}
+                  onKeyDown={(e) => handleKeyDown(e, stateRef)}
+                  ref={telRef}
                 />
               </div>
               <div className="details-div w30 d-flex-col a-center px10">
@@ -434,6 +494,8 @@ const CreateEmployee = () => {
                   id="disttehsil"
                   onChange={handleInputChange}
                   value={formData.district || ""}
+                  onKeyDown={(e) => handleKeyDown(e, pinRef)}
+                  ref={stateRef}
                 />
               </div>
               <div className="details-div w20 d-flex-col a-center px10">
@@ -448,13 +510,15 @@ const CreateEmployee = () => {
                   id="pincode"
                   onChange={handleInputChange}
                   value={formData.pincode || ""}
+                  onKeyDown={(e) => handleKeyDown(e, bankRef)}
+                  ref={pinRef}
                 />
               </div>
             </div>
           </div>
 
-          <div className="emp-div Bank-details-div w100 d-flex-col sb">
-            <span className="info-text px10">Bank Details :</span>
+          <div className="Bank-details-div w100 d-flex-col sb">
+            <span className="label-text px10">Bank Details :</span>
             <div className="Bank-details w100 h1 d-flex sb">
               <div className="details-div w40 d-flex-col a-center px10">
                 <label htmlFor="bank" className="info-text w100 ">
@@ -469,6 +533,8 @@ const CreateEmployee = () => {
                   id="bank"
                   onChange={handleInputChange}
                   value={formData.bankName || ""}
+                  onKeyDown={(e) => handleKeyDown(e, bankacRef)}
+                  ref={bankRef}
                 />
               </div>
               <div className="details-div w30 d-flex-col a-center px10">
@@ -482,6 +548,8 @@ const CreateEmployee = () => {
                   id="acc"
                   onChange={handleInputChange}
                   value={formData.bank_ac || ""}
+                  onKeyDown={(e) => handleKeyDown(e, bankifscRef)}
+                  ref={bankacRef}
                 />
               </div>
               <div className="details-div w30 d-flex-col a-center px10">
@@ -497,6 +565,8 @@ const CreateEmployee = () => {
                   id="ifsc"
                   onChange={handleInputChange}
                   value={formData.bankIFSC || ""}
+                  onKeyDown={(e) => handleKeyDown(e, passRef)}
+                  ref={bankifscRef}
                 />
               </div>
             </div>
@@ -505,7 +575,7 @@ const CreateEmployee = () => {
           {isEditing ? (
             ""
           ) : (
-            <div className="emp-div emp-details-div w100 d-flex py10 sb">
+            <div className="emp-pass-details-div w100 d-flex py10 sb">
               <div className="details-div w50 d-flex-col a-center px10">
                 <label htmlFor="pass" className="info-text w100">
                   Enter Password<span className="req">*</span>
@@ -520,6 +590,8 @@ const CreateEmployee = () => {
                   id="pass"
                   onChange={handleInputChange}
                   value={formData.password || ""}
+                  onKeyDown={(e) => handleKeyDown(e, cpassRef)}
+                  ref={passRef}
                 />
               </div>
               <div className="details-div w50 d-flex-col a-center px10">
@@ -536,28 +608,48 @@ const CreateEmployee = () => {
                   id="cpass"
                   value={formData.confirm_pass || ""}
                   onChange={handleInputChange}
+                  onKeyDown={(e) => handleKeyDown(e, submitbtn)}
+                  ref={cpassRef}
                 />
               </div>
             </div>
           )}
 
           <div className="button-container w100 d-flex j-end p10">
-            <button type="button" className="w-btn" onClick={handleEditClick}>
+            <button
+              type="button"
+              className="w-btn mx10"
+              onClick={handleEditClick}
+            >
               {isEditing ? "Cancel" : "Edit"}
             </button>
-            <button type="submit" className="btn mx10" disabled={isLoading}>
-              {isLoading ? (
-                <Spinner />
-              ) : isEditing ? (
-                "Update Employee"
-              ) : (
-                "Create Employee"
-              )}
-            </button>
+            {isEditing ? (
+              <button
+                className="w-btn"
+                type="submit"
+                disabled={updateStatus === "loading"}
+                ref={submitbtn}
+              >
+                {updateStatus === "loading"
+                  ? `${t("m-updating")}`
+                  : `${t("m-update")}`}
+              </button>
+            ) : (
+              <button
+                className="w-btn"
+                type="submit"
+                disabled={createStatus === "loading"}
+                ref={submitbtn}
+              >
+                {createStatus === "loading"
+                  ? `${t("m-creating")}`
+                  : `${t("m-create")}`}
+              </button>
+            )}
           </div>
         </div>
       </form>
-    </>
+    </div>
   );
 };
 
