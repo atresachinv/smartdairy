@@ -3,9 +3,11 @@ import axiosInstance from "../../axiosInstance";
 
 const initialState = {
   payment: {},
+  paymentAmt: [],
   customerMilkData: [],
   transferedMilkData: [],
   status: "idle",
+  paystatus: "idle",
   getMilkstatus: "idle",
   transferedMilkstatus: "idle",
   transtodatestatus: "idle",
@@ -278,6 +280,27 @@ export const transferToShift = createAsyncThunk(
     }
   }
 );
+//----------------------------------------------------->
+// generate payment ---------------------------------------->
+//----------------------------------------------------->
+
+//get total milk payment amt----------------------------------------------------->
+export const fetchMilkTotalAmt = createAsyncThunk(
+  "payment/fetchMilkTotalAmt",
+  async ({ fromDate, toDate }, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.get("/get/total/payment-amt", {
+        fromDate,
+        toDate,
+      });
+      return response.data;
+    } catch (error) {
+      const errorMessage =
+        error.response?.data?.message || "Failed to delete milk records.";
+      return rejectWithValue(errorMessage);
+    }
+  }
+);
 
 const paymentSlice = createSlice({
   name: "payment",
@@ -422,6 +445,18 @@ const paymentSlice = createSlice({
       })
       .addCase(deleteCollection.rejected, (state, action) => {
         state.deleteCollstatus = "failed";
+        state.error = action.payload;
+      }) //get total milk payment ------------------------------------------->
+      .addCase(fetchMilkTotalAmt.pending, (state) => {
+        state.paystatus = "loading";
+        state.error = null;
+      })
+      .addCase(fetchMilkTotalAmt.fulfilled, (state, action) => {
+        state.paystatus = "succeeded";
+        state.paymentAmt = action.payload;
+      })
+      .addCase(fetchMilkTotalAmt.rejected, (state, action) => {
+        state.paystatus = "failed";
         state.error = action.payload;
       });
   },

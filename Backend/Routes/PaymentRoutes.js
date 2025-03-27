@@ -13,6 +13,7 @@ const {
   getTrasferedMilk,
   milkTrasferToDates,
   milkTrasferToShift,
+  getMilkPayAmt,
 } = require("../Controllers/PaymentController");
 
 const router = express.Router();
@@ -41,5 +42,9 @@ router.route("/transfer-milk/to-shift").patch(verifyToken, milkTrasferToShift);
 router
   .route("/milk/correction/delete-milk")
   .delete(verifyToken, deleteMilkCollection);
+// ---------------------------------------------------------------------->
+// generate payment
+// ---------------------------------------------------------------------->
+router.route("/get/total/payment-amt").get(verifyToken, getMilkPayAmt);
 
 module.exports = router;
