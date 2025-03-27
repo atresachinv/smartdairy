@@ -565,7 +565,7 @@ const StockReport = () => {
           </div>
           <div className="d-flex h1 sb center w25 sales-dates-container-mobile-w100  p10 bg">
             <label htmlFor="" className="label-text ">
-              Total Qty
+              एकूण शिल्लक
             </label>
             <NavLink
               className="w-btn d-flex "
@@ -651,7 +651,7 @@ const StockReport = () => {
             <span className="f-info-text w15">Purchase Qty</span>
             <span className="f-info-text w15">Sale Qty</span>
             <span className="f-info-text w25">Return Qty</span>
-            <span className="f-info-text w10">Qty</span>
+            <span className="f-info-text w15">एकूण शिल्लक </span>
           </div>
           {loading || saleloading ? (
             <div className="box d-flex center">
@@ -684,7 +684,7 @@ const StockReport = () => {
                     <span className="text w25">
                       {findItemReturnQty(item.ItemCode)}
                     </span>
-                    <span className="text w10">
+                    <span className="text w15 ">
                       {findRemQty(item.ItemCode)}
                     </span>
                   </div>

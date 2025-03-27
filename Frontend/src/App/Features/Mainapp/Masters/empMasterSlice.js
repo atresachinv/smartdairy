@@ -58,9 +58,11 @@ export const updateEmp = createAsyncThunk(
 // Delete Employee
 export const deleteEmp = createAsyncThunk(
   "emp/deleteEmployee",
-  async (formData, { rejectWithValue }) => {
+  async ({ emp_id, mobile }, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.post("/delete/employee", formData);
+      const response = await axiosInstance.delete("/delete/employee", {
+        data: { emp_id, mobile },
+      });
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || error.message);

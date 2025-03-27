@@ -693,7 +693,7 @@ const List = () => {
                   <tr>
                     {/* <th className="f-info-text"> {t("ps-srNo")}</th> */}
                     <th className="f-info-text"> {t("ps-itm-name")}</th>
-                    <th className="f-info-text"> {t("ps-rate")}</th>
+                    <th className="f-info-text"> {t("खरेदी दर")}</th>
                     <th className="f-info-text"> {t("ps-sale-rate")}</th>
                     <th className="f-info-text"> {t("ps-qty")}</th>
                     <th className="f-info-text"> {t("ps-amt")}</th>

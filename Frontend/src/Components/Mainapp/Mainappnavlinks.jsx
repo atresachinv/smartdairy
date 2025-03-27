@@ -246,10 +246,17 @@ const Mainappnavlinks = ({ setselected, handleSidebar }) => {
       role: ["admin", "super_admin", "manager"],
       submenus: [
         {
-          name: `${t("व्यवहार भरणे")}`,
+          name: `${t("कॅश चलन")}`,
           icon: <FaFileInvoice className="icon" />,
           index: 4.1,
-          path: "accounts/credit",
+          path: "accounts/cash",
+          role: ["admin", "super_admin", "manager"],
+        },
+        {
+          name: `${t("ट्रान्सफर चलन")}`,
+          icon: <FaFileInvoice className="icon" />,
+          index: 4.22,
+          path: "accounts/transfer",
           role: ["admin", "super_admin", "manager"],
         },
       ],

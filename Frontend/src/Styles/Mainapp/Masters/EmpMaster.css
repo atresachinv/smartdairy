@@ -1,3 +1,20 @@
+.custom-swal-popup {
+  min-width: 250px;
+  min-height: 50vh;
+}
+.custom-swal-title {
+  font-size: 20px;
+  font-weight: bold;
+  color: #17acc0;
+}
+.custom-swal-content {
+  font-size: 14px;
+}
+
+.swal2-icon.swal2-warning {
+  font-size: 14px;
+}
+
 @media screen and (max-width: 769px) {
   .create-emp-container,
   .emp-list-container {

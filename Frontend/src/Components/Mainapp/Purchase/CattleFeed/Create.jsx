@@ -376,7 +376,7 @@ const Create = () => {
           </div>
           <div className="purchase-input-row w100 h20 d-flex a-center sb">
             <div className="purchase-input-col w45 d-flex-col sb">
-              <label className="info-text px10">{t("ps-rate")}:</label>
+              <label className="info-text px10">{t("खरेदी दर ")}:</label>
               <input
                 id="rate"
                 type="number"
