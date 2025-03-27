@@ -200,14 +200,14 @@ exports.createEmployee = async (req, res) => {
 //v2
 exports.findEmpByCode = async (req, res) => {
   const { code } = req.body;
-  const dairy_id = req.user.dairy_id;
-  const center_id = req.user.center_id;
+  const { dairy_id, center_id } = req.user;
 
   if (!code) {
     return res
       .status(400)
       .json({ status: 400, message: "Employee code required!" });
   }
+
   if (!dairy_id) {
     return res.status(401).json({ status: 401, message: "Unauthorized User!" });
   }
@@ -235,12 +235,12 @@ exports.findEmpByCode = async (req, res) => {
             .status(500)
             .json({ message: "Error retrieving employee data" });
         }
+
         if (result.affectedRows === 0) {
           return res
             .status(204)
             .json({ status: 204, message: "Employee Not found!" });
         }
-
         return res.status(200).json({ status: 200, employee: result[0] });
       }
     );
@@ -283,10 +283,7 @@ exports.updateEmployee = async (req, res) => {
     !city ||
     !tehsil ||
     !district ||
-    !pincode ||
-    !bankName ||
-    !bank_ac ||
-    !bankIFSC
+    !pincode
   ) {
     return res
       .status(400)
@@ -322,7 +319,7 @@ exports.updateEmployee = async (req, res) => {
           emp_name,
           marathi_name,
           bankName,
-          bank_ac,
+          bank_ac || 0,
           bankIFSC,
           city,
           tehsil,
@@ -581,6 +578,7 @@ exports.employeeList = async (req, res) => {
           SELECT center_id, emp_name, emp_mobile, designation, salary, emp_id
           FROM employeemaster
           WHERE dairy_id = ?
+          ORDER BY center_id ASC, emp_id ASC;
         `;
         queryParams = [dairy_id];
       } else {
@@ -589,6 +587,7 @@ exports.employeeList = async (req, res) => {
           SELECT center_id, emp_name, emp_mobile, designation, salary, emp_id
           FROM employeemaster
           WHERE dairy_id = ? AND center_id = ?
+          ORDER BY emp_id ASC;
         `;
         queryParams = [dairy_id, center_id];
       }

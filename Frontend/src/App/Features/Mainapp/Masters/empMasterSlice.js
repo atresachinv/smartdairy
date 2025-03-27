@@ -9,11 +9,7 @@ const initialState = {
   deleteStatus: "idle",
   fetchStatus: "idle",
   findStatus: "idle",
-  createError: null,
-  updateError: null,
-  deleteError: null,
-  fetchError: null,
-  findError: null,
+  Error: null,
 };
 
 // Create a new Employee
