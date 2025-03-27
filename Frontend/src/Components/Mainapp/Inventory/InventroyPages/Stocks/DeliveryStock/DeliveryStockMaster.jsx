@@ -6,6 +6,7 @@ import ListDeliveryStock from "./ListDeliveryStock";
 import DeliveryReturns from "./DeliveryReturns";
 import DeliveryStockLinks from "./DeliveryStockLinks";
 import "../../../../../../Styles/Mainapp/Inventory/InventoryPages/Stock.css";
+import StockReport from "../../../../Apphome/Appnavviews/Sales/StockReport";
 
 const DeliveryStockMaster = () => {
   const [userRole, setUserRole] = useState(null);
@@ -31,6 +32,7 @@ const DeliveryStockMaster = () => {
           <Route path="list" element={<ListDeliveryStock />} />
           <Route path="return-list/add-new" element={<DeliveryReturns />} />
           <Route path="return-list" element={<ReturnListDeliveryStock />} />
+          <Route path="report" element={<StockReport />} />
           <Route path="*" element={<ListDeliveryStock />} />
         </Routes>
       </div>

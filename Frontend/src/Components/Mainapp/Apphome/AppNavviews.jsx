@@ -10,6 +10,7 @@ import MilksalesReport from "./Appnavviews/MilksalesPages/MilksalesReport";
 import Milksales from "./Appnavviews/MilksalesPages/Milksales";
 import AdminSalesReports from "./Appnavviews/MilkSankalan/AdminSalesReports";
 import SalesReports from "./Appnavviews/MilkSankalan/SalesReports";
+import StockReport from "./Appnavviews/Sales/StockReport";
 
 const AppNavViews = ({ index }) => {
   switch (index) {
@@ -45,6 +46,9 @@ const AppNavViews = ({ index }) => {
       break;
     case "retail/sale-report":
       return <MilksalesReport />;
+      break;
+    case "vehicle/stock/report":
+      return <StockReport />;
       break;
 
     default:

@@ -1233,7 +1233,7 @@ exports.getMaxDealNo = async (req, res) => {
 
     try {
       let query =
-        "SELECT MAX(srno) AS maxCustNo FROM customer WHERE orgid = ? AND ctype = ?";
+        "SELECT MAX(srno) AS maxCustNo FROM customer WHERE orgid = ? AND ctype = ? AND (isdeleted IS NULL OR isdeleted != 1)";
       let queryParams = [dairy_id, 2];
 
       if (autoCenter === 1) {
@@ -1254,7 +1254,7 @@ exports.getMaxDealNo = async (req, res) => {
         }
 
         // Fetching maxCustNo from results
-        const maxCustNo = results[0]?.maxCustNo || 0; // Use maxCustNo instead of maxCid
+        const maxCustNo = results[0]?.maxCustNo || 1000; // Use maxCustNo instead of maxCid
         const cust_no = maxCustNo + 1;
 
         // Return the new customer number

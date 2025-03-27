@@ -2,8 +2,15 @@
   width: 100%;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
 }
-
+.Credit-container-scroll {
+  scrollbar-width: none;
+  overflow-y: auto;
+}
+.Credit-container-scroll::-webkit-scrollbar {
+  display: none; /* For Chrome, Safari, and Edge */
+}
 .credit-form,
 .credit-table {
   padding: 10px;
@@ -32,7 +39,10 @@
 .credit-table .table-container .table th {
   font-weight: bold;
 }
-
+.credit-batchTally-buttons {
+  gap: 30px;
+  justify-content: center;
+}
 /* Responsive Design */
 @media (max-width: 768px) {
   .credit-form .row {
@@ -95,5 +105,17 @@
   }
   .utpadak-number-container .Amount-button-container {
     width: 100%;
+  }
+  .credit-all-form {
+    flex-direction: column;
+    gap: 10px;
+  }
+  .credit-batchTally {
+    flex-direction: column-reverse !important;
+  }
+  .credit-batchTally-buttons {
+    flex-direction: row !important;
+    gap: 10px;
+    justify-content: center;
   }
 }

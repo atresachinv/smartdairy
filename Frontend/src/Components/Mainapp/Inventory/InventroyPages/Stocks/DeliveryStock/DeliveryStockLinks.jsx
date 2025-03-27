@@ -40,20 +40,13 @@ const DeliveryStockLinks = ({ isselected, setIsSelected, userRole }) => {
       index: 2,
       path: "return-list",
       role: ["super_admin", "admin", "salesman"],
-      // submenus: [
-      //   {
-      //     name: "Add return",
-      //     index: 2.1,
-      //     path: "delivery/returns",
-      //     icon: <BsSignTurnSlightRight />,
-      //   },
-      //   {
-      //     name: "Return List",
-      //     index: 2.2,
-      //     path: "delivery/return-list",
-      //     icon: <FaListUl />,
-      //   },
-      // ],
+    },
+    {
+      name: `Report`,
+      icon: <MdOutlineAddTask className="icon" />,
+      index: 3,
+      path: "report",
+      role: ["super_admin", "admin", "salesman"],
     },
   ];
 
