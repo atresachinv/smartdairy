@@ -18,72 +18,64 @@ const Payments = () => {
         <label className="heading " htmlFor="">
           Payment
         </label>
-        <div className="bil-date-from-to-and-button-first-half-div w100 h35  d-flex-col">
-          <div className="bill-date-15day-to-button-div p10 d-flex w100 ">
-            <div className="bil-datee-div d-flex w40 a-center px10 ">
-              <span className="label-text w30">बिल दिनांक :</span>
-              <input className="data w50" type="date" />
+        <div className="bil-date-from-to-and-button-first-half-div w100 h20 d-flex">
+          <div className="bill-date-15day-to-button-div px10 d-flex-col sa w30 ">
+            <div className="bil-datee-div d-flex w100 h a-center px10 ">
+              <span className="label-text w40">बिल दिनांक</span>
+              <input className="data w60" type="date" />
             </div>
-            <div className="panderwada-fromDay-From-datee-div d-flex w40 a-center px10 ">
-              <span className="label-text w40">पंधरवडा दिनांक पासून </span>
-              <input className="data w50" type="date" />
-            </div>
-            <div className="Bill-show-date-button w20">
-              <button className="w-btn">दाखवा</button>
+            <div className="Vochucher-datee-div d-flex w100 a-center px10 ">
+              <span className="label-text w40">वोउचेर दिनांक:</span>
+              <input className="data w60" type="date" />
             </div>
           </div>
-          <div className="Vochucher-date-15day-to-button-div p10 d-flex w100 ">
-            <div className="Vochucher-datee-div d-flex w40 a-center px10 ">
-              <span className="label-text w35">वोउचेर दिनांक:</span>
+          <div className="Vochucher-date-15day-to-button-div  d-flex-col sa w40 ">
+            <div className="panderwada-fromDay-From-datee-div d-flex w100 a-center px10 ">
+              <span className="label-text w40">पंधरवडा दिनांक पासून:</span>
               <input className="data w50" type="date" />
             </div>
-            <div className="pandarwadaDay-From-second-datee-div d-flex w40 a-center px10 ">
-              <span className="label-text w40">पंधरवडा दिनांक पर्येंत</span>
+            <div className="pandarwadaDay-From-second-datee-div d-flex w100 a-center px10 ">
+              <span className="label-text w40">पंधरवडा दिनांक पर्येंत:</span>
               <input className="data w50" type="date" />
-            </div>
-            <div className="Bill-create-date-button w10">
-              <button className="w-btn">बिल पाहणे </button>
             </div>
           </div>
-          <div className="bill-list-checkbox-container w100 h20 d-flex">
-            <div className="check-acc-div w30 d-flex h1 px10">
+          <div className="code-no-from-to-button-div w15 d-flex-col sa  a-center">
+            <button className="w-btn">पाहणे</button>
+            <button className="w-btn">बदल करणे</button>
+          </div>
+          <div className="code-no-from-to-button-div w15 d-flex-col sa a-center">
+            <div className="check-acc-div w100 d-flex h1  a-center">
               <input className="w10" type="checkbox" />
-              <span className="w30 label-text">Check Acc</span>
+              <span className="w90 label-text"> Commission</span>
             </div>
-            <div className="Auto-kapat-div w30 d-flex h1 px10">
+            <div className="Auto-kapat-div w100 d-flex h1 a-center">
               <input className="w10" type="checkbox" />
-              <span className="w50 label-text">ऑटो कपात</span>
-            </div>
-          </div>
-          <div className="code-no-from-to-button-div w100 h20 my10 d-flex px10 a-center">
-            <div className="code-from-to-div w60 h1 d-flex">
-              <div className="from-code-no-div w40 h1 d-flex a-center">
-                <span className="w60">कोड.न पासून</span>
-                <input className=" data w30" type="text" />
-              </div>
-              <div className="to-code-no-div w40 h1 d-flex a-center">
-                <span className="w10"> ते </span>
-                <input className=" data w30" type="text" />
-              </div>
-            </div>
-            <div className="buttons-milk-payment w40 h1 d-flex a-center sa">
-              <button className="w-btn w50"> बिल कपात</button>
-              <button className="w-btn w50">कपात यादी</button>
+              <span className="w90 label-text">ऑटो कपात</span>
             </div>
           </div>
         </div>
         <div className="Bil-list-table-button-link-second-container d-flex-col w100 h65 ">
           <div className="table-secoin-div-and-buttons-div w100 d-flex h80 px10">
             <div className="bil-list-tabel-section-div w60 d-flex-col h1">
-              <div className="table-heading-section w100  h40 sa  d-flex">
+              <div className="code-number-from-todiv w100 h20 d-flex">
+                <div className="code-nofrom-div d-flex w50 h1 a-center">
+                  <span className="w30">कोड न पासून</span>
+                  <input className="data w30" type="text" />
+                </div>
+                <div className="code-nofrom-div d-flex w20 h1 a-center">
+                  <span className="w10">ते</span>
+                  <input className="data w50" type="text" />
+                </div>
+              </div>
+              <div className="table-heading-section w100 sa  d-flex">
                 <span>उत्पादक.क्र </span>
                 <span>उत्पादक नाव </span>
                 <span>Amount</span>
               </div>
               <div className="table-data-section-div w100 d-flex mx90 hidescrollbar">
                 <div className="Bill-list-table-data-div  w100 h1  d-flex sa  ">
-                  <span>Code</span>
-                  <span>Customer Name</span>
+                  <span>उत्पादक.क्र</span>
+                  <span>उत्पादक नाव</span>
                   <span>Amount</span>
                 </div>
               </div>
@@ -110,11 +102,11 @@ const Payments = () => {
               </div>
             </div>
           </div>
-          <div className="bill-payments-container-div w60 px10 sa d-flex">
-            <button className="w-btn ">निवडलेले बिल Delete करा </button>
-            <button className="w-btn">सर्व बिल Delete करा </button>
-            <button className="w-btn">पंधरवडा दूध बिल रद्द करा </button>
-          </div>
+        </div>
+        <div className="bill-payments-container-div w60 px10 sa d-flex">
+          <button className="w-btn ">निवडलेले बिल Delete करा </button>
+          <button className="w-btn">सर्व बिल Delete करा </button>
+          <button className="w-btn">पंधरवडा दूध बिल रद्द करा </button>
         </div>
       </div>
     </>

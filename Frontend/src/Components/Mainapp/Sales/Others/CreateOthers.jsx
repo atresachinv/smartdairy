@@ -29,6 +29,7 @@ const CreateOthers = () => {
     (state) => state.inventory.allProducts,
     shallowEqual
   );
+  const [mobile, setMobile] = useState("");
   const [cartItem, setCartItem] = useState([]);
   const [cname, setCname] = useState("");
   const [fcode, setFcode] = useState("");
@@ -85,8 +86,10 @@ const CreateOthers = () => {
         (customer) => customer.srno === parseInt(fcode)
       );
       setCname(customer?.cname || "");
+      setMobile(customer?.mobile || "");
     } else {
       setCname("");
+      setMobile("");
     }
   }, [fcode, customerslist]);
 
@@ -752,8 +755,25 @@ const CreateOthers = () => {
               />
             </div>
             <div className="col w80">
-              <label htmlFor="custname" className="info-text w100">
-                {t("milkcollection:m-cust-name")}:
+              <label
+                htmlFor="custname"
+                className="info-text w100 d-flex a-center sb"
+              >
+                {t("milkcollection:m-cust-name")}:{" "}
+                {/* {userRole !== "mobilecollector" ? (
+                  <></>
+                ) : (
+                  <span className="label-text w50 d-flex j-center">
+                    {mobile}
+                  </span>
+                )} */}
+                {settings.salesms === 1 ? (
+                  <span className="label-text w50 d-flex j-center">
+                    {mobile}
+                  </span>
+                ) : (
+                  <></>
+                )}
               </label>
               <input
                 type="text"
