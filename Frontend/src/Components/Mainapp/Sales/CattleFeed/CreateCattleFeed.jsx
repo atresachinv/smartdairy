@@ -773,13 +773,20 @@ const CreateCattleFeed = () => {
                 className="info-text w100 d-flex a-center sb"
               >
                 {t("milkcollection:m-cust-name")}:{" "}
-                {userRole !== "mobilecollector" ? (
+                {/* {userRole !== "mobilecollector" ? (
                   <></>
                 ) : (
                   <span className="label-text w50 d-flex j-center">
                     {mobile}
                   </span>
-                )}
+                )} */}
+                {settings.salesms === 1 ? (
+                  <span className="label-text w50 d-flex j-center">
+                    {mobile}
+                  </span>
+                ) : (
+                  <></>
+                )}{" "}
               </label>
               <input
                 type="text"
