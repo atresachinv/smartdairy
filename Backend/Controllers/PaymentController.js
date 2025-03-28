@@ -12,7 +12,6 @@ dotenv.config({ path: "Backend/.env" });
 exports.updateSelectedRecord = async (req, res) => {
   const { data } = req.body;
 
-  console.log("hiii");
   if (!data) {
     return res.status(400).json({ message: "record are required!" });
   }
@@ -1222,5 +1221,75 @@ exports.transferMilkCollToDate = async (req, res) => {
       connection.release();
       return res.status(500).json({ message: "Internal server error" });
     }
+  });
+};
+
+// <<<<<<<<<<< ----------------- Generate Payment -------------------->>>>>>>>>>>>>> //
+// ----------------------------------------------------------------------------------->
+// get payment Amount ---------------------------------------------------------------->
+// ----------------------------------------------------------------------------------->
+
+exports.getMilkPayAmt = async (req, res) => {
+  const { dairy_id, center_id } = req.user;
+  const { fromDate, toDate } = req.query;
+
+  if (!dairy_id) {
+    return res
+      .status(400)
+      .json({ message: "Dairy ID not found in the request!" });
+  }
+  if (!fromDate || !toDate) {
+    return res
+      .status(400)
+      .json({ message: "fromDate and toDate are required!" });
+  }
+
+  const dairy_table = `dailymilkentry_${dairy_id}`;
+
+  pool.getConnection((err, connection) => {
+    if (err) {
+      console.error("Error getting MySQL connection: ", err.message);
+      return res.status(500).json({ message: "Database connection error" });
+    }
+
+    const milkCollectionQuery = `
+      SELECT 
+        rno, 
+        cname,
+        SUM(Litres) AS totalLitres,
+        SUM(Litres * rate) AS totalamt,
+        MIN(ReceiptDate) AS min_receipt_date 
+      FROM 
+        ${dairy_table}
+      WHERE 
+        ReceiptDate BETWEEN ? AND ? 
+        AND center_id = ?
+      GROUP BY 
+        rno, cname
+      ORDER BY 
+        min_receipt_date ASC;
+    `;
+
+    connection.query(
+      milkCollectionQuery,
+      [fromDate, toDate, center_id],
+      (err, results) => {
+        connection.release();
+
+        if (err) {
+          console.error("Error executing query: ", err.message);
+          return res.status(500).json({ message: "Error executing query" });
+        }
+
+        if (results.length === 0) {
+          return res.status(200).json({
+            paymentAmount: [],
+            message: "No record found!",
+          });
+        }
+
+        res.status(200).json({ paymentAmount: results });
+      }
+    );
   });
 };
