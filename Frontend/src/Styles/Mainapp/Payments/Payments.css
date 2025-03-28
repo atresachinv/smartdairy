@@ -1,0 +1,94 @@
+.bill-payments-container-div button {
+  width: 45%;
+}
+
+@media screen and (max-width: 426px) {
+  .Bil-list-container {
+    min-height: auto;
+  }
+
+  .generate-bill-form-container {
+    min-height: fit-content;
+    flex-direction: column;
+  }
+
+  .generate-bill-form-container .bill-voucher-date-container,
+  .generate-bill-form-container .payment-dates-container {
+    width: 100%;
+    min-height: fit-content;
+    margin-bottom: 10px;
+    padding: 10px;
+  }
+
+  .bill-voucher-date-container .bil-date-div,
+  .Voucher-date-div,
+  .payment-dates-container .pay-fromdate-div,
+  .pay-todate-div {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .bill-voucher-date-container span,
+  .bill-voucher-date-container input,
+  .payment-dates-container span,
+  .payment-dates-container input {
+    width: 100%;
+  }
+
+  .code-no-from-to-button-div,
+  .checkbox-container {
+    width: 100%;
+    min-height: fit-content;
+    flex-direction: row;
+    margin-bottom: 10px;
+  }
+
+  .payment-details-and-report-btn-div {
+    min-height: 180%;
+    flex-direction: column;
+  }
+
+  .payment-data-report-btn-div {
+    min-height: fit-content;
+    width: 100%;
+    padding: 0;
+  }
+
+  .customer-code-div {
+    width: 100%;
+    min-height: fit-content;
+    flex-direction: column;
+  }
+
+  .customer-code-div span {
+    width: 100%;
+  }
+
+  .customer-code-div .cust-code-div {
+    width: 100%;
+    min-height: fit-content;
+    margin-bottom: 10px;
+  }
+
+  .cust-code-div input {
+    width: 50%;
+  }
+
+  .bill-payments-details-container {
+    min-height: 60%;
+    margin-bottom: 10px;
+  }
+
+  .bill-form-btn-div {
+    justify-content: space-between;
+    margin-bottom: 10px;
+  }
+
+  .payment-details-and-report-btn-div .bill-payments-container-div {
+    width: 100%;
+    min-height: 40%;
+  }
+  .bill-payments-container-div button {
+    width: 45%;
+  }
+}
