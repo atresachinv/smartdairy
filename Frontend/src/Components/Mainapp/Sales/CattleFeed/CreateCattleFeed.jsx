@@ -19,7 +19,8 @@ const CreateCattleFeed = () => {
   const { t } = useTranslation(["common", "milkcollection", "puchasesale"]);
   const tDate = useSelector((state) => state.date.toDate);
   const salesRates = useSelector((state) => state.sales.salesRates);
-  const customerslist = useSelector((state) => state.customer.customerlist);
+  const customersData = useSelector((state) => state.customer.customerlist);
+  const [customerslist, setCustomerList] = useState([]);
   const productlist = useSelector(
     (state) => state.inventory.allProducts || [],
     shallowEqual
@@ -49,6 +50,8 @@ const CreateCattleFeed = () => {
   const centerSetting = useSelector(
     (state) => state.dairySetting.centerSetting
   );
+  const centerId = useSelector((state) => state.dairy.dairyData.center_id);
+
   const [settings, setSettings] = useState({});
   const autoCenter = settings?.autoCenter;
   //set setting
@@ -708,6 +711,16 @@ const CreateCattleFeed = () => {
     const year = date.getFullYear();
     return `${day}/${month}/${year}`;
   };
+
+  //set Customer List
+  useEffect(() => {
+    if (customersData.length > 0) {
+      const filterCust = customersData.filter(
+        (item) => item.centerid === centerId
+      );
+      setCustomerList(filterCust);
+    }
+  }, [customersData]);
 
   return (
     <div className="add-cattlefeed-sale-container w100 h1 d-flex-col sa">
