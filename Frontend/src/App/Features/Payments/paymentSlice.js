@@ -3,10 +3,12 @@ import axiosInstance from "../../axiosInstance";
 
 const initialState = {
   payment: {},
-  paymentAmt: [],
+  paymentData: [],
+  payZeroData: [],
   customerMilkData: [],
   transferedMilkData: [],
   status: "idle",
+  pzerostatus: "idle",
   paystatus: "idle",
   getMilkstatus: "idle",
   transferedMilkstatus: "idle",
@@ -285,18 +287,42 @@ export const transferToShift = createAsyncThunk(
 //----------------------------------------------------->
 
 //get total milk payment amt----------------------------------------------------->
-export const fetchMilkTotalAmt = createAsyncThunk(
-  "payment/fetchMilkTotalAmt",
+export const checkAmtZero = createAsyncThunk(
+  "payment/checkAmtZero",
   async ({ fromDate, toDate }, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.get("/get/total/payment-amt", {
-        fromDate,
-        toDate,
+      const response = await axiosInstance.get("/check/amt-zero", {
+        params: {
+          fromDate,
+          toDate,
+        },
       });
+      if (response.status === 204) {
+        return { status: 204, paymentZero: [] }; // Ensure a proper response structure
+      }
       return response.data;
     } catch (error) {
       const errorMessage =
-        error.response?.data?.message || "Failed to delete milk records.";
+        error.response?.data?.message || "Failed to check amt zero.";
+      return rejectWithValue(errorMessage);
+    }
+  }
+);
+//get total milk payment amt----------------------------------------------------->
+export const fetchMilkPaydata = createAsyncThunk(
+  "payment/fetchMilkPaydata",
+  async ({ fromDate, toDate }, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.get("/get/total/payment-amt", {
+        params: {
+          fromDate,
+          toDate,
+        },
+      });
+      return response.data.paymentData;
+    } catch (error) {
+      const errorMessage =
+        error.response?.data?.message || "Failed to fetch payment data.";
       return rejectWithValue(errorMessage);
     }
   }
@@ -446,16 +472,28 @@ const paymentSlice = createSlice({
       .addCase(deleteCollection.rejected, (state, action) => {
         state.deleteCollstatus = "failed";
         state.error = action.payload;
+      }) //check amount zero ------------------------------------------->
+      .addCase(checkAmtZero.pending, (state) => {
+        state.pzerostatus = "loading";
+        state.error = null;
+      })
+      .addCase(checkAmtZero.fulfilled, (state, action) => {
+        state.pzerostatus = "succeeded";
+        state.payZeroData = action.payload.paymentZero;
+      })
+      .addCase(checkAmtZero.rejected, (state, action) => {
+        state.pzerostatus = "failed";
+        state.error = action.payload;
       }) //get total milk payment ------------------------------------------->
-      .addCase(fetchMilkTotalAmt.pending, (state) => {
+      .addCase(fetchMilkPaydata.pending, (state) => {
         state.paystatus = "loading";
         state.error = null;
       })
-      .addCase(fetchMilkTotalAmt.fulfilled, (state, action) => {
+      .addCase(fetchMilkPaydata.fulfilled, (state, action) => {
         state.paystatus = "succeeded";
-        state.paymentAmt = action.payload;
+        state.paymentData = action.payload;
       })
-      .addCase(fetchMilkTotalAmt.rejected, (state, action) => {
+      .addCase(fetchMilkPaydata.rejected, (state, action) => {
         state.paystatus = "failed";
         state.error = action.payload;
       });

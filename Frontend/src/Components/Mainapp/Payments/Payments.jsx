@@ -1,12 +1,18 @@
 import React, { useEffect, useRef, useState } from "react";
+import { toast } from "react-toastify";
 import "../../../Styles/Mainapp/Payments/Payments.css";
 import { useDispatch, useSelector } from "react-redux";
-import { listCustomer } from "../../../App/Features/Mainapp/Masters/custMasterSlice";
+import { getMaxCustNo } from "../../../App/Features/Mainapp/Masters/custMasterSlice";
+import {
+  checkAmtZero,
+  fetchMilkPaydata,
+} from "../../../App/Features/Payments/paymentSlice";
 
 const Payments = () => {
   const dispatch = useDispatch();
   const tDate = useSelector((state) => state.date.toDate);
   const custno = useSelector((state) => state.customer.maxCustNo);
+  const payData = useSelector((state) => state.payment.paymentData);
   const bdateRef = useRef(null);
   const vcdateRef = useRef(null);
   const fdateRef = useRef(null);
@@ -27,9 +33,8 @@ const Payments = () => {
   };
 
   const [formData, setFormData] = useState(initialData);
-
   useEffect(() => {
-    dispatch(listCustomer());
+    dispatch(getMaxCustNo());
   }, [dispatch]);
 
   useEffect(() => {
@@ -39,6 +44,13 @@ const Payments = () => {
       billDate: tDate,
     }));
   }, [custno, tDate]);
+
+  useEffect(() => {
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      vcDate: formData.toDate,
+    }));
+  }, [formData.toDate]);
 
   const handleInput = (e) => {
     const { name, value } = e.target;
@@ -56,13 +68,38 @@ const Payments = () => {
     }
   };
 
+  // handle Generate bill function --------------------------------------------------------->
+  const handleGenerateBill = async (e) => {
+    e.preventDefault();
+
+    const result = await dispatch(
+      checkAmtZero({ fromDate: formData.fromDate, toDate: formData.toDate })
+    ).unwrap();
+
+    if (result?.status === 204) {
+      dispatch(
+        fetchMilkPaydata({
+          fromDate: formData.fromDate,
+          toDate: formData.toDate,
+        })
+      );
+    } else if (result?.status === 200) {
+      toast.error("Milk correction required!");
+    } else {
+      toast.error("Unexpected response. Please try again!");
+    }
+  };
+
   return (
     <>
       <div className="Bil-list-container w100 h1 d-flex-col sb p10">
         <label className="heading " htmlFor="">
           Payment
         </label>
-        <form className="generate-bill-form-container w100 h20 d-flex sb br6">
+        <form
+          onSubmit={handleGenerateBill}
+          className="generate-bill-form-container w100 h20 d-flex sb br6"
+        >
           <div className="bill-voucher-date-container w30 px10 d-flex-col bg-light-skyblue br6 sa px10">
             <div className="bil-date-div d-flex w100 h1 a-center sb">
               <label htmlFor="billdate" className="label-text w40">
@@ -88,6 +125,7 @@ const Payments = () => {
                 className="data w60"
                 type="date"
                 name="vcDate"
+                value={formData.vcDate}
                 onChange={handleInput}
                 onKeyDown={(e) => handleKeyDown(e, fdateRef)}
                 ref={vcdateRef}
@@ -151,7 +189,7 @@ const Payments = () => {
               </label>
             </div>
           </div>
-          <div className="code-no-from-to-button-div w10 h1 d-flex-col se a-center">
+          <div className="form-button-div w10 h1 d-flex-col se a-center">
             <button type="button" className="w-btn">
               पाहणे
             </button>
@@ -194,15 +232,35 @@ const Payments = () => {
             </div>
             <div className="bill-payments-details-container w100 h70 d-flex-col mh70 hidescrollbar bg">
               <div className="bill-heading-div w100 p10 d-flex a-center t-center sb sticky-top bg7 br6">
-                <span className="f-label-text w10">उत्पा.क्र </span>
-                <span className="f-label-text w40">उत्पादकाचे नाव </span>
-                <span className="f-label-text w20">रक्कम</span>
+                <span className="f-label-text w10">उत्पा.क्र</span>
+                <span className="f-label-text w40">उत्पादकाचे नाव</span>
+                <span className="f-label-text w15">लिटर</span>
+                <span className="f-label-text w15">रक्कम</span>
               </div>
-              <div className="bill-data-div w100 p10 d-flex a-center t-center sb">
-                <span className="info-text w10">उत्पा.क्र</span>
-                <span className="info-text w40">उत्पादकाचे नाव</span>
-                <span className="info-text w20">रक्कम</span>
-              </div>
+              {payData.length !== 0 ? (
+                payData.map((item, index) => (
+                  <div
+                    key={index}
+                    className="bill-data-div w100 p10 d-flex a-center sb"
+                    style={{
+                      backgroundColor: index % 2 === 0 ? "#faefe3" : "#fff",
+                    }}
+                  >
+                    <span className="info-text w10 t-center">{item.rno}</span>
+                    <span className="info-text w40 t-start">{item.cname}</span>
+                    <span className="info-text w15 t-end">
+                      {item.totalLitres}
+                    </span>
+                    <span className="info-text w15 t-end">
+                      {item.totalamt || 0}
+                    </span>
+                  </div>
+                ))
+              ) : (
+                <div className="box d-flex center">
+                  <span className="label-text">No data Found!</span>
+                </div>
+              )}
             </div>
 
             <div className="bill-form-btn-div w100 h10 d-flex j-end">

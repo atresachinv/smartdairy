@@ -4,33 +4,59 @@
 
 @media screen and (max-width: 768px) {
   .bank-master-container {
-    min-height: fit-content;
+    min-height: auto;
   }
+
   .bank-master-container .bank-master-form-container {
     min-height: fit-content;
-    flex-wrap: wrap;
-    gap: 10px;
   }
+
+  .bank-master-form-container .bank-info-details-code {
+    min-height: fit-content;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-bottom: 10px;
+  }
+
   .bank-master-form-container .bank-details-code {
-    flex: 1 0 50px;
+    width: 20%;
   }
+
   .bank-master-form-container .bank-details-bankname {
-    flex: 2 0 200px;
-  }
-  .bank-master-form-container .bank-details-branch {
-    flex: 1 0 170px;
-  }
-  .bank-master-form-container .bank-details-ifsc {
-    flex: 2 0 120px;
-  }
-  .bank-master-form-container .add-bank-btn {
-    margin: 0 0 10px 0;
-    flex: 2 0 120px;
-  }
-  .bank-details-container {
-    overflow-x: auto;
     width: 100%;
   }
+
+  .bank-master-form-container .bank-details-branch {
+    width: 100%;
+  }
+
+  .bank-master-form-container .bank-details-ifsc {
+    width: 100%;
+  }
+
+  .bank-master-form-container .add-bank-btn {
+    width: 100%;
+  }
+  .bank-master-form-container .form-btn-container {
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: flex-start;
+    justify-content: space-around;
+    min-height: fit-content;
+    margin-bottom: 10px;
+  }
+
+  .bank-master-form-container .form-btn-container button {
+    width: 45%;
+    margin: 0;
+  }
+
+  .bank-details-container {
+    overflow-x: auto;
+    min-height: 70%;
+    width: 100%;
+  }
+
   .bank-details-headings {
     min-width: 600px;
   }

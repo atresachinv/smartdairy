@@ -280,7 +280,7 @@ exports.createSubLedger = async (req, res) => {
           marathi_name,
           subAcc,
           sanghahead,
-          perltramt,
+          perltramt || 0.0,
           vcsms,
           date,
           user_id,
