@@ -14,6 +14,7 @@ const {
   milkTrasferToDates,
   milkTrasferToShift,
   getMilkPayAmt,
+  checkZeroAmt,
 } = require("../Controllers/PaymentController");
 
 const router = express.Router();
@@ -45,6 +46,7 @@ router
 // ---------------------------------------------------------------------->
 // generate payment
 // ---------------------------------------------------------------------->
+router.route("/check/amt-zero").get(verifyToken, checkZeroAmt);
 router.route("/get/total/payment-amt").get(verifyToken, getMilkPayAmt);
 
 module.exports = router;

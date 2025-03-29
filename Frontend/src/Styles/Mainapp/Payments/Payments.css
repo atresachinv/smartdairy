@@ -21,9 +21,9 @@
   }
 
   .bill-voucher-date-container .bil-date-div,
-  .Voucher-date-div,
+  .bill-voucher-date-container .Voucher-date-div,
   .payment-dates-container .pay-fromdate-div,
-  .pay-todate-div {
+  .payment-dates-container .pay-todate-div {
     flex-direction: column;
     align-items: flex-start;
   }
@@ -35,32 +35,38 @@
     width: 100%;
   }
 
-  .code-no-from-to-button-div,
-  .checkbox-container {
+  .generate-bill-form-container .checkbox-container {
     width: 100%;
     min-height: fit-content;
     flex-direction: row;
     margin-bottom: 10px;
   }
-
+  .generate-bill-form-container .form-button-div {
+    width: 100%;
+    flex-direction: row;
+    justify-content: space-between;
+  }
+  .generate-bill-form-container .form-button-div button {
+    width: 45%;
+  }
   .payment-details-and-report-btn-div {
     min-height: 180%;
     flex-direction: column;
   }
 
-  .payment-data-report-btn-div {
+  .payment-details-and-report-btn-div .payment-data-report-btn-div {
     min-height: fit-content;
     width: 100%;
     padding: 0;
   }
 
-  .customer-code-div {
+  .payment-details-and-report-btn-div .customer-code-div {
     width: 100%;
     min-height: fit-content;
     flex-direction: column;
   }
 
-  .customer-code-div span {
+  .payment-data-report-btn-div .customer-code-div span {
     width: 100%;
   }
 
@@ -71,7 +77,7 @@
   }
 
   .cust-code-div input {
-    width: 50%;
+    width: 20%;
   }
 
   .bill-payments-details-container {
@@ -79,11 +85,13 @@
     margin-bottom: 10px;
   }
 
-  .bill-form-btn-div {
+  .payment-data-report-btn-div .bill-form-btn-div {
     justify-content: space-between;
     margin-bottom: 10px;
   }
-
+  .payment-data-report-btn-div .bill-form-btn-div button {
+    width: 30%;
+  }
   .payment-details-and-report-btn-div .bill-payments-container-div {
     width: 100%;
     min-height: 40%;
