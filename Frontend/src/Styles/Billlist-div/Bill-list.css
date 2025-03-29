@@ -1,0 +1,93 @@
+/* Parent Container */
+
+/* Table Heading Section */
+.table-heading-section {
+  background: #007bff;
+  position: sticky;
+  height: 35px;
+}
+.table-heading-section span {
+  color: #f1f1f1;
+}
+
+/* Hide Scrollbars */
+.Bill-list-table-data-div::-webkit-scrollbar {
+  display: none; /* Hide scrollbar in webkit browsers (Chrome, Safari) */
+}
+
+/* Hover effect for rows */
+.Bill-list-table-data-div:hover {
+  background-color: #f1f1f1;
+  cursor: pointer;
+}
+
+/* Optional responsive behavior for smaller screens */
+@media (max-width: 768px) {
+  .bil-list-tabel-section-div {
+    width: 100%; /* Make it full width on smaller screens */
+  }
+
+  .table-heading-section,
+  .Bill-list-table-data-div {
+    flex-direction: column;
+  }
+
+  .table-heading-section span,
+  .Bill-list-table-data-div span {
+    text-align: left;
+    padding-left: 10px;
+  }
+}
+/* Button Section */
+.button-section-div {
+  display: flex;
+  width: 40%;
+  justify-content: space-between;
+}
+
+.buttons-first-section-div,
+.buttons-second-section-div {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 48%;
+}
+
+.buttons-first-section-div button,
+.buttons-second-section-div button {
+  width: 100%;
+}
+.bill-payments-container-div {
+  display: flex;
+  width: 40%;
+  justify-content: space-between;
+}
+.w-btn {
+  padding: 8px 20px;
+  font-size: 14px;
+
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.w-btn:hover {
+  background-color: #45a049;
+}
+.buttons-second-section-div {
+  margin-left: 10px;
+}
+.bill-payments-container-div button {
+  width: 180px;
+}
+
+@media screen and (max-width: 426px) {
+ .bil-date-from-to-and-button-first-half-div{
+  flex-direction: column;
+  height: auto;
+ }
+ .bil-date-from-to-and-button-first-half-div .bill-date-15day-to-button-div{
+    
+ }
+}
