@@ -1,285 +1,10 @@
-// import React, { useEffect, useRef, useState } from "react";
-// import { toast } from "react-toastify";
-// import { useDispatch, useSelector } from "react-redux";
-// import { useTranslation } from "react-i18next";
-// import {
-//   createBank,
-//   fetchMaxCode,
-//   getBankList,
-// } from "../../../../../App/Features/Mainapp/Masters/bankSlice";
-// import "../../../../../Styles/Mainapp/Masters/BankMaster.css";
-
-// const BankMaster = () => {
-//   const dispatch = useDispatch();
-//   const { t } = useTranslation(["milkcollection", "common"]);
-//   const tDate = useSelector((state) => state.date.toDate);
-//   const maxCode = useSelector((state) => state.bank.maxCode);
-//   const bankList = useSelector((state) => state.bank.banksList);
-//   const listStatus = useSelector((state) => state.bank.listStatus);
-//   const [errors, setErrors] = useState({});
-//   const codeRef = useRef(null);
-//   const nameRef = useRef(null);
-//   const branchRef = useRef(null);
-//   const ifscRef = useRef(null);
-//   const addbuttonRef = useRef(null);
-//   console.log("max list", bankList);
-//   const initialValues = {
-//     date: "",
-//     code: "",
-//     bankname: "",
-//     branch: "",
-//     ifsc: "",
-//   };
-
-//   const [values, setValues] = useState(initialValues);
-
-//   useEffect(() => {
-//     dispatch(fetchMaxCode());
-//     dispatch(getBankList());
-//   }, []);
-
-//   useEffect(() => {
-//     setValues((prevData) => ({
-//       ...prevData,
-//       date: tDate,
-//       code: maxCode,
-//     }));
-//   }, [maxCode]);
-//   // --------------------------------------------------------------------------------->
-//   // handle input values ------------------------------------------------------------->
-
-//   const handleInputs = (e) => {
-//     const { name, value } = e.target;
-
-//     setValues({ ...values, [name]: value });
-
-//     const fieldError = validateField(name, value);
-//     setErrors((prevErrors) => {
-//       const updatedErrors = { ...prevErrors, ...fieldError };
-//       if (!value) delete updatedErrors[name]; // Clear error if field is empty
-//       return updatedErrors;
-//     });
-//   };
-
-//   const validateField = (name, value) => {
-//     let error = {};
-
-//     switch (name) {
-//       case "code":
-//         if (!/^\d+$/.test(value.toString())) {
-//           error[name] = "Invalid Customer code.";
-//         } else {
-//           delete errors[name];
-//         }
-//         break;
-
-//       case "bankname":
-//         if (!/^[a-zA-Z\s]+$/.test(value) || value.length < 3) {
-//           error[name] = "Invalid Customer Name.";
-//         } else {
-//           delete errors[name];
-//         }
-//         break;
-
-//       case "branch":
-//         if (!/^[a-zA-Z\s]+$/.test(value) || value.length < 3) {
-//           error[name] = "Invalid Customer Name.";
-//         } else {
-//           delete errors[name];
-//         }
-//         break;
-
-//       case "ifsc":
-//         if (!/^[A-Z]{4}0[A-Z0-9]{6}$/.test(value)) {
-//           error[name] = "Invalid IFSC code.";
-//         } else {
-//           delete errors[name];
-//         }
-//         break;
-
-//       default:
-//         break;
-//     }
-
-//     return error;
-//   };
-
-//   const validateFields = () => {
-//     const fieldsToValidate = ["code", "bankname", "branch", "ifsc"];
-
-//     const validationErrors = {};
-//     fieldsToValidate.forEach((field) => {
-//       const fieldError = validateField(field, values[field]);
-//       if (Object.keys(fieldError).length > 0) {
-//         validationErrors[field] = fieldError[field];
-//       }
-//     });
-
-//     setErrors(validationErrors);
-//     return validationErrors;
-//   };
-
-//   // ---------------------------------------------------------------------------------->
-//   // handle form submit --------------------------------------------------------------->
-
-//   const handleKeyDown = (e, nextRef) => {
-//     if (e.key === "Enter") {
-//       e.preventDefault(); // Prevent form submission
-//       if (nextRef && nextRef.current) {
-//         nextRef.current.focus();
-//       }
-//     }
-//   };
-
-//   const handleAddBank = async (e) => {
-//     e.preventDefault();
-//     console.log(values);
-//     // Validate fields before submission
-//     const validationErrors = validateFields();
-//     if (Object.keys(validationErrors).length > 0) {
-//       setErrors(validationErrors);
-//       return;
-//     }
-
-//     if (!values.code || !values.bankname || !values.ifsc || !values.branch) {
-//       toast.info("Please add bank details!");
-//       return;
-//     }
-
-//     const res = await dispatch(createBank({ values })).unwrap();
-//     if (res.status === 200) {
-//       dispatch(fetchMaxCode());
-//       dispatch(getBankList());
-//       setValues(initialValues);
-//       toast.success("New Bank Added Successfully!");
-//     } else {
-//       toast.success("Failed to add new bank!");
-//     }
-//   };
-
-//   return (
-//     <div className="bank-master-container w100 h1 d-flex-col sb p10">
-//       <span className="heading p10">Add New Bank</span>
-//       <form
-//         onSubmit={handleAddBank}
-//         className="bank-master-form-container w100 h20 d-flex-col a-center sb"
-//       >
-//         <div className="bank-info-details-code w100 h50 d-flex a-center sb">
-//           <div className="bank-details-code w10 d-flex-col sb">
-//             <label htmlFor="code" className="label-text w100">
-//               Code :
-//             </label>
-//             <input
-//               type="text"
-//               className={`data ${errors.code ? "input-error" : ""}`}
-//               id="code"
-//               name="code"
-//               value={values.code}
-//               ref={codeRef}
-//               onKeyDown={(e) => handleKeyDown(e, nameRef)}
-//               onChange={handleInputs}
-//             />
-//           </div>
-//           <div className="bank-details-bankname w30 d-flex-col sb">
-//             <label htmlFor="bankname" className="label-text w">
-//               Bank Name :
-//             </label>
-//             <input
-//               type="text"
-//               className={`data ${errors.bankname ? "input-error" : ""}`}
-//               id="bankname"
-//               name="bankname"
-//               value={values.bankname}
-//               ref={nameRef}
-//               disabled={!values.code}
-//               onKeyDown={(e) => handleKeyDown(e, branchRef)}
-//               onChange={handleInputs}
-//             />
-//           </div>
-//           <div className="bank-details-branch w25 d-flex-col sb">
-//             <label htmlFor="branch" className="label-text">
-//               Branch Name :
-//             </label>
-//             <input
-//               type="text"
-//               className={`data ${errors.branch ? "input-error" : ""}`}
-//               id="branch"
-//               name="branch"
-//               value={values.branch}
-//               ref={branchRef}
-//               disabled={!values.bankname}
-//               onKeyDown={(e) => handleKeyDown(e, ifscRef)}
-//               onChange={handleInputs}
-//             />
-//           </div>
-//           <div className="bank-details-ifsc w15 d-flex-col sb">
-//             <label htmlFor="ifsc" className="label-text">
-//               Bank IFSC :
-//             </label>
-//             <input
-//               type="text"
-//               className={`data ${errors.ifsc ? "input-error" : ""}`}
-//               id="ifsc"
-//               name="ifsc"
-//               value={values.ifsc}
-//               ref={ifscRef}
-//               disabled={!values.branch}
-//               onKeyDown={(e) => handleKeyDown(e, addbuttonRef)}
-//               onChange={handleInputs}
-//             />
-//           </div>
-//         </div>
-//         <div className="form-btn-container w100 h50 d-flex a-center j-end">
-//           <button type="reset" className="w-btn mx10">
-//             reset
-//           </button>
-//           <button type="submit" className="w-btn" ref={addbuttonRef}>
-//             ADD Bank
-//           </button>
-//         </div>
-//       </form>
-//       <div className="bank-details-container w100 h70 mh70 hidescrollbar d-flex-col bg">
-//         <div className="bank-details-headings w100 p10 d-flex a-center t-center sticky-top bg7 sa">
-//           <span className="f-label-text w10">No.</span>
-//           <span className="f-label-text w30">Name</span>
-//           <span className="f-label-text w20">Address</span>
-//           <span className="f-label-text w15">IFSC</span>
-//           <span className="f-label-text w10">Action</span>
-//         </div>
-//         {listStatus === "loading" ? (
-//           <Spinner />
-//         ) : bankList.length > 0 ? (
-//           bankList.map((bank, index) => (
-//             <div
-//               key={index}
-//               className="bank-details-headings w100 p10 d-flex a-center sa"
-//               style={{
-//                 backgroundColor: index % 2 === 0 ? "#faefe3" : "#fff",
-//               }}
-//             >
-//               <span className="label-text w10">{bank.code}</span>
-//               <span className="label-text w30 t-start">{bank.name}</span>
-//               <span className="label-text w20">{bank.branch}</span>
-//               <span className="label-text w15">{bank.ifsc}</span>
-//               <span className="label-text w10 t-center">Edit</span>
-//             </div>
-//           ))
-//         ) : (
-//           <div className="box d-flex center">
-//             <span className="label-text">No records Forund</span>
-//           </div>
-//         )}
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default BankMaster;
-
 import React, { useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
 import { useDispatch, useSelector } from "react-redux";
 import { useTranslation } from "react-i18next";
+import { FaEdit } from "react-icons/fa";
+import { MdDeleteForever } from "react-icons/md";
+import Swal from "sweetalert2";
 import {
   createBank,
   fetchMaxCode,
@@ -295,10 +20,11 @@ const BankMaster = () => {
   const tDate = useSelector((state) => state.date.toDate);
   const maxCode = useSelector((state) => state.bank.maxCode);
   const bankList = useSelector((state) => state.bank.banksList);
+  const createStatus = useSelector((state) => state.bank.creStatus);
+  const updateStatus = useSelector((state) => state.bank.upStatus);
   const listStatus = useSelector((state) => state.bank.listStatus);
   const [errors, setErrors] = useState({});
   const [isEditMode, setIsEditMode] = useState(false);
-  const [editId, setEditId] = useState(null);
 
   const codeRef = useRef(null);
   const nameRef = useRef(null);
@@ -307,6 +33,7 @@ const BankMaster = () => {
   const addbuttonRef = useRef(null);
 
   const initialValues = {
+    id: "",
     date: "",
     code: "",
     bankname: "",
@@ -409,9 +136,7 @@ const BankMaster = () => {
 
     if (isEditMode) {
       // UPDATE Bank
-      const res = await dispatch(
-        updateBankDetails({ id: editId, values })
-      ).unwrap();
+      const res = await dispatch(updateBankDetails({ values })).unwrap();
       if (res.status === 200) {
         toast.success("Bank updated successfully!");
       } else {
@@ -431,11 +156,11 @@ const BankMaster = () => {
     dispatch(getBankList());
     setValues(initialValues);
     setIsEditMode(false);
-    setEditId(null);
   };
 
   const handleEditBank = (bank) => {
     setValues({
+      id: bank.id,
       date: tDate,
       code: bank.code,
       bankname: bank.name,
@@ -443,95 +168,46 @@ const BankMaster = () => {
       ifsc: bank.ifsc,
     });
     setIsEditMode(true);
-    setEditId(bank.id);
   };
 
+  //its to delete  invoice based on id
   const handleDeleteBank = async (id) => {
-    const confirmDelete = window.confirm(
-      "Are you sure you want to delete this bank?"
-    );
-    if (confirmDelete) {
-      const res = await dispatch(deleteBank({ id })).unwrap();
-      if (res.status === 200) {
-        toast.success("Bank deleted successfully!");
-        dispatch(getBankList());
-      } else {
-        toast.error("Failed to delete bank!");
+    const result = await Swal.fire({
+      title: "Confirm Deletion?",
+      text: "Are you sure you want to delete bank?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+    });
+
+    if (result.isConfirmed) {
+      try {
+        const res = await dispatch(deleteBank({ id })).unwrap();
+        if (res.status === 200) {
+          toast.success("Bank deleted successfully!");
+          dispatch(getBankList());
+        } else {
+          toast.error("Failed to delete bank!");
+        }
+      } catch (error) {
+        toast.error("Server failed to delete the bank!");
       }
     }
   };
 
-  //   return (
-  //     <div className="bank-master-container w100 h1 d-flex-col sb p10">
-  //       <span className="heading p10">
-  //         {isEditMode ? "Edit Bank" : "Add New Bank"}
-  //       </span>
-  //       <form
-  //         onSubmit={handleAddOrUpdateBank}
-  //         className="bank-master-form-container w100 h20 d-flex-col a-center sb"
-  //       >
-  //         <div className="bank-info-details-code w100 h50 d-flex a-center sb">
-  //           <input
-  //             type="text"
-  //             name="code"
-  //             value={values.code}
-  //             onChange={handleInputs}
-  //             ref={codeRef}
-  //             disabled
-  //           />
-  //           <input
-  //             type="text"
-  //             name="bankname"
-  //             value={values.bankname}
-  //             onChange={handleInputs}
-  //             ref={nameRef}
-  //           />
-  //           <input
-  //             type="text"
-  //             name="branch"
-  //             value={values.branch}
-  //             onChange={handleInputs}
-  //             ref={branchRef}
-  //           />
-  //           <input
-  //             type="text"
-  //             name="ifsc"
-  //             value={values.ifsc}
-  //             onChange={handleInputs}
-  //             ref={ifscRef}
-  //           />
-  //         </div>
-  //         <div className="form-btn-container w100 h50 d-flex a-center j-end">
-  //           <button
-  //             type="reset"
-  //             className="w-btn mx10"
-  //             onClick={() => setIsEditMode(false)}
-  //           >
-  //             Reset
-  //           </button>
-  //           <button type="submit" className="w-btn">
-  //             {isEditMode ? "Update Bank" : "Add Bank"}
-  //           </button>
-  //         </div>
-  //       </form>
-  //       <div className="bank-details-container w100 h70 d-flex-col bg">
-  //         {bankList.map((bank, index) => (
-  //           <div
-  //             key={index}
-  //             className="bank-details-headings w100 p10 d-flex a-center sa"
-  //           >
-  //             <span>{bank.code}</span>
-  //             <span>{bank.name}</span>
-  //             <span>{bank.branch}</span>
-  //             <span>{bank.ifsc}</span>
-  //             <button onClick={() => handleEditBank(bank)}>Edit</button>
-  //             <button onClick={() => handleDeleteBank(bank.id)}>Delete</button>
-  //           </div>
-  //         ))}
-  //       </div>
-  //     </div>
-  //   );
-  // };
+  const handleReset = () => {
+    setValues({
+      id: "",
+      date: tDate,
+      code: maxCode,
+      bankname: "",
+      branch: "",
+      ifsc: "",
+    });
+    setIsEditMode(false);
+  };
 
   return (
     <div className="bank-master-container w100 h1 d-flex-col sb p10">
@@ -609,16 +285,18 @@ const BankMaster = () => {
           </div>
         </div>
         <div className="form-btn-container w100 h50 d-flex a-center j-end">
-          <button
-            type="reset"
-            className="w-btn mx10"
-            onClick={() => setIsEditMode(false)}
-          >
+          <button type="reset" className="w-btn mx10" onClick={handleReset}>
             reset
           </button>
-          <button type="submit" className="w-btn" ref={addbuttonRef}>
-            ADD Bank
-          </button>
+          {isEditMode ? (
+            <button type="submit" className="w-btn" ref={addbuttonRef}>
+              {updateStatus === "loading" ? "Updating..." : "Update"}
+            </button>
+          ) : (
+            <button type="submit" className="w-btn" ref={addbuttonRef}>
+              {createStatus === "loading" ? "Adding..." : "Add"}
+            </button>
+          )}
         </div>
       </form>
       <div className="bank-details-container w100 h70 mh70 hidescrollbar d-flex-col bg">
@@ -626,8 +304,8 @@ const BankMaster = () => {
           <span className="f-label-text w10">No.</span>
           <span className="f-label-text w30">Name</span>
           <span className="f-label-text w20">Address</span>
-          <span className="f-label-text w15">IFSC</span>
-          <span className="f-label-text w10">Action</span>
+          <span className="f-label-text w20">IFSC</span>
+          <span className="f-label-text w15">Action</span>
         </div>
         {listStatus === "loading" ? (
           <Spinner />
@@ -643,10 +321,13 @@ const BankMaster = () => {
               <span className="label-text w10">{bank.code}</span>
               <span className="label-text w30 t-start">{bank.name}</span>
               <span className="label-text w20">{bank.branch}</span>
-              <span className="label-text w15">{bank.ifsc}</span>
-              <span className="label-text w10 t-center">
-                <span onClick={() => handleEditBank(bank)}></span>
-                <span onClick={() => handleDeleteBank(bank.id)}></span>
+              <span className="label-text w20">{bank.ifsc}</span>
+              <span className="label-text w15 d-flex sa t-center">
+                <FaEdit type="button" onClick={() => handleEditBank(bank)} />
+                <MdDeleteForever
+                  type="button"
+                  onClick={() => handleDeleteBank(bank.id)}
+                />
               </span>
             </div>
           ))
