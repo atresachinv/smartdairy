@@ -105,14 +105,14 @@ exports.maxSubLCode = async (req, res) => {
 // ----------------------------------------------------------------------------->
 exports.createMainLedger = async (req, res) => {
   const { date, code, eng_name, marathi_name, category } = req.body;
-  const { user_id } = req.user;
+  const { dairy_id, center_id, user_id } = req.user;
   if (!date || !code || !eng_name || !marathi_name || !category) {
     return res
       .status(400)
       .json({ status: 400, message: "All fields data required!" });
   }
 
-  if (!user_id) {
+  if (!dairy_id || !user_id) {
     return res.status(401).json({ status: 401, message: "Unauthorized User!" });
   }
 
@@ -126,13 +126,22 @@ exports.createMainLedger = async (req, res) => {
 
     try {
       const insertQuery = `
-        INSERT INTO mainglmaster (code, gl_name, gl_marathi_name, gl_category, createdon, createdby) 
-        VALUES (?, ?, ?, ?, ?, ?)
+        INSERT INTO mainglmaster (dairy_id, center_id, code, gl_name, gl_marathi_name, gl_category, createdon, createdby) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
       `;
 
       connection.query(
         insertQuery,
-        [code, eng_name, marathi_name, category, date, user_id],
+        [
+          dairy_id,
+          center_id,
+          code,
+          eng_name,
+          marathi_name,
+          category,
+          date,
+          user_id,
+        ],
         (err, result) => {
           connection.release();
           if (err) {

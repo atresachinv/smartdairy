@@ -15,6 +15,7 @@ const MainLedger = () => {
   const MainLedgers = useSelector((state) => state.ledger.mledgerlist);
   const status = useSelector((state) => state.ledger.cmlStatus);
   const [errors, setErrors] = useState({});
+  
   const [formData, setFormData] = useState({
     date: tdate,
     code: "",
@@ -22,6 +23,7 @@ const MainLedger = () => {
     marathi_name: "",
     category: "",
   });
+
   useEffect(() => {
     dispatch(getMaxMLCode());
     dispatch(listMainLedger());
@@ -127,6 +129,7 @@ const MainLedger = () => {
     if (result?.status === 200) {
       const result = await dispatch(getMaxMLCode()).unwrap();
       const res = await dispatch(listMainLedger()).unwrap();
+
       setFormData({
         eng_name: "",
         marathi_name: "",
@@ -143,6 +146,7 @@ const MainLedger = () => {
       toast.error("failed to create new ledger!");
     }
   };
+
   return (
     <div className="main-glmaster-container w100 h1 d-flex-col center p10">
       <span className="heading p10">Add New Ledger Group</span>
@@ -208,7 +212,11 @@ const MainLedger = () => {
           <button type="reset" className="w-btn mx10">
             Cancel
           </button>
-          <button type="submit" className="w-btn" disabled>
+          <button
+            type="submit"
+            className="w-btn"
+            disabled={status === "loading"}
+          >
             {status === "loading" ? "Saving..." : "Save"}
           </button>
         </div>

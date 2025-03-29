@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getPaymentsDeductionInfo } from "../../../../../App/Features/Deduction/deductionSlice";
+import "../../../../../Styles/PayDeductions/PayDeductions.css";
 
 const PayDeductions = () => {
   const dispatch = useDispatch();
@@ -81,43 +82,120 @@ const PayDeductions = () => {
   }, [deduction]);
 
   return (
-    <div>
-      <h2>Grouped Deduction Data by Code</h2>
-      {groupedData.length > 0 && (
-        <table border="1">
-          <thead>
-            <tr>
-              <th>Code</th>
-              <th>tliters</th>
-              <th>pamt</th>
-              <th>damt</th>
-              <th>namt</th>
-              {dnames.map((dname) => (
-                <th key={dname}>{dname}</th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {groupedData.map((item) => (
-              <tr key={item.Code}>
-                <td>{item.Code}</td>
-                <td>{item.tliters}</td>
-                <td>{item.pamt}</td>
-                <td>{item.damt}</td>
-                <td>{item.namt}</td>
-                {dnames.map((dname) => (
-                  <td key={dname}>
-                    {item.additionalDeductions[dname]
-                      ? item.additionalDeductions[dname]
-                      : 0}
-                  </td>
-                ))}
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      )}
-    </div>
+    <>
+      <div className="Payment-Bil-deduction-container w100 h1 d-flex-col">
+        <span className="heading px10">Bill</span>
+        <div className="bil-payment-deduction-first-half d-flex-col  h50 w100 ">
+          <div className="bill-no-bil-date-button-div h20  w100  d-flex">
+            <div className="bill-no-comopent w35 d-flex a-center px10">
+              <span className="label-text w20">Bill No:</span>
+              <input className="data w40" type="text" />
+            </div>
+            <div className="bill-date-comopent w35 d-flex a-center px10">
+              <span className="label-text w20">Bill No:</span>
+              <input className="data w40" type="date" />
+            </div>
+            <div className="collection-changes-compoent a-center">
+              <button className=" w-btn">संकलन दुरुस्थी </button>
+            </div>
+          </div>
+          <div className="customer-name-customer-number w100 h20  d-flex">
+            <div className="customer-no-div w40 d-flex a-center  px10">
+              <span className="label-text w30">उत्पादक क्रमांक:</span>
+              <input className="data w40" type="text" />
+            </div>
+            <div className="customer-name-div w40 d-flex a-center px10">
+              <span className="label-text w30">उत्पादक क्रमांक:</span>
+              <select className="data w70" name="" id=""></select>
+            </div>
+          </div>
+          <div className="morning-evening-liter-commistion-span-input w100 d-flex h80 ">
+            <div className="morning-evening-liter w100 d-flex-col h1 sa bg ">
+              <div className="morening-evening-all-collection w100   sa d-flex">
+                <div className="morening-liter-compoentv w25 d-flex px10 a-center">
+                  <span className="label-text w50">सकाळ लि</span>
+                  <input className="data" type="text" />
+                </div>
+                <div className="morening-liter-compoentv w25 d-flex px10 a-center">
+                  <span className="label-text w70">सायंकाळ लि</span>
+                  <input className="data" type="text" />
+                </div>
+                <div className="morening-liter-compoentv w25 d-flex px10 a-center">
+                  <span className="label-text w80">एकूण संकलन </span>
+                  <input className="data" type="text" />
+                </div>
+                <div className="all-amount-bil-div d-flex w25  a-center">
+                  <span className="label-text w40">एकूण रक्कम:</span>
+                  <input className="data w50" type="text" />
+                </div>
+              </div>
+              <div className="collection-commision-all-commission sa w100 d-flex">
+                <div className="morening-commision-compoent w25 d-flex px10 a-center">
+                  <span className="label-text w50">स.कमिशन</span>
+                  <input className="data" type="text" />
+                </div>
+                <div className="Eveninng-commission-compoent w25 d-flex sa px10 a-center">
+                  <span className="label-text w70">सायं.कमिशन</span>
+                  <input className="data" type="text" />
+                </div>
+                <div className="all-commission w25 d-flex px10 a-center">
+                  <span className="label-text w80">एकूण कमिशन </span>
+                  <input className="data" type="text" />
+                </div>
+                <div className="all-commission-t-bil-div d-flex w25  a-center">
+                  <span className="label-text w40">एकूण कमिशन:</span>
+                  <input className="data w50" type="text" />
+                </div>
+              </div>
+              <div className="sari-all-commission-container w100 sa d-flex">
+                <div className="sari-all-commission-compoent w25 d-flex  px10 a-center">
+                  <span className="label-text w50">स.री.कमिशन</span>
+                  <input className="data" type="text" />
+                </div>
+                <div className="evening-ri-compoentv w25 d-flex px10 a-center">
+                  <span className="label-text w70">सायं.री.कमिशन</span>
+                  <input className="data" type="text" />
+                </div>
+                <div className="all-ri-liter-compoentv w25 d-flex px10 a-center">
+                  <span className="label-text w80">एकूण.री.कमिशन </span>
+                  <input className="data" type="text" />
+                </div>
+                <div className="all-advance-t-bil-div d-flex w25 a-center">
+                  <span className="label-text w40">एकूण अनामत:</span>
+                  <input className="data w50" type="text" />
+                </div>
+              </div>
+              <div className="transport-container w100 sa d-flex">
+                <div className="transport-commission-compoent w25 d-flex  px10 a-center">
+                  <span className="label-text w50">वाहतूक </span>
+                  <input className="data" type="text" />
+                </div>
+                <div className="TOtal-Deduction-compoent w25 d-flex px10 a-center">
+                  <span className="label-text w70">एकूण कपात </span>
+                  <input className="data" type="text" />
+                </div>
+                <div className="Raound-amount-liter-compoentv w25 d-flex px10 a-center">
+                  <span className="label-text w80">राऊंड रक्कम</span>
+                  <input className="data" type="text" />
+                </div>
+                <div className="remening-amount-bil-div d-flex w25 a-center">
+                  <span className="label-text w40">निव्वळ देय :</span>
+                  <input className="data w50" type="text" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="deduction-name-table-container-save-print-button  w100 h50 d-flex-col ">
+          <div className="bill-table-heading-container w100 h20 sa d-flex">
+            <span>कपातीचे नाव</span>
+            <span>कपातीचे नाव</span>
+            <span>कपातीचे नाव</span>
+            <span>कपातीचे नाव</span>
+          </div>
+        </div>
+      </div>
+    </>
   );
 };
 
