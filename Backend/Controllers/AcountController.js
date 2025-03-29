@@ -3,8 +3,9 @@ const pool = require("../Configs/Database");
 //get all Voucher
 exports.getAllVoucher = async (req, res) => {
   const { dairy_id, center_id } = req.user;
-  const { autoCenter, ...filters } = req.query;
-
+  const { autoCenter, VoucherDate, filter } = req.query;
+  const autoCenterNumber = Number(autoCenter);
+  const filterNumber = Number(filter);
   pool.getConnection((err, connection) => {
     if (err) {
       console.error("Error getting MySQL connection: ", err);
@@ -20,7 +21,7 @@ exports.getAllVoucher = async (req, res) => {
     let query = `SELECT * FROM tally_trnfile WHERE companyid = ? `;
     let queryParams = [dairy_id];
 
-    if (autoCenter === 1) {
+    if (autoCenterNumber === 1) {
       // If autoCenter is enabled, fetch only for the specific center
       query += " AND center_id = ?";
       queryParams.push(center_id);
@@ -30,13 +31,16 @@ exports.getAllVoucher = async (req, res) => {
       queryParams.push(center_id);
     }
 
-    if (filters) {
-      for (const [field, value] of Object.entries(filters)) {
-        if (value) {
-          query += ` AND ${field} = ?`;
-          queryParams.push(value);
-        }
-      }
+    if (filterNumber === 1) {
+      query += " AND (Vtype=0 OR Vtype=3) "; // Only fetch  cash entry
+    } else if (filterNumber === 2) {
+      query += " AND (Vtype=1 OR Vtype=4) "; // Only fetch trasfer entry
+    }
+    if (VoucherDate) {
+      query += " AND VoucherDate = ? ORDER BY id DESC";
+      queryParams.push(VoucherDate);
+    } else {
+      query += " VoucherDate=CURDATE() ORDER BY id DESC ";
     }
 
     connection.query(query, queryParams, (err, result) => {
@@ -65,7 +69,7 @@ exports.getAllVoucher = async (req, res) => {
 // Insert new voucher
 exports.insertNewVoucher = async (req, res) => {
   const voucherData = req.body;
-  const { dairy_id, center_id } = req.user;
+  const { dairy_id, center_id, user_id } = req.user;
 
   pool.getConnection((err, connection) => {
     if (err) {
@@ -82,8 +86,8 @@ exports.insertNewVoucher = async (req, res) => {
       .join(", ");
     const values = Object.values(voucherData);
 
-    const query = `INSERT INTO tally_trnfile (companyid, center_id, ${fields}) VALUES (?, ?, ${placeholders})`;
-    const queryParams = [dairy_id, center_id, ...values];
+    const query = `INSERT INTO tally_trnfile (companyid, center_id, userid, ${fields}) VALUES (?, ?, ?, ${placeholders})`;
+    const queryParams = [dairy_id, center_id, user_id, ...values];
 
     connection.query(query, queryParams, (err, result) => {
       connection.release();
@@ -104,7 +108,8 @@ exports.insertNewVoucher = async (req, res) => {
 
 // Update voucher
 exports.updateVoucher = async (req, res) => {
-  const { id, ...updateData } = req.body;
+  const { id } = req.query;
+  const { ...updateData } = req.body;
   const { dairy_id } = req.user;
 
   pool.getConnection((err, connection) => {
@@ -158,7 +163,7 @@ exports.deleteVoucher = async (req, res) => {
       console.error("Error getting MySQL connection: ", err);
       return res
         .status(500)
-        .json({ success: false, message: "Database connection error" });
+        .json({ success: false, message: "Server connection Failed" });
     }
 
     // Create the delete query
@@ -171,7 +176,7 @@ exports.deleteVoucher = async (req, res) => {
         console.error("Error executing query: ", err);
         return res
           .status(500)
-          .json({ success: false, message: "Database query error" });
+          .json({ success: false, message: "Server query Failed" });
       }
       if (result.affectedRows === 0) {
         return res.status(404).json({

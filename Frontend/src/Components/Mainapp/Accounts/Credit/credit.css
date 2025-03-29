@@ -17,26 +17,26 @@
   border-radius: 8px;
 }
 
-.credit-table .table-container {
+.credit-table .creditTable-container {
   overflow-x: auto; /* Enables horizontal scrolling */
   width: 100%; /* Ensures the container spans the full width */
   margin-top: 10px;
 }
 
-.credit-table .table-container .table {
+.credit-table .creditTable-container .table {
   width: 100%; /* Ensures the table occupies full width */
   border-collapse: collapse; /* Removes space between table cells */
 }
 
-.credit-table .table-container .table th,
-.credit-table .table-container .table td {
+.credit-table .creditTable-container .table th,
+.credit-table .creditTable-container .table td {
   border: 1px solid #ccc;
   text-align: center;
   padding: 8px;
   white-space: nowrap; /* Prevents text wrapping */
 }
 
-.credit-table .table-container .table th {
+.credit-table .creditTable-container .table th {
   font-weight: bold;
 }
 .credit-batchTally-buttons {
