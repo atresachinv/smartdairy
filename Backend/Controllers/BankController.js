@@ -157,6 +157,7 @@ exports.updateBankDetails = async (req, res) => {
     }
 
     try {
+      const glcode = 0;
       const updateBankQuery = `
         UPDATE bankmaster SET
         code = ?, name = ?, branch = ?, ifsc = ?, companyid = ?, center_id = ?, glcode = ?, updatedon = ?, updatedby = ? 

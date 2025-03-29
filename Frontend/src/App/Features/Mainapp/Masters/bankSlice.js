@@ -40,9 +40,9 @@ export const createBank = createAsyncThunk(
 // update bank details
 export const updateBankDetails = createAsyncThunk(
   "bank/updateBankDetails",
-  async (_, { rejectWithValue }) => {
+  async ({ values }, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.put("/bank/update");
+      const response = await axiosInstance.put("/bank/update", { values });
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || error.message);
@@ -66,9 +66,11 @@ export const getBankList = createAsyncThunk(
 // Delete bank
 export const deleteBank = createAsyncThunk(
   "bank/deleteBank",
-  async (_, { rejectWithValue }) => {
+  async ({ id }, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.delete("/bank/delete");
+      const response = await axiosInstance.delete("/bank/delete", {
+        params: { id },
+      });
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || error.message);

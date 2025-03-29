@@ -1,5 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-/* eslint-disable no-unused-vars */
 import React, { useEffect, useState } from "react";
 import * as XLSX from "xlsx";
 import Spinner from "../../../Home/Spinner/Spinner";
@@ -104,7 +102,7 @@ const CattleSaleList = () => {
         SetLoadings(false);
         console.error("Error fetching sales:", error);
       }
-    }; 
+    };
 
     fetchSales();
   }, []);
