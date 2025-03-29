@@ -30,7 +30,7 @@ const CashCredit = () => {
     Amt: "",
     ChequeNo: "",
     ChequeDate: getTodaysDate(),
-    VoucherNo: "",
+    VoucherNo: "1",
     ReceiptNo: "1",
     Narration: "",
   });
@@ -151,7 +151,7 @@ const CashCredit = () => {
   };
   const handlePavtity = (e) => {
     setTimeout(() => {
-      if (formData.InstrType === "0") {
+      if (formData.InstrType === "2") {
         const comp = document.getElementById("ChequeNo");
         if (comp) comp.focus();
       } else if (formData.InstrType === "1") {
@@ -467,7 +467,7 @@ const CashCredit = () => {
                     handleKeyPress(e, document.getElementById("GLCode"))
                   }
                   disabled={
-                    !formData.InstrType || formData.InstrType == 0 || fix === 1
+                    !formData.InstrType || formData.InstrType == 1 || fix === 1
                   }
                 />
               </div>
@@ -644,7 +644,7 @@ const CashCredit = () => {
                     handleKeyPress(e, document.getElementById("ChequeDate"))
                   }
                   disabled={
-                    !formData.InstrType || formData.InstrType == 1 || fix === 1
+                    !formData.InstrType || formData.InstrType == 2 || fix === 1
                   }
                 />
               </div>
@@ -662,7 +662,7 @@ const CashCredit = () => {
                     handleKeyPress(e, document.getElementById("GLCode"))
                   }
                   disabled={
-                    !formData.InstrType || formData.InstrType == 1 || fix === 1
+                    !formData.InstrType || formData.InstrType == 2 || fix === 1
                   }
                 />
               </div>

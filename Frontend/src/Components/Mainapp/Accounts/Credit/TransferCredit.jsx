@@ -23,19 +23,20 @@ const TransferCredit = () => {
     AccCode: "",
     GLCode: "",
     VoucherDate: getTodaysDate(),
-    BatchNo: "0",
+    BatchNo: "1",
     Vtype: "",
     InstrType: "",
     Amt: "",
     ChequeNo: "",
     ChequeDate: getTodaysDate(),
-    VoucherNo: "",
+    VoucherNo: "1",
     ReceiptNo: "1",
     Narration: "",
   });
   const [fix, setFix] = useState("");
   const sledgerlist = useSelector((state) => state.ledger.sledgerlist);
   const { loading, voucherList } = useSelector((state) => state.voucher);
+  const [filterVoucherList, setfilterVoucherList] = useState([]);
   const [onclickChalan, setOnclickChalan] = useState(false);
   const [edit, setEdit] = useState(false);
   const [ID, setId] = useState("");
@@ -134,6 +135,16 @@ const TransferCredit = () => {
 
   const handleNewChalan = (e) => {
     e.preventDefault();
+
+    const maxBatchNo = voucherList.reduce((max, item) => {
+      return item.BatchNo > max ? item.BatchNo : max;
+    }, 0);
+
+    setFormData((prev) => ({
+      ...prev,
+      BatchNo: maxBatchNo ? maxBatchNo + 1 : 1, // Default to 1 if no maxBatchNo
+    }));
+
     setOnclickChalan(true);
     const comp = document.getElementById("Vtype");
     comp.focus();
@@ -150,11 +161,11 @@ const TransferCredit = () => {
   };
   const handlePavtity = (e) => {
     setTimeout(() => {
-      if (formData.InstrType === "0") {
-        const comp = document.getElementById("ChequeNo");
+      if (formData.InstrType === "2") {
+        const comp = document.getElementById("ReceiptNo");
         if (comp) comp.focus();
       } else if (formData.InstrType === "1") {
-        const comp = document.getElementById("ReceiptNo");
+        const comp = document.getElementById("ChequeNo");
         if (comp) comp.focus();
       }
     }, 0);
@@ -180,7 +191,7 @@ const TransferCredit = () => {
 
     // Adjust Amt based on Vtype
     const adjustedAmt =
-      Number(formData.Vtype) === 0
+      Number(formData.Vtype) === 1
         ? -Math.abs(formData.Amt)
         : Math.abs(formData.Amt);
 
@@ -204,7 +215,6 @@ const TransferCredit = () => {
               : {
                   AccCode: "",
                   GLCode: "",
-                  BatchNo: "0",
                   Vtype: "",
                   InstrType: "",
                   Amt: "",
@@ -243,7 +253,6 @@ const TransferCredit = () => {
           setFormData({
             AccCode: "",
             GLCode: "",
-            BatchNo: "0",
             Vtype: "",
             InstrType: "",
             Amt: "",
@@ -356,6 +365,26 @@ const TransferCredit = () => {
       Narration: "",
     });
   };
+
+  // Changing to batch no on change of voucher list
+  useEffect(() => {
+    if (voucherList.length > 0) {
+      if (formData.BatchNo) {
+        const filteredBatchNo = voucherList.filter(
+          (item) => Number(item.BatchNo) === Number(formData.BatchNo)
+        );
+
+        if (filteredBatchNo.length > 0) {
+          setfilterVoucherList(filteredBatchNo); // Use the filtered list
+        } else {
+          setfilterVoucherList([]);
+        }
+      } else {
+        setfilterVoucherList(voucherList);
+      }
+    }
+  }, [formData.BatchNo, voucherList]);
+
   return (
     <div className="Credit-container w100 h1 d-flex-col">
       <div className="Credit-container-scroll d-flex-col w100">
@@ -417,8 +446,8 @@ const TransferCredit = () => {
                   }
                 >
                   <option value=""> Select</option>
-                  <option value="0">नावे</option>
-                  <option value="3">जमा</option>
+                  <option value="1">नावे</option>
+                  <option value="4">जमा</option>
                 </select>
               </div>
               <div className=" bill-no-div w50 d-flex mx15 a-center sb">
@@ -466,7 +495,7 @@ const TransferCredit = () => {
                     handleKeyPress(e, document.getElementById("GLCode"))
                   }
                   disabled={
-                    !formData.InstrType || formData.InstrType == 0 || fix === 1
+                    !formData.InstrType || formData.InstrType == 1 || fix === 1
                   }
                 />
               </div>
@@ -615,15 +644,47 @@ const TransferCredit = () => {
               बॅच टॅलि
               <div className="d-flex a-center ">
                 <span className="w50 info-text">नावे </span>
-                <input type="text" className="data" />
+                <input
+                  type="text"
+                  className="data"
+                  value={
+                    formData.BatchNo && filterVoucherList
+                      ? filterVoucherList.reduce((sum, item) => {
+                          if (Number(item.Vtype) === 1) {
+                            return sum + Math.abs(item.Amt);
+                          }
+                          return sum;
+                        }, 0)
+                      : 0
+                  }
+                />
               </div>
               <div className="d-flex a-center my10">
                 <span className="w50 info-text">जमा </span>
-                <input type="text" className="data" />
+                <input
+                  type="text"
+                  className="data"
+                  value={
+                    formData.BatchNo && filterVoucherList
+                      ? filterVoucherList.reduce((sum, item) => {
+                          if (Number(item.Vtype) === 4) {
+                            return sum + Math.abs(item.Amt);
+                          }
+                          return sum;
+                        }, 0)
+                      : 0
+                  }
+                />
               </div>
               <div className="d-flex a-center ">
                 <span className="w50 info-text">बॅच फरक </span>
-                <span className="w50 req info-text">{0} </span>
+                <span className="w50 req info-text">
+                  {formData.BatchNo && filterVoucherList
+                    ? filterVoucherList.reduce((sum, item) => {
+                        return sum + item.Amt;
+                      }, 0)
+                    : 0}
+                </span>
               </div>
             </div>
             <div className="m10 p10 bg-light-green">
@@ -643,7 +704,7 @@ const TransferCredit = () => {
                     handleKeyPress(e, document.getElementById("ChequeDate"))
                   }
                   disabled={
-                    !formData.InstrType || formData.InstrType == 1 || fix === 1
+                    !formData.InstrType || formData.InstrType == 2 || fix === 1
                   }
                 />
               </div>
@@ -661,13 +722,12 @@ const TransferCredit = () => {
                     handleKeyPress(e, document.getElementById("GLCode"))
                   }
                   disabled={
-                    !formData.InstrType || formData.InstrType == 1 || fix === 1
+                    !formData.InstrType || formData.InstrType == 2 || fix === 1
                   }
                 />
               </div>
             </div>
             <div className="credit-batchTally-buttons d-flex mx10 p10 bg">
-              {/* <button className="w-btn ">नवीन बॅच</button> */}
               <button
                 type="button"
                 onClick={(e) => handleClear()}
@@ -675,6 +735,7 @@ const TransferCredit = () => {
               >
                 रद्द करा
               </button>
+
               <button
                 id="handleNewChalan"
                 className="w-btn "
@@ -715,8 +776,8 @@ const TransferCredit = () => {
               <tbody>
                 {loading ? (
                   "Loading..."
-                ) : voucherList.length > 0 ? (
-                  voucherList.map((voucher, index) => (
+                ) : filterVoucherList.length > 0 ? (
+                  filterVoucherList.map((voucher, index) => (
                     <tr key={index}>
                       <td>
                         <FaRegEdit
@@ -739,9 +800,9 @@ const TransferCredit = () => {
                       </td>
                       <td className="info-text">{voucher.Amt}</td>
                       <td className="info-text">
-                        {voucher.Vtype === 0
+                        {voucher.Vtype === 1
                           ? "नावे"
-                          : voucher.Vtype === 3
+                          : voucher.Vtype === 4
                           ? "जमा"
                           : ""}
                       </td>
