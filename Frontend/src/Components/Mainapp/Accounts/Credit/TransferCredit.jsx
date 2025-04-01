@@ -1,5 +1,5 @@
 import { FaRegEdit } from "react-icons/fa";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { MdDeleteOutline } from "react-icons/md";
 import Select from "react-select";
 import "./credit.css";
@@ -56,26 +56,23 @@ const TransferCredit = () => {
   // Get master dates and list customer and voucher
   useEffect(() => {
     if (settings?.autoCenter !== undefined) {
-      // console.log("in seleting:", formData.VoucherDate);
       dispatch(
         getAllVoucher({ VoucherDate: getTodaysDate(), autoCenter, filter: 2 })
       );
     }
     dispatch(listCustomer());
     dispatch(listSubLedger());
-  }, [settings]);
+  }, [settings, autoCenter, dispatch]);
 
   // Get  voucher on change voucher date
   useEffect(() => {
     if (settings?.autoCenter !== undefined) {
-      // console.log("in use effect:", formData.VoucherDate);
-
-      setFormData({
-        ...formData,
-        ChequeDate: formData.VoucherDate,
-      });
+      setFormData((prev) => ({
+        ...prev,
+        ChequeDate: prev.VoucherDate,
+      }));
     }
-  }, [formData.VoucherDate]);
+  }, [formData.VoucherDate, settings?.autoCenter]);
 
   // set today date
   useEffect(() => {
@@ -159,7 +156,7 @@ const TransferCredit = () => {
       }
     }
   };
-  const handlePavtity = (e) => {
+  const handlePavtity = () => {
     setTimeout(() => {
       if (formData.InstrType === "2") {
         const comp = document.getElementById("ReceiptNo");
@@ -730,7 +727,7 @@ const TransferCredit = () => {
             <div className="credit-batchTally-buttons d-flex mx10 p10 bg">
               <button
                 type="button"
-                onClick={(e) => handleClear()}
+                onClick={() => handleClear()}
                 className="w-btn"
               >
                 रद्द करा
@@ -749,7 +746,7 @@ const TransferCredit = () => {
                 id="handleSaveBatch"
                 className="w-btn"
                 type="submit"
-                onClick={(e) => handleSubmit()}
+                onClick={() => handleSubmit()}
               >
                 {edit ? "अपडेट करा" : "सेव्ह करा"}
               </button>
@@ -782,7 +779,7 @@ const TransferCredit = () => {
                       <td>
                         <FaRegEdit
                           className="icon"
-                          onClick={(e) => handleEdit(voucher.id)}
+                          onClick={() => handleEdit(voucher.id)}
                         />
                       </td>
                       <td className="info-text">{voucher.VoucherNo}</td>
@@ -810,7 +807,7 @@ const TransferCredit = () => {
                       <td>
                         <MdDeleteOutline
                           className="icon req"
-                          onClick={(e) => handleDelete(voucher.id)}
+                          onClick={() => handleDelete(voucher.id)}
                         />
                       </td>
                     </tr>
