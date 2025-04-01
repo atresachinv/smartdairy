@@ -70,6 +70,7 @@ import BankReportMaster from "./Reports/BankReports/BankReportMaster";
 import DedeutionName from "./Payments/PaymentPages/DedeutionName/DedeutionName";
 import CashCredit from "./Accounts/Credit/CashCredit";
 import TransferCredit from "./Accounts/Credit/TransferCredit";
+import Deductionlist from "./Reports/Deductionlist/Deductionlist";
 
 const Mainapp = () => {
   const dispatch = useDispatch();
@@ -270,6 +271,7 @@ const Mainapp = () => {
             <Route path="reports/sales/*" element={<ComingSoon />} />
             <Route path="reports/payment/*" element={<PaymentReports />} />
             <Route path="reports/bank/*" element={<BankReportMaster />} />
+            <Route path="reports/deduction/*" element={<Deductionlist/>} />
             {/* payment routes */}
             <Route
               path="payment/milk-correction/*"

@@ -377,6 +377,13 @@ const Mainappnavlinks = ({ setselected, handleSidebar }) => {
           path: "reports/bank",
           role: ["admin", "super_admin", "manager"],
         },
+        {
+          name: `${t("Deductionlist")}`,
+          icon: <FaFileInvoiceDollar className="icon" />,
+          index: 6.8,
+          path: "reports/deduction",
+          role: ["admin", "super_admin", "manager"],
+        },
       ],
     },
     {
