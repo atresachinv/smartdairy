@@ -1446,53 +1446,103 @@ exports.deleteMilkSangha = (req, res) => {
 // Dairy Starting Information ---------------------------------------------------------------------------->
 //-------------------------------------------------------------------------------------------------------->
 
-exports.dairySatrtingInfo = (req, res) => {
-  const { id } = req.body;
-  const { dairy_id } = req.user;
+exports.dairyStartingInfo = (req, res) => {
+  const { id, ...data } = req.body;
+  const { dairy_id, center_id } = req.user;
 
   if (!dairy_id) {
     return res.status(401).json({ status: 401, message: "Unauthorized User!" });
   }
 
-  if (!id) {
-    return res
-      .status(400)
-      .json({ status: 400, message: "Id required to delete!" });
-  }
+  pool.getConnection((err, connection) => {
+    if (err) {
+      console.error("Error getting MySQL connection: ", err);
+      return res
+        .status(500)
+        .json({ status: 500, message: "Database connection error" });
+    }
 
-  const dairyInfoQuery = `
-        INSERT INTO (dairy_id, center_id, CashOnHandGlcode, CashOnHandAmt, ClosingDate, PLGLCode,
-        PreviousPLGLCode, TreadingPLGlCode, ShareCapitalAmt, MilkPurchaseGL, MilkSaleGL, MilkPurchasePaybleGL,
-        MilkSaleRecivableGl, AllowSameUserPassing, RebateGlCode, BankCurrentAccount, RoundAmtGL, saleincomeGL,
-        ArambhiShillakMalGL, AkherShillakMal, anamatGlcode, MilkCommisionAndAnudan, ribetIncome, ribetExpense,
-        milkRateDiff, CashOnHandAmt_3, chillinggl, advGL, kirkolmilksale_yene, ghutnashgl, transportgl)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-      `;
+    if (!id) {
+      const fields = Object.keys(data).join(", ");
+      const placeholders = Object.keys(data)
+        .map(() => "?")
+        .join(", ");
+      const values = Object.values(data);
+
+      const insertQuery = `INSERT INTO dairy_info (dairy_id, center_id,${fields}) VALUES (?, ?,${placeholders})`;
+
+      connection.query(
+        insertQuery,
+        [dairy_id, center_id, values],
+        (err, result) => {
+          connection.release();
+          if (err) {
+            console.error("Error inserting record: ", err);
+            return res
+              .status(500)
+              .json({ status: 500, message: "Error in inserting data!" });
+          }
+          return res
+            .status(201)
+            .json({ status: 201, message: "Record inserted successfully!" });
+        }
+      );
+    } else {
+      // Update existing record dynamically
+      const updateFields = Object.keys(data)
+        .map((key) => `${key} = ?`)
+        .join(", ");
+      const values = [...Object.values(data), id];
+
+      const updateQuery = `UPDATE dairy_info SET ${updateFields} WHERE id = ?`;
+
+      connection.query(updateQuery, values, (err, result) => {
+        connection.release();
+        if (err) {
+          console.error("Error updating record: ", err);
+          return res
+            .status(500)
+            .json({ status: 500, message: "Error in updating data!" });
+        }
+        return res
+          .status(200)
+          .json({ status: 200, message: "Record updated successfully!" });
+      });
+    }
+  });
+};
+
+//-------------------------------------------------------------------------------------------------------->
+// Fetch Dairy Starting Information ---------------------------------------------------------------------->
+//-------------------------------------------------------------------------------------------------------->
+
+exports.fetchDairyStartingInfo = (req, res) => {
+  const { dairy_id, center_id } = req.user;
+
+  if (!dairy_id) {
+    return res.status(401).json({ status: 401, message: "Unauthorized User!" });
+  }
 
   pool.getConnection((err, connection) => {
     if (err) {
       console.error("Error getting MySQL connection: ", err);
-      return res.status(500).json({
-        status: 500,
-        message: "Database connection error",
-      });
+      return res
+        .status(500)
+        .json({ status: 500, message: "Database connection error" });
     }
 
-    connection.query(deleteQuery, [id], (err, result) => {
+    const fetchQuery =
+      "SELECT * FROM dairy_info WHERE dairy_id = ? AND center_id = ?";
+
+    connection.query(fetchQuery, [dairy_id, center_id], (err, results) => {
       connection.release();
-
       if (err) {
-        console.error("Error executing delete sangha query: ", err);
-        return res.status(500).json({
-          status: 500,
-          message: "Error in deleting Sangha!",
-        });
+        console.error("Error fetching record: ", err);
+        return res
+          .status(500)
+          .json({ status: 500, message: "Error in fetching data!" });
       }
-
-      return res.status(200).json({
-        status: 200,
-        message: "Sangha Deleted successfully!",
-      });
+      return res.status(200).json({ status: 200, data: results });
     });
   });
 };
