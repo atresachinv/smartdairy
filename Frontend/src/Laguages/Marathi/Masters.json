@@ -2,7 +2,9 @@
   "m-nv-mledger": "खतावणी ग्रुप",
   "m-nv-sledger": "खतावणी मास्टर",
   "m-nv-empmaster": "सेवक मास्टर",
+  "m-nv-drmaster": "डॉक्टर मास्टर",
   "m-nv-bankmaster": "बँक मास्टर",
+  "m-nv-dedumaster": "कपात मास्टर",
 
   "m-custlist": "उत्पादक यादी",
   "m-custadd": "उत्पादक जोडा",

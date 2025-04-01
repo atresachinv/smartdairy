@@ -19,7 +19,7 @@ const BankMaster = () => {
   const { t } = useTranslation(["milkcollection", "common"]);
   const tDate = useSelector((state) => state.date.toDate);
   const maxCode = useSelector((state) => state.bank.maxCode);
-  const bankList = useSelector((state) => state.bank.banksList);
+  const bankList = useSelector((state) => state.bank.banksList || []);
   const createStatus = useSelector((state) => state.bank.creStatus);
   const updateStatus = useSelector((state) => state.bank.upStatus);
   const listStatus = useSelector((state) => state.bank.listStatus);
@@ -46,7 +46,7 @@ const BankMaster = () => {
   useEffect(() => {
     dispatch(fetchMaxCode());
     dispatch(getBankList());
-  }, []);
+  }, [dispatch]);
 
   useEffect(() => {
     if (!isEditMode) {
@@ -77,6 +77,8 @@ const BankMaster = () => {
       case "code":
         if (!/^\d+$/.test(value.toString())) {
           error[name] = "Invalid Bank Code.";
+        } else {
+          delete errors[name];
         }
         break;
       case "bankname":
@@ -85,11 +87,15 @@ const BankMaster = () => {
           error[name] = `Invalid ${
             name === "bankname" ? "Bank" : "Branch"
           } Name.`;
+        } else {
+          delete errors[name];
         }
         break;
       case "ifsc":
         if (!/^[A-Z]{4}0[A-Z0-9]{6}$/.test(value)) {
           error[name] = "Invalid IFSC Code.";
+        } else {
+          delete errors[name];
         }
         break;
       default:

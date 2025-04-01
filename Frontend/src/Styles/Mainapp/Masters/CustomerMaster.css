@@ -126,11 +126,14 @@
 /* Create Customer Responsive Css end */
 
 @media screen and (max-width: 426px) {
-  .cust-details-setting-di .customer-details-container .info-text {
+  .cust-details-setting-div {
+    min-height: auto;
+  }
+  .cust-details-setting-div .customer-details-container .info-text {
     margin: 5px 0;
   }
   .cust-details-setting-div .customer-details-container {
-    height: auto;
+    min-height: fit-content;
   }
   .customer-details-container .cust-details-div,
   .customer-details-container .contact-details-div,
@@ -163,17 +166,45 @@
   .milk-details-div .ratechart-details-div {
     width: 50%;
   }
+
   .milk-details-div .farmerid-details-div {
     width: 100%;
   }
-  .Bank-details-div .bankname-details-div {
+  .cust-details-setting-div .cust-data-settings {
+    min-height: fit-content;
+  }
+  .cust-data-settings .milk-settings-div {
+    min-height: fit-content;
+  }
+  .cust-data-settings .milk-settings-div .details-div {
+    min-height: fit-content;
+    margin-bottom: 10px;
+  }
+
+  .Bank-details-div {
+    min-height: fit-content;
+    flex-direction: column;
     width: 100%;
   }
+  .Bank-details-div .details-div {
+    width: 100%;
+  }
+
   .Bank-details-div .acc-details-div,
   .Bank-details-div .ifsc-details-div {
     width: 50%;
   }
   .button-container {
+    width: 100%;
+    margin: 0 0 10px 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .button-container button {
+    width: 45%;
+  }
+  .excel-format-container {
     margin-bottom: 10px;
   }
   /* <<<<<<<<<<<<<<<<<------------------ customer list css -------------------->>>>>>>>>>>>>>>> */

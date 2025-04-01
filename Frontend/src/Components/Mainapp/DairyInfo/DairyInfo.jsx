@@ -17,6 +17,9 @@ const DairyInfo = () => {
   const [formData, setFormData] = useState({
     marathiName: "",
     SocietyName: "",
+    SocietyCode: "",
+    prefix: "",
+    startDate: "",
     RegNo: "",
     RegDate: "",
     gstno: "",
@@ -158,45 +161,90 @@ const DairyInfo = () => {
   };
 
   return (
-    <div className="dairy-main-container w100 h1 d-flex-col center sb">
+    <div className="dairy-main-container w100 h1 d-flex-col center se">
       <span className="heading-text w100 heading t-center py10">
         Dairy Information
       </span>
       <form
-        className="dairy-information-div w50 h90 d-flex-col bg p10"
+        className="dairy-information-div w70 h80 d-flex-col bg-light-green br9 p10 sb"
         onSubmit={handleSubmit}
       >
-        <div className="dairy-name-div w100 h15 d-flex-col sa">
-          <span className="info-text w100 ">Marathi Name : </span>
-          <input
-            className={`data w100 ${errors.date ? "input-error" : ""}`}
-            type="text"
-            name="marathiName"
-            id="marathiName"
-            placeholder="डेरीचे नाव"
-            maxlength="150"
-            value={formData.marathiName} // Use formData here
-            required
-            onChange={handleChange}
-          />
-        </div>
-        <div className="dairy-name-div w100 h15 d-flex-col sa">
-          <span className="info-text w100 ">English Name :</span>
-          <input
-            className={`data w100 ${errors.date ? "input-error" : ""}`}
-            type="text"
-            name="SocietyName"
-            placeholder="Dairy Name"
-            maxlength="150"
-            id="SocietyName"
-            value={formData.SocietyName} // Use formData here
-            required
-            onChange={handleChange}
-          />
+        <div className="dairy-div w100 h15 d-flex sb">
+          <div className="dairy-info-div w45 h1 d-flex-col sa">
+            <span className="label-text w100 ">Marathi Name : </span>
+            <input
+              className={`data w100 ${errors.date ? "input-error" : ""}`}
+              type="text"
+              name="marathiName"
+              id="marathiName"
+              placeholder="डेरीचे नाव"
+              maxlength="150"
+              value={formData.marathiName}
+              required
+              onChange={handleChange}
+            />
+          </div>
+          <div className="dairy-info-div w45 h1 d-flex-col sa">
+            <span className="label-text w100 ">English Name :</span>
+            <input
+              className={`data w100 ${errors.date ? "input-error" : ""}`}
+              type="text"
+              name="SocietyName"
+              placeholder="Dairy Name"
+              maxlength="150"
+              id="SocietyName"
+              value={formData.SocietyName}
+              required
+              onChange={handleChange}
+            />
+          </div>
         </div>
         <div className="dairy-div w100 h15 d-flex sb">
-          <div className="regi-no-div w45 h1 d-flex-col sa">
-            <span className="info-text w100 ">Register Number :</span>
+          <div className="dairy-info-div w30 h1 d-flex-col sa">
+            <label htmlFor="scode" className="label-text w100 ">
+              Dairy Id :
+            </label>
+            <input
+              className="data w100"
+              type="text"
+              name="SocietyCode"
+              id="scode"
+              readOnly
+              maxlength="4"
+              value={formData.SocietyCode}
+              onChange={handleChange}
+            />
+          </div>
+          <div className="dairy-info-div w30 h1 d-flex-col sb">
+            <label htmlFor="prefix" className="label-text w100 ">
+              Dairy Prefix :
+            </label>
+            <input
+              className="data w100"
+              type="text"
+              name="prefix"
+              id="prefix"
+              readOnly
+              value={formData.prefix}
+              onChange={handleChange}
+            />
+          </div>
+          <div className="dairy-info-div w30 h1 d-flex-col sb">
+            <span className="label-text w100 ">Start Date :</span>
+            <input
+              className="data w100"
+              type="date"
+              name="startDate"
+              id="startDate"
+              readOnly
+              value={formData.startDate.slice(0, 10)}
+              onChange={handleChange}
+            />
+          </div>
+        </div>
+        <div className="dairy-div w100 h15 d-flex sb">
+          <div className="dairy-info-div w30 h1 d-flex-col sa">
+            <span className="label-text w100 ">Register Number :</span>
             <input
               className="data w100"
               type="text"
@@ -207,8 +255,8 @@ const DairyInfo = () => {
               onChange={handleChange}
             />
           </div>
-          <div className="regi-no-div w45 h1 d-flex-col sb">
-            <span className="info-text w100 ">Register Date :</span>
+          <div className="dairy-info-div w30 h1 d-flex-col sb">
+            <span className="label-text w100 ">Register Date :</span>
             <input
               className="data w100"
               type="date"
@@ -218,10 +266,8 @@ const DairyInfo = () => {
               onChange={handleChange}
             />
           </div>
-        </div>
-        <div className="dairy-div w100 h15 d-flex sb">
-          <div className="gst-div w45 h1 d-flex-col sb">
-            <span className="info-text w100 ">GST Number :</span>
+          <div className="dairy-info-div w30 h1 d-flex-col sb">
+            <span className="label-text w100 ">GST Number :</span>
             <input
               className={`data w100 ${errors.date ? "input-error" : ""}`}
               type="text"
@@ -232,8 +278,10 @@ const DairyInfo = () => {
               onChange={handleChange}
             />
           </div>
-          <div className="gst-div w45 h1 d-flex-col sb">
-            <span className="info-text w100 ">Audit Class :</span>
+        </div>
+        <div className="dairy-div w100 h15 d-flex sb">
+          <div className="dairy-info-div w30 h1 d-flex-col sb">
+            <span className="label-text w100 ">Audit Class :</span>
             <input
               className={`data w100 ${errors.date ? "input-error" : ""}`}
               type="text"
@@ -244,10 +292,8 @@ const DairyInfo = () => {
               onChange={handleChange}
             />
           </div>
-        </div>
-        <div className="dairy-div w100 h15 d-flex sb">
-          <div className="add-div w45 h1 d-flex-col sb">
-            <span className="info-text w100 ">Mobile Number :</span>
+          <div className="dairy-info-div w30 h1 d-flex-col sb">
+            <span className="label-text w100 ">Mobile Number :</span>
             <input
               className={`data w100 ${errors.date ? "input-error" : ""}`}
               type="tel"
@@ -258,8 +304,8 @@ const DairyInfo = () => {
               onChange={handleChange}
             />
           </div>
-          <div className="gst-div w45 h1 d-flex-col sb">
-            <span className="info-text w100 ">Email :</span>
+          <div className="dairy-info-div w30 h1 d-flex-col sb">
+            <span className="label-text w100 ">Email :</span>
             <input
               className={`data w100 ${errors.date ? "input-error" : ""}`}
               type="email"
@@ -272,33 +318,31 @@ const DairyInfo = () => {
           </div>
         </div>
         <div className="dairy-div w100 h15 d-flex sb">
-          <div className="add-div w45 h1 d-flex-col sb ">
-            <span className="info-text w100 ">City :</span>
+          <div className="dairy-info-div w30 h1 d-flex-col sb ">
+            <span className="label-text w100 ">City :</span>
             <input
               className="data w100"
               type="text"
-              name="City" // Updated name for this input
+              name="City"
               id="city"
               maxlength="15"
               value={formData.City}
               onChange={handleChange}
             />
           </div>
-          <div className="add-div w45 h1 d-flex-col sb">
-            <span className="info-text w100 ">Tehsil :</span>
+          <div className="dairy-info-div w30 h1 d-flex-col sb">
+            <span className="label-text w100 ">Tehsil :</span>
             <input
               className={`data w100 ${errors.date ? "input-error" : ""}`}
               type="text"
-              name="tel" // Updated name for this input
+              name="tel"
               maxlength="15"
               value={formData.tel}
               onChange={handleChange}
             />
           </div>
-        </div>
-        <div className="dairy-div w100 h15 d-flex sb">
-          <div className="add-div w45 h1 d-flex-col sa">
-            <span className="info-text w100 ">District :</span>
+          <div className="dairy-info-div w30 h1 d-flex-col sa">
+            <span className="label-text w100 ">District :</span>
             <input
               className="data w100"
               type="text"
@@ -309,20 +353,8 @@ const DairyInfo = () => {
               onChange={handleChange}
             />
           </div>
-          <div className="add-div w45 h1 d-flex-col sb">
-            <span className="info-text w100 ">Pincode :</span>
-            <input
-              className={`data w100 ${errors.date ? "input-error" : ""}`}
-              type="text"
-              name="PinCode"
-              id="PinCode"
-              maxlength="6"
-              value={formData.PinCode}
-              onChange={handleChange}
-            />
-          </div>
         </div>
-        <div className="button-container d-flex w100 h10 my10 center">
+        <div className="button-container d-flex w100 h15 my10 center">
           <button
             className="btn w50 h1"
             type="submit"

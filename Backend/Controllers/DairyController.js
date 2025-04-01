@@ -1441,3 +1441,58 @@ exports.deleteMilkSangha = (req, res) => {
     });
   });
 };
+
+//-------------------------------------------------------------------------------------------------------->
+// Dairy Starting Information ---------------------------------------------------------------------------->
+//-------------------------------------------------------------------------------------------------------->
+
+exports.dairySatrtingInfo = (req, res) => {
+  const { id } = req.body;
+  const { dairy_id } = req.user;
+
+  if (!dairy_id) {
+    return res.status(401).json({ status: 401, message: "Unauthorized User!" });
+  }
+
+  if (!id) {
+    return res
+      .status(400)
+      .json({ status: 400, message: "Id required to delete!" });
+  }
+
+  const dairyInfoQuery = `
+        INSERT INTO (dairy_id, center_id, CashOnHandGlcode, CashOnHandAmt, ClosingDate, PLGLCode,
+        PreviousPLGLCode, TreadingPLGlCode, ShareCapitalAmt, MilkPurchaseGL, MilkSaleGL, MilkPurchasePaybleGL,
+        MilkSaleRecivableGl, AllowSameUserPassing, RebateGlCode, BankCurrentAccount, RoundAmtGL, saleincomeGL,
+        ArambhiShillakMalGL, AkherShillakMal, anamatGlcode, MilkCommisionAndAnudan, ribetIncome, ribetExpense,
+        milkRateDiff, CashOnHandAmt_3, chillinggl, advGL, kirkolmilksale_yene, ghutnashgl, transportgl)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `;
+
+  pool.getConnection((err, connection) => {
+    if (err) {
+      console.error("Error getting MySQL connection: ", err);
+      return res.status(500).json({
+        status: 500,
+        message: "Database connection error",
+      });
+    }
+
+    connection.query(deleteQuery, [id], (err, result) => {
+      connection.release();
+
+      if (err) {
+        console.error("Error executing delete sangha query: ", err);
+        return res.status(500).json({
+          status: 500,
+          message: "Error in deleting Sangha!",
+        });
+      }
+
+      return res.status(200).json({
+        status: 200,
+        message: "Sangha Deleted successfully!",
+      });
+    });
+  });
+};

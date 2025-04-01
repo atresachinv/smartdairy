@@ -26,6 +26,8 @@ import {
   FaFileInvoice,
   FaFileInvoiceDollar,
   FaSitemap,
+  FaUserDoctor,
+  FaFileCircleMinus,
 } from "react-icons/fa6";
 import { TbTruckReturn } from "react-icons/tb";
 import { IoAnalyticsOutline } from "react-icons/io5";
@@ -303,8 +305,15 @@ const Mainappnavlinks = ({ setselected, handleSidebar }) => {
           role: ["admin", "super_admin", "manager"],
         },
         {
-          name: `${t("Deduction Master")}`,
-          icon: <MdDomainAdd className="icon" />,
+          name: `${t("master:m-nv-drmaster")}`,
+          icon: <FaUserDoctor className="icon" />,
+          index: 5.5,
+          path: "master/doctor",
+          role: ["admin", "super_admin", "manager"],
+        },
+        {
+          name: `${t("master:m-nv-dedumaster")}`,
+          icon: <FaFileCircleMinus className="icon" />,
           index: 5.6,
           path: "master/deductions",
           role: ["admin", "super_admin", "manager"],
