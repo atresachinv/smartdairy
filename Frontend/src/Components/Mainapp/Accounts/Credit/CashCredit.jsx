@@ -1,5 +1,5 @@
 import { FaRegEdit } from "react-icons/fa";
-import React, { useEffect, useState } from "react";
+import { useCallback, useEffect, useState, useMemo } from "react";
 import { MdDeleteOutline } from "react-icons/md";
 import Select from "react-select";
 import "./credit.css";
@@ -17,6 +17,20 @@ const getTodaysDate = () => {
   return today.toISOString().split("T")[0];
 };
 
+// Extract balance fetching logic into a separate function
+const fetchBal = async (autoCenter) => {
+  try {
+    const res = await axiosInstance.get("/balance", {
+      params: { autoCenter },
+    });
+    return res.data.statementData;
+  } catch (error) {
+    console.error("Failed to fetch balance:", error);
+    toast.error("Failed to fetch balance data");
+    return [];
+  }
+};
+
 const CashCredit = () => {
   const [customerList, setCustomerList] = useState([]);
   const dispatch = useDispatch();
@@ -30,7 +44,7 @@ const CashCredit = () => {
     Amt: "",
     ChequeNo: "",
     ChequeDate: getTodaysDate(),
-    VoucherNo: "",
+    VoucherNo: "1",
     ReceiptNo: "1",
     Narration: "",
   });
@@ -44,7 +58,29 @@ const CashCredit = () => {
     (state) => state.dairySetting.centerSetting
   );
   const [settings, setSettings] = useState({});
-  const autoCenter = settings?.autoCenter;
+  const autoCenter = useMemo(() => settings?.autoCenter, [settings]);
+  const [balance, setBalance] = useState(0);
+  const [balanceData, setBalanceData] = useState([]);
+  const [haveSubAcc, setHaveSubAcc] = useState(false);
+
+  const checkHaveSubAcc = useCallback(() => {
+    const subAcc = sledgerlist.find(
+      (item) => item.lno === Number(formData.GLCode)
+    );
+    if (subAcc) {
+      setHaveSubAcc(subAcc.subacc);
+    } else {
+      setHaveSubAcc(false);
+    }
+  }, [formData.GLCode, sledgerlist]);
+
+  useEffect(() => {
+    if (formData.GLCode) {
+      checkHaveSubAcc();
+    } else {
+      setHaveSubAcc(false);
+    }
+  }, [formData.GLCode, checkHaveSubAcc]);
 
   //set setting
   useEffect(() => {
@@ -56,26 +92,23 @@ const CashCredit = () => {
   // Get master dates and list customer and voucher
   useEffect(() => {
     if (settings?.autoCenter !== undefined) {
-      // console.log("in seleting:", formData.VoucherDate);
       dispatch(
         getAllVoucher({ VoucherDate: getTodaysDate(), autoCenter, filter: 1 })
       );
     }
     dispatch(listCustomer());
     dispatch(listSubLedger());
-  }, [settings]);
+  }, [settings, autoCenter, dispatch]);
 
   // Get  voucher on change voucher date
   useEffect(() => {
     if (settings?.autoCenter !== undefined) {
-      // console.log("in use effect:", formData.VoucherDate);
-
-      setFormData({
-        ...formData,
-        ChequeDate: formData.VoucherDate,
-      });
+      setFormData((f) => ({
+        ...f,
+        ChequeDate: f.VoucherDate,
+      }));
     }
-  }, [formData.VoucherDate]);
+  }, [formData.VoucherDate, settings?.autoCenter]);
 
   // set today date
   useEffect(() => {
@@ -93,7 +126,7 @@ const CashCredit = () => {
     if (storedCustomerList) {
       setCustomerList(JSON.parse(storedCustomerList));
     }
-  }, [dispatch]);
+  }, []);
 
   // ----------------------->
   //set max voucher no---
@@ -149,9 +182,9 @@ const CashCredit = () => {
       }
     }
   };
-  const handlePavtity = (e) => {
+  const handlePavtity = () => {
     setTimeout(() => {
-      if (formData.InstrType === "0") {
+      if (formData.InstrType === "2") {
         const comp = document.getElementById("ChequeNo");
         if (comp) comp.focus();
       } else if (formData.InstrType === "1") {
@@ -170,7 +203,7 @@ const CashCredit = () => {
   //----------------------------------------
   //handle submit------->
   const handleSubmit = async () => {
-    if (!formData.AccCode) {
+    if (!formData.AccCode && haveSubAcc) {
       toast.warn("कृपया खाते क्र. भरा ");
       return;
     }
@@ -185,9 +218,12 @@ const CashCredit = () => {
         ? -Math.abs(formData.Amt)
         : Math.abs(formData.Amt);
 
-    // Ensure the state reflects the adjusted amount before submission
-    const updatedFormData = { ...formData, Amt: adjustedAmt };
-
+    // Convert empty AccCode to 0 for backend
+    const updatedFormData = {
+      ...formData,
+      Amt: adjustedAmt,
+      AccCode: formData.AccCode === "" ? 0 : Number(formData.AccCode),
+    };
     if (!edit) {
       try {
         const res = await axiosInstance.post("/voucher/new", updatedFormData);
@@ -223,6 +259,9 @@ const CashCredit = () => {
               filter: 1,
             })
           );
+          // Fetch updated balance after successful submission
+          const newBalanceData = await fetchBal(autoCenter);
+          setBalanceData(newBalanceData);
         }
       } catch (error) {
         toast.error("Failed to Submit");
@@ -263,6 +302,9 @@ const CashCredit = () => {
 
           setEdit(false);
           setOnclickChalan(false);
+          // Fetch updated balance after successful update
+          const newBalanceData = await fetchBal(autoCenter);
+          setBalanceData(newBalanceData);
         }
       } catch (error) {
         toast.error("Failed to Submit");
@@ -357,6 +399,35 @@ const CashCredit = () => {
       Narration: "",
     });
   };
+
+  //get balance
+  useEffect(() => {
+    const getBalance = async () => {
+      const data = await fetchBal(autoCenter);
+      setBalanceData(data);
+    };
+    getBalance();
+  }, [autoCenter]);
+
+  //set balance
+  useEffect(() => {
+    const balance = balanceData.reduce((acc, item) => {
+      if (item.GLCode === Number(formData.GLCode)) {
+        if (formData.AccCode) {
+          // If AccCode is selected, only include matching transactions
+          if (item.AccCode === Number(formData.AccCode)) {
+            acc += Number(item.Amt);
+          }
+        } else {
+          // If no AccCode selected, include all transactions for this GLCode
+          acc += Number(item.Amt);
+        }
+      }
+      return acc;
+    }, 0);
+    setBalance(balance || 0);
+  }, [formData.GLCode, formData.AccCode, balanceData]);
+
   return (
     <div className="Credit-container w100 h1 d-flex-col">
       <div className="Credit-container-scroll d-flex-col w100">
@@ -467,7 +538,7 @@ const CashCredit = () => {
                     handleKeyPress(e, document.getElementById("GLCode"))
                   }
                   disabled={
-                    !formData.InstrType || formData.InstrType == 0 || fix === 1
+                    !formData.InstrType || formData.InstrType == 1 || fix === 1
                   }
                 />
               </div>
@@ -488,7 +559,10 @@ const CashCredit = () => {
                   setFormData({ ...formData, GLCode: e.target.value })
                 }
                 onKeyDown={(e) =>
-                  handleKeyPress(e, document.getElementById("AccCode"))
+                  handleKeyPress(
+                    e,
+                    document.getElementById(haveSubAcc ? "AccCode" : "amt")
+                  )
                 }
                 disabled={!formData.InstrType || fix}
               />
@@ -533,7 +607,7 @@ const CashCredit = () => {
                 onChange={(e) =>
                   setFormData({ ...formData, AccCode: e.target.value })
                 }
-                disabled={!formData.GLCode}
+                disabled={!formData.GLCode || !haveSubAcc}
               />
 
               <Select
@@ -554,9 +628,13 @@ const CashCredit = () => {
                       )
                     : null
                 }
-                onChange={(selectedOption) =>
-                  handleSelectChange(selectedOption, "AccCode")
+                onKeyDown={(e) =>
+                  handleKeyPress(
+                    e,
+                    document.getElementById(haveSubAcc ? "AccCode" : "amt")
+                  )
                 }
+                isDisabled={!haveSubAcc}
               />
             </div>
             <div className="Amount-button-container  d-flex sb">
@@ -577,12 +655,11 @@ const CashCredit = () => {
                   onChange={(e) =>
                     setFormData({ ...formData, Amt: e.target.value })
                   }
-                  disabled={!formData.AccCode}
                 />
               </div>
               <div className=" Amountt-div d-flex a-center w50 ">
                 <span className="info-text w60">आज बॅलेन्स </span>
-                <input type="text" className="data" disabled />
+                <input type="text" className="data" disabled value={balance} />
               </div>
             </div>
             <div className="Amount-button-container  w100 d-flex sb my5">
@@ -644,7 +721,7 @@ const CashCredit = () => {
                     handleKeyPress(e, document.getElementById("ChequeDate"))
                   }
                   disabled={
-                    !formData.InstrType || formData.InstrType == 1 || fix === 1
+                    !formData.InstrType || formData.InstrType == 2 || fix === 1
                   }
                 />
               </div>
@@ -662,7 +739,7 @@ const CashCredit = () => {
                     handleKeyPress(e, document.getElementById("GLCode"))
                   }
                   disabled={
-                    !formData.InstrType || formData.InstrType == 1 || fix === 1
+                    !formData.InstrType || formData.InstrType == 2 || fix === 1
                   }
                 />
               </div>
@@ -671,7 +748,7 @@ const CashCredit = () => {
               {/* <button className="w-btn ">नवीन बॅच</button> */}
               <button
                 type="button"
-                onClick={(e) => handleClear()}
+                onClick={() => handleClear()}
                 className="w-btn"
               >
                 रद्द करा
@@ -689,7 +766,7 @@ const CashCredit = () => {
                 id="handleSaveBatch"
                 className="w-btn"
                 type="submit"
-                onClick={(e) => handleSubmit()}
+                onClick={() => handleSubmit()}
               >
                 {edit ? "अपडेट करा" : "सेव्ह करा"}
               </button>
@@ -722,7 +799,7 @@ const CashCredit = () => {
                       <td>
                         <FaRegEdit
                           className="icon"
-                          onClick={(e) => handleEdit(voucher.id)}
+                          onClick={() => handleEdit(voucher.id)}
                         />
                       </td>
                       <td className="info-text">{voucher.VoucherNo}</td>
@@ -750,7 +827,7 @@ const CashCredit = () => {
                       <td>
                         <MdDeleteOutline
                           className="icon req"
-                          onClick={(e) => handleDelete(voucher.id)}
+                          onClick={() => handleDelete(voucher.id)}
                         />
                       </td>
                     </tr>
