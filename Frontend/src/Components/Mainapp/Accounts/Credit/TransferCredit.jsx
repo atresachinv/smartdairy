@@ -466,6 +466,8 @@ const TransferCredit = () => {
       } else {
         setfilterVoucherList(voucherList);
       }
+    } else {
+      setfilterVoucherList([]);
     }
   }, [formData.BatchNo, voucherList]);
 

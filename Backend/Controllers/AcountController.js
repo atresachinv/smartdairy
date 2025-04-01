@@ -40,7 +40,7 @@ exports.getAllVoucher = async (req, res) => {
       query += " AND VoucherDate = ? ORDER BY id DESC";
       queryParams.push(VoucherDate);
     } else {
-      query += " VoucherDate=CURDATE() ORDER BY id DESC ";
+      query += " AND VoucherDate=CURDATE() ORDER BY id DESC ";
     }
 
     connection.query(query, queryParams, (err, result) => {
