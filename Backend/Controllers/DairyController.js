@@ -923,12 +923,58 @@ exports.saveMessage = async (req, res) => {
 // Center wise milk Collection --------------------------------------------------------------------------->
 //-------------------------------------------------------------------------------------------------------->
 
+// exports.getCenterWiseMilkData = (req, res) => {
+//   const { fromDate, toDate } = req.body;
+//   const {dairy_id, center_id} = req.user.dairy_id;
+//   if (!dairy_id) {
+//     connection.release();
+//     return res.status(401).json({ status: 401, message: "Unathorised User!" });
+//   }
+
+//   pool.getConnection((err, connection) => {
+//     if (err) {
+//       console.error("Error getting MySQL connection: ", err);
+//       return res
+//         .status(500)
+//         .json({ status: 500, message: "Database connection error" });
+//     }
+//     const dairy_table = `dailymilkentry_${dairy_id}`;
+//     const getLiterAmt = `
+//       SELECT center_id, 
+//         SUM(litres) AS total_litres, 
+//         SUM(amt) AS total_amount
+//       FROM ${dairy_table}
+//       WHERE ReceiptDate BETWEEN ? AND ?
+//       GROUP BY center_id;
+//     `;
+
+//     connection.query(getLiterAmt, [fromDate, toDate], (err, result) => {
+//       connection.release(); // Always release the connection back to the pool
+
+//       if (err) {
+//         console.error("Error executing query: ", err);
+//         return res
+//           .status(500)
+//           .json({ status: 500, message: "Query execution error" });
+//       }
+//       if (result.length === 0) {
+//         return res.status(404).json({
+//           status: 404,
+//           message: "Rate not found for the provided parameters.",
+//         });
+//       }
+
+//       res.status(200).json({ status: 200, centerData: result });
+//     });
+//   });
+// };
+
 exports.getCenterWiseMilkData = (req, res) => {
   const { fromDate, toDate } = req.body;
-  const dairy_id = req.user.dairy_id;
+  const { dairy_id, center_id } = req.user;
+
   if (!dairy_id) {
-    connection.release();
-    return res.status(401).json({ status: 401, message: "Unathorised User!" });
+    return res.status(401).json({ status: 401, message: "Unauthorized User!" });
   }
 
   pool.getConnection((err, connection) => {
@@ -938,17 +984,25 @@ exports.getCenterWiseMilkData = (req, res) => {
         .status(500)
         .json({ status: 500, message: "Database connection error" });
     }
+
     const dairy_table = `dailymilkentry_${dairy_id}`;
-    const getLiterAmt = `
+    let getLiterAmt = `
       SELECT center_id, 
         SUM(litres) AS total_litres, 
         SUM(amt) AS total_amount
       FROM ${dairy_table}
-      WHERE ReceiptDate BETWEEN ? AND ?
-      GROUP BY center_id;
-    `;
+      WHERE ReceiptDate BETWEEN ? AND ?`;
 
-    connection.query(getLiterAmt, [fromDate, toDate], (err, result) => {
+    const values = [fromDate, toDate];
+
+    if (center_id !== 0) {
+      getLiterAmt += " AND center_id = ?";
+      values.push(center_id);
+    }
+
+    getLiterAmt += " GROUP BY center_id;";
+
+    connection.query(getLiterAmt, values, (err, result) => {
       connection.release(); // Always release the connection back to the pool
 
       if (err) {
@@ -968,6 +1022,7 @@ exports.getCenterWiseMilkData = (req, res) => {
     });
   });
 };
+
 
 //-------------------------------------------------------------------------------------------------------->
 // Center wise customer count ---------------------------------------------------------------------------->
