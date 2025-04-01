@@ -1,0 +1,115 @@
+.profitloss-current-div select {
+  margin-left: 10px;
+}
+.cash-gl-no-div select {
+  margin-left: 10px;
+}
+.remining-cost-colsing-date input {
+  margin-right: 10px;
+}
+.Society-info-div .first-half-society-info {
+  width: 100%;
+}
+.round-amount-container span{
+  width: 150px;
+}
+.round-amount-container input{
+width: 120px;
+}
+@media screen and (max-width: 426px) {
+  .Society-info-div {
+    flex-direction: column;
+  }
+  .first-half-society-info {
+    width: 100%;
+  }
+  .second-half-container {
+    width: 100%;
+  }
+  .Society-info-contianer span {
+    font-size: small;
+    width: 150px;
+  }
+  .Society-info-contianer input {
+    font-size: small;
+    width: 120px;
+  }
+  .colsing-date-div input {
+
+    font-size: x-small;
+  }
+  .first-half-society-info .Strtup-info-div span {
+    width: 150px;
+  }
+  .first-half-society-info .Strtup-info-div {
+    width: 100%;
+  }
+  .first-half-society-info .Strtup-info-div input {
+    width: 180px;
+    height: 30px;
+  }
+  .in-hand-cash-and-closing-date .remining-cost-colsing-date {
+    flex-direction: column;
+
+  }
+  .in-hand-cash-and-closing-date .remining-cost-colsing-date input {
+    width: 120px;
+    height: 30px;
+  }
+  .in-hand-cash-and-closing-date .colsing-date-div {
+    flex-direction: column;
+    margin-bottom: 5px;
+  }
+  .in-hand-cash-and-closing-date .colsing-date-div span {
+    width: 130px;
+    margin-top: 5px;
+  }
+  .in-hand-cash-and-closing-date .colsing-date-div input {
+    width: 130px;
+height: 30px;
+  }
+  .cashamount-info-div .grocary-cash-div  {
+  margin-bottom: 5px;
+  align-items: center;
+  }
+  .cashamount-info-div .grocary-cash-div span {
+    width: 196px;
+  }
+  .cashamount-info-div .grocary-cash-div input {
+    width: 170px;
+    height: 30px;
+  }
+  .cashamount-info-div .cash-gl-no-div {
+    height: 50px;
+    margin-bottom:50px;
+    width: 90%;
+    padding-right: 10px;
+  }
+  .cashamount-info-div .cash-gl-no-div select {
+    height: 30px;
+    width: 120px;
+  } 
+   .first-half-society-info .profit-lossgl-div {
+    width: 100%;
+  }
+  .profitloss-current-div select{
+  margin-right: 10px;
+  }
+  .Society-info-div .second-half-container{
+    width: 100%;
+  }
+  .Society-info-div .second-half-container .round-amount-container span{
+      padding-left: 10px;
+  } 
+  .Society-info-div .second-half-container .round-amount-container input{
+     height: 35px;
+     margin-bottom: 10px;
+     width: 200px;
+  } 
+  .buttons-amount-container{
+    margin-top: 10px;
+    margin-right: 20px;
+  }
+
+}
+

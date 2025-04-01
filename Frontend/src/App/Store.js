@@ -38,6 +38,7 @@ import sanghaReducer from "./Features/Mainapp/Sangha/sanghaSlice"; //super-admin
 import ledgerReducer from "./Features/Mainapp/Masters/ledgerSlice"; //super-admin
 
 import smsReducer from "./Features/Mainapp/Dairyinfo/smsSlice";
+import voucherReducer from "./Features/Mainapp/Account/voucherSlice";
 
 export const store = configureStore({
   reducer: {
@@ -78,5 +79,6 @@ export const store = configureStore({
     dairySetting: settingsReducer,
     smsHistory: smsReducer,
     ledger: ledgerReducer,
+    voucher: voucherReducer,
   },
 });
