@@ -347,9 +347,9 @@ const CreateCenter = () => {
         </div>
         <div className="center-add-data-div w100 h10 d-flex a-center sb">
           <div className="center-details-div center-data w20 d-flex-col sa">
-            <lable htmlFor="city" className="info-text w100">
+            <label htmlFor="city" className="info-text w100">
               City
-            </lable>
+            </label>
             <input
               className={`data w100 ${errors.city ? "input-error" : ""}`}
               type="text"
