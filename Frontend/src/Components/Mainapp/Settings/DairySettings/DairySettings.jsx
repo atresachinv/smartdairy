@@ -107,31 +107,37 @@ const DairySettings = () => {
 
       <div className="h1 w100 d-flex j-center ">
         <div className="mx5 my5 w90 d-flex-col bg center">
-          {[...centerList]
-            .sort((a, b) => a.center_id - b.center_id)
-            .map((center) => (
-              <>
-                <div
-                  key={center.center_id}
-                  className="w50 h10  d-flex px10 sa dairy-settings-page-main-item"
-                >
-                  <div className="px10w10 info-text">{center.center_id}</div>
-                  <div className="w80">
-                    <div className="info-text">
-                      {center.marathi_name || center.center_name}
+          {centerList &&
+            [...centerList]
+              .sort((a, b) => a.center_id - b.center_id)
+              .map((center) => (
+                <>
+                  <div
+                    key={center.center_id}
+                    className="w50 h10  d-flex px10 sa dairy-settings-page-main-item"
+                  >
+                    <div className="px10w10 info-text">{center.center_id}</div>
+                    <div className="w80">
+                      <div className="info-text">
+                        {center.marathi_name || center.center_name}
+                      </div>
+                      {/* <div className="info-text">{center.city}</div> */}
                     </div>
-                    {/* <div className="info-text">{center.city}</div> */}
+                    <div className="w10">
+                      <IoSettingsOutline
+                        style={{ cursor: "pointer" }}
+                        className="icon"
+                        onClick={() => handleOnsetting(center.center_id)}
+                      />
+                    </div>
                   </div>
-                  <div className="w10">
-                    <IoSettingsOutline
-                      style={{ cursor: "pointer" }}
-                      className="icon"
-                      onClick={() => handleOnsetting(center.center_id)}
-                    />
-                  </div>
-                </div>
-              </>
-            ))}
+                </>
+              ))}
+          {!centerList && (
+            <div className="w100 h10 d-flex j-center">
+              "सेंटर माहिती मिळाली नाही "
+            </div>
+          )}
         </div>
         {model && (
           <>

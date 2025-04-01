@@ -1225,6 +1225,69 @@ exports.transferMilkCollToDate = async (req, res) => {
 };
 
 // <<<<<<<<<<< ----------------- Generate Payment -------------------->>>>>>>>>>>>>> //
+
+// ----------------------------------------------------------------------------------->
+// get payment avg fat snf ---------------------------------------------------------------->
+// ----------------------------------------------------------------------------------->
+
+exports.checkZeroAmt = async (req, res) => {
+  const { dairy_id, center_id } = req.user;
+  const { fromDate, toDate } = req.query;
+
+  if (!dairy_id) {
+    return res
+      .status(401)
+      .json({ status: 401, message: "Dairy ID not found in the request!" });
+  }
+
+  if (!fromDate || !toDate) {
+    return res
+      .status(400)
+      .json({ status: 400, message: "fromDate and toDate are required!" });
+  }
+
+  const dairy_table = `dailymilkentry_${dairy_id}`;
+
+  pool.getConnection((err, connection) => {
+    if (err) {
+      console.error("Error getting MySQL connection: ", err.message);
+      return res
+        .status(500)
+        .json({ status: 500, message: "Database connection error" });
+    }
+
+    const milkCollectionQuery = `
+      SELECT rno FROM ${dairy_table}
+        WHERE ReceiptDate BETWEEN ? AND ? AND center_id = ? AND Amt = 0
+        ORDER BY rno ASC;
+      `;
+
+    connection.query(
+      milkCollectionQuery,
+      [fromDate, toDate, center_id],
+      (err, results) => {
+        connection.release();
+        if (err) {
+          console.error("Error executing query: ", err.message);
+          return res
+            .status(500)
+            .json({ status: 500, message: "Error executing query" });
+        }
+
+        if (results.length === 0) {
+          return res.status(204).json({
+            status: 204,
+            paymentZero: [],
+            message: "No record found!",
+          });
+        }
+
+        res.status(200).json({ status: 200, paymentZero: results });
+      }
+    );
+  });
+};
+
 // ----------------------------------------------------------------------------------->
 // get payment Amount ---------------------------------------------------------------->
 // ----------------------------------------------------------------------------------->
@@ -1252,26 +1315,28 @@ exports.getMilkPayAmt = async (req, res) => {
       return res.status(500).json({ message: "Database connection error" });
     }
 
-    const milkCollectionQuery = `
+    const milkPaymentDataquery = `
       SELECT 
-        rno, 
-        cname,
-        SUM(Litres) AS totalLitres,
-        SUM(Litres * rate) AS totalamt,
-        MIN(ReceiptDate) AS min_receipt_date 
-      FROM 
-        ${dairy_table}
-      WHERE 
-        ReceiptDate BETWEEN ? AND ? 
-        AND center_id = ?
-      GROUP BY 
-        rno, cname
-      ORDER BY 
-        min_receipt_date ASC;
-    `;
+            rno, 
+            cname,
+            SUM(Litres) AS totalLitres,
+            SUM(Litres * rate) AS totalamt,
+            MIN(ReceiptDate) AS min_receipt_date,
+            SUM(Litres * fat) / SUM(Litres) AS avgFat, 
+            SUM(Litres * snf) / SUM(Litres) AS avgSnf
+        FROM 
+            ${dairy_table}
+        WHERE 
+            ReceiptDate BETWEEN ? AND ? 
+            AND center_id = ?
+        GROUP BY 
+            rno, cname
+        ORDER BY 
+            CAST(rno AS UNSIGNED) ASC;
+      `;
 
     connection.query(
-      milkCollectionQuery,
+      milkPaymentDataquery,
       [fromDate, toDate, center_id],
       (err, results) => {
         connection.release();
@@ -1283,12 +1348,12 @@ exports.getMilkPayAmt = async (req, res) => {
 
         if (results.length === 0) {
           return res.status(200).json({
-            paymentAmount: [],
+            paymentData: [],
             message: "No record found!",
           });
         }
 
-        res.status(200).json({ paymentAmount: results });
+        res.status(200).json({ status: 200, paymentData: results });
       }
     );
   });

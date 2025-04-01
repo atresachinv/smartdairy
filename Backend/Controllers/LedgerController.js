@@ -105,14 +105,14 @@ exports.maxSubLCode = async (req, res) => {
 // ----------------------------------------------------------------------------->
 exports.createMainLedger = async (req, res) => {
   const { date, code, eng_name, marathi_name, category } = req.body;
-  const { user_id } = req.user;
+  const { dairy_id, center_id, user_id } = req.user;
   if (!date || !code || !eng_name || !marathi_name || !category) {
     return res
       .status(400)
       .json({ status: 400, message: "All fields data required!" });
   }
 
-  if (!user_id) {
+  if (!dairy_id || !user_id) {
     return res.status(401).json({ status: 401, message: "Unauthorized User!" });
   }
 
@@ -126,13 +126,22 @@ exports.createMainLedger = async (req, res) => {
 
     try {
       const insertQuery = `
-        INSERT INTO mainglmaster (code, gl_name, gl_marathi_name, gl_category, createdon, createdby) 
-        VALUES (?, ?, ?, ?, ?, ?)
+        INSERT INTO mainglmaster (dairy_id, center_id, code, gl_name, gl_marathi_name, gl_category, createdon, createdby) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
       `;
 
       connection.query(
         insertQuery,
-        [code, eng_name, marathi_name, category, date, user_id],
+        [
+          dairy_id,
+          center_id,
+          code,
+          eng_name,
+          marathi_name,
+          category,
+          date,
+          user_id,
+        ],
         (err, result) => {
           connection.release();
           if (err) {
@@ -180,7 +189,7 @@ exports.fetchAllMainLedger = async (req, res) => {
 
     try {
       const fetchQuery = `
-        SELECT code, gl_name, gl_marathi_name, gl_category FROM mainglmaster WHERE dairy_id = ? AND center_id = ?
+        SELECT code, gl_name, gl_marathi_name, gl_category FROM mainglmaster WHERE dairy_id IN (0 , ?) AND center_id = ?
       `;
 
       connection.query(fetchQuery, [dairy_id, center_id], (err, result) => {
@@ -215,6 +224,7 @@ exports.fetchAllMainLedger = async (req, res) => {
     }
   });
 };
+
 // ----------------------------------------------------------------------------->
 // Create New  Sub Ledger
 // ----------------------------------------------------------------------------->
@@ -271,7 +281,7 @@ exports.createSubLedger = async (req, res) => {
           marathi_name,
           subAcc,
           sanghahead,
-          perltramt,
+          perltramt || 0.0,
           vcsms,
           date,
           user_id,
@@ -331,19 +341,6 @@ exports.updateSubLedger = async (req, res) => {
     subAcc,
     vcsms,
   } = formData;
-
-  console.log(
-    date,
-    id,
-    groupcode,
-    groupname,
-    eng_name,
-    marathi_name,
-    sanghahead,
-    perltramt,
-    subAcc,
-    vcsms
-  );
 
   pool.getConnection((err, connection) => {
     if (err) {
@@ -462,7 +459,7 @@ exports.fetchAllSubLedger = async (req, res) => {
       let fetchquery = `
       SELECT id, lno, group_code, group_name, ledger_name, marathi_name, subacc, sangha_head, per_ltr_amt, vcsms
       FROM subledgermaster
-      WHERE dairy_id = ? AND center_id = ?
+      WHERE dairy_id IN (0, ?) AND center_id = ?
       `;
 
       connection.query(fetchquery, [dairy_id, center_id], (err, result) => {
