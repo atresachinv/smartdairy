@@ -1,0 +1,81 @@
+.deduction-heading-side-table {
+  background-color: #007bff;
+}
+.deduction-heading-side-table span {
+  color: aliceblue;
+}
+@media screen and (max-width: 426px) {
+  .select-deduction-report span {
+    width: 30%;
+  }
+  .deduction-list-first-half-div {
+    height: auto;
+    height: 40%;
+  }
+  .select-deduction-report select {
+    width: 70%;
+  }
+  .deduction-list-from-to-date-div {
+    margin-bottom: 20px;
+  }
+  .deduction-list-from-to-date-div .deduction-list-from-date {
+    flex-direction: column;
+  }
+  .deduction-list-from-to-date-div .deduction-list-from-date span {
+    width: 120px;
+  }
+  .deduction-list-from-to-date-div .deduction-list-from-date input {
+    width: 150px;
+  }
+  .deduction-list-from-to-date-div .deduction-list-to-date {
+    flex-direction: column;
+  }
+  .deduction-list-from-to-date-div .deduction-list-to-date span {
+    width: 120px;
+  }
+  .deduction-list-from-to-date-div .deduction-list-to-date input {
+    width: 150px;
+  }
+
+  .code-number-from-to-div-and-button-div .code-number-from-to-div {
+    margin-bottom: 10px;
+  }
+  .code-number-from-to-div-and-button-div
+    .code-number-from-to-div
+    .from-code-numbers-div {
+    flex-direction: column;
+  }
+  .code-number-from-to-div-and-button-div
+    .code-number-from-to-div
+    .from-code-numbers-div
+    span {
+    width: 80px;
+  }
+  .code-number-from-to-div-and-button-div
+    .code-number-from-to-div
+    .from-code-numbers-div
+    input {
+    width: 80px;
+    padding-bottom: 10px;
+    height: 25px;
+  }
+
+  .code-number-from-to-div-and-button-div
+    .code-number-from-to-div
+    .to-code-numbers-div {
+    flex-direction: column;
+  }
+  .code-number-from-to-div-and-button-div
+    .code-number-from-to-div
+    .to-code-numbers-div span {
+   width: 20px;
+  }
+  .code-number-from-to-div-and-button-div
+    .code-number-from-to-div
+    .to-code-numbers-div input {
+   width: 80px;
+   padding-bottom: 10px;
+    height: 25px;
+  }
+
+}

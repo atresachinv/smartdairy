@@ -54,6 +54,14 @@
     width: 100%;
     min-height: fit-content;
   }
+  .dairy-information-div .dairy-div {
+    width: 100%;
+    flex-direction: column;
+    min-height: fit-content;
+  }
+  .dairy-div .dairy-info-div {
+    width: 100%;
+  }
 }
 
 /* --------------------------------------------------------- */

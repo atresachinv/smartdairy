@@ -164,19 +164,23 @@ const CustomerList = () => {
               value={searchTerm}
               onChange={handleSearch}
             />
-            <select
-              className="data w40"
-              name="center"
-              id=""
-              onChange={handleSelectInput}
-            >
-              <option value="">-- Select Center --</option>
-              {centerList.map((center, index) => (
-                <option key={index} value={center.center_id}>
-                  {center.center_name}
-                </option>
-              ))}
-            </select>
+            {center_id === 0 ? (
+              <select
+                className="data w40"
+                name="center"
+                id=""
+                onChange={handleSelectInput}
+              >
+                <option value="">-- Select Center --</option>
+                {centerList.map((center, index) => (
+                  <option key={index} value={center.center_id}>
+                    {center.center_name}
+                  </option>
+                ))}
+              </select>
+            ) : (
+              ""
+            )}
             <button className="btn" onClick={downloadExcel}>
               <span className="f-label-text px10">
                 {t("milkcollection:m-d-excel")}

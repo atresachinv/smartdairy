@@ -101,7 +101,7 @@ const Dashboard = () => {
   const customerCount = customerslist.length;
   const totalLitres = mastermilk.reduce((acc, item) => acc + item.Litres, 0);
   const totalAmt = mastermilk.reduce((acc, item) => acc + item.Amt, 0);
-  const avgRate = totalAmt / totalLitres;
+  const avgRate = totalLitres > 0 ? totalAmt / totalLitres : 0;
   const totalFatValue = mastermilk.reduce(
     (acc, item) => acc + item.Litres * item.fat,
     0
@@ -144,8 +144,6 @@ const Dashboard = () => {
       data.totalLitres > 0 ? data.totalSNFValue / data.totalLitres : 0;
   });
 
-  console.log(aggregatedData);
-
   // ---------------------------------------------------------------------------------------------->
   //  Data to show in bar chart ----------------------------------------------------------------->
   const chartData = Object.keys(aggregatedData).map((date) => ({
@@ -175,12 +173,12 @@ const Dashboard = () => {
         })
       );
       if (center_id === 0) {
-        dispatch(
-          getCenterMilkData({
-            fromDate: selectedDate.start,
-            toDate: selectedDate.end,
-          })
-        );
+        // dispatch(
+        //   getCenterMilkData({
+        //     fromDate: selectedDate.start,
+        //     toDate: selectedDate.end,
+        //   })
+        // );
         dispatch(centersLists());
         dispatch(getCenterCustCount());
       }
@@ -192,14 +190,14 @@ const Dashboard = () => {
           toDate: tDate,
         })
       );
-      if (center_id === 0) {
-        dispatch(
-          getCenterMilkData({
-            fromDate: fDate,
-            toDate: tDate,
-          })
-        );
-      }
+      // if (center_id === 0) {
+      //   dispatch(
+      //     getCenterMilkData({
+      //       fromDate: fDate,
+      //       toDate: tDate,
+      //     })
+      //   );
+      // }
     }
   }, [dispatch, selectedDate, fDate, tDate]);
 
@@ -399,7 +397,7 @@ const Dashboard = () => {
                   <span className="heading">
                     {new Date(selectedDate.start).toLocaleDateString("en-GB", {
                       day: "2-digit",
-                      month: "short", // Abbreviated month format
+                      month: "short",
                       year: "numeric",
                     })}
                   </span>{" "}
@@ -407,7 +405,7 @@ const Dashboard = () => {
                   <span className="heading">
                     {new Date(selectedDate.end).toLocaleDateString("en-GB", {
                       day: "2-digit",
-                      month: "short", // Abbreviated month format
+                      month: "short",
                       year: "numeric",
                     })}
                   </span>

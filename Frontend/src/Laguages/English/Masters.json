@@ -2,7 +2,9 @@
   "m-nv-mledger": "Ledger Groups",
   "m-nv-sledger": "Ledger Master",
   "m-nv-bankmaster": "Bank Master",
+  "m-nv-drmaster": "Doctor Master",
   "m-nv-empmaster": "Employee Master",
+  "m-nv-dedumaster": "Deduction Master",
 
   "m-custlist": "Customer List",
   "m-custadd": "Add Customer",

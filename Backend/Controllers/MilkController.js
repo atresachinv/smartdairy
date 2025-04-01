@@ -1630,12 +1630,74 @@ exports.updateMobileCollection = async (req, res) => {
 };
 
 //------------------------------------------------------------------------------------------------------------------->
-// Milk Collection Report (use to Fillter)
+// Milk Collection Report (use to Fillter) and to show on dashboard
 //------------------------------------------------------------------------------------------------------------------->
+
+// exports.allMilkCollReport = async (req, res) => {
+//   const { fromDate, toDate } = req.query;
+
+//   const {dairy_id, center_id} = req.user;
+
+//   if (!dairy_id) {
+//     return res
+//       .status(400)
+//       .json({ message: "Dairy ID not found in the request!" });
+//   }
+
+//   const dairy_table = `dailymilkentry_${dairy_id}`;
+//   pool.getConnection((err, connection) => {
+//     if (err) {
+//       console.error("Error getting MySQL connection: ", err.message);
+//       return res.status(500).json({ message: "Database connection error" });
+//     }
+
+//     try {
+//       const milkCollectionQuery = `
+//         SELECT id, userid, ReceiptDate,  ME,  CB,  Litres,  fat,  snf,  rate,  Amt,  cname,  rno , AccCode ,center_id
+//         FROM ${dairy_table}
+//         WHERE ReceiptDate BETWEEN ? AND ? ORDER BY ReceiptDate ASC
+//       `;
+
+//       connection.query(
+//         milkCollectionQuery,
+//         [fromDate, toDate],
+//         (err, results) => {
+//           connection.release();
+
+//           if (err) {
+//             console.error("Error executing query: ", err.message);
+//             return res.status(500).json({ message: "Error executing query" });
+//           }
+
+//           if (results.length === 0) {
+//             return res.status(200).json({
+//               milkcollection: [],
+//               message: "No record found!",
+//             });
+//           }
+
+//           res.status(200).json({ milkcollection: results });
+//         }
+//       );
+//     } catch (err) {
+//       connection.release();
+//       console.error("Unexpected error: ", err.message);
+//       res.status(500).json({ message: "Unexpected server error" });
+//     }
+//   });
+// };
 
 exports.allMilkCollReport = async (req, res) => {
   const { fromDate, toDate } = req.query;
+  const { dairy_id, center_id } = req.user;
 
+  if (!dairy_id) {
+    return res
+      .status(400)
+      .json({ message: "Dairy ID not found in the request!" });
+  }
+
+  const dairy_table = `dailymilkentry_${dairy_id}`;
   pool.getConnection((err, connection) => {
     if (err) {
       console.error("Error getting MySQL connection: ", err.message);
@@ -1643,43 +1705,37 @@ exports.allMilkCollReport = async (req, res) => {
     }
 
     try {
-      const dairy_id = req.user.dairy_id;
+      let milkCollectionQuery = `
+        SELECT id, userid, ReceiptDate, ME, CB, Litres, fat, snf, rate, Amt, cname, rno, AccCode, center_id
+        FROM ${dairy_table}
+        WHERE ReceiptDate BETWEEN ? AND ?`;
 
-      if (!dairy_id) {
-        return res
-          .status(400)
-          .json({ message: "Dairy ID not found in the request!" });
+      const values = [fromDate, toDate];
+
+      if (center_id !== 0) {
+        milkCollectionQuery += " AND center_id = ?";
+        values.push(center_id);
       }
 
-      const dairy_table = `dailymilkentry_${dairy_id}`;
+      milkCollectionQuery += " ORDER BY ReceiptDate ASC";
 
-      const milkCollectionQuery = `
-        SELECT id, userid, ReceiptDate,  ME,  CB,  Litres,  fat,  snf,  rate,  Amt,  cname,  rno , AccCode ,center_id
-        FROM ${dairy_table}
-        WHERE ReceiptDate BETWEEN ? AND ? ORDER BY ReceiptDate ASC
-      `;
+      connection.query(milkCollectionQuery, values, (err, results) => {
+        connection.release();
 
-      connection.query(
-        milkCollectionQuery,
-        [fromDate, toDate],
-        (err, results) => {
-          connection.release();
-
-          if (err) {
-            console.error("Error executing query: ", err.message);
-            return res.status(500).json({ message: "Error executing query" });
-          }
-
-          if (results.length === 0) {
-            return res.status(200).json({
-              milkcollection: [],
-              message: "No record found!",
-            });
-          }
-
-          res.status(200).json({ milkcollection: results });
+        if (err) {
+          console.error("Error executing query: ", err.message);
+          return res.status(500).json({ message: "Error executing query" });
         }
-      );
+
+        if (results.length === 0) {
+          return res.status(200).json({
+            milkcollection: [],
+            message: "No record found!",
+          });
+        }
+
+        res.status(200).json({ milkcollection: results });
+      });
     } catch (err) {
       connection.release();
       console.error("Unexpected error: ", err.message);
@@ -1793,27 +1849,23 @@ exports.todaysMilkCollReport = async (req, res) => {
         WHERE center_id = ? AND ReceiptDate = ?
       `;
 
-      connection.query(
-        todaysMilkQuery,
-        [ center_id, date],
-        (err, results) => {
-          connection.release();
+      connection.query(todaysMilkQuery, [center_id, date], (err, results) => {
+        connection.release();
 
-          if (err) {
-            console.error("Error executing query: ", err.message);
-            return res.status(500).json({ message: "Error executing query" });
-          }
-
-          if (results.length === 0) {
-            return res.status(200).json({
-              todaysmilk: [],
-              message: "No record found!",
-            });
-          }
-
-          res.status(200).json({ todaysmilk: results });
+        if (err) {
+          console.error("Error executing query: ", err.message);
+          return res.status(500).json({ message: "Error executing query" });
         }
-      );
+
+        if (results.length === 0) {
+          return res.status(200).json({
+            todaysmilk: [],
+            message: "No record found!",
+          });
+        }
+
+        res.status(200).json({ todaysmilk: results });
+      });
     } catch (err) {
       connection.release();
       console.error("Unexpected error: ", err.message);

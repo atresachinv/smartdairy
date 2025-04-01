@@ -85,6 +85,7 @@ const BankReportMaster = () => {
 
     try {
       const response = await axios.post({ fromDate, toDate });
+      
       console.log("API Response Data:", response.data.Deduction); // Log the response data
       setBankData(response.data.Deduction);
     } catch (error) {

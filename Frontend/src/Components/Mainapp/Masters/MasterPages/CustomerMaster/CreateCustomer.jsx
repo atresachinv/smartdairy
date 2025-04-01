@@ -13,10 +13,12 @@ import {
 import "../../../../../Styles/Mainapp/Masters/CustomerMaster.css";
 import { listRateCharts } from "../../../../../App/Features/Mainapp/Masters/rateChartSlice";
 import { useTranslation } from "react-i18next";
+import { getBankList } from "../../../../../App/Features/Mainapp/Masters/bankSlice";
 
 const CreateCustomer = () => {
   const dispatch = useDispatch();
   const { t } = useTranslation(["master", "common"]);
+  const bankList = useSelector((state) => state.bank.banksList || []);
   const [isActive, setIsActive] = useState(true);
   const [isMember, setIsMember] = useState(false);
   const [errors, setErrors] = useState({});
@@ -32,6 +34,8 @@ const CreateCustomer = () => {
   const [fileName, setFileName] = useState("");
   const fileInputRef = useRef(null); // for excel file input
   const [excelData, setExcelData] = useState(null); // selected excel file data
+  const [selectedBank, setSelectedBank] = useState("");
+
   const [formData, setFormData] = useState({
     cid: "",
     isActive: 1,
@@ -70,6 +74,7 @@ const CreateCustomer = () => {
 
   useState(() => {
     dispatch(listRateCharts());
+    dispatch(getBankList());
     dispatch(getMaxCustNo());
   }, [dispatch]);
 
@@ -174,6 +179,9 @@ const CreateCustomer = () => {
       });
     }
   };
+  
+  // ----------------------------------------------------------------------------------->
+  // validate fields ------------------------------------------------------------------->
 
   const validateField = (name, value) => {
     let error = {};
@@ -254,14 +262,6 @@ const CreateCustomer = () => {
         }
         break;
 
-      case "bankIFSC":
-        if (!/^[A-Z]{4}0[A-Z0-9]{6}$/.test(value)) {
-          error[name] = "Invalid IFSC code.";
-        } else {
-          delete errors[name];
-        }
-        break;
-
       default:
         break;
     }
@@ -302,7 +302,7 @@ const CreateCustomer = () => {
     }
   }, [dispatch]);
 
-  // Effect to search for customer when code changes
+  // Effect to search for customer when code changes ---------------------------------->
   useEffect(() => {
     const handler = setTimeout(() => {
       if (formData.cust_no.length >= 1) {
@@ -351,6 +351,18 @@ const CreateCustomer = () => {
     }
   };
 
+  // handle bank selection ------------------------------------------------------------>
+  const handleBankChange = (e) => {
+    const bid = e.target.value;
+    setSelectedBank(bid);
+    const bankdetails = bankList.filter((bank) => bank.id.toString() === bid);
+    setFormData((prevData) => ({
+      ...prevData,
+      bankName: bankdetails[0].name,
+      bankIFSC: bankdetails[0].ifsc,
+    }));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -360,30 +372,32 @@ const CreateCustomer = () => {
       setErrors(validationErrors);
       return;
     }
-
-    try {
-    if (isEditing) {
-      // Update existing customer in DB
-      const result = await dispatch(updateCustomer(formData)).unwrap();
-      if (result.status === 200) {
-        dispatch(listCustomer());
-        toast.success(result.message);
-      } else {
-        toast.error(result.message);
-      }
-    } else {
-      // Create new customer
-      const result = await dispatch(createCustomer(formData)).unwrap();
-      if (result.status === 200) {
-        dispatch(listCustomer());
-        dispatch(getMaxCustNo());
-        resetForm();
-        toast.success(result.message);
-      } else {
-        toast.error(result.message);
-      }
+    if (!formData.bankName || !formData.bankIFSC) {
+      return toast.error("Select Bank Again!");
     }
-    // Reset the form after fetching the new cust_no
+    try {
+      if (isEditing) {
+        // Update existing customer in DB
+        const result = await dispatch(updateCustomer(formData)).unwrap();
+        if (result.status === 200) {
+          dispatch(listCustomer());
+          toast.success(result.message);
+        } else {
+          toast.error(result.message);
+        }
+      } else {
+        // Create new customer
+        const result = await dispatch(createCustomer(formData)).unwrap();
+        if (result.status === 200) {
+          dispatch(listCustomer());
+          dispatch(getMaxCustNo());
+          resetForm();
+          toast.success(result.message);
+        } else {
+          toast.error(result.message);
+        }
+      }
+      // Reset the form after fetching the new cust_no
     } catch (error) {
       toast.error("Failed to create Customer. Please try again.");
     }
@@ -460,7 +474,6 @@ const CreateCustomer = () => {
       const result = await dispatch(
         uploadCustomerExcel({ excelData, prefix })
       ).unwrap();
-      console.log(result);
       if (result.status === 200) {
         setExcelData([]);
         dispatch(listCustomer());
@@ -805,9 +818,9 @@ const CreateCustomer = () => {
             </div>
           </div>
         </div>
-        <div className="cust-div Bank-details-div w100 h15 d-flex-col sb">
-          <div className="bank-details w100 h1 d-flex f-wrap sb">
-            <div className="bankname-details-div w40 d-flex-col a-center px10">
+        <div className="Bank-details-div w100 h15 d-flex sb">
+          {/* <div className="bank-details w100 h1 d-flex f-wrap sb"> */}
+          {/* <div className="bankname-details-div w40 d-flex-col a-center px10">
               <span className="info-text w100 ">{t("m-bname")}</span>{" "}
               {errors.bankName && (
                 <span className="text error-message">{errors.bankName}</span>
@@ -821,20 +834,7 @@ const CreateCustomer = () => {
                 value={formData.bankName || ""}
               />
             </div>
-            <div className="acc-details-div w30 d-flex-col a-center px10">
-              <span className="info-text w100">{t("m-accno")}</span>{" "}
-              {errors.bank_ac && (
-                <span className="text error-message">{errors.bank_ac}</span>
-              )}
-              <input
-                className={`data w100 ${errors.bank_ac ? "input-error" : ""}`}
-                type="number"
-                name="bank_ac"
-                id=""
-                onChange={handleInputChange}
-                value={formData.bank_ac || ""}
-              />
-            </div>
+
             <div className="ifsc-details-div w30 d-flex-col a-center px10">
               <span className="info-text w100">{t("m-ifsc")}</span>{" "}
               {errors.bankIFSC && (
@@ -848,8 +848,50 @@ const CreateCustomer = () => {
                 onChange={handleInputChange}
                 value={formData.bankIFSC || ""}
               />
-            </div>
+            </div> */}
+
+          <div className="details-div w40 d-flex-col a-center px10">
+            <span className="info-text w100">{t("Select Bank")}</span>{" "}
+            {errors.bankIFSC && (
+              <span className="text error-message">{errors.bankIFSC}</span>
+            )}
+            <select
+              name="bank"
+              id="bankname"
+              className="data"
+              onChange={handleBankChange}
+              value={selectedBank}
+            >
+              <option value="">-- select bank --</option>
+              {bankList.length > 0 ? (
+                bankList.map((bank, i) => (
+                  <option key={i} value={bank.id}>
+                    {bank.name}
+                  </option>
+                ))
+              ) : (
+                <option value="" disabled>
+                  Banks Not Found!
+                </option>
+              )}
+            </select>
           </div>
+
+          <div className="details-div w40 d-flex-col a-center px10">
+            <span className="info-text w100">{t("m-accno")}</span>{" "}
+            {errors.bank_ac && (
+              <span className="text error-message">{errors.bank_ac}</span>
+            )}
+            <input
+              className={`data w100 ${errors.bank_ac ? "input-error" : ""}`}
+              type="number"
+              name="bank_ac"
+              id=""
+              onChange={handleInputChange}
+              value={formData.bank_ac || ""}
+            />
+          </div>
+          {/* </div> */}
         </div>
       </div>
       <div className="cust-data-settings w40 h1 d-flex-col p10">
@@ -867,7 +909,7 @@ const CreateCustomer = () => {
             />
           </div>
           <div className="details-div w45 h50 d-flex a-center ">
-            <span className="info-text w70">{t("m-commision")} :</span>
+            <span className="info-text w70">{t("m-commission")} :</span>
             <input
               className="data w30"
               type="number"

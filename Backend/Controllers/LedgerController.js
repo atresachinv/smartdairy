@@ -171,7 +171,6 @@ exports.createMainLedger = async (req, res) => {
 // ----------------------------------------------------------------------------->
 // Create New Ledger
 // ----------------------------------------------------------------------------->
-
 exports.fetchAllMainLedger = async (req, res) => {
   const { dairy_id, center_id } = req.user;
 
@@ -228,7 +227,6 @@ exports.fetchAllMainLedger = async (req, res) => {
 // ----------------------------------------------------------------------------->
 // Create New  Sub Ledger
 // ----------------------------------------------------------------------------->
-
 exports.createSubLedger = async (req, res) => {
   const formData = req.body;
   const { dairy_id, center_id, user_id } = req.user;
@@ -398,7 +396,6 @@ exports.updateSubLedger = async (req, res) => {
 // ----------------------------------------------------------------------------->
 // Delete sub Ledger
 // ----------------------------------------------------------------------------->
-
 exports.deleteSubLedger = async (req, res) => {
   const {} = req.query;
   const { dairy_id, center_id } = req.user;
