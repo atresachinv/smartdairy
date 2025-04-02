@@ -72,6 +72,7 @@ import CashCredit from "./Accounts/Credit/CashCredit";
 import TransferCredit from "./Accounts/Credit/TransferCredit";
 import Deductionlist from "./Reports/Deductionlist/Deductionlist";
 import DoctorMaster from "./Masters/MasterPages/DoctorMaster";
+import WhatsappSms from "./DairyInfo/Centers/WhatsappSms";
 
 const Mainapp = () => {
   const dispatch = useDispatch();
@@ -273,7 +274,7 @@ const Mainapp = () => {
             <Route path="reports/sales/*" element={<ComingSoon />} />
             <Route path="reports/payment/*" element={<PaymentReports />} />
             <Route path="reports/bank/*" element={<BankReportMaster />} />
-            <Route path="reports/deduction/*" element={<Deductionlist/>} />
+            <Route path="reports/deduction/*" element={<Deductionlist />} />
             {/* payment routes */}
             <Route
               path="payment/milk-correction/*"
@@ -290,6 +291,7 @@ const Mainapp = () => {
             <Route path="dairy/information" element={<DairyInfo />} />
             <Route path="dairy/initial-info" element={<DairyInitialInfo />} />
             <Route path="dairy/create/center" element={<Centers />} />
+            <Route path="dairy/whatsapp-sms" element={<WhatsappSms />} />
             {/* settings routes */}
             <Route path="settings/dairy/*" element={<DairySettings />} />
             <Route path="settings/inventory" element={<InventorySettings />} />
