@@ -188,7 +188,7 @@ exports.fetchAllMainLedger = async (req, res) => {
 
     try {
       const fetchQuery = `
-        SELECT code, gl_name, gl_marathi_name, gl_category FROM mainglmaster WHERE dairy_id IN (0 , ?) AND center_id = ?
+        SELECT code, gl_name, gl_marathi_name, gl_category FROM mainglmaster WHERE dairy_id IN (0 , ?) AND center_id IN (0 , ?)
       `;
 
       connection.query(fetchQuery, [dairy_id, center_id], (err, result) => {
@@ -456,7 +456,7 @@ exports.fetchAllSubLedger = async (req, res) => {
       let fetchquery = `
       SELECT id, lno, group_code, group_name, ledger_name, marathi_name, subacc, sangha_head, per_ltr_amt, vcsms
       FROM subledgermaster
-      WHERE dairy_id IN (0, ?) AND center_id = ?
+      WHERE dairy_id IN (0, ?) AND center_id IN (0, ?)
       `;
 
       connection.query(fetchquery, [dairy_id, center_id], (err, result) => {
