@@ -1,0 +1,19 @@
+.abmin-whatsapp-sms {
+  width: 60%;
+  margin: auto;
+  margin-top: 20px;
+  padding: 20px;
+}
+.recharge-whsms-container {
+  width: 100%;
+  padding: 15px;
+}
+@media screen and (max-width: 426px) {
+  .abmin-whatsapp-sms {
+    width: 100%;
+    padding: 5px;
+  }
+  .recharge-whsms-container {
+    padding: 5px;
+  }
+}
