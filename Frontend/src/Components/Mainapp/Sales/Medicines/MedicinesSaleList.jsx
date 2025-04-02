@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import * as XLSX from "xlsx";
 import Spinner from "../../../Home/Spinner/Spinner";
 import { useSelector } from "react-redux";
@@ -17,12 +17,10 @@ import jsPDF from "jspdf";
 
 const MedicinesSaleList = () => {
   const { t } = useTranslation(["puchasesale", "common"]);
-  const { customerlist, loading } = useSelector((state) => state.customer);
   const [date1, SetDate1] = useState("");
   const [date2, SetDate2] = useState("");
   const [fcode, setFcode] = useState("");
   const [sales, setSales] = useState([]);
-  const [itemList, setItemList] = useState([]);
   const [editSale, setEditSale] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isInvoiceOpen, setIsInvoiceOpen] = useState(false);
@@ -50,9 +48,9 @@ const MedicinesSaleList = () => {
       BillDate: formatDateToDDMMYYYY(sale.BillDate),
       BillNo: sale.ReceiptNo,
       custCode: sale.CustCode,
-      custName: handleFindCustName(sale.CustCode),
+      custName: sale.cust_name,
       ItemCode: sale.ItemCode,
-      ItemName: handleFindItemName(sale.ItemCode),
+      ItemName: sale.ItemName,
       Qty: sale.Qty,
       Rate: sale.Rate,
       Amt: sale.Amount,
@@ -71,19 +69,6 @@ const MedicinesSaleList = () => {
     XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1"); // Add sheet to workbook
     XLSX.writeFile(workbook, `${date1}_to_${date2}.xlsx`); // Trigger download as .xlsx file
   };
-
-  //getall Item
-  useEffect(() => {
-    const fetchAllItems = async () => {
-      try {
-        const { data } = await axiosInstance.get("/item/all?ItemGroupCode=2");
-        setItemList(data.itemsData || []);
-      } catch (error) {
-        console.error("Error fetching items:", error);
-      }
-    };
-    fetchAllItems();
-  }, []);
 
   // Fetch sales data from backend (API endpoint)
   useEffect(() => {
@@ -212,18 +197,6 @@ const MedicinesSaleList = () => {
     }
   };
 
-  //get item name from item code
-  const handleFindItemName = (id) => {
-    const selectedItem = itemList.find((item) => item.ItemCode === id);
-    return selectedItem?.ItemName || "Unknown Item";
-  };
-
-  //get cust name from cust code
-  const handleFindCustName = (id) => {
-    const selectedItem = customerlist.find((item) => item.srno === id);
-    return selectedItem?.cname || "Unknown Customer";
-  };
-
   // calculate total amount
   const handleAmountCalculation = () => {
     const qty = parseFloat(editSale?.Qty || 0);
@@ -328,7 +301,7 @@ const MedicinesSaleList = () => {
         const isCodeMatch = item.CustCode.toString().includes(fcode);
         const isRecptMatch = item.ReceiptNo.toString().includes(fcode);
 
-        const isNameMatch = handleFindCustName(item.CustCode)
+        const isNameMatch = item.cust_name
           ?.toLowerCase()
           .includes(fcode.toLowerCase());
 
@@ -370,7 +343,7 @@ const MedicinesSaleList = () => {
       formatDateToDDMMYYYY(item.BillDate),
       item.ReceiptNo,
       item.CustCode,
-      handleFindCustName(item.CustCode),
+      item.cust_name,
       item.TotalAmount,
     ]);
 
@@ -626,9 +599,7 @@ const MedicinesSaleList = () => {
                 </span>
                 <span className="text w5">{sale.ReceiptNo}</span>
                 <span className="text w5">{sale.CustCode}</span>
-                <span className="text w35 ">
-                  {handleFindCustName(sale.CustCode)}
-                </span>
+                <span className="text w35 ">{sale.cust_name}</span>
 
                 <span className="text w10">{sale.TotalAmount}</span>
 
@@ -684,9 +655,7 @@ const MedicinesSaleList = () => {
                 <h4>
                   {t("ps-custCode")} : {viewItems[0]?.CustCode || ""}
                 </h4>
-                <h4 className="mx15">
-                  {handleFindCustName(viewItems[0]?.CustCode) || ""}
-                </h4>
+                <h4 className="mx15">{viewItems[0]?.cust_name || ""}</h4>
               </div>
               <div className=" w100">
                 <div className="sales-table-container w100">
@@ -705,7 +674,7 @@ const MedicinesSaleList = () => {
                       {viewItems.map((item, i) => (
                         <tr key={i}>
                           {/* <td>{i + 1}</td> */}
-                          <td>{handleFindItemName(item.ItemCode)}</td>
+                          <td>{item.ItemName}</td>
                           <td className="w15"> {item.Rate}</td>
 
                           <td className="w15">{item.Qty}</td>
