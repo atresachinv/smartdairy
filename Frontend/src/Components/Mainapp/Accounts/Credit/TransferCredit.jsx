@@ -361,6 +361,7 @@ const TransferCredit = () => {
             ChequeNo: "",
             ReceiptNo: Number(formData.ReceiptNo) + 1,
             Narration: "",
+            Narration1: "",
           });
           dispatch(
             getAllVoucher({
@@ -407,6 +408,7 @@ const TransferCredit = () => {
       VoucherNo: voucher.VoucherNo,
       ReceiptNo: voucher.ReceiptNo,
       Narration: voucher.Narration,
+      Narration1: voucher.Narration1,
     });
   };
   // ---------------------------------
@@ -462,6 +464,7 @@ const TransferCredit = () => {
       VoucherNo: 1,
       ReceiptNo: 1,
       Narration: "",
+      Narration1: "",
     });
   };
 
@@ -518,15 +521,18 @@ const TransferCredit = () => {
   // Update voucher filtering based on center selection
   useEffect(() => {
     const filteredVoucherList = voucherList.filter(
-      (voucher) => Number(voucher.center_id) === Number(filter)
+      (voucher) =>
+        Number(voucher.center_id) === Number(centerId > 0 ? centerId : filter)
     );
     setFilterVoucherList(filteredVoucherList);
-  }, [filter, voucherList]);
+  }, [filter, voucherList, centerId]);
+
+  const [isManualNarration, setIsManualNarration] = useState(false);
 
   //noramal input change norration
   useEffect(() => {
     // Only generate narration if Vtype and InstrType are selected
-    if (formData.Vtype && formData.InstrType) {
+    if (formData.Vtype && formData.InstrType && !isManualNarration) {
       if (formData.Vtype === "1") {
         // नावे
         if (formData.InstrType === "1") {
@@ -624,7 +630,17 @@ const TransferCredit = () => {
     formData.ChequeDate,
     formData.VoucherDate,
     custOptions1,
+    isManualNarration,
   ]);
+
+  const handleNarrationChange = (e) => {
+    setIsManualNarration(true);
+    setFormData({
+      ...formData,
+      Narration: e.target.value,
+      Narration1: e.target.value,
+    });
+  };
 
   return (
     <div className="Credit-container w100 h1 d-flex-col">
@@ -891,10 +907,8 @@ const TransferCredit = () => {
                   type="text"
                   className="data mx5 "
                   value={formData.Narration}
-                  onChange={(e) =>
-                    setFormData({ ...formData, Narration: e.target.value })
-                  }
-                  disabled={!formData.Amt}
+                  onChange={handleNarrationChange}
+                  disabled={!formData.GLCode}
                 />
               </div>
             </div>
