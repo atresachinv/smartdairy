@@ -40,7 +40,7 @@ exports.getAllVoucher = async (req, res) => {
       query += " AND VoucherDate = ? ORDER BY id DESC";
       queryParams.push(VoucherDate);
     } else {
-      query += " VoucherDate=CURDATE() ORDER BY id DESC ";
+      query += " AND VoucherDate=CURDATE() ORDER BY id DESC ";
     }
 
     connection.query(query, queryParams, (err, result) => {
@@ -68,8 +68,8 @@ exports.getAllVoucher = async (req, res) => {
 
 // Insert new voucher
 exports.insertNewVoucher = async (req, res) => {
-  const voucherData = req.body;
-  const { dairy_id, center_id, user_id } = req.user;
+  const { center_id, ...voucherData } = req.body;
+  const { dairy_id, user_id } = req.user;
 
   pool.getConnection((err, connection) => {
     if (err) {

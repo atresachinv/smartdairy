@@ -49,8 +49,10 @@ const CashCredit = () => {
     Narration: "",
   });
   const [fix, setFix] = useState("");
+  const [filter, setFilter] = useState(0);
   const sledgerlist = useSelector((state) => state.ledger.sledgerlist);
   const { loading, voucherList } = useSelector((state) => state.voucher);
+  const [filterVoucherList, setFilterVoucherList] = useState([]);
   const [onclickChalan, setOnclickChalan] = useState(false);
   const [edit, setEdit] = useState(false);
   const [ID, setId] = useState("");
@@ -59,9 +61,14 @@ const CashCredit = () => {
   );
   const [settings, setSettings] = useState({});
   const autoCenter = useMemo(() => settings?.autoCenter, [settings]);
+  const centerId = useSelector((state) => state.dairy.dairyData.center_id);
   const [balance, setBalance] = useState(0);
   const [balanceData, setBalanceData] = useState([]);
   const [haveSubAcc, setHaveSubAcc] = useState(false);
+  const centerList = useSelector(
+    (state) => state.center.centersList.centersDetails || []
+  );
+  const [isManualNarration, setIsManualNarration] = useState(false);
 
   const checkHaveSubAcc = useCallback(() => {
     const subAcc = sledgerlist.find(
@@ -124,9 +131,19 @@ const CashCredit = () => {
   useEffect(() => {
     const storedCustomerList = localStorage.getItem("customerlist");
     if (storedCustomerList) {
-      setCustomerList(JSON.parse(storedCustomerList));
+      if (centerId === 0) {
+        const filteredCustomerList = JSON.parse(storedCustomerList).filter(
+          (customer) => Number(customer.centerid) === Number(filter)
+        );
+        setCustomerList(filteredCustomerList);
+      } else {
+        const filteredCustomerList = JSON.parse(storedCustomerList).filter(
+          (customer) => Number(customer.centerid) === Number(centerId)
+        );
+        setCustomerList(filteredCustomerList);
+      }
     }
-  }, []);
+  }, [centerId, filter]);
 
   // ----------------------->
   //set max voucher no---
@@ -223,6 +240,7 @@ const CashCredit = () => {
       ...formData,
       Amt: adjustedAmt,
       AccCode: formData.AccCode === "" ? 0 : Number(formData.AccCode),
+      center_id: !autoCenter ? (centerId === 0 ? filter : centerId) : centerId,
     };
     if (!edit) {
       try {
@@ -235,6 +253,7 @@ const CashCredit = () => {
               ? {
                   AccCode: "",
                   Narration: "",
+                  Narration1: "",
                   Amt: "",
                   VoucherNo: Number(formData.VoucherNo) + 1,
                 }
@@ -249,6 +268,7 @@ const CashCredit = () => {
                   VoucherNo: Number(formData.VoucherNo) + 1,
                   ReceiptNo: Number(formData.ReceiptNo) + 1,
                   Narration: "",
+                  Narration1: "",
                 };
 
           setFormData({ ...updatedFormData, ...resetData });
@@ -290,6 +310,7 @@ const CashCredit = () => {
             ChequeNo: "",
             ReceiptNo: Number(formData.ReceiptNo) + 1,
             Narration: "",
+            Narration1: "",
           });
 
           dispatch(
@@ -338,6 +359,7 @@ const CashCredit = () => {
       VoucherNo: voucher.VoucherNo,
       ReceiptNo: voucher.ReceiptNo,
       Narration: voucher.Narration,
+      Narration1: voucher.Narration1,
     });
   };
   // ---------------------------------
@@ -384,6 +406,7 @@ const CashCredit = () => {
   const handleClear = () => {
     setEdit(false);
     setOnclickChalan(false);
+    setIsManualNarration(false);
     setFormData({
       AccCode: "",
       GLCode: "",
@@ -397,6 +420,7 @@ const CashCredit = () => {
       VoucherNo: "1",
       ReceiptNo: "1",
       Narration: "",
+      Narration1: "",
     });
   };
 
@@ -428,10 +452,152 @@ const CashCredit = () => {
     setBalance(balance || 0);
   }, [formData.GLCode, formData.AccCode, balanceData]);
 
+  // Update voucher filtering based on center selection
+  useEffect(() => {
+    const filteredVoucherList = voucherList.filter(
+      (voucher) =>
+        Number(voucher.center_id) === Number(centerId > 0 ? centerId : filter)
+    );
+    setFilterVoucherList(filteredVoucherList);
+  }, [filter, voucherList, centerId]);
+
+  //noramal input change norration
+  useEffect(() => {
+    // Only generate narration if Vtype and InstrType are selected and narration hasn't been manually edited
+    if (formData.Vtype && formData.InstrType && !isManualNarration) {
+      let newNarration = "";
+      let newNarration1 = "";
+
+      if (formData.Vtype === "0") {
+        // नावे
+        if (formData.InstrType === "1") {
+          // चेक
+          if (formData.AccCode) {
+            const subAcc = custOptions1.find(
+              (option) => option.value === Number(formData.AccCode)
+            );
+            if (subAcc) {
+              newNarration = `${subAcc.label} यांचे नावे कॅश (चेक नं. ${formData.ChequeNo}  )`;
+              newNarration1 = `${subAcc.label} Cash Debit (Cheque No. ${formData.ChequeNo})`;
+            } else {
+              newNarration = `चेक नं. ${formData.ChequeNo}   प्रमाणे नावे कॅश`;
+              newNarration1 = `Cash Debit as per Cheque No. ${formData.ChequeNo}`;
+            }
+          } else {
+            newNarration = `चेक नं. ${formData.ChequeNo}   प्रमाणे नावे कॅश`;
+            newNarration1 = `Cash Debit as per Cheque No. ${formData.ChequeNo}`;
+          }
+        } else if (formData.InstrType === "2") {
+          // व्हॉउचर
+          if (formData.AccCode) {
+            const subAcc = custOptions1.find(
+              (option) => option.value === Number(formData.AccCode)
+            );
+            if (subAcc) {
+              newNarration = `${subAcc.label} यांचे नावे कॅश (व्हॉउचर नं. ${formData.ReceiptNo} )`;
+              newNarration1 = `${subAcc.label} Cash Debit (Voucher No. ${formData.ReceiptNo})`;
+            } else {
+              newNarration = `व्हॉउचर नं. ${formData.ReceiptNo}  प्रमाणे नावे कॅश`;
+              newNarration1 = `Cash Debit as per Voucher No. ${formData.ReceiptNo}`;
+            }
+          } else {
+            newNarration = `व्हॉउचर नं. ${formData.ReceiptNo}  प्रमाणे नावे कॅश`;
+            newNarration1 = `Cash Debit as per Voucher No. ${formData.ReceiptNo}`;
+          }
+        }
+      } else if (formData.Vtype === "3") {
+        // जमा
+        if (formData.InstrType === "1") {
+          // चेक
+          if (formData.AccCode) {
+            const subAcc = custOptions1.find(
+              (option) => option.value === Number(formData.AccCode)
+            );
+            if (subAcc) {
+              newNarration = `${subAcc.label} यांचे जमा कॅश (चेक नं. ${formData.ChequeNo} )`;
+              newNarration1 = `${subAcc.label} Cash Credit (Cheque No. ${formData.ChequeNo})`;
+            } else {
+              newNarration = `चेक नं. ${formData.ChequeNo} प्रमाणे जमा कॅश`;
+              newNarration1 = `Cash Credit as per Cheque No. ${formData.ChequeNo}`;
+            }
+          } else {
+            newNarration = `चेक नं. ${formData.ChequeNo} प्रमाणे जमा कॅश`;
+            newNarration1 = `Cash Credit as per Cheque No. ${formData.ChequeNo}`;
+          }
+        } else if (formData.InstrType === "2") {
+          // व्हॉउचर
+          if (formData.AccCode) {
+            const subAcc = custOptions1.find(
+              (option) => option.value === Number(formData.AccCode)
+            );
+            if (subAcc) {
+              newNarration = `${subAcc.label} यांचे जमा कॅश (व्हॉउचर नं. ${formData.ReceiptNo} )`;
+              newNarration1 = `${subAcc.label} Cash Credit (Voucher No. ${formData.ReceiptNo})`;
+            } else {
+              newNarration = `व्हॉउचर नं. ${formData.ReceiptNo}   प्रमाणे जमा कॅश`;
+              newNarration1 = `Cash Credit as per Voucher No. ${formData.ReceiptNo}`;
+            }
+          } else {
+            newNarration = `व्हॉउचर नं. ${formData.ReceiptNo}   प्रमाणे जमा कॅश`;
+            newNarration1 = `Cash Credit as per Voucher No. ${formData.ReceiptNo}`;
+          }
+        }
+      }
+      setFormData((f) => ({
+        ...f,
+        Narration: newNarration,
+        Narration1: newNarration1,
+      }));
+    }
+  }, [
+    formData.Vtype,
+    formData.InstrType,
+    formData.AccCode,
+    formData.ChequeNo,
+    formData.ReceiptNo,
+    formData.ChequeDate,
+    formData.VoucherDate,
+    custOptions1,
+    isManualNarration,
+  ]);
+
+  const handleNarrationChange = (e) => {
+    setIsManualNarration(true);
+    setFormData({
+      ...formData,
+      Narration: e.target.value,
+      Narration1: e.target.value,
+    });
+  };
+
   return (
     <div className="Credit-container w100 h1 d-flex-col">
       <div className="Credit-container-scroll d-flex-col w100">
-        <span className=" heading p10">कॅश चलन</span>
+        <div className="d-flex w100 sa">
+          <span className=" heading p10">कॅश चलन</span>
+          {centerId > 0 ? (
+            <></>
+          ) : (
+            <div className="d-flex a-center mx10">
+              <span className="info-text">सेंटर निवडा :</span>
+              <select
+                className="data w50 a-center  my5 mx5"
+                name="center"
+                value={filter}
+                onChange={(e) => setFilter(e.target.value)}
+              >
+                {centerList &&
+                  [...centerList]
+                    .sort((a, b) => a.center_id - b.center_id)
+                    .map((center, index) => (
+                      <option key={index} value={center.center_id}>
+                        {center.center_name}
+                      </option>
+                    ))}
+              </select>
+            </div>
+          )}
+        </div>
         <div className="credit-all-form d-flex w100 ">
           <div className="credit-form d-flex-col mx10 p10 bg">
             <div className="row d-flex w100  sb a-center ">
@@ -585,9 +751,9 @@ const CashCredit = () => {
                       )
                     : null
                 }
-                onChange={(selectedOption) =>
-                  handleSelectChange(selectedOption, "GLCode")
-                }
+                onChange={(selectedOption) => {
+                  handleSelectChange(selectedOption, "GLCode");
+                }}
                 isDisabled={fix === 1}
               />
             </div>
@@ -628,6 +794,9 @@ const CashCredit = () => {
                       )
                     : null
                 }
+                onChange={(selectedOption) => {
+                  handleSelectChange(selectedOption, "AccCode");
+                }}
                 onKeyDown={(e) =>
                   handleKeyPress(
                     e,
@@ -669,10 +838,8 @@ const CashCredit = () => {
                   type="text"
                   className="data mx5 "
                   value={formData.Narration}
-                  onChange={(e) =>
-                    setFormData({ ...formData, Narration: e.target.value })
-                  }
-                  disabled={!formData.Amt}
+                  onChange={handleNarrationChange}
+                  disabled={!formData.GLCode}
                 />
               </div>
             </div>
@@ -793,8 +960,8 @@ const CashCredit = () => {
               <tbody>
                 {loading ? (
                   "Loading..."
-                ) : voucherList.length > 0 ? (
-                  voucherList.map((voucher, index) => (
+                ) : filterVoucherList.length > 0 ? (
+                  filterVoucherList.map((voucher, index) => (
                     <tr key={index}>
                       <td>
                         <FaRegEdit

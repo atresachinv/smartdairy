@@ -130,11 +130,12 @@ const TransferCredit = () => {
     VoucherNo: 1,
     ReceiptNo: 1,
     Narration: "",
+    Narration1: "",
   });
   const [isFixed, setIsFixed] = useState(0);
   const sledgerlist = useSelector((state) => state.ledger.sledgerlist);
   const { loading, voucherList } = useSelector((state) => state.voucher);
-  const [filterVoucherList, setfilterVoucherList] = useState([]);
+  const [filterVoucherList, setFilterVoucherList] = useState([]);
   const [onclickChalan, setOnclickChalan] = useState(false);
   const [edit, setEdit] = useState(false);
   const [ID, setId] = useState("");
@@ -146,6 +147,11 @@ const TransferCredit = () => {
   const [balance, setBalance] = useState(0);
   const [balanceData, setBalanceData] = useState([]);
   const [haveSubAcc, setHaveSubAcc] = useState(false);
+  const [filter, setFilter] = useState(0);
+  const centerId = useSelector((state) => state.dairy.dairyData.center_id);
+  const centerList = useSelector(
+    (state) => state.center.centersList.centersDetails || []
+  );
 
   // Optimize fetchBal with proper error handling
   const fetchBal = useCallback(async () => {
@@ -203,10 +209,18 @@ const TransferCredit = () => {
   // Effect to load customer list from local storage
   useEffect(() => {
     const storedCustomerList = localStorage.getItem("customerlist");
-    if (storedCustomerList) {
-      setCustomerList(JSON.parse(storedCustomerList));
+    if (centerId === 0) {
+      const filteredCustomerList = JSON.parse(storedCustomerList).filter(
+        (customer) => Number(customer.centerid) === Number(filter)
+      );
+      setCustomerList(filteredCustomerList);
+    } else {
+      const filteredCustomerList = JSON.parse(storedCustomerList).filter(
+        (customer) => Number(customer.centerid) === Number(centerId)
+      );
+      setCustomerList(filteredCustomerList);
     }
-  }, [dispatch]);
+  }, [dispatch, centerId, filter]);
 
   // ----------------------->
   //set max voucher no---
@@ -309,6 +323,7 @@ const TransferCredit = () => {
       ...formData,
       Amt: adjustedAmt,
       AccCode: formData.AccCode === "" ? 0 : Number(formData.AccCode),
+      center_id: !autoCenter ? (centerId === 0 ? filter : centerId) : centerId,
     };
 
     try {
@@ -346,6 +361,7 @@ const TransferCredit = () => {
             ChequeNo: "",
             ReceiptNo: Number(formData.ReceiptNo) + 1,
             Narration: "",
+            Narration1: "",
           });
           dispatch(
             getAllVoucher({
@@ -392,6 +408,7 @@ const TransferCredit = () => {
       VoucherNo: voucher.VoucherNo,
       ReceiptNo: voucher.ReceiptNo,
       Narration: voucher.Narration,
+      Narration1: voucher.Narration1,
     });
   };
   // ---------------------------------
@@ -447,6 +464,7 @@ const TransferCredit = () => {
       VoucherNo: 1,
       ReceiptNo: 1,
       Narration: "",
+      Narration1: "",
     });
   };
 
@@ -459,13 +477,15 @@ const TransferCredit = () => {
         );
 
         if (filteredBatchNo.length > 0) {
-          setfilterVoucherList(filteredBatchNo); // Use the filtered list
+          setFilterVoucherList(filteredBatchNo); // Use the filtered list
         } else {
-          setfilterVoucherList([]);
+          setFilterVoucherList([]);
         }
       } else {
-        setfilterVoucherList(voucherList);
+        setFilterVoucherList(voucherList);
       }
+    } else {
+      setFilterVoucherList([]);
     }
   }, [formData.BatchNo, voucherList]);
 
@@ -498,10 +518,159 @@ const TransferCredit = () => {
     }
   }, [formData.GLCode, checkHaveSubAcc]);
 
+  // Update voucher filtering based on center selection
+  useEffect(() => {
+    const filteredVoucherList = voucherList.filter(
+      (voucher) =>
+        Number(voucher.center_id) === Number(centerId > 0 ? centerId : filter)
+    );
+    setFilterVoucherList(filteredVoucherList);
+  }, [filter, voucherList, centerId]);
+
+  const [isManualNarration, setIsManualNarration] = useState(false);
+
+  //noramal input change norration
+  useEffect(() => {
+    // Only generate narration if Vtype and InstrType are selected
+    if (formData.Vtype && formData.InstrType && !isManualNarration) {
+      if (formData.Vtype === "1") {
+        // नावे
+        if (formData.InstrType === "1") {
+          // चेक
+          if (formData.AccCode) {
+            const subAcc = custOptions1.find(
+              (option) => option.value === Number(formData.AccCode)
+            );
+            if (subAcc) {
+              setFormData((f) => ({
+                ...f,
+                Narration: `${subAcc.label} यांचे नावे ट्रान्सफर (चेक नं. ${f.ChequeNo}  )`,
+                Narration1: `${subAcc.label} Debit Transfer (Cheque No. ${f.ChequeNo})`,
+              }));
+            }
+          } else {
+            setFormData((f) => ({
+              ...f,
+              Narration: `चेक नं. ${f.ChequeNo}   प्रमाणे नावे ट्रान्सफर`,
+              Narration1: `Debit Transfer as per Cheque No. ${f.ChequeNo}`,
+            }));
+          }
+        } else if (formData.InstrType === "2") {
+          // व्हॉउचर
+          if (formData.AccCode) {
+            const subAcc = custOptions1.find(
+              (option) => option.value === Number(formData.AccCode)
+            );
+            if (subAcc) {
+              setFormData((f) => ({
+                ...f,
+                Narration: `${subAcc.label} यांचे नावे ट्रान्सफर (व्हॉउचर नं. ${f.ReceiptNo} )`,
+                Narration1: `${subAcc.label} Debit Transfer (Voucher No. ${f.ReceiptNo})`,
+              }));
+            }
+          } else {
+            setFormData((f) => ({
+              ...f,
+              Narration: `व्हॉउचर नं. ${f.ReceiptNo}  प्रमाणे नावे ट्रान्सफर`,
+              Narration1: `Debit Transfer as per Voucher No. ${f.ReceiptNo}`,
+            }));
+          }
+        }
+      } else if (formData.Vtype === "4") {
+        // जमा
+        if (formData.InstrType === "1") {
+          // चेक
+          if (formData.AccCode) {
+            const subAcc = custOptions1.find(
+              (option) => option.value === Number(formData.AccCode)
+            );
+            if (subAcc) {
+              setFormData((f) => ({
+                ...f,
+                Narration: `${subAcc.label} यांचे जमा ट्रान्सफर (चेक नं. ${f.ChequeNo} )`,
+                Narration1: `${subAcc.label} Credit Transfer (Cheque No. ${f.ChequeNo})`,
+              }));
+            }
+          } else {
+            setFormData((f) => ({
+              ...f,
+              Narration: `चेक नं. ${f.ChequeNo} प्रमाणे जमा ट्रान्सफर`,
+              Narration1: `Credit Transfer as per Cheque No. ${f.ChequeNo}`,
+            }));
+          }
+        } else if (formData.InstrType === "2") {
+          // व्हॉउचर
+          if (formData.AccCode) {
+            const subAcc = custOptions1.find(
+              (option) => option.value === Number(formData.AccCode)
+            );
+            if (subAcc) {
+              setFormData((f) => ({
+                ...f,
+                Narration: `${subAcc.label} यांचे जमा ट्रान्सफर (व्हॉउचर नं. ${f.ReceiptNo} )`,
+                Narration1: `${subAcc.label} Credit Transfer (Voucher No. ${f.ReceiptNo})`,
+              }));
+            }
+          } else {
+            setFormData((f) => ({
+              ...f,
+              Narration: `व्हॉउचर नं. ${f.ReceiptNo}   प्रमाणे जमा ट्रान्सफर`,
+              Narration1: `Credit Transfer as per Voucher No. ${f.ReceiptNo}`,
+            }));
+          }
+        }
+      }
+    }
+  }, [
+    formData.Vtype,
+    formData.InstrType,
+    formData.AccCode,
+    formData.ChequeNo,
+    formData.ReceiptNo,
+    formData.ChequeDate,
+    formData.VoucherDate,
+    custOptions1,
+    isManualNarration,
+  ]);
+
+  const handleNarrationChange = (e) => {
+    setIsManualNarration(true);
+    setFormData({
+      ...formData,
+      Narration: e.target.value,
+      Narration1: e.target.value,
+    });
+  };
+
   return (
     <div className="Credit-container w100 h1 d-flex-col">
       <div className="Credit-container-scroll d-flex-col w100">
-        <span className=" heading p10">ट्रान्सफर चलन</span>
+        <div className="d-flex w100 sa">
+          <span className=" heading p10">ट्रान्सफर चलन</span>
+
+          {centerId > 0 ? (
+            <></>
+          ) : (
+            <div className="d-flex a-center mx10">
+              <span className="info-text w30">सेंटर निवडा :</span>
+              <select
+                className="data   a-center  my5 mx5"
+                name="center"
+                value={filter}
+                onChange={(e) => setFilter(e.target.value)}
+              >
+                {centerList &&
+                  [...centerList]
+                    .sort((a, b) => a.center_id - b.center_id)
+                    .map((center, index) => (
+                      <option key={index} value={center.center_id}>
+                        {center.center_name}
+                      </option>
+                    ))}
+              </select>
+            </div>
+          )}
+        </div>
         <div className="credit-all-form d-flex w100 ">
           <div className="credit-form d-flex-col mx10 p10 bg">
             <div className="row d-flex w100  sb a-center ">
@@ -738,10 +907,8 @@ const TransferCredit = () => {
                   type="text"
                   className="data mx5 "
                   value={formData.Narration}
-                  onChange={(e) =>
-                    setFormData({ ...formData, Narration: e.target.value })
-                  }
-                  disabled={!formData.Amt}
+                  onChange={handleNarrationChange}
+                  disabled={!formData.GLCode}
                 />
               </div>
             </div>
