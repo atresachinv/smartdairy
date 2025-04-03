@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import "../../../../../Styles/DeductionReport/Deduction.css";
 import Select from "react-select";
 import { useDispatch, useSelector } from "react-redux";
@@ -51,15 +51,21 @@ const DeductionHead = () => {
   }, [centerSetting]);
 
   //option list show only name
-  const options = sledgerlist.map((i) => ({
-    value: i.lno,
-    label: i.marathi_name,
-  }));
+  const options = [
+    { value: 0, label: "null" },
+    ...sledgerlist.map((i) => ({
+      value: i.lno,
+      label: i.marathi_name,
+    })),
+  ];
   //option list show only id
-  const options2 = sledgerlist.map((i) => ({
-    value: i.lno,
-    label: i.lno,
-  }));
+  const options2 = [
+    { value: 0, label: "0" },
+    ...sledgerlist.map((i) => ({
+      value: i.lno,
+      label: i.lno,
+    })),
+  ];
 
   // handle Select Change
   const handleSelectChange = (selectedOption, keyToUpdate) => {
@@ -331,9 +337,13 @@ const DeductionHead = () => {
                       zIndex: 200,
                     }),
                   }}
-                  value={options2.find(
-                    (option) => option.value === formData.GLCode
-                  )}
+                  value={
+                    formData.GLCode
+                      ? options2.find(
+                          (option) => option.value === formData.GLCode
+                        )
+                      : null
+                  }
                   onChange={(selectedOption) =>
                     handleSelectChange(selectedOption, "GLCode")
                   }
@@ -351,9 +361,13 @@ const DeductionHead = () => {
                       zIndex: 200,
                     }),
                   }}
-                  value={options.find(
-                    (option) => option.value === formData.GLCode
-                  )}
+                  value={
+                    formData.GLCode
+                      ? options.find(
+                          (option) => option.value === formData.GLCode
+                        )
+                      : null
+                  }
                   onChange={(selectedOption) =>
                     handleSelectChange(selectedOption, "GLCode")
                   }
@@ -377,9 +391,13 @@ const DeductionHead = () => {
                       zIndex: 200,
                     }),
                   }}
-                  value={options2.find(
-                    (option) => option.value === formData.GLCodeCR
-                  )}
+                  value={
+                    formData.GLCodeCR
+                      ? options2.find(
+                          (option) => option.value === formData.GLCodeCR
+                        )
+                      : null
+                  }
                   onChange={(selectedOption) =>
                     handleSelectChange(selectedOption, "GLCodeCR")
                   }
@@ -397,9 +415,13 @@ const DeductionHead = () => {
                       zIndex: 200,
                     }),
                   }}
-                  value={options.find(
-                    (option) => option.value === formData.GLCodeCR
-                  )}
+                  value={
+                    formData.GLCodeCR
+                      ? options.find(
+                          (option) => option.value === formData.GLCodeCR
+                        )
+                      : null
+                  }
                   onChange={(selectedOption) =>
                     handleSelectChange(selectedOption, "GLCodeCR")
                   }
@@ -446,7 +468,7 @@ const DeductionHead = () => {
                 <span className="">{item.GLCode}</span>
                 <span className="">
                   {(sledgerlist &&
-                    sledgerlist.find((item) => item.GLCode === item.GLCode)
+                    sledgerlist.find((i) => i.lno === item.GLCode)
                       ?.marathi_name) ||
                     "Not Found"}
                 </span>

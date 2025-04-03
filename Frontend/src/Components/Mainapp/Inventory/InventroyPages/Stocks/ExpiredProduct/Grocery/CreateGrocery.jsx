@@ -31,7 +31,7 @@ const CreateGrocery = () => {
   const [groupItems, setGroupItems] = useState([]);
   const [filteredItems, setFilteredItems] = useState([]); //p--
   const [userRole, setUserRole] = useState(null);
-
+  const centerId = useSelector((state) => state.dairy.dairyData.center_id);
   const centerSetting = useSelector(
     (state) => state.dairySetting.centerSetting
   );
@@ -112,6 +112,7 @@ const CreateGrocery = () => {
         Rate: Number(rate),
         Amount: Number(qty) * Number(rate),
         cn: 2,
+        center_id: centerId,
       };
 
       setCartItem((prev) => [...prev, newCartItem]);

@@ -46,8 +46,8 @@ const WhRechargeHistory = () => {
           Recharge
         </NavLink>
       </div>
-      <div className="w100 d-flex j-center my10">
-        <table>
+      <div className="w100 d-flex j-center my10 wh-recharge-history-table-container">
+        <table className="wh-recharge-history-table">
           <thead>
             <tr>
               <th>SrNo</th>

@@ -121,7 +121,7 @@ const TransferCredit = () => {
     AccCode: "",
     GLCode: "",
     VoucherDate: getTodaysDate(),
-    BatchNo: 1,
+    BatchNo: "",
     Vtype: "",
     InstrType: "",
     Amt: "",
@@ -471,7 +471,7 @@ const TransferCredit = () => {
   // Changing to batch no on change of voucher list
   useEffect(() => {
     if (voucherList.length > 0) {
-      if (formData.BatchNo) {
+      if (formData.BatchNo !== "") {
         const filteredBatchNo = voucherList.filter(
           (item) => Number(item.BatchNo) === Number(formData.BatchNo)
         );
@@ -652,7 +652,7 @@ const TransferCredit = () => {
             <></>
           ) : (
             <div className="d-flex a-center mx10">
-              <span className="info-text w30">सेंटर निवडा :</span>
+              <span className="info-text w50">सेंटर निवडा :</span>
               <select
                 className="data   a-center  my5 mx5"
                 name="center"
@@ -1069,10 +1069,12 @@ const TransferCredit = () => {
                   filterVoucherList.map((voucher, index) => (
                     <tr key={index}>
                       <td>
-                        <FaRegEdit
-                          className="icon"
-                          onClick={() => handleEdit(voucher.id)}
-                        />
+                        {!voucher.salebillno && (
+                          <FaRegEdit
+                            className="icon"
+                            onClick={() => handleEdit(voucher.id)}
+                          />
+                        )}
                       </td>
                       <td className="info-text">{voucher.VoucherNo}</td>
                       <td className="info-text">{voucher.GLCode}</td>
@@ -1097,10 +1099,12 @@ const TransferCredit = () => {
                       </td>
                       <td className="info-text">{voucher.BatchNo}</td>
                       <td>
-                        <MdDeleteOutline
-                          className="icon req"
-                          onClick={() => handleDelete(voucher.id)}
-                        />
+                        {!voucher.salebillno && (
+                          <MdDeleteOutline
+                            className="icon req"
+                            onClick={() => handleDelete(voucher.id)}
+                          />
+                        )}
                       </td>
                     </tr>
                   ))
