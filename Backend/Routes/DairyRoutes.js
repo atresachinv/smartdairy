@@ -58,7 +58,7 @@ router.route("/delete/sangha").post(verifyToken, deleteMilkSangha);
 
 // Dairy info routes ----------------------------------------------------------------------------------->
 router.route("/dairy/create/init-info").post(verifyToken, createDairyInitInfo);
-router.route("/dairy/update/init-info").post(verifyToken, updateDairyInitInfo);
+router.route("/dairy/update/init-info").put(verifyToken, updateDairyInitInfo);
 router.route("/dairy/fetch/init-info").get(verifyToken, fetchDairyInitInfo);
 
 module.exports = router;
