@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import  { useEffect, useState } from "react";
 import axiosInstance from "../../../../../../../App/axiosInstance";
 import { MdDeleteOutline } from "react-icons/md";
 import { useDispatch, useSelector, shallowEqual } from "react-redux";
@@ -36,7 +36,7 @@ const CreateMedicines = () => {
     (state) => state.dairySetting.centerSetting
   );
   const [settings, setSettings] = useState({});
-
+  const centerId = useSelector((state) => state.dairy.dairyData.center_id);
   //set setting
   useEffect(() => {
     if (centerSetting?.length > 0) {
@@ -112,6 +112,7 @@ const CreateMedicines = () => {
         Rate: Number(rate),
         Amount: Number(qty) * Number(rate),
         cn: 2,
+        center_id: centerId,
       };
 
       setCartItem((prev) => [...prev, newCartItem]);

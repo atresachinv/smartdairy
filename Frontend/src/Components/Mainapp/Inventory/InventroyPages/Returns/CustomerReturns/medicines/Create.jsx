@@ -38,6 +38,7 @@ const MedCreate = () => {
   );
   const [settings, setSettings] = useState({});
   const autoCenter = settings?.autoCenter;
+  const centerId = useSelector((state) => state.dairy.dairyData.center_id);
   //set setting
   useEffect(() => {
     if (centerSetting?.length > 0) {
@@ -128,6 +129,7 @@ const MedCreate = () => {
         Rate: rate,
         Amount: qty * rate,
         cn: 1,
+        center_id: centerId,
       };
 
       // Update the cart items
@@ -329,7 +331,7 @@ const MedCreate = () => {
     const totalAmountTextStr = `${convertToWords(totalAmount)}`;
     const totalAmountLabel = `Total Amount: ${totalAmount}`;
 
-    const totalAmountTextWidth = doc.getTextWidth(totalAmountTextStr);
+    // const totalAmountTextWidth = doc.getTextWidth(totalAmountTextStr);
     const totalAmountLabelWidth = doc.getTextWidth(totalAmountLabel);
 
     // Add borders for total amount text
