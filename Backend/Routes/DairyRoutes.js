@@ -21,8 +21,9 @@ const {
   listMilkSangha,
   deleteMilkSangha,
   saveMessage,
-  dairyStartingInfo,
-  fetchDairyStartingInfo,
+  createDairyInitInfo,
+  updateDairyInitInfo,
+  fetchDairyInitInfo,
 } = require("../Controllers/DairyController");
 const router = express.Router();
 
@@ -54,10 +55,10 @@ router.route("/create/sangha").post(verifyToken, createMilkSangha);
 router.route("/update/sangha").post(verifyToken, updateMilkSangha);
 router.route("/list/sangha").get(verifyToken, listMilkSangha);
 router.route("/delete/sangha").post(verifyToken, deleteMilkSangha);
+
 // Dairy info routes ----------------------------------------------------------------------------------->
-router.route("/dairy/initial/info").post(verifyToken, dairyStartingInfo);
-router
-  .route("/fetch/dairy/initial/info")
-  .get(verifyToken, fetchDairyStartingInfo);
+router.route("/dairy/create/init-info").post(verifyToken, createDairyInitInfo);
+router.route("/dairy/update/init-info").put(verifyToken, updateDairyInitInfo);
+router.route("/dairy/fetch/init-info").get(verifyToken, fetchDairyInitInfo);
 
 module.exports = router;

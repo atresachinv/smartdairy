@@ -6,7 +6,7 @@ const pool = require("../Configs/Database");
 
 exports.createSales = (req, res) => {
   const salesData = req.body;
-  const { dairy_id, center_id, user_id } = req.user;
+  const { dairy_id, user_id } = req.user;
 
   if (!Array.isArray(salesData) || salesData.length === 0) {
     return res.status(400).json({
@@ -25,8 +25,8 @@ exports.createSales = (req, res) => {
 
     // Step 1: Get the max BillNo for the company and center
     connection.query(
-      "SELECT MAX(BillNo) AS maxBillNo FROM salesmaster WHERE companyid = ? AND center_id = ?",
-      [dairy_id, center_id],
+      "SELECT MAX(BillNo) AS maxBillNo FROM salesmaster WHERE companyid = ? ",
+      [dairy_id],
       (err, countResult) => {
         if (err) {
           connection.release();
@@ -42,7 +42,7 @@ exports.createSales = (req, res) => {
 
         // Step 2: Build the bulk INSERT query dynamically
         let insertQuery =
-          "INSERT INTO salesmaster (BillNo, BillDate, companyid, center_id, createdby";
+          "INSERT INTO salesmaster (BillNo, BillDate, companyid, createdby";
         const insertValues = [];
         const valuePlaceholders = [];
 
@@ -56,7 +56,7 @@ exports.createSales = (req, res) => {
             });
           }
 
-          const rowValues = [newBillNo, BillDate, dairy_id, center_id, user_id];
+          const rowValues = [newBillNo, BillDate, dairy_id, user_id];
           for (const key of Object.keys(otherFields)) {
             if (!insertQuery.includes(key)) {
               insertQuery += `, ${key}`;

@@ -1,5 +1,5 @@
 import { FaRegEdit } from "react-icons/fa";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { MdDeleteOutline } from "react-icons/md";
 import Select from "react-select";
 import "./credit.css";
@@ -16,6 +16,104 @@ const getTodaysDate = () => {
   const today = new Date();
   return today.toISOString().split("T")[0];
 };
+
+// Extract form validation into a separate function
+const validateFormData = (data) => {
+  const errors = {};
+
+  if (!data.Amt) {
+    errors.Amt = "कृपया रक्कम भरा";
+  } else if (isNaN(Number(data.Amt)) || Number(data.Amt) <= 0) {
+    errors.Amt = "कृपया वैध रक्कम भरा";
+  }
+
+  if (!data.GLCode) {
+    errors.GLCode = "कृपया खतावणी नं. भरा";
+  }
+
+  if (!data.Vtype) {
+    errors.Vtype = "कृपया व्यवहार प्रकार निवडा";
+  }
+
+  if (!data.InstrType) {
+    errors.InstrType = "कृपया पावती प्रकार निवडा";
+  }
+
+  if (data.InstrType === "1" && !data.ChequeNo) {
+    errors.ChequeNo = "कृपया चेक नंबर भरा";
+  }
+
+  if (data.InstrType === "2" && !data.ReceiptNo) {
+    errors.ReceiptNo = "कृपया पावती नंबर भरा";
+  }
+
+  return errors;
+};
+
+// Extract form reset logic
+const getResetFormData = (currentData, isFixed) => {
+  if (isFixed) {
+    return {
+      AccCode: "",
+      Narration: "",
+      Amt: "",
+      VoucherNo: Number(currentData.VoucherNo) + 1,
+    };
+  }
+  return {
+    AccCode: "",
+    GLCode: "",
+    Vtype: "",
+    InstrType: "",
+    Amt: "",
+    ChequeNo: "",
+    VoucherNo: Number(currentData.VoucherNo) + 1,
+    ReceiptNo: Number(currentData.ReceiptNo) + 1,
+    Narration: "",
+  };
+};
+
+// Extract API calls into a separate service
+const voucherService = {
+  create: async (data) => {
+    const response = await axiosInstance.post("/voucher/new", data);
+    return response.data;
+  },
+  update: async (id, data) => {
+    const response = await axiosInstance.patch(
+      `/voucher/update?id=${id}`,
+      data
+    );
+    return response.data;
+  },
+  delete: async (id) => {
+    const response = await axiosInstance.delete(`/voucher/delete?id=${id}`);
+    return response.data;
+  },
+  getBalance: async (autoCenter) => {
+    const response = await axiosInstance.get("/balance", {
+      params: { autoCenter },
+    });
+    return response.data;
+  },
+};
+
+// Extract balance calculation logic
+const calculateBalance = (balanceData, glCode, accCode) => {
+  return balanceData.reduce((acc, item) => {
+    if (item.GLCode === Number(glCode)) {
+      if (accCode) {
+        if (item.AccCode === Number(accCode)) {
+          acc += Number(item.Amt);
+        }
+      } else {
+        acc += Number(item.Amt);
+      }
+    }
+    return acc;
+  }, 0);
+};
+
 const TransferCredit = () => {
   const [customerList, setCustomerList] = useState([]);
   const dispatch = useDispatch();
@@ -23,19 +121,21 @@ const TransferCredit = () => {
     AccCode: "",
     GLCode: "",
     VoucherDate: getTodaysDate(),
-    BatchNo: "0",
+    BatchNo: "",
     Vtype: "",
     InstrType: "",
     Amt: "",
     ChequeNo: "",
     ChequeDate: getTodaysDate(),
-    VoucherNo: "",
-    ReceiptNo: "1",
+    VoucherNo: 1,
+    ReceiptNo: 1,
     Narration: "",
+    Narration1: "",
   });
-  const [fix, setFix] = useState("");
+  const [isFixed, setIsFixed] = useState(0);
   const sledgerlist = useSelector((state) => state.ledger.sledgerlist);
   const { loading, voucherList } = useSelector((state) => state.voucher);
+  const [filterVoucherList, setFilterVoucherList] = useState([]);
   const [onclickChalan, setOnclickChalan] = useState(false);
   const [edit, setEdit] = useState(false);
   const [ID, setId] = useState("");
@@ -44,6 +144,29 @@ const TransferCredit = () => {
   );
   const [settings, setSettings] = useState({});
   const autoCenter = settings?.autoCenter;
+  const [balance, setBalance] = useState(0);
+  const [balanceData, setBalanceData] = useState([]);
+  const [haveSubAcc, setHaveSubAcc] = useState(false);
+  const [filter, setFilter] = useState(0);
+  const centerId = useSelector((state) => state.dairy.dairyData.center_id);
+  const centerList = useSelector(
+    (state) => state.center.centersList.centersDetails || []
+  );
+
+  // Optimize fetchBal with proper error handling
+  const fetchBal = useCallback(async () => {
+    try {
+      const res = await voucherService.getBalance(autoCenter);
+      setBalanceData(res.statementData);
+    } catch (error) {
+      console.error("Failed to fetch balance:", error);
+      toast.error("Failed to fetch balance data");
+    }
+  }, [autoCenter]);
+
+  useEffect(() => {
+    fetchBal();
+  }, [fetchBal]);
 
   //set setting
   useEffect(() => {
@@ -55,26 +178,23 @@ const TransferCredit = () => {
   // Get master dates and list customer and voucher
   useEffect(() => {
     if (settings?.autoCenter !== undefined) {
-      // console.log("in seleting:", formData.VoucherDate);
       dispatch(
         getAllVoucher({ VoucherDate: getTodaysDate(), autoCenter, filter: 2 })
       );
     }
     dispatch(listCustomer());
     dispatch(listSubLedger());
-  }, [settings]);
+  }, [settings, autoCenter, dispatch]);
 
   // Get  voucher on change voucher date
   useEffect(() => {
     if (settings?.autoCenter !== undefined) {
-      // console.log("in use effect:", formData.VoucherDate);
-
-      setFormData({
-        ...formData,
-        ChequeDate: formData.VoucherDate,
-      });
+      setFormData((prev) => ({
+        ...prev,
+        ChequeDate: prev.VoucherDate,
+      }));
     }
-  }, [formData.VoucherDate]);
+  }, [formData.VoucherDate, settings?.autoCenter]);
 
   // set today date
   useEffect(() => {
@@ -89,10 +209,18 @@ const TransferCredit = () => {
   // Effect to load customer list from local storage
   useEffect(() => {
     const storedCustomerList = localStorage.getItem("customerlist");
-    if (storedCustomerList) {
-      setCustomerList(JSON.parse(storedCustomerList));
+    if (centerId === 0) {
+      const filteredCustomerList = JSON.parse(storedCustomerList).filter(
+        (customer) => Number(customer.centerid) === Number(filter)
+      );
+      setCustomerList(filteredCustomerList);
+    } else {
+      const filteredCustomerList = JSON.parse(storedCustomerList).filter(
+        (customer) => Number(customer.centerid) === Number(centerId)
+      );
+      setCustomerList(filteredCustomerList);
     }
-  }, [dispatch]);
+  }, [dispatch, centerId, filter]);
 
   // ----------------------->
   //set max voucher no---
@@ -134,6 +262,16 @@ const TransferCredit = () => {
 
   const handleNewChalan = (e) => {
     e.preventDefault();
+
+    const maxBatchNo = voucherList.reduce((max, item) => {
+      return item.BatchNo > max ? item.BatchNo : max;
+    }, 0);
+
+    setFormData((prev) => ({
+      ...prev,
+      BatchNo: maxBatchNo ? maxBatchNo + 1 : 1, // Default to 1 if no maxBatchNo
+    }));
+
     setOnclickChalan(true);
     const comp = document.getElementById("Vtype");
     comp.focus();
@@ -148,13 +286,13 @@ const TransferCredit = () => {
       }
     }
   };
-  const handlePavtity = (e) => {
+  const handlePavtity = () => {
     setTimeout(() => {
-      if (formData.InstrType === "0") {
-        const comp = document.getElementById("ChequeNo");
+      if (formData.InstrType === "2") {
+        const comp = document.getElementById("ReceiptNo");
         if (comp) comp.focus();
       } else if (formData.InstrType === "1") {
-        const comp = document.getElementById("ReceiptNo");
+        const comp = document.getElementById("ChequeNo");
         if (comp) comp.focus();
       }
     }, 0);
@@ -169,51 +307,31 @@ const TransferCredit = () => {
   //----------------------------------------
   //handle submit------->
   const handleSubmit = async () => {
-    if (!formData.AccCode) {
-      toast.warn("कृपया खाते क्र. भरा ");
-      return;
-    }
-    if (!formData.Amt) {
-      toast.warn("कृपया रक्कम भरा ");
+    const errors = validateFormData(formData);
+    if (Object.keys(errors).length > 0) {
+      Object.values(errors).forEach((error) => toast.warn(error));
       return;
     }
 
-    // Adjust Amt based on Vtype
     const adjustedAmt =
-      Number(formData.Vtype) === 0
-        ? -Math.abs(formData.Amt)
-        : Math.abs(formData.Amt);
+      Number(formData.Vtype) === 1
+        ? -Math.abs(Number(formData.Amt))
+        : Math.abs(Number(formData.Amt));
 
-    // Ensure the state reflects the adjusted amount before submission
-    const updatedFormData = { ...formData, Amt: adjustedAmt };
+    // Convert empty AccCode to 0 for backend
+    const updatedFormData = {
+      ...formData,
+      Amt: adjustedAmt,
+      AccCode: formData.AccCode === "" ? 0 : Number(formData.AccCode),
+      center_id: !autoCenter ? (centerId === 0 ? filter : centerId) : centerId,
+    };
 
-    if (!edit) {
-      try {
-        const res = await axiosInstance.post("/voucher/new", updatedFormData);
-        if (res.data?.success) {
+    try {
+      if (!edit) {
+        const res = await voucherService.create(updatedFormData);
+        if (res?.success) {
           toast.success("Submit Successfully");
-
-          const resetData =
-            fix === 1
-              ? {
-                  AccCode: "",
-                  Narration: "",
-                  Amt: "",
-                  VoucherNo: Number(formData.VoucherNo) + 1,
-                }
-              : {
-                  AccCode: "",
-                  GLCode: "",
-                  BatchNo: "0",
-                  Vtype: "",
-                  InstrType: "",
-                  Amt: "",
-                  ChequeNo: "",
-                  VoucherNo: Number(formData.VoucherNo) + 1,
-                  ReceiptNo: Number(formData.ReceiptNo) + 1,
-                  Narration: "",
-                };
-
+          const resetData = getResetFormData(updatedFormData, isFixed);
           setFormData({ ...updatedFormData, ...resetData });
           dispatch(
             getAllVoucher({
@@ -222,36 +340,29 @@ const TransferCredit = () => {
               filter: 2,
             })
           );
+          fetchBal();
+        } else {
+          throw new Error(res?.message || "Failed to create voucher");
         }
-      } catch (error) {
-        toast.error("Failed to Submit");
-        console.error(error);
-      }
-    } else {
-      if (!ID) {
-        toast.warn("Not Have the ID");
-        return;
-      }
-      try {
-        const res = await axiosInstance.patch(
-          `/voucher/update?id=${ID}`,
-          updatedFormData
-        );
-        if (res.data?.success) {
+      } else {
+        if (!ID) {
+          toast.warn("Not Have the ID");
+          return;
+        }
+        const res = await voucherService.update(ID, updatedFormData);
+        if (res?.success) {
           toast.success("Update Successfully");
-
           setFormData({
             AccCode: "",
             GLCode: "",
-            BatchNo: "0",
             Vtype: "",
             InstrType: "",
             Amt: "",
             ChequeNo: "",
             ReceiptNo: Number(formData.ReceiptNo) + 1,
             Narration: "",
+            Narration1: "",
           });
-
           dispatch(
             getAllVoucher({
               VoucherDate: updatedFormData.VoucherDate,
@@ -259,14 +370,16 @@ const TransferCredit = () => {
               filter: 2,
             })
           );
-
+          fetchBal();
           setEdit(false);
           setOnclickChalan(false);
+        } else {
+          throw new Error(res?.message || "Failed to update voucher");
         }
-      } catch (error) {
-        toast.error("Failed to Submit");
-        console.error(error);
       }
+    } catch (error) {
+      console.error("Voucher operation failed:", error);
+      toast.error(error.message || "Operation failed. Please try again.");
     }
   };
 
@@ -295,6 +408,7 @@ const TransferCredit = () => {
       VoucherNo: voucher.VoucherNo,
       ReceiptNo: voucher.ReceiptNo,
       Narration: voucher.Narration,
+      Narration1: voucher.Narration1,
     });
   };
   // ---------------------------------
@@ -312,14 +426,10 @@ const TransferCredit = () => {
     });
 
     if (result.isConfirmed) {
-      if (!id) {
-        toast.error("Id Not found");
-        return;
-      }
       try {
-        const res = await axiosInstance.delete(`/voucher/delete?id=${id}`);
-        if (res.data?.success) {
-          toast.success(res.data.message);
+        const res = await voucherService.delete(id);
+        if (res?.success) {
+          toast.success(res.message);
           dispatch(
             getAllVoucher({
               VoucherDate: formData.VoucherDate,
@@ -328,11 +438,11 @@ const TransferCredit = () => {
             })
           );
         } else {
-          toast.error("Failed to delete the voucher.");
+          throw new Error(res?.message || "Failed to delete voucher");
         }
       } catch (error) {
-        toast.error("Failed to delete. Please try again.");
-        console.error(error);
+        console.error("Delete operation failed:", error);
+        toast.error(error.message || "Failed to delete. Please try again.");
       }
     }
   };
@@ -345,21 +455,222 @@ const TransferCredit = () => {
       AccCode: "",
       GLCode: "",
       VoucherDate: getTodaysDate(),
-      BatchNo: "0",
+      BatchNo: 1,
       Vtype: "",
       InstrType: "",
       Amt: "",
       ChequeNo: "",
       ChequeDate: getTodaysDate(),
-      VoucherNo: "1",
-      ReceiptNo: "1",
+      VoucherNo: 1,
+      ReceiptNo: 1,
       Narration: "",
+      Narration1: "",
     });
   };
+
+  // Changing to batch no on change of voucher list
+  useEffect(() => {
+    if (voucherList.length > 0) {
+      if (formData.BatchNo !== "") {
+        const filteredBatchNo = voucherList.filter(
+          (item) => Number(item.BatchNo) === Number(formData.BatchNo)
+        );
+
+        if (filteredBatchNo.length > 0) {
+          setFilterVoucherList(filteredBatchNo); // Use the filtered list
+        } else {
+          setFilterVoucherList([]);
+        }
+      } else {
+        setFilterVoucherList(voucherList);
+      }
+    } else {
+      setFilterVoucherList([]);
+    }
+  }, [formData.BatchNo, voucherList]);
+
+  // Optimize balance calculation effect
+  useEffect(() => {
+    const balance = calculateBalance(
+      balanceData,
+      formData.GLCode,
+      formData.AccCode
+    );
+    setBalance(balance);
+  }, [formData.GLCode, formData.AccCode, balanceData]);
+
+  const checkHaveSubAcc = useCallback(() => {
+    const subAcc = sledgerlist.find(
+      (item) => item.lno === Number(formData.GLCode)
+    );
+    if (subAcc) {
+      setHaveSubAcc(subAcc.subacc);
+    } else {
+      setHaveSubAcc(false);
+    }
+  }, [formData.GLCode, sledgerlist]);
+
+  useEffect(() => {
+    if (formData.GLCode) {
+      checkHaveSubAcc();
+    } else {
+      setHaveSubAcc(false);
+    }
+  }, [formData.GLCode, checkHaveSubAcc]);
+
+  // Update voucher filtering based on center selection
+  useEffect(() => {
+    const filteredVoucherList = voucherList.filter(
+      (voucher) =>
+        Number(voucher.center_id) === Number(centerId > 0 ? centerId : filter)
+    );
+    setFilterVoucherList(filteredVoucherList);
+  }, [filter, voucherList, centerId]);
+
+  const [isManualNarration, setIsManualNarration] = useState(false);
+
+  //noramal input change norration
+  useEffect(() => {
+    // Only generate narration if Vtype and InstrType are selected
+    if (formData.Vtype && formData.InstrType && !isManualNarration) {
+      if (formData.Vtype === "1") {
+        // नावे
+        if (formData.InstrType === "1") {
+          // चेक
+          if (formData.AccCode) {
+            const subAcc = custOptions1.find(
+              (option) => option.value === Number(formData.AccCode)
+            );
+            if (subAcc) {
+              setFormData((f) => ({
+                ...f,
+                Narration: `${subAcc.label} यांचे नावे ट्रान्सफर (चेक नं. ${f.ChequeNo}  )`,
+                Narration1: `${subAcc.label} Debit Transfer (Cheque No. ${f.ChequeNo})`,
+              }));
+            }
+          } else {
+            setFormData((f) => ({
+              ...f,
+              Narration: `चेक नं. ${f.ChequeNo}   प्रमाणे नावे ट्रान्सफर`,
+              Narration1: `Debit Transfer as per Cheque No. ${f.ChequeNo}`,
+            }));
+          }
+        } else if (formData.InstrType === "2") {
+          // व्हॉउचर
+          if (formData.AccCode) {
+            const subAcc = custOptions1.find(
+              (option) => option.value === Number(formData.AccCode)
+            );
+            if (subAcc) {
+              setFormData((f) => ({
+                ...f,
+                Narration: `${subAcc.label} यांचे नावे ट्रान्सफर (व्हॉउचर नं. ${f.ReceiptNo} )`,
+                Narration1: `${subAcc.label} Debit Transfer (Voucher No. ${f.ReceiptNo})`,
+              }));
+            }
+          } else {
+            setFormData((f) => ({
+              ...f,
+              Narration: `व्हॉउचर नं. ${f.ReceiptNo}  प्रमाणे नावे ट्रान्सफर`,
+              Narration1: `Debit Transfer as per Voucher No. ${f.ReceiptNo}`,
+            }));
+          }
+        }
+      } else if (formData.Vtype === "4") {
+        // जमा
+        if (formData.InstrType === "1") {
+          // चेक
+          if (formData.AccCode) {
+            const subAcc = custOptions1.find(
+              (option) => option.value === Number(formData.AccCode)
+            );
+            if (subAcc) {
+              setFormData((f) => ({
+                ...f,
+                Narration: `${subAcc.label} यांचे जमा ट्रान्सफर (चेक नं. ${f.ChequeNo} )`,
+                Narration1: `${subAcc.label} Credit Transfer (Cheque No. ${f.ChequeNo})`,
+              }));
+            }
+          } else {
+            setFormData((f) => ({
+              ...f,
+              Narration: `चेक नं. ${f.ChequeNo} प्रमाणे जमा ट्रान्सफर`,
+              Narration1: `Credit Transfer as per Cheque No. ${f.ChequeNo}`,
+            }));
+          }
+        } else if (formData.InstrType === "2") {
+          // व्हॉउचर
+          if (formData.AccCode) {
+            const subAcc = custOptions1.find(
+              (option) => option.value === Number(formData.AccCode)
+            );
+            if (subAcc) {
+              setFormData((f) => ({
+                ...f,
+                Narration: `${subAcc.label} यांचे जमा ट्रान्सफर (व्हॉउचर नं. ${f.ReceiptNo} )`,
+                Narration1: `${subAcc.label} Credit Transfer (Voucher No. ${f.ReceiptNo})`,
+              }));
+            }
+          } else {
+            setFormData((f) => ({
+              ...f,
+              Narration: `व्हॉउचर नं. ${f.ReceiptNo}   प्रमाणे जमा ट्रान्सफर`,
+              Narration1: `Credit Transfer as per Voucher No. ${f.ReceiptNo}`,
+            }));
+          }
+        }
+      }
+    }
+  }, [
+    formData.Vtype,
+    formData.InstrType,
+    formData.AccCode,
+    formData.ChequeNo,
+    formData.ReceiptNo,
+    formData.ChequeDate,
+    formData.VoucherDate,
+    custOptions1,
+    isManualNarration,
+  ]);
+
+  const handleNarrationChange = (e) => {
+    setIsManualNarration(true);
+    setFormData({
+      ...formData,
+      Narration: e.target.value,
+      Narration1: e.target.value,
+    });
+  };
+
   return (
     <div className="Credit-container w100 h1 d-flex-col">
       <div className="Credit-container-scroll d-flex-col w100">
-        <span className=" heading p10">ट्रान्सफर चलन</span>
+        <div className="d-flex w100 sa">
+          <span className=" heading p10">ट्रान्सफर चलन</span>
+
+          {centerId > 0 ? (
+            <></>
+          ) : (
+            <div className="d-flex a-center mx10">
+              <span className="info-text w50">सेंटर निवडा :</span>
+              <select
+                className="data   a-center  my5 mx5"
+                name="center"
+                value={filter}
+                onChange={(e) => setFilter(e.target.value)}
+              >
+                {centerList &&
+                  [...centerList]
+                    .sort((a, b) => a.center_id - b.center_id)
+                    .map((center, index) => (
+                      <option key={index} value={center.center_id}>
+                        {center.center_name}
+                      </option>
+                    ))}
+              </select>
+            </div>
+          )}
+        </div>
         <div className="credit-all-form d-flex w100 ">
           <div className="credit-form d-flex-col mx10 p10 bg">
             <div className="row d-flex w100  sb a-center ">
@@ -385,7 +696,7 @@ const TransferCredit = () => {
                       document.getElementById("handleNewChalan")
                     )
                   }
-                  disabled={fix === 1}
+                  disabled={isFixed === 1}
                 />
               </div>
               <div className="Batch No-div d-flex a-center mx10 sb">
@@ -411,14 +722,14 @@ const TransferCredit = () => {
                   onChange={(e) =>
                     setFormData({ ...formData, Vtype: e.target.value })
                   }
-                  disabled={!onclickChalan || fix === 1}
+                  disabled={!onclickChalan || isFixed === 1}
                   onKeyDown={(e) =>
                     handleKeyPress(e, document.getElementById("VoucherNo"))
                   }
                 >
                   <option value=""> Select</option>
-                  <option value="0">नावे</option>
-                  <option value="3">जमा</option>
+                  <option value="1">नावे</option>
+                  <option value="4">जमा</option>
                 </select>
               </div>
               <div className=" bill-no-div w50 d-flex mx15 a-center sb">
@@ -444,7 +755,7 @@ const TransferCredit = () => {
                     handlePavtity();
                   }}
                   onKeyDown={handleKeyDown}
-                  disabled={formData.Vtype === "" || fix === 1}
+                  disabled={formData.Vtype === "" || isFixed === 1}
                 >
                   <option value="">select</option>
                   <option value="1">चेक </option>
@@ -466,7 +777,9 @@ const TransferCredit = () => {
                     handleKeyPress(e, document.getElementById("GLCode"))
                   }
                   disabled={
-                    !formData.InstrType || formData.InstrType == 0 || fix === 1
+                    !formData.InstrType ||
+                    formData.InstrType == 1 ||
+                    isFixed === 1
                   }
                 />
               </div>
@@ -487,9 +800,12 @@ const TransferCredit = () => {
                   setFormData({ ...formData, GLCode: e.target.value })
                 }
                 onKeyDown={(e) =>
-                  handleKeyPress(e, document.getElementById("AccCode"))
+                  handleKeyPress(
+                    e,
+                    document.getElementById(haveSubAcc ? "AccCode" : "amt")
+                  )
                 }
-                disabled={!formData.InstrType || fix}
+                disabled={!formData.InstrType || isFixed}
               />
 
               <Select
@@ -513,7 +829,7 @@ const TransferCredit = () => {
                 onChange={(selectedOption) =>
                   handleSelectChange(selectedOption, "GLCode")
                 }
-                isDisabled={fix === 1}
+                isDisabled={isFixed === 1}
               />
             </div>
 
@@ -532,7 +848,7 @@ const TransferCredit = () => {
                 onChange={(e) =>
                   setFormData({ ...formData, AccCode: e.target.value })
                 }
-                disabled={!formData.GLCode}
+                disabled={!formData.GLCode || !haveSubAcc}
               />
 
               <Select
@@ -556,6 +872,7 @@ const TransferCredit = () => {
                 onChange={(selectedOption) =>
                   handleSelectChange(selectedOption, "AccCode")
                 }
+                isDisabled={!haveSubAcc}
               />
             </div>
             <div className="Amount-button-container  d-flex sb">
@@ -576,12 +893,11 @@ const TransferCredit = () => {
                   onChange={(e) =>
                     setFormData({ ...formData, Amt: e.target.value })
                   }
-                  disabled={!formData.AccCode}
                 />
               </div>
               <div className=" Amountt-div d-flex a-center w50 ">
                 <span className="info-text w60">आज बॅलेन्स </span>
-                <input type="text" className="data" disabled />
+                <input type="text" className="data" disabled value={balance} />
               </div>
             </div>
             <div className="Amount-button-container  w100 d-flex sb my5">
@@ -591,10 +907,8 @@ const TransferCredit = () => {
                   type="text"
                   className="data mx5 "
                   value={formData.Narration}
-                  onChange={(e) =>
-                    setFormData({ ...formData, Narration: e.target.value })
-                  }
-                  disabled={!formData.Amt}
+                  onChange={handleNarrationChange}
+                  disabled={!formData.GLCode}
                 />
               </div>
             </div>
@@ -602,8 +916,8 @@ const TransferCredit = () => {
               <input
                 type="checkbox"
                 name=""
-                checked={fix === 1}
-                onChange={(e) => setFix(e.target.checked ? 1 : 0)}
+                checked={isFixed === 1}
+                onChange={(e) => setIsFixed(e.target.checked ? 1 : 0)}
                 disabled={!formData.GLCode}
                 className="mx5"
               />
@@ -615,15 +929,47 @@ const TransferCredit = () => {
               बॅच टॅलि
               <div className="d-flex a-center ">
                 <span className="w50 info-text">नावे </span>
-                <input type="text" className="data" />
+                <input
+                  type="text"
+                  className="data"
+                  value={
+                    formData.BatchNo && filterVoucherList
+                      ? filterVoucherList.reduce((sum, item) => {
+                          if (Number(item.Vtype) === 1) {
+                            return sum + Math.abs(item.Amt);
+                          }
+                          return sum;
+                        }, 0)
+                      : 0
+                  }
+                />
               </div>
               <div className="d-flex a-center my10">
                 <span className="w50 info-text">जमा </span>
-                <input type="text" className="data" />
+                <input
+                  type="text"
+                  className="data"
+                  value={
+                    formData.BatchNo && filterVoucherList
+                      ? filterVoucherList.reduce((sum, item) => {
+                          if (Number(item.Vtype) === 4) {
+                            return sum + Math.abs(item.Amt);
+                          }
+                          return sum;
+                        }, 0)
+                      : 0
+                  }
+                />
               </div>
               <div className="d-flex a-center ">
                 <span className="w50 info-text">बॅच फरक </span>
-                <span className="w50 req info-text">{0} </span>
+                <span className="w50 req info-text">
+                  {formData.BatchNo && filterVoucherList
+                    ? filterVoucherList.reduce((sum, item) => {
+                        return sum + item.Amt;
+                      }, 0)
+                    : 0}
+                </span>
               </div>
             </div>
             <div className="m10 p10 bg-light-green">
@@ -643,7 +989,9 @@ const TransferCredit = () => {
                     handleKeyPress(e, document.getElementById("ChequeDate"))
                   }
                   disabled={
-                    !formData.InstrType || formData.InstrType == 1 || fix === 1
+                    !formData.InstrType ||
+                    formData.InstrType == 2 ||
+                    isFixed === 1
                   }
                 />
               </div>
@@ -661,26 +1009,28 @@ const TransferCredit = () => {
                     handleKeyPress(e, document.getElementById("GLCode"))
                   }
                   disabled={
-                    !formData.InstrType || formData.InstrType == 1 || fix === 1
+                    !formData.InstrType ||
+                    formData.InstrType == 2 ||
+                    isFixed === 1
                   }
                 />
               </div>
             </div>
             <div className="credit-batchTally-buttons d-flex mx10 p10 bg">
-              {/* <button className="w-btn ">नवीन बॅच</button> */}
               <button
                 type="button"
-                onClick={(e) => handleClear()}
+                onClick={() => handleClear()}
                 className="w-btn"
               >
                 रद्द करा
               </button>
+
               <button
                 id="handleNewChalan"
                 className="w-btn "
                 type="button"
                 onClick={handleNewChalan}
-                disabled={fix === 1}
+                disabled={isFixed === 1}
               >
                 नवीन चलन
               </button>
@@ -688,7 +1038,7 @@ const TransferCredit = () => {
                 id="handleSaveBatch"
                 className="w-btn"
                 type="submit"
-                onClick={(e) => handleSubmit()}
+                onClick={() => handleSubmit()}
               >
                 {edit ? "अपडेट करा" : "सेव्ह करा"}
               </button>
@@ -715,14 +1065,16 @@ const TransferCredit = () => {
               <tbody>
                 {loading ? (
                   "Loading..."
-                ) : voucherList.length > 0 ? (
-                  voucherList.map((voucher, index) => (
+                ) : filterVoucherList.length > 0 ? (
+                  filterVoucherList.map((voucher, index) => (
                     <tr key={index}>
                       <td>
-                        <FaRegEdit
-                          className="icon"
-                          onClick={(e) => handleEdit(voucher.id)}
-                        />
+                        {!voucher.salebillno && (
+                          <FaRegEdit
+                            className="icon"
+                            onClick={() => handleEdit(voucher.id)}
+                          />
+                        )}
                       </td>
                       <td className="info-text">{voucher.VoucherNo}</td>
                       <td className="info-text">{voucher.GLCode}</td>
@@ -739,18 +1091,20 @@ const TransferCredit = () => {
                       </td>
                       <td className="info-text">{voucher.Amt}</td>
                       <td className="info-text">
-                        {voucher.Vtype === 0
+                        {voucher.Vtype === 1
                           ? "नावे"
-                          : voucher.Vtype === 3
+                          : voucher.Vtype === 4
                           ? "जमा"
                           : ""}
                       </td>
                       <td className="info-text">{voucher.BatchNo}</td>
                       <td>
-                        <MdDeleteOutline
-                          className="icon req"
-                          onClick={(e) => handleDelete(voucher.id)}
-                        />
+                        {!voucher.salebillno && (
+                          <MdDeleteOutline
+                            className="icon req"
+                            onClick={() => handleDelete(voucher.id)}
+                          />
+                        )}
                       </td>
                     </tr>
                   ))

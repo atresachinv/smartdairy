@@ -1,0 +1,48 @@
+.abmin-whatsapp-sms {
+  width: 60%;
+  margin: auto;
+  margin-top: 20px;
+  padding: 20px;
+}
+.recharge-whsms-container {
+  width: 100%;
+  padding: 15px;
+}
+.wh-recharge-history-table-container {
+  width: 100%;
+  max-height: 70vh;
+  overflow: auto;
+  position: relative;
+}
+.wh-recharge-history-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.wh-recharge-history-table thead {
+  position: sticky;
+}
+.wh-recharge-history-table th {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+  text-align: center;
+  /* background-color: #f8f9fa; */
+}
+.wh-recharge-history-table td {
+  padding: 12px;
+  border-bottom: 1px solid #ddd;
+  text-align: center;
+}
+.wh-recharge-history-table tbody tr:hover {
+  background-color: #f5f5f5;
+}
+
+@media screen and (max-width: 426px) {
+  .abmin-whatsapp-sms {
+    width: 100%;
+    padding: 5px;
+  }
+  .recharge-whsms-container {
+    padding: 5px;
+  }
+}

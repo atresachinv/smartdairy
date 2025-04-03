@@ -46,7 +46,7 @@ const Dashboard = () => {
     (state) => state.center.centersList.centersDetails // center list
   );
   const centerLiterAmt = useSelector(
-    (state) => state.admindashboard.centerMilk // center wise liter and amount
+    (state) => state.admindashboard.centerMilk || [] // center wise liter and amount
   );
   const customerCounts = useSelector(
     (state) => state.admindashboard.custCount // center wise liter and amount
@@ -101,7 +101,7 @@ const Dashboard = () => {
   const customerCount = customerslist.length;
   const totalLitres = mastermilk.reduce((acc, item) => acc + item.Litres, 0);
   const totalAmt = mastermilk.reduce((acc, item) => acc + item.Amt, 0);
-  const avgRate = totalAmt / totalLitres;
+  const avgRate = totalLitres > 0 ? totalAmt / totalLitres : 0;
   const totalFatValue = mastermilk.reduce(
     (acc, item) => acc + item.Litres * item.fat,
     0
@@ -143,8 +143,6 @@ const Dashboard = () => {
     data.avgSNF =
       data.totalLitres > 0 ? data.totalSNFValue / data.totalLitres : 0;
   });
-
-  console.log(aggregatedData);
 
   // ---------------------------------------------------------------------------------------------->
   //  Data to show in bar chart ----------------------------------------------------------------->
@@ -357,14 +355,14 @@ const Dashboard = () => {
       <div className="dashboard-scrll-container w100 h1 mh100 hidescrollbar ">
         <div className="Milk-sale-details-container w100 hidescrollbar">
           <form className="selection-container w100 h10 d-flex a-center j-start">
-            <div className="select-data-text w60 h1 d-flex a-center p10">
+            <div className="select-data-text w60 h10 d-flex a-center p10">
               <span className="w30 info-text">{t("c-select-period")} :</span>
-              <div className="custmize-report-div w70 h1 data  px10 d-flex a-center sb">
-                <span className="cl-icon w10 h1 d-flex center">
+              <div className="custmize-report-div w70 h1 data px10 d-flex a-center sb">
+                <span className="cl-icon w10 d-flex center">
                   <BsCalendar3 />
                 </span>
                 <select
-                  className="custom-select label-text w90 h1 p10"
+                  className="custom-select label-text w90 h1 d-flex p10"
                   onChange={handleSelectChange}
                 >
                   <option className="label-text w100 d-flex" value={""}>
@@ -376,16 +374,15 @@ const Dashboard = () => {
                       key={index}
                       value={index}
                     >
-                      {" "}
                       {new Date(dates.start).toLocaleDateString("en-GB", {
                         day: "2-digit",
-                        month: "2-digit", // Abbreviated month format
+                        month: "2-digit",
                         year: "numeric",
                       })}{" "}
                       - {t("c-to")} -{" "}
                       {new Date(dates.end).toLocaleDateString("en-GB", {
                         day: "2-digit",
-                        month: "2-digit", // Abbreviated month format
+                        month: "2-digit",
                         year: "numeric",
                       })}
                     </option>
@@ -399,7 +396,7 @@ const Dashboard = () => {
                   <span className="heading">
                     {new Date(selectedDate.start).toLocaleDateString("en-GB", {
                       day: "2-digit",
-                      month: "short", // Abbreviated month format
+                      month: "short",
                       year: "numeric",
                     })}
                   </span>{" "}
@@ -407,7 +404,7 @@ const Dashboard = () => {
                   <span className="heading">
                     {new Date(selectedDate.end).toLocaleDateString("en-GB", {
                       day: "2-digit",
-                      month: "short", // Abbreviated month format
+                      month: "short",
                       year: "numeric",
                     })}
                   </span>
@@ -680,7 +677,7 @@ const Dashboard = () => {
                 <></>
               )}
             </div>
-            <div className="liter-sales-details-inner-container w100 h50 d-flex-col sb p10">
+            <div className="liter-sales-details-inner-container w100 h60 d-flex-col sb p10">
               <span className="heading">{t("c-anaylatics")} : </span>
               <div className="pie-chart-container w100 h1 d-flex a-center sb p10">
                 <div className="liter-sales-card w25 h90 d-flex-col sb bg-light-skyblue br6 p10 ">

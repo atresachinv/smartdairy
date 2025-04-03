@@ -469,6 +469,13 @@ const Mainappnavlinks = ({ setselected, handleSidebar }) => {
               },
             ]
           : []),
+        {
+          name: `${t("व्हाट्सअँप मेसेज ")}`,
+          icon: <BsGridFill className="icon" />,
+          index: 8.4,
+          path: "dairy/whatsapp-sms",
+          role: ["admin", "super_admin", "manager"],
+        },
       ],
     },
     {

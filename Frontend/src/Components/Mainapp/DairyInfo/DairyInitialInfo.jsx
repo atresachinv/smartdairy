@@ -1,288 +1,944 @@
-import React, { useState, useCallback } from "react";
-import debounce from "lodash.debounce";
-import sanscript from "@indic-transliteration/sanscript";
+import React, { useEffect, useState } from "react";
 import "../../../Styles/DairyInitialInfo/DairyInitialInfo.css";
-
-const anuswaraConsonants = [
-  "द",
-  "ध",
-  "ग",
-  "घ",
-  "च",
-  "छ",
-  "ज",
-  "झ",
-  "ट",
-  "ठ",
-  "ड",
-  "ढ",
-  "ण",
-  "त",
-  "थ",
-  "न",
-  "प",
-  "फ",
-  "ब",
-  "भ",
-  "म",
-  "य",
-  "र",
-  "ल",
-  "व",
-  "श",
-  "ष",
-  "स",
-  "ह",
-];
-
-const anuswaraRegex = new RegExp(`न्(?=[${anuswaraConsonants.join("")}])`, "g");
-
-const applyAnuswaraCorrections = (text) => {
-  return text.replace(anuswaraRegex, "ं");
-};
+import Select from "react-select";
+import { useDispatch, useSelector } from "react-redux";
+import { useTranslation } from "react-i18next";
+import {
+  listMainLedger,
+  listSubLedger,
+} from "../../../App/Features/Mainapp/Masters/ledgerSlice";
+import { toast } from "react-toastify";
+import {
+  createInitInfo,
+  updateInitInfo,
+  fetchInitInfo,
+} from "../../../App/Features/Mainapp/Dairyinfo/dairyDetailsSlice";
 
 const DairyInitialInfo = () => {
-  const [inputValue, setInputValue] = useState("");
-  const [originalValue, setOriginalValue] = useState(""); // To store original input
-  const [isTranslitEnabled, setIsTranslitEnabled] = useState(true);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const dispatch = useDispatch();
+  const { t } = useTranslation(["milkcollection", "common"]);
+  // const MainLedgers = useSelector((state) => state.ledger.mledgerlist);
+  const dinitInfo = useSelector((state) => state.dairyInfo.initialInfo || []);
+  const status = useSelector((state) => state.dairyInfo.updateStatus);
+  const SubLedgers = useSelector((state) => state.ledger.sledgerlist);
+  const [errors, setErrors] = useState({});
+  const [formData, setFormData] = useState({
+    id: "",
+    ShareCapitalAmt: "",
+    ClosingDate: "",
+    CashOnHandAmt: "",
+    CashOnHandAmt_3: "",
+    CashOnHandGlcode: "",
+    cashinhandgl_txt: "",
+    PLGLCode: "",
+    plgl_txt: "",
+    PreviousPLGLCode: "",
+    prevplgl_txt: "",
+    TreadingPLGlCode: "",
+    tradergl_txt: "",
+    MilkPurchaseGL: "",
+    milkpgl_txt: "",
+    MilkSaleGL: "",
+    msaleegl_txt: "",
+    MilkPurchasePaybleGL: "",
+    purch_inc_txt: "",
+    MilkSaleRecivableGl: "",
+    saleincome_txt: "",
+    saleincomeGL: "",
+    RoundAmtGL: "",
+    anamatGlcode: "",
+    advGL: "",
+    kirkolmilksale_yene: "",
+    ghutnashgl: "",
+    ArambhiShillakMalGL: "",
+    AkherShillakMal: "",
+    MilkCommisionAndAnudan: "",
+    ribetIncome: "",
+    ribetExpense: "",
+    milkRateDiff: "",
+    chillinggl: "",
+    transportgl: "",
+  });
 
-  // Debounced transliteration function
-  const handleTransliteration = useCallback(
-    debounce((value) => {
-      if (!isTranslitEnabled || value.trim() === "") {
-        return;
-      }
+  useEffect(() => {
+    dispatch(listMainLedger());
+    dispatch(listSubLedger());
+    dispatch(fetchInitInfo());
+  }, [dispatch]);
 
-      setIsLoading(true);
-      setError(null);
+  console.log(formData);
+  console.log(formData.id);
 
-      try {
-        // Transliterate from ITRANS to Devanagari
-        let marathiText = sanscript.t(value, "itrans", "devanagari");
-
-        // Apply Anuswara Corrections
-        marathiText = applyAnuswaraCorrections(marathiText);
-
-        setInputValue(marathiText);
-      } catch (err) {
-        console.error("Transliteration Error:", err);
-        setError("An error occurred during transliteration.");
-      } finally {
-        setIsLoading(false);
-      }
-    }, 500), // 500 ms debounce
-    [isTranslitEnabled]
-  );
+  useEffect(() => {
+    if (dinitInfo.length > 0)
+      setFormData((prevData) => ({
+        ...prevData,
+        id: dinitInfo.id,
+        ShareCapitalAmt: dinitInfo.ShareCapitalAmt,
+        ClosingDate: dinitInfo.ClosingDate,
+        CashOnHandAmt: dinitInfo.CashOnHandAmt,
+        CashOnHandAmt_3: dinitInfo.CashOnHandAmt_3,
+        CashOnHandGlcode: dinitInfo.CashOnHandGlcode,
+        PLGLCode: dinitInfo.PLGLCode,
+        PreviousPLGLCode: dinitInfo.PreviousPLGLCode,
+        TreadingPLGlCode: dinitInfo.TreadingPLGlCode,
+        MilkPurchaseGL: dinitInfo.MilkPurchaseGL,
+        MilkSaleGL: dinitInfo.MilkSaleGL,
+        MilkPurchasePaybleGL: dinitInfo.MilkPurchasePaybleGL,
+        MilkSaleRecivableGl: dinitInfo.MilkSaleRecivableGl,
+        saleincomeGL: dinitInfo.saleincomeGL,
+        RoundAmtGL: dinitInfo.RoundAmtGL,
+        anamatGlcode: dinitInfo.anamatGlcode,
+        advGL: dinitInfo.advGL,
+        kirkolmilksale_yene: dinitInfo.kirkolmilksale_yene,
+        ghutnashgl: dinitInfo.ghutnashgl,
+        ArambhiShillakMalGL: dinitInfo.ArambhiShillakMalGL,
+        AkherShillakMal: dinitInfo.AkherShillakMal,
+        MilkCommisionAndAnudan: dinitInfo.MilkCommisionAndAnudan,
+        ribetIncome: dinitInfo.ribetIncome,
+        ribetExpense: dinitInfo.ribetExpense,
+        milkRateDiff: dinitInfo.milkRateDiff,
+        chillinggl: dinitInfo.chillinggl,
+        transportgl: dinitInfo.transportgl,
+      }));
+  }, [dinitInfo]);
 
   const handleChange = (e) => {
-    const value = e.target.value;
-    setOriginalValue(value);
-    setInputValue(value); // Display original input immediately
-    handleTransliteration(value);
+    const { name, value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+    const fieldError = validateField(name, value);
+    setErrors((prevErrors) => {
+      const updatedErrors = { ...prevErrors, ...fieldError };
+      if (!value) delete updatedErrors[name]; // Clear error if field is empty
+      return updatedErrors;
+    });
   };
 
-  const toggleTransliteration = () => {
-    setIsTranslitEnabled(!isTranslitEnabled);
-    if (!isTranslitEnabled) {
-      // If disabling transliteration, revert to original input
-      setInputValue(originalValue);
-    } else {
-      // If enabling transliteration, re-apply transliteration
-      handleTransliteration(originalValue);
+  // handle select --------------------------------------------------------------------------->
+  const handleSelectChange = (selectedOption, field, relatedField) => {
+    const matchedLedger = SubLedgers.find(
+      (i) =>
+        i.lno === selectedOption.value ||
+        i.marathi_name === selectedOption.label
+    );
+    if (matchedLedger) {
+      setFormData((prevData) => {
+        const updatedData = {
+          ...prevData,
+          [field]: field.includes("gl")
+            ? matchedLedger.lno
+            : matchedLedger.marathi_name,
+          [relatedField]: field.includes("txt")
+            ? matchedLedger.marathi_name
+            : matchedLedger.lno,
+        };
+        console.log("FormData After:", updatedData);
+        return updatedData;
+      });
     }
   };
 
-  const styles = {
-    container: {
-      display: "flex",
-      flexDirection: "column",
-      maxWidth: "500px",
-      margin: "0 auto",
-      fontFamily: "Arial, sans-serif",
-    },
-    label: {
-      marginBottom: "8px",
-      fontSize: "16px",
-    },
-    input: {
-      padding: "10px",
-      fontSize: "16px",
-      marginBottom: "10px",
-      border: "1px solid #ccc",
-      borderRadius: "4px",
-    },
-    loading: {
-      color: "blue",
-      fontSize: "14px",
-    },
-    error: {
-      color: "red",
-      fontSize: "14px",
-    },
-    toggleContainer: {
-      marginTop: "10px",
-    },
+  //option sleg list show only name
+  const sglOptions = SubLedgers.map((i) => ({
+    value: i.lno,
+    label: i.lno,
+  }));
+  //option sleg list show only id
+  const sglOptions1 = SubLedgers.map((i) => ({
+    value: i.lno,
+    label: i.marathi_name,
+  }));
+
+  // Handle Enter key press to move to the next field ---------------------------------->
+  const handleKeyPress = (e, nextField) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      if (nextField) {
+        nextField.focus();
+      }
+    }
+  };
+
+  const validateField = (name, value) => {
+    let error = {};
+
+    switch (name) {
+      case "ShareCapitalAmt":
+      case "CashOnHandAmt":
+      case "CashOnHandAmt_3":
+        if (!/^-?\d+(\.\d+)?$/.test(value)) {
+          error[name] = "Invalid Value.";
+        } else {
+          delete errors[name];
+        }
+        break;
+
+      case "cust_no":
+      case "RoundAmtGL":
+      case "anamatGlcode":
+      case "advGL":
+      case "kirkolmilksale_yene":
+      case "ghutnashgl":
+      case "ArambhiShillakMalGL":
+      case "AkherShillakMal":
+      case "MilkCommisionAndAnudan":
+      case "ribetIncome":
+      case "ribetExpense":
+      case "milkRateDiff":
+      case "chillinggl":
+      case "transportgl":
+        if (!/^\d+$/.test(value)) {
+          error[name] = "Invalid Value.";
+        } else {
+          delete errors[name];
+        }
+        break;
+
+      default:
+        break;
+    }
+
+    return error;
+  };
+
+  const validateFields = () => {
+    const fieldsToValidate = [
+      "RoundAmtGL",
+      "anamatGlcode",
+      "advGL",
+      "kirkolmilksale_yene",
+      "ghutnashgl",
+      "ArambhiShillakMalGL",
+      "AkherShillakMal",
+      "MilkCommisionAndAnudan",
+      "ribetIncome",
+      "ribetExpense",
+      "milkRateDiff",
+      "chillinggl",
+      "transportgl",
+    ];
+    const validationErrors = {};
+    fieldsToValidate.forEach((field) => {
+      const fieldError = validateField(field, formData[field]);
+      if (Object.keys(fieldError).length > 0) {
+        validationErrors[field] = fieldError[field];
+      }
+    });
+
+    setErrors(validationErrors);
+    return validationErrors;
+  };
+
+  const handleform = async (e) => {
+    e.preventDefault();
+
+    if (!formData.id) {
+      return toast.error("Fill All data fields!");
+    }
+    const result = await dispatch(updateInitInfo({ formData })).unwrap();
+    if (result.status === 200) {
+      toast.success("Dairy initial information updated successfully!");
+    } else {
+      toast.error("failed to update dairy inital information!");
+    }
   };
 
   return (
     <>
-      <div className="Society-info-contianer w100 h1 d-flex-col bg">
-        <span className="heading px10">Society In Detail</span>
-        <div className="Society-info-div w100 h1 d-flex">
-          <div className="first-half-society-info w70 h1 d-flex-col">
-            <div className="Strtup-info-div w90  h10 d-flex a-center">
-              <span className="label-text w30 px10">अधिकृत भागभांडवल</span>
-              <input
-                className="data w40 h70 "
-                type="text"
-                placeholder="0.000"
-              />
-            </div>
-            <div className="cashamount-info-div w100  h25 d-flex-col ">
-              <div className="in-hand-cash-and-closing-date w100 d-flex a-center ">
-                <div className="remining-cost-colsing-date d-flex w50 a-center">
-                  <span className="label-text w50 px10">
-                    {" "}
-                    रोख रक्कम शिल्लख हेड
-                  </span>
-                  <input
-                    className="data w40 h70 "
-                    type="text"
-                    placeholder="0.000"
-                  />
-                </div>
-                <div className="colsing-date-div w50 d-flex a-center">
-                  <span className="label-text w40 px10">
-                    {" "}
-                    क्लोजिंग कॅश दिनांक
-                  </span>
-                  <input className="data  w40 h70 " type="date" />
-                </div>
-              </div>
-              <div className="grocary-cash-div w100 h30  d-flex a-center ">
-                <span className="label-text w40 px10">
-                  {" "}
-                  हातातील रोख शिल्लख किराणा
-                </span>
+      <div className="society-initial-info-contianer w100 h1 d-flex-col">
+        <span className="heading px10">संस्था आरंभीची माहिती :</span>
+        <form
+          onSubmit={handleform}
+          className="dairy-ladger-info-outer-container w100 h1 d-flex sa"
+        >
+          <div className="dairy-main-ladger-info-container w65 h1 d-flex-col sb p10 bg">
+            <div className="dairy-initial-cash-info-div w100 h10 d-flex a-center sb">
+              <div className="starting-info-div w50 d-flex a-center sb">
+                <label htmlFor="iamt" className="label-text w60 px10">
+                  अधिकृत भागभांडवल :
+                </label>
                 <input
-                  className="data w50 h70"
-                  placeholder="0.000"
+                  id="iamt"
+                  className={`data w35 ${
+                    errors.ShareCapitalAmt ? "input-error" : ""
+                  }`}
                   type="text"
+                  name="ShareCapitalAmt"
+                  required
+                  value={formData.ShareCapitalAmt}
+                  step={"any"}
+                  placeholder="0.000"
+                  onChange={handleChange}
+                  onKeyDown={(e) =>
+                    handleKeyPress(e, document.getElementById("cdate"))
+                  }
                 />
               </div>
-              <div className="cash-gl-no-div w90 d-flex sa   a-center">
-                <span className="label-text w30 px10">कॅश खतवानी न</span>
-                <select className="data w20 h70" name="" id=""></select>
-                <select className="data w60 h70" name="" id=""></select>
+              <div className="starting-info-div w50 d-flex a-center sb">
+                <label htmlFor="cdate" className="label-text w55 px10">
+                  क्लोजिंग कॅश दिनांक :
+                </label>
+                <input
+                  id="cdate"
+                  className="data w45"
+                  name="ClosingDate"
+                  required
+                  value={formData.ClosingDate}
+                  type="date"
+                  onChange={handleChange}
+                  onKeyDown={(e) =>
+                    handleKeyPress(e, document.getElementById("rsamt"))
+                  }
+                />
               </div>
             </div>
-            <div className="profit-lossgl-div d-flex-col w90 h25">
-              {/* <legend className="label-text ">नफा तोटा खतावणी संबंधित </legend> */}
-              <div className="profitloss-current-div w100 d-flex sa a-center">
-                <span className="label-text w30 px10 ">चालू नफा तोटा ख न</span>
-                <select className="data w20 h70" name="" id=""></select>
-                <select className="data w60 h70" name="" id=""></select>
+            <div className="dairy-initial-cash-gl-info-div w100 h10 d-flex a-center sb">
+              <div className="cashgl-info-div w50 h10 d-flex a-center sa">
+                <label htmlFor="rsamt" className="label-text w65 px10">
+                  रोख शिल्लख रक्कम :
+                </label>
+                <input
+                  id="rsamt"
+                  className="data w35"
+                  placeholder="0.000"
+                  required
+                  type="text"
+                  name="CashOnHandAmt"
+                  value={formData.CashOnHandAmt}
+                  onChange={handleChange}
+                  onKeyDown={(e) =>
+                    handleKeyPress(e, document.getElementById("cashRemgoods"))
+                  }
+                />
               </div>
-              <div className="profitloss-current-div w100 d-flex sa a-center">
-                <span className="label-text w30 px10 ">
-                  मागील नफा तोटा ख न{" "}
-                </span>
-                <select className="data w20 h70" name="" id=""></select>
-                <select className="data w60 h70" name="" id=""></select>
-              </div>
-              <div className="profitloss-current-div w100 d-flex  sa a-center">
-                <span className="label-text w30 px10 ">
-                  व्यापारी नफा तोटा ख न
-                </span>
-                <select className="data w20 h70" name="" id=""></select>
-                <select className="data w60 h70" name="" id=""></select>
-              </div>
-            </div>
-            <div className="profit-lossgl-div d-flex-col w90 h25">
-              <div className="profitloss-current-div w100 d-flex sa a-center">
-                <span className="label-text w30 px10 ">खरेदी खर्च ख न</span>
-                <select className="data w20 h70" name="" id=""></select>
-                <select className="data w60 h70" name="" id=""></select>
-              </div>
-              <div className="profitloss-current-div w100 d-flex sa a-center">
-                <span className="label-text w30 px10 ">
-                  विक्री उत्पन्न ख न{" "}
-                </span>
-                <select className="data w20 h70" name="" id=""></select>
-                <select className="data w60 h70" name="" id=""></select>
-              </div>
-              <div className="profitloss-current-div w100 d-flex  sa a-center">
-                <span className="label-text w30 px10 ">खरेदी देणे ख न</span>
-                <select className="data w20 h70" name="" id=""></select>
-                <select className="data w60 h70" name="" id=""></select>
-              </div>
-              <div className="profitloss-current-div w100 d-flex  sa a-center">
-                <span className="label-text w30 px10 ">विक्री येणे ख न</span>
-                <select className="data w20 h70" name="" id=""></select>
-                <select className="data w60 h70" name="" id=""></select>
+              <div className="cashgl-info-div w50 d-flex a-center sb">
+                <label htmlFor="cashRemgoods" className="label-text w55 px10">
+                  रोख शिल्लख किराणा :
+                </label>
+                <input
+                  id="cashRemgoods"
+                  className="data w45"
+                  placeholder="0.000"
+                  type="text"
+                  required
+                  name="CashOnHandAmt_3"
+                  value={formData.CashOnHandAmt_3}
+                  onChange={handleChange}
+                  onKeyDown={(e) =>
+                    handleKeyPress(e, document.getElementById("cashgl"))
+                  }
+                />
               </div>
             </div>
-            
+            <div className="select-dairy-gl-div w100 h10 d-flex a-center sb">
+              <label htmlFor="cashgl" className="label-text w30 px10">
+                कॅश खतवानी क्र.
+              </label>
+              <Select
+                id="cashgl"
+                options={sglOptions}
+                className="s1 w15"
+                name="CashOnHandGlcode"
+                isSearchable
+                styles={{ menu: (provided) => ({ ...provided, zIndex: 200 }) }}
+                value={sglOptions.find(
+                  (option) => option.value === formData.CashOnHandGlcode
+                )}
+                onChange={(option) =>
+                  handleSelectChange(
+                    option,
+                    "CashOnHandGlcode",
+                    "cashinhandgl_txt"
+                  )
+                }
+                onKeyDown={(e) =>
+                  handleKeyPress(e, document.getElementById("plgl"))
+                }
+              />
+
+              <Select
+                options={sglOptions1}
+                className="s2 w50"
+                isSearchable
+                name="cashinhandgl_txt"
+                styles={{ menu: (provided) => ({ ...provided, zIndex: 200 }) }}
+                value={sglOptions1.find(
+                  (option) => option.value === formData.cashinhandgl_txt
+                )}
+                onChange={(option) =>
+                  handleSelectChange(
+                    option,
+                    "CashOnHandGlcode",
+                    "cashinhandgl_txt"
+                  )
+                }
+              />
+            </div>
+            <div className="select-dairy-gl-outer-div w100 h30 d-flex-col sa">
+              <span className="label-text px10">नफा तोटा खतावणी संबंधित :</span>
+              <div className="select-dairy-gl-div w100 d-flex sb a-center">
+                <label htmlFor="plgl" className="label-text w30 px10 ">
+                  चालू नफा तोटा ख. क्र.
+                </label>
+                <Select
+                  id="plgl"
+                  options={sglOptions}
+                  className="s1 w15"
+                  isSearchable
+                  styles={{
+                    menu: (provided) => ({ ...provided, zIndex: 200 }),
+                  }}
+                  value={sglOptions.find(
+                    (option) => option.value === formData.PLGLCode
+                  )}
+                  onChange={(option) =>
+                    handleSelectChange(option, "PLGLCode", "plgl_txt")
+                  }
+                  onKeyDown={(e) =>
+                    handleKeyPress(e, document.getElementById("prevplgl"))
+                  }
+                />
+
+                <Select
+                  id="plgl_txt"
+                  options={sglOptions1}
+                  className="s2 w50"
+                  isSearchable
+                  styles={{
+                    menu: (provided) => ({ ...provided, zIndex: 200 }),
+                  }}
+                  value={sglOptions1.find(
+                    (option) => option.value === formData.plgl_txt
+                  )}
+                  onChange={(option) =>
+                    handleSelectChange(option, "plgl_txt", "PLGLCode")
+                  }
+                />
+              </div>
+              <div className="select-dairy-gl-div w100 d-flex sb a-center">
+                <label htmlFor="prevplgl" className="label-text w30 px10 ">
+                  मागील नफा तोटा ख. क्र.
+                </label>
+                <Select
+                  id="prevplgl"
+                  options={sglOptions}
+                  className="s1 w15"
+                  isSearchable
+                  styles={{
+                    menu: (provided) => ({ ...provided, zIndex: 200 }),
+                  }}
+                  value={sglOptions.find(
+                    (option) => option.value === formData.PreviousPLGLCode
+                  )}
+                  onChange={(option) =>
+                    handleSelectChange(
+                      option,
+                      "PreviousPLGLCode",
+                      "prevplgl_txt"
+                    )
+                  }
+                  onKeyDown={(e) =>
+                    handleKeyPress(e, document.getElementById("traderlggl"))
+                  }
+                />
+
+                <Select
+                  id="prevplgl"
+                  options={sglOptions1}
+                  className="s2 w50"
+                  isSearchable
+                  styles={{
+                    menu: (provided) => ({ ...provided, zIndex: 200 }),
+                  }}
+                  value={sglOptions1.find(
+                    (option) => option.value === formData.prevplgl_txt
+                  )}
+                  onChange={(option) =>
+                    handleSelectChange(
+                      option,
+                      "prevplgl_txt",
+                      "PreviousPLGLCode"
+                    )
+                  }
+                />
+              </div>
+              <div className="select-dairy-gl-div w100 d-flex  sb a-center">
+                <label htmlFor="traderlggl" className="label-text w30 px10 ">
+                  व्यापारी नफा तोटा ख. क्र.
+                </label>
+                <Select
+                  id="traderlggl"
+                  options={sglOptions}
+                  className="s1 w15"
+                  isSearchable
+                  styles={{
+                    menu: (provided) => ({ ...provided, zIndex: 200 }),
+                  }}
+                  value={sglOptions.find(
+                    (option) => option.value === formData.TreadingPLGlCode
+                  )}
+                  onChange={(option) =>
+                    handleSelectChange(
+                      option,
+                      "TreadingPLGlCode",
+                      "tradergl_txt"
+                    )
+                  }
+                  onKeyDown={(e) =>
+                    handleKeyPress(e, document.getElementById("purch_expe"))
+                  }
+                />
+
+                <Select
+                  id="tradergl_txt"
+                  options={sglOptions1}
+                  className="s2 w50"
+                  isSearchable
+                  styles={{
+                    menu: (provided) => ({ ...provided, zIndex: 200 }),
+                  }}
+                  value={sglOptions1.find(
+                    (option) => option.value === formData.tradergl_txt
+                  )}
+                  onChange={(option) =>
+                    handleSelectChange(
+                      option,
+                      "tradergl_txt",
+                      "TreadingPLGlCode"
+                    )
+                  }
+                />
+              </div>
+            </div>
+            <div className="select-dairy-gl-outer-div w100 h40 d-flex-col sb">
+              <label htmlFor="spglr" className="label-text px10">
+                खरेदी विक्री खतावणी संबंधित :
+              </label>
+              <div className="select-dairy-gl-div w100 d-flex sb a-center">
+                <label htmlFor="purch_expe" className="label-text w30 px10 ">
+                  खरेदी खर्च ख. क्र.
+                </label>
+                <Select
+                  id="purch_expe"
+                  options={sglOptions}
+                  className="s1 w15"
+                  isSearchable
+                  styles={{
+                    menu: (provided) => ({ ...provided, zIndex: 200 }),
+                  }}
+                  value={sglOptions.find(
+                    (option) => option.value === formData.MilkPurchaseGL
+                  )}
+                  onChange={(option) =>
+                    handleSelectChange(option, "MilkPurchaseGL", "milkpgl_txt")
+                  }
+                  onKeyDown={(e) =>
+                    handleKeyPress(e, document.getElementById("saleincgl"))
+                  }
+                />
+
+                <Select
+                  id="purch_expetxt"
+                  options={sglOptions1}
+                  className="s2 w50"
+                  isSearchable
+                  styles={{
+                    menu: (provided) => ({ ...provided, zIndex: 200 }),
+                  }}
+                  value={sglOptions1.find(
+                    (option) => option.value === formData.milkpgl_txt
+                  )}
+                  onChange={(option) =>
+                    handleSelectChange(option, "milkpgl_txt", "MilkPurchaseGL")
+                  }
+                />
+              </div>
+              <div className="select-dairy-gl-div w100 d-flex sb a-center">
+                <label htmlFor="saleincgl" className="label-text w30 px10 ">
+                  विक्री उत्पन्न ख. क्र.
+                </label>
+                <Select
+                  id="saleincgl"
+                  options={sglOptions}
+                  className="s1 w15"
+                  isSearchable
+                  styles={{
+                    menu: (provided) => ({ ...provided, zIndex: 200 }),
+                  }}
+                  value={sglOptions.find(
+                    (option) => option.value === formData.MilkSaleGL
+                  )}
+                  onChange={(option) =>
+                    handleSelectChange(option, "MilkSaleGL", "msaleegl_txt")
+                  }
+                  onKeyDown={(e) =>
+                    handleKeyPress(e, document.getElementById("purch_inc"))
+                  }
+                />
+
+                <Select
+                  id="saleincgl"
+                  options={sglOptions1}
+                  className="s2 w50"
+                  isSearchable
+                  styles={{
+                    menu: (provided) => ({ ...provided, zIndex: 200 }),
+                  }}
+                  value={sglOptions1.find(
+                    (option) => option.value === formData.msaleegl_txt
+                  )}
+                  onChange={(option) =>
+                    handleSelectChange(option, "msaleegl_txt", "MilkSaleGL")
+                  }
+                />
+              </div>
+              <div className="select-dairy-gl-div w100 d-flex sb a-center">
+                <label htmlFor="purch_inc" className="label-text w30 px10 ">
+                  खरेदी देणे ख. क्र.
+                </label>
+                <Select
+                  id="purch_inc"
+                  options={sglOptions}
+                  className="s1 w15"
+                  isSearchable
+                  styles={{
+                    menu: (provided) => ({ ...provided, zIndex: 200 }),
+                  }}
+                  value={sglOptions.find(
+                    (option) => option.value === formData.MilkPurchasePaybleGL
+                  )}
+                  onChange={(option) =>
+                    handleSelectChange(
+                      option,
+                      "MilkPurchasePaybleGL",
+                      "purch_inc_txt"
+                    )
+                  }
+                  onKeyDown={(e) =>
+                    handleKeyPress(e, document.getElementById("saleincome"))
+                  }
+                />
+
+                <Select
+                  id="purch_inc"
+                  options={sglOptions1}
+                  className="s2 w50"
+                  isSearchable
+                  styles={{
+                    menu: (provided) => ({ ...provided, zIndex: 200 }),
+                  }}
+                  value={sglOptions1.find(
+                    (option) => option.value === formData.purch_inc_txt
+                  )}
+                  onChange={(option) =>
+                    handleSelectChange(
+                      option,
+                      "purch_inc_txt",
+                      "MilkPurchasePaybleGL"
+                    )
+                  }
+                />
+              </div>
+              <div className="select-dairy-gl-div w100 d-flex sb a-center">
+                <label htmlFor="saleincome" className="label-text w30 px10 ">
+                  विक्री येणे ख. क्र.
+                </label>
+                <Select
+                  id="saleincome"
+                  options={sglOptions}
+                  className="s1 w15"
+                  isSearchable
+                  styles={{
+                    menu: (provided) => ({ ...provided, zIndex: 200 }),
+                  }}
+                  value={sglOptions.find(
+                    (option) => option.value === formData.MilkSaleRecivableGl
+                  )}
+                  onChange={(option) =>
+                    handleSelectChange(
+                      option,
+                      "MilkSaleRecivableGl",
+                      "saleincome_txt"
+                    )
+                  }
+                  onKeyDown={(e) =>
+                    handleKeyPress(e, document.getElementById("roundoff"))
+                  }
+                />
+
+                <Select
+                  id="saleincome"
+                  options={sglOptions1}
+                  className="s2 w50"
+                  isSearchable
+                  styles={{
+                    menu: (provided) => ({ ...provided, zIndex: 200 }),
+                  }}
+                  value={sglOptions1.find(
+                    (option) => option.value === formData.saleincome_txt
+                  )}
+                  onChange={(option) =>
+                    handleSelectChange(
+                      option,
+                      "saleincome_txt",
+                      "MilkSaleRecivableGl"
+                    )
+                  }
+                />
+              </div>
+            </div>
           </div>
 
-          <div className="second-half-container w35 d-flex-col h1 bg ">
-            <div className="round-amount-container w100 d-flex h5 ">
-              <span className="label-text w40 ">राऊंड रक्कम:</span>
-              <input className="data w50 h70" type="text" />
+          <div className="ladger-settings-container w30 d-flex f-wrap h1 sb p10 bg">
+            <div className="round-amount-container w45 h10 d-flex-col sb">
+              <label htmlFor="roundoff" className="label-text w100">
+                राऊंड रक्कम :
+              </label>
+              <input
+                id="roundoff"
+                className="data w100"
+                type="number"
+                required
+                name="RoundAmtGL"
+                value={formData.RoundAmtGL}
+                onChange={handleChange}
+                onKeyDown={(e) =>
+                  handleKeyPress(e, document.getElementById("cattlefeedgl"))
+                }
+              />
             </div>
-            <div className="round-amount-container w100 d-flex h5 ">
-              <span className="label-text w40 ">पशुखाद्य:</span>
-              <input className="data w50 h70" type="text" />
+            <div className="round-amount-container w45 h10 d-flex-col sb">
+              <label htmlFor="cattlefeedgl" className="label-text w100">
+                पशुखाद्य :
+              </label>
+              <input
+                id="cattlefeedgl"
+                className="data w100"
+                type="number"
+                required
+                name="saleincomeGL"
+                value={formData.saleincomeGL}
+                onChange={handleChange}
+                onKeyDown={(e) =>
+                  handleKeyPress(e, document.getElementById("commissiongl"))
+                }
+              />
             </div>
-            <div className="round-amount-container w100 d-flex h5 ">
-              <span className="label-text w40 ">अनामत :</span>
-              <input className="data w50 h70" type="text" />
+            <div className="round-amount-container w100 w45 h10 d-flex-col sb">
+              <label htmlFor="commissiongl" className="label-text w100">
+                अनामत :
+              </label>
+              <input
+                id="commissiongl"
+                className="data w100"
+                type="number"
+                required
+                name="anamatGlcode"
+                value={formData.anamatGlcode}
+                onChange={handleChange}
+                onKeyDown={(e) =>
+                  handleKeyPress(e, document.getElementById("advgl"))
+                }
+              />
             </div>
-            <div className="round-amount-container w100 d-flex h5 ">
-              <span className="label-text w40 ">ऍडव्हान्स :</span>
-              <input className="data w50 h70" type="text" />
+            <div className="round-amount-container w100 w45 h10 d-flex-col sb">
+              <label htmlFor="advgl" className="label-text w100">
+                ऍडव्हान्स :
+              </label>
+              <input
+                id="advgl"
+                className="data w100"
+                type="number"
+                required
+                name="advGL"
+                value={formData.advGL}
+                onChange={handleChange}
+                onKeyDown={(e) =>
+                  handleKeyPress(e, document.getElementById("retailmsale"))
+                }
+              />
             </div>
-            <div className="round-amount-container w100 d-flex h5 ">
-              <span className="label-text w40">किरकोळ दूध वि:</span>
-              <input className="data w50 h70" type="text" />
+            <div className="round-amount-container w100 w45 h10 d-flex-col sa">
+              <label htmlFor="retailmsale" className="label-text w100">
+                किरकोळ दूध विक्रि :
+              </label>
+              <input
+                id="retailmsale"
+                className="data w100"
+                type="number"
+                required
+                name="kirkolmilksale_yene"
+                value={formData.kirkolmilksale_yene}
+                onChange={handleChange}
+                onKeyDown={(e) =>
+                  handleKeyPress(e, document.getElementById("ghatnash"))
+                }
+              />
             </div>
-            <div className="round-amount-container w100 d-flex h5 ">
-              <span className="label-text w40 ">घट नाश GL:</span>
-              <input className="data w50 h70" type="text" />
+            <div className="round-amount-container w100 w45 h10 d-flex-col sb">
+              <label htmlFor="ghatnash" className="label-text w100">
+                घट नाश खतावणी :
+              </label>
+              <input
+                id="ghatnash"
+                className="data w100"
+                type="number"
+                required
+                name="ghutnashgl"
+                value={formData.ghutnashgl}
+                onChange={handleChange}
+                onKeyDown={(e) =>
+                  handleKeyPress(e, document.getElementById("sremaingl"))
+                }
+              />
             </div>
-            <div className="round-amount-container w100 d-flex h5 ">
-              <span className="label-text w40 ">आरंभी शिल्लख माल:</span>
-              <input className="data w50 h70" type="text" />
+            <div className="round-amount-container w100 w45 h10 d-flex-col sb">
+              <label htmlFor="sremaingl" className="label-text w100">
+                आरंभी शिल्लख माल :
+              </label>
+              <input
+                id="sremaingl"
+                className="data w100"
+                type="number"
+                required
+                name="ArambhiShillakMalGL"
+                value={formData.ArambhiShillakMalGL}
+                onChange={handleChange}
+                onKeyDown={(e) =>
+                  handleKeyPress(e, document.getElementById("lasteremgl"))
+                }
+              />
             </div>
-           
-            <div className="round-amount-container w100 d-flex h5 ">
-              <span className="label-text w40 ">Ribbit उत्त्पन्न</span>
-              <input className="data w50 h70" type="text" />
+            <div className="round-amount-container w100 w45 h10 d-flex-col sb">
+              <label htmlFor="lasteremgl" className="label-text w100">
+                अखेर शिल्लख माल :
+              </label>
+              <input
+                id="lasteremgl"
+                className="data w100"
+                type="number"
+                required
+                name="AkherShillakMal"
+                value={formData.AkherShillakMal}
+                onChange={handleChange}
+                onKeyDown={(e) =>
+                  handleKeyPress(e, document.getElementById("comanuexpe"))
+                }
+              />
             </div>
-            <div className="round-amount-container w100 d-flex h5 ">
-              <span className="label-text w40 ">Ribbit खर्च :</span>
-              <input className="data w50 h70" type="text" />
+            <div className="round-amount-container w100 w45 h10 d-flex-col sb">
+              <label htmlFor="comanuexpe" className="label-text w100">
+                कमि./अनुदान व खर्च :
+              </label>
+              <input
+                id="comanuexpe"
+                className="data w100"
+                type="number"
+                required
+                name="MilkCommisionAndAnudan"
+                value={formData.MilkCommisionAndAnudan}
+                onChange={handleChange}
+                onKeyDown={(e) =>
+                  handleKeyPress(e, document.getElementById("ribetIncome"))
+                }
+              />
             </div>
-            <div className="round-amount-container w100 d-flex h5 ">
-              <span className="label-text w40 ">दूध दर फरक:</span>
-              <input className="data w50 h70" type="text" />
+
+            <div className="round-amount-container w100 w45 h10 d-flex-col sb">
+              <label htmlFor="ribetIncome" className="label-text w100">
+                रिबेट उत्त्पन्न
+              </label>
+              <input
+                id="ribetIncome"
+                className="data w100"
+                type="number"
+                required
+                name="ribetIncome"
+                value={formData.ribetIncome}
+                onChange={handleChange}
+                onKeyDown={(e) =>
+                  handleKeyPress(e, document.getElementById("rebbetExpe"))
+                }
+              />
             </div>
-            <div className="round-amount-container w100 d-flex h5 ">
-              <span className="label-text w40 ">शितकार :</span>
-              <input className="data w50 h70" type="text" />
+            <div className="round-amount-container w100 w45 h10 d-flex-col sb">
+              <label htmlFor="rebbetExpe" className="label-text w100">
+                रिबेट खर्च :
+              </label>
+              <input
+                id="rebbetExpe"
+                className="data w100"
+                type="number"
+                required
+                name="ribetExpense"
+                value={formData.ribetExpense}
+                onChange={handleChange}
+                onKeyDown={(e) =>
+                  handleKeyPress(e, document.getElementById("rdiffgl"))
+                }
+              />
             </div>
-            <div className="round-amount-container w100 d-flex h5 ">
-              <span className="label-text w40">वाहतूक खर्च :</span>
-              <input className="data w50 h70" type="text" />
+            <div className="round-amount-container w100 w45 h10 d-flex-col sb">
+              <label htmlFor="rdiffgl" className="label-text w100">
+                दूध दर फरक:
+              </label>
+              <input
+                id="rdiffgl"
+                className="data w100"
+                type="number"
+                required
+                name="milkRateDiff"
+                value={formData.milkRateDiff}
+                onChange={handleChange}
+                onKeyDown={(e) =>
+                  handleKeyPress(e, document.getElementById("coolgl"))
+                }
+              />
             </div>
-            <div className="buttons-amount-container w100 sa d-flex h5 ">
-              <button className="w-btn">Save</button>
-              <button className="w-btn">Update</button>
+            <div className="round-amount-container w100 w45 h10 d-flex-col sb">
+              <label htmlFor="coolgl" className="label-text w100">
+                शितकार :
+              </label>
+              <input
+                id="coolgl"
+                className="data w100"
+                type="number"
+                required
+                name="chillinggl"
+                value={formData.chillinggl}
+                onChange={handleChange}
+                onKeyDown={(e) =>
+                  handleKeyPress(e, document.getElementById("vexpe"))
+                }
+              />
+            </div>
+            <div className="round-amount-container w100 w45 h10 d-flex-col sb">
+              <label htmlFor="vexpe" className="label-text w100">
+                वाहतूक खर्च :
+              </label>
+              <input
+                id="vexpe"
+                className="data w100"
+                type="number"
+                required
+                name="transportgl"
+                value={formData.transportgl}
+                onChange={handleChange}
+                onKeyDown={(e) =>
+                  handleKeyPress(e, document.getElementById("submitbtn"))
+                }
+              />
+            </div>
+            <div className="buttons-amount-container w100 d-flex j-end">
+              <button id="submitbtn" type="submit" className="w-btn">
+                Update
+              </button>
             </div>
           </div>
-        </div>
+        </form>
       </div>
     </>
   );

@@ -5,6 +5,7 @@ import milkReducer from "./Features/Customers/Milk/milkSlice";
 import notificationReducer from "./Features/Notifications/notificationSlice";
 import milkMasterReducer from "./Features/Customers/Milk/milkMasterSlice";
 import dairyReducer from "./Features/Admin/Dairyinfo/dairySlice";
+import dairyInfoReducer from "./Features/Mainapp/Dairyinfo/dairyDetailsSlice";
 import customerReducer from "./Features/Customers/customerSlice";
 import customersReducer from "./Features/Mainapp/Masters/custMasterSlice";
 import centerReducer from "./Features/Dairy/Center/centerSlice";
@@ -49,6 +50,7 @@ export const store = configureStore({
     notify: notificationReducer,
     mMilk: milkMasterReducer,
     dairy: dairyReducer,
+    dairyInfo: dairyInfoReducer,
     customer: customerReducer,
     customers: customersReducer, // mainapp
     center: centerReducer,

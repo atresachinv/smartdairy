@@ -24,6 +24,9 @@
 .w50 {
   width: 50%;
 }
+.w48 {
+  width: 48%;
+}
 .w45 {
   width: 45%;
 }
@@ -71,8 +74,14 @@
 .h70 {
   height: 70%;
 }
+.h65 {
+  height: 65%;
+}
 .h60 {
   height: 60%;
+}
+.h55 {
+  height: 55%;
 }
 .h50 {
   height: 50%;

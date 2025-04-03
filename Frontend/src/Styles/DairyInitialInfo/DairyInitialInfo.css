@@ -1,115 +1,189 @@
-.profitloss-current-div select {
-  margin-left: 10px;
+.buttons-amount-container {
+  margin-top: 10px;
 }
-.cash-gl-no-div select {
-  margin-left: 10px;
+.buttons-amount-container button {
+  width: 45%;
 }
-.remining-cost-colsing-date input {
-  margin-right: 10px;
-}
-.Society-info-div .first-half-society-info {
-  width: 100%;
-}
-.round-amount-container span{
-  width: 150px;
-}
-.round-amount-container input{
-width: 120px;
-}
-@media screen and (max-width: 426px) {
-  .Society-info-div {
-    flex-direction: column;
-  }
-  .first-half-society-info {
-    width: 100%;
-  }
-  .second-half-container {
-    width: 100%;
-  }
-  .Society-info-contianer span {
-    font-size: small;
-    width: 150px;
-  }
-  .Society-info-contianer input {
-    font-size: small;
-    width: 120px;
-  }
-  .colsing-date-div input {
 
-    font-size: x-small;
+@media screen and (max-width: 769px) {
+  .society-initial-info-contianer {
+    min-height: auto;
+    flex-direction: column;
   }
-  .first-half-society-info .Strtup-info-div span {
-    width: 150px;
+  .society-initial-info-contianer .dairy-ladger-info-outer-container {
+    min-height: fit-content;
+    flex-direction: column;
   }
-  .first-half-society-info .Strtup-info-div {
+  .dairy-ladger-info-outer-container .dairy-main-ladger-info-container {
     width: 100%;
+    min-height: fit-content;
+    margin-bottom: 10px;
   }
-  .first-half-society-info .Strtup-info-div input {
-    width: 180px;
-    height: 30px;
+  .dairy-main-ladger-info-container .dairy-initial-cash-info-div {
+    width: 100%;
+    min-height: fit-content;
   }
-  .in-hand-cash-and-closing-date .remining-cost-colsing-date {
-    flex-direction: column;
+  .dairy-main-ladger-info-container .dairy-initial-cash-gl-info-div {
+    margin-top: 15px;
+    width: 100%;
+    min-height: fit-content;
+  }
 
-  }
-  .in-hand-cash-and-closing-date .remining-cost-colsing-date input {
-    width: 120px;
-    height: 30px;
-  }
-  .in-hand-cash-and-closing-date .colsing-date-div {
-    flex-direction: column;
+  .dairy-initial-cash-info-div .starting-info-div {
+    width: 100%;
     margin-bottom: 5px;
   }
-  .in-hand-cash-and-closing-date .colsing-date-div span {
-    width: 130px;
-    margin-top: 5px;
+  .dairy-initial-cash-info-div .starting-info-div label {
+    width: 50%;
+    padding: 0;
   }
-  .in-hand-cash-and-closing-date .colsing-date-div input {
-    width: 130px;
-height: 30px;
-  }
-  .cashamount-info-div .grocary-cash-div  {
-  margin-bottom: 5px;
-  align-items: center;
-  }
-  .cashamount-info-div .grocary-cash-div span {
-    width: 196px;
-  }
-  .cashamount-info-div .grocary-cash-div input {
-    width: 170px;
-    height: 30px;
-  }
-  .cashamount-info-div .cash-gl-no-div {
-    height: 50px;
-    margin-bottom:50px;
-    width: 90%;
-    padding-right: 10px;
-  }
-  .cashamount-info-div .cash-gl-no-div select {
-    height: 30px;
-    width: 120px;
-  } 
-   .first-half-society-info .profit-lossgl-div {
-    width: 100%;
-  }
-  .profitloss-current-div select{
-  margin-right: 10px;
-  }
-  .Society-info-div .second-half-container{
-    width: 100%;
-  }
-  .Society-info-div .second-half-container .round-amount-container span{
-      padding-left: 10px;
-  } 
-  .Society-info-div .second-half-container .round-amount-container input{
-     height: 35px;
-     margin-bottom: 10px;
-     width: 200px;
-  } 
-  .buttons-amount-container{
-    margin-top: 10px;
-    margin-right: 20px;
+  .dairy-initial-cash-info-div .starting-info-div input {
+    width: 50%;
   }
 
+  .dairy-initial-cash-gl-info-div .cashgl-info-div {
+    width: 100%;
+    margin-bottom: 5px;
+  }
+  .dairy-initial-cash-gl-info-div .cashgl-info-div label {
+    width: 50%;
+    padding: 0;
+  }
+  .dairy-initial-cash-gl-info-div .cashgl-info-div input {
+    width: 50%;
+  }
+  .dairy-main-ladger-info-container .select-dairy-gl-div {
+    width: 100%;
+    justify-content: space-between;
+    margin-bottom: 10px;
+  }
+  .dairy-main-ladger-info-container .select-dairy-gl-div {
+    width: 100%;
+    justify-content: space-between;
+    margin-bottom: 10px;
+  }
+  .dairy-main-ladger-info-container .select-dairy-gl-div label {
+    width: 30%;
+    padding: 0;
+  }
+  .dairy-main-ladger-info-container .select-dairy-gl-div .s1 {
+    width: 15%;
+  }
+  .dairy-main-ladger-info-container .select-dairy-gl-div .s2 {
+    width: 45%;
+  }
+
+  .dairy-ladger-info-outer-container .ladger-settings-container {
+    width: 100%;
+    display: flex;
+  }
+  .ladger-settings-container .round-amount-container {
+    width: 22%;
+    margin-right: 10px;
+    margin-bottom: 10px;
+  }
+  .ladger-settings-container button {
+    width: 30%;
+  }
 }
 
+@media screen and (max-width: 426px) {
+  .society-initial-info-contianer {
+    min-height: auto;
+    flex-direction: column;
+  }
+  .society-initial-info-contianer .dairy-ladger-info-outer-container {
+    min-height: fit-content;
+    flex-direction: column;
+  }
+  .dairy-ladger-info-outer-container .dairy-main-ladger-info-container {
+    width: 100%;
+    min-height: fit-content;
+  }
+  .dairy-main-ladger-info-container .dairy-initial-cash-info-div {
+    width: 100%;
+    min-height: fit-content;
+    flex-direction: column;
+  }
+  .dairy-main-ladger-info-container .dairy-initial-cash-gl-info-div {
+    margin-top: 15px;
+    width: 100%;
+    min-height: fit-content;
+    flex-direction: column;
+  }
+
+  .dairy-initial-cash-info-div .starting-info-div {
+    width: 100%;
+    margin-bottom: 5px;
+  }
+  .dairy-initial-cash-info-div .starting-info-div label {
+    width: 50%;
+  }
+  .dairy-initial-cash-info-div .starting-info-div input {
+    width: 50%;
+  }
+
+  .dairy-initial-cash-gl-info-div .cashgl-info-div {
+    width: 100%;
+    margin-bottom: 5px;
+  }
+  .dairy-initial-cash-gl-info-div .cashgl-info-div label {
+    width: 50%;
+    padding: 0;
+  }
+  .dairy-initial-cash-gl-info-div .cashgl-info-div input {
+    width: 50%;
+  }
+  .dairy-main-ladger-info-container .select-dairy-gl-div {
+    width: 100%;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    margin-bottom: 10px;
+  }
+  .dairy-main-ladger-info-container .select-dairy-gl-div label {
+    width: 100%;
+    padding: 0;
+  }
+  .dairy-main-ladger-info-container .select-dairy-gl-div .s1 {
+    width: 30%;
+  }
+  .dairy-main-ladger-info-container .select-dairy-gl-div .s2 {
+    width: 65%;
+  }
+  .dairy-main-ladger-info-container .select-dairy-gl-outer-div label {
+    margin-bottom: 10px;
+    padding: 0;
+  }
+  .dairy-main-ladger-info-container .select-dairy-gl-outer-div label {
+    margin-bottom: 10px;
+    padding: 0;
+  }
+
+  .dairy-main-ladger-info-container .select-dairy-gl-div {
+    width: 100%;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    margin-bottom: 10px;
+  }
+  .dairy-main-ladger-info-container .select-dairy-gl-div label {
+    width: 100%;
+  }
+  .dairy-main-ladger-info-container .select-dairy-gl-div .s1 {
+    width: 30%;
+  }
+  .dairy-main-ladger-info-container .select-dairy-gl-div .s2 {
+    width: 65%;
+  }
+
+  .dairy-ladger-info-outer-container .ladger-settings-container {
+    width: 100%;
+  }
+  .ladger-settings-container .round-amount-container {
+    width: 45%;
+    margin-right: 0px;
+    margin-bottom: 10px;
+  }
+  .ladger-settings-container button {
+    width: 45%;
+  }
+}

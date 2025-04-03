@@ -1,5 +1,5 @@
 import { FaRegEdit } from "react-icons/fa";
-import React, { useEffect, useState } from "react";
+import { useCallback, useEffect, useState, useMemo } from "react";
 import { MdDeleteOutline } from "react-icons/md";
 import Select from "react-select";
 import "./credit.css";
@@ -17,6 +17,20 @@ const getTodaysDate = () => {
   return today.toISOString().split("T")[0];
 };
 
+// Extract balance fetching logic into a separate function
+const fetchBal = async (autoCenter) => {
+  try {
+    const res = await axiosInstance.get("/balance", {
+      params: { autoCenter },
+    });
+    return res.data.statementData;
+  } catch (error) {
+    console.error("Failed to fetch balance:", error);
+    toast.error("Failed to fetch balance data");
+    return [];
+  }
+};
+
 const CashCredit = () => {
   const [customerList, setCustomerList] = useState([]);
   const dispatch = useDispatch();
@@ -30,13 +44,15 @@ const CashCredit = () => {
     Amt: "",
     ChequeNo: "",
     ChequeDate: getTodaysDate(),
-    VoucherNo: "",
+    VoucherNo: "1",
     ReceiptNo: "1",
     Narration: "",
   });
   const [fix, setFix] = useState("");
+  const [filter, setFilter] = useState(0);
   const sledgerlist = useSelector((state) => state.ledger.sledgerlist);
   const { loading, voucherList } = useSelector((state) => state.voucher);
+  const [filterVoucherList, setFilterVoucherList] = useState([]);
   const [onclickChalan, setOnclickChalan] = useState(false);
   const [edit, setEdit] = useState(false);
   const [ID, setId] = useState("");
@@ -44,7 +60,34 @@ const CashCredit = () => {
     (state) => state.dairySetting.centerSetting
   );
   const [settings, setSettings] = useState({});
-  const autoCenter = settings?.autoCenter;
+  const autoCenter = useMemo(() => settings?.autoCenter, [settings]);
+  const centerId = useSelector((state) => state.dairy.dairyData.center_id);
+  const [balance, setBalance] = useState(0);
+  const [balanceData, setBalanceData] = useState([]);
+  const [haveSubAcc, setHaveSubAcc] = useState(false);
+  const centerList = useSelector(
+    (state) => state.center.centersList.centersDetails || []
+  );
+  const [isManualNarration, setIsManualNarration] = useState(false);
+
+  const checkHaveSubAcc = useCallback(() => {
+    const subAcc = sledgerlist.find(
+      (item) => item.lno === Number(formData.GLCode)
+    );
+    if (subAcc) {
+      setHaveSubAcc(subAcc.subacc);
+    } else {
+      setHaveSubAcc(false);
+    }
+  }, [formData.GLCode, sledgerlist]);
+
+  useEffect(() => {
+    if (formData.GLCode) {
+      checkHaveSubAcc();
+    } else {
+      setHaveSubAcc(false);
+    }
+  }, [formData.GLCode, checkHaveSubAcc]);
 
   //set setting
   useEffect(() => {
@@ -56,26 +99,23 @@ const CashCredit = () => {
   // Get master dates and list customer and voucher
   useEffect(() => {
     if (settings?.autoCenter !== undefined) {
-      // console.log("in seleting:", formData.VoucherDate);
       dispatch(
         getAllVoucher({ VoucherDate: getTodaysDate(), autoCenter, filter: 1 })
       );
     }
     dispatch(listCustomer());
     dispatch(listSubLedger());
-  }, [settings]);
+  }, [settings, autoCenter, dispatch]);
 
   // Get  voucher on change voucher date
   useEffect(() => {
     if (settings?.autoCenter !== undefined) {
-      // console.log("in use effect:", formData.VoucherDate);
-
-      setFormData({
-        ...formData,
-        ChequeDate: formData.VoucherDate,
-      });
+      setFormData((f) => ({
+        ...f,
+        ChequeDate: f.VoucherDate,
+      }));
     }
-  }, [formData.VoucherDate]);
+  }, [formData.VoucherDate, settings?.autoCenter]);
 
   // set today date
   useEffect(() => {
@@ -91,9 +131,19 @@ const CashCredit = () => {
   useEffect(() => {
     const storedCustomerList = localStorage.getItem("customerlist");
     if (storedCustomerList) {
-      setCustomerList(JSON.parse(storedCustomerList));
+      if (centerId === 0) {
+        const filteredCustomerList = JSON.parse(storedCustomerList).filter(
+          (customer) => Number(customer.centerid) === Number(filter)
+        );
+        setCustomerList(filteredCustomerList);
+      } else {
+        const filteredCustomerList = JSON.parse(storedCustomerList).filter(
+          (customer) => Number(customer.centerid) === Number(centerId)
+        );
+        setCustomerList(filteredCustomerList);
+      }
     }
-  }, [dispatch]);
+  }, [centerId, filter]);
 
   // ----------------------->
   //set max voucher no---
@@ -149,9 +199,9 @@ const CashCredit = () => {
       }
     }
   };
-  const handlePavtity = (e) => {
+  const handlePavtity = () => {
     setTimeout(() => {
-      if (formData.InstrType === "0") {
+      if (formData.InstrType === "2") {
         const comp = document.getElementById("ChequeNo");
         if (comp) comp.focus();
       } else if (formData.InstrType === "1") {
@@ -170,7 +220,7 @@ const CashCredit = () => {
   //----------------------------------------
   //handle submit------->
   const handleSubmit = async () => {
-    if (!formData.AccCode) {
+    if (!formData.AccCode && haveSubAcc) {
       toast.warn("कृपया खाते क्र. भरा ");
       return;
     }
@@ -185,9 +235,13 @@ const CashCredit = () => {
         ? -Math.abs(formData.Amt)
         : Math.abs(formData.Amt);
 
-    // Ensure the state reflects the adjusted amount before submission
-    const updatedFormData = { ...formData, Amt: adjustedAmt };
-
+    // Convert empty AccCode to 0 for backend
+    const updatedFormData = {
+      ...formData,
+      Amt: adjustedAmt,
+      AccCode: formData.AccCode === "" ? 0 : Number(formData.AccCode),
+      center_id: !autoCenter ? (centerId === 0 ? filter : centerId) : centerId,
+    };
     if (!edit) {
       try {
         const res = await axiosInstance.post("/voucher/new", updatedFormData);
@@ -199,6 +253,7 @@ const CashCredit = () => {
               ? {
                   AccCode: "",
                   Narration: "",
+                  Narration1: "",
                   Amt: "",
                   VoucherNo: Number(formData.VoucherNo) + 1,
                 }
@@ -213,6 +268,7 @@ const CashCredit = () => {
                   VoucherNo: Number(formData.VoucherNo) + 1,
                   ReceiptNo: Number(formData.ReceiptNo) + 1,
                   Narration: "",
+                  Narration1: "",
                 };
 
           setFormData({ ...updatedFormData, ...resetData });
@@ -223,6 +279,9 @@ const CashCredit = () => {
               filter: 1,
             })
           );
+          // Fetch updated balance after successful submission
+          const newBalanceData = await fetchBal(autoCenter);
+          setBalanceData(newBalanceData);
         }
       } catch (error) {
         toast.error("Failed to Submit");
@@ -251,6 +310,7 @@ const CashCredit = () => {
             ChequeNo: "",
             ReceiptNo: Number(formData.ReceiptNo) + 1,
             Narration: "",
+            Narration1: "",
           });
 
           dispatch(
@@ -263,6 +323,9 @@ const CashCredit = () => {
 
           setEdit(false);
           setOnclickChalan(false);
+          // Fetch updated balance after successful update
+          const newBalanceData = await fetchBal(autoCenter);
+          setBalanceData(newBalanceData);
         }
       } catch (error) {
         toast.error("Failed to Submit");
@@ -296,6 +359,7 @@ const CashCredit = () => {
       VoucherNo: voucher.VoucherNo,
       ReceiptNo: voucher.ReceiptNo,
       Narration: voucher.Narration,
+      Narration1: voucher.Narration1,
     });
   };
   // ---------------------------------
@@ -342,6 +406,7 @@ const CashCredit = () => {
   const handleClear = () => {
     setEdit(false);
     setOnclickChalan(false);
+    setIsManualNarration(false);
     setFormData({
       AccCode: "",
       GLCode: "",
@@ -355,12 +420,184 @@ const CashCredit = () => {
       VoucherNo: "1",
       ReceiptNo: "1",
       Narration: "",
+      Narration1: "",
     });
   };
+
+  //get balance
+  useEffect(() => {
+    const getBalance = async () => {
+      const data = await fetchBal(autoCenter);
+      setBalanceData(data);
+    };
+    getBalance();
+  }, [autoCenter]);
+
+  //set balance
+  useEffect(() => {
+    const balance = balanceData.reduce((acc, item) => {
+      if (item.GLCode === Number(formData.GLCode)) {
+        if (formData.AccCode) {
+          // If AccCode is selected, only include matching transactions
+          if (item.AccCode === Number(formData.AccCode)) {
+            acc += Number(item.Amt);
+          }
+        } else {
+          // If no AccCode selected, include all transactions for this GLCode
+          acc += Number(item.Amt);
+        }
+      }
+      return acc;
+    }, 0);
+    setBalance(balance || 0);
+  }, [formData.GLCode, formData.AccCode, balanceData]);
+
+  // Update voucher filtering based on center selection
+  useEffect(() => {
+    const filteredVoucherList = voucherList.filter(
+      (voucher) =>
+        Number(voucher.center_id) === Number(centerId > 0 ? centerId : filter)
+    );
+    setFilterVoucherList(filteredVoucherList);
+  }, [filter, voucherList, centerId]);
+
+  //noramal input change norration
+  useEffect(() => {
+    // Only generate narration if Vtype and InstrType are selected and narration hasn't been manually edited
+    if (formData.Vtype && formData.InstrType && !isManualNarration) {
+      let newNarration = "";
+      let newNarration1 = "";
+
+      if (formData.Vtype === "0") {
+        // नावे
+        if (formData.InstrType === "1") {
+          // चेक
+          if (formData.AccCode) {
+            const subAcc = custOptions1.find(
+              (option) => option.value === Number(formData.AccCode)
+            );
+            if (subAcc) {
+              newNarration = `${subAcc.label} यांचे नावे कॅश (चेक नं. ${formData.ChequeNo}  )`;
+              newNarration1 = `${subAcc.label} Cash Debit (Cheque No. ${formData.ChequeNo})`;
+            } else {
+              newNarration = `चेक नं. ${formData.ChequeNo}   प्रमाणे नावे कॅश`;
+              newNarration1 = `Cash Debit as per Cheque No. ${formData.ChequeNo}`;
+            }
+          } else {
+            newNarration = `चेक नं. ${formData.ChequeNo}   प्रमाणे नावे कॅश`;
+            newNarration1 = `Cash Debit as per Cheque No. ${formData.ChequeNo}`;
+          }
+        } else if (formData.InstrType === "2") {
+          // व्हॉउचर
+          if (formData.AccCode) {
+            const subAcc = custOptions1.find(
+              (option) => option.value === Number(formData.AccCode)
+            );
+            if (subAcc) {
+              newNarration = `${subAcc.label} यांचे नावे कॅश (व्हॉउचर नं. ${formData.ReceiptNo} )`;
+              newNarration1 = `${subAcc.label} Cash Debit (Voucher No. ${formData.ReceiptNo})`;
+            } else {
+              newNarration = `व्हॉउचर नं. ${formData.ReceiptNo}  प्रमाणे नावे कॅश`;
+              newNarration1 = `Cash Debit as per Voucher No. ${formData.ReceiptNo}`;
+            }
+          } else {
+            newNarration = `व्हॉउचर नं. ${formData.ReceiptNo}  प्रमाणे नावे कॅश`;
+            newNarration1 = `Cash Debit as per Voucher No. ${formData.ReceiptNo}`;
+          }
+        }
+      } else if (formData.Vtype === "3") {
+        // जमा
+        if (formData.InstrType === "1") {
+          // चेक
+          if (formData.AccCode) {
+            const subAcc = custOptions1.find(
+              (option) => option.value === Number(formData.AccCode)
+            );
+            if (subAcc) {
+              newNarration = `${subAcc.label} यांचे जमा कॅश (चेक नं. ${formData.ChequeNo} )`;
+              newNarration1 = `${subAcc.label} Cash Credit (Cheque No. ${formData.ChequeNo})`;
+            } else {
+              newNarration = `चेक नं. ${formData.ChequeNo} प्रमाणे जमा कॅश`;
+              newNarration1 = `Cash Credit as per Cheque No. ${formData.ChequeNo}`;
+            }
+          } else {
+            newNarration = `चेक नं. ${formData.ChequeNo} प्रमाणे जमा कॅश`;
+            newNarration1 = `Cash Credit as per Cheque No. ${formData.ChequeNo}`;
+          }
+        } else if (formData.InstrType === "2") {
+          // व्हॉउचर
+          if (formData.AccCode) {
+            const subAcc = custOptions1.find(
+              (option) => option.value === Number(formData.AccCode)
+            );
+            if (subAcc) {
+              newNarration = `${subAcc.label} यांचे जमा कॅश (व्हॉउचर नं. ${formData.ReceiptNo} )`;
+              newNarration1 = `${subAcc.label} Cash Credit (Voucher No. ${formData.ReceiptNo})`;
+            } else {
+              newNarration = `व्हॉउचर नं. ${formData.ReceiptNo}   प्रमाणे जमा कॅश`;
+              newNarration1 = `Cash Credit as per Voucher No. ${formData.ReceiptNo}`;
+            }
+          } else {
+            newNarration = `व्हॉउचर नं. ${formData.ReceiptNo}   प्रमाणे जमा कॅश`;
+            newNarration1 = `Cash Credit as per Voucher No. ${formData.ReceiptNo}`;
+          }
+        }
+      }
+      setFormData((f) => ({
+        ...f,
+        Narration: newNarration,
+        Narration1: newNarration1,
+      }));
+    }
+  }, [
+    formData.Vtype,
+    formData.InstrType,
+    formData.AccCode,
+    formData.ChequeNo,
+    formData.ReceiptNo,
+    formData.ChequeDate,
+    formData.VoucherDate,
+    custOptions1,
+    isManualNarration,
+  ]);
+
+  const handleNarrationChange = (e) => {
+    setIsManualNarration(true);
+    setFormData({
+      ...formData,
+      Narration: e.target.value,
+      Narration1: e.target.value,
+    });
+  };
+
   return (
     <div className="Credit-container w100 h1 d-flex-col">
       <div className="Credit-container-scroll d-flex-col w100">
-        <span className=" heading p10">कॅश चलन</span>
+        <div className="d-flex w100 sa">
+          <span className=" heading p10">कॅश चलन</span>
+          {centerId > 0 ? (
+            <></>
+          ) : (
+            <div className="d-flex a-center mx10">
+              <span className="info-text">सेंटर निवडा :</span>
+              <select
+                className="data w50 a-center  my5 mx5"
+                name="center"
+                value={filter}
+                onChange={(e) => setFilter(e.target.value)}
+              >
+                {centerList &&
+                  [...centerList]
+                    .sort((a, b) => a.center_id - b.center_id)
+                    .map((center, index) => (
+                      <option key={index} value={center.center_id}>
+                        {center.center_name}
+                      </option>
+                    ))}
+              </select>
+            </div>
+          )}
+        </div>
         <div className="credit-all-form d-flex w100 ">
           <div className="credit-form d-flex-col mx10 p10 bg">
             <div className="row d-flex w100  sb a-center ">
@@ -467,7 +704,7 @@ const CashCredit = () => {
                     handleKeyPress(e, document.getElementById("GLCode"))
                   }
                   disabled={
-                    !formData.InstrType || formData.InstrType == 0 || fix === 1
+                    !formData.InstrType || formData.InstrType == 1 || fix === 1
                   }
                 />
               </div>
@@ -488,7 +725,10 @@ const CashCredit = () => {
                   setFormData({ ...formData, GLCode: e.target.value })
                 }
                 onKeyDown={(e) =>
-                  handleKeyPress(e, document.getElementById("AccCode"))
+                  handleKeyPress(
+                    e,
+                    document.getElementById(haveSubAcc ? "AccCode" : "amt")
+                  )
                 }
                 disabled={!formData.InstrType || fix}
               />
@@ -511,9 +751,9 @@ const CashCredit = () => {
                       )
                     : null
                 }
-                onChange={(selectedOption) =>
-                  handleSelectChange(selectedOption, "GLCode")
-                }
+                onChange={(selectedOption) => {
+                  handleSelectChange(selectedOption, "GLCode");
+                }}
                 isDisabled={fix === 1}
               />
             </div>
@@ -533,7 +773,7 @@ const CashCredit = () => {
                 onChange={(e) =>
                   setFormData({ ...formData, AccCode: e.target.value })
                 }
-                disabled={!formData.GLCode}
+                disabled={!formData.GLCode || !haveSubAcc}
               />
 
               <Select
@@ -554,9 +794,16 @@ const CashCredit = () => {
                       )
                     : null
                 }
-                onChange={(selectedOption) =>
-                  handleSelectChange(selectedOption, "AccCode")
+                onChange={(selectedOption) => {
+                  handleSelectChange(selectedOption, "AccCode");
+                }}
+                onKeyDown={(e) =>
+                  handleKeyPress(
+                    e,
+                    document.getElementById(haveSubAcc ? "AccCode" : "amt")
+                  )
                 }
+                isDisabled={!haveSubAcc}
               />
             </div>
             <div className="Amount-button-container  d-flex sb">
@@ -577,12 +824,11 @@ const CashCredit = () => {
                   onChange={(e) =>
                     setFormData({ ...formData, Amt: e.target.value })
                   }
-                  disabled={!formData.AccCode}
                 />
               </div>
               <div className=" Amountt-div d-flex a-center w50 ">
                 <span className="info-text w60">आज बॅलेन्स </span>
-                <input type="text" className="data" disabled />
+                <input type="text" className="data" disabled value={balance} />
               </div>
             </div>
             <div className="Amount-button-container  w100 d-flex sb my5">
@@ -592,10 +838,8 @@ const CashCredit = () => {
                   type="text"
                   className="data mx5 "
                   value={formData.Narration}
-                  onChange={(e) =>
-                    setFormData({ ...formData, Narration: e.target.value })
-                  }
-                  disabled={!formData.Amt}
+                  onChange={handleNarrationChange}
+                  disabled={!formData.GLCode}
                 />
               </div>
             </div>
@@ -644,7 +888,7 @@ const CashCredit = () => {
                     handleKeyPress(e, document.getElementById("ChequeDate"))
                   }
                   disabled={
-                    !formData.InstrType || formData.InstrType == 1 || fix === 1
+                    !formData.InstrType || formData.InstrType == 2 || fix === 1
                   }
                 />
               </div>
@@ -662,7 +906,7 @@ const CashCredit = () => {
                     handleKeyPress(e, document.getElementById("GLCode"))
                   }
                   disabled={
-                    !formData.InstrType || formData.InstrType == 1 || fix === 1
+                    !formData.InstrType || formData.InstrType == 2 || fix === 1
                   }
                 />
               </div>
@@ -671,7 +915,7 @@ const CashCredit = () => {
               {/* <button className="w-btn ">नवीन बॅच</button> */}
               <button
                 type="button"
-                onClick={(e) => handleClear()}
+                onClick={() => handleClear()}
                 className="w-btn"
               >
                 रद्द करा
@@ -689,7 +933,7 @@ const CashCredit = () => {
                 id="handleSaveBatch"
                 className="w-btn"
                 type="submit"
-                onClick={(e) => handleSubmit()}
+                onClick={() => handleSubmit()}
               >
                 {edit ? "अपडेट करा" : "सेव्ह करा"}
               </button>
@@ -716,13 +960,13 @@ const CashCredit = () => {
               <tbody>
                 {loading ? (
                   "Loading..."
-                ) : voucherList.length > 0 ? (
-                  voucherList.map((voucher, index) => (
+                ) : filterVoucherList.length > 0 ? (
+                  filterVoucherList.map((voucher, index) => (
                     <tr key={index}>
                       <td>
                         <FaRegEdit
                           className="icon"
-                          onClick={(e) => handleEdit(voucher.id)}
+                          onClick={() => handleEdit(voucher.id)}
                         />
                       </td>
                       <td className="info-text">{voucher.VoucherNo}</td>
@@ -750,7 +994,7 @@ const CashCredit = () => {
                       <td>
                         <MdDeleteOutline
                           className="icon req"
-                          onClick={(e) => handleDelete(voucher.id)}
+                          onClick={() => handleDelete(voucher.id)}
                         />
                       </td>
                     </tr>

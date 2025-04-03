@@ -40,6 +40,8 @@ const deduction = require("./Routes/DeductionRoutes");
 const admin = require("./Routes/AdminRoutes");
 const ledger = require("./Routes/LedgerRoutes");
 const account = require("./Routes/AccountRoutes");
+const dairySetting = require("./Routes/DairySetting");
+const smsSetting = require("./Routes/SmsSettingRoutes");
 //Common api starting
 
 app.use("/smartdairy/api", admin);
@@ -62,5 +64,6 @@ app.use("/smartdairy/api", deliverstock);
 app.use("/smartdairy/api", ledger);
 app.use("/smartdairy/api", deduction);
 app.use("/smartdairy/api", account);
-
+app.use("/smartdairy/api", dairySetting);
+app.use("/smartdairy/api", smsSetting);
 module.exports = app;

@@ -40,7 +40,7 @@ exports.getAllVoucher = async (req, res) => {
       query += " AND VoucherDate = ? ORDER BY id DESC";
       queryParams.push(VoucherDate);
     } else {
-      query += " VoucherDate=CURDATE() ORDER BY id DESC ";
+      query += " AND VoucherDate=CURDATE() ORDER BY id DESC ";
     }
 
     connection.query(query, queryParams, (err, result) => {
@@ -68,8 +68,8 @@ exports.getAllVoucher = async (req, res) => {
 
 // Insert new voucher
 exports.insertNewVoucher = async (req, res) => {
-  const voucherData = req.body;
-  const { dairy_id, center_id, user_id } = req.user;
+  const { center_id, ...voucherData } = req.body;
+  const { dairy_id, user_id } = req.user;
 
   pool.getConnection((err, connection) => {
     if (err) {
@@ -187,6 +187,52 @@ exports.deleteVoucher = async (req, res) => {
       res.status(200).json({
         success: true,
         message: "Voucher deleted successfully!",
+      });
+    });
+  });
+};
+
+//get balance
+exports.generateBalance = async (req, res) => {
+  const { autoCenter } = req.query;
+  const { dairy_id, center_id } = req.user;
+  const autoCenterNumber = Number(autoCenter);
+  pool.getConnection((err, connection) => {
+    if (err) {
+      console.error("Error getting MySQL connection: ", err);
+      return res
+        .status(500)
+        .json({ success: false, message: "Database connection error" });
+    }
+
+    let query = `SELECT GLCode, AccCode, center_id, SUM(Amt) AS Amt FROM tally_trnfile WHERE companyid = ?`;
+    const queryParams = [dairy_id];
+
+    if (autoCenterNumber === 1) {
+      // If autoCenter is enabled, fetch only for the specific center
+      query += " AND center_id = ?";
+      queryParams.push(center_id);
+    } else if (center_id > 0) {
+      // If autoCenter is disabled, fetch items for both global (center_id = 0) and the specific center
+      query += " AND (center_id = 0 OR center_id = ?)";
+      queryParams.push(center_id);
+    }
+
+    query += " GROUP BY GLCode, AccCode, center_id";
+
+    connection.query(query, queryParams, (err, result) => {
+      connection.release();
+      if (err) {
+        console.error("Error executing query: ", err);
+        return res
+          .status(500)
+          .json({ success: false, message: "Database query error" });
+      }
+
+      res.status(200).json({
+        success: true,
+        message: "Balance generated successfully",
+        statementData: result || [],
       });
     });
   });
