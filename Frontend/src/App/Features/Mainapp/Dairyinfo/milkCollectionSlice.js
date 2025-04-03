@@ -1,5 +1,3 @@
-// src/App/Features/Customers/Milk/milkCollectionSlice.js
-
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axiosInstance from "../../../axiosInstance";
 

@@ -235,8 +235,7 @@ const Dashboard = () => {
       total_customers: customerCount ? customerCount.total_customers : 0,
     };
   });
-  console.log("center liter amt", centerLiterAmt, customerCounts);
-  console.log("center datta", centersmergedData);
+
   // ------------------------------------------------------------------------------------------->
   // Pie chart Data to show center wise Milk Collection ---------------------------------------->
   // ------------------------------------------------------------------------------------------->
