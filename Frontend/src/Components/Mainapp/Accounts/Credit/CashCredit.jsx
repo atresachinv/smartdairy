@@ -68,6 +68,7 @@ const CashCredit = () => {
   const centerList = useSelector(
     (state) => state.center.centersList.centersDetails || []
   );
+  const [isManualNarration, setIsManualNarration] = useState(false);
 
   const checkHaveSubAcc = useCallback(() => {
     const subAcc = sledgerlist.find(
@@ -252,6 +253,7 @@ const CashCredit = () => {
               ? {
                   AccCode: "",
                   Narration: "",
+                  Narration1: "",
                   Amt: "",
                   VoucherNo: Number(formData.VoucherNo) + 1,
                 }
@@ -266,6 +268,7 @@ const CashCredit = () => {
                   VoucherNo: Number(formData.VoucherNo) + 1,
                   ReceiptNo: Number(formData.ReceiptNo) + 1,
                   Narration: "",
+                  Narration1: "",
                 };
 
           setFormData({ ...updatedFormData, ...resetData });
@@ -307,6 +310,7 @@ const CashCredit = () => {
             ChequeNo: "",
             ReceiptNo: Number(formData.ReceiptNo) + 1,
             Narration: "",
+            Narration1: "",
           });
 
           dispatch(
@@ -355,6 +359,7 @@ const CashCredit = () => {
       VoucherNo: voucher.VoucherNo,
       ReceiptNo: voucher.ReceiptNo,
       Narration: voucher.Narration,
+      Narration1: voucher.Narration1,
     });
   };
   // ---------------------------------
@@ -401,6 +406,7 @@ const CashCredit = () => {
   const handleClear = () => {
     setEdit(false);
     setOnclickChalan(false);
+    setIsManualNarration(false);
     setFormData({
       AccCode: "",
       GLCode: "",
@@ -449,15 +455,19 @@ const CashCredit = () => {
   // Update voucher filtering based on center selection
   useEffect(() => {
     const filteredVoucherList = voucherList.filter(
-      (voucher) => Number(voucher.center_id) === Number(filter)
+      (voucher) =>
+        Number(voucher.center_id) === Number(centerId > 0 ? centerId : filter)
     );
     setFilterVoucherList(filteredVoucherList);
-  }, [filter, voucherList]);
+  }, [filter, voucherList, centerId]);
 
   //noramal input change norration
   useEffect(() => {
-    // Only generate narration if Vtype and InstrType are selected
-    if (formData.Vtype && formData.InstrType) {
+    // Only generate narration if Vtype and InstrType are selected and narration hasn't been manually edited
+    if (formData.Vtype && formData.InstrType && !isManualNarration) {
+      let newNarration = "";
+      let newNarration1 = "";
+
       if (formData.Vtype === "0") {
         // नावे
         if (formData.InstrType === "1") {
@@ -467,18 +477,15 @@ const CashCredit = () => {
               (option) => option.value === Number(formData.AccCode)
             );
             if (subAcc) {
-              setFormData((f) => ({
-                ...f,
-                Narration: `${subAcc.label} यांचे नावे कॅश (चेक नं. ${f.ChequeNo}  )`,
-                Narration1: `${subAcc.label} Cash Debit (Cheque No. ${f.ChequeNo})`,
-              }));
+              newNarration = `${subAcc.label} यांचे नावे कॅश (चेक नं. ${formData.ChequeNo}  )`;
+              newNarration1 = `${subAcc.label} Cash Debit (Cheque No. ${formData.ChequeNo})`;
+            } else {
+              newNarration = `चेक नं. ${formData.ChequeNo}   प्रमाणे नावे कॅश`;
+              newNarration1 = `Cash Debit as per Cheque No. ${formData.ChequeNo}`;
             }
           } else {
-            setFormData((f) => ({
-              ...f,
-              Narration: `चेक नं. ${f.ChequeNo}   प्रमाणे नावे कॅश`,
-              Narration1: `Cash Debit as per Cheque No. ${f.ChequeNo}`,
-            }));
+            newNarration = `चेक नं. ${formData.ChequeNo}   प्रमाणे नावे कॅश`;
+            newNarration1 = `Cash Debit as per Cheque No. ${formData.ChequeNo}`;
           }
         } else if (formData.InstrType === "2") {
           // व्हॉउचर
@@ -487,18 +494,15 @@ const CashCredit = () => {
               (option) => option.value === Number(formData.AccCode)
             );
             if (subAcc) {
-              setFormData((f) => ({
-                ...f,
-                Narration: `${subAcc.label} यांचे नावे कॅश (व्हॉउचर नं. ${f.ReceiptNo} )`,
-                Narration1: `${subAcc.label} Cash Debit (Voucher No. ${f.ReceiptNo})`,
-              }));
+              newNarration = `${subAcc.label} यांचे नावे कॅश (व्हॉउचर नं. ${formData.ReceiptNo} )`;
+              newNarration1 = `${subAcc.label} Cash Debit (Voucher No. ${formData.ReceiptNo})`;
+            } else {
+              newNarration = `व्हॉउचर नं. ${formData.ReceiptNo}  प्रमाणे नावे कॅश`;
+              newNarration1 = `Cash Debit as per Voucher No. ${formData.ReceiptNo}`;
             }
           } else {
-            setFormData((f) => ({
-              ...f,
-              Narration: `व्हॉउचर नं. ${f.ReceiptNo}  प्रमाणे नावे कॅश`,
-              Narration1: `Cash Debit as per Voucher No. ${f.ReceiptNo}`,
-            }));
+            newNarration = `व्हॉउचर नं. ${formData.ReceiptNo}  प्रमाणे नावे कॅश`;
+            newNarration1 = `Cash Debit as per Voucher No. ${formData.ReceiptNo}`;
           }
         }
       } else if (formData.Vtype === "3") {
@@ -510,18 +514,15 @@ const CashCredit = () => {
               (option) => option.value === Number(formData.AccCode)
             );
             if (subAcc) {
-              setFormData((f) => ({
-                ...f,
-                Narration: `${subAcc.label} यांचे जमा कॅश (चेक नं. ${f.ChequeNo} )`,
-                Narration1: `${subAcc.label} Cash Credit (Cheque No. ${f.ChequeNo})`,
-              }));
+              newNarration = `${subAcc.label} यांचे जमा कॅश (चेक नं. ${formData.ChequeNo} )`;
+              newNarration1 = `${subAcc.label} Cash Credit (Cheque No. ${formData.ChequeNo})`;
+            } else {
+              newNarration = `चेक नं. ${formData.ChequeNo} प्रमाणे जमा कॅश`;
+              newNarration1 = `Cash Credit as per Cheque No. ${formData.ChequeNo}`;
             }
           } else {
-            setFormData((f) => ({
-              ...f,
-              Narration: `चेक नं. ${f.ChequeNo} प्रमाणे जमा कॅश`,
-              Narration1: `Cash Credit as per Cheque No. ${f.ChequeNo}`,
-            }));
+            newNarration = `चेक नं. ${formData.ChequeNo} प्रमाणे जमा कॅश`;
+            newNarration1 = `Cash Credit as per Cheque No. ${formData.ChequeNo}`;
           }
         } else if (formData.InstrType === "2") {
           // व्हॉउचर
@@ -530,21 +531,23 @@ const CashCredit = () => {
               (option) => option.value === Number(formData.AccCode)
             );
             if (subAcc) {
-              setFormData((f) => ({
-                ...f,
-                Narration: `${subAcc.label} यांचे जमा कॅश (व्हॉउचर नं. ${f.ReceiptNo} )`,
-                Narration1: `${subAcc.label} Cash Credit (Voucher No. ${f.ReceiptNo})`,
-              }));
+              newNarration = `${subAcc.label} यांचे जमा कॅश (व्हॉउचर नं. ${formData.ReceiptNo} )`;
+              newNarration1 = `${subAcc.label} Cash Credit (Voucher No. ${formData.ReceiptNo})`;
+            } else {
+              newNarration = `व्हॉउचर नं. ${formData.ReceiptNo}   प्रमाणे जमा कॅश`;
+              newNarration1 = `Cash Credit as per Voucher No. ${formData.ReceiptNo}`;
             }
           } else {
-            setFormData((f) => ({
-              ...f,
-              Narration: `व्हॉउचर नं. ${f.ReceiptNo}   प्रमाणे जमा कॅश`,
-              Narration1: `Cash Credit as per Voucher No. ${f.ReceiptNo}`,
-            }));
+            newNarration = `व्हॉउचर नं. ${formData.ReceiptNo}   प्रमाणे जमा कॅश`;
+            newNarration1 = `Cash Credit as per Voucher No. ${formData.ReceiptNo}`;
           }
         }
       }
+      setFormData((f) => ({
+        ...f,
+        Narration: newNarration,
+        Narration1: newNarration1,
+      }));
     }
   }, [
     formData.Vtype,
@@ -555,7 +558,17 @@ const CashCredit = () => {
     formData.ChequeDate,
     formData.VoucherDate,
     custOptions1,
+    isManualNarration,
   ]);
+
+  const handleNarrationChange = (e) => {
+    setIsManualNarration(true);
+    setFormData({
+      ...formData,
+      Narration: e.target.value,
+      Narration1: e.target.value,
+    });
+  };
 
   return (
     <div className="Credit-container w100 h1 d-flex-col">
@@ -825,10 +838,8 @@ const CashCredit = () => {
                   type="text"
                   className="data mx5 "
                   value={formData.Narration}
-                  onChange={(e) =>
-                    setFormData({ ...formData, Narration: e.target.value })
-                  }
-                  disabled={!formData.Amt}
+                  onChange={handleNarrationChange}
+                  disabled={!formData.GLCode}
                 />
               </div>
             </div>
