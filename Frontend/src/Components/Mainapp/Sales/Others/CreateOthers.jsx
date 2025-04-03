@@ -1,8 +1,7 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import axiosInstance from "../../../../App/axiosInstance";
 import { MdDeleteOutline } from "react-icons/md";
 import { useDispatch, useSelector, shallowEqual } from "react-redux";
-import * as XLSX from "xlsx";
 import { jsPDF } from "jspdf";
 import "jspdf-autotable";
 import { useTranslation } from "react-i18next";
@@ -21,8 +20,12 @@ const CreateOthers = () => {
   const tDate = useSelector((state) => state.date.toDate);
   const salesRates = useSelector((state) => state.sales.salesRates);
   const customersData = useSelector((state) => state.customer.customerlist);
-  const [customerslist, setCustomerList] = useState([]);
+  const [customerslist, setCustomerslist] = useState([]);
   const centerId = useSelector((state) => state.dairy.dairyData.center_id);
+  const [filter, setFilter] = useState(0);
+  const centerList = useSelector(
+    (state) => state.center.centersList.centersDetails || []
+  );
   const dairyInfo = useSelector(
     (state) =>
       state.dairy.dairyData.SocietyName || state.dairy.dairyData.center_name
@@ -74,7 +77,7 @@ const CreateOthers = () => {
         getProductSaleRates({ groupCode: 4, autoCenter: settings.autoCenter })
       );
     }
-  }, [settings]);
+  }, [settings, autoCenter, dispatch]);
 
   // set today date
   useEffect(() => {
@@ -107,7 +110,7 @@ const CreateOthers = () => {
         setAmt(salesrate.salerate * qty);
       }
     }
-  }, [selectitemcode, qty]);
+  }, [selectitemcode, qty, salesRates]);
 
   //set amount
   useEffect(() => {
@@ -149,6 +152,11 @@ const CreateOthers = () => {
         Rate: Number(rate),
         Amount: Number(qty) * Number(rate),
         cn: 0,
+        center_id: !autoCenter
+          ? centerId === 0
+            ? filter
+            : centerId
+          : centerId,
       };
 
       setCartItem((prev) => [...prev, newCartItem]);
@@ -185,6 +193,8 @@ const CreateOthers = () => {
   const handelClear = () => {
     setFcode("");
     setCartItem([]);
+    setCname("");
+    setMobile("");
     setQty(1);
     setRate(0);
     setAmt(0);
@@ -585,7 +595,7 @@ const CreateOthers = () => {
     const totalAmountTextStr = `${convertToWords(totalAmount)}`;
     const totalAmountLabel = `Total Amount: ${totalAmount}`;
 
-    const totalAmountTextWidth = doc.getTextWidth(totalAmountTextStr);
+    // const totalAmountTextWidth = doc.getTextWidth(totalAmountTextStr);
     const totalAmountLabelWidth = doc.getTextWidth(totalAmountLabel);
 
     // Add borders for total amount text
@@ -701,16 +711,64 @@ const CreateOthers = () => {
   //set Customer List
   useEffect(() => {
     if (customersData.length > 0) {
-      const filterCust = customersData.filter(
-        (item) => item.centerid === centerId
-      );
-      setCustomerList(filterCust);
+      if (centerId === 0) {
+        const filteredCustomerList = customersData.filter(
+          (customer) => Number(customer.centerid) === Number(filter)
+        );
+        setCustomerslist(filteredCustomerList);
+      } else {
+        const filteredCustomerList = customersData.filter(
+          (customer) => Number(customer.centerid) === Number(centerId)
+        );
+        setCustomerslist(filteredCustomerList);
+      }
     }
-  }, [customersData]);
+  }, [customersData, centerId, filter]);
+
+  const handleCenterChange = (value) => {
+    setFilter(value);
+    setFcode("");
+    setCname("");
+    setSelectitemcode(0);
+    setQty(1);
+    setRate("");
+    setAmt("");
+    setCartItem([]);
+  };
 
   return (
     <div className="add-cattlefeed-sale-container w100 h1 d-flex-col sa">
-      <span className="heading p10">{t("c-other")}</span>
+      <div className="d-flex w100 sa">
+        <span className="heading p10">{t("c-other")}</span>
+
+        {userRole === "admin" ? (
+          centerId > 0 ? (
+            <></>
+          ) : (
+            <div className="d-flex a-center mx10">
+              <span className="info-text w50">सेंटर निवडा :</span>
+              <select
+                className="data   a-center  my5 mx5"
+                name="center"
+                value={filter}
+                onChange={(e) => handleCenterChange(e.target.value)}
+              >
+                {centerList &&
+                  [...centerList]
+                    .sort((a, b) => a.center_id - b.center_id)
+                    .map((center, index) => (
+                      <option key={index} value={center.center_id}>
+                        {center.center_name}
+                      </option>
+                    ))}
+              </select>
+            </div>
+          )
+        ) : (
+          <></>
+        )}
+      </div>
+
       <div className="create-cattlefeed-sales-inner-container w100 h1 d-flex sb p10">
         <form className="create-sales-form-container w50 h1 bg p10">
           <div className="sales-details w100 h20 d-flex a-center sb ">
@@ -726,6 +784,7 @@ const CreateOthers = () => {
                 value={date}
                 onChange={(e) => setDate(e.target.value)}
                 max={tDate}
+                disabled={cartItem.length > 0}
               />
             </div>
             <div className="col w30 d-flex a-center">
@@ -744,6 +803,7 @@ const CreateOthers = () => {
                   handleKeyPress(e, document.getElementById("code"))
                 }
                 min="0"
+                disabled={cartItem.length > 0}
               />
             </div>
           </div>
@@ -764,6 +824,7 @@ const CreateOthers = () => {
                 onKeyDown={(e) =>
                   handleKeyPress(e, document.getElementById("items"))
                 }
+                disabled={cartItem.length > 0}
               />
             </div>
             <div className="col w80">
@@ -799,6 +860,7 @@ const CreateOthers = () => {
                 onKeyDown={(e) =>
                   handleKeyPress(e, document.getElementById("items"))
                 }
+                disabled={cartItem.length > 0}
               />
               <datalist id="farmer-list">
                 {customerslist
