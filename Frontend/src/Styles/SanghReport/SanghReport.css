@@ -1,0 +1,38 @@
+.sangha-sale-table-header {
+  background-color: rgb(42, 25, 230);
+  height: 20px;
+}
+.sangha-sale-table-header span {
+  color: hwb(180 89% 10%);
+
+}
+/* Main table section */
+/* General Container */
+
+
+@media screen and (max-width:426px) {
+    .sangha-sales-date-buttons-div{
+        flex-direction: column;
+    }
+    .sangha-sales-date-buttons-div .sangha-from-to-datediv-container{
+        width: 100%;
+    }
+    .sangha-sales-date-buttons-div .sangha-from-to-datediv-container .sanghaa-from-date-divv{
+       margin-right: 10px;
+    }
+    .sangha-sales-date-buttons-div .sangha-from-to-datediv-container .sanghaa-from-date-divv span{
+       width: 49px;
+    }
+    .sangha-sales-date-buttons-div .sangha-from-to-datediv-container .sanghaa-from-date-divv input{
+       width: 123px;
+       font-size: small;
+    }
+    .sangha-sales-date-buttons-div .sangha-from-to-datediv-container .sanghaa-to-date-divv input{
+       width: 123px;
+       font-size: small;
+    }
+        .sangha-sales-date-buttons-div  .sangha-sales-buttons-div {
+        width: 100%;
+    }
+  
+}
