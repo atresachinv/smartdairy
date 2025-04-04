@@ -153,14 +153,14 @@ const Create = () => {
     if (Object.keys(newErrors).length === 0) {
       if (selectitemcode > 0 && qty > 0 && rate > 0) {
         const selectedItem = itemList.find(
-          (item) => item.ItemCode === selectitemcode
+          (item) => item.id === selectitemcode
         );
         const newCartItem = {
           receiptno: rctno, // Receipt No
           dealerCode: fcode,
           dealerName: cname,
           billno: billNo,
-          itemcode: selectedItem?.ItemCode,
+          itemcode: selectedItem?.id,
           itemname: selectedItem?.ItemName,
           purchasedate: date + " 00:00:00",
           qty: qty,
@@ -409,7 +409,7 @@ const Create = () => {
                 <option value="0">Select Item</option>
                 {itemList.length > 0 &&
                   filteredItems.map((item, i) => (
-                    <option key={i} value={item.ItemCode}>
+                    <option key={i} value={item.id}>
                       {item.ItemName}
                     </option>
                   ))}
