@@ -1404,7 +1404,7 @@ exports.dealerList = async (req, res) => {
   const dairy_id = req.user.dairy_id;
   const center_id = req.user.center_id;
   const { autoCenter } = req.query;
-
+  const autoCenterNumber = Number(autoCenter);
   pool.getConnection((err, connection) => {
     if (err) {
       console.error("Error getting MySQL connection: ", err);
@@ -1422,7 +1422,7 @@ exports.dealerList = async (req, res) => {
 
       let queryParams = [dairy_id];
 
-      if (autoCenter === 1) {
+      if (autoCenterNumber === 1) {
         // Only fetch customers from the user's specific center
         getCustList += " AND centerid = ?";
         queryParams.push(center_id);

@@ -1,0 +1,400 @@
+.table-heading-container-div {
+  background-color: #007bff;
+}
+.table-heading-container-div span {
+  color: beige;
+}
+.first-table-div-sangha {
+  margin-right: 13px;
+}
+.all-liter-changle-dudh input {
+  height: 38px;
+}
+.changle-dudh-ekun input {
+  height: 38px;
+}
+.changle-dudh input {
+  height: 38px;
+}
+.prashashikya-div input {
+  height: 38px;
+}
+.changle-dudh-kami-container {
+  margin-bottom: 15px;
+}
+.sanghasales-table-table-heading {
+  background-color: #007bff;
+  position: sticky;
+}
+.sanghasales-table-table-heading span {
+  color: aliceblue;
+}
+
+/*  tables css   */
+.sangh-table-section-div {
+  width: 100%;
+  height: 60vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  overflow: hidden;
+}
+
+.first-table-div-sangha,
+.second-table-div-sangha {
+  width: 45%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background: #fff;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Wrapper for both header and table data */
+.sangha-table-wrapper {
+  width: 100%;
+  height: 100%;
+  overflow-x: auto;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Sticky header */
+.table-heading-container-div {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  font-weight: bold;
+  background-color: #007bff;
+  overflow-x: hidden;
+  border-bottom: 1px solid #ccc;
+  padding: 10px;
+  white-space: nowrap;
+  flex-shrink: 0; /* Prevents the header from shrinking */
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+/* Scrollable data */
+.sangha-table-data {
+  display: flex;
+  overflow-x: auto;
+  align-items: center;
+  padding: 10px;
+  gap: 10px;
+  background: #ffffff;
+  white-space: nowrap;
+  flex-grow: 1;
+}
+
+.sangha-table-data span,
+.table-heading-container-div span {
+  min-width: 100px;
+  text-align: center;
+  padding: 5px;
+  border-bottom: 1px solid #ccc;
+  white-space: nowrap;
+}
+
+/* Scrollbar customization */
+.sangha-table-wrapper::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.sangha-table-wrapper::-webkit-scrollbar-thumb {
+  background: #aaa;
+  border-radius: 10px;
+}
+
+.sangha-table-wrapper::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+/* Second table css */
+
+@media screen and (max-width: 426px) {
+
+  .table-heading-container-div {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  font-weight: bold;
+  background-color: #007bff;
+  overflow-x: auto;
+  border-bottom: 1px solid #ccc;
+  padding: 10px;
+  white-space: nowrap;
+  flex-shrink: 0; /* Prevents the header from shrinking */
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+/* Scrollable data */
+.sangha-table-data {
+  display: flex;
+  overflow-x: auto;
+  align-items: center;
+  padding: 10px;
+  gap: 10px;
+  background: #ffffff;
+  white-space: nowrap;
+  flex-grow: 1;
+}
+  .sangha-sale-container {
+    min-height: auto;
+  }
+  .first-halfsangha-sale-container {
+    min-height: fit-content;
+  }
+  .first-halfsangha-sale-container .bill-information-container {
+    min-height: fit-content;
+  }
+  .bill-information-container {
+    flex-direction: column;
+  }
+  .bill-information-container .bill-info-from-to-date-div {
+    width: 100%;
+  }
+  .bill-information-container
+    .bill-info-from-to-date-div
+    .sangh-phoch-from-date-div {
+    flex-direction: column;
+  }
+  .bill-information-container
+    .bill-info-from-to-date-div
+    .sangh-phoch-from-date-div
+    span {
+    margin-right: 10px;
+  }
+  .bill-information-container
+    .bill-info-from-to-date-div
+    .sangh-phoch-from-date-div
+    input {
+    width: 105px;
+    font-size: 0.65rem;
+    height: 35px;
+  }
+  .bill-information-container
+    .bill-info-from-to-date-div
+    .sangh-phoch-to-date-div {
+    flex-direction: column;
+  }
+  .bill-information-container
+    .bill-info-from-to-date-div
+    .sangh-phoch-to-date-div
+    input {
+    width: 105px;
+    font-size: 0.65rem;
+    margin-left: 5px;
+    height: 35px;
+  }
+  .bill-information-container
+    .bill-info-from-to-date-div
+    .sangh-phoch-paryent-date-div {
+    flex-direction: column;
+  }
+  .bill-information-container
+    .bill-info-from-to-date-div
+    .sangh-phoch-paryent-date-div
+    input {
+    width: 105px;
+    font-size: 0.65rem;
+    height: 35px;
+    margin-left: 10px;
+  }
+  .bill-information-container .dudh-sangh-code-container-div {
+    width: 100%;
+    margin-top: 5px;
+  }
+  .bill-information-container .dudh-sangh-code-container-div span {
+    width: 100px;
+  }
+  .collection-phohach-container {
+    flex-direction: column;
+  }
+  .collection-phohach-container .time-date-liter-container {
+    width: 100%;
+    margin-top: 5px;
+  }
+  .collection-phohach-container .time-date-liter-container .time-sangh-div {
+    margin-inline-start: 5px;
+  }
+  .collection-phohach-container .time-date-liter-container .time-sangh-divv {
+    margin-left: 20px;
+  }
+  .collection-phohach-container
+    .time-date-liter-container
+    .time-sangh-divv
+    select {
+    margin-left: 20px;
+  }
+  .collection-phohach-container
+    .time-date-liter-container
+    .time-sangh-div
+    span {
+    width: 120px;
+  }
+  .collection-phohach-container
+    .time-date-liter-container
+    .time-sangh-div
+    input {
+    width: 92px;
+    font-size: xx-small;
+    height: 35px;
+  }
+  .collection-phohach-container
+    .time-date-liter-container
+    .time-sangh-div
+    select {
+    width: 120px;
+  }
+  .collection-phohach-container .amount-kapat-per-liter-div {
+    width: 100%;
+    min-height: 50px;
+    margin-bottom: 50px;
+  }
+  .collection-phohach-container .amount-kapat-per-liter-div .amount-sangha-div {
+    flex-direction: column;
+    min-height: fit-content;
+    margin-bottom: 25px;
+    margin-top: 35px;
+  }
+  .collection-phohach-container .amount-kapat-per-liter-div .kapat-sangha-div {
+    flex-direction: column;
+    min-height: fit-content;
+    margin-bottom: 25px;
+    margin-top: 35px;
+    margin-left: 10px;
+  }
+  .collection-phohach-container .amount-kapat-per-liter-div .loss-sangha-div {
+    flex-direction: column;
+    min-height: fit-content;
+    margin-bottom: 25px;
+    margin-top: 35px;
+  }
+  .collection-phohach-container .amount-kapat-per-liter-div .button-sangha-div {
+    margin-top: 30px;
+  }
+  .sangh-table-section-div {
+    flex-direction: column;
+  }
+  .sangh-table-section-div .first-table-div-sangha {
+    width: 100%;
+  }
+  .sangh-table-section-div .second-table-div-sangha {
+    width: 100%;
+  }
+  .changle-dudh-kami-container {
+    flex-direction: column;
+    min-height: fit-content;
+  }
+  .changle-dudh-kami-container .changle-dudh-contianer {
+    width: 100%;
+  }
+  .changle-dudh-kami-container .prashashikya-and-other-experaince {
+    width: 100%;
+    flex-direction: row;
+  }
+  .prashashikya-and-other-experaince .prashashikya-divv {
+    flex-direction: row;
+  }
+  .prashashikya-and-other-experaince .prashashikya-divv input {
+    margin-left: 10px;
+    width: 60px;
+  }
+  .prashashikya-and-other-experaince .prashashikya-div {
+    flex-direction: row;
+    margin-top: 5px;
+  }
+  .prashashikya-and-other-experaince .prashashikya-div input {
+    width: 65px;
+  }
+
+  .changle-dudh-kami-container .rebbit-and-other-experaince {
+    width: 100%;
+    flex-direction: row;
+  }
+  .changle-dudh-kami-container .rebbit-and-other-experaince .prashashikya-div {
+    flex-direction: row;
+    margin-top: 5px;
+  }
+  .changle-dudh-contianer .changle-dudh input {
+    margin-bottom: 10px;
+  }
+  .changle-dudh-contianer fieldset {
+    width: 100%;
+  }
+  .sanghasales-table-and-gl-setup-div {
+    flex-direction: column;
+    min-height: fit-content;
+  }
+  .sanghasales-table-and-gl-setup-div .sanghasales-table {
+    width: 100%;
+    height: 120px;
+  }
+  .sanghasales-table-and-gl-setup-div
+    .sanghasales-table
+    .sanghasales-table-table-heading {
+    height: 40px;
+  }
+  .sanghasales-table-and-gl-setup-div .khatavni-setup-span-input {
+    width: 100%;
+  }
+  .sanghasales-table-and-gl-setup-div
+    .khatavni-setup-span-input
+    .all-amount-div
+    span {
+    width: 90px;
+  }
+  .bill-info-from-to-date-div {
+    flex-direction: column;
+  }
+  .bill-information-container
+    .bill-info-from-to-date-div
+    .sangh-phoch-from-date-div {
+    flex-direction: row;
+    width: 100%;
+  }
+  .bill-information-container
+    .bill-info-from-to-date-div
+    .sangh-phoch-paryent-date-div {
+    flex-direction: row;
+    width: 100%;
+  }
+  .bill-information-container
+    .bill-info-from-to-date-div
+    .sangh-phoch-paryent-date-div
+    input {
+    width: 200px;
+    margin-right: 10px;
+
+  }
+  .bill-information-container
+    .bill-info-from-to-date-div
+    .sangh-phoch-to-date-div {
+    flex-direction: row;
+    width: 100%;
+  }
+  .bill-information-container
+    .bill-info-from-to-date-div
+    .sangh-phoch-to-date-div
+    input {
+    width:198px;
+    margin-bottom: 5px;
+  }
+  .bill-information-container
+    .bill-info-from-to-date-div
+    .sangh-phoch-from-date-div
+    input {
+    width: 200px;
+    margin-right: 9px;
+    margin-bottom: 5px;
+  }
+}
