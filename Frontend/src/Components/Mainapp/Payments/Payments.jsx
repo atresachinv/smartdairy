@@ -1,18 +1,31 @@
 import React, { useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
 import "../../../Styles/Mainapp/Payments/Payments.css";
+import { NavLink } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { getMaxCustNo } from "../../../App/Features/Mainapp/Masters/custMasterSlice";
 import {
   checkAmtZero,
   fetchMilkPaydata,
+  savMilkPaydata,
 } from "../../../App/Features/Payments/paymentSlice";
+import { getDeductionDetails } from "../../../App/Features/Deduction/deductionSlice";
+import { getAllSalePayment } from "../../../App/Features/Sales/salesSlice";
 
 const Payments = () => {
   const dispatch = useDispatch();
   const tDate = useSelector((state) => state.date.toDate);
   const custno = useSelector((state) => state.customer.maxCustNo);
+  const SalesData = useSelector((state) => state.sales.allSalesPay);
   const payData = useSelector((state) => state.payment.paymentData);
+  const deductionDetails = useSelector(
+    (state) => state.deduction.deductionDetails || []
+  );
+  const centerSetting = useSelector(
+    (state) => state.dairySetting.centerSetting
+  );
+  const [settings, setSettings] = useState({});
+  const [PaymentFD, setPaymentFD] = useState([]);
   const bdateRef = useRef(null);
   const vcdateRef = useRef(null);
   const fdateRef = useRef(null);
@@ -20,6 +33,17 @@ const Payments = () => {
   const fcustRef = useRef(null);
   const tcustRef = useRef(null);
   const submitbtn = useRef(null);
+
+  // console.log("sales data", SalesData);
+  // console.log("pay data", payData);
+  // check center is autonomace or not -------------------------------------->
+  const autoCenter = settings?.autoCenter;
+  //set setting
+  useEffect(() => {
+    if (centerSetting?.length > 0) {
+      setSettings(centerSetting[0]);
+    }
+  }, [centerSetting]);
 
   const initialData = {
     billDate: "",
@@ -32,9 +56,12 @@ const Payments = () => {
     autodeduct: "",
   };
 
+  // console.log(deductionDetails);
+
   const [formData, setFormData] = useState(initialData);
   useEffect(() => {
     dispatch(getMaxCustNo());
+    dispatch(getDeductionDetails(autoCenter));
   }, [dispatch]);
 
   useEffect(() => {
@@ -67,6 +94,233 @@ const Payments = () => {
       nextRef.current.focus();
     }
   };
+  console.log(PaymentFD);
+  // const handleFixDeductions = async () => {
+  //   // filter deductons deductionDetails.RatePerLitre is !== 0
+  //   // get liters for each user from payData if three deduction with RatePerLitre is !== 0 then for first record
+  //   // first multiply payData.totalLitres * RatePerLitre = amt  then amt - payData.totalamt = newToatal
+  //   // save  deductionDetails.GLCode, deductionDetails.DeductionId, dname, amt (result of payData.totalLitres * RatePerLitre ) and save entry in array
+  //   // and same for other but for next deduction totalamt is different and that is newToatal
+  // and add last entry of payData.totalamt, payData.totalLitres, payData.rno,  payData.cname , payData.avgSnf,  payData.avgFat, avgRate = payData.totalamt / payData.totalLitres
+  // }
+
+  // ----------------------------------------------------------------------------->
+  // Function to group sales by BillNo ------------------------------------------->
+  const groupSales = () => {
+    const groupedSales = filteredSalesList.reduce((acc, sale) => {
+      const key = sale.BillNo;
+      if (!acc[key]) {
+        acc[key] = { ...sale, TotalAmount: 0 };
+      }
+      acc[key].TotalAmount += sale.Amount;
+      return acc;
+    }, {});
+
+    return Object.values(groupedSales).sort((a, b) => {
+      if (sortKey === "BillDate") {
+        return sortOrder === "asc"
+          ? new Date(a.BillDate) - new Date(b.BillDate)
+          : new Date(b.BillDate) - new Date(a.BillDate);
+      } else {
+        return sortOrder === "asc"
+          ? a[sortKey] > b[sortKey]
+            ? 1
+            : -1
+          : a[sortKey] < b[sortKey]
+          ? 1
+          : -1;
+      }
+    });
+  };
+
+  const handleFixDeductions = async () => {
+    try {
+      // Filter deductions where RatePerLitre is not equal to 0
+      const filteredDeductions = deductionDetails.filter(
+        (deduction) => deduction.RatePerLitre !== 0
+      );
+
+      // Initialize an array to store deduction entries
+      const deductionEntries = [];
+
+      // Iterate over each user in payData
+      payData.forEach((user) => {
+        let newTotal = user.totalamt; // Initialize newTotal with user's total amount
+        let totalDeduction = 0; // Initialize total deduction
+
+        filteredDeductions.forEach((deduction, index) => {
+          // Calculate deduction amount
+          const amt = (user.totalLitres * deduction.RatePerLitre).toFixed(2);
+
+          // Add deduction amount to totalDeduction
+          totalDeduction += parseFloat(amt);
+
+          // Push the deduction entry to the array
+          deductionEntries.push({
+            GLCode: deduction.GLCode,
+            DeductionId: deduction.DeductionId,
+            dname: deduction.dname,
+            amt: amt,
+          });
+
+          // Update newTotal for the next deduction
+          newTotal -= parseFloat(amt);
+        });
+        console.log("",filteredDeductions);
+        // Calculate net payment
+        const netPayment = (user.totalamt - totalDeduction).toFixed(2);
+
+        // Add last entry with additional payData fields
+        deductionEntries.push({
+          DeductionId: 0,
+          totalamt: user.totalamt.toFixed(2),
+          totalLitres: user.totalLitres.toFixed(2),
+          rno: user.rno,
+          cname: user.cname,
+          avgSnf: user.avgSnf.toFixed(1),
+          avgFat: user.avgFat.toFixed(1),
+          avgRate: (user.totalamt / user.totalLitres).toFixed(1), // Calculating avgRate
+          totalDeduction: totalDeduction.toFixed(2), // Total deductions
+          netPayment: netPayment, // Net payment after deduction
+        });
+      });
+      setPaymentFD(deductionEntries);
+      console.log("Deduction Entries:", deductionEntries);
+      // Now you can use deductionEntries to save or update your database
+    } catch (error) {
+      console.error("Error in handling deductions:", error);
+    }
+  };
+
+  // const handleFixDeductions = async () => {
+  //   try {
+  //     // Filter deductions where RatePerLitre is not equal to 0
+  //     const filteredDeductions = deductionDetails.filter(
+  //       (deduction) => deduction.RatePerLitre !== 0
+  //     );
+
+  //     // Initialize an array to store deduction entries
+  //     const deductionEntries = [];
+
+  //     // Iterate over each user in payData
+  //     payData.forEach((user) => {
+  //       let newTotal = user.totalamt; // Initialize newTotal with user's total amount
+  //       let totalDeduction = 0; // Initialize total deduction
+
+  //       filteredDeductions.forEach((deduction, index) => {
+  //         // Calculate deduction amount
+  //         const amt = (user.totalLitres * deduction.RatePerLitre).toFixed(2);
+
+  //         // Add deduction amount to totalDeduction
+  //         totalDeduction += parseFloat(amt);
+
+  //         // Push the deduction entry to the array
+  //         deductionEntries.push({
+  //           GLCode: deduction.GLCode,
+  //           DeductionId: deduction.DeductionId,
+  //           dname: deduction.dname,
+  //           amt: amt,
+  //         });
+
+  //         // Update newTotal for the next deduction
+  //         newTotal -= parseFloat(amt);
+  //       });
+
+  //       // Calculate net payment
+  //       const netPayment = (user.totalamt - totalDeduction).toFixed(2);
+
+  //       // >>>>>>>>>>>>>
+  //       // befor last deduction 0 entry we have other deductions also so we have to do that also
+  //       //  we have done fix deductions above now we have to do more deductions from SalesData we have to first match SalesData.CustCode === payData.rno
+  //       // then add this entry new entry in array
+
+  //       // Add last entry with additional payData fields
+  //       deductionEntries.push({
+  //         DeductionId: 0,
+  //         totalamt: user.totalamt.toFixed(2),
+  //         totalLitres: user.totalLitres.toFixed(2),
+  //         rno: user.rno,
+  //         cname: user.cname,
+  //         avgSnf: user.avgSnf.toFixed(1),
+  //         avgFat: user.avgFat.toFixed(1),
+  //         avgRate: (user.totalamt / user.totalLitres).toFixed(1), // Calculating avgRate
+  //         totalDeduction: totalDeduction.toFixed(2), // Total deductions
+  //         netPayment: netPayment, // Net payment after deduction
+  //       });
+  //     });
+  //     console.log("Deduction Entries:", deductionEntries);
+  //     // Now you can use deductionEntries to save or update your database
+  //   } catch (error) {
+  //     console.error("Error in handling deductions:", error);
+  //   }
+  // };
+
+  const handleAutoDeductions = async () => {
+    try {
+      // Filter deductions where RatePerLitre is not equal to 0
+      const filteredDeductions = deductionDetails.filter(
+        (deduction) => deduction.RatePerLitre !== 0
+      );
+
+      // Initialize an array to store deduction entries
+      const deductionEntries = [];
+
+      // Iterate over each user in payData
+      payData.forEach((user) => {
+        let newTotal = user.totalamt; // Initialize newTotal with user's total amount
+        let totalDeduction = 0; // Initialize total deduction
+
+        filteredDeductions.forEach((deduction, index) => {
+          // Calculate deduction amount
+          const amt = (user.totalLitres * deduction.RatePerLitre).toFixed(2);
+
+          // Add deduction amount to totalDeduction
+          totalDeduction += parseFloat(amt);
+
+          // Push the deduction entry to the array
+          deductionEntries.push({
+            GLCode: deduction.GLCode,
+            DeductionId: deduction.DeductionId,
+            dname: deduction.dname,
+            amt: amt,
+          });
+
+          // Update newTotal for the next deduction
+          newTotal -= parseFloat(amt);
+        });
+
+        // Calculate net payment
+        const netPayment = (user.totalamt - totalDeduction).toFixed(2);
+
+        // Add last entry with additional payData fields
+        deductionEntries.push({
+          DeductionId: 0,
+          totalamt: user.totalamt.toFixed(2),
+          totalLitres: user.totalLitres.toFixed(2),
+          rno: user.rno,
+          cname: user.cname,
+          avgSnf: user.avgSnf.toFixed(1),
+          avgFat: user.avgFat.toFixed(1),
+          avgRate: (user.totalamt / user.totalLitres).toFixed(1), // Calculating avgRate
+          totalDeduction: totalDeduction.toFixed(2), // Total deductions
+          netPayment: netPayment, // Net payment after deduction
+        });
+      });
+      console.log("Deduction Entries:", deductionEntries);
+      // Now you can use deductionEntries to save or update your database
+    } catch (error) {
+      console.error("Error in handling deductions:", error);
+    }
+  };
+
+  useEffect(() => {
+    if (payData && deductionDetails && formData.autodeduct === 1) {
+      handleFixDeductions();
+    } else {
+      handleFixDeductions();
+      // handleAutoDeductions();
+    }
+  }, [payData, deductionDetails]);
 
   // handle Generate bill function --------------------------------------------------------->
   const handleGenerateBill = async (e) => {
@@ -75,6 +329,17 @@ const Payments = () => {
     const result = await dispatch(
       checkAmtZero({ fromDate: formData.fromDate, toDate: formData.toDate })
     ).unwrap();
+
+    const saleres = await dispatch(
+      getAllSalePayment({
+        fromdate: formData.fromDate,
+        todate: formData.toDate,
+      })
+    ).unwrap();
+
+    // const saveres = await dispatch(
+    //   savMilkPaydata({ formData, PaymentFD })
+    // ).unwrap();
 
     if (result?.status === 204) {
       dispatch(
@@ -237,8 +502,8 @@ const Payments = () => {
                 <span className="f-label-text w15">लिटर</span>
                 <span className="f-label-text w15">रक्कम</span>
               </div>
-              {payData.length !== 0 ? (
-                payData.map((item, index) => (
+              {PaymentFD.length !== 0 ? (
+                PaymentFD.map((item, index) => (
                   <div
                     key={index}
                     className="bill-data-div w100 p10 d-flex a-center sb"
@@ -270,6 +535,7 @@ const Payments = () => {
             </div>
           </div>
           <div className="bill-payments-container-div w30 d-flex f-wrap se">
+            <button className="w-btn w45">पेमेंट कपाती</button>
             <button className="w-btn w45">संकलन रिपोर्ट </button>
             <button className="w-btn w45">कपात रिपोर्ट</button>
             <button className="w-btn w45">संकलन दुरुस्थी </button>
@@ -283,7 +549,6 @@ const Payments = () => {
             <button className="w-btn w45">Payment Register</button>
             <button className="w-btn w45">Payment Summary</button>
             <button className="w-btn w45">Payment Regi</button>
-            <button className="w-btn w45">Bill List 1</button>
           </div>
         </div>
       </div>

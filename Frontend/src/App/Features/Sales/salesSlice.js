@@ -5,9 +5,11 @@ const initialState = {
   salesRates: [],
   vehiclesales: [],
   allSales: [],
+  allSalesPay: [],
   status: "idle",
   salesstatus: "idle",
   allstatus: "idle",
+  allSalesstatus: "idle",
   error: null,
 };
 
@@ -63,6 +65,24 @@ export const getAllSale = createAsyncThunk(
   }
 );
 
+// get all sales for payment --------------------------------------->
+export const getAllSalePayment = createAsyncThunk(
+  "sales/getAllSalePayment",
+  async ({ fromdate, todate }, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.get("/payment/all-sales", {
+        params: { fromdate, todate },
+      });
+      return response.data.PayAllSales;
+    } catch (error) {
+      const errorMessage = error.response
+        ? error.response.data
+        : "Failed to fetch Sales Rates.";
+      return rejectWithValue(errorMessage);
+    }
+  }
+);
+
 const salesSlice = createSlice({
   name: "sales",
   initialState,
@@ -104,6 +124,18 @@ const salesSlice = createSlice({
       })
       .addCase(getAllSale.rejected, (state, action) => {
         state.allstatus = "failed";
+        state.error = action.payload;
+      }) // get all sales for payment-------------------------------------------------------->
+      .addCase(getAllSalePayment.pending, (state) => {
+        state.allSalesstatus = "loading";
+        state.error = null;
+      })
+      .addCase(getAllSalePayment.fulfilled, (state, action) => {
+        state.allSalesstatus = "succeeded";
+        state.allSalesPay = action.payload;
+      })
+      .addCase(getAllSalePayment.rejected, (state, action) => {
+        state.allSalesstatus = "failed";
         state.error = action.payload;
       });
   },

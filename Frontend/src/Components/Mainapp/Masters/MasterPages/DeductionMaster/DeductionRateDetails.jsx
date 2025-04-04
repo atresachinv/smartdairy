@@ -24,11 +24,12 @@ const DeductionRateDetails = () => {
     FixedVariable: 0,
     LP: 0,
   });
+  
   const dispatch = useDispatch();
   const deductionData = useSelector((state) => state.deduction.deductionData);
   const sledgerlist = useSelector((state) => state.ledger.sledgerlist);
   const deductionDetails = useSelector(
-    (state) => state.deduction.deductionDetails
+    (state) => state.deduction.deductionDetails || []
   );
 
   const [isEdit, setIsEdit] = useState(false);

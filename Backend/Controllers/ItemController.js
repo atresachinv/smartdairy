@@ -75,7 +75,7 @@ exports.getAllProducts = async (req, res) => {
     const center_id = req.user.center_id;
 
     try {
-      let query = `SELECT  ItemGroupCode, ItemCode, ItemName FROM itemmaster WHERE companyid = ? `;
+      let query = `SELECT  id,ItemGroupCode, ItemCode, ItemName FROM itemmaster WHERE companyid = ? `;
       let queryParams = [dairy_id];
 
       if (autoCenter === 1) {

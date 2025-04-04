@@ -102,9 +102,10 @@ const CreateOthers = () => {
   // find rate and amount for perticular item ----------------------------------->
   useEffect(() => {
     if (selectitemcode) {
-      const salesrate = salesRates.find(
-        (rate) => rate.itemcode.toString() === selectitemcode.toString()
-      );
+      const salesrate = [...salesRates]
+        .reverse()
+        .find((rate) => rate.itemcode.toString() === selectitemcode.toString());
+
       if (salesrate) {
         setRate(salesrate.salerate);
         setAmt(salesrate.salerate * qty);
@@ -130,9 +131,7 @@ const CreateOthers = () => {
       return;
     }
 
-    const selectedItem = productlist.find(
-      (item) => item.ItemCode === selectitemcode
-    );
+    const selectedItem = productlist.find((item) => item.id === selectitemcode);
 
     if (!selectedItem) {
       toast.error("Invalid product selected!");
@@ -884,14 +883,18 @@ const CreateOthers = () => {
                   id="items"
                   value={selectitemcode}
                   className="data w100"
-                  onChange={(e) => setSelectitemcode(parseInt(e.target.value))}
+                  onChange={(e) => {
+                    setSelectitemcode(parseInt(e.target.value));
+                    setRate("");
+                    setAmt("");
+                  }}
                   onKeyDown={(e) =>
                     handleKeyPress(e, document.getElementById("qty"))
                   }
                 >
                   <option value="0">-- {t("c-groce-select")} --</option>
                   {filteredItems.map((item, i) => (
-                    <option key={i} value={item.ItemCode}>
+                    <option key={i} value={item.id}>
                       {item.ItemName}
                     </option>
                   ))}
@@ -902,14 +905,18 @@ const CreateOthers = () => {
                   id="items"
                   value={selectitemcode}
                   className="data w100"
-                  onChange={(e) => setSelectitemcode(parseInt(e.target.value))}
+                  onChange={(e) => {
+                    setSelectitemcode(parseInt(e.target.value));
+                    setRate("");
+                    setAmt("");
+                  }}
                   onKeyDown={(e) =>
                     handleKeyPress(e, document.getElementById("addtocart"))
                   }
                 >
                   <option value="0">-- {t("c-groce-select")} --</option>
                   {filteredItems.map((item, i) => (
-                    <option key={i} value={item.ItemCode}>
+                    <option key={i} value={item.id}>
                       {item.ItemName}
                     </option>
                   ))}

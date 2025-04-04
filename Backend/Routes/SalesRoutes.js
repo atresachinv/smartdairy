@@ -10,6 +10,7 @@ const {
   fetchAllSales,
   getSaleStock,
   getPurchaseStock,
+  fetchAllSalesPay,
 } = require("../Controllers/SalesController");
 
 const router = express.Router();
@@ -25,5 +26,7 @@ router.route("/sale/update").put(verifyToken, updateSale);
 router.route("/vehicle-sales").get(verifyToken, fetchVehicleSales);
 router.route("/admin/all-sales").get(verifyToken, fetchAllSales);
 
+// dev by shubham
+router.route("/payment/all-sales").get(verifyToken, fetchAllSalesPay);
 
 module.exports = router;
