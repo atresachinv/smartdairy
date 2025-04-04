@@ -131,9 +131,7 @@ const CreateGrocery = () => {
       return;
     }
 
-    const selectedItem = productlist.find(
-      (item) => item.ItemCode === selectitemcode
-    );
+    const selectedItem = productlist.find((item) => item.id === selectitemcode);
 
     if (!selectedItem) {
       toast.error("Invalid product selected!");
@@ -892,7 +890,7 @@ const CreateGrocery = () => {
                 >
                   <option value="0">-- {t("c-groce-select")}--</option>
                   {filteredItems.map((item, i) => (
-                    <option key={i} value={item.ItemCode}>
+                    <option key={i} value={item.id}>
                       {item.ItemName}
                     </option>
                   ))}
@@ -910,7 +908,7 @@ const CreateGrocery = () => {
                 >
                   <option value="0">-- {t("c-groce-select")} --</option>
                   {filteredItems.map((item, i) => (
-                    <option key={i} value={item.ItemCode}>
+                    <option key={i} value={item.id}>
                       {item.ItemName}
                     </option>
                   ))}

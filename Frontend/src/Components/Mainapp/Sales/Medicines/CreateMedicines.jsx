@@ -133,9 +133,7 @@ const CreateMedicines = () => {
       return;
     }
 
-    const selectedItem = productlist.find(
-      (item) => item.ItemCode === selectitemcode
-    );
+    const selectedItem = productlist.find((item) => item.id === selectitemcode);
 
     if (!selectedItem) {
       toast.error("Invalid product selected!");
@@ -895,7 +893,7 @@ const CreateMedicines = () => {
                 >
                   <option value="0">-- {t("c-medimedi-select")} --</option>
                   {filteredItems.map((item, i) => (
-                    <option key={i} value={item.ItemCode}>
+                    <option key={i} value={item.id}>
                       {item.ItemName}
                     </option>
                   ))}
@@ -913,7 +911,7 @@ const CreateMedicines = () => {
                 >
                   <option value="0">-- {t("c-medimedi-select")} --</option>
                   {filteredItems.map((item, i) => (
-                    <option key={i} value={item.ItemCode}>
+                    <option key={i} value={item.id}>
                       {item.ItemName}
                     </option>
                   ))}
