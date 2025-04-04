@@ -636,14 +636,13 @@ exports.fetchAllSalesPay = (req, res) => {
       const getSalesQuery = `
         SELECT 
           ItemGroupCode,
-          SUM(Qty) AS totalQty,
-          SUM(Amount) AS totalAmount,
-          SUM(cgst) AS totalCgst,
-          SUM(sgst) AS totalSgst
+          CustCode,
+          MAX(cust_name) AS cust_name,
+          SUM(Amount) AS totalAmt
         FROM salesmaster
-        WHERE companyid = ? AND center_id = ? AND BillDate BETWEEN ? AND ?
-        GROUP BY ItemGroupCode
-        ORDER BY ItemGroupCode ASC
+        WHERE companyid = ? AND center_id = ? AND BillDate BETWEEN ? AND ? AND cn = 0
+        GROUP BY ItemGroupCode, CustCode
+        ORDER BY ItemGroupCode ASC;
       `;
 
       connection.query(
@@ -654,12 +653,10 @@ exports.fetchAllSalesPay = (req, res) => {
 
           if (err) {
             console.error("Error deleting purchase record: ", err);
-            return res
-              .status(500)
-              .json({
-                status: 500,
-                message: "Error deleting purchase record",
-              });
+            return res.status(500).json({
+              status: 500,
+              message: "Error deleting purchase record",
+            });
           }
 
           if (result.affectedRows === 0) {
