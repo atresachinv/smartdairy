@@ -35,36 +35,36 @@ const Sanghsales = () => {
                 <span className="label-text  w30 px10">वेळ</span>
                 <select className="data w70" name="select" id="001"></select>
               </div>
-              <div className="time-sangh-div w35 d-flex a-center h1">
+              <div className="time-sangh-div w40 d-flex a-center h1">
                 <span className="label-text px10 w30">तारीख </span>
                 <input className="data w70 " type="date" />
               </div>
               <div className="time-sangh-divv w30 d-flex a-center h1">
-                <span className="label-text  w30 px10">लिटर </span>
+                <span className="label-text  w35 px10">लिटर </span>
                 <select className="data w" name="select" id="001"></select>
               </div>
             </div>
             <div className="amount-kapat-per-liter-div w50 d-flex h1 a-center">
-              <div className="amount-sangha-div w25 d-flex a-center ">
-                <span className="label-text px10">रक्कम </span>
+              <div className="amount-sangha-div w25 px10 d-flex a-center ">
+                <span className="label-text w70 ">रक्कम </span>
                 <input className="data" type="text" />
               </div>
-              <div className="kapat-sangha-div w25 d-flex a-center ">
-                <span className="label-text px10">क.प्र.ली</span>
+              <div className="kapat-sangha-div w30 d-flex h1 a-center ">
+                <span className="label-text w50 px10">क.प्र.ली</span>
                 <input className="data" type="text" />
               </div>
               <div className="loss-sangha-div w25 d-flex a-center ">
                 <span className="label-text w90 px10">नाश ली </span>
                 <input className="data w50 " type="text" />
               </div>
-              <div className="button-sangha-div w25 d-flex a-center px10 ">
+              <div className="button-sangha-div w15 d-flex a-center px10 ">
                 <button className="label-text px10 w-btn">जमा </button>
               </div>
             </div>
           </div>
           <div className="sangh-table-section-div w100 h60 a-center d-flex ">
             <div className="first-table-div-sangha w45 h1 d-flex-col ">
-              <div className="table-heading-container-div w100 h20  sa d-flex">
+              <div className="table-heading-container-div w100 h30  sa d-flex">
                 <span>Date</span>
                 <span>सकाळ </span>
                 <span>ली</span>
@@ -86,7 +86,7 @@ const Sanghsales = () => {
               </div>
             </div>
             <div className="second-table-div-sangha w45 h1 d-flex-col ">
-              <div className="table-heading-container-div w100 h20  sa d-flex">
+              <div className="table-heading-container-div w100 h30  sa d-flex">
                 <span>Date</span>
                 <span>सकाळ </span>
                 <span>ली</span>
@@ -137,32 +137,32 @@ const Sanghsales = () => {
               </fieldset>
             </div>
 
-            <div className="prashashikya-and-other-experaince w15 h20 px10 d-flex-col ">
-              <div className="prashashikya-div w100   d-flex-col a-center ">
+            <div className="prashashikya-and-other-experaince w15 h20 px10 d-flex-col bg ">
+              <div className="prashashikya-div w100 d-flex-col  ">
                 <span className="label-text w100 px10">इतरखर्च </span>
                 <input className="data w60" type="text" />
               </div>
-              <div className="prashashikya-divv w100 d-flex-col a-center ">
+              <div className="prashashikya-divv w100 d-flex-col  ">
                 <span className="label-text w100 px10">एकूण</span>
                 <input className="data w60" type="text" />
               </div>
             </div>
-            <div className="rebbit-and-other-experaince w15  h20 d-flex-col ">
-              <div className="prashashikya-div w100   d-flex-col ">
+            <div className="rebbit-and-other-experaince w15  h20 px10 d-flex-col ">
+              <div className="prashashikya-rebbit-div w100   d-flex-col">
                 <span className="label-text w100 px10">रॆबिट</span>
                 <input className="data w60" type="text" />
               </div>
-              <div className="prashashikya-div w100 d-flex-col ">
+              <div className="prashashikya-shitkaran-div w100 d-flex-col ">
                 <span className="label-text w100 px10">शीतकरण </span>
                 <input className="data w60" type="text" />
               </div>
             </div>
             <div className="rebbit-and-other-experaince w15  h20  d-flex-col ">
-              <div className="prashashikya-div w100   d-flex-col ">
+              <div className="prashashikynash-div w100   d-flex-col ">
                 <span className="label-text w100 px10">नाश.ली</span>
                 <input className="data w60" type="text" />
               </div>
-              <div className="prashashikya-div w100 d-flex-col ">
+              <div className="prashashikya-div-all w100 d-flex-col ">
                 <span className="label-text w100 px10">एकूण</span>
                 <input className="data w60" type="text" />
               </div>
@@ -214,15 +214,27 @@ const Sanghsales = () => {
               <div className="span-input-alls-amount w100 d-flex h50">
                 <div className="all-amount-div h25 d-flex-col w30  px10 a-center ">
                   <span className="label-text w90">एकूण रक्कम</span>
-                  <input className="data" type="text" />
+                  <input
+                    className="data"
+                    type="text"
+                    placeholder="एकूण रक्कम"
+                  />
                 </div>
                 <div className="all-amount-div h25 d-flex-col w30 px10 a-center ">
                   <span className="label-text w90">वजावट रक्कम</span>
-                  <input className="data" type="text" />
+                  <input
+                    className="data"
+                    type="text"
+                    placeholder="वजावट रक्कम"
+                  />
                 </div>
                 <div className="all-amount-div h25 d-flex-col w30 px10 a-center ">
                   <span className="label-text w90">निव्वळ रक्कम </span>
-                  <input className="data" type="text" />
+                  <input
+                    className="data"
+                    type="text"
+                    placeholder="निव्वळ रक्कम "
+                  />
                 </div>
               </div>
               <div className="gl-setup-register-butoon w100 sa d-flex h50 a-center">
