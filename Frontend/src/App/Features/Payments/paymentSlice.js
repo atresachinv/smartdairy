@@ -10,6 +10,7 @@ const initialState = {
   status: "idle",
   pzerostatus: "idle",
   paystatus: "idle",
+  savepaystatus: "idle", //save fix dedu m pay
   getMilkstatus: "idle",
   transferedMilkstatus: "idle",
   transtodatestatus: "idle",
@@ -309,6 +310,26 @@ export const checkAmtZero = createAsyncThunk(
   }
 );
 //get total milk payment amt----------------------------------------------------->
+export const savMilkPaydata = createAsyncThunk(
+  "payment/savMilkPaydata",
+  async ({ fromDate, toDate }, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.get("/get/total/payment-amt", {
+        params: {
+          fromDate,
+          toDate,
+        },
+      });
+      return response.data.paymentData;
+    } catch (error) {
+      const errorMessage =
+        error.response?.data?.message || "Failed to fetch payment data.";
+      return rejectWithValue(errorMessage);
+    }
+  }
+);
+
+//get total milk payment amt----------------------------------------------------->
 export const fetchMilkPaydata = createAsyncThunk(
   "payment/fetchMilkPaydata",
   async ({ fromDate, toDate }, { rejectWithValue }) => {
@@ -483,6 +504,18 @@ const paymentSlice = createSlice({
       })
       .addCase(checkAmtZero.rejected, (state, action) => {
         state.pzerostatus = "failed";
+        state.error = action.payload;
+      }) //Save fix deductions of milk payment ------------------------------------------->
+      .addCase(savMilkPaydata.pending, (state) => {
+        state.savepaystatus = "loading";
+        state.error = null;
+      })
+      .addCase(savMilkPaydata.fulfilled, (state, action) => {
+        state.savepaystatus = "succeeded";
+        state.paymentData = action.payload;
+      })
+      .addCase(savMilkPaydata.rejected, (state, action) => {
+        state.savepaystatus = "failed";
         state.error = action.payload;
       }) //get total milk payment ------------------------------------------->
       .addCase(fetchMilkPaydata.pending, (state) => {
