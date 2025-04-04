@@ -106,6 +106,8 @@ const CreateCattleFeed = () => {
       const salesrate = salesRates.find(
         (rate) => rate.itemcode.toString() === selectitemcode.toString()
       );
+      console.log("salesRates", salesRates);
+      console.log("found salesRates", salesrate);
       if (salesrate) {
         setRate(salesrate.salerate);
         setAmt(salesrate.salerate * qty);

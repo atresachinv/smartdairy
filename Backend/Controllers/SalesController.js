@@ -456,8 +456,11 @@ exports.fetchAllSales = (req, res) => {
     }
 
     try {
-      const getSalesQuery =
-        "SELECT BillDate, BillNo, ReceiptNo, CustCode, cust_name, ItemCode, ItemName, Qty, rate, Amount, cgst, sgst, cn ,createdby FROM salesmaster WHERE companyid = ? AND center_id = ? AND BillDate BETWEEN ? AND ? ";
+      const getSalesQuery = `
+        SELECT BillDate, BillNo, ReceiptNo, CustCode, cust_name, ItemCode, ItemName, Qty, rate,
+           Amount, cgst, sgst, cn, createdby FROM salesmaster
+        WHERE companyid = ? AND center_id = ? AND BillDate BETWEEN ? AND ?
+        `;
 
       connection.query(
         getSalesQuery,
@@ -598,5 +601,85 @@ exports.getPurchaseStock = async (req, res) => {
         .status(200)
         .json({ status: 200, success: true, purchaseData: result });
     });
+  });
+};
+
+//-------------------------------------------------------------------------->
+// fetch All sales for Payment --------------------------------------------->
+//-------------------------------------------------------------------------->
+
+exports.fetchAllSalesPay = (req, res) => {
+  const { fromdate, todate } = req.query;
+  const { dairy_id, center_id } = req.user;
+
+  if (!dairy_id) {
+    return res
+      .status(401)
+      .json({ status: 401, message: "Unauthorised User!." });
+  }
+
+  if (!fromdate || !todate) {
+    return res
+      .status(400)
+      .json({ status: 400, message: "Date required to fetch data!." });
+  }
+
+  pool.getConnection((err, connection) => {
+    if (err) {
+      console.error("Error getting MySQL connection: ", err);
+      return res
+        .status(500)
+        .json({ status: 500, message: "Database connection error" });
+    }
+
+    try {
+      const getSalesQuery = `
+        SELECT 
+          ItemGroupCode,
+          SUM(Qty) AS totalQty,
+          SUM(Amount) AS totalAmount,
+          SUM(cgst) AS totalCgst,
+          SUM(sgst) AS totalSgst
+        FROM salesmaster
+        WHERE companyid = ? AND center_id = ? AND BillDate BETWEEN ? AND ?
+        GROUP BY ItemGroupCode
+        ORDER BY ItemGroupCode ASC
+      `;
+
+      connection.query(
+        getSalesQuery,
+        [dairy_id, center_id, fromdate, todate],
+        (err, result) => {
+          connection.release();
+
+          if (err) {
+            console.error("Error deleting purchase record: ", err);
+            return res
+              .status(500)
+              .json({
+                status: 500,
+                message: "Error deleting purchase record",
+              });
+          }
+
+          if (result.affectedRows === 0) {
+            return res.status(404).json({
+              status: 404,
+              success: false,
+              message: "No sales record found with the given criteria.",
+            });
+          }
+          res.status(200).json({ status: 200, PayAllSales: result });
+        }
+      );
+    } catch (error) {
+      connection.release();
+      console.error("Unexpected error: ", error);
+      return res.status(500).json({
+        status: 500,
+        message: "Unexpected error occurred",
+        error: error.message,
+      });
+    }
   });
 };
