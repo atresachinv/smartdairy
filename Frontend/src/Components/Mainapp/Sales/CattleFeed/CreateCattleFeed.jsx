@@ -131,9 +131,7 @@ const CreateCattleFeed = () => {
       return;
     }
 
-    const selectedItem = productlist.find(
-      (item) => item.ItemCode === selectitemcode
-    );
+    const selectedItem = productlist.find((item) => item.id === selectitemcode);
 
     if (!selectedItem) {
       toast.error("Invalid product selected!");
@@ -891,14 +889,18 @@ const CreateCattleFeed = () => {
                   id="items"
                   value={selectitemcode}
                   className="data w100"
-                  onChange={(e) => setSelectitemcode(parseInt(e.target.value))}
+                  onChange={(e) => {
+                    setSelectitemcode(parseInt(e.target.value));
+                    setRate("");
+                    setAmt("");
+                  }}
                   onKeyDown={(e) =>
                     handleKeyPress(e, document.getElementById("qty"))
                   }
                 >
                   <option value="0">-- {t("c-prod-select")} --</option>
                   {filteredItems.map((item, i) => (
-                    <option key={i} value={item.ItemCode}>
+                    <option key={i} value={item.id}>
                       {item.ItemName}
                     </option>
                   ))}
@@ -909,14 +911,18 @@ const CreateCattleFeed = () => {
                   id="items"
                   value={selectitemcode}
                   className="data w100"
-                  onChange={(e) => setSelectitemcode(parseInt(e.target.value))}
+                  onChange={(e) => {
+                    setSelectitemcode(parseInt(e.target.value));
+                    setRate("");
+                    setAmt("");
+                  }}
                   onKeyDown={(e) =>
                     handleKeyPress(e, document.getElementById("addtocart"))
                   }
                 >
                   <option value="0">-- {t("c-prod-select")} --</option>
                   {filteredItems.map((item, i) => (
-                    <option key={i} value={item.ItemCode}>
+                    <option key={i} value={item.id}>
                       {item.ItemName}
                     </option>
                   ))}
