@@ -886,7 +886,11 @@ const CreateMedicines = () => {
                   id="items"
                   value={selectitemcode}
                   className="data w100"
-                  onChange={(e) => setSelectitemcode(parseInt(e.target.value))}
+                  onChange={(e) => {
+                    setSelectitemcode(parseInt(e.target.value));
+                    setRate("");
+                    setAmt("");
+                  }}
                   onKeyDown={(e) =>
                     handleKeyPress(e, document.getElementById("qty"))
                   }
@@ -904,7 +908,11 @@ const CreateMedicines = () => {
                   id="items"
                   value={selectitemcode}
                   className="data w100"
-                  onChange={(e) => setSelectitemcode(parseInt(e.target.value))}
+                  onChange={(e) => {
+                    setSelectitemcode(parseInt(e.target.value));
+                    setRate("");
+                    setAmt("");
+                  }}
                   onKeyDown={(e) =>
                     handleKeyPress(e, document.getElementById("addtocart"))
                   }
