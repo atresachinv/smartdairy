@@ -102,9 +102,10 @@ const CreateGrocery = () => {
   // find rate and amount for perticular item ----------------------------------->
   useEffect(() => {
     if (selectitemcode) {
-      const salesrate = salesRates.find(
-        (rate) => rate.itemcode.toString() === selectitemcode.toString()
-      );
+      const salesrate = [...salesRates]
+        .reverse()
+        .find((rate) => rate.itemcode.toString() === selectitemcode.toString());
+
       if (salesrate) {
         setRate(salesrate.salerate);
         setAmt(salesrate.salerate * qty);

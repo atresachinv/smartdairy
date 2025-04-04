@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { MdDeleteOutline } from "react-icons/md";
 import axiosInstance from "../../../../App/axiosInstance";
 import "../../../../Styles/Mainapp/Purchase/Purchase.css";
@@ -25,6 +25,12 @@ const Create = () => {
   const [billNo, setBillNo] = useState("9112");
   const [sellrate, setSellrate] = useState(0);
   const [errors, setErrors] = useState({});
+  const centerId = useSelector((state) => state.dairy.dairyData.center_id);
+  const [filter, setFilter] = useState(0);
+  const centerList = useSelector(
+    (state) => state.center.centersList.centersDetails || []
+  );
+  const [userRole, setUserRole] = useState(null);
 
   const centerSetting = useSelector(
     (state) => state.dairySetting.centerSetting
@@ -32,6 +38,11 @@ const Create = () => {
   const [settings, setSettings] = useState({});
   const autoCenter = settings?.autoCenter;
 
+  //set user role
+  useEffect(() => {
+    const myrole = localStorage.getItem("userRole");
+    setUserRole(myrole);
+  }, []);
   //set setting
   useEffect(() => {
     if (centerSetting?.length > 0) {
@@ -54,7 +65,7 @@ const Create = () => {
     if (settings?.autoCenter !== undefined) {
       fetchAllItems();
     }
-  }, [settings]);
+  }, [settings, autoCenter]);
 
   // Fetch all dealer from API
   useEffect(() => {
@@ -73,7 +84,7 @@ const Create = () => {
     if (settings?.autoCenter !== undefined) {
       fetchDealerList();
     }
-  }, [settings]);
+  }, [settings, autoCenter]);
 
   // Set today's date
   useEffect(() => {
@@ -157,6 +168,11 @@ const Create = () => {
           amount: qty * rate,
           salerate: parseInt(sellrate),
           cn: 0,
+          center_id: !autoCenter
+            ? centerId === 0
+              ? filter
+              : centerId
+            : centerId,
         };
 
         // Update the cart items
@@ -258,9 +274,49 @@ const Create = () => {
     setFilteredItems(itemsNotInCart);
   }, [itemList, cartItem]);
 
+  // Handle center change
+  const handleCenterChange = (value) => {
+    setFilter(value);
+    setFcode("");
+    setCname("");
+    setSelectitemcode(0);
+    setQty(1);
+    setRate("");
+    setAmt("");
+    setCartItem([]);
+  };
+
   return (
     <div className="purchase-cattle-feed-container w100 h1 d-flex-col p10">
-      <span className="heading"> {t("ps-nv-add-medicines")}</span>
+      <div className="d-flex w100 sa">
+        <span className="heading"> {t("ps-nv-add-medicines")}</span>
+        {userRole === "admin" ? (
+          centerId > 0 ? (
+            <></>
+          ) : (
+            <div className="d-flex a-center mx10">
+              <span className="info-text w50">सेंटर निवडा :</span>
+              <select
+                className="data   a-center  my5 mx5"
+                name="center"
+                value={filter}
+                onChange={(e) => handleCenterChange(e.target.value)}
+              >
+                {centerList &&
+                  [...centerList]
+                    .sort((a, b) => a.center_id - b.center_id)
+                    .map((center, index) => (
+                      <option key={index} value={center.center_id}>
+                        {center.center_name}
+                      </option>
+                    ))}
+              </select>
+            </div>
+          )
+        ) : (
+          <></>
+        )}
+      </div>
       <div className="purchase-cattle-feed-inner-container w100 h1 d-flex sb">
         <form className="purchase-cattle-feed-form-container w50 h1 bg p10">
           <div className="purchase-input-row w100 h20 d-flex  a-center sb">
@@ -326,11 +382,12 @@ const Create = () => {
                 }
               >
                 <option value="">Select Dealer</option>
-                {dealerList.map((item, i) => (
-                  <option key={i} value={item.cname}>
-                    {item.cname}
-                  </option>
-                ))}
+                {dealerList &&
+                  dealerList.map((item, i) => (
+                    <option key={i} value={item.cname}>
+                      {item.cname}
+                    </option>
+                  ))}
               </select>
             </div>
           </div>

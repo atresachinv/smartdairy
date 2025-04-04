@@ -490,7 +490,7 @@ exports.paymentDeductionInfo = async (req, res) => {
 exports.createPurchases = async (req, res) => {
   const purchaseData = req.body; // Expecting an array of purchase objects
 
-  const { dairy_id, center_id, user_id } = req.user;
+  const { dairy_id, user_id } = req.user;
   // Validate input
   if (!Array.isArray(purchaseData) || purchaseData.length === 0) {
     return res.status(400).json({
@@ -519,7 +519,7 @@ exports.createPurchases = async (req, res) => {
     try {
       // Step 1: Build the bulk INSERT query dynamically, including dairy_id and center_id
       let insertQuery =
-        "INSERT INTO PurchaseMaster (purchasedate, itemcode, qty, dealerCode, dairy_id, center_id,createdby";
+        "INSERT INTO PurchaseMaster (purchasedate, itemcode, qty, dealerCode, dairy_id,createdby";
       const insertValues = [];
       const valuePlaceholders = [];
 
@@ -532,7 +532,6 @@ exports.createPurchases = async (req, res) => {
           qty,
           dealerCode,
           dairy_id,
-          center_id,
           user_id,
         ];
 
