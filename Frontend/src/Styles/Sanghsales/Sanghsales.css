@@ -123,6 +123,9 @@
 .prashashikya-div-all input {
   height: 40px;
 }
+.center-wisesangha-sales-data {
+  margin-bottom: 10px;
+}
 @media screen and (max-width: 426px) {
   .table-heading-container-div {
     display: flex;
@@ -402,5 +405,13 @@
     width: 240px;
     margin-right: 9px;
     margin-bottom: 5px;
+  }
+  .center-wisesangha-sales-data span {
+    width: 120px;
+  }
+  .khatavni-setup-span-input .span-input-alls-amount input {
+
+     width: 100px;
+
   }
 }

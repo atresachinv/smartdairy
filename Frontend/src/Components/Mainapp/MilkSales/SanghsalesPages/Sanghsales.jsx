@@ -211,7 +211,7 @@ const Sanghsales = () => {
               </div>
             </div>
             <div className="khatavni-setup-span-input w40 h1 d-flex-col">
-              <div className="span-input-alls-amount w100 d-flex h50">
+              <div className="span-input-alls-amount w100 d-flex h35">
                 <div className="all-amount-div h25 d-flex-col w30  px10 a-center ">
                   <span className="label-text w90">एकूण रक्कम</span>
                   <input
@@ -236,8 +236,13 @@ const Sanghsales = () => {
                     placeholder="निव्वळ रक्कम "
                   />
                 </div>
+                
               </div>
-              <div className="gl-setup-register-butoon w100 sa d-flex h50 a-center">
+              <div className="center-wisesangha-sales-data h30 d-flex w100 a-center  ">
+                 <span className="label-text w30">Select Center</span>
+                  <select className="data w60" name="center data" id="001"></select>
+              </div>
+              <div className="gl-setup-register-butoon w100 sa d-flex h35 a-center">
                 <button className="w-btn">खटावणी सेटअप</button>
                 <button className="w-btn">नोंद </button>
               </div>
