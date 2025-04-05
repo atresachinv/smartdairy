@@ -73,6 +73,7 @@ import TransferCredit from "./Accounts/Credit/TransferCredit";
 import Deductionlist from "./Reports/Deductionlist/Deductionlist";
 import DoctorMaster from "./Masters/MasterPages/DoctorMaster";
 import WhatsappSms from "./DairyInfo/Centers/WhatsappSms";
+import Inventory from "./Inventory/Inventory";
 
 const Mainapp = () => {
   const dispatch = useDispatch();
@@ -211,6 +212,7 @@ const Mainapp = () => {
             <Route path="milk/sangha/*" element={<SanghsalesMaster />} />
             <Route path="milk/retail/sales" element={<Milksales />} />
             {/* inventory routes */}
+            <Route path="inventory" element={<Inventory />} />
             <Route path="inventory/dealer/*" element={<Dealers />} />
             <Route path="inventory/product/*" element={<Products />} />
             <Route

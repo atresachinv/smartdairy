@@ -165,6 +165,7 @@ const Mainappnavlinks = ({ setselected, handleSidebar }) => {
     {
       name: `${t("nv-inventory")}`,
       icon: <BsHouseFill className="icon" />,
+      path: "inventory",
       index: 3,
       role: ["admin", "super_admin", "manager", "salesman"],
       submenus: [
