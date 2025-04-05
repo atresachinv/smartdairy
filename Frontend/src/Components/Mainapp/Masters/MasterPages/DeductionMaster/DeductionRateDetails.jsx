@@ -422,15 +422,15 @@ const DeductionRateDetails = () => {
           </div>
         </div>
         <div className="Deduction-details-table-container-div w100 h60 d-flex-col ">
-          <div className="table-heading-deduction-details w100 d-flex h10 sa">
-            <span className="info-text  ">Edit </span>
-            <span className="info-text ">कपात </span>
-            <span className="info-text ">खतावणी </span>
-            <span className="info-text  ">दर </span>
-            <span className="info-text ">लागू दिनांक </span>
-            <span className="info-text ">दर प्रकार </span>
-            <span className="info-text ">दर प्रती </span>
-            <span className="info-text ">Action </span>
+          <div className="table-heading-deduction-details w100 d-flex p10 h10 sa">
+            <span className="info-text w10  ">Edit </span>
+            <span className="info-text w10 ">कपात </span>
+            <span className="info-text w20 ">खतावणी </span>
+            <span className="info-text w10  ">दर </span>
+            <span className="info-text  w20">लागू दिनांक </span>
+            <span className="info-text w10 ">दर प्रकार </span>
+            <span className="info-text w10 ">दर प्रती </span>
+            <span className="info-text w10 ">Action </span>
           </div>
           {deductionDetails ? (
             deductionDetails.map((item) => (
@@ -439,31 +439,31 @@ const DeductionRateDetails = () => {
                 className="deduction-details-table-data-div w100 d-flex sa h90"
               >
                 <span
-                  className=""
+                  className="w10"
                   onClick={() => handleEdit(item.id)}
                   style={{ cursor: "pointer" }}
                 >
                   <FaRegEdit />
                 </span>
-                <span className="info-text ">
+                <span className="info-text w10 ">
                   {findDeduction(item.DeductionId)}
                 </span>
-                <span className="info-text ">{findLedger(item.GLCode)}</span>
-                <span className="info-text w5 ">{item.RatePerLitre}</span>
-                <span className="info-text ">
+                <span className="info-text w20 ">{findLedger(item.GLCode)}</span>
+                <span className="info-text w10 ">{item.RatePerLitre}</span>
+                <span className="info-text w20 ">
                   {item.ApplyDate.substring(0, 10)}
                 </span>
-                <span className="info-text">
+                <span className="info-text w10">
                   {Number(item.FixedVariable) === 0 ? "एक दर " : "Round Amt"}
                 </span>
-                <span className="info-text ">
+                <span className="info-text w10 ">
                   {Number(item.LP) === 0
                     ? "प्रती लीटर प्रमाणे"
                     : Number(item.LP) === 1
                     ? "प्रती पेमेंट प्रमाणे"
                     : "माल विक्री प्रमाणे/जमा-नावे प्रमाणे"}
                 </span>
-                <span className="">
+                <span className="w10">
                   <MdDeleteOutline
                     size={20}
                     className="table-icon"

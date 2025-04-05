@@ -71,9 +71,9 @@
   align-items: center;
   font-weight: bold;
   background-color: #007bff;
-  overflow-x: hidden;
+
   border-bottom: 1px solid #ccc;
-  padding: 10px;
+
   white-space: nowrap;
   flex-shrink: 0; /* Prevents the header from shrinking */
   position: sticky;
@@ -117,36 +117,43 @@
   background: #f1f1f1;
 }
 /* Second table css */
-
+.prashashikya-shitkaran-div input {
+  height: 40px;
+}
+.prashashikya-div-all input {
+  height: 40px;
+}
+.center-wisesangha-sales-data {
+  margin-bottom: 10px;
+}
 @media screen and (max-width: 426px) {
-
   .table-heading-container-div {
-  display: flex;
-  justify-content: flex-start;
-  align-items: center;
-  font-weight: bold;
-  background-color: #007bff;
-  overflow-x: auto;
-  border-bottom: 1px solid #ccc;
-  padding: 10px;
-  white-space: nowrap;
-  flex-shrink: 0; /* Prevents the header from shrinking */
-  position: sticky;
-  top: 0;
-  z-index: 10;
-}
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    font-weight: bold;
+    background-color: #007bff;
 
-/* Scrollable data */
-.sangha-table-data {
-  display: flex;
-  overflow-x: auto;
-  align-items: center;
-  padding: 10px;
-  gap: 10px;
-  background: #ffffff;
-  white-space: nowrap;
-  flex-grow: 1;
-}
+    border-bottom: 1px solid #ccc;
+    overflow-x: auto;
+
+    flex-shrink: 0; /* Prevents the header from shrinking */
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+
+  /* Scrollable data */
+  .sangha-table-data {
+    display: flex;
+    overflow-x: auto;
+    align-items: center;
+    padding: 10px;
+    gap: 10px;
+    background: #ffffff;
+    white-space: nowrap;
+    flex-grow: 1;
+  }
   .sangha-sale-container {
     min-height: auto;
   }
@@ -177,22 +184,18 @@
     .bill-info-from-to-date-div
     .sangh-phoch-from-date-div
     input {
-    width: 105px;
-    font-size: 0.65rem;
+    width: 130px;
+    font-size: small;
     height: 35px;
   }
-  .bill-information-container
-    .bill-info-from-to-date-div
-    .sangh-phoch-to-date-div {
-    flex-direction: column;
-  }
+  
   .bill-information-container
     .bill-info-from-to-date-div
     .sangh-phoch-to-date-div
     input {
-    width: 105px;
-    font-size: 0.65rem;
-    margin-left: 5px;
+    width: 200px;
+    font-size: small;
+     margin-bottom:10px;
     height: 35px;
   }
   .bill-information-container
@@ -204,8 +207,7 @@
     .bill-info-from-to-date-div
     .sangh-phoch-paryent-date-div
     input {
-    width: 105px;
-    font-size: 0.65rem;
+    font-size: small;
     height: 35px;
     margin-left: 10px;
   }
@@ -225,29 +227,32 @@
   }
   .collection-phohach-container .time-date-liter-container .time-sangh-div {
     margin-inline-start: 5px;
+    flex-direction: column;
   }
   .collection-phohach-container .time-date-liter-container .time-sangh-divv {
     margin-left: 20px;
+    flex-direction: column;
   }
   .collection-phohach-container
     .time-date-liter-container
     .time-sangh-divv
-    select {
-    margin-left: 20px;
+    span {
+    width: 50px;
   }
   .collection-phohach-container
     .time-date-liter-container
     .time-sangh-div
     span {
-    width: 120px;
+    width: 50px;
   }
   .collection-phohach-container
     .time-date-liter-container
     .time-sangh-div
     input {
-    width: 92px;
-    font-size: xx-small;
+    width: 122px;
+    font-size: small;
     height: 35px;
+    margin-left: 10px;
   }
   .collection-phohach-container
     .time-date-liter-container
@@ -306,15 +311,25 @@
     flex-direction: row;
   }
   .prashashikya-and-other-experaince .prashashikya-divv input {
-    margin-left: 10px;
-    width: 60px;
+    width: 120px;
+    height: 40px;
+    margin-top: 3px;
+    margin-right:10px ;
+  }
+  .prashashikya-and-other-experaince .prashashikya-divv span {
+    width: 70px;
+    height: 35px;
+    margin-top: 3px;
   }
   .prashashikya-and-other-experaince .prashashikya-div {
     flex-direction: row;
     margin-top: 5px;
   }
   .prashashikya-and-other-experaince .prashashikya-div input {
-    width: 65px;
+    width: 120px;
+  }
+  .prashashikya-and-other-experaince .prashashikya-div span {
+    width: 80px;
   }
 
   .changle-dudh-kami-container .rebbit-and-other-experaince {
@@ -324,6 +339,12 @@
   .changle-dudh-kami-container .rebbit-and-other-experaince .prashashikya-div {
     flex-direction: row;
     margin-top: 5px;
+  }
+  .changle-dudh-kami-container
+    .rebbit-and-other-experaince
+    .prashashikya-div
+    input {
+    width: 90px;
   }
   .changle-dudh-contianer .changle-dudh input {
     margin-bottom: 10px;
@@ -347,12 +368,7 @@
   .sanghasales-table-and-gl-setup-div .khatavni-setup-span-input {
     width: 100%;
   }
-  .sanghasales-table-and-gl-setup-div
-    .khatavni-setup-span-input
-    .all-amount-div
-    span {
-    width: 90px;
-  }
+
   .bill-info-from-to-date-div {
     flex-direction: column;
   }
@@ -372,9 +388,8 @@
     .bill-info-from-to-date-div
     .sangh-phoch-paryent-date-div
     input {
-    width: 200px;
+    width: 230px;
     margin-right: 10px;
-
   }
   .bill-information-container
     .bill-info-from-to-date-div
@@ -382,19 +397,21 @@
     flex-direction: row;
     width: 100%;
   }
-  .bill-information-container
-    .bill-info-from-to-date-div
-    .sangh-phoch-to-date-div
-    input {
-    width:198px;
-    margin-bottom: 5px;
-  }
+
   .bill-information-container
     .bill-info-from-to-date-div
     .sangh-phoch-from-date-div
     input {
-    width: 200px;
+    width: 240px;
     margin-right: 9px;
     margin-bottom: 5px;
+  }
+  .center-wisesangha-sales-data span {
+    width: 120px;
+  }
+  .khatavni-setup-span-input .span-input-alls-amount input {
+
+     width: 100px;
+
   }
 }
