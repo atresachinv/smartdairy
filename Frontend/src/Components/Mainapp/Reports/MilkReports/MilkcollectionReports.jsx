@@ -1071,7 +1071,7 @@ const MilkcollectionReports = () => {
                   <span className="w5 f-info-text">AVG FAT</span>
                   <span className="w5 f-info-text">AVG SNF</span>
                   <span className="w10 f-info-text">AVG Rate</span>
-                  <span className="w10 f-info-text"> Amount</span>
+                  <span className="w10 f-info-text">Amount</span>
                   <span className="w10 f-info-text">C/B</span>
                 </>
               ) : (
@@ -1090,7 +1090,6 @@ const MilkcollectionReports = () => {
               )}
             </div>
 
-            {/* Display filtered data based on sumreport */}
             {sumreport ? (
               <>
                 {status === "loading" ? (
@@ -1132,24 +1131,73 @@ const MilkcollectionReports = () => {
                     <div className="milkdata-div w100 h10 d-flex center t-center sa bg-total">
                       <span className="w10 text t-center font-bold">Total</span>
                       <span className="w25 text t-start"></span>
+
+                      {/* Total Liters */}
                       <span className="w10 text t-center font-bold">
                         {summaryData
                           .reduce(
                             (sum, item) => sum + (parseFloat(item.Liters) || 0),
                             0
                           )
-                          .toFixed(2)}{" "}
+                          .toFixed(2)}
                       </span>
-                      <span className="w5 text t-center"></span>
-                      <span className="w5 text t-center"></span>
-                      <span className="w10 text t-center"></span>
+
+                      {/* Weighted Average FAT */}
+                      <span className="w5 text t-center font-bold">
+                        {(
+                          summaryData.reduce(
+                            (sum, item) =>
+                              sum +
+                              (parseFloat(item.fat) || 0) *
+                                (parseFloat(item.Liters) || 0),
+                            0
+                          ) /
+                          summaryData.reduce(
+                            (sum, item) => sum + (parseFloat(item.Liters) || 0),
+                            0
+                          )
+                        ).toFixed(2)}
+                      </span>
+
+                      {/* Weighted Average SNF */}
+                      <span className="w5 text t-center font-bold">
+                        {(
+                          summaryData.reduce(
+                            (sum, item) =>
+                              sum +
+                              (parseFloat(item.snf) || 0) *
+                                (parseFloat(item.Liters) || 0),
+                            0
+                          ) /
+                          summaryData.reduce(
+                            (sum, item) => sum + (parseFloat(item.Liters) || 0),
+                            0
+                          )
+                        ).toFixed(2)}
+                      </span>
+
+                      {/* ✅ Correct Average Rate */}
+                      <span className="w10 text t-center font-bold">
+                        {(
+                          summaryData.reduce(
+                            (sum, item) => sum + (parseFloat(item.Amt) || 0),
+                            0
+                          ) /
+                          summaryData.reduce(
+                            (sum, item) => sum + (parseFloat(item.Liters) || 0),
+                            0
+                          )
+                        ).toFixed(2)}
+                      </span>
+
+                      {/* Total Amount */}
                       <span className="w10 text t-end font-bold">
                         {summaryData
                           .reduce(
                             (sum, item) => sum + (parseFloat(item.Amt) || 0),
                             0
                           )
-                          .toFixed(2)}{" "}
+                          .toFixed(2)}
                       </span>
                       <span className="w10 text t-center"></span>
                     </div>
@@ -1203,6 +1251,8 @@ const MilkcollectionReports = () => {
                       <span className="w5 text t-center"></span>
                       <span className="w5 text t-center"></span>
                       <span className="w25 text t-start"></span>
+
+                      {/* Total Litres */}
                       <span className="w5 text t-end font-bold">
                         {centerData.milkData
                           .reduce(
@@ -1211,9 +1261,56 @@ const MilkcollectionReports = () => {
                           )
                           .toFixed(2)}
                       </span>
-                      <span className="w5 text t-center"></span>
-                      <span className="w5 text t-center"></span>
-                      <span className="w10 text t-center"></span>
+
+                      {/* Weighted Avg FAT */}
+                      <span className="w5 text t-center font-bold">
+                        {(
+                          centerData.milkData.reduce(
+                            (sum, item) =>
+                              sum +
+                              (parseFloat(item.fat) || 0) *
+                                (parseFloat(item.Litres) || 0),
+                            0
+                          ) /
+                          centerData.milkData.reduce(
+                            (sum, item) => sum + (parseFloat(item.Litres) || 0),
+                            0
+                          )
+                        ).toFixed(2)}
+                      </span>
+
+                      {/* Weighted Avg SNF */}
+                      <span className="w5 text t-center font-bold">
+                        {(
+                          centerData.milkData.reduce(
+                            (sum, item) =>
+                              sum +
+                              (parseFloat(item.snf) || 0) *
+                                (parseFloat(item.Litres) || 0),
+                            0
+                          ) /
+                          centerData.milkData.reduce(
+                            (sum, item) => sum + (parseFloat(item.Litres) || 0),
+                            0
+                          )
+                        ).toFixed(2)}
+                      </span>
+
+                      {/* ✅ Correct Average Rate */}
+                      <span className="w10 text t-center font-bold">
+                        {(
+                          centerData.milkData.reduce(
+                            (sum, item) => sum + (parseFloat(item.Amt) || 0),
+                            0
+                          ) /
+                          centerData.milkData.reduce(
+                            (sum, item) => sum + (parseFloat(item.Litres) || 0),
+                            0
+                          )
+                        ).toFixed(2)}
+                      </span>
+
+                      {/* Total Amount */}
                       <span className="w5 text t-end font-bold">
                         {centerData.milkData
                           .reduce(

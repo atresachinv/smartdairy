@@ -445,34 +445,34 @@ const DeductionHead = () => {
           </div>
         </div>
         <div className="Deductionhead-table-section-container w100 h60 d-flex-col">
-          <div className="Deductionhead-table-heading-container w100  h10 d-flex sa a-center">
-            <span className="">Edit</span>
-            <span className=""> Code</span>
-            <span className=""> Name</span>
-            <span className="">GL Number</span>
-            <span className="">GL Name</span>
-            <span className="">Action</span>
+          <div className="Deductionhead-table-heading-container w100  h10 p10 d-flex sa a-center">
+            <span className="w10">Edit</span>
+            <span className="w10"> Code</span>
+            <span className="w25"> Name</span>
+            <span className="w10">GL Number</span>
+            <span className="w25">GL Name</span>
+            <span className="w10">Action</span>
           </div>
           {deductionData &&
             deductionData.map((item) => (
               <div className="w100  h20 d-flex sa a-center" key={item.id}>
                 <span
-                  className=""
+                  className="w10"
                   onClick={() => handleEdit(item.id)}
                   style={{ cursor: "pointer" }}
                 >
                   <FaRegEdit />
                 </span>
-                <span className="">{item.PriorityNo}</span>
-                <span className="">{item.DeductionName}</span>
-                <span className="">{item.GLCode}</span>
-                <span className="">
+                <span className="w10">{item.PriorityNo}</span>
+                <span className="w25">{item.DeductionName}</span>
+                <span className="w10">{item.GLCode}</span>
+                <span className="w25">
                   {(sledgerlist &&
                     sledgerlist.find((i) => i.lno === item.GLCode)
                       ?.marathi_name) ||
                     "Not Found"}
                 </span>
-                <span className="">
+                <span className="w10">
                   <MdDeleteOutline
                     size={20}
                     className="table-icon"
