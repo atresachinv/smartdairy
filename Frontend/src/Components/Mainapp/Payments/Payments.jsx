@@ -7,7 +7,8 @@ import { getMaxCustNo } from "../../../App/Features/Mainapp/Masters/custMasterSl
 import {
   checkAmtZero,
   fetchMilkPaydata,
-  savMilkPaydata,
+  fetchPaymentDetails,
+  saveMilkPaydata,
 } from "../../../App/Features/Payments/paymentSlice";
 import { getDeductionDetails } from "../../../App/Features/Deduction/deductionSlice";
 import { getAllSalePayment } from "../../../App/Features/Sales/salesSlice";
@@ -18,6 +19,7 @@ const Payments = () => {
   const custno = useSelector((state) => state.customer.maxCustNo);
   const SalesData = useSelector((state) => state.sales.allSalesPay);
   const payData = useSelector((state) => state.payment.paymentData);
+  const payDetails = useSelector((state) => state.payment.paymentDetails);
   const deductionDetails = useSelector(
     (state) => state.deduction.deductionDetails || []
   );
@@ -34,8 +36,6 @@ const Payments = () => {
   const tcustRef = useRef(null);
   const submitbtn = useRef(null);
 
-  // console.log("sales data", SalesData);
-  // console.log("pay data", payData);
   // check center is autonomace or not -------------------------------------->
   const autoCenter = settings?.autoCenter;
   //set setting
@@ -55,8 +55,6 @@ const Payments = () => {
     commission: "",
     autodeduct: "",
   };
-
-  // console.log(deductionDetails);
 
   const [formData, setFormData] = useState(initialData);
   useEffect(() => {
@@ -94,7 +92,6 @@ const Payments = () => {
       nextRef.current.focus();
     }
   };
-  console.log(PaymentFD);
   // const handleFixDeductions = async () => {
   //   // filter deductons deductionDetails.RatePerLitre is !== 0
   //   // get liters for each user from payData if three deduction with RatePerLitre is !== 0 then for first record
@@ -133,6 +130,8 @@ const Payments = () => {
     });
   };
 
+  console.log("all payment details", payDetails);
+
   const handleFixDeductions = async () => {
     try {
       // Filter deductions where RatePerLitre is not equal to 0
@@ -157,36 +156,43 @@ const Payments = () => {
 
           // Push the deduction entry to the array
           deductionEntries.push({
-            GLCode: deduction.GLCode,
             DeductionId: deduction.DeductionId,
+            GLCode: deduction.GLCode,
+            rno: user.rno,
             dname: deduction.dname,
             amt: amt,
+            cname: "",
+            totalamt: 0.0,
+            totalLitres: 0.0,
+            avgSnf: 0.0,
+            avgFat: 0.0,
+            avgRate: 0.0,
+            totalDeduction: 0.0,
           });
 
           // Update newTotal for the next deduction
           newTotal -= parseFloat(amt);
         });
-        console.log("",filteredDeductions);
         // Calculate net payment
         const netPayment = (user.totalamt - totalDeduction).toFixed(2);
 
         // Add last entry with additional payData fields
         deductionEntries.push({
           DeductionId: 0,
+          GLCode: 28,
+          rno: user.rno,
+          dname: "",
+          amt: netPayment,
+          cname: user.cname,
           totalamt: user.totalamt.toFixed(2),
           totalLitres: user.totalLitres.toFixed(2),
-          rno: user.rno,
-          cname: user.cname,
           avgSnf: user.avgSnf.toFixed(1),
           avgFat: user.avgFat.toFixed(1),
-          avgRate: (user.totalamt / user.totalLitres).toFixed(1), // Calculating avgRate
-          totalDeduction: totalDeduction.toFixed(2), // Total deductions
-          netPayment: netPayment, // Net payment after deduction
+          avgRate: (user.totalamt / user.totalLitres).toFixed(1),
+          totalDeduction: totalDeduction.toFixed(2),
         });
       });
       setPaymentFD(deductionEntries);
-      console.log("Deduction Entries:", deductionEntries);
-      // Now you can use deductionEntries to save or update your database
     } catch (error) {
       console.error("Error in handling deductions:", error);
     }
@@ -313,6 +319,8 @@ const Payments = () => {
     }
   };
 
+  console.log("milk deductions details", PaymentFD);
+
   useEffect(() => {
     if (payData && deductionDetails && formData.autodeduct === 1) {
       handleFixDeductions();
@@ -330,17 +338,6 @@ const Payments = () => {
       checkAmtZero({ fromDate: formData.fromDate, toDate: formData.toDate })
     ).unwrap();
 
-    const saleres = await dispatch(
-      getAllSalePayment({
-        fromdate: formData.fromDate,
-        todate: formData.toDate,
-      })
-    ).unwrap();
-
-    // const saveres = await dispatch(
-    //   savMilkPaydata({ formData, PaymentFD })
-    // ).unwrap();
-
     if (result?.status === 204) {
       dispatch(
         fetchMilkPaydata({
@@ -350,6 +347,30 @@ const Payments = () => {
       );
     } else if (result?.status === 200) {
       toast.error("Milk correction required!");
+      return;
+    }
+
+    const saleres = await dispatch(
+      getAllSalePayment({
+        fromdate: formData.fromDate,
+        todate: formData.toDate,
+      })
+    ).unwrap();
+
+    const saveres = await dispatch(
+      saveMilkPaydata({ formData, PaymentFD })
+    ).unwrap();
+
+    if (saveres?.status === 200) {
+      const fetchres = await dispatch(
+        fetchPaymentDetails({
+          fromdate: formData.fromDate,
+          todate: formData.toDate,
+        })
+      ).unwrap();
+      if (fetchres?.status === 200) {
+        toast.success("Milk payment Generated successfully!");
+      }
     } else {
       toast.error("Unexpected response. Please try again!");
     }
@@ -516,9 +537,7 @@ const Payments = () => {
                     <span className="info-text w15 t-end">
                       {item.totalLitres}
                     </span>
-                    <span className="info-text w15 t-end">
-                      {item.totalamt || 0}
-                    </span>
+                    <span className="info-text w15 t-end">{item.amt || 0}</span>
                   </div>
                 ))
               ) : (

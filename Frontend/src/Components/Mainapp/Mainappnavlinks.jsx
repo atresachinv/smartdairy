@@ -307,14 +307,14 @@ const Mainappnavlinks = ({ setselected, handleSidebar }) => {
         {
           name: `${t("master:m-nv-drmaster")}`,
           icon: <FaUserDoctor className="icon" />,
-          index: 5.5,
+          index: 5.6,
           path: "master/doctor",
           role: ["admin", "super_admin", "manager"],
         },
         {
           name: `${t("master:m-nv-dedumaster")}`,
           icon: <FaFileCircleMinus className="icon" />,
-          index: 5.6,
+          index: 5.7,
           path: "master/deductions",
           role: ["admin", "super_admin", "manager"],
         },
