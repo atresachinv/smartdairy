@@ -2,15 +2,7 @@ import React, { useState } from "react";
 import "../../../../Styles/SanghReport/SanghReport.css";
 
 const SanghReport = () => {
-  const [progress, setProgress] = useState(0);
 
-  const increaseProgress = () => {
-    setProgress((prev) => (prev >= 100 ? 100 : prev + 10));
-  };
-
-  const decreaseProgress = () => {
-    setProgress((prev) => (prev <= 0 ? 0 : prev - 10));
-  };
   return (
     <>
       <div className="sanghsale-report-container w100 h1 d-flex-col sa">
@@ -33,7 +25,7 @@ const SanghReport = () => {
           </div>
         </div>
         <div className="sangha-details-table-section w100 h70 d-flex-col bg">
-          <div className="sangha-sale-table-header w100 h10 d-flex sa  ">
+          <div className="sangha-sale-table-header w100 h20 d-flex sa  ">
             <span className="label-text w10">बिल न</span>
             <span className="label-text w20">बिल दिनांक </span>
             <span className="label-text w20">संघाचे नाव</span>
@@ -54,6 +46,8 @@ const SanghReport = () => {
             </div>
           </div>
         </div>
+
+
         <div className="daybook-progress-div w100 h15 d-flex">
           <div className="Daybook-button-div w30 h1 d-flex a-center">
             <button className="w-btn">Day Book</button>
