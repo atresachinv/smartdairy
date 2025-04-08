@@ -303,7 +303,7 @@ const MilkSankalan = () => {
           if (values.mobile.length === 10 && values.mobile !== "0000000000") {
             sendMessage();
           } else {
-            toast.warn("Mobile number is not valid");
+            toast.warn("Mobile number is not valid, Message not sent!");
           }
         }
         codeInputRef.current.focus(); // Focus on the code input
