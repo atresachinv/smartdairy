@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import "../../../Styles/DairyInitialInfo/DairyInitialInfo.css";
 import Select from "react-select";
 import { useDispatch, useSelector } from "react-redux";
@@ -17,8 +17,7 @@ import {
 const DairyInitialInfo = () => {
   const dispatch = useDispatch();
   const { t } = useTranslation(["milkcollection", "common"]);
-  // const MainLedgers = useSelector((state) => state.ledger.mledgerlist);
-  const dinitInfo = useSelector((state) => state.dairyInfo.initialInfo || []);
+  const dinitInfo = useSelector((state) => state.dairyInfo.initialInfo || {});
   const status = useSelector((state) => state.dairyInfo.updateStatus);
   const SubLedgers = useSelector((state) => state.ledger.sledgerlist);
   const [errors, setErrors] = useState({});
@@ -29,21 +28,13 @@ const DairyInitialInfo = () => {
     CashOnHandAmt: "",
     CashOnHandAmt_3: "",
     CashOnHandGlcode: "",
-    cashinhandgl_txt: "",
     PLGLCode: "",
-    plgl_txt: "",
     PreviousPLGLCode: "",
-    prevplgl_txt: "",
     TreadingPLGlCode: "",
-    tradergl_txt: "",
     MilkPurchaseGL: "",
-    milkpgl_txt: "",
     MilkSaleGL: "",
-    msaleegl_txt: "",
     MilkPurchasePaybleGL: "",
-    purch_inc_txt: "",
     MilkSaleRecivableGl: "",
-    saleincome_txt: "",
     saleincomeGL: "",
     RoundAmtGL: "",
     anamatGlcode: "",
@@ -66,45 +57,43 @@ const DairyInitialInfo = () => {
     dispatch(fetchInitInfo());
   }, [dispatch]);
 
-  console.log(formData);
-  console.log(formData.id);
-
   useEffect(() => {
-    if (dinitInfo.length > 0)
-      setFormData((prevData) => ({
-        ...prevData,
-        id: dinitInfo.id,
-        ShareCapitalAmt: dinitInfo.ShareCapitalAmt,
-        ClosingDate: dinitInfo.ClosingDate,
-        CashOnHandAmt: dinitInfo.CashOnHandAmt,
-        CashOnHandAmt_3: dinitInfo.CashOnHandAmt_3,
-        CashOnHandGlcode: dinitInfo.CashOnHandGlcode,
-        PLGLCode: dinitInfo.PLGLCode,
-        PreviousPLGLCode: dinitInfo.PreviousPLGLCode,
-        TreadingPLGlCode: dinitInfo.TreadingPLGlCode,
-        MilkPurchaseGL: dinitInfo.MilkPurchaseGL,
-        MilkSaleGL: dinitInfo.MilkSaleGL,
-        MilkPurchasePaybleGL: dinitInfo.MilkPurchasePaybleGL,
-        MilkSaleRecivableGl: dinitInfo.MilkSaleRecivableGl,
-        saleincomeGL: dinitInfo.saleincomeGL,
-        RoundAmtGL: dinitInfo.RoundAmtGL,
-        anamatGlcode: dinitInfo.anamatGlcode,
-        advGL: dinitInfo.advGL,
-        kirkolmilksale_yene: dinitInfo.kirkolmilksale_yene,
-        ghutnashgl: dinitInfo.ghutnashgl,
-        ArambhiShillakMalGL: dinitInfo.ArambhiShillakMalGL,
-        AkherShillakMal: dinitInfo.AkherShillakMal,
-        MilkCommisionAndAnudan: dinitInfo.MilkCommisionAndAnudan,
-        ribetIncome: dinitInfo.ribetIncome,
-        ribetExpense: dinitInfo.ribetExpense,
-        milkRateDiff: dinitInfo.milkRateDiff,
-        chillinggl: dinitInfo.chillinggl,
-        transportgl: dinitInfo.transportgl,
-      }));
+    if (dinitInfo && Object.keys(dinitInfo).length > 0) {
+      setFormData({
+        id: dinitInfo.id || "",
+        ShareCapitalAmt: dinitInfo.ShareCapitalAmt || "",
+        ClosingDate: dinitInfo.ClosingDate.split("T")[0] || "",
+        CashOnHandAmt: dinitInfo.CashOnHandAmt || "",
+        CashOnHandAmt_3: dinitInfo.CashOnHandAmt_3 || "",
+        CashOnHandGlcode: dinitInfo.CashOnHandGlcode || "",
+        PLGLCode: dinitInfo.PLGLCode || "",
+        PreviousPLGLCode: dinitInfo.PreviousPLGLCode || "",
+        TreadingPLGlCode: dinitInfo.TreadingPLGlCode || "",
+        MilkPurchaseGL: dinitInfo.MilkPurchaseGL || "",
+        MilkSaleGL: dinitInfo.MilkSaleGL || "",
+        MilkPurchasePaybleGL: dinitInfo.MilkPurchasePaybleGL || "",
+        MilkSaleRecivableGl: dinitInfo.MilkSaleRecivableGl || "",
+        saleincomeGL: dinitInfo.saleincomeGL || "",
+        RoundAmtGL: dinitInfo.RoundAmtGL || "",
+        anamatGlcode: dinitInfo.anamatGlcode || "",
+        advGL: dinitInfo.advGL || "",
+        kirkolmilksale_yene: dinitInfo.kirkolmilksale_yene || "",
+        ghutnashgl: dinitInfo.ghutnashgl || "",
+        ArambhiShillakMalGL: dinitInfo.ArambhiShillakMalGL || "",
+        AkherShillakMal: dinitInfo.AkherShillakMal || "",
+        MilkCommisionAndAnudan: dinitInfo.MilkCommisionAndAnudan || "",
+        ribetIncome: dinitInfo.ribetIncome || "",
+        ribetExpense: dinitInfo.ribetExpense || "",
+        milkRateDiff: dinitInfo.milkRateDiff || "",
+        chillinggl: dinitInfo.chillinggl || "",
+        transportgl: dinitInfo.transportgl || "",
+      });
+    }
   }, [dinitInfo]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+    console.log(name, value);
     setFormData((prevData) => ({
       ...prevData,
       [name]: value,
@@ -117,42 +106,16 @@ const DairyInitialInfo = () => {
     });
   };
 
-  // handle select --------------------------------------------------------------------------->
-  const handleSelectChange = (selectedOption, field, relatedField) => {
-    const matchedLedger = SubLedgers.find(
-      (i) =>
-        i.lno === selectedOption.value ||
-        i.marathi_name === selectedOption.label
-    );
-    if (matchedLedger) {
-      setFormData((prevData) => {
-        const updatedData = {
-          ...prevData,
-          [field]: field.includes("gl")
-            ? matchedLedger.lno
-            : matchedLedger.marathi_name,
-          [relatedField]: field.includes("txt")
-            ? matchedLedger.marathi_name
-            : matchedLedger.lno,
-        };
-        console.log("FormData After:", updatedData);
-        return updatedData;
-      });
-    }
-  };
-
-  //option sleg list show only name
   const sglOptions = SubLedgers.map((i) => ({
     value: i.lno,
     label: i.lno,
   }));
-  //option sleg list show only id
+
   const sglOptions1 = SubLedgers.map((i) => ({
     value: i.lno,
     label: i.marathi_name,
   }));
 
-  // Handle Enter key press to move to the next field ---------------------------------->
   const handleKeyPress = (e, nextField) => {
     if (e.key === "Enter") {
       e.preventDefault();
@@ -169,14 +132,11 @@ const DairyInitialInfo = () => {
       case "ShareCapitalAmt":
       case "CashOnHandAmt":
       case "CashOnHandAmt_3":
-        if (!/^-?\d+(\.\d+)?$/.test(value)) {
+        if (value && !/^-?\d+(\.\d+)?$/.test(value)) {
           error[name] = "Invalid Value.";
-        } else {
-          delete errors[name];
         }
         break;
 
-      case "cust_no":
       case "RoundAmtGL":
       case "anamatGlcode":
       case "advGL":
@@ -190,10 +150,8 @@ const DairyInitialInfo = () => {
       case "milkRateDiff":
       case "chillinggl":
       case "transportgl":
-        if (!/^\d+$/.test(value)) {
+        if (value && !/^\d+$/.test(value)) {
           error[name] = "Invalid Value.";
-        } else {
-          delete errors[name];
         }
         break;
 
@@ -204,55 +162,61 @@ const DairyInitialInfo = () => {
     return error;
   };
 
-  const validateFields = () => {
-    const fieldsToValidate = [
-      "RoundAmtGL",
-      "anamatGlcode",
-      "advGL",
-      "kirkolmilksale_yene",
-      "ghutnashgl",
-      "ArambhiShillakMalGL",
-      "AkherShillakMal",
-      "MilkCommisionAndAnudan",
-      "ribetIncome",
-      "ribetExpense",
-      "milkRateDiff",
-      "chillinggl",
-      "transportgl",
-    ];
-    const validationErrors = {};
-    fieldsToValidate.forEach((field) => {
-      const fieldError = validateField(field, formData[field]);
-      if (Object.keys(fieldError).length > 0) {
-        validationErrors[field] = fieldError[field];
-      }
-    });
-
-    setErrors(validationErrors);
-    return validationErrors;
-  };
-
-  const handleform = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!formData.id) {
-      return toast.error("Fill All data fields!");
+    // Validate required fields
+    const requiredFields = [
+      "ShareCapitalAmt",
+      "ClosingDate",
+      "CashOnHandAmt",
+      "CashOnHandAmt_3",
+      "CashOnHandGlcode",
+      "PLGLCode",
+      "PreviousPLGLCode",
+      "TreadingPLGlCode",
+      "MilkPurchaseGL",
+      "MilkSaleGL",
+      "MilkPurchasePaybleGL",
+      "MilkSaleRecivableGl",
+    ];
+
+    const missingFields = requiredFields.filter((field) => !formData[field]);
+
+    if (missingFields.length > 0) {
+      toast.error("Please fill all required fields!");
+      return;
     }
-    const result = await dispatch(updateInitInfo({ formData })).unwrap();
-    if (result.status === 200) {
-      toast.success("Dairy initial information updated successfully!");
-    } else {
-      toast.error("failed to update dairy inital information!");
+
+    try {
+      if (formData.id) {
+        const result = await dispatch(updateInitInfo({ formData })).unwrap();
+        if (result.status === 200) {
+          toast.success("Dairy initial information updated successfully!");
+        } else {
+          toast.error("Failed to update dairy initial information!");
+        }
+      } else {
+        const result = await dispatch(createInitInfo({ formData })).unwrap();
+        if (result.status === 201) {
+          toast.success("Dairy initial information created successfully!");
+        } else {
+          toast.error("Failed to create dairy initial information!");
+        }
+      }
+    } catch (error) {
+      toast.error("An error occurred while updating information");
+      console.error("Update error:", error);
     }
   };
 
   return (
     <>
-      <div className="society-initial-info-contianer w100 h1 d-flex-col">
+      <div className="society-initial-info-contianer w100 h1 d-flex-col sb">
         <span className="heading px10">संस्था आरंभीची माहिती :</span>
         <form
-          onSubmit={handleform}
-          className="dairy-ladger-info-outer-container w100 h1 d-flex sa"
+          onSubmit={handleSubmit}
+          className="dairy-ladger-info-outer-container w100 h95 d-flex sa"
         >
           <div className="dairy-main-ladger-info-container w65 h1 d-flex-col sb p10 bg">
             <div className="dairy-initial-cash-info-div w100 h10 d-flex a-center sb">
@@ -271,7 +235,7 @@ const DairyInitialInfo = () => {
                   value={formData.ShareCapitalAmt}
                   step={"any"}
                   placeholder="0.000"
-                  onChange={handleChange}
+                  onChange={(e) => handleChange(e)}
                   onKeyDown={(e) =>
                     handleKeyPress(e, document.getElementById("cdate"))
                   }
@@ -288,7 +252,7 @@ const DairyInitialInfo = () => {
                   required
                   value={formData.ClosingDate}
                   type="date"
-                  onChange={handleChange}
+                  onChange={(e) => handleChange(e)}
                   onKeyDown={(e) =>
                     handleKeyPress(e, document.getElementById("rsamt"))
                   }
@@ -308,7 +272,7 @@ const DairyInitialInfo = () => {
                   type="text"
                   name="CashOnHandAmt"
                   value={formData.CashOnHandAmt}
-                  onChange={handleChange}
+                  onChange={(e) => handleChange(e)}
                   onKeyDown={(e) =>
                     handleKeyPress(e, document.getElementById("cashRemgoods"))
                   }
@@ -326,7 +290,7 @@ const DairyInitialInfo = () => {
                   required
                   name="CashOnHandAmt_3"
                   value={formData.CashOnHandAmt_3}
-                  onChange={handleChange}
+                  onChange={(e) => handleChange(e)}
                   onKeyDown={(e) =>
                     handleKeyPress(e, document.getElementById("cashgl"))
                   }
@@ -344,15 +308,20 @@ const DairyInitialInfo = () => {
                 name="CashOnHandGlcode"
                 isSearchable
                 styles={{ menu: (provided) => ({ ...provided, zIndex: 200 }) }}
-                value={sglOptions.find(
-                  (option) => option.value === formData.CashOnHandGlcode
-                )}
-                onChange={(option) =>
-                  handleSelectChange(
-                    option,
-                    "CashOnHandGlcode",
-                    "cashinhandgl_txt"
-                  )
+                value={
+                  formData.CashOnHandGlcode
+                    ? sglOptions.find(
+                        (option) =>
+                          Number(option.value) ===
+                          Number(formData.CashOnHandGlcode)
+                      )
+                    : null
+                }
+                onChange={(selectedOption) =>
+                  setFormData({
+                    ...formData,
+                    CashOnHandGlcode: selectedOption.value,
+                  })
                 }
                 onKeyDown={(e) =>
                   handleKeyPress(e, document.getElementById("plgl"))
@@ -365,15 +334,20 @@ const DairyInitialInfo = () => {
                 isSearchable
                 name="cashinhandgl_txt"
                 styles={{ menu: (provided) => ({ ...provided, zIndex: 200 }) }}
-                value={sglOptions1.find(
-                  (option) => option.value === formData.cashinhandgl_txt
-                )}
-                onChange={(option) =>
-                  handleSelectChange(
-                    option,
-                    "CashOnHandGlcode",
-                    "cashinhandgl_txt"
-                  )
+                value={
+                  formData.CashOnHandGlcode
+                    ? sglOptions1.find(
+                        (option) =>
+                          Number(option.value) ===
+                          Number(formData.CashOnHandGlcode)
+                      )
+                    : null
+                }
+                onChange={(selectedOption) =>
+                  setFormData({
+                    ...formData,
+                    CashOnHandGlcode: selectedOption.value,
+                  })
                 }
               />
             </div>
@@ -391,11 +365,19 @@ const DairyInitialInfo = () => {
                   styles={{
                     menu: (provided) => ({ ...provided, zIndex: 200 }),
                   }}
-                  value={sglOptions.find(
-                    (option) => option.value === formData.PLGLCode
-                  )}
-                  onChange={(option) =>
-                    handleSelectChange(option, "PLGLCode", "plgl_txt")
+                  value={
+                    formData.PLGLCode
+                      ? sglOptions.find(
+                          (option) =>
+                            Number(option.value) === Number(formData.PLGLCode)
+                        )
+                      : null
+                  }
+                  onChange={(selectedOption) =>
+                    setFormData({
+                      ...formData,
+                      PLGLCode: selectedOption.value,
+                    })
                   }
                   onKeyDown={(e) =>
                     handleKeyPress(e, document.getElementById("prevplgl"))
@@ -410,11 +392,19 @@ const DairyInitialInfo = () => {
                   styles={{
                     menu: (provided) => ({ ...provided, zIndex: 200 }),
                   }}
-                  value={sglOptions1.find(
-                    (option) => option.value === formData.plgl_txt
-                  )}
-                  onChange={(option) =>
-                    handleSelectChange(option, "plgl_txt", "PLGLCode")
+                  value={
+                    formData.PLGLCode
+                      ? sglOptions1.find(
+                          (option) =>
+                            Number(option.value) === Number(formData.PLGLCode)
+                        )
+                      : null
+                  }
+                  onChange={(selectedOption) =>
+                    setFormData({
+                      ...formData,
+                      PLGLCode: selectedOption.value,
+                    })
                   }
                 />
               </div>
@@ -430,15 +420,20 @@ const DairyInitialInfo = () => {
                   styles={{
                     menu: (provided) => ({ ...provided, zIndex: 200 }),
                   }}
-                  value={sglOptions.find(
-                    (option) => option.value === formData.PreviousPLGLCode
-                  )}
-                  onChange={(option) =>
-                    handleSelectChange(
-                      option,
-                      "PreviousPLGLCode",
-                      "prevplgl_txt"
-                    )
+                  value={
+                    formData.PreviousPLGLCode
+                      ? sglOptions.find(
+                          (option) =>
+                            Number(option.value) ===
+                            Number(formData.PreviousPLGLCode)
+                        )
+                      : null
+                  }
+                  onChange={(selectedOption) =>
+                    setFormData({
+                      ...formData,
+                      PreviousPLGLCode: selectedOption.value,
+                    })
                   }
                   onKeyDown={(e) =>
                     handleKeyPress(e, document.getElementById("traderlggl"))
@@ -453,15 +448,20 @@ const DairyInitialInfo = () => {
                   styles={{
                     menu: (provided) => ({ ...provided, zIndex: 200 }),
                   }}
-                  value={sglOptions1.find(
-                    (option) => option.value === formData.prevplgl_txt
-                  )}
-                  onChange={(option) =>
-                    handleSelectChange(
-                      option,
-                      "prevplgl_txt",
-                      "PreviousPLGLCode"
-                    )
+                  value={
+                    formData.PreviousPLGLCode
+                      ? sglOptions1.find(
+                          (option) =>
+                            Number(option.value) ===
+                            Number(formData.PreviousPLGLCode)
+                        )
+                      : null
+                  }
+                  onChange={(selectedOption) =>
+                    setFormData({
+                      ...formData,
+                      PreviousPLGLCode: selectedOption.value,
+                    })
                   }
                 />
               </div>
@@ -477,15 +477,20 @@ const DairyInitialInfo = () => {
                   styles={{
                     menu: (provided) => ({ ...provided, zIndex: 200 }),
                   }}
-                  value={sglOptions.find(
-                    (option) => option.value === formData.TreadingPLGlCode
-                  )}
-                  onChange={(option) =>
-                    handleSelectChange(
-                      option,
-                      "TreadingPLGlCode",
-                      "tradergl_txt"
-                    )
+                  value={
+                    formData.TreadingPLGlCode
+                      ? sglOptions.find(
+                          (option) =>
+                            Number(option.value) ===
+                            Number(formData.TreadingPLGlCode)
+                        )
+                      : null
+                  }
+                  onChange={(selectedOption) =>
+                    setFormData({
+                      ...formData,
+                      TreadingPLGlCode: selectedOption.value,
+                    })
                   }
                   onKeyDown={(e) =>
                     handleKeyPress(e, document.getElementById("purch_expe"))
@@ -500,15 +505,20 @@ const DairyInitialInfo = () => {
                   styles={{
                     menu: (provided) => ({ ...provided, zIndex: 200 }),
                   }}
-                  value={sglOptions1.find(
-                    (option) => option.value === formData.tradergl_txt
-                  )}
-                  onChange={(option) =>
-                    handleSelectChange(
-                      option,
-                      "tradergl_txt",
-                      "TreadingPLGlCode"
-                    )
+                  value={
+                    formData.TreadingPLGlCode
+                      ? sglOptions1.find(
+                          (option) =>
+                            Number(option.value) ===
+                            Number(formData.TreadingPLGlCode)
+                        )
+                      : null
+                  }
+                  onChange={(selectedOption) =>
+                    setFormData({
+                      ...formData,
+                      TreadingPLGlCode: selectedOption.value,
+                    })
                   }
                 />
               </div>
@@ -529,11 +539,20 @@ const DairyInitialInfo = () => {
                   styles={{
                     menu: (provided) => ({ ...provided, zIndex: 200 }),
                   }}
-                  value={sglOptions.find(
-                    (option) => option.value === formData.MilkPurchaseGL
-                  )}
-                  onChange={(option) =>
-                    handleSelectChange(option, "MilkPurchaseGL", "milkpgl_txt")
+                  value={
+                    formData.MilkPurchaseGL
+                      ? sglOptions.find(
+                          (option) =>
+                            Number(option.value) ===
+                            Number(formData.MilkPurchaseGL)
+                        )
+                      : null
+                  }
+                  onChange={(selectedOption) =>
+                    setFormData({
+                      ...formData,
+                      MilkPurchaseGL: selectedOption.value,
+                    })
                   }
                   onKeyDown={(e) =>
                     handleKeyPress(e, document.getElementById("saleincgl"))
@@ -548,11 +567,20 @@ const DairyInitialInfo = () => {
                   styles={{
                     menu: (provided) => ({ ...provided, zIndex: 200 }),
                   }}
-                  value={sglOptions1.find(
-                    (option) => option.value === formData.milkpgl_txt
-                  )}
-                  onChange={(option) =>
-                    handleSelectChange(option, "milkpgl_txt", "MilkPurchaseGL")
+                  value={
+                    formData.MilkPurchaseGL
+                      ? sglOptions1.find(
+                          (option) =>
+                            Number(option.value) ===
+                            Number(formData.MilkPurchaseGL)
+                        )
+                      : null
+                  }
+                  onChange={(selectedOption) =>
+                    setFormData({
+                      ...formData,
+                      MilkPurchaseGL: selectedOption.value,
+                    })
                   }
                 />
               </div>
@@ -568,11 +596,19 @@ const DairyInitialInfo = () => {
                   styles={{
                     menu: (provided) => ({ ...provided, zIndex: 200 }),
                   }}
-                  value={sglOptions.find(
-                    (option) => option.value === formData.MilkSaleGL
-                  )}
-                  onChange={(option) =>
-                    handleSelectChange(option, "MilkSaleGL", "msaleegl_txt")
+                  value={
+                    formData.MilkSaleGL
+                      ? sglOptions.find(
+                          (option) =>
+                            Number(option.value) === Number(formData.MilkSaleGL)
+                        )
+                      : null
+                  }
+                  onChange={(selectedOption) =>
+                    setFormData({
+                      ...formData,
+                      MilkSaleGL: selectedOption.value,
+                    })
                   }
                   onKeyDown={(e) =>
                     handleKeyPress(e, document.getElementById("purch_inc"))
@@ -587,11 +623,19 @@ const DairyInitialInfo = () => {
                   styles={{
                     menu: (provided) => ({ ...provided, zIndex: 200 }),
                   }}
-                  value={sglOptions1.find(
-                    (option) => option.value === formData.msaleegl_txt
-                  )}
-                  onChange={(option) =>
-                    handleSelectChange(option, "msaleegl_txt", "MilkSaleGL")
+                  value={
+                    formData.MilkSaleGL
+                      ? sglOptions1.find(
+                          (option) =>
+                            Number(option.value) === Number(formData.MilkSaleGL)
+                        )
+                      : null
+                  }
+                  onChange={(selectedOption) =>
+                    setFormData({
+                      ...formData,
+                      MilkSaleGL: selectedOption.value,
+                    })
                   }
                 />
               </div>
@@ -607,15 +651,20 @@ const DairyInitialInfo = () => {
                   styles={{
                     menu: (provided) => ({ ...provided, zIndex: 200 }),
                   }}
-                  value={sglOptions.find(
-                    (option) => option.value === formData.MilkPurchasePaybleGL
-                  )}
-                  onChange={(option) =>
-                    handleSelectChange(
-                      option,
-                      "MilkPurchasePaybleGL",
-                      "purch_inc_txt"
-                    )
+                  value={
+                    formData.MilkPurchasePaybleGL
+                      ? sglOptions.find(
+                          (option) =>
+                            Number(option.value) ===
+                            Number(formData.MilkPurchasePaybleGL)
+                        )
+                      : null
+                  }
+                  onChange={(selectedOption) =>
+                    setFormData({
+                      ...formData,
+                      MilkPurchasePaybleGL: selectedOption.value,
+                    })
                   }
                   onKeyDown={(e) =>
                     handleKeyPress(e, document.getElementById("saleincome"))
@@ -630,15 +679,20 @@ const DairyInitialInfo = () => {
                   styles={{
                     menu: (provided) => ({ ...provided, zIndex: 200 }),
                   }}
-                  value={sglOptions1.find(
-                    (option) => option.value === formData.purch_inc_txt
-                  )}
-                  onChange={(option) =>
-                    handleSelectChange(
-                      option,
-                      "purch_inc_txt",
-                      "MilkPurchasePaybleGL"
-                    )
+                  value={
+                    formData.MilkPurchasePaybleGL
+                      ? sglOptions1.find(
+                          (option) =>
+                            Number(option.value) ===
+                            Number(formData.MilkPurchasePaybleGL)
+                        )
+                      : null
+                  }
+                  onChange={(selectedOption) =>
+                    setFormData({
+                      ...formData,
+                      MilkPurchasePaybleGL: selectedOption.value,
+                    })
                   }
                 />
               </div>
@@ -654,15 +708,20 @@ const DairyInitialInfo = () => {
                   styles={{
                     menu: (provided) => ({ ...provided, zIndex: 200 }),
                   }}
-                  value={sglOptions.find(
-                    (option) => option.value === formData.MilkSaleRecivableGl
-                  )}
-                  onChange={(option) =>
-                    handleSelectChange(
-                      option,
-                      "MilkSaleRecivableGl",
-                      "saleincome_txt"
-                    )
+                  value={
+                    formData.MilkSaleRecivableGl
+                      ? sglOptions.find(
+                          (option) =>
+                            Number(option.value) ===
+                            Number(formData.MilkSaleRecivableGl)
+                        )
+                      : null
+                  }
+                  onChange={(selectedOption) =>
+                    setFormData({
+                      ...formData,
+                      MilkSaleRecivableGl: selectedOption.value,
+                    })
                   }
                   onKeyDown={(e) =>
                     handleKeyPress(e, document.getElementById("roundoff"))
@@ -677,15 +736,20 @@ const DairyInitialInfo = () => {
                   styles={{
                     menu: (provided) => ({ ...provided, zIndex: 200 }),
                   }}
-                  value={sglOptions1.find(
-                    (option) => option.value === formData.saleincome_txt
-                  )}
-                  onChange={(option) =>
-                    handleSelectChange(
-                      option,
-                      "saleincome_txt",
-                      "MilkSaleRecivableGl"
-                    )
+                  value={
+                    formData.MilkSaleRecivableGl
+                      ? sglOptions1.find(
+                          (option) =>
+                            Number(option.value) ===
+                            Number(formData.MilkSaleRecivableGl)
+                        )
+                      : null
+                  }
+                  onChange={(selectedOption) =>
+                    setFormData({
+                      ...formData,
+                      MilkSaleRecivableGl: selectedOption.value,
+                    })
                   }
                 />
               </div>
@@ -699,12 +763,12 @@ const DairyInitialInfo = () => {
               </label>
               <input
                 id="roundoff"
-                className="data w100"
+                className="data w100 h60"
                 type="number"
                 required
                 name="RoundAmtGL"
                 value={formData.RoundAmtGL}
-                onChange={handleChange}
+                onChange={(e) => handleChange(e)}
                 onKeyDown={(e) =>
                   handleKeyPress(e, document.getElementById("cattlefeedgl"))
                 }
@@ -716,12 +780,12 @@ const DairyInitialInfo = () => {
               </label>
               <input
                 id="cattlefeedgl"
-                className="data w100"
+                className="data w100 h60"
                 type="number"
                 required
                 name="saleincomeGL"
                 value={formData.saleincomeGL}
-                onChange={handleChange}
+                onChange={(e) => handleChange(e)}
                 onKeyDown={(e) =>
                   handleKeyPress(e, document.getElementById("commissiongl"))
                 }
@@ -733,12 +797,12 @@ const DairyInitialInfo = () => {
               </label>
               <input
                 id="commissiongl"
-                className="data w100"
+                className="data w100 h60"
                 type="number"
                 required
                 name="anamatGlcode"
                 value={formData.anamatGlcode}
-                onChange={handleChange}
+                onChange={(e) => handleChange(e)}
                 onKeyDown={(e) =>
                   handleKeyPress(e, document.getElementById("advgl"))
                 }
@@ -750,12 +814,12 @@ const DairyInitialInfo = () => {
               </label>
               <input
                 id="advgl"
-                className="data w100"
+                className="data w100 h60"
                 type="number"
                 required
                 name="advGL"
                 value={formData.advGL}
-                onChange={handleChange}
+                onChange={(e) => handleChange(e)}
                 onKeyDown={(e) =>
                   handleKeyPress(e, document.getElementById("retailmsale"))
                 }
@@ -767,12 +831,12 @@ const DairyInitialInfo = () => {
               </label>
               <input
                 id="retailmsale"
-                className="data w100"
+                className="data w100 h60"
                 type="number"
                 required
                 name="kirkolmilksale_yene"
                 value={formData.kirkolmilksale_yene}
-                onChange={handleChange}
+                onChange={(e) => handleChange(e)}
                 onKeyDown={(e) =>
                   handleKeyPress(e, document.getElementById("ghatnash"))
                 }
@@ -784,12 +848,12 @@ const DairyInitialInfo = () => {
               </label>
               <input
                 id="ghatnash"
-                className="data w100"
+                className="data w100 h60"
                 type="number"
                 required
                 name="ghutnashgl"
                 value={formData.ghutnashgl}
-                onChange={handleChange}
+                onChange={(e) => handleChange(e)}
                 onKeyDown={(e) =>
                   handleKeyPress(e, document.getElementById("sremaingl"))
                 }
@@ -801,12 +865,12 @@ const DairyInitialInfo = () => {
               </label>
               <input
                 id="sremaingl"
-                className="data w100"
+                className="data w100 h60"
                 type="number"
                 required
                 name="ArambhiShillakMalGL"
                 value={formData.ArambhiShillakMalGL}
-                onChange={handleChange}
+                onChange={(e) => handleChange(e)}
                 onKeyDown={(e) =>
                   handleKeyPress(e, document.getElementById("lasteremgl"))
                 }
@@ -818,12 +882,12 @@ const DairyInitialInfo = () => {
               </label>
               <input
                 id="lasteremgl"
-                className="data w100"
+                className="data w100 h60"
                 type="number"
                 required
                 name="AkherShillakMal"
                 value={formData.AkherShillakMal}
-                onChange={handleChange}
+                onChange={(e) => handleChange(e)}
                 onKeyDown={(e) =>
                   handleKeyPress(e, document.getElementById("comanuexpe"))
                 }
@@ -835,12 +899,12 @@ const DairyInitialInfo = () => {
               </label>
               <input
                 id="comanuexpe"
-                className="data w100"
+                className="data w100 h60"
                 type="number"
                 required
                 name="MilkCommisionAndAnudan"
                 value={formData.MilkCommisionAndAnudan}
-                onChange={handleChange}
+                onChange={(e) => handleChange(e)}
                 onKeyDown={(e) =>
                   handleKeyPress(e, document.getElementById("ribetIncome"))
                 }
@@ -853,12 +917,12 @@ const DairyInitialInfo = () => {
               </label>
               <input
                 id="ribetIncome"
-                className="data w100"
+                className="data w100 h60"
                 type="number"
                 required
                 name="ribetIncome"
                 value={formData.ribetIncome}
-                onChange={handleChange}
+                onChange={(e) => handleChange(e)}
                 onKeyDown={(e) =>
                   handleKeyPress(e, document.getElementById("rebbetExpe"))
                 }
@@ -870,12 +934,12 @@ const DairyInitialInfo = () => {
               </label>
               <input
                 id="rebbetExpe"
-                className="data w100"
+                className="data w100 h60"
                 type="number"
                 required
                 name="ribetExpense"
                 value={formData.ribetExpense}
-                onChange={handleChange}
+                onChange={(e) => handleChange(e)}
                 onKeyDown={(e) =>
                   handleKeyPress(e, document.getElementById("rdiffgl"))
                 }
@@ -887,12 +951,12 @@ const DairyInitialInfo = () => {
               </label>
               <input
                 id="rdiffgl"
-                className="data w100"
+                className="data w100 h60"
                 type="number"
                 required
                 name="milkRateDiff"
                 value={formData.milkRateDiff}
-                onChange={handleChange}
+                onChange={(e) => handleChange(e)}
                 onKeyDown={(e) =>
                   handleKeyPress(e, document.getElementById("coolgl"))
                 }
@@ -904,12 +968,12 @@ const DairyInitialInfo = () => {
               </label>
               <input
                 id="coolgl"
-                className="data w100"
+                className="data w100 h60"
                 type="number"
                 required
                 name="chillinggl"
                 value={formData.chillinggl}
-                onChange={handleChange}
+                onChange={(e) => handleChange(e)}
                 onKeyDown={(e) =>
                   handleKeyPress(e, document.getElementById("vexpe"))
                 }
@@ -921,12 +985,12 @@ const DairyInitialInfo = () => {
               </label>
               <input
                 id="vexpe"
-                className="data w100"
+                className="data w100 h60"
                 type="number"
                 required
                 name="transportgl"
                 value={formData.transportgl}
-                onChange={handleChange}
+                onChange={(e) => handleChange(e)}
                 onKeyDown={(e) =>
                   handleKeyPress(e, document.getElementById("submitbtn"))
                 }
