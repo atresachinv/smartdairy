@@ -17,6 +17,7 @@ const {
   checkZeroAmt,
   saveFixDeductions,
   fetchSelectedPayAmt,
+  checkPaymentExists,
 } = require("../Controllers/PaymentController");
 
 const router = express.Router();
@@ -48,6 +49,7 @@ router
 // ---------------------------------------------------------------------->
 // generate payment
 // ---------------------------------------------------------------------->
+router.route("/check/payment/exists").get(verifyToken, checkPaymentExists);
 router.route("/check/amt-zero").get(verifyToken, checkZeroAmt);
 router.route("/get/total/payment-amt").get(verifyToken, getMilkPayAmt);
 router.route("/save/milk/payment").post(verifyToken, saveFixDeductions);

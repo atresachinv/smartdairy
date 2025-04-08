@@ -1225,9 +1225,69 @@ exports.transferMilkCollToDate = async (req, res) => {
 };
 
 // <<<<<<<<<<< ----------------- Generate Payment -------------------->>>>>>>>>>>>>> //
+// ----------------------------------------------------------------------------------->
+// Check if Payment exists ----------------------------------------------------------->
+// ----------------------------------------------------------------------------------->
+
+exports.checkPaymentExists = async (req, res) => {
+  const { dairy_id, center_id } = req.user;
+  const { fromDate, toDate } = req.query;
+
+  if (!dairy_id) {
+    return res.status(401).json({ status: 401, message: "Unauthorised User!" });
+  }
+
+  if (!fromDate || !toDate) {
+    return res
+      .status(400)
+      .json({ status: 400, message: "fromDate and toDate are required!" });
+  }
+
+  pool.getConnection((err, connection) => {
+    if (err) {
+      console.error("Error getting MySQL connection: ", err.message);
+      return res
+        .status(500)
+        .json({ status: 500, message: "Database connection error" });
+    }
+
+    const fetchPaymentquery = `
+      SELECT 1 FROM custbilldetails
+      WHERE companyid = ? AND center_id = ? AND FromDate = ? AND ToDate = ?
+      LIMIT 1
+      `;
+
+    connection.query(
+      fetchPaymentquery,
+      [dairy_id, center_id, fromDate, toDate],
+      (err, results) => {
+        connection.release();
+
+        if (err) {
+          console.error("Error executing query: ", err.message);
+          return res
+            .status(500)
+            .json({ status: 500, message: "Error executing query" });
+        }
+
+        if (results.length === 0) {
+          return res.status(204).json({
+            status: 204,
+            message: "No record found for the given date range",
+          });
+        }
+
+        return res.status(200).json({
+          status: 200,
+          message: "Record exists for the given date range",
+        });
+      }
+    );
+  });
+};
 
 // ----------------------------------------------------------------------------------->
-// get payment avg fat snf ---------------------------------------------------------------->
+// get payment avg fat snf ----------------------------------------------------------->
 // ----------------------------------------------------------------------------------->
 
 exports.checkZeroAmt = async (req, res) => {
@@ -1364,347 +1424,6 @@ exports.getMilkPayAmt = async (req, res) => {
   Save FIx Deduction And Deduction 0 Entries */ //------------------------------------>
 //------------------------------------------------------------------------------------>
 
-// exports.saveFixDeductions = (req, res) => {
-//   const { dairy_id, center_id } = req.user;
-//   const { formData, PaymentFD } = req.body;
-//   const { billDate, vcDate, fromDate, toDate } = formData;
-
-//   console.log(billDate, vcDate, fromDate, toDate);
-
-//   // revice function i want save each record from PaymentFD
-//   // in sequence deductionId Asc
-//   // insure all records inserted
-
-//   if (!dairy_id) {
-//     return res
-//       .status(401)
-//       .json({ status: 401, message: "Dairy ID or center ID missing!" });
-//   }
-
-//   if (!fromDate || !toDate) {
-//     return res
-//       .status(400)
-//       .json({ status: 400, message: "fromDate and toDate are required!" });
-//   }
-//   console.log(PaymentFD);
-//   if (!Array.isArray(PaymentFD) || PaymentFD.length === 0) {
-//     return res
-//       .status(400)
-//       .json({ status: 400, message: "No payment data provided!" });
-//   }
-
-//   pool.getConnection((err, connection) => {
-//     if (err) {
-//       console.error("Connection error:", err);
-//       return res
-//         .status(500)
-//         .json({ status: 500, message: "Database connection failed!" });
-//     }
-
-//     const query = `
-//       SELECT MAX(CAST(BillNo AS UNSIGNED)) AS maxBillNo
-//       FROM custbilldetails
-//       WHERE companyid = ? AND center_id = ?
-//     `;
-
-//     connection.query(query, [dairy_id, center_id], (err, billRows) => {
-//       if (err) {
-//         connection.release();
-//         console.error("Query error:", err);
-//         return res
-//           .status(500)
-//           .json({ status: 500, message: "Failed to fetch bill number!" });
-//       }
-
-//       let billCounter = billRows[0].maxBillNo
-//         ? parseInt(billRows[0].maxBillNo)
-//         : 0;
-
-//       // Group data by rno
-//       const groupedByRno = PaymentFD.reduce((acc, item) => {
-//         if (item.rno) {
-//           if (!acc[item.rno]) acc[item.rno] = [];
-//           acc[item.rno].push(item);
-//         }
-//         return acc;
-//       }, {});
-
-//       const rnoKeys = Object.keys(groupedByRno);
-//       console.log("Grouped RNOs:", rnoKeys);
-
-//       const insertNextRno = (index) => {
-//         if (index >= rnoKeys.length) {
-//           connection.release();
-//           return res
-//             .status(200)
-//             .json({ status: 200, message: "Deductions saved successfully." });
-//         }
-
-//         const rno = rnoKeys[index];
-//         billCounter++;
-//         const billNo = billCounter.toString().padStart(4, "0");
-//         const records = groupedByRno[rno].sort(
-//           (a, b) => a.DeductionId - b.DeductionId
-//         );
-
-//         const insertNextRecord = (recIndex) => {
-//           if (recIndex >= records.length) {
-//             return insertNextRno(index + 1);
-//           }
-
-//           const row = records[recIndex];
-//           const {
-//             GLCode,
-//             DeductionId,
-//             dname,
-//             amt,
-//             totalamt,
-//             totalLitres,
-//             avgFat,
-//             avgSnf,
-//             avgRate,
-//             totalDeduction,
-//           } = row;
-//           ``;
-
-//           const insertQuery = `
-//             INSERT INTO custbilldetails
-//             (companyid, center_id, CBId, BillNo, BillDate, VoucherNo, VoucherDate,
-//             GLCode, Code, FromDate, ToDate, dname, DeductionId, Amt, MAMT, BAMT,
-//             tliters, afat, asnf, arate, pamt, damt, namt)
-//             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-//           `;
-
-//           const values = [
-//             dairy_id,
-//             center_id,
-//             0,
-//             billNo,
-//             billDate,
-//             billNo,
-//             vcDate,
-//             GLCode || null,
-//             rno,
-//             fromDate,
-//             toDate,
-//             dname || null,
-//             DeductionId,
-//             parseFloat(amt || 0).toFixed(2),
-//             0.0,
-//             0.0,
-//             parseFloat(totalLitres || 0).toFixed(2),
-//             parseFloat(avgFat || 0).toFixed(1),
-//             parseFloat(avgSnf || 0).toFixed(1),
-//             parseFloat(avgRate || 0).toFixed(2),
-//             parseFloat(totalamt || 0).toFixed(2),
-//             parseFloat(totalDeduction || 0).toFixed(2),
-//             parseFloat(amt || 0).toFixed(2),
-//           ];
-
-//           console.log("Inserting record:", values);
-
-//           connection.query(insertQuery, values, (err, results) => {
-//             if (err) {
-//               connection.release();
-//               console.error("Insert error:", err);
-//               return res.status(500).json({
-//                 status: 500,
-//                 message: "Failed to insert deduction data!",
-//               });
-//             }
-
-//             insertNextRecord(recIndex + 1);
-//           });
-//         };
-
-//         insertNextRecord(0);
-//       };
-
-//       insertNextRno(0);
-//     });
-//   });
-// };
-
-// exports.saveFixDeductions = (req, res) => {
-//   const { dairy_id, center_id } = req.user;
-//   const { formData, PaymentFD } = req.body;
-//   const { billDate, vcDate, fromDate, toDate } = formData;
-
-//   if (!dairy_id) {
-//     return res
-//       .status(401)
-//       .json({ status: 401, message: "Dairy ID or center ID missing!" });
-//   }
-//   if (!fromDate || !toDate) {
-//     return res
-//       .status(400)
-//       .json({ status: 400, message: "fromDate and toDate are required!" });
-//   }
-
-//   if (!Array.isArray(PaymentFD) || PaymentFD.length === 0) {
-//     return res
-//       .status(400)
-//       .json({ status: 400, message: "No payment data provided!" });
-//   }
-
-//   pool.getConnection((err, connection) => {
-//     if (err) {
-//       console.error("Connection error:", err);
-//       return res
-//         .status(500)
-//         .json({ status: 500, message: "Database connection failed!" });
-//     }
-
-//     connection.beginTransaction((err) => {
-//       if (err) {
-//         connection.release();
-//         return res
-//           .status(500)
-//           .json({ status: 500, message: "Failed to start transaction!" });
-//       }
-
-//       const query = `
-//         SELECT MAX(CAST(BillNo AS UNSIGNED)) AS maxBillNo
-//         FROM custbilldetails
-//         WHERE companyid = ? AND center_id = ?
-//       `;
-
-//       connection.query(query, [dairy_id, center_id], (err, billRows) => {
-//         if (err) {
-//           return connection.rollback(() => {
-//             connection.release();
-//             console.error("Query error:", err);
-//             return res
-//               .status(500)
-//               .json({ status: 500, message: "Failed to fetch bill number!" });
-//           });
-//         }
-
-//         let billCounter = billRows[0].maxBillNo
-//           ? parseInt(billRows[0].maxBillNo)
-//           : 0;
-
-//         // Group data by rno
-//         const groupedByRno = PaymentFD.reduce((acc, item) => {
-//           if (item.rno) {
-//             if (!acc[item.rno]) acc[item.rno] = [];
-//             acc[item.rno].push(item);
-//           }
-//           return acc;
-//         }, {});
-
-//         const rnoKeys = Object.keys(groupedByRno);
-//         console.log("Grouped RNOs:", rnoKeys);
-
-//         const insertNextRno = (index) => {
-//           if (index >= rnoKeys.length) {
-//             return connection.commit((commitErr) => {
-//               connection.release();
-//               if (commitErr) {
-//                 console.error("Commit error:", commitErr);
-//                 return res
-//                   .status(500)
-//                   .json({
-//                     status: 500,
-//                     message: "Failed to commit transaction!",
-//                   });
-//               }
-//               return res
-//                 .status(200)
-//                 .json({
-//                   status: 200,
-//                   message: "Deductions saved successfully.",
-//                 });
-//             });
-//           }
-
-//           const rno = rnoKeys[index];
-//           billCounter++;
-//           const billNo = billCounter.toString().padStart(4, "0");
-//           const records = groupedByRno[rno].sort(
-//             (a, b) => a.DeductionId - b.DeductionId
-//           );
-
-//           const insertNextRecord = (recIndex) => {
-//             if (recIndex >= records.length) {
-//               return insertNextRno(index + 1);
-//             }
-
-//             const row = records[recIndex];
-//             const {
-//               GLCode,
-//               DeductionId,
-//               dname,
-//               amt,
-//               totalamt,
-//               totalLitres,
-//               avgFat,
-//               avgSnf,
-//               avgRate,
-//               totalDeduction,
-//             } = row;
-
-//             const insertQuery = `
-//               INSERT INTO custbilldetails
-//               (companyid, center_id, CBId, BillNo, BillDate, VoucherNo, VoucherDate,
-//                GLCode, Code, FromDate, ToDate, dname, DeductionId, Amt, MAMT, BAMT,
-//                tliters, afat, asnf, arate, pamt, damt, namt)
-//               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-//             `;
-
-//             const values = [
-//               dairy_id,
-//               center_id,
-//               0,
-//               billNo,
-//               billDate,
-//               billNo,
-//               vcDate,
-//               GLCode || DeductionId === 0 ? 28 : null ,
-//               rno,
-//               fromDate,
-//               toDate,
-//               dname || null,
-//               DeductionId,
-//               Number(parseFloat(amt || 0).toFixed(2)),
-//               0.0,
-//               0.0,
-//               Number(parseFloat(totalLitres || 0).toFixed(2)),
-//               Number(parseFloat(avgFat || 0).toFixed(1)),
-//               Number(parseFloat(avgSnf || 0).toFixed(1)),
-//               Number(parseFloat(avgRate || 0).toFixed(2)),
-//               Number(parseFloat(totalamt || 0).toFixed(2)),
-//               Number(parseFloat(totalDeduction || 0).toFixed(2)),
-//               Number(parseFloat(amt || 0).toFixed(2)),
-//             ];
-
-//             console.log("Inserting record:", values);
-
-//             connection.query(insertQuery, values, (err, results) => {
-//               if (err) {
-//                 return connection.rollback(() => {
-//                   connection.release();
-//                   console.error("Insert error:", err);
-//                   return res.status(500).json({
-//                     status: 500,
-//                     message: "Failed to insert deduction data!",
-//                   });
-//                 });
-//               }
-
-//               insertNextRecord(recIndex + 1);
-//             });
-//           };
-
-//           insertNextRecord(0);
-//         };
-
-//         insertNextRno(0);
-//       });
-//     });
-//   });
-// };
-
 exports.saveFixDeductions = (req, res) => {
   const { dairy_id, center_id } = req.user;
   const { formData, PaymentFD } = req.body;
@@ -1826,8 +1545,6 @@ exports.saveFixDeductions = (req, res) => {
               totalDeduction,
             } = row;
 
-            console.log(row);
-
             const insertQuery = `
               INSERT INTO custbilldetails
               (companyid, center_id, CBId, BillNo, BillDate, VoucherNo, VoucherDate,
@@ -1844,7 +1561,7 @@ exports.saveFixDeductions = (req, res) => {
               billDate,
               billNo,
               vcDate,
-              GLCode || DeductionId === 0 ? 28 : null,
+              GLCode || null,
               row.rno !== undefined ? row.rno : null,
               fromDate,
               toDate,
@@ -2061,7 +1778,7 @@ exports.fetchSelectedPayAmt = async (req, res) => {
       SELECT  BillNo, Code, GLCode, Amt, DeductionId, dname, MAMT, BAMT, afat, asnf, arate, tliters, pamt, damt, namt 
         FROM custbilldetails
         WHERE companyid = ? AND center_id = ? AND FromDate = ? AND ToDate = ? 
-        ORDER BY DeductionId ASC;
+        ORDER BY DeductionId ASC, Code ASC;
       `;
 
     connection.query(
