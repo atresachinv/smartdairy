@@ -4,7 +4,7 @@ import { Route, Routes } from "react-router-dom";
 import Dashboard from "./Dashboard";
 import Inventory from "../Inventory/Inventory";
 
-const MainDashboard = () => {
+const Maindashboard = () => {
   const [isselected, setIsSelected] = useState(0);
 
   return (
@@ -26,4 +26,4 @@ const MainDashboard = () => {
   );
 };
 
-export default MainDashboard;
+export default Maindashboard;
