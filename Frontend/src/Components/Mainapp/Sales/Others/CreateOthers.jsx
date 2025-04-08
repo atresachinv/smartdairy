@@ -91,7 +91,7 @@ const CreateOthers = () => {
         (customer) => customer.srno === parseInt(fcode)
       );
       setCname(customer?.cname || "");
-      setMobile(customer?.mobile || "");
+      setMobile(customer?.Phone || customer?.mobile || "");
     } else {
       setCname("");
       setMobile("");
@@ -225,7 +225,7 @@ const CreateOthers = () => {
             }
             let cName = `${customer.srno}-${customer.cname}`;
             sendMessage({
-              to: customer.Phone,
+              to: customer.Phone || customer.mobile,
               dName: dairyInfo,
               cName: cName,
               date: formatDateToDDMMYYYY(date),
