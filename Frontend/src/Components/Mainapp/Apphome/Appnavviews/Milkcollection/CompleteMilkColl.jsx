@@ -12,6 +12,9 @@ import "../../../../../Styles/Mainapp/Apphome/Appnavview/Milkcollection.css";
 import Spinner from "../../../../Home/Spinner/Spinner";
 import { listEmployee } from "../../../../../App/Features/Mainapp/Masters/empMasterSlice";
 import { getRateCharts } from "../../../../../App/Features/Mainapp/Masters/rateChartSlice";
+import axiosInstance from "../../../../../App/axiosInstance";
+import { store } from "../../../../../App/Store";
+import { saveMessage } from "../../../../../App/Features/Mainapp/Dairyinfo/smsSlice";
 
 const CompleteMilkColl = () => {
   const { t } = useTranslation(["milkcollection", "common"]);
@@ -505,7 +508,18 @@ const CompleteMilkColl = () => {
     };
     try {
       const response = await axiosInstance.post("/send-message", requestBody);
-      toast.success("Whatsapp message send successfully...");
+      if (response?.data.success) {
+        toast.success("Whatsapp message send successfully...");
+        const smsData = {
+          smsStatus: "Sent",
+          mono: values.mobile,
+          custCode: values.code,
+          rNo: "8600",
+          smsText: requestBody,
+        };
+
+        store.dispatch(saveMessage(smsData));
+      }
     } catch (error) {
       toast.error("Error in whatsapp message sending...");
     }
@@ -547,7 +561,11 @@ const CompleteMilkColl = () => {
         settings.whsms === 1 &&
         settings.cmillcoll === 1
       ) {
-        sendMessage();
+        if (values.mobile.length === 10 && values.mobile !== "0000000000") {
+          sendMessage();
+        } else {
+          toast.warn("Mobile number is not valid");
+        }
       }
       smapleRef.current.focus();
     } catch (error) {

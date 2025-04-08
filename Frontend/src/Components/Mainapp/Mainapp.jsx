@@ -74,6 +74,7 @@ import Deductionlist from "./Reports/Deductionlist/Deductionlist";
 import DoctorMaster from "./Masters/MasterPages/DoctorMaster";
 import WhatsappSms from "./DairyInfo/Centers/WhatsappSms";
 import Inventory from "./Inventory/Inventory";
+import MainDashboard from "./Dashboard/MainDashboard";
 
 const Mainapp = () => {
   const dispatch = useDispatch();
@@ -180,7 +181,7 @@ const Mainapp = () => {
           <Routes>
             {/* dashboard route */}
             {userRoutes.includes("dashboard") && (
-              <Route path="dashboard/*" element={<Dashboard />} />
+              <Route path="dashboard/*" element={<MainDashboard />} />
             )}
             {/* <Route path="dashboard/*" element={<Dashboard />} /> */}
             {/* milk purchase routes */}

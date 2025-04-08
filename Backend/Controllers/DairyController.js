@@ -1448,7 +1448,6 @@ exports.deleteMilkSangha = (req, res) => {
 
 exports.createDairyInitInfo = (req, res) => {
   const {
-    id,
     CashOnHandGlcode,
     CashOnHandAmt,
     ClosingDate,
@@ -1507,38 +1506,39 @@ exports.createDairyInitInfo = (req, res) => {
     connection.query(
       insertQuery,
       [
-        0,
-        0,
-        53,
-        500000,
-        "2015-03-31",
-        100000.0,
-        262,
-        266,
-        270,
-        248,
-        224,
-        28,
-        100,
-        0,
-        0,
-        55,
-        2,
-        107,
-        243,
-        239,
-        26,
-        133,
-        133,
-        133,
-        133,
-        35000,
-        155,
-        95,
-        114,
-        379,
-        0,
+        dairy_id,
+        center_id,
+        CashOnHandGlcode,
+        CashOnHandAmt,
+        ClosingDate,
+        PLGLCode,
+        PreviousPLGLCode,
+        TreadingPLGlCode,
+        ShareCapitalAmt,
+        MilkPurchaseGL,
+        MilkSaleGL,
+        MilkPurchasePaybleGL,
+        MilkSaleRecivableGl,
+        AllowSameUserPassing,
+        RebateGlCode,
+        BankCurrentAccount,
+        RoundAmtGL,
+        saleincomeGL,
+        ArambhiShillakMalGL,
+        AkherShillakMal,
+        anamatGlcode,
+        MilkCommisionAndAnudan,
+        ribetIncome,
+        ribetExpense,
+        milkRateDiff,
+        CashOnHandAmt_3,
+        chillinggl,
+        advGL,
+        kirkolmilksale_yene,
+        ghutnashgl,
+        transportgl,
       ],
+
       (err, result) => {
         connection.release();
         if (err) {
@@ -1761,7 +1761,7 @@ exports.updateDairyInitInfo = (req, res) => {
   } = req.body.formData;
 
   const { dairy_id, user_id } = req.user;
-  console.log("hello");
+  // console.log("hello");
   if (!dairy_id) {
     return res.status(401).json({ status: 401, message: "Unauthorized User!" });
   }
@@ -1785,7 +1785,7 @@ exports.updateDairyInitInfo = (req, res) => {
           TreadingPLGlCode = ?, ShareCapitalAmt = ?, MilkPurchaseGL = ?, MilkSaleGL = ?, MilkPurchasePaybleGL = ?, MilkSaleRecivableGl = ?,
           RebateGlCode = ?, BankCurrentAccount = ?, RoundAmtGL = ?, saleincomeGL = ?, ArambhiShillakMalGL = ?,
           AkherShillakMal = ?, anamatGlcode = ?, MilkCommisionAndAnudan = ?, ribetIncome = ?, ribetExpense = ?, milkRateDiff = ?,
-          CashOnHandAmt_3 = ?, chillinggl = ?, advGL = ?, kirkolmilksale_yene = ?, ghutnashgl = ?, transportgl
+          CashOnHandAmt_3 = ?, chillinggl = ?, advGL = ?, kirkolmilksale_yene = ?, ghutnashgl = ?, transportgl=?
         WHERE id = ?
       `;
 
@@ -1830,7 +1830,7 @@ exports.updateDairyInitInfo = (req, res) => {
             .status(500)
             .json({ status: 500, message: "Error in updating data!" });
         }
-        console.log("result");
+        // console.log("result");
         return res
           .status(200)
           .json({ status: 200, message: "Record updated successfully!" });
@@ -1869,7 +1869,7 @@ exports.fetchDairyInitInfo = (req, res) => {
           .status(500)
           .json({ status: 500, message: "Error in fetching data!" });
       }
-      const initialInfo = results[0];
+      const initialInfo = results[0] || {};
       return res.status(200).json({ status: 200, initialInfo });
     });
   });

@@ -610,7 +610,7 @@ const Inventory = () => {
 
   return (
     <div className="w100 h1 d-flex-col">
-      <div className="heading w100 d-flex j-center">Inventory Dashboard</div>
+      <div className="heading w100 d-flex j-center">इन्व्हेंटरी डॅशबोर्ड</div>
       <div
         style={{
           width: "100%",
