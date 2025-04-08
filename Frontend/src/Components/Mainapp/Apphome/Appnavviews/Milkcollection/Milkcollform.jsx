@@ -502,6 +502,8 @@ const MilkColleform = ({ switchToSettings, times }) => {
   // ------------------------------------------------------------------------------------->
   // Send Milk Collection Whatsapp Message ------------------------------------------------>
 
+  const datetime = `${values.date}_${values.shift === 0 ? "M" : "E"}`;
+
   const sendMessage = async () => {
     const requestBody = {
       messaging_product: "whatsapp",
@@ -525,7 +527,7 @@ const MilkColleform = ({ switchToSettings, times }) => {
               { type: "text", text: values.amt },
               { type: "text", text: "--" },
               { type: "text", text: dairyphone },
-              { type: "text", text: tDate },
+              { type: "text", text: datetime },
             ],
           },
         ],
@@ -534,22 +536,12 @@ const MilkColleform = ({ switchToSettings, times }) => {
     try {
       const response = await axiosInstance.post("/send-message", requestBody);
       toast.success("Whatsapp message send successfully...");
-      console.log("Response:", response.data);
+      // console.log("Response:", response.data);
     } catch (error) {
       toast.error("Error in whatsapp message sending...");
       console.error("Error sending message:", error);
     }
   };
-
-  // const shareOnWhatsApp = async () => {
-  //   // const phoneNumber = `91${values.mobile}`;
-  //   const phoneNumber = `8669340801`;
-  //   const message = encodeURIComponent(
-  //     "Check out this amazing app! Download it here: https://play.google.com/store/apps/details?id=com.yourapp.package"
-  //   );
-
-  //   window.open(`https://wa.me/${phoneNumber}?text=${message}`, "_blank");
-  // };
 
   // handle enter press move cursor to next refrence Input -------------------------------->
   const handleKeyDown = (e, nextRef) => {
@@ -723,7 +715,11 @@ const MilkColleform = ({ switchToSettings, times }) => {
           settings.whsms === 1 &&
           settings.millcoll === 1
         ) {
-          sendMessage();
+          if (values.mobile.length === 10 && values.mobile !== "0000000000") {
+            sendMessage();
+          } else {
+            toast.warn("Mobile number is not valid, message not sent!");
+          }
         }
         codeInputRef.current.focus();
       } else {

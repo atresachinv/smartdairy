@@ -299,7 +299,6 @@ const CompleteMilkColl = () => {
       const parsedSnf = parseFloat(snf);
       const parsedLiters = parseFloat(liters);
       // const degree = (parsedFat * parsedSnf).toFixed(2);
-      console.log("ratechart type name", rcName);
       // console.log(milkRateChart);
       const rateEntry = milkRateChart.find(
         (entry) =>
@@ -307,7 +306,6 @@ const CompleteMilkColl = () => {
           entry.snf === parsedSnf &&
           entry.rctypename === rcName
       );
-      console.log("ratechart", rateEntry);
       if (rateEntry) {
         const rate = parseFloat(rateEntry.rate);
         const amount = rate * parsedLiters;
@@ -477,7 +475,7 @@ const CompleteMilkColl = () => {
   // ------------------------------------------------------------------------------------------->
 
   // Send Milk Collection Whatsapp Message ----------------------------------------------------->
-
+  const datetime = `${values.date}_${values.shift === 0 ? "M" : "E"}`;
   const sendMessage = async () => {
     const requestBody = {
       messaging_product: "whatsapp",
@@ -492,7 +490,7 @@ const CompleteMilkColl = () => {
             type: "body",
             parameters: [
               { type: "text", text: values.cname },
-              { type: "text", text: values.date },
+              { type: "text", text: datetime },
               { type: "text", text: dairyname },
               { type: "text", text: values.code },
               { type: "text", text: values.liters },
@@ -506,6 +504,7 @@ const CompleteMilkColl = () => {
         ],
       },
     };
+    
     try {
       const response = await axiosInstance.post("/send-message", requestBody);
       if (response?.data.success) {
@@ -564,7 +563,7 @@ const CompleteMilkColl = () => {
         if (values.mobile.length === 10 && values.mobile !== "0000000000") {
           sendMessage();
         } else {
-          toast.warn("Mobile number is not valid");
+          toast.warn("Mobile number is not valid, message not sent!");
         }
       }
       smapleRef.current.focus();
