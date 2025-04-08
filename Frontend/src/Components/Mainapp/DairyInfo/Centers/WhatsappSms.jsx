@@ -83,7 +83,7 @@ const WhatsappSms = () => {
                 ))
             ) : (
               <tr>
-                <td colSpan="6" className=" text-center">
+                <td colSpan="6" style={{ textAlign: "center" }}>
                   No data available
                 </td>
               </tr>
