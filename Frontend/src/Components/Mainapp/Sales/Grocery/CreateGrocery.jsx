@@ -13,7 +13,7 @@ import Invoice from "../Invoice";
 import "../../../../Styles/Mainapp/Sales/Sales.css";
 import { toWords } from "number-to-words";
 import { sendMessage } from "../WhatsAppSender";
-
+import Select from "react-select";
 const CreateGrocery = () => {
   const dispatch = useDispatch();
   const { t } = useTranslation(["common", "milkcollection", "puchasesale"]);
@@ -98,6 +98,11 @@ const CreateGrocery = () => {
     }
   }, [fcode, customerslist]);
 
+   
+  const custOptions2 = customerslist.map((item) => ({
+    value: item.srno,
+    label: item.cname,
+  }));
   // ----------------------------------------------------------------------------->
   // find rate and amount for perticular item ----------------------------------->
   useEffect(() => {
@@ -847,29 +852,28 @@ const CreateGrocery = () => {
                   <></>
                 )}
               </label>
-              <input
-                type="text"
-                name="fname"
-                id="custname"
-                list="farmer-list"
-                className="data w100"
-                value={cname}
-                onChange={(e) => setCname(e.target.value)}
-                onFocus={handleFocus}
-                onKeyDown={(e) =>
-                  handleKeyPress(e, document.getElementById("items"))
+              <Select
+                options={custOptions2}
+                className=" mx10 w100"
+                placeholder=""
+                isSearchable
+                styles={{
+                  menu: (provided) => ({
+                    ...provided,
+                    zIndex: 200,
+                  }),
+                }}
+                value={
+                  fcode
+                    ? custOptions2.find((option) => option.value === fcode)
+                    : null
                 }
-                disabled={cartItem.length > 0}
+                onChange={(selectedOption) => {
+                  setCname(selectedOption.label);
+                  setFcode(selectedOption.value);
+                }}
+                isDisabled={cartItem.length > 0}
               />
-              <datalist id="farmer-list">
-                {customerslist
-                  .filter((customer) =>
-                    customer.cname.toLowerCase().includes(cname.toLowerCase())
-                  )
-                  .map((customer, index) => (
-                    <option key={index} value={customer.cname} />
-                  ))}
-              </datalist>
             </div>
           </div>
           <div className="sales-details w100 h20 d-flex a-center sb ">

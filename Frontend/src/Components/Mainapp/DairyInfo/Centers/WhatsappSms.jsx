@@ -29,6 +29,18 @@ const WhatsappSms = () => {
     fetchData();
   }, []);
 
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return new Intl.DateTimeFormat("en-IN", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true,
+    }).format(date);
+  };
+
   return (
     <div className="d-flex-col h1 w100">
       <div className="w100 h10 d-flex heading j-center a-center">
@@ -50,6 +62,7 @@ const WhatsappSms = () => {
               <th>mono</th>
               <th>status</th>
               <th>smsDate</th>
+              <th>template</th>
             </tr>
           </thead>
           <tbody>
@@ -64,7 +77,8 @@ const WhatsappSms = () => {
                     <td>{item.custCode}</td>
                     <td>{item.mono}</td>
                     <td>{item.smsStatus}</td>
-                    <td>{item.smsDate}</td>
+                    <td>{formatDate(item.smsDate)}</td>
+                    <td>{JSON.parse(item.smsText).template.name}</td>
                   </tr>
                 ))
             ) : (
