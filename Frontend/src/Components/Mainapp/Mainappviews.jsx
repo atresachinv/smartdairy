@@ -44,6 +44,7 @@ import MedicinesMaster from "./Sales/Medicines/MedicinesMaster";
 import OthersMaster from "./Sales/Others/OthersMaster";
 import Dealers from "./Inventory/InventroyPages/Dealers/Dealers";
 import Products from "./Inventory/InventroyPages/Products/Products";
+import DayBook from "./Accounts/Credit/DayBook";
 // import MilkReports from "./Reports/MilkReports/MilkReports";
 // import MilkcollectionReports from "./Reports/MilkReports/MilkcollectionReports";
 
@@ -69,6 +70,8 @@ const Mainappviews = ({ index }) => {
 
     case 3:
       return <Accounts />;
+      case 3.1:
+        return <DayBook/>
     // Master Submenus
     case 4.1:
       return <MainLedger />;

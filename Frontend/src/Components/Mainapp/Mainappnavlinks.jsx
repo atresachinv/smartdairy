@@ -261,6 +261,13 @@ const Mainappnavlinks = ({ setselected, handleSidebar }) => {
           path: "accounts/transfer",
           role: ["admin", "super_admin", "manager"],
         },
+        {
+          name: `${t("डे बुक")}`,
+          icon: <FaFileInvoice className="icon" />,
+          index: 4.22,
+          path: "accounts/daybook",
+          role: ["admin", "super_admin", "manager"],
+        },
       ],
     },
     {
