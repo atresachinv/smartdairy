@@ -303,7 +303,7 @@ export const checkPayExists = createAsyncThunk(
       return response.data;
     } catch (error) {
       const errorMessage =
-        error.response?.data?.message || "Failed to check amt zero.";
+        error.response?.data?.message || "Failed to check payment exits.";
       return rejectWithValue(errorMessage);
     }
   }

@@ -1233,53 +1233,60 @@ exports.checkPaymentExists = async (req, res) => {
   const { dairy_id, center_id } = req.user;
   const { fromDate, toDate } = req.query;
 
+  // Basic validation
   if (!dairy_id) {
-    return res.status(401).json({ status: 401, message: "Unauthorised User!" });
+    return res.status(401).json({ status: 401, message: "Unauthorized User!" });
   }
 
   if (!fromDate || !toDate) {
-    return res
-      .status(400)
-      .json({ status: 400, message: "fromDate and toDate are required!" });
+    return res.status(400).json({
+      status: 400,
+      message: "fromDate and toDate are required!",
+    });
   }
 
+  // Get DB connection
   pool.getConnection((err, connection) => {
     if (err) {
-      console.error("Error getting MySQL connection: ", err.message);
-      return res
-        .status(500)
-        .json({ status: 500, message: "Database connection error" });
+      console.error("DB Connection Error:", err.message);
+      return res.status(500).json({
+        status: 500,
+        message: "Database connection error",
+      });
     }
 
-    const fetchPaymentquery = `
+    const query = `
       SELECT 1 FROM custbilldetails
       WHERE companyid = ? AND center_id = ? AND FromDate = ? AND ToDate = ?
       LIMIT 1
-      `;
+    `;
 
     connection.query(
-      fetchPaymentquery,
+      query,
       [dairy_id, center_id, fromDate, toDate],
       (err, results) => {
-        connection.release();
+        connection.release(); // Always release the connection
 
         if (err) {
-          console.error("Error executing query: ", err.message);
-          return res
-            .status(500)
-            .json({ status: 500, message: "Error executing query" });
+          console.error("Query Error:", err.message);
+          return res.status(500).json({
+            status: 500,
+            message: "Error executing query",
+          });
         }
 
         if (results.length === 0) {
-          return res.status(204).json({
-            status: 204,
-            message: "No record found for the given date range",
+          return res.status(200).json({
+            status: 200,
+            found: false,
+            message: "No payment record found for the given date range",
           });
         }
 
         return res.status(200).json({
           status: 200,
-          message: "Record exists for the given date range",
+          found: true,
+          message: "Payment record exists for the given date range",
         });
       }
     );
@@ -1383,7 +1390,9 @@ exports.getMilkPayAmt = async (req, res) => {
             SUM(Litres * rate) AS totalamt,
             MIN(ReceiptDate) AS min_receipt_date,
             SUM(Litres * fat) / SUM(Litres) AS avgFat, 
-            SUM(Litres * snf) / SUM(Litres) AS avgSnf
+            SUM(Litres * snf) / SUM(Litres) AS avgSnf,
+            SUM(CASE WHEN ME = 0 THEN Litres ELSE 0 END) AS mrgMilk,
+            SUM(CASE WHEN ME = 1 THEN Litres ELSE 0 END) AS eveMilk
         FROM 
             ${dairy_table}
         WHERE 
@@ -1423,6 +1432,188 @@ exports.getMilkPayAmt = async (req, res) => {
 /* Save bill on generate button click ------------------------------------------------>
   Save FIx Deduction And Deduction 0 Entries */ //------------------------------------>
 //------------------------------------------------------------------------------------>
+
+// exports.saveFixDeductions = (req, res) => {
+//   const { dairy_id, center_id } = req.user;
+//   const { formData, PaymentFD } = req.body;
+//   const { billDate, vcDate, fromDate, toDate } = formData;
+
+//   // Validate required fields
+//   if (!dairy_id) {
+//     return res
+//       .status(401)
+//       .json({ status: 401, message: "Dairy ID or center ID missing!" });
+//   }
+//   if (!fromDate || !toDate) {
+//     return res
+//       .status(400)
+//       .json({ status: 400, message: "fromDate and toDate are required!" });
+//   }
+//   if (!Array.isArray(PaymentFD) || PaymentFD.length === 0) {
+//     return res
+//       .status(400)
+//       .json({ status: 400, message: "No payment data provided!" });
+//   }
+
+//   pool.getConnection((err, connection) => {
+//     if (err) {
+//       console.error("Connection error:", err);
+//       return res
+//         .status(500)
+//         .json({ status: 500, message: "Database connection failed!" });
+//     }
+
+//     connection.beginTransaction((err) => {
+//       if (err) {
+//         connection.release();
+//         return res
+//           .status(500)
+//           .json({ status: 500, message: "Failed to start transaction!" });
+//       }
+
+//       const query = `
+//         SELECT MAX(CAST(BillNo AS UNSIGNED)) AS maxBillNo
+//         FROM custbilldetails
+//         WHERE companyid = ? AND center_id = ?
+//       `;
+//       connection.query(query, [dairy_id, center_id], (err, billRows) => {
+//         if (err) {
+//           return connection.rollback(() => {
+//             connection.release();
+//             return res
+//               .status(500)
+//               .json({ status: 500, message: "Failed to fetch bill number!" });
+//           });
+//         }
+
+//         let billCounter = billRows[0].maxBillNo
+//           ? parseInt(billRows[0].maxBillNo)
+//           : 0;
+
+//         // Group PaymentFD sequentially.
+//         // We assume that when a row has an rno property defined, it marks the end of a group.
+//         const groups = [];
+//         let currentGroup = [];
+//         PaymentFD.forEach((row) => {
+//           currentGroup.push(row);
+//           if (row.rno !== undefined) {
+//             groups.push(currentGroup);
+//             currentGroup = [];
+//           }
+//         });
+//         // If any rows remain ungrouped, add them as a final group.
+//         if (currentGroup.length > 0) groups.push(currentGroup);
+
+//         // Function to process each group sequentially.
+//         const insertNextGroup = (groupIndex) => {
+//           if (groupIndex >= groups.length) {
+//             // All groups processed; commit the transaction.
+//             return connection.commit((commitErr) => {
+//               connection.release();
+//               if (commitErr) {
+//                 console.error("Commit error:", commitErr);
+//                 return res.status(500).json({
+//                   status: 500,
+//                   message: "Failed to commit transaction!",
+//                 });
+//               }
+//               return res.status(200).json({
+//                 status: 200,
+//                 message: "Deductions saved successfully.",
+//               });
+//             });
+//           }
+
+//           // Increase bill counter and assign a new bill number for this group.
+//           billCounter++;
+//           const billNo = billCounter.toString().padStart(4, "0");
+
+//           // Sort records within the group by DeductionId in ascending order.
+//           const records = groups[groupIndex].sort(
+//             (a, b) => a.DeductionId - b.DeductionId
+//           );
+
+//           // Function to insert each record in the group sequentially.
+//           const insertNextRecord = (recIndex) => {
+//             if (recIndex >= records.length) {
+//               // Group finished; process next group.
+//               return insertNextGroup(groupIndex + 1);
+//             }
+
+//             const row = records[recIndex];
+//             const {
+//               GLCode,
+//               DeductionId,
+//               dname,
+//               amt,
+//               totalamt,
+//               totalLitres,
+//               avgFat,
+//               avgSnf,
+//               avgRate,
+//               totalDeduction,
+//             } = row;
+
+//             const insertQuery = `
+//               INSERT INTO custbilldetails
+//               (companyid, center_id, CBId, BillNo, BillDate, VoucherNo, VoucherDate,
+//                GLCode, Code, FromDate, ToDate, dname, DeductionId, Amt, MAMT, BAMT,
+//                tliters, afat, asnf, arate, pamt, damt, namt)
+//               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+//             `;
+
+//             const values = [
+//               dairy_id,
+//               center_id,
+//               0,
+//               billNo,
+//               billDate,
+//               billNo,
+//               vcDate,
+//               GLCode || null,
+//               row.rno !== undefined ? row.rno : null,
+//               fromDate,
+//               toDate,
+//               dname || null,
+//               DeductionId,
+//               Number(parseFloat(amt || 0).toFixed(2)),
+//               0.0,
+//               0.0,
+//               Number(parseFloat(totalLitres || 0).toFixed(2)),
+//               Number(parseFloat(avgFat || 0).toFixed(1)),
+//               Number(parseFloat(avgSnf || 0).toFixed(1)),
+//               Number(parseFloat(avgRate || 0).toFixed(2)),
+//               Number(parseFloat(totalamt || 0).toFixed(2)),
+//               Number(parseFloat(totalDeduction || 0).toFixed(2)),
+//               Number(parseFloat(amt || 0).toFixed(2)),
+//             ];
+
+//             connection.query(insertQuery, values, (err, results) => {
+//               if (err) {
+//                 return connection.rollback(() => {
+//                   connection.release();
+//                   console.error("Insert error:", err);
+//                   return res.status(500).json({
+//                     status: 500,
+//                     message: "Failed to insert deduction data!",
+//                   });
+//                 });
+//               }
+//               // Insert next record in this group.
+//               insertNextRecord(recIndex + 1);
+//             });
+//           };
+
+//           // Start inserting records for this group.
+//           insertNextRecord(0);
+//         };
+
+//         // Start processing groups.
+//         insertNextGroup(0);
+//       });
+//     });
+//   });
+// };
 
 exports.saveFixDeductions = (req, res) => {
   const { dairy_id, center_id } = req.user;
@@ -1481,24 +1672,21 @@ exports.saveFixDeductions = (req, res) => {
           ? parseInt(billRows[0].maxBillNo)
           : 0;
 
-        // Group PaymentFD sequentially.
-        // We assume that when a row has an rno property defined, it marks the end of a group.
-        const groups = [];
-        let currentGroup = [];
-        PaymentFD.forEach((row) => {
-          currentGroup.push(row);
-          if (row.rno !== undefined) {
-            groups.push(currentGroup);
-            currentGroup = [];
+        // Group PaymentFD by rno
+        const groupedByRno = PaymentFD.reduce((acc, row) => {
+          const rno = row.rno || "no_rno"; // Use a fallback key if rno is undefined
+          if (!acc[rno]) {
+            acc[rno] = [];
           }
-        });
-        // If any rows remain ungrouped, add them as a final group.
-        if (currentGroup.length > 0) groups.push(currentGroup);
+          acc[rno].push(row);
+          return acc;
+        }, {});
 
-        // Function to process each group sequentially.
-        const insertNextGroup = (groupIndex) => {
-          if (groupIndex >= groups.length) {
-            // All groups processed; commit the transaction.
+        // Process each group
+        const rnoKeys = Object.keys(groupedByRno);
+        const processNextGroup = (groupIndex) => {
+          if (groupIndex >= rnoKeys.length) {
+            // All groups processed; commit the transaction
             return connection.commit((commitErr) => {
               connection.release();
               if (commitErr) {
@@ -1515,23 +1703,19 @@ exports.saveFixDeductions = (req, res) => {
             });
           }
 
-          // Increase bill counter and assign a new bill number for this group.
+          // Assign a new bill number for the current group
           billCounter++;
           const billNo = billCounter.toString().padStart(4, "0");
+          const groupRows = groupedByRno[rnoKeys[groupIndex]];
 
-          // Sort records within the group by DeductionId in ascending order.
-          const records = groups[groupIndex].sort(
-            (a, b) => a.DeductionId - b.DeductionId
-          );
-
-          // Function to insert each record in the group sequentially.
+          // Insert each record in the group
           const insertNextRecord = (recIndex) => {
-            if (recIndex >= records.length) {
-              // Group finished; process next group.
-              return insertNextGroup(groupIndex + 1);
+            if (recIndex >= groupRows.length) {
+              // Group finished; process next group
+              return processNextGroup(groupIndex + 1);
             }
 
-            const row = records[recIndex];
+            const row = groupRows[recIndex];
             const {
               GLCode,
               DeductionId,
@@ -1590,17 +1774,17 @@ exports.saveFixDeductions = (req, res) => {
                   });
                 });
               }
-              // Insert next record in this group.
+              // Insert next record in this group
               insertNextRecord(recIndex + 1);
             });
           };
 
-          // Start inserting records for this group.
+          // Start inserting records for this group
           insertNextRecord(0);
         };
 
-        // Start processing groups.
-        insertNextGroup(0);
+        // Start processing groups
+        processNextGroup(0);
       });
     });
   });
@@ -1775,7 +1959,7 @@ exports.fetchSelectedPayAmt = async (req, res) => {
     }
 
     const fetchPaymentquery = `
-      SELECT  BillNo, Code, GLCode, Amt, DeductionId, dname, MAMT, BAMT, afat, asnf, arate, tliters, pamt, damt, namt 
+      SELECT  BillNo, BillDate, Code, GLCode, Amt, DeductionId, dname, MAMT, BAMT, afat, asnf, arate, tliters, pamt, damt, namt 
         FROM custbilldetails
         WHERE companyid = ? AND center_id = ? AND FromDate = ? AND ToDate = ? 
         ORDER BY DeductionId ASC, Code ASC;

@@ -435,6 +435,10 @@
 .noti-title {
   color: #34078e;
 }
+.read-onlytxt {
+  color: #000000;
+  background-color: #d8d8d8;
+}
 /* Titles and text */
 
 /* error classes */

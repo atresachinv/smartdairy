@@ -26,8 +26,15 @@ const CompleteMilkColl = () => {
     (state) =>
       state.dairy.dairyData.SocietyName || state.dairy.dairyData.center_name
   );
+  const centerid = useSelector(
+    (state) =>
+      state.dairy.dairyData.center_id || state.dairy.dairyData.center_id
+  );
   const dairyphone = useSelector(
     (state) => state.dairy.dairyData.PhoneNo || state.dairy.dairyData.mobile
+  );
+  const customerlist = useSelector(
+    (state) => state.customers.customerlist || []
   );
   const milkcollRatechart = useSelector((state) => state.ratechart.rateChart);
   const sankalak = useSelector((state) => state.userinfo.profile.emp_name);
@@ -263,15 +270,15 @@ const CompleteMilkColl = () => {
 
   //------------------------------------------------------------------------------------------------->
 
-  // Effect to load customer list from local storage
+  // Effect to load customer list from local storage ------------------------------------------>
   useEffect(() => {
-    const storedCustomerList = localStorage.getItem("customerlist");
-    if (storedCustomerList) {
-      setCustomerList(JSON.parse(storedCustomerList));
-    }
-  }, [dispatch]);
+    const custLists = customerlist.filter(
+      (customer) => customer.centerid === centerid
+    );
+    setCustomerList(custLists);
+  }, [customerlist]);
 
-  // // Retrieve the stored rate chart from localStorage on component mount ---------------------------->
+  // Retrieve the stored rate chart from localStorage on component mount ---------------------------->
   // useEffect(() => {
   //   const storedRateChart = localStorage.getItem("milkcollrcharts");
   //   if (storedRateChart) {
@@ -475,7 +482,8 @@ const CompleteMilkColl = () => {
   // ------------------------------------------------------------------------------------------->
 
   // Send Milk Collection Whatsapp Message ----------------------------------------------------->
-  const datetime = `${values.date}_${values.shift === 0 ? "M" : "E"}`;
+  const datetime = `${values.date}_${values.shift === 0 ? "सकाळ" : "सायंकाळ"}`;
+  
   const sendMessage = async () => {
     const requestBody = {
       messaging_product: "whatsapp",
@@ -504,7 +512,7 @@ const CompleteMilkColl = () => {
         ],
       },
     };
-    
+
     try {
       const response = await axiosInstance.post("/send-message", requestBody);
       if (response?.data.success) {
@@ -517,7 +525,7 @@ const CompleteMilkColl = () => {
           smsText: requestBody,
         };
 
-        store.dispatch(saveMessage(smsData));
+        dispatch(saveMessage(smsData));
       }
     } catch (error) {
       toast.error("Error in whatsapp message sending...");
