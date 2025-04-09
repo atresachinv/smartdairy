@@ -636,7 +636,7 @@ const Inventory = () => {
                 selected={startDate}
                 onChange={(date) => setStartDate(date)}
                 dateFormat="dd-MM-yyyy"
-                className="data"
+                className="data w60"
                 minDate={getFinancialYearStart(new Date())}
                 maxDate={getFinancialYearEnd(new Date())}
                 showYearDropdown
@@ -650,7 +650,7 @@ const Inventory = () => {
                 selected={endDate}
                 onChange={(date) => setEndDate(date)}
                 dateFormat="dd-MM-yyyy"
-                className="data "
+                className="data w60"
                 minDate={startDate}
                 maxDate={getFinancialYearEnd(new Date())}
                 showYearDropdown
@@ -664,7 +664,7 @@ const Inventory = () => {
               <div style={{ margin: "5px" }}>
                 <span className="info-text">सेंटर निवडा :</span>
                 <select
-                  className="data w50 a-center  my5 mx5"
+                  className="data w60 a-center  my5 mx5"
                   name="center"
                   value={filter}
                   onChange={(e) => setFilter(e.target.value)}
