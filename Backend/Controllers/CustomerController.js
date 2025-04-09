@@ -426,13 +426,13 @@ exports.customerList = async (req, res) => {
     center_id === 0
       ? `SELECT cid, cname, Phone, fax, City, tal, dist, cust_accno, createdby, createdon, mobile,
               isSabhasad, rno, orgid, engName, rateChartNo, centerid, srno, cust_pincode,
-              cust_addhar, cust_farmerid, cust_bankname, cust_ifsc, caste, gender, milktype, isActive, rcName
+              cust_addhar, cust_farmerid, cust_bankname, cust_ifsc, caste, gender, milktype, isActive, rcName, commission, rebet, transportation
        FROM customer
        WHERE orgid = ? AND (ctype IS NULL OR ctype = 1) AND (isdeleted IS NULL OR isdeleted = 0)
        ORDER BY centerid ASC, srno ASC`
       : `SELECT cid, cname, Phone, fax, City, tal, dist, cust_accno, createdby, createdon, mobile,
               isSabhasad, rno, orgid, engName, rateChartNo, centerid, srno, cust_pincode,
-              cust_addhar, cust_farmerid, cust_bankname, cust_ifsc, caste, gender, milktype, isActive, rcName
+              cust_addhar, cust_farmerid, cust_bankname, cust_ifsc, caste, gender, milktype, isActive, rcName, commission, rebet, transportation
        FROM customer
        WHERE orgid = ? AND centerid = ? AND (ctype IS NULL OR ctype = 1) AND (isdeleted IS NULL OR isdeleted = 0) ORDER BY srno ASC`;
 

@@ -35,6 +35,7 @@ const Payments = () => {
   const [PaymentFD, setPaymentFD] = useState([]);
   const [filteredPayDetails, setFilteredPayDetails] = useState([]);
   const [payStatus, setPayStatus] = useState(false);
+  const [payShowStatus, setPayShowStatus] = useState(false);
   const initialData = {
     billDate: "",
     vcDate: "",
@@ -230,14 +231,13 @@ const Payments = () => {
       const results = await dispatch(
         checkPayExists({ fromDate: formData.fromDate, toDate: formData.toDate })
       ).unwrap();
-
-      if (results?.status === 204) {
+      if (results?.found === false) {
         const result = await dispatch(
           checkAmtZero({ fromDate: formData.fromDate, toDate: formData.toDate })
         ).unwrap();
 
         if (result?.status === 204) {
-          await dispatch(
+          dispatch(
             fetchMilkPaydata({
               fromDate: formData.fromDate,
               toDate: formData.toDate,
@@ -284,8 +284,10 @@ const Payments = () => {
             toast.error("Unexpected response. Please try again!");
           }
         }
-      } else if (results?.status === 200) {
+      } else if (results?.found === true) {
         toast.error("Payment already exists for this dates!");
+      } else {
+        toast.error("Unexpected response. Please try again!");
       }
     } catch (error) {
       toast.error("Unexpected error", error);
@@ -296,15 +298,29 @@ const Payments = () => {
 
   const handleShowBtn = async (e) => {
     e.preventDefault();
-    if (formData.fromDate && formData.toDate) {
-      const fetchres = await dispatch(
-        fetchPaymentDetails({
-          fromdate: formData.fromDate,
-          todate: formData.toDate,
-        })
-      ).unwrap();
-    } else {
-      toast.error("Payment Dates required to show Payment!");
+    setPayShowStatus(true);
+    try {
+      if (formData.fromDate && formData.toDate) {
+        const fetchres = await dispatch(
+          fetchPaymentDetails({
+            fromdate: formData.fromDate,
+            todate: formData.toDate,
+          })
+        ).unwrap();
+
+        dispatch(
+          fetchMilkPaydata({
+            fromDate: formData.fromDate,
+            toDate: formData.toDate,
+          })
+        );
+      } else {
+        toast.error("Payment Dates required to show Payment!");
+      }
+    } catch (error) {
+      toast.error("Unexpected error", error);
+    } finally {
+      setPayShowStatus(false);
     }
   };
 
@@ -409,8 +425,13 @@ const Payments = () => {
             </div>
           </div>
           <div className="form-button-div w10 h1 d-flex-col se a-center">
-            <button type="button" className="w-btn" onClick={handleShowBtn}>
-              पाहणे
+            <button
+              type="button"
+              className="w-btn"
+              disabled={payShowStatus}
+              onClick={handleShowBtn}
+            >
+              {payShowStatus ? "showing..." : "पाहणे "}
             </button>
             <button type="submit" className="w-btn" disabled={payStatus}>
               {payStatus ? "Generating..." : "बिल निर्माण"}
@@ -456,7 +477,7 @@ const Payments = () => {
                 <span className="f-label-text w15">लिटर</span>
                 <span className="f-label-text w15">रक्कम</span>
               </div>
-              {payStatus ? (
+              {payStatus || payShowStatus ? (
                 <Spinner />
               ) : filteredPayDetails.length !== 0 ? (
                 filteredPayDetails.map((item, index) => (

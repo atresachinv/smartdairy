@@ -30,7 +30,7 @@ const CustomerList = () => {
     dispatch(listCustomer());
     dispatch(centersLists());
   }, [dispatch]);
-
+  console.log("list from ", customerlist);
   useEffect(() => {
     setFilteredData(customerlist);
   }, [customerlist]);

@@ -7,11 +7,9 @@ import { useParams } from "react-router-dom";
 const Milkcollelist = ({ times }) => {
   const { t } = useTranslation(["milkcollection", "common", "master"]);
   const { time } = useParams();
-  // Retrieve milk collection data and sort in descending order
   const milkColl = useSelector((state) => state.milkCollection.entries || [])
     .slice()
     .reverse();
-  console.log(milkColl);
   const [custList, setCustomersList] = useState({}); // to check remainning customer list
   const [milkData, setMilkData] = useState([]); // to check remainning customer list
   const [isRCust, setIsRCust] = useState(false); // to show remainning customer list
@@ -77,9 +75,6 @@ const Milkcollelist = ({ times }) => {
                     <span className="text w15 d-flex center">
                       {t("common:c-snf")}
                     </span>
-                    {/* <span className="text w15 d-flex center">
-                      {t("common:c-deg")}
-                    </span> */}
                     <span className="text w20 d-flex center">
                       {t("common:c-rate")}
                     </span>
@@ -97,9 +92,6 @@ const Milkcollelist = ({ times }) => {
                     <span className="text w15 d-flex center">
                       {entry.snf || "00.0"}
                     </span>
-                    {/* <span className="text w15 d-flex center">
-                      {entry.degree || "00.0"}
-                    </span> */}
                     <span className="text w20 d-flex center">
                       {entry.rate || "00.0"}
                     </span>
