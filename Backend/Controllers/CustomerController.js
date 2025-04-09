@@ -1254,7 +1254,7 @@ exports.getMaxDealNo = async (req, res) => {
         }
 
         // Fetching maxCustNo from results
-        const maxCustNo = results[0]?.maxCustNo || 1000; // Use maxCustNo instead of maxCid
+        const maxCustNo = results[0]?.maxCustNo || 8000; // Use maxCustNo instead of maxCid
         const cust_no = maxCustNo + 1;
 
         // Return the new customer number
