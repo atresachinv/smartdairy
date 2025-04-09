@@ -1936,6 +1936,68 @@ exports.lockMilkPayment = async (req, res) => {
 // View Selected Payment ------------------------------------------------------------->
 // ----------------------------------------------------------------------------------->
 
+exports.fetchTrnDeductionData = async (req, res) => {
+  const { dairy_id, center_id } = req.user;
+  const { fromDate, toDate } = req.query;
+
+  if (!dairy_id) {
+    return res.status(401).json({ status: 401, message: "Unauthorised User!" });
+  }
+
+  if (!fromDate || !toDate) {
+    return res
+      .status(400)
+      .json({ status: 400, message: "fromDate and toDate are required!" });
+  }
+
+  pool.getConnection((err, connection) => {
+    if (err) {
+      console.error("Error getting MySQL connection: ", err.message);
+      return res
+        .status(500)
+        .json({ status: 500, message: "Database connection error" });
+    }
+
+    const fetchTrnDeduquery = `
+      SELECT AccCode, GLCode, SUM(Amt) AS totalamt
+        FROM tally_trnfile
+        WHERE companyid = ? AND center_id = ?
+          AND vtype = 4 AND VoucherDate BETWEEN ? AND ?
+        GROUP BY AccCode, GLCode
+        ORDER BY AccCode ASC;
+      `;
+
+    connection.query(
+      fetchTrnDeduquery,
+      [dairy_id, center_id, fromDate, toDate],
+      (err, results) => {
+        connection.release();
+
+        if (err) {
+          console.error("Error executing query: ", err.message);
+          return res
+            .status(500)
+            .json({ status: 500, message: "Error executing query" });
+        }
+
+        if (results.length === 0) {
+          return res.status(200).json({
+            found: false,
+            trnDeductions: [],
+            message: "No record found!",
+          });
+        }
+        const trnDeductions = results;
+        res.status(200).json({ found: true, trnDeductions });
+      }
+    );
+  });
+};
+
+// ----------------------------------------------------------------------------------->
+// View Selected Payment ------------------------------------------------------------->
+// ----------------------------------------------------------------------------------->
+
 exports.fetchSelectedPayAmt = async (req, res) => {
   const { dairy_id, center_id } = req.user;
   const { fromdate, todate } = req.query;
