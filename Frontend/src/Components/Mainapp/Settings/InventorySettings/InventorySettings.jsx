@@ -1,11 +1,5 @@
-import React from 'react'
-
 const InventorySettings = () => {
-  return (
-    <div>
-      <span>InventorySettings InventorySettings</span>
-    </div>
-  );
-}
+  return <div>InventorySettings</div>;
+};
 
-export default InventorySettings
+export default InventorySettings;

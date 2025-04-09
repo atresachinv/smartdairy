@@ -12,6 +12,9 @@ import "../../../../../Styles/Mainapp/Apphome/Appnavview/Milkcollection.css";
 import Spinner from "../../../../Home/Spinner/Spinner";
 import { listEmployee } from "../../../../../App/Features/Mainapp/Masters/empMasterSlice";
 import { getRateCharts } from "../../../../../App/Features/Mainapp/Masters/rateChartSlice";
+import axiosInstance from "../../../../../App/axiosInstance";
+import { store } from "../../../../../App/Store";
+import { saveMessage } from "../../../../../App/Features/Mainapp/Dairyinfo/smsSlice";
 
 const CompleteMilkColl = () => {
   const { t } = useTranslation(["milkcollection", "common"]);
@@ -23,8 +26,15 @@ const CompleteMilkColl = () => {
     (state) =>
       state.dairy.dairyData.SocietyName || state.dairy.dairyData.center_name
   );
+  const centerid = useSelector(
+    (state) =>
+      state.dairy.dairyData.center_id || state.dairy.dairyData.center_id
+  );
   const dairyphone = useSelector(
     (state) => state.dairy.dairyData.PhoneNo || state.dairy.dairyData.mobile
+  );
+  const customerlist = useSelector(
+    (state) => state.customers.customerlist || []
   );
   const milkcollRatechart = useSelector((state) => state.ratechart.rateChart);
   const sankalak = useSelector((state) => state.userinfo.profile.emp_name);
@@ -260,15 +270,15 @@ const CompleteMilkColl = () => {
 
   //------------------------------------------------------------------------------------------------->
 
-  // Effect to load customer list from local storage
+  // Effect to load customer list from local storage ------------------------------------------>
   useEffect(() => {
-    const storedCustomerList = localStorage.getItem("customerlist");
-    if (storedCustomerList) {
-      setCustomerList(JSON.parse(storedCustomerList));
-    }
-  }, [dispatch]);
+    const custLists = customerlist.filter(
+      (customer) => customer.centerid === centerid
+    );
+    setCustomerList(custLists);
+  }, [customerlist]);
 
-  // // Retrieve the stored rate chart from localStorage on component mount ---------------------------->
+  // Retrieve the stored rate chart from localStorage on component mount ---------------------------->
   // useEffect(() => {
   //   const storedRateChart = localStorage.getItem("milkcollrcharts");
   //   if (storedRateChart) {
@@ -296,7 +306,6 @@ const CompleteMilkColl = () => {
       const parsedSnf = parseFloat(snf);
       const parsedLiters = parseFloat(liters);
       // const degree = (parsedFat * parsedSnf).toFixed(2);
-      console.log("ratechart type name", rcName);
       // console.log(milkRateChart);
       const rateEntry = milkRateChart.find(
         (entry) =>
@@ -304,7 +313,6 @@ const CompleteMilkColl = () => {
           entry.snf === parsedSnf &&
           entry.rctypename === rcName
       );
-      console.log("ratechart", rateEntry);
       if (rateEntry) {
         const rate = parseFloat(rateEntry.rate);
         const amount = rate * parsedLiters;
@@ -474,7 +482,8 @@ const CompleteMilkColl = () => {
   // ------------------------------------------------------------------------------------------->
 
   // Send Milk Collection Whatsapp Message ----------------------------------------------------->
-
+  const datetime = `${values.date}_${values.shift === 0 ? "सकाळ" : "सायंकाळ"}`;
+  
   const sendMessage = async () => {
     const requestBody = {
       messaging_product: "whatsapp",
@@ -489,7 +498,7 @@ const CompleteMilkColl = () => {
             type: "body",
             parameters: [
               { type: "text", text: values.cname },
-              { type: "text", text: values.date },
+              { type: "text", text: datetime },
               { type: "text", text: dairyname },
               { type: "text", text: values.code },
               { type: "text", text: values.liters },
@@ -503,9 +512,21 @@ const CompleteMilkColl = () => {
         ],
       },
     };
+
     try {
       const response = await axiosInstance.post("/send-message", requestBody);
-      toast.success("Whatsapp message send successfully...");
+      if (response?.data.success) {
+        toast.success("Whatsapp message send successfully...");
+        const smsData = {
+          smsStatus: "Sent",
+          mono: values.mobile,
+          custCode: values.code,
+          rNo: "8600",
+          smsText: requestBody,
+        };
+
+        dispatch(saveMessage(smsData));
+      }
     } catch (error) {
       toast.error("Error in whatsapp message sending...");
     }
@@ -547,7 +568,11 @@ const CompleteMilkColl = () => {
         settings.whsms === 1 &&
         settings.cmillcoll === 1
       ) {
-        sendMessage();
+        if (values.mobile.length === 10 && values.mobile !== "0000000000") {
+          sendMessage();
+        } else {
+          toast.warn("Mobile number is not valid, message not sent!");
+        }
       }
       smapleRef.current.focus();
     } catch (error) {

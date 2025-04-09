@@ -18,13 +18,17 @@ const DeductionRateDetails = () => {
     id: "",
     DDId: "",
     DeductionId: "",
+    dname: "",
+    marathi_dname: "",
     GLCode: 0,
     RatePerLitre: "",
     ApplyDate: "",
     FixedVariable: 0,
     LP: 0,
   });
-  
+
+  // console.log("formdata", formData);
+
   const dispatch = useDispatch();
   const deductionData = useSelector((state) => state.deduction.deductionData);
   const sledgerlist = useSelector((state) => state.ledger.sledgerlist);
@@ -52,21 +56,27 @@ const DeductionRateDetails = () => {
     DeductionId: item.DeductionId,
     value: item.DeductionId,
     label: `${item.DeductionName}`,
-    GLCode: item.GLCode,
+    dname: item.deductionNameeng,
+    marathi_dname: item.DeductionName,
   }));
   const options1 = deductionData.map((item) => ({
     DeductionId: item.DeductionId,
     value: item.DeductionId,
     label: `${item.DeductionId}`,
     GLCode: item.GLCode,
+    dname: item.deductionNameeng,
+    marathi_dname: item.DeductionName,
   }));
 
   // handle Select Change
   const handleSelectChange = (selectedOption) => {
+    console.log(selectedOption);
     setFormData({
       ...formData,
       DeductionId: selectedOption.value,
       GLCode: selectedOption.GLCode,
+      dname: selectedOption.dname,
+      marathi_dname: selectedOption.marathi_dname,
     });
   };
 
@@ -163,6 +173,8 @@ const DeductionRateDetails = () => {
       id: "",
       DDId: "",
       DeductionId: "",
+      dname: "",
+      marathi_dname: "",
       GLCode: 0,
       RatePerLitre: "",
       ApplyDate: "",
@@ -207,6 +219,8 @@ const DeductionRateDetails = () => {
       id: item.id,
       DDId: item.DDId,
       DeductionId: item.DeductionId,
+      dname: item.dname,
+      marathi_dname: item.marathi_dname,
       GLCode: item.GLCode,
       RatePerLitre: item.RatePerLitre,
       ApplyDate: formattedApplyDate,
@@ -252,7 +266,7 @@ const DeductionRateDetails = () => {
   return (
     <>
       <div className="deduction-details-report-container w100 h1 d-flex-col bg ">
-        <span className="heading">Deduction Details</span>
+        <span className="heading px10">Deduction Details</span>
         <div className="deduction-details-first-half-div w100 h40 d-flex-col ">
           <div className="deduction-name-div w100 d-flex h20 a-center ">
             <span className="label-text w15">कपातीचे नाव :</span>
@@ -421,49 +435,49 @@ const DeductionRateDetails = () => {
             </button>
           </div>
         </div>
-        <div className="Deduction-details-table-container-div w100 h60 d-flex-col ">
-          <div className="table-heading-deduction-details w100 d-flex p10 h10 sa">
-            <span className="info-text w10  ">Edit </span>
-            <span className="info-text w10 ">कपात </span>
-            <span className="info-text w20 ">खतावणी </span>
-            <span className="info-text w10  ">दर </span>
-            <span className="info-text  w20">लागू दिनांक </span>
-            <span className="info-text w10 ">दर प्रकार </span>
-            <span className="info-text w10 ">दर प्रती </span>
-            <span className="info-text w10 ">Action </span>
+        <div className="Deduction-details-table-container-div w100 h60 mh60 hidescrollbar d-flex-col ">
+          <div className="table-heading-deduction-details w100 d-flex h10 a-center t-center sa sticky-top">
+            <span className="f-label-text w5">Edit </span>
+            <span className="f-label-text w15">कपात </span>
+            <span className="f-label-text w20">खतावणी </span>
+            <span className="f-label-text w5">दर </span>
+            <span className="f-label-text w15">लागू दिनांक </span>
+            <span className="f-label-text w15">दर प्रकार </span>
+            <span className="f-label-text w15">दर प्रती </span>
+            <span className="f-label-text w5">Action </span>
           </div>
           {deductionDetails ? (
             deductionDetails.map((item) => (
               <div
                 key={item.id}
-                className="deduction-details-table-data-div w100 d-flex sa h90"
+                className="deduction-details-table-data-div w100 p10 d-flex a-center t-start sa"
               >
                 <span
-                  className="w10"
+                  className="w5"
                   onClick={() => handleEdit(item.id)}
                   style={{ cursor: "pointer" }}
                 >
                   <FaRegEdit />
                 </span>
-                <span className="info-text w10 ">
+                <span className="info-text w15">
                   {findDeduction(item.DeductionId)}
                 </span>
-                <span className="info-text w20 ">{findLedger(item.GLCode)}</span>
-                <span className="info-text w10 ">{item.RatePerLitre}</span>
-                <span className="info-text w20 ">
+                <span className="info-text w20">{findLedger(item.GLCode)}</span>
+                <span className="info-text w5">{item.RatePerLitre}</span>
+                <span className="info-text w15">
                   {item.ApplyDate.substring(0, 10)}
                 </span>
-                <span className="info-text w10">
+                <span className="info-text w15">
                   {Number(item.FixedVariable) === 0 ? "एक दर " : "Round Amt"}
                 </span>
-                <span className="info-text w10 ">
+                <span className="info-text w15">
                   {Number(item.LP) === 0
                     ? "प्रती लीटर प्रमाणे"
                     : Number(item.LP) === 1
                     ? "प्रती पेमेंट प्रमाणे"
                     : "माल विक्री प्रमाणे/जमा-नावे प्रमाणे"}
                 </span>
-                <span className="w10">
+                <span className="w5 d-flex a-center">
                   <MdDeleteOutline
                     size={20}
                     className="table-icon"

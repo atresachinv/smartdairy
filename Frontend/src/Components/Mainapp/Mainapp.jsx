@@ -74,6 +74,8 @@ import DayBook from "./Accounts/Credit/DayBook";
 import Deductionlist from "./Reports/Deductionlist/Deductionlist";
 import DoctorMaster from "./Masters/MasterPages/DoctorMaster";
 import WhatsappSms from "./DairyInfo/Centers/WhatsappSms";
+import Inventory from "./Inventory/Inventory";
+import Maindashboard from "./Dashboard/Maindashboard";
 
 const Mainapp = () => {
   const dispatch = useDispatch();
@@ -180,7 +182,7 @@ const Mainapp = () => {
           <Routes>
             {/* dashboard route */}
             {userRoutes.includes("dashboard") && (
-              <Route path="dashboard/*" element={<Dashboard />} />
+              <Route path="dashboard/*" element={<Maindashboard />} />
             )}
             {/* <Route path="dashboard/*" element={<Dashboard />} /> */}
             {/* milk purchase routes */}
@@ -212,6 +214,7 @@ const Mainapp = () => {
             <Route path="milk/sangha/*" element={<SanghsalesMaster />} />
             <Route path="milk/retail/sales" element={<Milksales />} />
             {/* inventory routes */}
+            <Route path="inventory" element={<Inventory />} />
             <Route path="inventory/dealer/*" element={<Dealers />} />
             <Route path="inventory/product/*" element={<Products />} />
             <Route

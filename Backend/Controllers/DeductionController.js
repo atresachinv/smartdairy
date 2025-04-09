@@ -340,6 +340,8 @@ exports.createDeductionDetails = async (req, res) => {
   const {
     DDId,
     DeductionId,
+    dname,
+    marathi_dname,
     GLCode,
     RatePerLitre,
     ApplyDate,
@@ -359,8 +361,8 @@ exports.createDeductionDetails = async (req, res) => {
 
     const query = `
       INSERT INTO DeductionDetails 
-      (dairy_id, center_id,DDId, DeductionId, GLCode, RatePerLitre, ApplyDate, FixedVariable, LP ) 
-      VALUES (?, ?,?, ?, ?, ?, ?, ?, ?)`;
+      (dairy_id, center_id,DDId, DeductionId, dname, marathi_dname,  GLCode, RatePerLitre, ApplyDate, FixedVariable, LP ) 
+      VALUES (?, ?,?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
     // Query parameters
     const queryParams = [
@@ -368,6 +370,8 @@ exports.createDeductionDetails = async (req, res) => {
       center_id,
       DDId,
       DeductionId,
+      dname,
+      marathi_dname,
       GLCode,
       RatePerLitre,
       ApplyDate,
@@ -394,6 +398,8 @@ exports.createDeductionDetails = async (req, res) => {
           center_id,
           DDId,
           DeductionId,
+          dname,
+          marathi_dname,
           GLCode,
           RatePerLitre,
           ApplyDate,

@@ -1,5 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-/* eslint-disable no-unused-vars */
 import React, { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -11,6 +9,8 @@ import { listCustomer } from "../../../../../App/Features/Customers/customerSlic
 import { useTranslation } from "react-i18next";
 import "../../../../../Styles/Mainapp/Apphome/Appnavview/Milkcollection.css";
 import axiosInstance from "../../../../../App/axiosInstance";
+import { store } from "../../../../../App/Store";
+import { saveMessage } from "../../../../../App/Features/Mainapp/Dairyinfo/smsSlice";
 
 const MilkSankalan = () => {
   const dispatch = useDispatch();
@@ -28,7 +28,13 @@ const MilkSankalan = () => {
     (state) => state.dairySetting.centerSetting
   );
   const [settings, setSettings] = useState({});
-  const { customerlist, loading } = useSelector((state) => state.customer);
+  const customerlist = useSelector(
+    (state) => state.customers.customerlist || []
+  );
+  const centerid = useSelector(
+    (state) =>
+      state.dairy.dairyData.center_id || state.dairy.dairyData.center_id
+  );
   const PrevLiters = useSelector((state) => state.milkCollection.PrevLiters);
   const [collCount, setCollCount] = useState(
     Number(localStorage.getItem("collCount")) || 0
@@ -95,13 +101,13 @@ const MilkSankalan = () => {
     dispatch(mobilePrevLiters());
   }, []);
 
-  // Effect to load customer list from local storage ------------------------>
+  // // Effect to load customer list from local storage ------------------------------------------>
   useEffect(() => {
-    const storedCustomerList = localStorage.getItem("customerlist");
-    if (storedCustomerList) {
-      setCustomerList(JSON.parse(storedCustomerList));
-    }
-  }, []);
+    const custLists = customerlist.filter(
+      (customer) => customer.centerid === centerid
+    );
+    setCustomerList(custLists);
+  }, [customerlist]);
 
   //finding Customers Previous Liters
   const findPrevLitersByCode = (code) => {
@@ -137,7 +143,7 @@ const MilkSankalan = () => {
         ...prev,
         cname: customer.cname.toString(),
         acccode: customer.cid,
-        mobile: customer.Phone,
+        mobile: customer.Phone || customer.mobile,
         rateChartNo: customer.rateChartNo,
       }));
     } else {
@@ -218,7 +224,9 @@ const MilkSankalan = () => {
 
   // ------------------------------------------------------------------------------------->
   // Send Milk Collection Whatsapp Message ------------------------------------------------>
-
+  const datetime = `${values.date} - ${
+    values.shift === 0 ? "सकाळ" : "सायंकाळ"
+  }`;
   const sendMessage = async () => {
     const requestBody = {
       messaging_product: "whatsapp",
@@ -234,7 +242,7 @@ const MilkSankalan = () => {
             parameters: [
               { type: "text", text: dairyname },
               { type: "text", text: values.cname },
-              { type: "text", text: tDate },
+              { type: "text", text: datetime },
               { type: "text", text: values.liters },
               { type: "text", text: values.sample },
               { type: "text", text: sankalak || "--" },
@@ -246,7 +254,18 @@ const MilkSankalan = () => {
     };
     try {
       const response = await axiosInstance.post("/send-message", requestBody);
-      toast.success("Whatsapp message send successfully...");
+      if (response?.data.success) {
+        toast.success("Whatsapp message send successfully...");
+        // Save message in database
+        const smsData = {
+          smsStatus: "Sent",
+          mono: values.mobile,
+          custCode: values.code,
+          rNo: "8600",
+          smsText: requestBody,
+        };
+        dispatch(saveMessage(smsData));
+      }
     } catch (error) {
       toast.error("Error in whatsapp message sending...");
       console.error("Error sending message:", error);
@@ -286,7 +305,11 @@ const MilkSankalan = () => {
           settings.whsms === 1 &&
           settings.vMillcoll === 1
         ) {
-          sendMessage();
+          if (values.mobile.length === 10 && values.mobile !== "0000000000") {
+            sendMessage();
+          } else {
+            toast.warn("Mobile number is not valid, Message not sent!");
+          }
         }
         codeInputRef.current.focus(); // Focus on the code input
       }

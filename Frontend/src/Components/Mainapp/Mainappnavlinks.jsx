@@ -244,7 +244,6 @@ const Mainappnavlinks = ({ setselected, handleSidebar }) => {
       name: `${t("nv-acc")}`,
       icon: <GrNotes className="icon" />,
       index: 4,
-      path: "accounts",
       role: ["admin", "super_admin", "manager"],
       submenus: [
         {
@@ -314,14 +313,14 @@ const Mainappnavlinks = ({ setselected, handleSidebar }) => {
         {
           name: `${t("master:m-nv-drmaster")}`,
           icon: <FaUserDoctor className="icon" />,
-          index: 5.5,
+          index: 5.6,
           path: "master/doctor",
           role: ["admin", "super_admin", "manager"],
         },
         {
           name: `${t("master:m-nv-dedumaster")}`,
           icon: <FaFileCircleMinus className="icon" />,
-          index: 5.6,
+          index: 5.7,
           path: "master/deductions",
           role: ["admin", "super_admin", "manager"],
         },
@@ -396,7 +395,7 @@ const Mainappnavlinks = ({ setselected, handleSidebar }) => {
         {
           name: `${t("Deductionlist")}`,
           icon: <FaFileInvoiceDollar className="icon" />,
-          index: 6.8,
+          index: 6.9,
           path: "reports/deduction",
           role: ["admin", "super_admin", "manager"],
         },

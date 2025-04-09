@@ -13,6 +13,10 @@ export const sendMessage = async ({
   products,
   mono,
 }) => {
+  if (to.length !== 10 || to === "0000000000") {
+    toast.warn("Mobile number is not valid");
+    return;
+  }
   const requestBody = {
     messaging_product: "whatsapp",
     recipient_type: "individual",
@@ -59,6 +63,6 @@ export const sendMessage = async ({
     }
   } catch (error) {
     toast.error("Error in WhatsApp message sending...");
-    console.error("Error sending message:", error);
+    // console.error("Error sending message:", error);
   }
 };

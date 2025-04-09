@@ -13,6 +13,7 @@ import "../../../../../Styles/Mainapp/Apphome/Appnavview/Milkcollection.css";
 import axiosInstance from "../../../../../App/axiosInstance";
 import { useParams } from "react-router-dom";
 import { listCustomer } from "../../../../../App/Features/Mainapp/Masters/custMasterSlice";
+import { saveMessage } from "../../../../../App/Features/Mainapp/Dairyinfo/smsSlice";
 
 const MilkColleform = ({ switchToSettings, times }) => {
   const dispatch = useDispatch();
@@ -33,7 +34,6 @@ const MilkColleform = ({ switchToSettings, times }) => {
       state.dairy.dairyData.center_id || state.dairy.dairyData.center_id
   );
   const tDate = useSelector((state) => state.date.toDate);
-  // const token = useSelector((state) => state.notify.fcmToken);
   const customerlist = useSelector(
     (state) => state.customers.customerlist || []
   );
@@ -43,9 +43,8 @@ const MilkColleform = ({ switchToSettings, times }) => {
   );
   const [settings, setSettings] = useState({}); //center settings
   const [customerList, setCustomerList] = useState([]);
-  const [custList, setCustList] = useState({}); // to check remainning customer list
+  const [custList, setCustList] = useState([]); // to check remainning customer list
   const [milkRateChart, setMilkRatechart] = useState([]);
-  // const [time, setTime] = useState(true);
   const [errors, setErrors] = useState({});
   const [changedDate, setChangedDate] = useState("");
   const [slotCount, setSlotCount] = useState(0); //To rerive local stored milk entries
@@ -184,16 +183,13 @@ const MilkColleform = ({ switchToSettings, times }) => {
       }));
     }
   };
-
   // // Effect to load customer list from local storage ------------------------------------------>
   useEffect(() => {
-    const storedCustomerList = localStorage.getItem("customerlist");
-    if (storedCustomerList) {
-      setCustomerList(JSON.parse(storedCustomerList));
-      setCustList(JSON.parse(storedCustomerList));
-    }
-    dispatch(getRateCharts());
-  }, [dispatch]);
+    const custLists = customerlist.filter(
+      (customer) => customer.centerid === centerid
+    );
+    setCustomerList(custLists);
+  }, [customerlist]);
 
   // morning evening -------------------------------------------------------------------------->
   const handleTime = () => {
@@ -275,7 +271,7 @@ const MilkColleform = ({ switchToSettings, times }) => {
       return;
     }
     // Ensure the code is a string for comparison
-    const customer = customerlist.find(
+    const customer = customerList.find(
       (customer) => customer.srno.toString() === code
     );
     if (customer) {
@@ -284,12 +280,14 @@ const MilkColleform = ({ switchToSettings, times }) => {
         cname: customer.cname,
         acccode: customer.cid,
         rcName: customer.rcName,
-        mobile: customer.mobile || customer.Phone,
+        mobile: customer.Phone || customer.mobile,
       }));
     } else {
       setValues((prev) => ({ ...prev, cname: "" })); // Clear cname if not found
     }
   };
+
+  // console.log(customerlist);
 
   //calulate slots on the basis of customer no
   // useEffect(() => {
@@ -378,7 +376,6 @@ const MilkColleform = ({ switchToSettings, times }) => {
     setErrors(validationErrors);
     return validationErrors;
   };
-
   // retriving milk entry from localstorage to display
   useEffect(() => {
     dispatch(fetchEntries());
@@ -502,6 +499,8 @@ const MilkColleform = ({ switchToSettings, times }) => {
   // ------------------------------------------------------------------------------------->
   // Send Milk Collection Whatsapp Message ------------------------------------------------>
 
+  const datetime = `${values.date}_${values.shift === 0 ? "सकाळ" : "सायंकाळ"}`;
+
   const sendMessage = async () => {
     const requestBody = {
       messaging_product: "whatsapp",
@@ -525,7 +524,7 @@ const MilkColleform = ({ switchToSettings, times }) => {
               { type: "text", text: values.amt },
               { type: "text", text: "--" },
               { type: "text", text: dairyphone },
-              { type: "text", text: tDate },
+              { type: "text", text: datetime },
             ],
           },
         ],
@@ -533,23 +532,23 @@ const MilkColleform = ({ switchToSettings, times }) => {
     };
     try {
       const response = await axiosInstance.post("/send-message", requestBody);
-      toast.success("Whatsapp message send successfully...");
-      console.log("Response:", response.data);
+      if (response?.data.success) {
+        toast.success("Whatsapp message send successfully...");
+        const smsData = {
+          smsStatus: "Sent",
+          mono: values.mobile,
+          custCode: values.code,
+          rNo: "8600",
+          smsText: requestBody,
+        };
+
+        dispatch(saveMessage(smsData));
+      }
     } catch (error) {
       toast.error("Error in whatsapp message sending...");
       console.error("Error sending message:", error);
     }
   };
-
-  // const shareOnWhatsApp = async () => {
-  //   // const phoneNumber = `91${values.mobile}`;
-  //   const phoneNumber = `8669340801`;
-  //   const message = encodeURIComponent(
-  //     "Check out this amazing app! Download it here: https://play.google.com/store/apps/details?id=com.yourapp.package"
-  //   );
-
-  //   window.open(`https://wa.me/${phoneNumber}?text=${message}`, "_blank");
-  // };
 
   // handle enter press move cursor to next refrence Input -------------------------------->
   const handleKeyDown = (e, nextRef) => {
@@ -708,12 +707,8 @@ const MilkColleform = ({ switchToSettings, times }) => {
           JSON.stringify(existingEntries)
         );
         fetchEntries();
-
-        setValues(initialValues); // Reset form
-
-        setErrors({}); // Clear errors
-
-        // Show success toast
+        setValues(initialValues); 
+        setErrors({}); 
         toast.success(result.message || "Milk Collection saved successfully!");
 
         removeCustomer();
@@ -723,7 +718,11 @@ const MilkColleform = ({ switchToSettings, times }) => {
           settings.whsms === 1 &&
           settings.millcoll === 1
         ) {
-          sendMessage();
+          if (values.mobile.length === 10 && values.mobile !== "0000000000") {
+            sendMessage();
+          } else {
+            toast.warn("Mobile number is not valid, message not sent!");
+          }
         }
         codeInputRef.current.focus();
       } else {
