@@ -3,7 +3,9 @@ import axiosInstance from "../../../../../App/axiosInstance";
 import { toast } from "react-toastify";
 import "./Product.css";
 import { useTranslation } from "react-i18next";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { listSubLedger } from "../../../../../App/Features/Mainapp/Masters/ledgerSlice";
+import { centersLists } from "../../../../../App/Features/Dairy/Center/centerSlice";
 
 const CreateProducts = () => {
   const { t } = useTranslation(["puchasesale", "common"]);
@@ -17,12 +19,28 @@ const CreateProducts = () => {
     ManufacturerName: "",
   });
   const [itemlist, setItemList] = useState([]);
-
   const centerSetting = useSelector(
     (state) => state.dairySetting.centerSetting
   );
+  const centerId = useSelector((state) => state.dairy.dairyData.center_id);
   const [settings, setSettings] = useState({});
   const autoCenter = settings?.autoCenter;
+  const [formData1, setFormData1] = useState({
+    ItemGroupCode: 1,
+    GhatnashakNo: "",
+    VikriYeneNo: "",
+    kharediDeneNo: "",
+    kharediKharchNo: "",
+    vikriUtpannaNo: "",
+  });
+  const [selectedCenter, setSelectedCenter] = useState(0);
+  const centerList = useSelector(
+    (state) => state.center.centersList.centersDetails
+  );
+  const dispatch = useDispatch();
+  const SubLedgers = useSelector((state) => state.ledger.sledgerlist);
+  const [GlData1, setGlData1] = useState([]);
+  const [GlData, setGlData] = useState([]);
 
   //set setting
   useEffect(() => {
@@ -151,15 +169,117 @@ const CreateProducts = () => {
       console.error("Failed to fetch items.", error);
     }
   };
+
+  //get all gl data-------------------------------------->
+  useEffect(() => {
+    dispatch(listSubLedger());
+    dispatch(centersLists());
+  }, [dispatch]);
+
+  //fetch all itemGroupMaster
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axiosInstance.get(
+          `/grpitem/all?autoCenter=${autoCenter}`
+        );
+        setGlData1(response.data?.itemsData || []);
+      } catch (error) {
+        console.error("Error fetching group items:", error);
+      }
+    };
+    if (settings?.autoCenter !== undefined) {
+      fetchData();
+    }
+  }, [settings]);
+
+  useEffect(() => {
+    if (GlData.length) {
+      const selectedGlData = GlData.find(
+        (item) => item.ItemGroupCode === Number(formData1.ItemGroupCode)
+      );
+      if (selectedGlData) {
+        setFormData1((prevState) => ({
+          ...prevState,
+          GhatnashakNo: selectedGlData.GhatnashakNo,
+          VikriYeneNo: selectedGlData.VikriYeneNo,
+          kharediDeneNo: selectedGlData.kharediDeneNo,
+          kharediKharchNo: selectedGlData.kharediKharchNo,
+          vikriUtpannaNo: selectedGlData.vikriUtpannaNo,
+        }));
+      } else {
+        setFormData1((prevState) => ({
+          ...prevState,
+          GhatnashakNo: "",
+          VikriYeneNo: "",
+          kharediDeneNo: "",
+          kharediKharchNo: "",
+          vikriUtpannaNo: "",
+        }));
+      }
+    } else {
+      setFormData1((prevState) => ({
+        ...prevState,
+        GhatnashakNo: "",
+        VikriYeneNo: "",
+        kharediDeneNo: "",
+        kharediKharchNo: "",
+        vikriUtpannaNo: "",
+      }));
+    }
+  }, [GlData, selectedCenter]);
+
+  useEffect(() => {
+    const filteredGlData = GlData1.filter(
+      (item) =>
+        Number(item.center_id) ===
+        Number(
+          autoCenter === 1 ? centerId : centerId > 0 ? centerId : selectedCenter
+        )
+    );
+    setGlData(filteredGlData || []);
+  }, [selectedCenter, centerId, GlData1]);
+
+  const handleOngrop = (e) => {
+    const newGroupCode = e.target.value;
+    setFormData1((prevState) => ({
+      ...prevState,
+      ItemGroupCode: newGroupCode,
+    }));
+
+    const selectedGlData = GlData.find(
+      (item) => item.ItemGroupCode === Number(newGroupCode)
+    );
+    if (selectedGlData) {
+      setFormData1((prevState) => ({
+        ...prevState,
+        GhatnashakNo: selectedGlData.GhatnashakNo,
+        VikriYeneNo: selectedGlData.VikriYeneNo,
+        kharediDeneNo: selectedGlData.kharediDeneNo,
+        kharediKharchNo: selectedGlData.kharediKharchNo,
+        vikriUtpannaNo: selectedGlData.vikriUtpannaNo,
+      }));
+    } else {
+      setFormData1((prevState) => ({
+        ...prevState,
+        GhatnashakNo: "",
+        VikriYeneNo: "",
+        kharediDeneNo: "",
+        kharediKharchNo: "",
+        vikriUtpannaNo: "",
+      }));
+    }
+  };
+
   return (
-    <div className="create-dealer-container w100 h1 d-flex-col p10 ">
+    <div className="w100 h1 d-flex-col p10 ">
       <span className="heading">{t("ps-nv-pro-add")}</span>
-      <div className="create-dealer-inner-container w100 h1 d-flex-col center">
+      <div className="createProductContainer w100 h1 d-flex center sb">
         <form
           onSubmit={handleSubmit}
-          className="create-dealer-form-container w50 h90 d-flex-col p10 bg"
+          className="createProductContainer-item m10 w50 h90 d-flex-col p10 bg"
         >
-          <div className="row d-flex my5">
+          <div className="  d-flex my5">
             <div className="col">
               <label className="info-text px10">
                 {t("ps-code")}
@@ -195,7 +315,7 @@ const CreateProducts = () => {
               />
             </div>
           </div>
-          <div className="row d-flex my5">
+          <div className="  d-flex my5">
             <div className="col">
               <label className="info-text px10">
                 {t("ps-mar-name")}
@@ -239,7 +359,7 @@ const CreateProducts = () => {
               </select>
             </div>
           </div>
-          <div className="row d-flex my5">
+          <div className="  d-flex my5">
             <div className="col">
               <label className="info-text px10">
                 Unit Code: <span className="req">*</span>
@@ -293,7 +413,7 @@ const CreateProducts = () => {
               />
             </div>
           </div>
-          <div className="button-container d-flex a-center j-end my10">
+          <div className="  d-flex a-center  j-end my10">
             <button className="w-btn" type="button" onClick={handleClear}>
               {t("ps-cancel")}
             </button>
@@ -302,6 +422,165 @@ const CreateProducts = () => {
             </button>
           </div>
         </form>
+        <div className="createProductContainer-item w50 m10  h90 d-flex-col p10 bg">
+          <div className=" w100  d-flex a-center my10  j-center">
+            {centerId > 0 ? null : (
+              <div className="d-flex  center">
+                <span className="info-text w50">सेंटर निवडा :</span>
+                <select
+                  className="data  my5"
+                  name="center"
+                  onChange={(e) => setSelectedCenter(e.target.value)}
+                  value={selectedCenter}
+                >
+                  {centerList &&
+                    [...centerList]
+                      .sort((a, b) => a.center_id - b.center_id)
+                      .map((center) => (
+                        <option key={center.center_id} value={center.center_id}>
+                          {center.center_name}
+                        </option>
+                      ))}
+                </select>
+              </div>
+            )}
+          </div>
+          <div className=" w100  d-flex a-center  j-center">
+            <span className="info-text">ग्रुपचे नाव :</span>
+            <select
+              name="ItemGroupCode"
+              className="data form-field w30"
+              value={formData1.ItemGroupCode}
+              onChange={handleOngrop}
+            >
+              {[
+                { value: 1, label: `${t("ps-nv-cattlefeed")}` },
+                { value: 2, label: `${t("ps-nv-medicines")}` },
+                { value: 3, label: `${t("ps-nv-grocery")}` },
+                { value: 4, label: `${t("ps-nv-other")}` },
+              ].map((item) => (
+                <option key={item.value} value={item.value}>
+                  {item.label}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="w100 d-flex center my10">
+            <span className="info-text w70">खरेदी देणे ख. नं . : </span>
+            <input
+              type="text"
+              name="kharediDeneNo"
+              value={formData1.kharediKharchNo}
+              className={`data mx5 w30`}
+              disabled
+            />
+            <input
+              type="text"
+              name="kharediDeneNo"
+              value={
+                formData1.kharediDeneNo
+                  ? SubLedgers.find(
+                      (item) => item.lno === formData1.kharediKharchNo
+                    )?.marathi_name
+                  : ""
+              }
+              className={`data  `}
+              disabled
+            />
+          </div>
+          <div className="w100 d-flex center ">
+            <span className="info-text w70">विक्री येणे खतावणी नं. : </span>
+            <input
+              type="text"
+              name="kharediDeneNo"
+              value={formData1.vikriUtpannaNo}
+              className={`data mx5 w30`}
+              disabled
+            />
+            <input
+              type="text"
+              name="kharediDeneNo"
+              value={
+                formData1.vikriUtpannaNo
+                  ? SubLedgers.find(
+                      (item) => item.lno === formData1.vikriUtpannaNo
+                    )?.marathi_name
+                  : ""
+              }
+              className={`data  `}
+              disabled
+            />
+          </div>
+          <div className="w100 d-flex center my10">
+            <span className="info-text w70">खरेदी खर्च ख. नं. : </span>
+            <input
+              type="text"
+              name="kharediDeneNo"
+              value={formData1.kharediDeneNo}
+              className={`data mx5 w30`}
+              disabled
+            />
+            <input
+              type="text"
+              name="kharediDeneNo"
+              value={
+                formData1.kharediDeneNo
+                  ? SubLedgers.find(
+                      (item) => item.lno === formData1.kharediDeneNo
+                    )?.marathi_name
+                  : ""
+              }
+              className={`data  `}
+              disabled
+            />
+          </div>
+          <div className="w100 d-flex center ">
+            <span className="info-text w70">विक्री उत्पत्र ख. नं. : </span>
+            <input
+              type="text"
+              name="kharediDeneNo"
+              value={formData1.VikriYeneNo}
+              className={`data mx5 w30`}
+              disabled
+            />
+            <input
+              type="text"
+              name="kharediDeneNo"
+              value={
+                formData1.VikriYeneNo
+                  ? SubLedgers.find(
+                      (item) => item.lno === formData1.VikriYeneNo
+                    )?.marathi_name
+                  : ""
+              }
+              className={`data  `}
+              disabled
+            />
+          </div>
+          <div className="w100 d-flex center my10">
+            <span className="info-text w70">घटनाश ख. नं. : </span>
+            <input
+              type="text"
+              name="kharediDeneNo"
+              value={formData1.GhatnashakNo}
+              className={`data mx5 w30`}
+              disabled
+            />
+            <input
+              type="text"
+              name="kharediDeneNo"
+              value={
+                formData1.kharediDeneNo
+                  ? SubLedgers.find(
+                      (item) => item.lno === formData1.GhatnashakNo
+                    )?.marathi_name
+                  : ""
+              }
+              className={`data  `}
+              disabled
+            />
+          </div>
+        </div>
       </div>
     </div>
   );

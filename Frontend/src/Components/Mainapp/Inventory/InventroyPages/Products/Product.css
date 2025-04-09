@@ -114,4 +114,10 @@
   .forMin {
     padding: 15px !important;
   }
+  .createProductContainer {
+    flex-direction: column;
+  }
+  .createProductContainer .createProductContainer-item {
+    width: 100%;
+  }
 }

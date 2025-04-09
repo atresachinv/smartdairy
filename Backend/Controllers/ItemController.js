@@ -142,8 +142,8 @@ exports.createItem = async (req, res) => {
 
     // Check if ItemGroupCode exists in itemgroupmaster
     connection.query(
-      "SELECT ItemGroupCode FROM itemgroupmaster WHERE ItemGroupCode = ? AND companyid = ?",
-      [ItemGroupCode, companyid],
+      "SELECT ItemGroupCode FROM itemgroupmaster WHERE ItemGroupCode = ? AND companyid = ? AND center_id = ?",
+      [ItemGroupCode, companyid, center_id],
       (err, groupResult) => {
         if (err) {
           connection.release();
@@ -194,10 +194,38 @@ exports.createItem = async (req, res) => {
         };
 
         if (groupResult.length === 0) {
+          const valuesMap = {
+            1: [22, 107, 245, 221, "CattleFeed", "पशुखाद्य"],
+            2: [22, 280, 290, 222, "Medicine", " औषध"],
+            3: [22, 279, 286, 223, "Grocery", "किराणा"],
+            4: [22, 273, 283, 225, "Other", "इतर"],
+          };
+
+          let [
+            kharediKharchNo,
+            vikriUtpannaNo,
+            kharediDeneNo,
+            VikriYeneNo,
+            ItemGroupName,
+            MarItemGroupName,
+          ] = valuesMap[ItemGroupCode] || [0, 0, 0, 0, "Unknown", "Unknown"];
+
           // ItemGroupCode does not exist, insert into itemg    roupmaster
           connection.query(
-            "INSERT INTO itemgroupmaster (ItemGroupCode,ItemGroupName, kharediKharchNo, vikriUtpannaNo, kharediDeneNo, VikriYeneNo, companyid, MarItemGroupName, HinItemGroupName) VALUES (?,?, ?, ?, ?, ?, ?, ?, ?)",
-            [ItemGroupCode, "N/A", 0, 0, 0, 0, companyid, "N/A", "N/A"],
+            "INSERT INTO itemgroupmaster (ItemGroupCode,ItemGroupName, kharediKharchNo, vikriUtpannaNo, kharediDeneNo, VikriYeneNo,GhatnashakNo, companyid, MarItemGroupName, HinItemGroupName,center_id) VALUES (?,?,?,?, ?, ?, ?, ?, ?, ?, ?)",
+            [
+              ItemGroupCode,
+              ItemGroupName,
+              kharediKharchNo,
+              vikriUtpannaNo,
+              kharediDeneNo,
+              VikriYeneNo,
+              379,
+              companyid,
+              MarItemGroupName,
+              "N/A",
+              center_id,
+            ],
             (err, insertResult) => {
               if (err) {
                 connection.release();
@@ -283,7 +311,7 @@ exports.updateItem = async (req, res) => {
   });
 };
 
-//delete item its item code and company id and center id are provided
+//delete itemmaster its item code and company id and center id are provided
 exports.deleteItem = async (req, res) => {
   const { dairy_id: companyid, center_id } = req.user;
   const { ItemCode } = req.body;
@@ -328,8 +356,9 @@ exports.deleteItem = async (req, res) => {
 
 //get all ItemGroupMaster with url cond
 exports.getAllGrpItems = async (req, res) => {
-  const { ...dynamicFields } = req.query; // Capture dynamic fields from query parameters
-
+  const { autoCenter, ...dynamicFields } = req.query; // Capture dynamic fields from query parameters
+  const { dairy_id: companyid, center_id } = req.user;
+  const autoConterNumber = Number(autoCenter);
   pool.getConnection((err, connection) => {
     if (err) {
       console.error("Error getting MySQL connection: ", err);
@@ -337,8 +366,14 @@ exports.getAllGrpItems = async (req, res) => {
     }
 
     try {
-      let query = `SELECT * FROM itemgroupmaster WHERE 1=1`; // Base query
-      const queryParams = [];
+      let query = `SELECT * FROM itemgroupmaster WHERE companyid=?`; // Base query
+      const queryParams = [companyid];
+
+      if (autoConterNumber === 1) {
+        // If autoCenter is enabled, fetch only for the specific center
+        query += " AND center_id = ?";
+        queryParams.push(center_id);
+      }
 
       // Append dynamic filters
       for (const [field, value] of Object.entries(dynamicFields)) {
@@ -378,8 +413,6 @@ exports.getAllGrpItems = async (req, res) => {
 };
 // create new in itemGroupMaster
 exports.createMasterGrpItem = async (req, res) => {
-  // ItemGroupCode, ItemGroupName, kharediKharchNo, vikriUtpannaNo, kharediDeneNo, VikriYeneNo, l1, l2, l3, l4, companyid, MarItemGroupName, HinItemGroupName, groupid, isactive
-  // 1, 'Group Name', 22, 107, 245, 221, '', '', '', '', 2, 'Group Name', 'Group Name', ,
   const {
     ItemGroupName,
     kharediKharchNo,
@@ -389,6 +422,7 @@ exports.createMasterGrpItem = async (req, res) => {
     companyid,
     MarItemGroupName,
     HinItemGroupName,
+    GhatnashakNo,
     ...otherFields // Rest of the fields
   } = req.body;
 
@@ -401,7 +435,8 @@ exports.createMasterGrpItem = async (req, res) => {
     !VikriYeneNo ||
     !companyid ||
     !MarItemGroupName ||
-    !HinItemGroupName
+    !HinItemGroupName ||
+    !GhatnashakNo
   ) {
     return res.status(400).json({
       success: false,
@@ -432,8 +467,9 @@ exports.createMasterGrpItem = async (req, res) => {
 
           // Step 2: Build the INSERT query dynamically
           let insertQuery =
-            "INSERT INTO itemgroupmaster (ItemGroupCode, ItemGroupName, kharediKharchNo, vikriUtpannaNo, kharediDeneNo, VikriYeneNo,companyid, MarItemGroupName, HinItemGroupName";
+            "INSERT INTO itemgroupmaster (GhatnashakNo,ItemGroupCode, ItemGroupName, kharediKharchNo, vikriUtpannaNo, kharediDeneNo, VikriYeneNo,companyid, MarItemGroupName, HinItemGroupName";
           const insertValues = [
+            GhatnashakNo,
             newItemId,
             ItemGroupName,
             kharediKharchNo,
