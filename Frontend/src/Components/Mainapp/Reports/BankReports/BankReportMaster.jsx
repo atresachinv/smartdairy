@@ -84,7 +84,9 @@ const BankReportMaster = () => {
     }
 
     try {
-      const response = await axios.post({ fromDate, toDate });
+router.route("/bank/update").put(verifyToken, updateBankDetails);
+const response = await axios.post("/bank/list", { fromDate, toDate });
+      
       
       console.log("API Response Data:", response.data.Deduction); // Log the response data
       setBankData(response.data.Deduction);
@@ -1006,6 +1008,7 @@ const BankReportMaster = () => {
       alert("Please select a valid bank report.");
     }
   };
+  console.log("bankData", bankData);
 
   //marge data
 
@@ -1087,21 +1090,21 @@ const BankReportMaster = () => {
       {/* First Part */}
       <div className="bank-first-container w100 h30 d-flex-col">
         <div className="date-from-to-bank d-flex w100 h30 p10 bg">
-          <div className="from-date-bank-div w40 d-flex h1 a-center">
-            <span className="label-text w20"> from:</span>
+          <div className="from-date-bank-div w30 d-flex h1 a-center">
+            <span className="label-text w20">from:</span>
             <input
               value={fromDate}
               onChange={(e) => setFromDate(e.target.value)}
-              className="data w40"
+              className="data w60"
               type="date"
             />
           </div>
-          <div className="bank-to-date-div w40 d-flex h1 a-center">
+          <div className="bank-to-date-div w30 d-flex h1 a-center">
             <span className="label-text w20">To :</span>
             <input
               value={toDate}
               onChange={(e) => setToDate(e.target.value)}
-              className="data w40"
+              className="data w60"
               type="date"
             />
           </div>
@@ -1137,7 +1140,7 @@ const BankReportMaster = () => {
               checked={showCustomerwiseDateFilter}
               onChange={(e) => setShowCustomerwiseDateFilter(e.target.checked)} // Update checkbox state
             />
-            <span className="label-text w30">Custwise</span>
+            <span className="label-text w40">Custwise</span>
           </div>
           <div className="refresh-button-container w10 h10 d-flex a-center">
             <button className="w-btn" onClick={handleRefresh}>
@@ -1188,7 +1191,7 @@ const BankReportMaster = () => {
       </div>
       {showBankWise ? (
         <div className="bankwise-list-container w100 h60 d-flex-col bg">
-          <div className="list-and-all-banks-div w100 h10 d-flex bg">
+          <div className="list-and-all-banks-div w100 h10 d-flex ">
             <div className="collected-list-checkbox w50 h1 d-flex a-center">
               <input className="w10" type="checkbox" />
               <span className="w50label-text">Collected</span>
@@ -1200,11 +1203,11 @@ const BankReportMaster = () => {
           </div>
 
           <div className="bank-code-div w90 h20 d-flex a-center">
-            <div className="bank-textfield-div w50 h1 a-center p10">
-              <span className="w50label-text">Bank Code:</span>
+            <div className="bank-textfield-div w40 h1 a-center p10">
+              <span className="w70 label-text">Bank Code:</span>
               <input className="w30 data" type="text" />
             </div>
-            <div className="textfield-div w40 h1 a-center">
+            <div className="textfield-div w50 h1 a-center">
               <input className="w70 data" type="text" />
             </div>
           </div>

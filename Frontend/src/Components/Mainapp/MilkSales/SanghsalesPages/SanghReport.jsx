@@ -32,7 +32,7 @@ const SanghReport = () => {
             <span className="label-text w10">एकूण लिटर </span>
             <span className="label-text w10">एकूण रक्कम </span>
             <span className="label-text w15">पासून</span>
-            <span className="label-text w15">पर्येंत </span>
+            <span className="label-text w15">पर्येंत</span>
           </div>
           <div className="sangha-tabledata-section-div w100 d-flex-col  mh90 hidescrollbar">
             <div className="datasanghasales-div w100 d-flex mh90 sa">

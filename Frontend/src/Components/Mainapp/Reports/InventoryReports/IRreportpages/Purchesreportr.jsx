@@ -30,16 +30,40 @@ const Purchesreportr = () => {
   const CityName = useSelector((state) => state.dairy.dairyData.city);
 
   // ......  purches APi Calling
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     if (!fromdate || !todate) {
+  //       return;
+  //     }
+  //     try {
+  //  const response = await axiosInstance.get("/stock/purchase/all", {
+  //    params: { fromdate, todate },
+  //  });
+
+  //       SetSales(response.data.purchaseData);
+  //       setShowTable(true); // Show table after fetching data
+  //     } catch (error) {
+  //       console.error(
+  //         "Error Handling:",
+  //         error.response ? error.response.data : error.message
+  //       );
+  //     }
+  //   };
+
+  //   fetchData();
+  // }, [fromdate, todate]); // Run useEffect when fromDate or toDate changes
+
   useEffect(() => {
+    console.log("fromdate:", fromdate, "todate:", todate); // Check their values
     const fetchData = async () => {
       if (!fromdate || !todate) {
         return;
       }
       try {
         const response = await axiosInstance.get("/stock/purchase/all", {
-          fromdate,
-          todate,
+          params: { fromdate, todate },
         });
+        console.log("Response:", response); // Check what the API returns
         SetSales(response.data.purchaseData);
         setShowTable(true); // Show table after fetching data
       } catch (error) {
@@ -88,6 +112,38 @@ const Purchesreportr = () => {
 
     fetchAllData();
   }, [fromdate, todate]);
+
+  // Chatgpt
+  // useEffect(() => {
+  //   const fetchAllData = async () => {
+  //     if (!fromdate || !todate) {
+  //       console.warn("Missing fromdate or todate");
+  //       return;
+  //     }
+
+  //     try {
+  //       console.log("Fetching data from:", fromdate, "to:", todate);
+
+  //       const response = await axiosInstance.get("/stock/purchase/all", {
+  //         params: { fromdate, todate },
+  //       });
+
+  //       console.log("Fetched data:", response.data);
+
+  //       if (response.data && response.data.purchaseData) {
+  //         setAllSales(response.data.purchaseData);
+  //       } else {
+  //         toast.warning("No data received.");
+  //         setAllSales([]);
+  //       }
+  //     } catch (error) {
+  //       console.error("Error fetching data:", error);
+  //       toast.error("Failed to fetch purchase data.");
+  //     }
+  //   };
+
+  //   fetchAllData();
+  // }, [fromdate, todate]);
 
   //... handle report change
 
@@ -815,7 +871,6 @@ Total Amount:        ${totalAmount.toFixed(2)}
   };
 
   // Dealer name wise
-
   useEffect(() => {
     if (selectedDealer && Array.isArray(sales)) {
       const data = sales.filter(

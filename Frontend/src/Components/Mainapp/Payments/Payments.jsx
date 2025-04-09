@@ -10,6 +10,7 @@ import {
   checkPayExists,
   fetchMilkPaydata,
   fetchPaymentDetails,
+  fetchTrnDeductions,
   saveMilkPaydata,
 } from "../../../App/Features/Payments/paymentSlice";
 import { getDeductionDetails } from "../../../App/Features/Deduction/deductionSlice";
@@ -260,9 +261,9 @@ const Payments = () => {
           setPaymentFD(deductionData);
 
           const saleres = await dispatch(
-            getAllSalePayment({
-              fromdate: formData.fromDate,
-              todate: formData.toDate,
+            fetchTrnDeductions({
+              fromDate: formData.fromDate,
+              toDate: formData.toDate,
             })
           ).unwrap();
 
@@ -308,12 +309,19 @@ const Payments = () => {
           })
         ).unwrap();
 
-        dispatch(
-          fetchMilkPaydata({
-            fromDate: formData.fromDate,
-            toDate: formData.toDate,
-          })
-        );
+       const fetchrres = await dispatch(
+         fetchMilkPaydata({
+           fromDate: formData.fromDate,
+           toDate: formData.toDate,
+         })
+       ).unwrap();
+
+      const fetchress = await dispatch(
+        fetchTrnDeductions({
+          fromDate: formData.fromDate,
+          toDate: formData.toDate,
+        })
+      ).unwrap();
       } else {
         toast.error("Payment Dates required to show Payment!");
       }

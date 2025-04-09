@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { BsChevronDoubleLeft, BsChevronDoubleRight } from "react-icons/bs";
 import "../../../../../Styles/PayDeductions/PayDeductions.css";
 import { use } from "react";
+import { listSubLedger } from "../../../../../App/Features/Mainapp/Masters/ledgerSlice";
 
 const PayDeductions = () => {
   const dispatch = useDispatch();
@@ -15,12 +16,14 @@ const PayDeductions = () => {
   );
   const data = useSelector((state) => state.payment.paymentDetails);
   const milkData = useSelector((state) => state.payment.paymentData);
+  const SubLedgers = useSelector((state) => state.ledger.sledgerlist);
+  const deductions = useSelector((state) => state.payment.trnDeductions);
   const [payData, setPayData] = useState([]);
   const [filteredPayData, setFilteredPayData] = useState([]);
   const [customerList, setCustomerList] = useState([]);
   const [customerName, setCustomerName] = useState(""); // customername
   const [currentIndex, setCurrentIndex] = useState(1); // corrent index of selected customer
-  
+
   const [formData, setFormData] = useState({
     billno: 0,
     billdate: "",
@@ -35,7 +38,6 @@ const PayDeductions = () => {
     eveningrebate: "",
     totalrebate: "",
     totalPayment: "",
-    totalcommission: "",
     totalAdvance: "",
     transport: "",
     totalTransport: "",
@@ -47,12 +49,17 @@ const PayDeductions = () => {
 
   // // Effect to load customer list from local storage ------------------------------------------>
   useEffect(() => {
+    dispatch(listSubLedger());
+  }, [dispatch]);
+  // // Effect to load customer list from local storage ------------------------------------------>
+  useEffect(() => {
     const custLists = customerlist.filter(
       (customer) => customer.centerid === centerid
     );
     setCustomerList(custLists);
   }, [customerlist]);
 
+  console.log(SubLedgers, deductions);
   //----------------------------------------------------------------->
   // Implemetation of customer prev next buttons and display customer name
   // Handling Code inputs ----------------------------->
