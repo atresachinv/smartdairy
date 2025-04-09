@@ -35,6 +35,7 @@ const Stocksreport = () => {
       nextRef.current.focus();
     }
   };
+  console.log ("salesdata",sales);
 
   // Fetch Purchase Data
   useEffect(() => {
@@ -53,6 +54,38 @@ const Stocksreport = () => {
       fetchData();
     }
   }, [fromdate, todate]);
+  // useEffect(() => {
+  //   const fetchPurchaseData = async () => {
+  //     if (!fromdate || !todate) {
+  //       console.warn("From and To date are required to fetch data.");
+  //       return;
+  //     }
+
+  //     try {
+  //       console.log("Fetching purchase data for:", fromdate, todate);
+
+  //       const response = await axiosInstance.put  ("/stock/purchase/all", {
+  //         params: {
+  //           fromdate: fromdate,
+  //           todate: todate,
+  //         },
+  //       });
+
+  //       if (response.data && response.data.purchaseData) {
+  //         console.log("PURCHASE DATA:", response.data.purchaseData);
+  //         SetSales(response.data.purchaseData);
+  //       } else {
+  //         console.warn("No purchase data received");
+  //         SetSales([]); // Clear if no data
+  //       }
+  //     } catch (error) {
+  //       console.error("Error fetching purchase data:", error);
+  //     }
+  //   };
+
+  //   fetchPurchaseData();
+  // }, [fromdate, todate]);
+
 
   const salefetchData = async (e) => {
     e.preventDefault(); // Prevent default action (form submission)
@@ -76,9 +109,12 @@ const Stocksreport = () => {
     }
   };
 
+
+
+console.log(sales);
   // Process the purchase and sale data to create all stock data
   useEffect(() => {
-    console.log("All Data", sales, saledata);
+    console.log("All Data" ,sales, saledata);
     const processedData = sales.map((purchase) => {
       const matchingSale = saledata.find(
         (sale) => sale.ItemCode === purchase.itemcode

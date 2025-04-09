@@ -1,0 +1,126 @@
+.heading-tableof-dy-book {
+  background-color: #007bff;
+}
+.heading-tableof-dy-book span {
+  color: aliceblue;
+}
+@media screen and (max-width: 426px) {
+  .Day-Book-container {
+    min-height: auto;
+  }
+  .first-day-book-half-div {
+    flex-direction: column;
+    min-height: fit-content;
+  }
+  .first-day-book-half-div .back-front-date-div {
+    width: 100%;
+    min-height: 50%;
+  }
+  .first-day-book-half-div .back-front-date-div .dates-books-div input {
+    width: 250px;
+  }
+  .first-day-book-half-div .back-front-date-div .front-and-backs-button  {
+     height: 15px;
+  }
+  .first-day-book-half-div .back-front-date-div .front-and-backs-button button  {
+    width: 100px;
+  }
+  .first-day-book-half-div .print-rokh-milk-payment .print-payment-rokh-div   {
+   height: 30px;
+   
+  }
+  .first-day-book-half-div .print-rokh-milk-payment .print-payment-rokh-div button   {
+   width: 100px;
+
+  }
+  .first-day-book-half-div .print-rokh-milk-payment{
+    width: 100%;
+    min-height: 50%;
+  }
+     .Day-Book-container .day-book-table-section{
+      min-height: 50%;
+      margin-top: 190px;
+
+  }
+   .first-day-book-half-div .second-print-rokh-milk-payment{
+    width: 100%;
+    
+  }
+   .first-day-book-half-div .second-print-rokh-milk-payment .secondprint-payment-rokh-div{
+     height: 50px;
+  }
+   .first-day-book-half-div .second-print-rokh-milk-payment .secondprint-payment-rokh-div button {
+     width: 100px;
+  }
+  .arabhichi-remening-qtyall-nameamt-transer{
+    flex-direction: column;
+  }
+  .arabhichi-remening-qtyall-nameamt-transer .satring-remining-qty{
+    width: 100%;
+    flex-direction: row;
+    margin-top: 10px;
+  }
+  .arabhichi-remening-qtyall-nameamt-transer .satring-remining-qty span{
+    width: 130px;
+  }
+}
+@media screen and (max-width: 768px) {
+  .Day-Book-container {
+    min-height: auto;
+  }
+  .first-day-book-half-div {
+    flex-direction: column;
+    min-height: fit-content;
+  }
+  .first-day-book-half-div .back-front-date-div {
+    width: 100%;
+    min-height: 50%;
+  }
+  .first-day-book-half-div .back-front-date-div .dates-books-div input {
+    width: 250px;
+  }
+  .first-day-book-half-div .back-front-date-div .front-and-backs-button  {
+     height: 15px;
+  }
+  .first-day-book-half-div .back-front-date-div .front-and-backs-button button  {
+    width: 100px;
+  }
+  .first-day-book-half-div .print-rokh-milk-payment .print-payment-rokh-div   {
+   height: 30px;
+   
+  }
+  .first-day-book-half-div .print-rokh-milk-payment .print-payment-rokh-div button   {
+   width: 100px;
+
+  }
+  .first-day-book-half-div .print-rokh-milk-payment{
+    width: 100%;
+    min-height: 50%;
+  }
+     .Day-Book-container .day-book-table-section{
+      min-height: 50%;
+      margin-top: 190px;
+
+  }
+   .first-day-book-half-div .second-print-rokh-milk-payment{
+    width: 100%;
+    
+  }
+   .first-day-book-half-div .second-print-rokh-milk-payment .secondprint-payment-rokh-div{
+     height: 50px;
+  }
+   .first-day-book-half-div .second-print-rokh-milk-payment .secondprint-payment-rokh-div button {
+     width: 100px;
+  }
+  .arabhichi-remening-qtyall-nameamt-transer{
+    flex-direction: column;
+  }
+  .arabhichi-remening-qtyall-nameamt-transer .satring-remining-qty{
+    width: 100%;
+    flex-direction: row;
+    margin-top: 10px;
+  }
+  .arabhichi-remening-qtyall-nameamt-transer .satring-remining-qty span{
+    width: 130px;
+  }
+}
