@@ -18,6 +18,7 @@ const {
   saveFixDeductions,
   fetchSelectedPayAmt,
   checkPaymentExists,
+  fetchTrnDeductionData,
 } = require("../Controllers/PaymentController");
 
 const router = express.Router();
@@ -53,6 +54,7 @@ router.route("/check/payment/exists").get(verifyToken, checkPaymentExists);
 router.route("/check/amt-zero").get(verifyToken, checkZeroAmt);
 router.route("/get/total/payment-amt").get(verifyToken, getMilkPayAmt);
 router.route("/save/milk/payment").post(verifyToken, saveFixDeductions);
+router.route("/fetch/trn/deductions").get(verifyToken, fetchTrnDeductionData);
 router.route("/fetch/payment").get(verifyToken, fetchSelectedPayAmt);
 
 module.exports = router;
