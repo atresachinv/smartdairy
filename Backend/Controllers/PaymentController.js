@@ -1995,6 +1995,66 @@ exports.fetchTrnDeductionData = async (req, res) => {
 };
 
 // ----------------------------------------------------------------------------------->
+// fetch Last Remaining amount ------------------------------------------------------->
+// ----------------------------------------------------------------------------------->
+
+exports.fetchLastReAmt = async (req, res) => {
+  const { dairy_id, center_id } = req.user;
+  const { fromdate, todate } = req.query;
+
+  if (!dairy_id) {
+    return res.status(401).json({ status: 401, message: "Unauthorised User!" });
+  }
+
+  if (!fromdate || !todate) {
+    return res
+      .status(400)
+      .json({ status: 400, message: "fromDate and toDate are required!" });
+  }
+
+  pool.getConnection((err, connection) => {
+    if (err) {
+      console.error("Error getting MySQL connection: ", err.message);
+      return res
+        .status(500)
+        .json({ status: 500, message: "Database connection error" });
+    }
+
+    const fetchPaymentquery = `
+      SELECT  BillNo, BillDate, Code, GLCode, Amt, DeductionId, dname, MAMT, BAMT, afat, asnf, arate, tliters, pamt, damt, namt 
+        FROM custbilldetails
+        WHERE companyid = ? AND center_id = ? AND FromDate = ? AND ToDate = ? 
+        ORDER BY DeductionId ASC, Code ASC;
+      `;
+
+    connection.query(
+      fetchPaymentquery,
+      [dairy_id, center_id, fromdate, todate],
+      (err, results) => {
+        connection.release();
+
+        if (err) {
+          console.error("Error executing query: ", err.message);
+          return res
+            .status(500)
+            .json({ status: 500, message: "Error executing query" });
+        }
+
+        if (results.length === 0) {
+          return res.status(204).json({
+            status: 204,
+            paymentDetails: [],
+            message: "No record found!",
+          });
+        }
+        const paymentDetails = results;
+        res.status(200).json({ status: 200, paymentDetails });
+      }
+    );
+  });
+};
+
+// ----------------------------------------------------------------------------------->
 // View Selected Payment ------------------------------------------------------------->
 // ----------------------------------------------------------------------------------->
 
