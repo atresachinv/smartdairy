@@ -68,6 +68,7 @@
     width: 130px;
   }
 }
+
 @media screen and (max-width: 768px) {
   .Day-Book-container {
     min-height: auto;
