@@ -103,7 +103,7 @@ const DairySettings = () => {
 
   return (
     <div className="dairy-settings-page w100 h1 d-flex-col">
-      <span className="heading p10 w100 d-flex j-center">Dairy Settings</span>
+      <span className="heading p10 w100 d-flex j-center">डेअरी सेटिंग </span>
 
       <div className="h1 w100 d-flex j-center ">
         <div className="mx5 my5 w90 d-flex-col bg center">
@@ -145,7 +145,7 @@ const DairySettings = () => {
 
             <div className="dairyModel">
               <div className="header">
-                <div>Dairy Setting</div>
+                <div> सेंटर सेटिंग </div>
                 <div
                   style={{ color: "red", cursor: "pointer" }}
                   onClick={() => handleModelColse()}
@@ -156,7 +156,7 @@ const DairySettings = () => {
 
               {/* Autonomous Centre Radio Buttons */}
               <div className="dairyModelContent my10 w100">
-                <label>Autonomous Centre</label>
+                <label className="info-text">ऑटोनॉमस सेंटर </label>
                 <div className="d-flex j-center a-center  ">
                   <div className="px10">
                     <input
@@ -181,7 +181,7 @@ const DairySettings = () => {
 
               {/* WhatsApp Message Radio Buttons */}
               <div className="dairyModelContent my10 w100">
-                <label>WhatsApp Message</label>
+                <label className="info-text">व्हाट्सअँप मेसेज </label>
                 <div className="d-flex j-center a-center  ">
                   <div className="px10">
                     <input
@@ -206,7 +206,9 @@ const DairySettings = () => {
 
               {/* Allow Duplicate Milk Entry Radio Buttons */}
               <div className="dairyModelContent my10 w100">
-                <label>Allow Duplicate Milk Entry</label>
+                <label className="info-text">
+                  डुप्लिकेट दुधाच्या एन्ट्री परवानगी द्या
+                </label>
                 <div className="d-flex j-center a-center  ">
                   <div className="px10">
                     <input
@@ -229,7 +231,7 @@ const DairySettings = () => {
                 </div>
               </div>
               <div className="dairyModelContent my10 w100">
-                <label>Allow Print</label>
+                <label className="info-text">प्रिंटला परवानगी द्या</label>
                 <div className="d-flex j-center a-center  ">
                   <div className="px10">
                     <input
