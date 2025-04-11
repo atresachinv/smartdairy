@@ -24,10 +24,7 @@ const CreateMedicines = () => {
   const customersData = useSelector((state) => state.customer.customerlist);
   const [customerslist, setCustomerslist] = useState([]);
   const centerId = useSelector((state) => state.dairy.dairyData.center_id);
-  const productlist = useSelector(
-    (state) => state.inventory.allProducts,
-    shallowEqual
-  );
+  const productlist = useSelector((state) => state.inventory.allProducts);
   const [mobile, setMobile] = useState("");
   const [cartItem, setCartItem] = useState([]);
   const [cname, setCname] = useState("");

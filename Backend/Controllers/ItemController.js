@@ -66,6 +66,7 @@ exports.getAllItems = async (req, res) => {
 
 exports.getAllProducts = async (req, res) => {
   const { autoCenter } = req.query;
+  const autoCenterNumber = Number(autoCenter); // Convert to number for comparison
   pool.getConnection((err, connection) => {
     if (err) {
       console.error("Error getting MySQL connection: ", err);
@@ -78,7 +79,7 @@ exports.getAllProducts = async (req, res) => {
       let query = `SELECT  id,ItemGroupCode, ItemCode, ItemName FROM itemmaster WHERE companyid = ? `;
       let queryParams = [dairy_id];
 
-      if (autoCenter === 1) {
+      if (autoCenterNumber === 1) {
         // If autoCenter is enabled, fetch only for the specific center
         query += " AND center_id = ?";
         queryParams.push(center_id);
