@@ -216,9 +216,7 @@ const CustomerList = () => {
                 filteredData.map((customer, index) => (
                   <div
                     key={index}
-                    className={`customer-data-values-div w100 p10 d-flex center t-center sa ${
-                      index % 2 === 0 ? "bg-light" : "bg-dark"
-                    }`}
+                    className={`customer-data-values-div w100 p10 d-flex center t-center sa`}
                     style={{
                       backgroundColor: index % 2 === 0 ? "#faefe3" : "#fff",
                     }}

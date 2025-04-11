@@ -20,6 +20,8 @@ const PayDeductions = () => {
   const deductions = useSelector((state) => state.payment.trnDeductions);
   const [payData, setPayData] = useState([]);
   const [filteredPayData, setFilteredPayData] = useState([]);
+  const [mergedDeductions, setMergedDeductions] = useState([]);
+  const [custTrnDedu, setCustTrnDedu] = useState([]);
   const [customerList, setCustomerList] = useState([]);
   const [customerName, setCustomerName] = useState(""); // customername
   const [currentIndex, setCurrentIndex] = useState(1); // corrent index of selected customer
@@ -59,7 +61,7 @@ const PayDeductions = () => {
     setCustomerList(custLists);
   }, [customerlist]);
 
-  console.log(SubLedgers, deductions);
+  // console.log(mergedDeductions);
   //----------------------------------------------------------------->
   // Implemetation of customer prev next buttons and display customer name
   // Handling Code inputs ----------------------------->
@@ -218,8 +220,8 @@ const PayDeductions = () => {
       }));
     }
   }, [currentIndex, data, customerlist]);
-  // fiter paydata for the current customer ---------------------------------->
 
+  // fiter paydata for the current customer ---------------------------------->
   useEffect(() => {
     if (payData && currentIndex) {
       const matchedData = payData.filter(
@@ -228,6 +230,32 @@ const PayDeductions = () => {
       setFilteredPayData(matchedData);
     }
   }, [payData, currentIndex]);
+
+  // mearge data deductions and SubLedgers ------------------------------------->
+  useEffect(() => {
+    if (SubLedgers && deductions) {
+      const merged = deductions.map((deduction) => {
+        const matchedSubLedger = SubLedgers.find(
+          (sub) => sub.lno === deduction.GLCode
+        );
+
+        return {
+          ...deduction,
+          ladgerName: matchedSubLedger ? matchedSubLedger.ledger_name : "",
+        };
+      });
+
+      setMergedDeductions(merged);
+    }
+  }, [SubLedgers, deductions]);
+
+  // handle deduction for perticular customer ------------------------->
+  useEffect(() => {
+    const custyomerdeductions = mergedDeductions.filter((item) => {
+      return item.AccCode === currentIndex;
+    });
+    setCustTrnDedu(custyomerdeductions);
+  }, [mergedDeductions, currentIndex]);
 
   return (
     <>
@@ -457,6 +485,9 @@ const PayDeductions = () => {
                 <div
                   key={index}
                   className="deduction-heading-container w100 p10 sa d-flex t-center a-center"
+                  style={{
+                    backgroundColor: "#f5d273",
+                  }}
                 >
                   <span className="info-text w30">{item.dname}</span>
                   <span className="info-text w10">{item.MAMT}</span>
@@ -467,7 +498,28 @@ const PayDeductions = () => {
               ))
             ) : (
               <div className="w100 h1 d-flex a-center j-center">
-                <span className="label-text">No Data Found</span>
+                <span className="label-text">No fix deduction data found!</span>
+              </div>
+            )}
+            {custTrnDedu && custTrnDedu.length > 0 ? (
+              custTrnDedu.map((item, index) => (
+                <div
+                  key={index}
+                  className="deduction-heading-container w100 p10 sa d-flex t-center a-center"
+                  style={{
+                    backgroundColor: index % 2 === 0 ? "#faefe3" : "#fff",
+                  }}
+                >
+                  <span className="info-text w30">{item.ladgerName}</span>
+                  <span className="info-text w10">{item.MAMT || 0}</span>
+                  <span className="info-text w10">{item.totalamt}</span>
+                  <span className="info-text w20">{item.Amt || 0}</span>
+                  <span className="info-text w10">{item.totalamt}</span>
+                </div>
+              ))
+            ) : (
+              <div className="w100 h1 d-flex a-center j-center">
+                <span className="label-text">No deduction data found</span>
               </div>
             )}
           </div>
@@ -488,7 +540,7 @@ const PayDeductions = () => {
                   id=""
                   className="data h60 t-center label-text read-onlytxt"
                 >
-                  {formData.totalcommission || ""}
+                  {formData.totalcommission + formData.totalrebate || ""}
                 </span>
               </div>
               <div className="deduction-details w20 h1 d-flex-col a-center sb">
@@ -497,7 +549,7 @@ const PayDeductions = () => {
                   id=""
                   className="data h60 t-center label-text read-onlytxt"
                 >
-                  {formData.totalrebate || ""}
+                  0.0
                 </span>
               </div>
               <div className="deduction-details w20 h1 d-flex-col a-center sb">

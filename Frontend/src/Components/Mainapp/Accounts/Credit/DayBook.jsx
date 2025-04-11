@@ -1,5 +1,5 @@
 import React from "react";
-import "../../../../Styles/Daybook/DayBook.css";
+import "../../../../Styles/Mainapp/Accounts/Daybook.css";
 const DayBook = () => {
   return (
     <div className="Day-Book-container w100  h1 d-flex-col bg ">
