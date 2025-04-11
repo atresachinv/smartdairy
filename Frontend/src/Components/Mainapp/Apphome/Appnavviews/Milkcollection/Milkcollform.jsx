@@ -53,7 +53,7 @@ const MilkColleform = ({ switchToSettings, times }) => {
   const fatRef = useRef(null);
   const snfRef = useRef(null);
   const submitbtn = useRef(null);
-
+  console.log("center settings", centerSetting);
   const initialValues = {
     date: changedDate || tDate,
     code: "",
@@ -768,11 +768,9 @@ const MilkColleform = ({ switchToSettings, times }) => {
           settings.millcoll === 1
         ) {
           if (values.mobile.length === 10 && values.mobile !== "0000000000") {
-
-            if () {
-              
+            if (settings.noRatesms !== 0) {
+              sendNoRateMessage();
             } else {
-              
               sendMessage();
             }
           } else {
