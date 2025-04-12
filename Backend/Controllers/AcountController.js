@@ -106,6 +106,56 @@ exports.insertNewVoucher = async (req, res) => {
   });
 };
 
+// Insert many new vouchers
+exports.manyNewVoucher = async (req, res) => {
+  const { centerId, voucherList } = req.body; // Expecting an array of vouchers in voucherList
+  const { dairy_id, user_id } = req.user;
+
+  if (!Array.isArray(voucherList) || voucherList.length === 0) {
+    return res.status(400).json({
+      success: false,
+      message: "Invalid or empty voucher list provided.",
+    });
+  }
+
+  pool.getConnection((err, connection) => {
+    if (err) {
+      console.error("Error getting MySQL connection: ", err);
+      return res
+        .status(500)
+        .json({ success: false, message: "Server connection failed" });
+    }
+
+    // Prepare the query for inserting multiple rows
+    const fields = Object.keys(voucherList[0]).join(", ");
+    const query = `INSERT INTO tally_trnfile (companyid, center_id, userid, ${fields}) VALUES ?`;
+
+    // Prepare the values for all rows
+    const values = voucherList.map((voucher) => [
+      dairy_id,
+      centerId,
+      user_id,
+      ...Object.values(voucher),
+    ]);
+
+    connection.query(query, [values], (err, result) => {
+      connection.release();
+      if (err) {
+        console.error("Error executing query: ", err);
+        return res
+          .status(500)
+          .json({ success: false, message: "server query failed" });
+      }
+
+      res.status(200).json({
+        success: true,
+        message: "Vouchers inserted successfully!",
+        result,
+      });
+    });
+  });
+};
+
 // Update voucher
 exports.updateVoucher = async (req, res) => {
   const { id } = req.query;

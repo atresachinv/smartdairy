@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Select from "react-select";
 import * as XLSX from "xlsx"; // Import xlsx library
@@ -25,6 +25,12 @@ const UploadAccount = () => {
 
   const [tableData, setTableData] = useState([]); // State to hold table data
   const fileInputRef = useRef(null); // Ref for the file input
+  const centerList = useSelector(
+    (state) => state.center.centersList.centersDetails || []
+  );
+
+  const centerId = useSelector((state) => state.dairy.dairyData.center_id);
+  const [filter, setFilter] = useState(0);
 
   useEffect(() => {
     dispatch(listSubLedger());
@@ -125,10 +131,10 @@ const UploadAccount = () => {
 
     console.log("Form Data to Submit:", formDataToSubmit);
     try {
-      const response = await axiosInstance.post(
-        "/api/credit/upload",
-        formDataToSubmit
-      );
+      const response = await axiosInstance.post("/voucher/upload", {
+        voucherList: formDataToSubmit,
+        centerId: centerId === 0 ? filter : centerId,
+      });
 
       if (response.data.success) {
         toast.success("Data uploaded successfully!");
@@ -154,6 +160,30 @@ const UploadAccount = () => {
   return (
     <div className="Credit-container w100 h1 d-flex-col p10">
       <div className="Credit-container-scroll d-flex-col h1 w100 bg p10">
+        <div className="d-flex w100 j-center my10">
+          {centerId > 0 ? (
+            <></>
+          ) : (
+            <div className="d-flex a-center mx10">
+              <span className="info-text">सेंटर निवडा :</span>
+              <select
+                className="data w50 a-center  my5 mx5"
+                name="center"
+                value={filter}
+                onChange={(e) => setFilter(e.target.value)}
+              >
+                {centerList &&
+                  [...centerList]
+                    .sort((a, b) => a.center_id - b.center_id)
+                    .map((center, index) => (
+                      <option key={index} value={center.center_id}>
+                        {center.center_name}
+                      </option>
+                    ))}
+              </select>
+            </div>
+          )}
+        </div>
         <div className="d-flex w100 j-center">
           <div className="d-flex center">
             <span className="info-text w50">व्यवहार दिनांक :</span>
