@@ -276,6 +276,56 @@ exports.deleteDeductions = async (req, res) => {
 
 //deduction details controller start ---->
 
+//find latest deduction details (by sb)----------------------------------------------------->
+exports.getMaxAppDedDetails = async (req, res) => {
+  const { dairy_id, center_id } = req.user;
+
+  pool.getConnection((err, connection) => {
+    if (err) {
+      console.error("Error getting MySQL connection: ", err);
+      return res
+        .status(500)
+        .json({ success: false, message: "Database connection error" });
+    }
+
+    let query = `
+      SELECT dd.DeductionId, dd.dname, dd.marathi_dname, dd.GLCode, dd.RatePerLitre, dd.ApplyDate, dd.LP
+        FROM DeductionDetails dd
+        WHERE dd.dairy_id = ? AND dd.center_id = ? AND dd.ApplyDate = (
+          SELECT MAX(inner_dd.ApplyDate)
+          FROM DeductionDetails inner_dd
+          WHERE inner_dd.DeductionId = dd.DeductionId
+            AND inner_dd.dairy_id = ? 
+            AND inner_dd.center_id = ?
+          )
+      ORDER BY dd.ApplyDate DESC
+      `;
+    let queryParams = [dairy_id, center_id, dairy_id, center_id];
+
+    connection.query(query, queryParams, (err, result) => {
+      connection.release();
+      if (err) {
+        console.error("Error executing query: ", err);
+        return res
+          .status(500)
+          .json({ success: false, message: "Database query error" });
+      }
+      if (result.length === 0) {
+        return res.status(201).json({
+          found: false,
+          message: "No product found matching criteria!",
+          maxADDedData: [],
+        });
+      }
+      res.status(200).json({
+        found: true,
+        status: 200,
+        maxADDedData: result,
+      });
+    });
+  });
+};
+
 //get all deduction details
 exports.getAllDeductionsDetails = async (req, res) => {
   const { dairy_id, center_id } = req.user;

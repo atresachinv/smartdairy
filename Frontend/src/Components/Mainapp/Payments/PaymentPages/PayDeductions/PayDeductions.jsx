@@ -1,12 +1,21 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { BsChevronDoubleLeft, BsChevronDoubleRight } from "react-icons/bs";
 import "../../../../../Styles/PayDeductions/PayDeductions.css";
 import { use } from "react";
 import { listSubLedger } from "../../../../../App/Features/Mainapp/Masters/ledgerSlice";
+import { getDeductionDetails } from "../../../../../App/Features/Deduction/deductionSlice";
+import {
+  fetchLastMAMT,
+  fetchPaymentDetails,
+  saveOtherDeductions,
+} from "../../../../../App/Features/Payments/paymentSlice";
+import { toast } from "react-toastify";
 
 const PayDeductions = () => {
   const dispatch = useDispatch();
+  const inputRefs = useRef([]);
+  const submitBtnRef = useRef(null);
   const centerid = useSelector(
     (state) =>
       state.dairy.dairyData.center_id || state.dairy.dairyData.center_id
@@ -16,17 +25,34 @@ const PayDeductions = () => {
   );
   const data = useSelector((state) => state.payment.paymentDetails);
   const milkData = useSelector((state) => state.payment.paymentData);
+  const deductionDetails = useSelector(
+    (state) => state.deduction.deductionDetails || []
+  );
   const SubLedgers = useSelector((state) => state.ledger.sledgerlist);
+  const centerSetting = useSelector(
+    (state) => state.dairySetting.centerSetting
+  );
   const deductions = useSelector((state) => state.payment.trnDeductions);
+  const prevMamt = useSelector((state) => state.payment.lastMamt);
+  const dedStatus = useSelector((state) => state.payment.savededstatus); // save other ded status
   const [payData, setPayData] = useState([]);
   const [filteredPayData, setFilteredPayData] = useState([]);
+  const [filteredPayData2, setFilteredPayData2] = useState([]);
+  const [mergedDeductions, setMergedDeductions] = useState([]);
+  const [allDeductions, setAllDeductions] = useState([]);
+  const [grandTotal, setGrandTotal] = useState(0);
+  const [settings, setSettings] = useState({});
+  const [custTrnDedu, setCustTrnDedu] = useState([]);
   const [customerList, setCustomerList] = useState([]);
   const [customerName, setCustomerName] = useState(""); // customername
   const [currentIndex, setCurrentIndex] = useState(1); // corrent index of selected customer
 
   const [formData, setFormData] = useState({
+    id: 0,
     billno: 0,
     billdate: "",
+    formDate: "",
+    toDate: "",
     code: 0,
     morningliters: "",
     eveningliters: "",
@@ -38,19 +64,33 @@ const PayDeductions = () => {
     eveningrebate: "",
     totalrebate: "",
     totalPayment: "",
-    totalAdvance: "",
+    totalAdvance: 0.0,
     transport: "",
-    totalTransport: "",
-    totalDeduction: "",
-    roundAmount: "",
-    netPayable: "",
-    minPayAmount: "",
+    totalTransport: 0.0,
+    totalDeduction: 0.0,
+    netDeduction: 0.0,
+    roundAmount: 0.0,
+    netPayable: 0.0,
+    netPayment: 0.0,
+    minPayAmount: 0.0,
   }); // form data for the payment deduction
+
+  // console.log("first", filteredPayData2, formData);
+
+  const autoCenter = settings?.autoCenter;
+  //set setting
+  useEffect(() => {
+    if (centerSetting?.length > 0) {
+      setSettings(centerSetting[0]);
+    }
+  }, [centerSetting]);
 
   // // Effect to load customer list from local storage ------------------------------------------>
   useEffect(() => {
     dispatch(listSubLedger());
+    dispatch(getDeductionDetails(autoCenter));
   }, [dispatch]);
+
   // // Effect to load customer list from local storage ------------------------------------------>
   useEffect(() => {
     const custLists = customerlist.filter(
@@ -59,7 +99,6 @@ const PayDeductions = () => {
     setCustomerList(custLists);
   }, [customerlist]);
 
-  console.log(SubLedgers, deductions);
   //----------------------------------------------------------------->
   // Implemetation of customer prev next buttons and display customer name
   // Handling Code inputs ----------------------------->
@@ -72,6 +111,7 @@ const PayDeductions = () => {
     }
   };
 
+  // Handling form data change -------------------------------------------------->
   const handleFormDataChange = (e) => {
     e.preventDefault();
     const { name, value } = e.target;
@@ -81,7 +121,7 @@ const PayDeductions = () => {
     }));
   };
 
-  // Handling "Enter" key press
+  // Handling "Enter" key press ------------------------------------------------->
   const handleKeyDown = (e) => {
     if (e.key === "Enter") {
       const value = parseInt(e.target.value, 10);
@@ -91,7 +131,7 @@ const PayDeductions = () => {
     }
   };
 
-  // Handling Prev Next Buttons ------------------------------------------>
+  // Handling Prev Next Buttons ------------------------------------------------>
 
   const handleNext = () => {
     setCurrentIndex((prevIndex) =>
@@ -105,7 +145,7 @@ const PayDeductions = () => {
     );
   };
 
-  // Handle Milk Data display ------------------------------------->
+  // Handle Milk Data display --------------------------------------------------->
   useEffect(() => {
     if (milkData && milkData.length > 0) {
       const currentCustomer = milkData.find(
@@ -159,7 +199,7 @@ const PayDeductions = () => {
     }
   }, [milkData, customerlist, currentIndex]);
 
-  //----------------------------------------------------------------->
+  //----------------------------------------------------------------------------->
   // Filter milk collection data for the current customer
 
   useEffect(() => {
@@ -180,15 +220,18 @@ const PayDeductions = () => {
       const currentCustomer = updatedPayData.find(
         (entry) => parseInt(entry.Code, 10) === currentIndex
       );
-
       if (currentCustomer) {
         setCustomerName(currentCustomer.cname || ""); // Set customer name or empty if not found
         setFormData((prevData) => ({
           ...prevData,
+          id: currentCustomer.id || 0,
+          code: currentCustomer.Code || 0,
           billno: currentCustomer.BillNo || 0,
           billdate: currentCustomer.BillDate
             ? currentCustomer.BillDate.slice(0, 10)
             : "",
+          formDate: currentCustomer.FromDate.slice(0, 10) || "",
+          toDate: currentCustomer.ToDate.slice(0, 10) || "",
           totalPayment: currentCustomer.pamt || 0.0,
           totalDeduction: currentCustomer.damt || 0.0,
           netPayable: currentCustomer.namt || 0.0,
@@ -198,8 +241,12 @@ const PayDeductions = () => {
         setCustomerName("");
         setFormData((prevData) => ({
           ...prevData,
+          id: 0,
+          code: 0,
           billno: 0,
           billdate: "",
+          formDate: "",
+          toDate: "",
           totalPayment: 0.0,
           totalDeduction: 0.0,
           netPayable: 0.0,
@@ -210,24 +257,168 @@ const PayDeductions = () => {
       setCustomerName("");
       setFormData((prevData) => ({
         ...prevData,
+        id: 0,
+        code: 0,
         billno: 0,
         billdate: "",
+        formDate: "",
+        toDate: "",
         totalPayment: 0.0,
         totalDeduction: 0.0,
         netPayable: 0.0,
       }));
     }
   }, [currentIndex, data, customerlist]);
-  // fiter paydata for the current customer ---------------------------------->
 
+  // fiter paydata for the current customer ------------------------------------->
   useEffect(() => {
     if (payData && currentIndex) {
       const matchedData = payData.filter(
         (item) => item.Code === currentIndex && item.DeductionId !== 0
       );
+      const mDeduData = allDeductions.filter(
+        (item) => item.AccCode === currentIndex
+      );
       setFilteredPayData(matchedData);
+      setFilteredPayData2(mDeduData);
     }
-  }, [payData, currentIndex]);
+  }, [payData, allDeductions, currentIndex]);
+
+  // mearge data deductions and deductionDetails -------------------------------------->
+  useEffect(() => {
+    if (deductionDetails && deductions && prevMamt) {
+      const merged = deductions.map((deduction) => {
+        const matchedDeduction = deductionDetails.find(
+          (sub) => sub.GLCode === deduction.GLCode
+        );
+        const matchedPrevMamt = prevMamt.find(
+          (prev) => prev.GLCode === deduction.GLCode
+        );
+        return {
+          ...deduction,
+          dname: matchedDeduction ? matchedDeduction.dname : "",
+          DeductionId: matchedDeduction ? matchedDeduction.DeductionId : "",
+          MAMT: matchedPrevMamt ? matchedPrevMamt.MAMT : 0.0,
+        };
+      });
+      setMergedDeductions(merged);
+    }
+  }, [deductions, deductionDetails, prevMamt]);
+
+  // handle deduction for perticular customer ----------------------------------->
+  useEffect(() => {
+    const customerdeductions = mergedDeductions.filter((item) => {
+      return item.AccCode === currentIndex;
+    });
+    setCustTrnDedu(customerdeductions);
+  }, [mergedDeductions, currentIndex]);
+
+  //calculate total deduction for the customer ---------------------------------->
+  useEffect(() => {
+    if (custTrnDedu && custTrnDedu.length > 0) {
+      const withCalculated = custTrnDedu.map((item) => {
+        const mam = Math.abs(Number(item.MAMT) || 0);
+        const total = Math.abs(Number(item.totalamt) || 0); // force +ve
+        const amt = Math.abs(Number(item.Amt) || 0); // force +ve
+
+        const net = mam + total - amt;
+
+        return {
+          ...item,
+          Amt: amt,
+          netamt: net,
+        };
+      });
+
+      setAllDeductions(withCalculated);
+    }
+  }, [custTrnDedu]);
+
+  // calculate grand total of all deductions ------------------------------------>
+  useEffect(() => {
+    const total = allDeductions.reduce((acc, item) => acc + (item.Amt || 0), 0);
+    setGrandTotal(total);
+  }, [allDeductions]);
+
+  // Handle amount change for each deduction ------------------------------------>
+  const handleAmtChange = (index, value) => {
+    const amt = Math.abs(parseFloat(value)) || 0;
+
+    const updated = [...allDeductions];
+    const current = { ...updated[index] };
+
+    const mam = Math.abs(current.MAMT || 0);
+    const total = Math.abs(custTrnDedu[index]?.totalamt || 0);
+
+    current.Amt = amt;
+    current.netamt = mam + total - amt;
+
+    updated[index] = current;
+    setAllDeductions(updated);
+  };
+
+  // handle grand total change for all deductions --------------------------------->
+ useEffect(() => {
+   const netPayment = formData.netPayable - grandTotal;
+   const rounded = Math.floor(netPayment);
+   const roundAmount = parseFloat((netPayment - rounded).toFixed(1));
+
+   setFormData((prevData) => ({
+     ...prevData,
+     totalTransport: formData.totalcollection * formData.transport,
+     netDeduction: formData.totalDeduction + grandTotal,
+     netPayment: netPayment - roundAmount,
+     roundAmount: roundAmount,
+   }));
+ }, [
+   grandTotal,
+   formData.netPayable,
+   formData.totalDeduction,
+   formData.totalcollection,
+   formData.transport,
+ ]);
+
+
+  //handle focus on next input field ----------------------------------------->
+
+  const handleEnterKey = (e, index) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      const nextInput = inputRefs.current[index + 1];
+      if (nextInput) {
+        nextInput.focus();
+      } else if (submitBtnRef.current) {
+        submitBtnRef.current.focus();
+      }
+    }
+  };
+
+  const handleBillSave = async (e) => {
+    e.preventDefault();
+    const saveres = await dispatch(
+      saveOtherDeductions({ formData, PaymentFD: filteredPayData2 })
+    ).unwrap();
+
+    setCurrentIndex((prevIndex) =>
+      prevIndex === customerList.length ? 1 : prevIndex + 1
+    );
+
+    if (inputRefs?.current) {
+      inputRefs.current[0].focus();
+    }
+    if (saveres.status === 200) {
+      const res = await dispatch(
+        fetchPaymentDetails({
+          fromdate: formData.formDate,
+          todate: formData.toDate,
+        })
+      ).unwrap();
+
+      toast.success("Bill saved successfully!");
+    } else {
+      toast.error("Failed to save bill!");
+    }
+  };
 
   return (
     <>
@@ -457,6 +648,9 @@ const PayDeductions = () => {
                 <div
                   key={index}
                   className="deduction-heading-container w100 p10 sa d-flex t-center a-center"
+                  style={{
+                    backgroundColor: "#f5d273",
+                  }}
                 >
                   <span className="info-text w30">{item.dname}</span>
                   <span className="info-text w10">{item.MAMT}</span>
@@ -466,8 +660,41 @@ const PayDeductions = () => {
                 </div>
               ))
             ) : (
-              <div className="w100 h1 d-flex a-center j-center">
-                <span className="label-text">No Data Found</span>
+              <div className="w100 p10 d-flex a-center j-center">
+                <span className="label-text">No fix deduction data found!</span>
+              </div>
+            )}
+            {filteredPayData2 && filteredPayData2.length > 0 ? (
+              filteredPayData2.map((item, index) => (
+                <div
+                  key={index}
+                  className="deduction-heading-container w100 p10 sa d-flex t-center a-center"
+                  style={{
+                    backgroundColor: index % 2 === 0 ? "#faefe3" : "#fff",
+                  }}
+                >
+                  <span className="info-text w30">{item.dname || ""}</span>
+                  <span className="info-text w10">{item.MAMT || 0}</span>
+                  <span className="info-text w10">
+                    {Math.abs(item.totalamt).toFixed(1) || 0.0}
+                  </span>
+                  <input
+                    type="number"
+                    className="data w20"
+                    onChange={(e) => handleAmtChange(index, e.target.value)}
+                    ref={(el) => (inputRefs.current[index] = el)}
+                    onKeyDown={(e) => handleEnterKey(e, index)}
+                    style={{ textAlign: "center" }}
+                  />
+
+                  <span className="info-text w10">
+                    {item.netamt.toFixed(1) || 0}
+                  </span>
+                </div>
+              ))
+            ) : (
+              <div className="w100 p10 d-flex a-center j-center">
+                <span className="label-text">No deduction data found</span>
               </div>
             )}
           </div>
@@ -479,7 +706,7 @@ const PayDeductions = () => {
                   id=""
                   className="data h60 t-center label-text read-onlytxt"
                 >
-                  {formData.totalPayment || "0.0"}
+                  {formData.totalPayment || 0.0}
                 </span>
               </div>
               <div className="deduction-details w20 h1 d-flex-col a-center sb">
@@ -488,7 +715,7 @@ const PayDeductions = () => {
                   id=""
                   className="data h60 t-center label-text read-onlytxt"
                 >
-                  {formData.totalcommission || ""}
+                  {formData.totalDeduction || 0.0}
                 </span>
               </div>
               <div className="deduction-details w20 h1 d-flex-col a-center sb">
@@ -497,7 +724,7 @@ const PayDeductions = () => {
                   id=""
                   className="data h60 t-center label-text read-onlytxt"
                 >
-                  {formData.totalrebate || ""}
+                  0.0
                 </span>
               </div>
               <div className="deduction-details w20 h1 d-flex-col a-center sb">
@@ -506,7 +733,7 @@ const PayDeductions = () => {
                   id=""
                   className="data h60 t-center label-text read-onlytxt"
                 >
-                  {formData.totalcollection * formData.transport || ""}
+                  {formData.totalTransport || 0.0}
                 </span>
               </div>
             </div>
@@ -517,25 +744,26 @@ const PayDeductions = () => {
                   id=""
                   className="data h60 t-center label-text read-onlytxt"
                 >
-                  {formData.totalDeduction || ""}
+                  {formData.netDeduction || 0.0}
                 </span>
               </div>
               <div className="deduction-details w20 h1 d-flex-col a-center sb">
-                <label htmlFor="">राउंड रक्कम</label>
+                <label htmlFor="roff">राउंड रक्कम</label>
                 <span
-                  id=""
+                  id="roff"
                   className="data h60 t-center label-text read-onlytxt"
                 >
-                  0.0
+                  {formData.roundAmount || 0.0}
                 </span>
               </div>
               <div className="deduction-details w20 h1 d-flex-col a-center sb">
-                <label htmlFor="">निव्वळ देय</label>
+                <label htmlFor="netpay">निव्वळ देय</label>
                 <span
-                  id=""
+                  id="netpay"
                   className="data h60 t-center label-text read-onlytxt"
+                  readOnly
                 >
-                  {formData.netPayable || ""}
+                  {formData.netPayment.toFixed(1) || 0.0}
                 </span>
               </div>
               <div className="deduction-details w20 h1 d-flex-col a-center sb"></div>
@@ -550,8 +778,14 @@ const PayDeductions = () => {
                   0.0
                 </span>
               </div>
-              <button type="submit" className="btn">
-                बिल सेव्ह करा
+              <button
+                type="submit"
+                className="btn"
+                ref={submitBtnRef}
+                onClick={handleBillSave}
+                disabled={dedStatus === "loading"}
+              >
+                {dedStatus === "loading" ? "saving..." : "बिल सेव्ह करा"}
               </button>
             </div>
           </div>

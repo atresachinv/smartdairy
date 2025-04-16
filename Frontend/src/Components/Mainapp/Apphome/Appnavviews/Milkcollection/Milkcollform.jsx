@@ -53,7 +53,6 @@ const MilkColleform = ({ switchToSettings, times }) => {
   const fatRef = useRef(null);
   const snfRef = useRef(null);
   const submitbtn = useRef(null);
-
   const initialValues = {
     date: changedDate || tDate,
     code: "",
@@ -550,6 +549,55 @@ const MilkColleform = ({ switchToSettings, times }) => {
     }
   };
 
+  const sendNoRateMessage = async () => {
+    const requestBody = {
+      messaging_product: "whatsapp",
+      recipient_type: "individual",
+      to: `91${values.mobile}`,
+      type: "template",
+      template: {
+        name: "milk_collection_marathi_norate",
+        language: { code: "en" },
+        components: [
+          {
+            type: "body",
+            parameters: [
+              { type: "text", text: dairyname },
+              { type: "text", text: values.cname },
+              { type: "text", text: values.code },
+              { type: "text", text: values.liters },
+              { type: "text", text: values.fat },
+              { type: "text", text: values.snf },
+              { type: "text", text: 0 },
+              { type: "text", text: 0 },
+              { type: "text", text: "--" },
+              { type: "text", text: dairyphone },
+              { type: "text", text: datetime },
+            ],
+          },
+        ],
+      },
+    };
+    try {
+      const response = await axiosInstance.post("/send-message", requestBody);
+      if (response?.data.success) {
+        toast.success("Whatsapp message send successfully...");
+        const smsData = {
+          smsStatus: "Sent",
+          mono: values.mobile,
+          custCode: values.code,
+          rNo: "8600",
+          smsText: requestBody,
+        };
+
+        dispatch(saveMessage(smsData));
+      }
+    } catch (error) {
+      toast.error("Error in whatsapp message sending...");
+      console.error("Error sending message:", error);
+    }
+  };
+
   // handle enter press move cursor to next refrence Input -------------------------------->
   const handleKeyDown = (e, nextRef) => {
     if (e.key === "Enter" && nextRef.current) {
@@ -707,8 +755,8 @@ const MilkColleform = ({ switchToSettings, times }) => {
           JSON.stringify(existingEntries)
         );
         fetchEntries();
-        setValues(initialValues); 
-        setErrors({}); 
+        setValues(initialValues);
+        setErrors({});
         toast.success(result.message || "Milk Collection saved successfully!");
 
         removeCustomer();
@@ -719,7 +767,11 @@ const MilkColleform = ({ switchToSettings, times }) => {
           settings.millcoll === 1
         ) {
           if (values.mobile.length === 10 && values.mobile !== "0000000000") {
-            sendMessage();
+            if (settings.noRatesms !== 0) {
+              sendNoRateMessage();
+            } else {
+              sendMessage();
+            }
           } else {
             toast.warn("Mobile number is not valid, message not sent!");
           }

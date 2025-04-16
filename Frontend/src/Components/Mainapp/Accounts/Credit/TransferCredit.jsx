@@ -1069,13 +1069,12 @@ const TransferCredit = () => {
                   filterVoucherList.map((voucher, index) => (
                     <tr key={index}>
                       <td>
-                        {!voucher.salebillno ||
-                          (!voucher.purchasebillno && (
-                            <FaRegEdit
-                              className="icon"
-                              onClick={() => handleEdit(voucher.id)}
-                            />
-                          ))}
+                        {!voucher.salebillno && !voucher.purchasebillno && (
+                          <FaRegEdit
+                            className="icon"
+                            onClick={() => handleEdit(voucher.id)}
+                          />
+                        )}
                       </td>
                       <td className="info-text">{voucher.VoucherNo}</td>
                       <td className="info-text">{voucher.GLCode}</td>
@@ -1100,13 +1099,12 @@ const TransferCredit = () => {
                       </td>
                       <td className="info-text">{voucher.BatchNo}</td>
                       <td>
-                        {!voucher.salebillno ||
-                          (!voucher.purchasebillno && (
-                            <MdDeleteOutline
-                              className="icon req"
-                              onClick={() => handleDelete(voucher.id)}
-                            />
-                          ))}
+                        {!voucher.salebillno && !voucher.purchasebillno && (
+                          <MdDeleteOutline
+                            className="icon req"
+                            onClick={() => handleDelete(voucher.id)}
+                          />
+                        )}
                       </td>
                     </tr>
                   ))

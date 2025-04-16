@@ -70,7 +70,6 @@ const DeductionRateDetails = () => {
 
   // handle Select Change
   const handleSelectChange = (selectedOption) => {
-    console.log(selectedOption);
     setFormData({
       ...formData,
       DeductionId: selectedOption.value,

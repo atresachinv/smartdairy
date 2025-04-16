@@ -31,10 +31,7 @@ const CreateOthers = () => {
     (state) =>
       state.dairy.dairyData.SocietyName || state.dairy.dairyData.center_name
   );
-  const productlist = useSelector(
-    (state) => state.inventory.allProducts,
-    shallowEqual
-  );
+  const productlist = useSelector((state) => state.inventory.allProducts);
   const [mobile, setMobile] = useState("");
   const [cartItem, setCartItem] = useState([]);
   const [cname, setCname] = useState("");

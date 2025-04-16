@@ -8,13 +8,18 @@ import Spinner from "../../Home/Spinner/Spinner";
 import {
   checkAmtZero,
   checkPayExists,
+  fetchLastMAMT,
   fetchMilkPaydata,
   fetchPaymentDetails,
   fetchTrnDeductions,
   saveMilkPaydata,
 } from "../../../App/Features/Payments/paymentSlice";
-import { getDeductionDetails } from "../../../App/Features/Deduction/deductionSlice";
+import {
+  fetchMaxApplyDeductions,
+  getDeductionDetails,
+} from "../../../App/Features/Deduction/deductionSlice";
 import { getAllSalePayment } from "../../../App/Features/Sales/salesSlice";
+import { use } from "react";
 
 const Payments = () => {
   const dispatch = useDispatch();
@@ -27,13 +32,14 @@ const Payments = () => {
   const payData = useSelector((state) => state.payment.paymentData);
   const payDetails = useSelector((state) => state.payment.paymentDetails);
   const deductionDetails = useSelector(
-    (state) => state.deduction.deductionDetails || []
+    (state) => state.deduction.mAdatededuction || []
   );
   const centerSetting = useSelector(
     (state) => state.dairySetting.centerSetting
   );
   const [settings, setSettings] = useState({});
   const [PaymentFD, setPaymentFD] = useState([]);
+  const [otherDeduction, setOtherDeduction] = useState([]);
   const [filteredPayDetails, setFilteredPayDetails] = useState([]);
   const [payStatus, setPayStatus] = useState(false);
   const [payShowStatus, setPayShowStatus] = useState(false);
@@ -80,7 +86,7 @@ const Payments = () => {
 
   useEffect(() => {
     dispatch(getMaxCustNo());
-    dispatch(getDeductionDetails(autoCenter));
+    dispatch(fetchMaxApplyDeductions());
   }, [dispatch]);
 
   useEffect(() => {
@@ -166,6 +172,13 @@ const Payments = () => {
     });
   };
 
+  useEffect(() => {
+    const otherDeductionGLCodes = deductionDetails
+      .filter((deduction) => deduction.LP !== 0)
+      .map((deduction) => deduction.GLCode);
+    setOtherDeduction(otherDeductionGLCodes);
+  }, [deductionDetails]);
+
   const handleFixDeductions = async () => {
     try {
       const filteredDeductions = deductionDetails.filter(
@@ -225,6 +238,28 @@ const Payments = () => {
     }
   };
 
+  //get previous payment last remaing amount of deductions ------------------------->
+
+  useEffect(() => {
+    if (formData.fromDate && otherDeduction.length > 0) {
+      const [year, month, day] = formData.fromDate.split("-").map(Number);
+
+      const date = new Date(year, month - 1, day);
+
+      // Subtract 1 day
+      date.setDate(date.getDate() - 1);
+
+      const prevDay = String(date.getDate()).padStart(2, "0");
+      const prevMonth = String(date.getMonth() + 1).padStart(2, "0");
+      const prevYear = date.getFullYear();
+
+      const result = `${prevYear}-${prevMonth}-${prevDay}`;
+
+      dispatch(fetchLastMAMT({ toDate: result, GlCodes: otherDeduction }));
+    }
+  }, [formData.fromDate, otherDeduction]);
+
+  //generate payment bill ---------------------------------------------------------->
   const handleGenerateBill = async (e) => {
     e.preventDefault();
     setPayStatus(true);
@@ -257,13 +292,13 @@ const Payments = () => {
             setPayStatus(false);
             return;
           }
-
           setPaymentFD(deductionData);
 
           const saleres = await dispatch(
             fetchTrnDeductions({
               fromDate: formData.fromDate,
               toDate: formData.toDate,
+              GlCodes: otherDeduction,
             })
           ).unwrap();
 
@@ -309,19 +344,25 @@ const Payments = () => {
           })
         ).unwrap();
 
-       const fetchrres = await dispatch(
-         fetchMilkPaydata({
-           fromDate: formData.fromDate,
-           toDate: formData.toDate,
-         })
-       ).unwrap();
+        const fetchrres = await dispatch(
+          fetchMilkPaydata({
+            fromDate: formData.fromDate,
+            toDate: formData.toDate,
+          })
+        ).unwrap();
 
-      const fetchress = await dispatch(
-        fetchTrnDeductions({
-          fromDate: formData.fromDate,
-          toDate: formData.toDate,
-        })
-      ).unwrap();
+        if (!otherDeduction) {
+          toast.error("other deduction glcodes not found!");
+          return;
+        }
+
+        const fetchress = await dispatch(
+          fetchTrnDeductions({
+            fromDate: formData.fromDate,
+            toDate: formData.toDate,
+            GlCodes: otherDeduction,
+          })
+        ).unwrap();
       } else {
         toast.error("Payment Dates required to show Payment!");
       }

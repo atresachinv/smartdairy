@@ -41,6 +41,7 @@ const inventorySlice = createSlice({
       .addCase(getAllProducts.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.payload;
+        state.allProducts = [];
       }); // --------------------------------------------------->
   },
 });

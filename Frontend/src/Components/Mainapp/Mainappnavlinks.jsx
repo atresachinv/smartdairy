@@ -256,15 +256,22 @@ const Mainappnavlinks = ({ setselected, handleSidebar }) => {
         {
           name: `${t("ट्रान्सफर चलन")}`,
           icon: <FaFileInvoice className="icon" />,
-          index: 4.22,
+          index: 4.2,
           path: "accounts/transfer",
           role: ["admin", "super_admin", "manager"],
         },
         {
           name: `${t("डे बुक")}`,
           icon: <FaFileInvoice className="icon" />,
-          index: 4.22,
+          index: 4.3,
           path: "accounts/daybook",
+          role: ["admin", "super_admin", "manager"],
+        },
+        {
+          name: `${t("व्यवहार एक्सेल अपलोड")}`,
+          icon: <FaFileInvoice className="icon" />,
+          index: 4.4,
+          path: "accounts/upload",
           role: ["admin", "super_admin", "manager"],
         },
       ],
@@ -464,12 +471,19 @@ const Mainappnavlinks = ({ setselected, handleSidebar }) => {
           path: "dairy/initial-info",
           role: ["admin", "super_admin", "manager"],
         },
+        {
+          name: `${t("Dairy Setup")}`,
+          icon: <BsGridFill className="icon" />,
+          index: 8.3,
+          path: "dairy/setup",
+          role: ["admin", "super_admin", "manager"],
+        },
         ...(center_id === 0
           ? [
               {
                 name: `${t("dairy-cre-center")}`,
                 icon: <BsGridFill className="icon" />,
-                index: 8.3,
+                index: 8.4,
                 path: "dairy/create/center",
                 role: ["admin", "super_admin", "manager"],
               },
@@ -478,7 +492,7 @@ const Mainappnavlinks = ({ setselected, handleSidebar }) => {
         {
           name: `${t("व्हाट्सअँप मेसेज ")}`,
           icon: <BsGridFill className="icon" />,
-          index: 8.4,
+          index: 8.5,
           path: "dairy/whatsapp-sms",
           role: ["admin", "super_admin", "manager"],
         },

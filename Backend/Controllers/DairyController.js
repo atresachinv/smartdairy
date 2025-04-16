@@ -1,5 +1,6 @@
 const jwt = require("jsonwebtoken");
 const dotenv = require("dotenv");
+const bcrypt = require("bcryptjs");
 const pool = require("../Configs/Database");
 dotenv.config({ path: "Backend/.env" });
 const NodeCache = require("node-cache");
@@ -321,7 +322,122 @@ exports.maxCenterId = async (req, res) => {
 
 // ------------------------------FIND MAX CENTERID
 
-exports.createCenter = async (req, res) => {
+// exports.createCenter = async (req, res) => {
+//   const {
+//     center_id,
+//     center_name,
+//     marathi_name,
+//     reg_no,
+//     reg_date,
+//     mobile,
+//     email,
+//     city,
+//     tehsil,
+//     district,
+//     pincode,
+//     auditclass,
+//     password,
+//     date,
+//     prefix,
+//   } = req.body;
+
+//   const dairy_id = req.user.dairy_id;
+//   const user_role = req.user.user_role;
+
+//   if (!dairy_id) {
+//     return res.status(401).json({ status: 401, message: "Unauthorized User!" });
+//   }
+//   pool.getConnection(async (err, connection) => {
+//     if (err) {
+//       console.error("Error getting MySQL connection: ", err);
+//       return res
+//         .status(500)
+//         .json({ status: 500, message: "Database connection error" });
+//     }
+
+//     // const hashedPassword = await bcrypt.hash(password, 10);
+
+//     // SQL query to create the center
+//     const createCenterQuery = `
+//       INSERT INTO centermaster (center_id, center_name, marathi_name, reg_no, reg_date, mobile, email, city, tehsil, district, pincode, orgid, auditclass, prefix)
+//       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )
+//     `;
+
+//     const designation = "Admin";
+//     const isAdmin = "1";
+//     const insertRegNo = reg_no && reg_no !== "" ? parseInt(reg_no, 10) : null;
+//     const insertRegDate = reg_date && reg_date !== "" ? reg_date : null;
+
+//     // SQL query to create the user associated with the center
+//     const createUserQuery = `
+//       INSERT INTO users (username, password, isAdmin, createdon, createdby, designation, SocietyCode, center_id)
+//       VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+//     `;
+
+//     // First, create the center
+//     connection.query(
+//       createCenterQuery,
+//       [
+//         center_id,
+//         center_name,
+//         marathi_name,
+//         insertRegNo,
+//         insertRegDate,
+//         mobile,
+//         email,
+//         city,
+//         tehsil,
+//         district,
+//         pincode,
+//         dairy_id,
+//         auditclass,
+//         prefix,
+//       ],
+//       (err, centerResult) => {
+//         if (err) {
+//           connection.release();
+//           console.error("Error executing createCenter query: ", err);
+//           return res
+//             .status(500)
+//             .json({ status: 500, message: "Database query error" });
+//         }
+
+//         // Now create the user associated with the center
+//         connection.query(
+//           createUserQuery,
+//           [
+//             mobile,
+//             password,
+//             isAdmin,
+//             date,
+//             user_role,
+//             designation,
+//             dairy_id,
+//             center_id,
+//           ],
+//           (err, userResult) => {
+//             connection.release();
+//             if (err) {
+//               console.error("Error executing createUser query: ", err);
+//               return res
+//                 .status(500)
+//                 .json({ status: 500, message: "Error creating user" });
+//             }
+//             // Invalidate the cache for this dairy_id
+//             const cacheKey = `centers_${dairy_id}_${center_id}`;
+//             cache.del(cacheKey);
+//             // Successfully created center
+//             res
+//               .status(200)
+//               .json({ status: 200, message: "Center created successfully!" });
+//           }
+//         );
+//       }
+//     );
+//   });
+// };
+
+exports.createCenter = (req, res) => {
   const {
     center_id,
     center_name,
@@ -346,93 +462,109 @@ exports.createCenter = async (req, res) => {
   if (!dairy_id) {
     return res.status(401).json({ status: 401, message: "Unauthorized User!" });
   }
-  pool.getConnection(async (err, connection) => {
+
+  pool.getConnection((err, connection) => {
     if (err) {
-      console.error("Error getting MySQL connection: ", err);
+      console.error("MySQL connection error:", err);
       return res
         .status(500)
         .json({ status: 500, message: "Database connection error" });
     }
 
-    // const hashedPassword = await bcrypt.hash(password, 10);
-
-    // SQL query to create the center
-    const createCenterQuery = `
-      INSERT INTO centermaster (center_id, center_name, marathi_name, reg_no, reg_date, mobile, email, city, tehsil, district, pincode, orgid, auditclass, prefix)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )
-    `;
-
-    const designation = "Admin";
-    const isAdmin = "1";
-    const insertRegNo = reg_no && reg_no !== "" ? parseInt(reg_no, 10) : null;
-    const insertRegDate = reg_date && reg_date !== "" ? reg_date : null;
-
-    // SQL query to create the user associated with the center
-    const createUserQuery = `
-      INSERT INTO users (username, password, isAdmin, createdon, createdby, designation, SocietyCode, center_id)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-    `;
-
-    // First, create the center
-    connection.query(
-      createCenterQuery,
-      [
-        center_id,
-        center_name,
-        marathi_name,
-        insertRegNo,
-        insertRegDate,
-        mobile,
-        email,
-        city,
-        tehsil,
-        district,
-        pincode,
-        dairy_id,
-        auditclass,
-        prefix,
-      ],
-      (err, centerResult) => {
-        if (err) {
-          connection.release();
-          console.error("Error executing createCenter query: ", err);
-          return res
-            .status(500)
-            .json({ status: 500, message: "Database query error" });
-        }
-
-        // Now create the user associated with the center
-        connection.query(
-          createUserQuery,
-          [
-            mobile,
-            password,
-            isAdmin,
-            date,
-            user_role,
-            designation,
-            dairy_id,
-            center_id,
-          ],
-          (err, userResult) => {
-            connection.release();
-            if (err) {
-              console.error("Error executing createUser query: ", err);
-              return res
-                .status(500)
-                .json({ status: 500, message: "Error creating user" });
-            }
-            // Invalidate the cache for this dairy_id
-            const cacheKey = `centers_${dairy_id}_${center_id}`;
-            cache.del(cacheKey);
-            // Successfully created center
-            res
-              .status(200)
-              .json({ status: 200, message: "Center created successfully!" });
-          }
-        );
+    // Hash password before inserting into `users`
+    bcrypt.hash(password, 10, (hashErr, hashedPassword) => {
+      if (hashErr) {
+        connection.release();
+        console.error("Error hashing password:", hashErr);
+        return res
+          .status(500)
+          .json({ status: 500, message: "Password hashing error" });
       }
-    );
+
+      // Insert into `centermaster`
+      const createCenterQuery = `
+        INSERT INTO centermaster (
+          center_id, center_name, marathi_name, reg_no, reg_date,
+          mobile, email, city, tehsil, district, pincode,
+          orgid, auditclass, prefix
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `;
+
+      const insertRegNo = reg_no && reg_no !== "" ? parseInt(reg_no, 10) : null;
+      const insertRegDate = reg_date && reg_date !== "" ? reg_date : null;
+
+      connection.query(
+        createCenterQuery,
+        [
+          center_id,
+          center_name,
+          marathi_name,
+          insertRegNo,
+          insertRegDate,
+          mobile,
+          email,
+          city,
+          tehsil,
+          district,
+          pincode,
+          dairy_id,
+          auditclass,
+          prefix,
+        ],
+        (err, centerResult) => {
+          if (err) {
+            connection.release();
+            console.error("Error inserting into centermaster:", err);
+            return res
+              .status(500)
+              .json({ status: 500, message: "Center creation failed" });
+          }
+
+          // Insert into `users`
+          const createUserQuery = `
+            INSERT INTO users (
+              username, password, isAdmin, createdon,
+              createdby, designation, SocietyCode, center_id
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+          `;
+
+          const designation = "Admin";
+          const isAdmin = "1";
+
+          connection.query(
+            createUserQuery,
+            [
+              mobile,
+              hashedPassword,
+              isAdmin,
+              date,
+              user_role,
+              designation,
+              dairy_id,
+              center_id,
+            ],
+            (err, userResult) => {
+              connection.release();
+
+              if (err) {
+                console.error("Error inserting into users:", err);
+                return res
+                  .status(500)
+                  .json({ status: 500, message: "User creation failed" });
+              }
+
+              const cacheKey = `centers_${dairy_id}_${center_id}`;
+              cache.del(cacheKey); // Clear cache if you're using it
+
+              return res.status(200).json({
+                status: 200,
+                message: "Center and user created successfully!",
+              });
+            }
+          );
+        }
+      );
+    });
   });
 };
 

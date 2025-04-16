@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import "../../../../Styles/Daybook/daybook.css";
+import "../../../../Styles/Mainapp/Accounts/Daybook.css";
 import { useDispatch, useSelector } from "react-redux";
 import { getAllVoucher } from "../../../../App/Features/Mainapp/Account/voucherSlice";
 import { listCustomer } from "../../../../App/Features/Customers/customerSlice";
