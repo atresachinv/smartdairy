@@ -10,10 +10,10 @@ import "../../../Styles/Mainapp/Dairy/Dairy.css";
 
 const DairyInfo = () => {
   const dispatch = useDispatch();
-  const dairyInfo = useSelector((state) => state.dairy.dairyData);
+  const dairyInfo = useSelector((state) => state.dairy.dairyData || []);
   const status = useSelector((state) => state.register.dairyinfostatus);
   const [errors, setErrors] = useState({});
-
+  console.log(dairyInfo);
   const [formData, setFormData] = useState({
     marathiName: "",
     SocietyName: "",
@@ -34,7 +34,24 @@ const DairyInfo = () => {
 
   useEffect(() => {
     if (dairyInfo) {
-      setFormData(dairyInfo);
+      setFormData((prevData) => ({
+        ...prevData,
+        marathiName: dairyInfo.marathi_name,
+        SocietyName: dairyInfo.center_name,
+        SocietyCode: dairyInfo.orgid,
+        prefix: dairyInfo.prefix,
+        startDate: "",
+        RegNo: dairyInfo.reg_no,
+        RegDate: dairyInfo.reg_date,
+        gstno: "",
+        AuditClass: dairyInfo,
+        PhoneNo: dairyInfo.mobile,
+        email: dairyInfo.email,
+        City: dairyInfo.city,
+        tel: dairyInfo.tehsil,
+        dist: dairyInfo.district,
+        PinCode: dairyInfo.pincode,
+      }));
     }
   }, [dairyInfo]);
 
@@ -237,7 +254,7 @@ const DairyInfo = () => {
               name="startDate"
               id="startDate"
               readOnly
-              value={formData.startDate.slice(0, 10)}
+              value={formData.startDate.slice(0, 10) || ""}
               onChange={handleChange}
             />
           </div>
