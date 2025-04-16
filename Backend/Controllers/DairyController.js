@@ -978,9 +978,9 @@ exports.sendMessage = (req, res) => {
                 }
               } else {
                 // Log additional details for better debugging
-                console.log(
-                  `Low Balance: Row Count = ${rowCount}, Total Balance = ${totalBalance}`
-                );
+                // console.log(
+                //   `Low Balance: Row Count = ${rowCount}, Total Balance = ${totalBalance}`
+                // );
                 return res.status(200).json({
                   success: false,
                   message: "Your balance is low",

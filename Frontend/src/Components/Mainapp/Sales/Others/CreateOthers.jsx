@@ -53,6 +53,7 @@ const CreateOthers = () => {
   );
   const [settings, setSettings] = useState({});
   const autoCenter = settings?.autoCenter;
+  const [submitDis, setSubmitDis] = useState(true);
 
   //set setting
   useEffect(() => {
@@ -96,7 +97,6 @@ const CreateOthers = () => {
     }
   }, [fcode, customerslist]);
 
-  
   const custOptions2 = customerslist.map((item) => ({
     value: item.srno,
     label: item.cname,
@@ -205,6 +205,7 @@ const CreateOthers = () => {
 
   //handle to save server
   const handleSubmit = async () => {
+    setSubmitDis(false);
     if (cartItem.length > 0) {
       try {
         const res = await axiosInstance.post("/sale/create", cartItem);
@@ -242,11 +243,14 @@ const CreateOthers = () => {
           setRctno(parseInt(rctno) + 1);
           toast.success(res.data.message);
           localStorage.setItem("receiptno4", parseInt(rctno) + 1);
+          setSubmitDis(true);
         }
       } catch (error) {
         toast.error("Error Submitting to server ");
+        setSubmitDis(true);
       }
     }
+    setSubmitDis(true);
   };
 
   // Set customer code (fcode) based on cname
@@ -1096,7 +1100,7 @@ const CreateOthers = () => {
             <button
               className="w-btn mx10"
               onClick={handleSubmit}
-              disabled={cartItem.length == 0}
+              disabled={cartItem.length == 0 || submitDis === false}
             >
               {t("milkcollection:m-btn-save")}
             </button>
