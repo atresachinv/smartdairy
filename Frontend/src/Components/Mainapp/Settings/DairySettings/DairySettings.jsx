@@ -96,6 +96,7 @@ const DairySettings = () => {
       };
       await dispatch(updateDairySettings(data));
       dispatch(getCenterSetting());
+      dispatch(getDairySettings());
       handleModelColse();
     }
   };
