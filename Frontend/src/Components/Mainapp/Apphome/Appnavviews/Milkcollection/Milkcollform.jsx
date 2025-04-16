@@ -19,7 +19,7 @@ import { saveMessage } from "../../../../../App/Features/Mainapp/Dairyinfo/smsSl
 const MilkColleform = ({ switchToSettings, times }) => {
   const dispatch = useDispatch();
   const { time } = useParams();
-  const { t } = useTranslation(["milkcollection", "common"]);
+  const { t } = useTranslation(["milkcollection", "common", "master"]);
   const dairyname = useSelector(
     (state) =>
       state.dairy.dairyData.SocietyName || state.dairy.dairyData.center_name
@@ -45,11 +45,13 @@ const MilkColleform = ({ switchToSettings, times }) => {
   const centerSetting = useSelector(
     (state) => state.dairySetting.centerSetting //center settings
   );
+
   const [settings, setSettings] = useState({}); //center settings
   const [customerList, setCustomerList] = useState([]);
   const [custList, setCustList] = useState([]); // to check remainning customer list
   const [milkRateChart, setMilkRatechart] = useState([]);
   const [errors, setErrors] = useState({});
+  const [loading, setLoading] = useState(false);
   const [changedDate, setChangedDate] = useState("");
   const [slotCount, setSlotCount] = useState(0); //To rerive local stored milk entries
   const codeInputRef = useRef(null);
@@ -75,9 +77,17 @@ const MilkColleform = ({ switchToSettings, times }) => {
     allow: false,
   };
 
-  // console.log("regular customers", regCustList);
-
   const [values, setValues] = useState(initialValues);
+
+  //---------------------------------------------------------------------------------------->
+  // Milk Collection list ---------------------------------------------------------------------------------------->
+  const milkColl = useSelector((state) => state.milkCollection.entries || [])
+    .slice()
+    .reverse();
+  const [custLists, setCustomersList] = useState({}); // to check remainning customer list
+  const [milkData, setMilkData] = useState([]); // to check remainning customer list
+  const [isRCust, setIsRCust] = useState(false); // to show remainning customer list
+
   // dynamic shift time set in time And allow is updated from state -------------------------------------------------------------->
   useEffect(() => {
     setValues((prevData) => ({
@@ -100,12 +110,6 @@ const MilkColleform = ({ switchToSettings, times }) => {
   useEffect(() => {
     dispatch(getRateCharts());
     dispatch(listCustomer());
-    dispatch(getRegCustomers());
-  }, [dispatch]);
-
-  // Effect to get regular customer list from backend ----------------------------------------------------->
-  useEffect(() => {
-    dispatch(getRegCustomers({ collDate: values.date }));
   }, [dispatch]);
 
   // effect to set rate chart --------------------------------------------------------------------->
@@ -497,16 +501,25 @@ const MilkColleform = ({ switchToSettings, times }) => {
   // };
 
   // Remove customer from custList
+
+  useEffect(() => {
+    const storedRCust = localStorage.getItem("rcustlist");
+    if (storedRCust) {
+      setCustList(JSON.parse(storedRCust));
+    } else {
+      setCustList(regCustList);
+      localStorage.setItem("rcustlist", JSON.stringify(regCustList));
+    }
+  }, [regCustList]);
+
   const removeCustomer = () => {
-    console.log(regCustList);
-    setCustList((regCustList) => {
-      const updatedList = regCustList.filter(
-        (customer) => customer.rno.toString() !== values.code.toString()
-      );
-      console.log("updatedList", updatedList);
-      localStorage.setItem("rcustlist", JSON.stringify(updatedList)); // Update localStorage
-      return updatedList;
-    });
+    const updatedList = custList.filter(
+      (customer) => customer.rno.toString() !== values.code.toString()
+    );
+
+    setCustList(updatedList);
+    localStorage.setItem("rcustlist", JSON.stringify(updatedList));
+    return updatedList;
   };
 
   // ------------------------------------------------------------------------------------->
@@ -745,7 +758,7 @@ const MilkColleform = ({ switchToSettings, times }) => {
 
   const handleCollection = async (e) => {
     e.preventDefault();
-
+    setLoading(true);
     // Validate fields before submission
     const validationErrors = validateFields();
     if (Object.keys(validationErrors).length > 0) {
@@ -761,6 +774,7 @@ const MilkColleform = ({ switchToSettings, times }) => {
     try {
       const result = await dispatch(saveMilkOneEntry(values)).unwrap();
       if (result?.status === 200) {
+        setValues(initialValues);
         const existingEntries =
           JSON.parse(localStorage.getItem(`milk_${dairyid}_${centerid}`)) || [];
         existingEntries.push(values);
@@ -769,11 +783,11 @@ const MilkColleform = ({ switchToSettings, times }) => {
           JSON.stringify(existingEntries)
         );
         fetchEntries();
-        setValues(initialValues);
         setErrors({});
         toast.success(result.message || "Milk Collection saved successfully!");
 
-        removeCustomer();
+        dispatch(getRegCustomers({ collDate: values.date, ME: values.shift }));
+
         if (
           settings?.whsms !== undefined &&
           settings?.millcoll !== undefined &&
@@ -797,14 +811,48 @@ const MilkColleform = ({ switchToSettings, times }) => {
     } catch (error) {
       const errorMessage = error?.message || "Failed to save milk collection!";
       toast.error(errorMessage);
+    } finally {
+      setLoading(false);
     }
   };
 
+  // -------------------------------------------------------------------------------------------------->
+  // -------------------------------------------------------------------------------------------------->
+  // Milk Collection list
+  // -------------------------------------------------------------------------------------------------->
+
+  useEffect(() => {
+    if (!milkColl || milkColl.length === 0) return; // Ensure milkColl is not empty
+    const ME = times === "morning" ? 0 : time === "morning" ? 0 : 1; // Determine ME based on time
+    const MilkEntries = milkColl.filter(
+      (entry) => entry.shift.toString() === ME.toString()
+    ); // Only update state if filtered data has changed
+    setMilkData((prevMilkData) => {
+      return JSON.stringify(prevMilkData) !== JSON.stringify(MilkEntries)
+        ? MilkEntries
+        : prevMilkData;
+    });
+  }, [milkColl, time]); // Only re-run when milkColl or time changes
+
+  useEffect(() => {
+    const storedCustList = localStorage.getItem("rcustlist");
+    if (storedCustList) {
+      setCustomersList(JSON.parse(storedCustList));
+    } else {
+      setCustomersList([]);
+    }
+  }, []);
+
+  const handleRemainingCustomers = async (e) => {
+    e.preventDefault();
+    setIsRCust(!isRCust);
+  };
+
   return (
-    <>
+    <div className="milk-collection-main-container w100 h1 d-flex sb p10">
       <form
         onSubmit={handleCollection}
-        className="milk-col-form w100 h1 d-flex-col bg p10"
+        className="milk-col-form w60 h1 d-flex-col bg p10"
       >
         <span className="heading w100 t-center py10">
           {values.shift === 0 ? `${t("common:c-mrg")}` : `${t("common:c-eve")}`}{" "}
@@ -877,8 +925,6 @@ const MilkColleform = ({ switchToSettings, times }) => {
           </div>
         </div>
         <div className="milk-details-div w100 h70 d-flex">
-          {/* <span className="label-text">Milk Details : </span> */}
-          {/* <div className="milk-details w100 h90 d-flex"> */}
           <div className="milk-info w50 h1 d-flex-col">
             <div className="form-div px10">
               <label htmlFor="liters" className="info-text">
@@ -1000,12 +1046,119 @@ const MilkColleform = ({ switchToSettings, times }) => {
             className="w-btn label-text mx10"
             type="submit"
             ref={submitbtn}
+            disabled={loading}
           >
-            {t("m-btn-save")}
+            {loading ? "saving..." : `${t("m-btn-save")}`}
           </button>
         </div>
       </form>
-    </>
+
+      {/* ------------------------------------------------------------------------------------------------------------------ */}
+      {/* ------------------------------------------------------------------------------------------------------------------ */}
+      {/* ------------------------------------------------------------------------------------------------------------------ */}
+      {/* ------------------------------------------------------------------------------------------------------------------ */}
+
+      <div className="milk-collection-list w38 h1 d-flex-col bg">
+        <div className="title-container w100 h10 d-flex a-center sb p10">
+          <h2 className="heading">
+            {isRCust ? t("master:m-custlist") : t("m-coll-list")}
+          </h2>
+          <button className="btn info-text" onClick={handleRemainingCustomers}>
+            {isRCust ? t("m-coll-list") : t("master:m-custlist")}
+          </button>
+        </div>
+
+        {!isRCust ? (
+          <div className="collection-list-container w100 h90 d-flex-col hidescrollbar p10">
+            {milkData.length > 0 ? (
+              milkData.map((entry, i) => (
+                <div
+                  key={i}
+                  className="collection-details w100 d-flex-col bg3 br6"
+                >
+                  <div className="col-user-info w100 h40 d-flex a-center sa p10">
+                    <span className="text w20">{entry.code}</span>
+                    <span className="text w70">{entry.cname}</span>
+                  </div>
+                  <div className="line"></div>
+                  <div className="col-milk-info w100 h60 d-flex-col">
+                    <div className="info-title w100 h50 d-flex sa">
+                      <span className="text w15 d-flex center">
+                        {t("common:c-liters")}
+                      </span>
+                      <span className="text w15 d-flex center">
+                        {t("common:c-fat")}
+                      </span>
+                      <span className="text w15 d-flex center">
+                        {t("common:c-snf")}
+                      </span>
+                      <span className="text w20 d-flex center">
+                        {t("common:c-rate")}
+                      </span>
+                      <span className="text w20 d-flex center">
+                        {t("common:c-amt")}
+                      </span>
+                    </div>
+                    <div className="info-value w100 h50 d-flex sa">
+                      <span className="text w15 d-flex center">
+                        {entry.liters || "00.0"}
+                      </span>
+                      <span className="text w15 d-flex center">
+                        {entry.fat || "00.0"}
+                      </span>
+                      <span className="text w15 d-flex center">
+                        {entry.snf || "00.0"}
+                      </span>
+                      <span className="text w20 d-flex center">
+                        {entry.rate || "00.0"}
+                      </span>
+                      <span className="text w20 d-flex center">
+                        {entry.amt || "00.0"}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="no-records w100 h1 d-flex center">
+                <span className="label-text">{t("common:c-no-data-avai")}</span>
+              </div>
+            )}
+          </div>
+        ) : (
+          <div className="remaing-customer-list-container w100 h90 mh90 d-flex-col hidescrollbar">
+            <div className="customer-details-heading-container w100 p10 d-flex a-center t-center sb sticky-top bg1">
+              <span className="f-info-text w15">{t("master:m-ccode")}</span>
+              <span className="f-info-text w50">{t("master:m-cname")}</span>
+              <span className="f-info-text w30">{t("master:m-mobile")}</span>
+            </div>
+            {regCustList.length > 0 ? (
+              regCustList.map((customer, index) => (
+                <div
+                  key={index}
+                  className={`customer-details-data-container w100 h10 d-flex a-center sb ${
+                    index % 2 === 0 ? "bg-light" : "bg-dark"
+                  }`}
+                  style={{
+                    backgroundColor: index % 2 === 0 ? "#faefe3" : "#fff",
+                  }}
+                >
+                  <span className="info-text w15 t-center">{customer.rno}</span>
+                  <span className="info-text w50">{customer.cname}</span>
+                  <span className="info-text w30 t-start">
+                    {customer.Phone}
+                  </span>
+                </div>
+              ))
+            ) : (
+              <div className="no-records w100 h1 d-flex center">
+                <span className="label-text">{t("common:c-no-data-avai")}</span>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+    </div>
   );
 };
 
