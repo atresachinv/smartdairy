@@ -5,19 +5,19 @@ const Sanghsales = () => {
   return (
     <>
       <div className="sangha-sale-container w100 h1 d-flex-col ">
-        <div className="first-halfsangha-sale-container w100 h40 d-flex-col bg  sb ">
+        <div className="first-halfsangha-sale-container w100 h40 d-flex-col   sb ">
           <div className="bill-information-container w100 h30 d-flex a-center">
             <div className="bill-info-from-to-date-div w60 h1 d-flex ">
               <div className="sangh-phoch-from-date-div w35 h1 d-flex a-center">
-                <span className="label-text px10 w40">दिनांक</span>
+                <span className="label-text  w40">दिनांक</span>
                 <input className="w70 data" type="date" />
               </div>
               <div className="sangh-phoch-to-date-div w35 h1 d-flex a-center">
-                <span className="label-text w40 px10">पासून</span>
+                <span className="label-text w40 ">पासून</span>
                 <input className="w70 data" type="date" />
               </div>
               <div className="sangh-phoch-paryent-date-div w35 h1 d-flex a-center">
-                <span className="label-text w40 px10">पर्येंत</span>
+                <span className="label-text w40 ">पर्येंत</span>
                 <input className="w70 data" type="date" />
               </div>
             </div>
@@ -29,7 +29,7 @@ const Sanghsales = () => {
               </div>
             </div>
           </div>
-          <div className="collection-phohach-container h30 w100 a-center  d-flex">
+          <div className="collection-phohach-container h30 w100 a-center d-flex">
             <div className="time-date-liter-container w50 h1 d-flex">
               <div className="time-sangh-div w30 d-flex a-center h1">
                 <span className="label-text  w30 px10">वेळ</span>
@@ -111,7 +111,7 @@ const Sanghsales = () => {
         </div>
         <div className="second-half-table-span-input-div w100 h60   d-flex-col">
           <div className="changle-dudh-kami-container w100 h40 d-flex">
-            <div className="changle-dudh-contianer w40 h1  bg d-flex-col ">
+            <div className="changle-dudh-contianer w40 h1  bg3 d-flex-col ">
               <fieldset className="w100 h1 sa d-flex-col sb">
                 <legend className="heading ">चांगले दूध </legend>
                 <div className="changle-dudh w100 h50 d-flex a-center">
@@ -136,38 +136,40 @@ const Sanghsales = () => {
                 </div>
               </fieldset>
             </div>
+            <div className="other-expence-rebbit-nashli w40 d-flex h1  ">
+              <div className="prashashikya-and-other-experaince w35 h20 px10 d-flex-col  ">
+                <div className="prashashikya-div w100 d-flex-col a-center  ">
+                  <span className="label-text w100 px10">इतरखर्च </span>
+                  <input className="data w60" type="text" />
+                </div>
+                <div className="prashashikya-div w100 d-flex-col a-center  ">
+                  <span className="label-text w100 px10">एकूण</span>
+                  <input className="data w60" type="text" />
+                </div>
+              </div>
+              <div className="rebbit-and-other-experaince w35 h20 px10 d-flex-col ">
+                <div className="prashashikya-rebbit-div w100   d-flex-col a-center">
+                  <span className="label-text w100 px10">रॆबिट</span>
+                  <input className="data w60" type="text" />
+                </div>
+                <div className="prashashikya-shitkaran-div w100 d-flex-col a-center ">
+                  <span className="label-text w100 px10">शीतकरण </span>
+                  <input className="data w60" type="text" />
+                </div>
+              </div>
+              <div className="rebbit-and-other-experaince w35 h20  d-flex-col ">
+                <div className="prashashikynash-div w100   d-flex-col a-center ">
+                  <span className="label-text w100 px10">नाश.ली</span>
+                  <input className="data w60" type="text" />
+                </div>
+                <div className="prashashikya-div-all w100 d-flex-col a-center ">
+                  <span className="label-text w100 px10">एकूण</span>
+                  <input className="data w60" type="text" />
+                </div>
+              </div>
+            </div>
 
-            <div className="prashashikya-and-other-experaince w15 h20 px10 d-flex-col bg ">
-              <div className="prashashikya-div w100 d-flex-col  ">
-                <span className="label-text w100 px10">इतरखर्च </span>
-                <input className="data w60" type="text" />
-              </div>
-              <div className="prashashikya-divv w100 d-flex-col  ">
-                <span className="label-text w100 px10">एकूण</span>
-                <input className="data w60" type="text" />
-              </div>
-            </div>
-            <div className="rebbit-and-other-experaince w15  h20 px10 d-flex-col ">
-              <div className="prashashikya-rebbit-div w100   d-flex-col">
-                <span className="label-text w100 px10">रॆबिट</span>
-                <input className="data w60" type="text" />
-              </div>
-              <div className="prashashikya-shitkaran-div w100 d-flex-col ">
-                <span className="label-text w100 px10">शीतकरण </span>
-                <input className="data w60" type="text" />
-              </div>
-            </div>
-            <div className="rebbit-and-other-experaince w15  h20  d-flex-col ">
-              <div className="prashashikynash-div w100   d-flex-col ">
-                <span className="label-text w100 px10">नाश.ली</span>
-                <input className="data w60" type="text" />
-              </div>
-              <div className="prashashikya-div-all w100 d-flex-col ">
-                <span className="label-text w100 px10">एकूण</span>
-                <input className="data w60" type="text" />
-              </div>
-            </div>
-            <div className="changle-dudh-contianer w40 h1 bg  d-flex-col ">
+            <div className="changle-dudh-contianer w40 h1 bg3  d-flex-col ">
               <fieldset className="w90 h1 sa d-flex-col sb">
                 <legend className="heading ">कमी प्रतीचे दूध </legend>
                 <div className="changle-dudh w100 h50 d-flex a-center">
@@ -211,9 +213,8 @@ const Sanghsales = () => {
               </div>
             </div>
             <div className="khatavni-setup-span-input w40 h1 d-flex-col">
-              <div className="span-input-alls-amount w100 d-flex h35">
+              <div className="span-input-alls-amount w100 d-flex h40">
                 <div className="all-amount-div h25 d-flex-col w30  px10 a-center ">
-                  <span className="label-text w90">एकूण रक्कम</span>
                   <input
                     className="data"
                     type="text"
@@ -221,7 +222,6 @@ const Sanghsales = () => {
                   />
                 </div>
                 <div className="all-amount-div h25 d-flex-col w30 px10 a-center ">
-                  <span className="label-text w90">वजावट रक्कम</span>
                   <input
                     className="data"
                     type="text"
@@ -229,18 +229,20 @@ const Sanghsales = () => {
                   />
                 </div>
                 <div className="all-amount-div h25 d-flex-col w30 px10 a-center ">
-                  <span className="label-text w90">निव्वळ रक्कम </span>
                   <input
                     className="data"
                     type="text"
                     placeholder="निव्वळ रक्कम "
                   />
                 </div>
-                
               </div>
-              <div className="center-wisesangha-sales-data h30 d-flex w100 a-center  ">
-                 <span className="label-text w30">Select Center</span>
-                  <select className="data w60" name="center data" id="001"></select>
+              <div className="center-wisesangha-sales-data h25 d-flex w100 a-center  ">
+                <span className="label-text w30">Select Center</span>
+                <select
+                  className="data w60"
+                  name="center data"
+                  id="001"
+                ></select>
               </div>
               <div className="gl-setup-register-butoon w100 sa d-flex h35 a-center">
                 <button className="w-btn">खटावणी सेटअप</button>
