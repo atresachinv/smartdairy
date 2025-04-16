@@ -74,10 +74,6 @@
   text-overflow: ellipsis;
 }
 
-.w5 { width: 5%; min-width: 50px; }
-.w10 { width: 10%; min-width: 90px; }
-.w20 { width: 20%; min-width: 160px; }
-.w100 { width: 100%; }
 
 .highlight-in {
   color: green;

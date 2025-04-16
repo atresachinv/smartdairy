@@ -46,7 +46,7 @@ const DayBook = () => {
       dispatch(getAllVoucher({ VoucherDate: selectedDate, autoCenter }));
     }
   };
-  console.log(voucherList);
+
 
   //.......PRINT Function
 
@@ -221,7 +221,7 @@ const DayBook = () => {
     printWindow.print();
   };
 
-  console.log("Subledger", sledgerlist);
+ 
 
   const mergedVoucherList = useMemo(() => {
     const temp = [];
