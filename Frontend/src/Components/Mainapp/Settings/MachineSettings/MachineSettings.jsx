@@ -94,7 +94,7 @@ const MachineSettings = () => {
           <div className="w100 machineContainer">
             {/* Printer Selection */}
             <div className="w90 d-flex j-center px10 settings-page-main-item">
-              <div className="w60 d-flex px10 info-text">Select Printer</div>
+              <div className="w60 d-flex px10 info-text">प्रिंटर निवडा</div>
               <div className="w40 d-flex">
                 {["A4", "58mm", "80mm"].map((label, index) => (
                   <div key={index} className="px5 settings-page-printer-item">
@@ -114,7 +114,7 @@ const MachineSettings = () => {
             {/* Sale WhatsApp Message */}
             <div className="w90 d-flex j-center p10 settings-page-main-item">
               <div className="w60 d-flex px10 info-text">
-                Sale WhatsApp Message
+                विक्री व्हाट्सअँप मेसेज
               </div>
               <div className="w40 d-flex">
                 <div>
@@ -140,7 +140,7 @@ const MachineSettings = () => {
             {/* Vehicle Sale WhatsApp Message */}
             <div className="w90 d-flex j-center px10 settings-page-main-item">
               <div className="w60 d-flex px10 info-text">
-                Vehicle Sale WhatsApp Message
+                गाडी विक्री व्हाट्सअँप मेसेज
               </div>
               <div className="w40 d-flex">
                 <div>
@@ -166,7 +166,7 @@ const MachineSettings = () => {
             {/* Milk Collection WhatsApp Message */}
             <div className="w90 d-flex j-center p10 settings-page-main-item">
               <div className="w60 d-flex px10 info-text">
-                Milk Collection WhatsApp Message
+                दूध संकलन व्हाट्सअँप मेसेज
               </div>
               <div className="w40 d-flex">
                 <div>
@@ -192,7 +192,7 @@ const MachineSettings = () => {
             {/* Vehicle Milk Collection WhatsApp Message */}
             <div className="w90 d-flex j-center px10 settings-page-main-item">
               <div className="w60 d-flex px10 info-text">
-                Vehicle Milk Collection WhatsApp Message
+                गाडी दूध संकलन व्हाट्सअँप मेसेज
               </div>
               <div className="w40 d-flex">
                 <div>
@@ -218,7 +218,7 @@ const MachineSettings = () => {
             {/* Complete Milk Collection WhatsApp Message */}
             <div className="w90 d-flex j-center p10 settings-page-main-item">
               <div className="w60 d-flex px10 info-text">
-                Complete Milk Collection WhatsApp Message
+                पूर्ण दूध संकलन व्हाट्सअँप मेसेज
               </div>
               <div className="w40 d-flex">
                 <div>
@@ -243,7 +243,7 @@ const MachineSettings = () => {
             </div>
             <div className="w90 d-flex j-center p10 settings-page-main-item">
               <div className="w60 d-flex px10 info-text">
-                Milk Collection WhatsApp Message Without Rate
+                दूध संकलन व्हाट्सअँप मेसेज विदाउट दर
               </div>
               <div className="w40 d-flex">
                 <div>
