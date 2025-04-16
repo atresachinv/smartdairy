@@ -55,6 +55,7 @@ const CreateCattleFeed = () => {
   );
   const [settings, setSettings] = useState({});
   const autoCenter = settings?.autoCenter;
+  const [submitDis, setSubmitDis] = useState(true);
   //set setting
   useEffect(() => {
     if (centerSetting?.length > 0) {
@@ -205,6 +206,7 @@ const CreateCattleFeed = () => {
 
   //handle to save server
   const handleSubmit = async () => {
+    setSubmitDis(false);
     if (cartItem.length > 0) {
       try {
         const res = await axiosInstance.post("/sale/create", cartItem);
@@ -243,11 +245,14 @@ const CreateCattleFeed = () => {
           setRctno(parseInt(rctno) + 1);
           toast.success(res.data.message);
           localStorage.setItem("receiptno1", parseInt(rctno) + 1);
+          setSubmitDis(true);
         }
       } catch (error) {
         toast.error("Error Submitting to server ");
+        setSubmitDis(true);
       }
     }
+    setSubmitDis(true);
   };
 
   // Set customer code (fcode) based on cname
@@ -1103,7 +1108,7 @@ const CreateCattleFeed = () => {
               type="button"
               className="w-btn mx10"
               onClick={handleSubmit}
-              disabled={cartItem.length == 0}
+              disabled={cartItem.length == 0 || submitDis === false}
             >
               {t("milkcollection:m-btn-save")}
             </button>

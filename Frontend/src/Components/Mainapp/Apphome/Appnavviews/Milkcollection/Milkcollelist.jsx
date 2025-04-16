@@ -28,6 +28,8 @@ const Milkcollelist = ({ times }) => {
         : prevMilkData;
     });
   }, [milkColl, time]); // Only re-run when milkColl or time changes
+  
+  console.log(custList);
 
   const handleRemainingCustomers = async (e) => {
     e.preventDefault();

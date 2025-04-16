@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { BsGearFill } from "react-icons/bs";
 import { useDispatch, useSelector } from "react-redux";
 import {
+  getRegCustomers,
   saveMilkOneEntry,
   setEntries,
 } from "../../../../../App/Features/Mainapp/Milk/MilkCollectionSlice";
@@ -38,6 +39,9 @@ const MilkColleform = ({ switchToSettings, times }) => {
     (state) => state.customers.customerlist || []
   );
   const milkcollRatechart = useSelector((state) => state.ratechart.rateChart);
+  const regCustList = useSelector(
+    (state) => state.milkCollection.regularCustomers || []
+  );
   const centerSetting = useSelector(
     (state) => state.dairySetting.centerSetting //center settings
   );
@@ -71,6 +75,8 @@ const MilkColleform = ({ switchToSettings, times }) => {
     allow: false,
   };
 
+  // console.log("regular customers", regCustList);
+
   const [values, setValues] = useState(initialValues);
   // dynamic shift time set in time And allow is updated from state -------------------------------------------------------------->
   useEffect(() => {
@@ -94,6 +100,12 @@ const MilkColleform = ({ switchToSettings, times }) => {
   useEffect(() => {
     dispatch(getRateCharts());
     dispatch(listCustomer());
+    dispatch(getRegCustomers());
+  }, [dispatch]);
+
+  // Effect to get regular customer list from backend ----------------------------------------------------->
+  useEffect(() => {
+    dispatch(getRegCustomers({ collDate: values.date }));
   }, [dispatch]);
 
   // effect to set rate chart --------------------------------------------------------------------->
@@ -486,10 +498,12 @@ const MilkColleform = ({ switchToSettings, times }) => {
 
   // Remove customer from custList
   const removeCustomer = () => {
-    setCustList((custList) => {
-      const updatedList = custList.filter(
-        (customer) => customer.srno.toString() !== values.code
+    console.log(regCustList);
+    setCustList((regCustList) => {
+      const updatedList = regCustList.filter(
+        (customer) => customer.rno.toString() !== values.code.toString()
       );
+      console.log("updatedList", updatedList);
       localStorage.setItem("rcustlist", JSON.stringify(updatedList)); // Update localStorage
       return updatedList;
     });

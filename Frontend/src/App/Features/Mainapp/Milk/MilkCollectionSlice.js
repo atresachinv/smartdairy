@@ -11,7 +11,9 @@ const initialState = {
   completedColle: [], //completed milk collection
   PrevLiters: [], //Previous liters
   todaysMilk: [],
+  regularCustomers: [], // regular customer for milk collection
   status: "idle",
+  getRegstatus: "idle",
   milkstatus: "idle",
   allmilkstatus: "idle",
   allmilkcollstatus: "idle",
@@ -249,6 +251,24 @@ export const completedMilkSankalan = createAsyncThunk(
   }
 );
 
+//fetch regular customer list
+export const getRegCustomers = createAsyncThunk(
+  "milkCollection/getRegCustomers",
+  async ({ collDate }, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.get("/regular/customer/list", {
+        params: { collDate },
+      });
+      return response.data.regularCustomers;
+    } catch (error) {
+      const errorMessage = error.response
+        ? error.response.data
+        : "Failed to fetch milk reports.";
+      return rejectWithValue(errorMessage);
+    }
+  }
+);
+
 const milkCollectionSlice = createSlice({
   name: "milkCollection",
   initialState,
@@ -400,11 +420,22 @@ const milkCollectionSlice = createSlice({
       .addCase(completedMilkSankalan.rejected, (state, action) => {
         state.compcollstatus = "failed";
         state.error = action.payload;
+      }) // fetch regular customer list ------------------------------------------->
+      .addCase(getRegCustomers.pending, (state) => {
+        state.getRegstatus = "loading";
+        state.error = null;
+      })
+      .addCase(getRegCustomers.fulfilled, (state, action) => {
+        state.getRegstatus = "succeeded";
+        state.regularCustomers = action.payload;
+      })
+      .addCase(getRegCustomers.rejected, (state, action) => {
+        state.getRegstatus = "failed";
+        state.error = action.payload;
       });
   },
 });
 
 export const { setEntries, addEntry } = milkCollectionSlice.actions;
 
-  
 export default milkCollectionSlice.reducer;
