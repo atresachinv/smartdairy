@@ -26,7 +26,9 @@ const DairySetup = () => {
           </div>
         </div>
         <div className="sms-setting-container w100 h30 d-flex sb bg-light-green br9 my10">
-          <label htmlFor="" className="label-text p10">Whatsapp Message Settings :</label>
+          <label htmlFor="" className="label-text p10">
+            Whatsapp Message Settings :
+          </label>
         </div>
       </div>
     </div>
