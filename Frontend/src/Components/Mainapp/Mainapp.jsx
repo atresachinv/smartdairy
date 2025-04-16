@@ -78,6 +78,7 @@ import Inventory from "./Inventory/Inventory";
 import Maindashboard from "./Dashboard/Maindashboard";
 import UploadAccount from "./Accounts/Credit/UploadAccount";
 import DairySetup from "./Settings/DairySettings/DairySetup";
+import LedgerList from "./Accounts/LedgerList/LedgerList";
 import MilkColleform from "./Apphome/Appnavviews/Milkcollection/Milkcollform";
 
 const Mainapp = () => {
@@ -249,6 +250,7 @@ const Mainapp = () => {
             <Route path="accounts/transfer" element={<TransferCredit />} />
             <Route path="accounts/daybook" element={<DayBook />} />
             <Route path="accounts/upload" element={<UploadAccount />} />
+            <Route path="accounts/ledger-list" element={<LedgerList/>} />
             {/* master routes */}
             <Route path="master/main-ledger/*" element={<MainLedger />} />
             <Route path="master/sub-ledger/*" element={<SubLedger />} />
