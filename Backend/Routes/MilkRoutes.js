@@ -22,6 +22,7 @@ const {
   retailMilkReports,
   centerReMilkReports,
   getRetailCustomer,
+  fetchRegCustomers,
 } = require("../Controllers/MilkController");
 const verifyToken = require("../Middlewares/VerifyToken");
 
@@ -46,10 +47,11 @@ router
   .route("/save/mobile/milkcollection")
   .post(verifyToken, mobileMilkCollection); // mobile Milkcollector
 router.route("/mobile/milkreport").get(verifyToken, fetchMobileMilkColl); // mobile Milkcollector
+router.route("/regular/customer/list").get(verifyToken, fetchRegCustomers); // regular customer list
 router.route("/mobile/prevliters").get(verifyToken, fetchPrevLiters); // mobile Milkcollector
 router
   .route("/fetch/mobile/collection")
-  .get(verifyToken, fetchMobileMilkCollection); // to update
+  .get(verifyToken, fetchMobileMilkCollection); // fetch mobile milk collection
 router.route("/update/mobile/coll").post(verifyToken, updateMobileCollection);
 router.route("/milk/coll/report").get(verifyToken, allMilkCollReport); // All milk collection Records
 router
