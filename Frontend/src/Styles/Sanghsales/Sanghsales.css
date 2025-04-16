@@ -126,6 +126,9 @@
 .center-wisesangha-sales-data {
   margin-bottom: 10px;
 }
+.prashashikya-and-other-experaince {
+  margin-bottom: px;
+}
 @media screen and (max-width: 426px) {
   .table-heading-container-div {
     display: flex;
@@ -188,14 +191,14 @@
     font-size: small;
     height: 35px;
   }
-  
+
   .bill-information-container
     .bill-info-from-to-date-div
     .sangh-phoch-to-date-div
     input {
     width: 230px;
     font-size: small;
-     margin-bottom:10px;
+    margin-bottom: 10px;
     height: 35px;
   }
   .bill-information-container
@@ -314,7 +317,7 @@
     width: 120px;
     height: 40px;
     margin-top: 3px;
-    margin-right:10px ;
+    margin-right: 10px;
   }
   .prashashikya-and-other-experaince .prashashikya-divv span {
     width: 70px;
@@ -322,8 +325,9 @@
     margin-top: 3px;
   }
   .prashashikya-and-other-experaince .prashashikya-div {
-    flex-direction: row;
+    flex-direction: column;
     margin-top: 5px;
+    height: 110px;
   }
   .prashashikya-and-other-experaince .prashashikya-div input {
     width: 120px;
@@ -339,6 +343,10 @@
   .changle-dudh-kami-container .rebbit-and-other-experaince .prashashikya-div {
     flex-direction: row;
     margin-top: 5px;
+
+  }
+   .other-expence-rebbit-nashli .rebbit-and-other-experaince  .prashashikya-rebbit-div{
+         height: 100px;
   }
   .changle-dudh-kami-container
     .rebbit-and-other-experaince
@@ -388,7 +396,7 @@
     .bill-info-from-to-date-div
     .sangh-phoch-paryent-date-div
     input {
-    width: 230px;
+    width: 250px;
     margin-right: 10px;
   }
   .bill-information-container
@@ -410,8 +418,13 @@
     width: 120px;
   }
   .khatavni-setup-span-input .span-input-alls-amount input {
-
-     width: 100px;
-
+    width: 100px;
+  }
+  .changle-dudh-kami-container .other-expence-rebbit-nashli {
+    width: 100%;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    flex-direction: column;
+    justify-content: space-between;
   }
 }

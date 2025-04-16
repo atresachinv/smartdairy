@@ -1270,7 +1270,7 @@ Total Amount:        ${totalAmount.toFixed(2)}
           </div>
         </div>
       </div>
-      <div className="container mx-auto p-4 h60 w100">
+      {/* <div className="container mx-auto p-4 h60 w100">
         {filteredSales.length > 0 && (
           <div className="table-container mt-4 overflow-y-auto">
             <table className="min-w-full divide-y divide-gray-200">
@@ -1329,6 +1329,77 @@ Total Amount:        ${totalAmount.toFixed(2)}
             </table>
           </div>
         )}
+      </div> */}
+      <div className="container mx-auto p-4 h60 w100">
+        <div className="table-container mt-4 overflow-y-auto">
+          <table className="min-w-full divide-y divide-gray-200">
+            <thead className="bg-gray-50">
+              <tr>
+                {columns.map((col) => (
+                  <th
+                    key={col.accessor}
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
+                    {col.header}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {filteredSales.length > 0 ? (
+                filteredSales.map((sale, index) => (
+                  <tr key={index} className="hover:bg-gray-100">
+                    {columns.map((col) => (
+                      <td
+                        key={col.accessor}
+                        className="px-6 py-4 whitespace-nowrap text-sm text-gray-700"
+                      >
+                        {col.accessor === "purchasedate"
+                          ? sale[col.accessor]?.slice(0, 10)
+                          : sale[col.accessor]}
+                      </td>
+                    ))}
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td
+                    colSpan={columns.length}
+                    className="text-center py-6 text-gray-500 text-lg"
+                  >
+                    Data not available
+                  </td>
+                </tr>
+              )}
+            </tbody>
+            {filteredSales.length > 0 && (
+              <tfoot className="bg-gray-100 font-bold">
+                <tr>
+                  {columns.map((col, index) => (
+                    <td
+                      key={col.accessor}
+                      className="px-6 py-4 text-sm text-gray-700"
+                    >
+                      {col.accessor === "quantity"
+                        ? filteredSales.reduce(
+                            (sum, sale) => sum + (sale.quantity || 0),
+                            0
+                          )
+                        : col.accessor === "amount"
+                        ? filteredSales.reduce(
+                            (sum, sale) => sum + (sale.amount || 0),
+                            0
+                          )
+                        : index === 0
+                        ? "Total"
+                        : ""}
+                    </td>
+                  ))}
+                </tr>
+              </tfoot>
+            )}
+          </table>
+        </div>
       </div>
     </div>
   );

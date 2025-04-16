@@ -57,6 +57,7 @@ const DeductionRateDetails = () => {
     value: item.DeductionId,
     label: `${item.DeductionName}`,
     dname: item.deductionNameeng,
+    GLCode: item.GLCode,
     marathi_dname: item.DeductionName,
   }));
   const options1 = deductionData.map((item) => ({
@@ -281,10 +282,14 @@ const DeductionRateDetails = () => {
                   zIndex: 200,
                 }),
               }}
-              value={options1.find(
-                (option) => option.value === formData.DeductionId
-              )}
-              onChange={handleSelectChange}
+              value={
+                formData.DeductionId
+                  ? options1.find(
+                      (option) => option.value === formData.DeductionId
+                    )
+                  : null
+              }
+              onChange={(selectedOption) => handleSelectChange(selectedOption)}
               isDisabled={isDisable}
             />
 
@@ -300,9 +305,13 @@ const DeductionRateDetails = () => {
                   zIndex: 200,
                 }),
               }}
-              value={options.find(
-                (option) => option.value === formData.DeductionId
-              )}
+              value={
+                formData.DeductionId
+                  ? options.find(
+                      (option) => option.value === formData.DeductionId
+                    )
+                  : null
+              }
               onChange={(selectedOption) => handleSelectChange(selectedOption)}
               isDisabled={isDisable}
             />
