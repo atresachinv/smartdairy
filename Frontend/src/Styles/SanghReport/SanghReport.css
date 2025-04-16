@@ -1,10 +1,29 @@
 .sangha-sale-table-header {
-  background-color: rgb(42, 25, 230);
-  height: 20px;
+  height: 10px;
+  display: flex;
+  position: sticky;
+  top: 0;
+  background-color: #007bff;
+  z-index: 2;
+  border-bottom: 1px solid #ccc;
+  min-width: 1000px; /* force scroll if content wider */
+  height: 70px;
+}
+.scroll-container {
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  position: relative;
+}
+.scroll-container::-webkit-scrollbar {
+  display: none;
+}
+.scroll-container {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 .sangha-sale-table-header span {
   color: hwb(180 89% 10%);
-
 }
 /* Main table section */
 /* General Container */
@@ -14,11 +33,18 @@
   border-radius: 8px;
   overflow: hidden;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  min-width: 1000px; /* match header width */
+  max-height: calc(
+    50vh - 40px
+  ); /* adjust height: total height - header height */
 }
 
 /* Table header styling */
 .sangha-sale-table-header {
-  background-color: #2c3e50;
+  background-color: #3177bd;
   color: white;
   font-weight: bold;
   padding: px 0;
@@ -28,7 +54,14 @@
 /* Table data container */
 .sangha-tabledata-section-div {
   overflow-x: auto;
-  max-height: 70vh; /* Adjust based on your needs */
+  max-height: 100vh; /* Adjust based on your needs */
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.datasanghasales-div 
+ ::-webkit-scrollbar {
+  display: none;
+
 }
 
 /* Data row styling */
@@ -39,23 +72,17 @@
   overflow-x: auto;
 }
 
+/* ad.
+
 /* Alternate row coloring */
-.datasanghasales-div:nth-child(even) {
-  background-color: #f9f9f9;
-}
 
 /* Hover effect for rows */
-.datasanghasales-div:hover {
-  background-color: #f1f1f1;
-}
 
 /* Cell styling */
 .label-text {
- 
   text-align: left;
- 
-  overflow: hidden;
 
+  overflow: hidden;
 }
 
 /* Fixed header implementation */
@@ -117,29 +144,39 @@
   background-color: white;
 }
 
-@media screen and (max-width:426px) {
-    .sangha-sales-date-buttons-div{
-        flex-direction: column;
-    }
-    .sangha-sales-date-buttons-div .sangha-from-to-datediv-container{
-        width: 100%;
-    }
-    .sangha-sales-date-buttons-div .sangha-from-to-datediv-container .sanghaa-from-date-divv{
-       margin-right: 10px;
-    }
-    .sangha-sales-date-buttons-div .sangha-from-to-datediv-container .sanghaa-from-date-divv span{
-       width: 49px;
-    }
-    .sangha-sales-date-buttons-div .sangha-from-to-datediv-container .sanghaa-from-date-divv input{
-       width: 123px;
-       font-size: small;
-    }
-    .sangha-sales-date-buttons-div .sangha-from-to-datediv-container .sanghaa-to-date-divv input{
-       width: 123px;
-       font-size: small;
-    }
-        .sangha-sales-date-buttons-div  .sangha-sales-buttons-div {
-        width: 100%;
-    }
-  
+@media screen and (max-width: 426px) {
+  .sangha-sales-date-buttons-div {
+    flex-direction: column;
+  }
+  .sangha-sales-date-buttons-div .sangha-from-to-datediv-container {
+    width: 100%;
+  }
+  .sangha-sales-date-buttons-div
+    .sangha-from-to-datediv-container
+    .sanghaa-from-date-divv {
+    margin-right: 10px;
+  }
+  .sangha-sales-date-buttons-div
+    .sangha-from-to-datediv-container
+    .sanghaa-from-date-divv
+    span {
+    width: 49px;
+  }
+  .sangha-sales-date-buttons-div
+    .sangha-from-to-datediv-container
+    .sanghaa-from-date-divv
+    input {
+    width: 123px;
+    font-size: small;
+  }
+  .sangha-sales-date-buttons-div
+    .sangha-from-to-datediv-container
+    .sanghaa-to-date-divv
+    input {
+    width: 123px;
+    font-size: small;
+  }
+  .sangha-sales-date-buttons-div .sangha-sales-buttons-div {
+    width: 100%;
+  }
 }
