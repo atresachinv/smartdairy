@@ -76,7 +76,6 @@ import DoctorMaster from "./Masters/MasterPages/DoctorMaster";
 import WhatsappSms from "./DairyInfo/Centers/WhatsappSms";
 import Inventory from "./Inventory/Inventory";
 import Maindashboard from "./Dashboard/Maindashboard";
-import UploadAccount from "./Accounts/Credit/UploadAccount";
 
 const Mainapp = () => {
   const dispatch = useDispatch();
@@ -245,8 +244,7 @@ const Mainapp = () => {
             <Route path="accounts" element={<ComingSoon />} />
             <Route path="accounts/cash" element={<CashCredit />} />
             <Route path="accounts/transfer" element={<TransferCredit />} />
-            <Route path="accounts/daybook" element={<DayBook />} />
-            <Route path="accounts/upload" element={<UploadAccount />} />
+            <Route path="accounts/daybook" element={<DayBook/>} />
             {/* master routes */}
             <Route path="master/main-ledger/*" element={<MainLedger />} />
             <Route path="master/sub-ledger/*" element={<SubLedger />} />
@@ -297,6 +295,7 @@ const Mainapp = () => {
             {/* dairy routes */}
             <Route path="dairy/information" element={<DairyInfo />} />
             <Route path="dairy/initial-info" element={<DairyInitialInfo />} />
+            <Route path="dairy/setup" element={<DairySetup />} />
             <Route path="dairy/create/center" element={<Centers />} />
             <Route path="dairy/whatsapp-sms" element={<WhatsappSms />} />
             {/* settings routes */}

@@ -964,7 +964,7 @@ const DairyInitialInfo = () => {
             </div>
             <div className="round-amount-container w100 w45 h10 d-flex-col sb">
               <label htmlFor="coolgl" className="label-text w100">
-                शितकार :
+                शितकरण :
               </label>
               <input
                 id="coolgl"

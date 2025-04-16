@@ -8,13 +8,17 @@ const initialState = {
   paymentDetails: [],
   customerMilkData: [],
   transferedMilkData: [],
+  lastMamt: [],
   trnDeductions: [],
   status: "idle",
+  lastMamtstatus: "idle",
   trnstatus: "idle",
+  transtatus: "idle",
   ckeckPaystatus: "idle",
   pzerostatus: "idle",
   paystatus: "idle",
   savepaystatus: "idle", //save fix dedu m pay
+  savededstatus: "idle", //save other dedu m pay
   getMilkstatus: "idle",
   transferedMilkstatus: "idle",
   transtodatestatus: "idle",
@@ -359,15 +363,36 @@ export const fetchMilkPaydata = createAsyncThunk(
 
 export const fetchTrnDeductions = createAsyncThunk(
   "payment/fetchTrnDeductions",
-  async ({ fromDate, toDate }, { rejectWithValue }) => {
+  async ({ fromDate, toDate, GlCodes }, { rejectWithValue }) => {
     try {
       const response = await axiosInstance.get("/fetch/trn/deductions", {
         params: {
           fromDate,
           toDate,
+          GlCodes,
         },
       });
       return response.data.trnDeductions;
+    } catch (error) {
+      const errorMessage =
+        error.response?.data?.message || "Failed to fetch payment data.";
+      return rejectWithValue(errorMessage);
+    }
+  }
+);
+//get trn deduction amt----------------------------------------------------->
+
+export const fetchLastMAMT = createAsyncThunk(
+  "payment/fetchLastMAMT",
+  async ({ toDate, GlCodes }, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.get("/fetch/payment/mamt", {
+        params: {
+          toDate,
+          GlCodes,
+        },
+      });
+      return response.data.trnLRemaings;
     } catch (error) {
       const errorMessage =
         error.response?.data?.message || "Failed to fetch payment data.";
@@ -382,8 +407,26 @@ export const saveMilkPaydata = createAsyncThunk(
   "payment/saveMilkPaydata",
   async ({ formData, PaymentFD }, { rejectWithValue }) => {
     try {
-      console.log("Thunk is sending:", { formData, PaymentFD }); // <-- Add this
       const response = await axiosInstance.post("/save/milk/payment", {
+        formData,
+        PaymentFD,
+      });
+      return response.data;
+    } catch (error) {
+      const errorMessage =
+        error.response?.data?.message || "Failed to save milk payment details.";
+      return rejectWithValue(errorMessage);
+    }
+  }
+);
+
+//save milk payment Other deductions and other deductions ------------------------->
+
+export const saveOtherDeductions = createAsyncThunk(
+  "payment/saveOtherDeductions",
+  async ({ formData, PaymentFD }, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.post("/save/other/deductions", {
         formData,
         PaymentFD,
       });
@@ -614,6 +657,17 @@ const paymentSlice = createSlice({
       .addCase(saveMilkPaydata.rejected, (state, action) => {
         state.savepaystatus = "failed";
         state.error = action.payload;
+      }) //Save other deductions of milk payment ------------------------------------------->
+      .addCase(saveOtherDeductions.pending, (state) => {
+        state.savededstatus = "loading";
+        state.error = null;
+      })
+      .addCase(saveOtherDeductions.fulfilled, (state) => {
+        state.savededstatus = "succeeded";
+      })
+      .addCase(saveOtherDeductions.rejected, (state, action) => {
+        state.savededstatus = "failed";
+        state.error = action.payload;
       }) //fetch trn deductions ------------------------------------------->
       .addCase(fetchTrnDeductions.pending, (state) => {
         state.trnstatus = "loading";
@@ -625,6 +679,18 @@ const paymentSlice = createSlice({
       })
       .addCase(fetchTrnDeductions.rejected, (state, action) => {
         state.trnstatus = "failed";
+        state.error = action.payload;
+      }) //fetch trn deductions ------------------------------------------->
+      .addCase(fetchLastMAMT.pending, (state) => {
+        state.lastMamtstatus = "loading";
+        state.error = null;
+      })
+      .addCase(fetchLastMAMT.fulfilled, (state, action) => {
+        state.lastMamtstatus = "succeeded";
+        state.lastMamt = action.payload;
+      })
+      .addCase(fetchLastMAMT.rejected, (state, action) => {
+        state.lastMamtstatus = "failed";
         state.error = action.payload;
       }) //get total milk payment ------------------------------------------->
       .addCase(fetchMilkPaydata.pending, (state) => {

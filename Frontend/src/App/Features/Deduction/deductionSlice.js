@@ -7,7 +7,9 @@ const initialState = {
   alldeductionInfo: [],
   deductionData: [],
   deductionDetails: [],
+  mAdatededuction: [],
   status: "idle",
+  maxAddSatus: "idle",
   deductionstatus: "idle",
   error: null,
 };
@@ -85,6 +87,22 @@ export const getDeductionDetails = createAsyncThunk(
   }
 );
 
+//get all max apply date Deduction Details
+export const fetchMaxApplyDeductions = createAsyncThunk(
+  "deduction/fetchMaxApplyDeductions",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.post(`/all/applied/deductions`);
+      return response.data.maxADDedData;
+    } catch (error) {
+      const errorMessage = error.response
+        ? error.response.data
+        : "Failed to fetch max applydate deduction Details.";
+      return rejectWithValue(errorMessage);
+    }
+  }
+);
+
 const deductionSlice = createSlice({
   name: "deduction",
   initialState,
@@ -141,6 +159,21 @@ const deductionSlice = createSlice({
         state.deductionDetails = action.payload;
       })
       .addCase(getDeductionDetails.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      }) // fetch max apply date deduction data ------------------------------------------>
+      .addCase(fetchMaxApplyDeductions.pending, (state) => {
+        state.maxAddSatus = "loading";
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchMaxApplyDeductions.fulfilled, (state, action) => {
+        state.maxAddSatus = "succeeded";
+        state.loading = false;
+        state.mAdatededuction = action.payload;
+      })
+      .addCase(fetchMaxApplyDeductions.rejected, (state, action) => {
+        state.maxAddSatus = "failed";
         state.loading = false;
         state.error = action.payload;
       });
