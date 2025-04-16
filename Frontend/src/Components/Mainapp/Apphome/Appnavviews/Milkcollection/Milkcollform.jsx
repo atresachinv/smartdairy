@@ -53,7 +53,6 @@ const MilkColleform = ({ switchToSettings, times }) => {
   const fatRef = useRef(null);
   const snfRef = useRef(null);
   const submitbtn = useRef(null);
-  console.log("center settings", centerSetting);
   const initialValues = {
     date: changedDate || tDate,
     code: "",

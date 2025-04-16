@@ -12,6 +12,7 @@ const {
   deleteDeductionsDetails,
   getDeductionsDid,
   getDedDetailDid,
+  getMaxAppDedDetails,
 } = require("../Controllers/DeductionController");
 
 const router = express.Router();
@@ -26,6 +27,7 @@ router.route("/delete-deduction").delete(verifyToken, deleteDeductions);
 //deduction details routes
 router.route("/getmax-ded-details").post(verifyToken, getDedDetailDid);
 router.route("/deduction-details").post(verifyToken, getAllDeductionsDetails);
+
 router
   .route("/create-deduction-details")
   .post(verifyToken, createDeductionDetails);
@@ -36,4 +38,6 @@ router
   .route("/delete-deduction-details")
   .delete(verifyToken, deleteDeductionsDetails);
 
+// shubham -------------------------------------------------------------------------->
+router.route("/all/applied/deductions").post(verifyToken, getMaxAppDedDetails);
 module.exports = router;
