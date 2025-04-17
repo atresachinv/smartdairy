@@ -268,6 +268,13 @@ const Mainappnavlinks = ({ setselected, handleSidebar }) => {
           role: ["admin", "super_admin", "manager"],
         },
         {
+          name: `${t("अकाउंट स्टेटमेंट  ")}`,
+          icon: <FaFileInvoice className="icon" />,
+          index: 4.3,
+          path: "accounts/accoundstatment",
+          role: ["admin", "super_admin", "manager"],
+        },
+        {
           name: `${t("येणे/देणे खतावणी यादी पाहणे")}`,
           icon: <FaFileInvoice className="icon" />,
           index: 4.4,
