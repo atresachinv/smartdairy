@@ -254,10 +254,10 @@ export const completedMilkSankalan = createAsyncThunk(
 //fetch regular customer list
 export const getRegCustomers = createAsyncThunk(
   "milkCollection/getRegCustomers",
-  async ({ collDate }, { rejectWithValue }) => {
+  async ({ collDate, ME }, { rejectWithValue }) => {
     try {
       const response = await axiosInstance.get("/regular/customer/list", {
-        params: { collDate },
+        params: { collDate, ME },
       });
       return response.data.regularCustomers;
     } catch (error) {

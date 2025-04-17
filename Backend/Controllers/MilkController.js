@@ -267,7 +267,7 @@ exports.updateMilkCollSetting = async (req, res) => {
 //------------------------------------------------------------------------------------------------------------------->
 
 exports.fetchRegCustomers = async (req, res) => {
-  const { collDate } = req.query;
+  const { collDate, ME } = req.query;
   const { dairy_id, center_id } = req.user;
 
   if (!collDate) {
@@ -286,13 +286,23 @@ exports.fetchRegCustomers = async (req, res) => {
 
   const toDate = collDateObj.toISOString().split("T")[0];
   const fromDate = fromDateObj.toISOString().split("T")[0];
- 
+
   const dairy_table = `dailymilkentry_${dairy_id}`;
 
   const query = `
-     SELECT DISTINCT rno, cname
-      FROM ${dairy_table}
-      WHERE ReceiptDate BETWEEN ? AND ? AND center_id = ?
+    SELECT DISTINCT d.rno, d.cname, c.Phone 
+    FROM ${dairy_table} d
+    JOIN customer c ON d.rno = c.srno
+    WHERE d.ReceiptDate BETWEEN ? AND ?
+      AND d.center_id = ?
+      AND c.orgid = ?
+      AND c.centerid = ?
+      AND c.ctype = 1
+      AND d.rno NOT IN (
+          SELECT rno 
+          FROM ${dairy_table}
+          WHERE ReceiptDate = ? AND ME = ? AND center_id = ?
+      )
   `;
 
   pool.getConnection((err, connection) => {
@@ -303,22 +313,25 @@ exports.fetchRegCustomers = async (req, res) => {
         .json({ status: 500, message: "Database connection error" });
     }
 
-    connection.query(query, [fromDate, toDate, center_id], (err, results) => {
-      connection.release();
+    connection.query(
+      query,
+      [fromDate, toDate, center_id, dairy_id, center_id, toDate, ME, center_id],
+      (err, results) => {
+        connection.release();
 
-      if (err) {
-        console.error("Error executing query: ", err);
-        return res
-          .status(500)
-          .json({ status: 500, message: "Query execution error!" });
+        if (err) {
+          console.error("Error executing query: ", err);
+          return res
+            .status(500)
+            .json({ status: 500, message: "Query execution error!" });
+        }
+        res.status(200).json({
+          status: 200,
+          regularCustomers: results,
+          message: "Fetched Regular Customers Successfully!",
+        });
       }
-
-      res.status(200).json({
-        status: 200,
-        regularCustomers: results,
-        message: "Fetched Regular Customers Successfully!",
-      });
-    });
+    );
   });
 };
 

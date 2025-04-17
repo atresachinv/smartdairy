@@ -79,6 +79,7 @@ import Maindashboard from "./Dashboard/Maindashboard";
 import UploadAccount from "./Accounts/Credit/UploadAccount";
 import DairySetup from "./Settings/DairySettings/DairySetup";
 import LedgerList from "./Accounts/LedgerList/LedgerList";
+import MilkColleform from "./Apphome/Appnavviews/Milkcollection/Milkcollform";
 
 const Mainapp = () => {
   const dispatch = useDispatch();
@@ -193,8 +194,8 @@ const Mainapp = () => {
               <Route path="vehicle/milk/collection/*" element={<Apphome />} />
             )}
             <Route path="milk/collection/*" element={<Apphome />} />
-            <Route path="milk/collection/:time" element={<Milkcollection />} />
-            <Route path="milk/collection/:time" element={<Milkcollection />} />
+            <Route path="milk/collection/:time" element={<MilkColleform />} />
+            <Route path="milk/collection/:time" element={<MilkColleform />} />
             <Route
               path="milk/customer/master/*"
               element={<CustomersMaster />}
@@ -249,7 +250,7 @@ const Mainapp = () => {
             <Route path="accounts/transfer" element={<TransferCredit />} />
             <Route path="accounts/daybook" element={<DayBook />} />
             <Route path="accounts/upload" element={<UploadAccount />} />
-            <Route path="accounts/ledger-list" element={<LedgerList />} />
+            <Route path="accounts/ledger-list" element={<LedgerList/>} />
             {/* master routes */}
             <Route path="master/main-ledger/*" element={<MainLedger />} />
             <Route path="master/sub-ledger/*" element={<SubLedger />} />
