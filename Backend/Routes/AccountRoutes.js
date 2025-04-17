@@ -7,11 +7,13 @@ const {
   insertNewVoucher,
   generateBalance,
   manyNewVoucher,
+  getGroupedVoucher,
 } = require("../Controllers/AcountController");
 
 const router = express.Router();
 
 router.route("/all/voucher").get(verifyToken, getAllVoucher); //get all voucher
+router.route("/voucher-sublegder-list").get(verifyToken, getGroupedVoucher); //get all voucher by grouping Accode and glcode
 router.route("/voucher/new").post(verifyToken, insertNewVoucher); //new voucher
 router.route("/voucher/upload").post(verifyToken, manyNewVoucher); //upload voucher
 router.route("/voucher/update").patch(verifyToken, updateVoucher); //update voucher
