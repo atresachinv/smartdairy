@@ -72,10 +72,27 @@ const UploadAccount = () => {
       const jsonData = XLSX.utils.sheet_to_json(sheet); // Convert sheet to JSON
 
       // Extract "Code" and "Amount" columns
-      const extractedData = jsonData.map((row) => ({
-        code: row["Code"] || row["code"], // Handle case-insensitivity
-        amt: row["Amount"] || row["amt"], // Handle case-insensitivity
-      }));
+      const extractedData = jsonData
+        .map((row) => {
+          const code = row["Code"] || row["code"] || row["CODE"];
+          const amt = row["Amount"] || row["amt"] || row["AMOUNT"];
+          const accname =
+            row["AccName"] ||
+            row["accname"] ||
+            row["ACCNAME"] ||
+            row["AccountName"] ||
+            row["accountname"] ||
+            row["ACCOUNTNAME"];
+
+          if (!code || !amt) return null; // Skip rows missing required fields
+
+          return {
+            code: code.toString().toLowerCase(),
+            amt: amt.toString().toLowerCase(),
+            accname: accname ? accname.toString().toLowerCase() : "",
+          };
+        })
+        .filter((item) => item !== null); // Remove nulls
 
       setTableData(extractedData); // Update table data state
 
@@ -116,10 +133,10 @@ const UploadAccount = () => {
       Vtype: formData.Vtype,
       Amt:
         Number(formData.Vtype) === 1
-          ? -row.amt
+          ? -Math.abs(row.amt)
           : Number(formData.Vtype) === 0
-          ? -row.amt
-          : row.amt,
+          ? -Math.abs(row.amt)
+          : Math.abs(row.amt),
       VoucherDate: formData.VoucherDate,
       BatchNo: formData.BatchNo,
       Narration: formData.Narration,
@@ -309,18 +326,18 @@ const UploadAccount = () => {
             <table className="table">
               <thead>
                 <tr>
-                  <th>कोड</th>
-                  <th>रक्कम</th>
-                  <th>नाव </th>
+                  <th>Code</th>
+                  <th>Amount</th>
+                  <th>AccountName </th>
                 </tr>
               </thead>
               <tbody>
                 {tableData.length > 0
                   ? tableData.map((row, index) => (
                       <tr key={index}>
-                        <td className="info-text"> {row.code}</td>
-                        <td className="info-text"> {row.amt}</td>
-                        <td className="info-text"> </td>
+                        <td className="info-text"> {row.code || ""}</td>
+                        <td className="info-text"> {row.amt || ""}</td>
+                        <td className="info-text"> {row.accname || ""} </td>
                       </tr>
                     ))
                   : null}
