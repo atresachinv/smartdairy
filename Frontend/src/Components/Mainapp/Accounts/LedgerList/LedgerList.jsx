@@ -1,9 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { listSubLedger } from "../../../../App/Features/Mainapp/Masters/ledgerSlice";
 import Select from "react-select";
 import { toast } from "react-toastify";
 import axiosInstance from "../../../../App/axiosInstance";
+import { listCustomer } from "../../../../App/Features/Customers/customerSlice";
+import * as XLSX from "xlsx";
 
 //gett todays date------------>
 const getTodaysDate = () => {
@@ -14,12 +16,38 @@ const getTodaysDate = () => {
 
 const LedgerList = () => {
   const dispatch = useDispatch();
+  const [customerList, setCustomerList] = useState([]);
   const sledgerlist = useSelector((state) => state.ledger.sledgerlist);
   const [formData, setFormData] = useState({
     GLCode: "",
     date: getTodaysDate(),
   });
   const [voucherList, setVoucherlist] = useState([]);
+  const [filterVoucherList, setFilterVoucherlist] = useState([]);
+  const [filter, setFilter] = useState(0);
+  const centerSetting = useSelector(
+    (state) => state.dairySetting.centerSetting
+  );
+  const centerList = useSelector(
+    (state) => state.center.centersList.centersDetails || []
+  );
+  const [settings, setSettings] = useState({});
+  const autoCenter = useMemo(() => settings?.autoCenter, [settings]);
+  const centerId = useSelector((state) => state.dairy.dairyData.center_id);
+  const [loading, setLoading] = useState(false);
+  const dairyInfo = useSelector(
+    (state) =>
+      state.dairy.dairyData.marathi_name ||
+      state.dairy.dairyData.SocietyName ||
+      state.dairy.dairyData.center_name
+  );
+
+  //set setting
+  useEffect(() => {
+    if (centerSetting?.length > 0) {
+      setSettings(centerSetting[0]);
+    }
+  }, [centerSetting]);
 
   //option list show only name
   const options = sledgerlist.map((i) => ({
@@ -29,7 +57,36 @@ const LedgerList = () => {
 
   useEffect(() => {
     dispatch(listSubLedger());
+    dispatch(listCustomer());
   }, []);
+
+  //----------------------------------------------------------------->
+  // Effect to load customer list from local storage
+  useEffect(() => {
+    const storedCustomerList = localStorage.getItem("customerlist");
+    if (storedCustomerList) {
+      if (centerId === 0) {
+        const filteredCustomerList = JSON.parse(storedCustomerList).filter(
+          (customer) => Number(customer.centerid) === Number(filter)
+        );
+        setCustomerList(filteredCustomerList);
+
+        const filteredVoucherList = voucherList.filter(
+          (item) => Number(item.center_id) === Number(filter)
+        );
+        setFilterVoucherlist(filteredVoucherList);
+      } else {
+        const filteredCustomerList = JSON.parse(storedCustomerList).filter(
+          (customer) => Number(customer.centerid) === Number(centerId)
+        );
+        setCustomerList(filteredCustomerList);
+        const filteredVoucherList = voucherList.filter(
+          (item) => Number(item.center_id) === Number(centerId)
+        );
+        setFilterVoucherlist(filteredVoucherList);
+      }
+    }
+  }, [centerId, filter, voucherList]);
 
   // handle Select Change
   const handleSelectChange = (selectedOption, keyToUpdate) => {
@@ -42,25 +99,90 @@ const LedgerList = () => {
   const handleFetchData = async (e) => {
     e.preventDefault();
     if (formData.GLCode && formData.date) {
+      setLoading(true);
       try {
+        //   GLCode, autoCenter, VoucherDate;
         const res = await axiosInstance.get(
-          `/voucher-sublegder-list?glcode=${formData.GLCode}&date${formData.date}`
+          `/voucher-sublegder-list?GLCode=${formData.GLCode}&VoucherDate=${formData.date}&autoCenter=${autoCenter}`
         );
         if (res.status === 200) {
           setVoucherlist(res.data?.voucherList || []);
         }
+        setLoading(false);
       } catch (error) {
         // console.error("Error fetching data:", error);
-        toast.error("Server falied fetching data");
+        toast.error("Server failed fetching data");
+        setLoading(false);
       }
     } else {
       toast.error("Please fill all the fields");
     }
   };
 
+  const handleExcel = (e) => {
+    e.preventDefault();
+    if (filterVoucherList.length === 0) {
+      toast.warn("No data available to download.");
+      return;
+    }
+    const data = filterVoucherList.map((item, i) => ({
+      SrNo: i + 1,
+      Code: item.AccCode,
+      AccountName:
+        customerList.find((i) => i.srno === item.AccCode)?.engName || "-",
+      Amount: item.totalamt,
+      Type: item.totalamt < 0 ? "नावे" : "जमा",
+    }));
+
+    const worksheet = XLSX.utils.json_to_sheet(data);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
+    XLSX.writeFile(workbook, `${dairyInfo} Ledger List.xlsx`);
+  };
+  const handlePdf = (e) => {
+    e.preventDefault();
+    if (filterVoucherList.length === 0) {
+      toast.warn("No data available to download.");
+      return;
+    }
+
+    // Placeholder for PDF generation logic
+    toast.info("PDF generation is a work in progress.");
+  };
+  const handlePrint = (e) => {
+    e.preventDefault();
+    if (filterVoucherList.length === 0) {
+      toast.warn("No data available to download.");
+      return;
+    }
+
+    
+  };
   return (
     <div className="w100 h1 d-flex-col m10 ">
       <div className="w100 p10 bg">
+        {centerId > 0 ? (
+          <></>
+        ) : (
+          <div className="d-flex a-center mx10">
+            <span className="info-text">सेंटर निवडा :</span>
+            <select
+              className="data w50 a-center  my5 mx5"
+              name="center"
+              value={filter}
+              onChange={(e) => setFilter(e.target.value)}
+            >
+              {centerList &&
+                [...centerList]
+                  .sort((a, b) => a.center_id - b.center_id)
+                  .map((center, index) => (
+                    <option key={index} value={center.center_id}>
+                      {center.center_name}
+                    </option>
+                  ))}
+            </select>
+          </div>
+        )}
         <div className="w100 d-flex center sa f-wrap">
           <input
             type="date"
@@ -85,7 +207,6 @@ const LedgerList = () => {
               setFormData({ ...formData, GLCode: e.target.value })
             }
           />
-
           <Select
             options={options}
             className=" mx10 w40"
@@ -112,6 +233,17 @@ const LedgerList = () => {
             यादी
           </button>
         </div>
+        <div className="w100 d-flex center sa my10">
+          <button type="button" className="w-btn" onClick={handleExcel}>
+            एक्सेल
+          </button>
+          <button type="button" className="w-btn" onClick={handlePdf}>
+            PDF
+          </button>
+          <button type="button" className="w-btn" onClick={handlePrint}>
+            प्रिंट
+          </button>
+        </div>
       </div>
       <div
         className="account-legder-table w100 my10 bg p10 h1"
@@ -120,23 +252,75 @@ const LedgerList = () => {
         <table className="account-legder-table w100">
           <thead>
             <tr>
-              <th>खाते नं.</th>
-              <th>खातेदार</th>
-              <th>रक्कम</th>
-              <th>जमा / नावे</th>
+              <th
+                style={{
+                  textAlign: "center",
+                }}
+                className="w10"
+              >
+                खाते नं.
+              </th>
+              <th className="w50">खातेदार</th>
+              <th
+                className="w20"
+                style={{
+                  textAlign: "center",
+                }}
+              >
+                रक्कम
+              </th>
+              <th
+                className="w20"
+                style={{
+                  textAlign: "center",
+                }}
+              >
+                जमा / नावे
+              </th>
             </tr>
           </thead>
         </table>
         <div style={{ maxHeight: "456px", overflowY: "auto" }}>
           <table className="account-legder-table w100">
             <tbody>
-              {voucherList.length > 0 ? (
-                voucherList.map((item, i) => (
+              {loading ? (
+                <tr>
+                  <td colSpan="4" style={{ textAlign: "center" }}>
+                    Loading...
+                  </td>
+                </tr>
+              ) : filterVoucherList.length > 0 ? (
+                filterVoucherList.map((item, i) => (
                   <tr key={i}>
-                    <td>{item.Accode}</td>
-                    <td>{item.AccName}</td>
-                    <td>{item.Amount}</td>
-                    <td>{item.v_type}</td>
+                    <td
+                      style={{
+                        textAlign: "center",
+                      }}
+                      className="w10"
+                    >
+                      {item.AccCode}
+                    </td>
+                    <td className="w50">
+                      {customerList.find((i) => i.srno === item.AccCode)
+                        ?.engName || "-"}
+                    </td>
+
+                    <td
+                      className="w20"
+                      style={{
+                        textAlign: "center",
+                      }}
+                    >
+                      {Math.abs(item.totalamt)}
+                    </td>
+                    <td
+                      className="w20"
+                      style={{
+                        textAlign: "center",
+                      }}
+                    >
+                      {item.totalamt < 0 ? "नावे" : "जमा"}
+                    </td>
                   </tr>
                 ))
               ) : (

@@ -66,6 +66,118 @@ exports.getAllVoucher = async (req, res) => {
   });
 };
 
+//get all Voucher by grouping Accode and glcode
+exports.getGroupedVoucher = async (req, res) => {
+  const { dairy_id, center_id } = req.user;
+  const { GLCode, autoCenter, VoucherDate } = req.query;
+  const autoCenterNumber = Number(autoCenter);
+
+  if (!GLCode || !VoucherDate) {
+    return res.status(400).json({
+      success: false,
+      message: "GLCode and VoucherDate are required",
+    });
+  }
+
+  // Calculate financial year start based on VoucherDate
+  const voucherDateObj = new Date(VoucherDate);
+  const year =
+    voucherDateObj.getMonth() + 1 < 4
+      ? voucherDateObj.getFullYear() - 1
+      : voucherDateObj.getFullYear();
+  const financialYearStart = `${year}-04-01`;
+
+  pool.getConnection((err, connection) => {
+    if (err) {
+      console.error("Connection error:", err);
+      return res
+        .status(500)
+        .json({ success: false, message: "Database connection error" });
+    }
+
+    let query = `SELECT AccCode,GLCode,center_id,SUM(Amt) AS totalamt FROM tally_trnfile WHERE companyid = ? `;
+
+    let queryParams = [dairy_id];
+
+    if (autoCenterNumber === 1 || center_id > 0) {
+      query += " AND center_id = ?";
+      queryParams.push(center_id);
+    }
+
+    query += " AND GLCode = ?";
+    queryParams.push(GLCode);
+
+    query += " AND VoucherDate BETWEEN ? AND ?";
+    queryParams.push(financialYearStart, VoucherDate);
+
+    query +=
+      " AND Amt != 0 GROUP BY AccCode, GLCode, center_id ORDER BY AccCode ASC";
+
+    connection.query(query, queryParams, (err, result) => {
+      connection.release();
+      if (err) {
+        console.error("Query error:", err);
+        return res.status(500).json({
+          success: false,
+          message: "Server query execution failed",
+        });
+      }
+      res.status(200).json({ success: true, voucherList: result });
+    });
+  });
+}; //get all Voucher by grouping Accode and glcode
+exports.getGroupedStaement = async (req, res) => {
+  const { dairy_id, center_id } = req.user;
+  const { accCode, GLCode, autoCenter, fromVoucherDate, toVoucherDate } =
+    req.query;
+  const autoCenterNumber = Number(autoCenter);
+
+  if (!GLCode || !fromVoucherDate || !toVoucherDate || !accCode) {
+    return res.status(400).json({
+      success: false,
+      message: "GLCode and Accocde and VoucherDate are required",
+    });
+  }
+
+  pool.getConnection((err, connection) => {
+    if (err) {
+      console.error("Connection error:", err);
+      return res
+        .status(500)
+        .json({ success: false, message: "Database connection error" });
+    }
+
+    let query = `SELECT * FROM tally_trnfile WHERE companyid = ? `;
+
+    let queryParams = [dairy_id];
+
+    if (autoCenterNumber === 1 || center_id > 0) {
+      query += " AND center_id = ?";
+      queryParams.push(center_id);
+    }
+
+    query += " AND GLCode = ? AND AccCode = ?";
+    queryParams.push(GLCode, accCode);
+
+    query += " AND VoucherDate BETWEEN ? AND ?";
+    queryParams.push(fromVoucherDate, toVoucherDate);
+
+    query += " ORDER BY VoucherDate ASC";
+
+    connection.query(query, queryParams, (err, result) => {
+      connection.release();
+      if (err) {
+        console.error("Query error:", err);
+        return res.status(500).json({
+          success: false,
+          message: "Server query execution failed",
+        });
+      }
+      res.status(200).json({ success: true, statementData: result });
+    });
+  });
+};
+
 // Insert new voucher
 exports.insertNewVoucher = async (req, res) => {
   const { center_id, ...voucherData } = req.body;

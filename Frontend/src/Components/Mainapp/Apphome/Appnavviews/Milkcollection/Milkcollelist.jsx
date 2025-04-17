@@ -3,6 +3,7 @@ import { useSelector } from "react-redux";
 import { useTranslation } from "react-i18next";
 import "../../../../../Styles/Mainapp/Apphome/Appnavview/Milkcollection.css";
 import { useParams } from "react-router-dom";
+import { use } from "react";
 
 const Milkcollelist = ({ times }) => {
   const { t } = useTranslation(["milkcollection", "common", "master"]);
@@ -28,18 +29,25 @@ const Milkcollelist = ({ times }) => {
         : prevMilkData;
     });
   }, [milkColl, time]); // Only re-run when milkColl or time changes
-  
-  console.log(custList);
+
+  useEffect(() => {
+     const storedCustList = localStorage.getItem("rcustlist");
+     if (storedCustList) {
+       setCustomersList(JSON.parse(storedCustList));
+     } else {
+       setCustomersList([]);
+     }
+  },[])
 
   const handleRemainingCustomers = async (e) => {
     e.preventDefault();
     setIsRCust(!isRCust);
-    const storedCustList = localStorage.getItem("rcustlist");
-    if (storedCustList) {
-      setCustomersList(JSON.parse(storedCustList));
-    } else {
-      setCustomersList([]);
-    }
+    // const storedCustList = localStorage.getItem("rcustlist");
+    // if (storedCustList) {
+    //   setCustomersList(JSON.parse(storedCustList));
+    // } else {
+    //   setCustomersList([]);
+    // }
   };
 
   return (
@@ -128,7 +136,7 @@ const Milkcollelist = ({ times }) => {
                   backgroundColor: index % 2 === 0 ? "#faefe3" : "#fff",
                 }}
               >
-                <span className="info-text w15 t-center">{customer.srno}</span>
+                <span className="info-text w15 t-center">{customer.rno}</span>
                 <span className="info-text w50">{customer.cname}</span>
                 <span className="info-text w30 t-start">{customer.Phone}</span>
               </div>
