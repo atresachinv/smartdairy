@@ -46,7 +46,7 @@ const DayBook = () => {
       dispatch(getAllVoucher({ VoucherDate: selectedDate, autoCenter }));
     }
   };
-  console.log(voucherList);
+
 
   //.......PRINT Function
 
@@ -221,72 +221,65 @@ const DayBook = () => {
     printWindow.print();
   };
 
-  console.log("Subledger", sledgerlist);
+ 
+const mergedVoucherList = useMemo(() => {
+  const temp = [];
 
-  const mergedVoucherList = useMemo(() => {
-    const temp = [];
+  voucherList.forEach((voucher) => {
+    const key = voucher.GLCode;
+    const existing = temp.find((v) => v.key === key);
 
-    voucherList.forEach((voucher) => {
-      const key = `${voucher.GLCode}-${voucher.Vtype}`;
-      const existing = temp.find((v) => v.key === key);
+    const amt = Math.abs(voucher.Amt || 0);
 
-      if (existing) {
-        existing.cashIn += voucher.cashIn || 0;
-        existing.cashOut += voucher.cashOut || 0;
-        existing.Amt += voucher.Amt || 0;
-        existing.totalOut += voucher.totalOut || 0;
-      } else {
-        temp.push({
-          ...voucher,
-          cashIn: voucher.cashIn || 0,
-          cashOut: voucher.cashOut || 0,
-          Amt: voucher.Amt || 0,
-          totalOut: voucher.totalOut || 0,
-          key,
-        });
-      }
-    });
+    if (existing) {
+      if (voucher.Vtype === 3) existing.cashIn = (existing.cashIn || 0) + amt; // जमा कॅश
+      if (voucher.Vtype === 4)
+        existing.transferIn = (existing.transferIn || 0) + amt; // जमा ट्रान्सफर
+      if (voucher.Vtype === 0) existing.cashOut = (existing.cashOut || 0) + amt; // नावे कॅश
+      if (voucher.Vtype === 1)
+        existing.transferOut = (existing.transferOut || 0) + amt; // नावे ट्रान्सफर
+    } else {
+      temp.push({
+        key,
+        GLCode: voucher.GLCode,
+        cashIn: voucher.Vtype === 3 ? amt : 0,
+        transferIn: voucher.Vtype === 4 ? amt : 0,
+        cashOut: voucher.Vtype === 0 ? amt : 0,
+        transferOut: voucher.Vtype === 1 ? amt : 0,
+      });
+    }
+  });
 
-    return temp;
-  }, [voucherList]);
+  return temp;
+}, [voucherList]);
 
-  const totals = useMemo(() => {
-    let jamaCash = 0;
-    let jamaTransfer = 0;
-    let naveCash = 0;
-    let naveTransfer = 0;
-
-    mergedVoucherList.forEach((voucher) => {
-      const amt = Math.abs(voucher.Amt);
-      switch (voucher.Vtype) {
-        case 0:
-          naveCash += amt;
-          break;
-        case 1:
-          naveTransfer += amt;
-          break;
-        case 3:
-          jamaCash += amt;
-          break;
-        case 4:
-          jamaTransfer += amt;
-          break;
-        default:
-          break;
-      }
-    });
-
-    return {
-      openingBalance: 0, // use real data if needed
-      closingBalance: 0, // calculate as needed
-      jamaCash,
-      jamaTransfer,
-      naveCash,
-      naveTransfer,
-    };
-  }, [mergedVoucherList]);
-
+ 
+  
   //.....
+const totals = useMemo(() => {
+  let jamaCash = 0;
+  let jamaTransfer = 0;
+  let naveCash = 0;
+  let naveTransfer = 0;
+
+  mergedVoucherList.forEach((voucher) => {
+    jamaCash += voucher.cashIn || 0;
+    jamaTransfer += voucher.transferIn || 0;
+    naveCash += voucher.cashOut || 0;
+    naveTransfer += voucher.transferOut || 0;
+  });
+
+  return {
+    openingBalance: 0, // use actual value if needed
+    closingBalance: jamaCash + jamaTransfer - naveCash - naveTransfer,
+    jamaCash,
+    jamaTransfer,
+    naveCash,
+    naveTransfer,
+  };
+}, [mergedVoucherList]);
+
+
 
   const handlePreviousDate = () => {
     const newDate = new Date(selectedDate);
@@ -507,6 +500,7 @@ const DayBook = () => {
             <span className="label-text w10">एकूण नावे</span>
           </div>
 
+        
           <div className="day-book-table-data-section w100 mx90 hidescrollbar d-flex-col">
             {mergedVoucherList.length > 0 ? (
               mergedVoucherList.map((voucher, index) => (
@@ -517,26 +511,22 @@ const DayBook = () => {
                       ?.marathi_name || ""}
                   </span>
                   <span className="label-text w10 highlight-in">
-                    {voucher.Vtype === 3 ? Math.abs(voucher.Amt) : ""}
+                    {voucher.cashIn || ""}
                   </span>
                   <span className="label-text w10 highlight-in">
-                    {voucher.Vtype === 4 ? Math.abs(voucher.Amt) : ""}
+                    {voucher.transferIn || ""}
                   </span>
                   <span className="label-text w10 highlight-in">
-                    {voucher.Vtype === 3 || voucher.Vtype === 4
-                      ? Math.abs(voucher.Amt)
-                      : ""}
+                    {(voucher.cashIn || 0) + (voucher.transferIn || 0) || ""}
                   </span>
                   <span className="label-text w10 highlight-out">
-                    {voucher.Vtype === 0 ? Math.abs(voucher.Amt) : ""}
+                    {voucher.cashOut || ""}
                   </span>
                   <span className="label-text w10 highlight-out">
-                    {voucher.Vtype === 1 ? Math.abs(voucher.Amt) : ""}
+                    {voucher.transferOut || ""}
                   </span>
                   <span className="label-text w10 highlight-out">
-                    {voucher.Vtype === 0 || voucher.Vtype === 1
-                      ? Math.abs(voucher.Amt)
-                      : ""}
+                    {(voucher.cashOut || 0) + (voucher.transferOut || 0) || ""}
                   </span>
                 </div>
               ))

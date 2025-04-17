@@ -80,6 +80,7 @@ import UploadAccount from "./Accounts/Credit/UploadAccount";
 import DairySetup from "./Settings/DairySettings/DairySetup";
 import LedgerList from "./Accounts/LedgerList/LedgerList";
 import MilkColleform from "./Apphome/Appnavviews/Milkcollection/Milkcollform";
+import AccoundStatment from "./Accounts/AccoundStatment/AccoundStatment";
 
 const Mainapp = () => {
   const dispatch = useDispatch();
@@ -249,6 +250,7 @@ const Mainapp = () => {
             <Route path="accounts/cash" element={<CashCredit />} />
             <Route path="accounts/transfer" element={<TransferCredit />} />
             <Route path="accounts/daybook" element={<DayBook />} />
+            <Route path="accounts/accoundstatment" element={<AccoundStatment />} />
             <Route path="accounts/upload" element={<UploadAccount />} />
             <Route path="accounts/ledger-list" element={<LedgerList/>} />
             {/* master routes */}
