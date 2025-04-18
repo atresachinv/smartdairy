@@ -95,13 +95,13 @@ const EmployeeList = () => {
         </div>
       </div>
       <div className="emp-data-list-container w100 h1 d-flex-col bg">
-        <div className="emp-data-heading-div w100 h10 d-flex a-center t-center sb bg2">
-          <span className="label-text w10">Id</span>
-          <span className="label-text w30">Employee Name</span>
-          <span className="label-text w20">Designation</span>
-          <span className="label-text w15">Mobile</span>
-          <span className="label-text w20">Salary</span>
-          {/* <span className="label-text w10">Action</span> */}
+        <div className="emp-data-heading-div w100 h10 d-flex a-center sb br9 bg7">
+          <span className="f-label-text w10  t-center">Id</span>
+          <span className="f-label-text w30  t-center">Employee Name</span>
+          <span className="f-label-text w20  t-center">Designation</span>
+          <span className="f-label-text w15  t-center">Mobile</span>
+          <span className="f-label-text w15  t-center">Salary</span>
+          <span className="f-label-text w10  t-center">Action</span>
         </div>
         <div className="emp-data-list-div w100 h90 mh90 d-flex-col hidescrollbar">
           {filteredEmpList.map((emp, i) => (
@@ -117,14 +117,14 @@ const EmployeeList = () => {
               <span className="text w20">{emp.designation}</span>
               <span className="text w15">{emp.emp_mobile}</span>
               <span className="text w20">{emp.salary}</span>
-              {/* <span type="button" className="icon w10" disabled>
+              <span type="button" className="icon w10" disabled>
                 <MdDeleteForever
                   className="req"
                   onClick={() =>
                     handleDelete({ id: emp.emp_id, mobile: emp.emp_mobile })
                   }
                 />
-              </span> */}
+              </span>
             </div>
           ))}
         </div>

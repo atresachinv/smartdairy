@@ -2171,7 +2171,8 @@ exports.fetchSelectedPayAmt = async (req, res) => {
     }
 
     const fetchPaymentquery = `
-      SELECT  id, BillNo, BillDate, FromDate, ToDate, Code, GLCode, Amt, DeductionId, dname, MAMT, BAMT, afat, asnf, arate, tliters, pamt, damt, namt 
+      SELECT  id, BillNo, BillDate, FromDate, ToDate, Code, GLCode, Amt, DeductionId,
+        dname, MAMT, BAMT, afat, asnf, arate, tliters, pamt, damt, namt, dtype
         FROM custbilldetails
         WHERE companyid = ? AND center_id = ? AND FromDate = ? AND ToDate = ? 
         ORDER BY DeductionId ASC, Code ASC;

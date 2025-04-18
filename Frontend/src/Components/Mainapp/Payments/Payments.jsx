@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
 import "../../../Styles/Mainapp/Payments/Payments.css";
-import { NavLink } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { getMaxCustNo } from "../../../App/Features/Mainapp/Masters/custMasterSlice";
 import Spinner from "../../Home/Spinner/Spinner";
@@ -16,10 +15,8 @@ import {
 } from "../../../App/Features/Payments/paymentSlice";
 import {
   fetchMaxApplyDeductions,
-  getDeductionDetails,
 } from "../../../App/Features/Deduction/deductionSlice";
-import { getAllSalePayment } from "../../../App/Features/Sales/salesSlice";
-import { use } from "react";
+
 
 const Payments = ({ setShowDeduPage }) => {
   const dispatch = useDispatch();
@@ -77,7 +74,7 @@ const Payments = ({ setShowDeduPage }) => {
     return `${yyyy}-${mm}-${dd}`;
   }
 
-  const master = 10;
+  const master = 10; // to set master days ---------------------------------->
 
   useEffect(() => {
     const toDate = calculateToDate(formData.fromDate, master);
@@ -248,253 +245,6 @@ const Payments = ({ setShowDeduPage }) => {
 
   // console.log("deductionDetails", deductionDetails);
 
-  // const handleAllDeductions = async () => {
-  //   try {
-  //     const filteredDeductions = deductionDetails.filter(
-  //       (deduction) => deduction.RatePerLitre !== 0
-  //     );
-
-  //     const deductionEntries = [];
-
-  //     for (const user of payData) {
-  //       const { rno, cname, totalamt, totalLitres, avgSnf, avgFat } = user;
-
-  //       let totalDeduction = 0;
-
-  //       for (const deduction of filteredDeductions) {
-  //         const amt = +(totalLitres * deduction.RatePerLitre).toFixed(2);
-  //         totalDeduction += amt;
-
-  //         deductionEntries.push({
-  //           DeductionId: deduction.DeductionId,
-  //           GLCode: deduction.GLCode,
-  //           rno,
-  //           dname: deduction.dname,
-  //           amt: amt.toFixed(2),
-  //           cname: "",
-  //           totalamt: 0.0,
-  //           totalLitres: 0.0,
-  //           avgSnf: 0.0,
-  //           avgFat: 0.0,
-  //           avgRate: 0.0,
-  //           totalDeduction: 0.0,
-  //           isFix: 1,
-  //         });
-  //       }
-
-  //       const otherDeductions = deductionDetails.filter(
-  //         (deduction) => deduction.RatePerLitre === 0
-  //       );
-  //       console.log("dedAmts", otherDeductions);
-  //       for (const deduction of otherDeductions) {
-  //         // we have data in dedAmts where have AccCode , GLCode, totalamt we have totalamt in -value make it +ve and then calculate
-  //         // also we have data in prevMamt where we have AccCode , GLCode, totalamt  we have totalamt in -value make it +ve and then calculate
-  //         // we have to match dedAmts.AccCode with prevMamt.AccCode
-  //         // then we need totalamt which is above destucture in user
-  //         // now we have perform caculation
-  //         // first we have add  deduAmt = dedAmts.AccCode with prevMamt.AccCode amounts ex 1200 + 1000 = 2200 ex2  1460 + 1000 = 2460
-  //         // then we have to minus this deduAmt from totalamt totalamt = 11000 - 2200 = 8800 for next deduction 8800 - 2460 = 6340
-  //         // in ex we have only two dedAmts so we have to perform this operation only two times
-  //         // do this same for all the deduction
-  //         // until totalamt === 0 or leastPayamt if having dedAmts more
-  //         // now we have to set data totalDeduction = in first 2200 and in second 2460
-  //         // MAMT = prevMamt.totalamt
-  //         // BAMT = if in case totalamt (user) is less than deduction amt then BAMT is  in third ex 6340 -6340 = 0 but
-  //         // we have leastPayamt = 200 then we only deduct 6340 - 6140 = 200 ant last amt should be 200 which is equal to leastPayamt
-  //         // befor this we have to check if leastPayamt (for now create veriable and set value 0 this value we will get from backend)
-  //         // we have to perform dedAmts until  totalamt is remain === leastPayamt
-  //         // do round off deduction as last deduction to ensure payment value is not in decimal value
-  //         // one more thing some time deduction amount is less than totalamt and some time it is more than totalamt
-  //         // ensure function works well without failing in any case
-
-  //         // here we have to deductuct all dedAmts of perticular user
-  //         // first we have to do deduction in Asc order of dedAmts.AccCode
-  //         // dedAmts have AccCode, GLCode , totalamt
-  //         // dedAmts = AccCode :  1, GLCode :  276, totalamt :  -135, ex2 : AccCode :  1, GLCode :  107, totalamt :  -1290
-  //         // match dedAmts.GLCode === otherDeductions.GLCode if present for AccCode we have deduction for that perticlar user
-  //         // we also have to check if their any prev remaing amount present for same user
-  //         // check dedAmts.AccCode === prevMamt.AccCode && dedAmts.GLCode === prevMamt.GLCode
-  //         // if match then perticular GLCode have remaining amt
-  //         // now we have to add totaldeduction = prevMamt.totalamt + dedAmts.totalamt (both value is negative but we want in + output)
-  //         // then above remainingAmt - totaldeduction again update remainingAmt
-  //         // before performing above calculation check totaldeduction is less than or equl to remainingAmt - leastPayamt <= totaldeduction
-  //         // 1400 -200 < = 1100 if condition true do calculations else dont
-
-  //         const amt = +(totalLitres * deduction.RatePerLitre).toFixed(2);
-  //         totalDeduction += amt;
-
-  //         deductionEntries.push({
-  //           DeductionId: deduction.DeductionId,
-  //           GLCode: deduction.GLCode,
-  //           rno,
-  //           dname: deduction.dname,
-  //           MAMT: prevMamt.totalamt,
-  //           BAMT: 0,
-  //           amt: amt.toFixed(2),
-  //           cname: "",
-  //           totalamt: 0.0,
-  //           totalLitres: 0.0,
-  //           avgSnf: 0.0,
-  //           avgFat: 0.0,
-  //           avgRate: 0.0,
-  //           totalDeduction: 0.0,
-  //           isFix: 0,
-  //         });
-  //       }
-
-  //       const avgRate = totalLitres !== 0 ? totalamt / totalLitres : 0;
-  //       const netPayment = +(totalamt - totalDeduction).toFixed(2);
-
-  //       deductionEntries.push({
-  //         DeductionId: 0,
-  //         GLCode: 28,
-  //         rno,
-  //         dname: "",
-  //         amt: netPayment.toFixed(2),
-  //         cname,
-  //         totalamt: totalamt.toFixed(2),
-  //         totalLitres: totalLitres.toFixed(2),
-  //         avgSnf: avgSnf.toFixed(1),
-  //         avgFat: avgFat.toFixed(1),
-  //         avgRate: avgRate.toFixed(1),
-  //         totalDeduction: totalDeduction.toFixed(2),
-  //         isFix: 2,
-  //       });
-  //     }
-
-  //     return deductionEntries;
-  //   } catch (error) {
-  //     console.error("Error in handling dedAmts:", error);
-  //     return [];
-  //   }
-  // };
-
-  // const handleAllDeductions = async () => {
-  //   try {
-  //     const filteredDeductions = deductionDetails.filter(
-  //       (deduction) => deduction.RatePerLitre !== 0
-  //     );
-
-  //     const deductionEntries = [];
-  //     const leastPayamt = 200; // assume this is fetched or fixed
-
-  //     for (const user of payData) {
-  //       const { rno, cname, totalamt, totalLitres, avgSnf, avgFat } = user;
-  //       let totalDeduction = 0;
-  //       let remainingAmt = totalamt; // start from full total
-  //       console.log("remainingAmt", remainingAmt);
-  //       // ✅ 1) FIX DEDUCTIONS (RatePerLitre !== 0)
-  //       for (const deduction of filteredDeductions) {
-  //         const amt = +(totalLitres * deduction.RatePerLitre).toFixed(2);
-  //         totalDeduction += amt;
-  //         remainingAmt -= amt;
-
-  //         deductionEntries.push({
-  //           DeductionId: deduction.DeductionId,
-  //           GLCode: deduction.GLCode,
-  //           rno,
-  //           dname: deduction.dname,
-  //           amt: amt.toFixed(2),
-  //           cname: "",
-  //           totalamt: 0.0,
-  //           totalLitres: 0.0,
-  //           avgSnf: 0.0,
-  //           avgFat: 0.0,
-  //           avgRate: 0.0,
-  //           totalDeduction: 0.0,
-  //           isFix: 1,
-  //         });
-  //       }
-
-  //       // ✅ 2) DYNAMIC DEDUCTIONS (RatePerLitre === 0) with leastPayamt logic
-  //       const otherDeductions = deductionDetails.filter(
-  //         (deduction) => deduction.RatePerLitre === 0
-  //       );
-  //       console.log(otherDeductions, "otherDeductions");
-
-  //       // here we have to deductuct all dedAmts of perticular user
-  //       // first we have to do deduction in Asc order of dedAmts.AccCode
-  //       // dedAmts have AccCode, GLCode , totalamt
-  //       // dedAmts = AccCode :  1, GLCode :  276, totalamt :  -135, ex2 : AccCode :  1, GLCode :  107, totalamt :  -1290
-  //       // match dedAmts.GLCode === otherDeductions.GLCode if present for AccCode we have deduction for that perticlar user
-  //       // we also have to check if their any prev remaing amount present for same user
-  //       // check dedAmts.AccCode === prevMamt.AccCode && dedAmts.GLCode === prevMamt.GLCode
-  //       // if match then perticular GLCode have remaining amt
-  //       // now we have to add totaldeduction = prevMamt.totalamt + dedAmts.totalamt (both value is negative but we want in + output)
-  //       // then above remainingAmt - totaldeduction again update remainingAmt
-  //       // before performing above calculation check totaldeduction is less than or equl to remainingAmt - leastPayamt <= totaldeduction
-  //       // 1400 -200 < = 1100 if condition true do calculations else dont
-
-  //       for (const deduction of otherDeductions) {
-  //         const matchedPrev = prevMamt.find(
-  //           (pm) => pm.AccCode === deduction.AccCode
-  //         );
-
-  //         const prevAmt = matchedPrev ? Math.abs(matchedPrev.totalamt) : 0;
-  //         const currAmt = Math.abs(deduction.totalamt || 0);
-  //         let deduAmt = prevAmt + currAmt;
-  //         console.log("deduAmt", deduAmt);
-  //         // ⛔ Don't go below leastPayamt
-  //         if (remainingAmt - deduAmt < leastPayamt) {
-  //           deduAmt = remainingAmt - leastPayamt;
-  //         }
-
-  //         deduAmt = +deduAmt.toFixed(2);
-
-  //         if (deduAmt <= 0) continue;
-
-  //         totalDeduction += deduAmt;
-  //         remainingAmt -= deduAmt;
-
-  //         deductionEntries.push({
-  //           DeductionId: deduction.DeductionId,
-  //           GLCode: deduction.GLCode,
-  //           rno,
-  //           dname: deduction.dname,
-  //           MAMT: prevAmt.toFixed(2),
-  //           BAMT: currAmt.toFixed(2),
-  //           amt: deduAmt.toFixed(2),
-  //           cname: "",
-  //           totalamt: 0.0,
-  //           totalLitres: 0.0,
-  //           avgSnf: 0.0,
-  //           avgFat: 0.0,
-  //           avgRate: 0.0,
-  //           totalDeduction: 0.0,
-  //           isFix: 0,
-  //         });
-
-  //         if (remainingAmt <= leastPayamt) break;
-  //       }
-
-  //       // ✅ 3) FINAL NET PAYMENT
-  //       const avgRate = totalLitres !== 0 ? totalamt / totalLitres : 0;
-  //       const netPayment = +remainingAmt.toFixed(2);
-  //       console.log("netPayment", netPayment);
-  //       deductionEntries.push({
-  //         DeductionId: 0,
-  //         GLCode: 28,
-  //         rno,
-  //         dname: "",
-  //         amt: netPayment.toFixed(2),
-  //         cname,
-  //         totalamt: totalamt.toFixed(2),
-  //         totalLitres: totalLitres.toFixed(2),
-  //         avgSnf: avgSnf.toFixed(1),
-  //         avgFat: avgFat.toFixed(1),
-  //         avgRate: avgRate.toFixed(1),
-  //         totalDeduction: totalDeduction.toFixed(2),
-  //         isFix: 2,
-  //       });
-  //     }
-
-  //     return deductionEntries;
-  //   } catch (error) {
-  //     console.error("Error in handling dedAmts:", error);
-  //     return [];
-  //   }
-  // };
-
   const handleAllDeductions = async () => {
     try {
       const filteredDeductions = deductionDetails.filter(
@@ -509,7 +259,7 @@ const Payments = ({ setShowDeduPage }) => {
         let totalDeduction = 0;
         let remainingAmt = totalamt;
 
-        // ✅ 1) FIXED DEDUCTIONS
+        // FIXED DEDUCTIONS ----------------------------------------->
         for (const deduction of filteredDeductions) {
           const amt = +(totalLitres * deduction.RatePerLitre).toFixed(2);
           totalDeduction += amt;
@@ -528,37 +278,35 @@ const Payments = ({ setShowDeduPage }) => {
             avgFat: 0.0,
             avgRate: 0.0,
             totalDeduction: 0.0,
-            isFix: 1,
+            dtype: 0,
           });
         }
 
-        // ✅ 2) DYNAMIC DEDUCTIONS
+        // OTHER DEDUCTIONS ----------------------------------------->
         const otherDeductions = deductionDetails.filter(
           (deduction) => deduction.RatePerLitre === 0
         );
 
         const userDedAmts = dedAmts.filter((item) => item.AccCode === rno);
         const userPrevMamt = prevMamt.filter((item) => item.AccCode === rno);
-        console.log("userDedAmts", userDedAmts);
-        console.log("userPrevMamt", userPrevMamt);
-        console.log(otherDeductions, "otherDeductions");
+        // console.log("userDedAmts", userDedAmts);
+        // console.log("userPrevMamt", userPrevMamt);
+        // console.log(otherDeductions, "otherDeductions");
         for (const deduction of otherDeductions) {
           const matchDedAmt = userDedAmts.find(
-            (item) =>
-              item.GLCode === deduction.GLCode
+            (item) => item.GLCode === deduction.GLCode
           );
           const matchPrevAmt = userPrevMamt.find(
-            (item) =>
-              item.GLCode === deduction.GLCode
+            (item) => item.GLCode === deduction.GLCode
           );
-          console.log("matchDedAmt", matchDedAmt);
-          console.log("matchPrevAmt", matchPrevAmt);
+          // console.log("matchDedAmt", matchDedAmt);
+          // console.log("matchPrevAmt", matchPrevAmt);
           const currAmt = matchDedAmt ? Math.abs(matchDedAmt.totalamt) : 0;
           const prevAmt = matchPrevAmt ? Math.abs(matchPrevAmt.totalamt) : 0;
-          console.log("currAmt", currAmt);
-          console.log("prevAmt", prevAmt);
+          // console.log("currAmt", currAmt);
+          // console.log("prevAmt", prevAmt);
           let deduAmt = +(currAmt + prevAmt).toFixed(2);
-          console.log(deduAmt, "deduAmt");
+          // console.log(deduAmt, "deduAmt");
           if (remainingAmt - deduAmt < leastPayamt) {
             deduAmt = +(remainingAmt - leastPayamt).toFixed(2);
           }
@@ -583,13 +331,49 @@ const Payments = ({ setShowDeduPage }) => {
             avgFat: 0.0,
             avgRate: 0.0,
             totalDeduction: 0.0,
-            isFix: 0,
+            dtype: 1,
           });
 
           if (remainingAmt <= leastPayamt) break;
         }
 
-        // ✅ 3) FINAL NET PAYMENT ENTRY
+        // Round OFF -------------------------------------------------->
+        const roundOffDedu = deductionDetails.find(
+          (deduction) => deduction.RatePerLitre === 0 && deduction.GLCode === 2
+        );
+
+        const flooredAmt = Math.floor(remainingAmt);
+        const roundAmt = Math.floor((remainingAmt - flooredAmt) * 100) / 100;
+
+        // console.log("roundOffDedu", roundOffDedu);
+        // console.log("remainingAmt", remainingAmt);
+        // console.log("flooredAmt", flooredAmt);
+        // console.log("roundAmt", roundAmt);
+
+        if (roundAmt > 0) {
+          totalDeduction += roundAmt;
+          remainingAmt = flooredAmt;
+
+          deductionEntries.push({
+            DeductionId: roundOffDedu.DeductionId,
+            GLCode: roundOffDedu.GLCode,
+            rno,
+            dname: roundOffDedu.dname,
+            MAMT: 0.0,
+            BAMT: 0.0,
+            amt: roundAmt.toFixed(2),
+            cname: "",
+            totalamt: 0.0,
+            totalLitres: 0.0,
+            avgSnf: 0.0,
+            avgFat: 0.0,
+            avgRate: 0.0,
+            totalDeduction: 0.0,
+            dtype: 1,
+          });
+        }
+        // console.log("remainingAmt aftre round off", remainingAmt);
+        //  FINAL NET PAYMENT ---------------------------------------------------------->
         const avgRate = totalLitres !== 0 ? totalamt / totalLitres : 0;
         const netPayment = +remainingAmt.toFixed(2);
 
@@ -606,7 +390,7 @@ const Payments = ({ setShowDeduPage }) => {
           avgFat: avgFat.toFixed(1),
           avgRate: avgRate.toFixed(1),
           totalDeduction: totalDeduction.toFixed(2),
-          isFix: 2,
+          dtype: 2,
         });
       }
 
@@ -849,211 +633,207 @@ const Payments = ({ setShowDeduPage }) => {
   };
 
   return (
-    <>
-      <div className="Bil-list-container w100 h1 d-flex-col sb p10">
-        <label className="heading " htmlFor="">
-          Payment
-        </label>
-        <form
-          onSubmit={handleGenerateBill}
-          className="generate-bill-form-container w100 h20 d-flex sb br6"
-        >
-          <div className="bill-voucher-date-container w30 px10 d-flex-col bg-light-skyblue br6 sa px10">
-            <div className="bil-date-div d-flex w100 h1 a-center sb">
-              <label htmlFor="billdate" className="label-text w40">
-                बिल दिनांक :
-              </label>
-              <input
-                className="data w60"
-                type="date"
-                id="billdate"
-                name="billDate"
-                onChange={handleInput}
-                value={formData.billDate || ""}
-                onKeyDown={(e) => handleKeyDown(e, vcdateRef)}
-                ref={bdateRef}
-              />
-            </div>
-            <div className="Voucher-date-div d-flex w100 h1 a-center sb">
-              <label htmlFor="vcdate" className="label-text w40">
-                व्हाऊचर दिनांक :
-              </label>
-              <input
-                id="vcdate"
-                className="data w60"
-                type="date"
-                name="vcDate"
-                value={formData.vcDate}
-                onChange={handleInput}
-                onKeyDown={(e) => handleKeyDown(e, fdateRef)}
-                ref={vcdateRef}
-              />
-            </div>
+    <div className="Bil-list-container w100 h1 d-flex-col sb p10">
+      <label className="heading py10" htmlFor="">
+        दुध बिले बनवा :
+      </label>
+      <form
+        onSubmit={handleGenerateBill}
+        className="generate-bill-form-container w100 h20 d-flex sb br6"
+      >
+        <div className="bill-voucher-date-container w30 px10 d-flex-col bg-light-skyblue br6 sa px10">
+          <div className="bil-date-div d-flex w100 h1 a-center sb">
+            <label htmlFor="billdate" className="label-text w40">
+              बिल दिनांक :
+            </label>
+            <input
+              className="data w60"
+              type="date"
+              id="billdate"
+              name="billDate"
+              onChange={handleInput}
+              value={formData.billDate || ""}
+              onKeyDown={(e) => handleKeyDown(e, vcdateRef)}
+              ref={bdateRef}
+            />
           </div>
-          <div className="payment-dates-container w40 d-flex-col  bg-light-skyblue br6 sa px10">
-            <div className="pay-fromdate-div d-flex w100 h1 a-center sb">
-              <label htmlFor="fdate" className="label-text w40">
-                पंधरवडा दिनांक पासून :
-              </label>
-              <input
-                id="fdate"
-                className="data w50"
-                type="date"
-                name="fromDate"
-                onChange={handleInput}
-                onKeyDown={(e) => handleKeyDown(e, tdateRef)}
-                ref={fdateRef}
-                max={formData.toDate}
-              />
-            </div>
-            <div className="pay-todate-div d-flex w100 h1 a-center sb">
-              <label htmlFor="tdate" className="label-text w40">
-                पंधरवडा दिनांक पर्येंत :
-              </label>
-              <input
-                id="tdate"
-                className="data w50"
-                type="date"
-                name="toDate"
-                value={formData.toDate}
-                onChange={handleInput}
-                ref={tdateRef}
-                max={formData.billDate}
-              />
-            </div>
-          </div>
-          <div className="checkbox-container w10 h1 d-flex-col se a-center">
-            <div className="check-acc-div w100 h50 d-flex a-center sb">
-              <input
-                id="comm"
-                className="w20"
-                type="checkbox"
-                name="commission"
-                onChange={handleInput}
-              />
-              <label htmlFor="comm" className="w70 label-text">
-                कमिशन
-              </label>
-            </div>
-            <div className="Auto-kapat-div w100 h50 d-flex a-center sb">
-              <input
-                id="adeduct"
-                className="w20"
-                name="autodeduct"
-                type="checkbox"
-                onChange={handleInput}
-              />
-              <label htmlFor="adeduct" className="w70 label-text">
-                ऑटो कपात
-              </label>
-            </div>
-          </div>
-          <div className="form-button-div w10 h1 d-flex-col se a-center">
-            <button
-              type="button"
-              className="w-btn"
-              disabled={payShowStatus}
-              onClick={handleShowBtn}
-            >
-              {payShowStatus ? "showing..." : "पाहणे "}
-            </button>
-            <button type="submit" className="w-btn" disabled={payStatus}>
-              {payStatus ? "Generating..." : "बिल निर्माण"}
-            </button>
-          </div>
-        </form>
-        <div className="payment-details-and-report-btn-div w100 h70 d-flex sb">
-          <div className="payment-data-report-btn-div w70 h1 d-flex-col se px10">
-            <div className="customer-code-div w100 h10 d-flex a-center sb px10">
-              <span className="label-text">Payment Details : </span>
-              <div className="cust-code-div d-flex w50 h1 sb a-center">
-                <label htmlFor="cform" className="w30">
-                  कोड नं पासून :
-                </label>
-                <input
-                  id="cform"
-                  className="data w30"
-                  type="text"
-                  name="custFrom"
-                  value={formData.custFrom}
-                  onChange={handleInput}
-                  onKeyDown={(e) => handleKeyDown(e, tcustRef)}
-                  ref={fcustRef}
-                />
-                <label htmlFor="custTo" className="w10 t-center">
-                  ते :
-                </label>
-                <input
-                  id="custTo"
-                  className="data w30"
-                  type="text"
-                  name="custTo"
-                  value={formData.custTo}
-                  onChange={handleInput}
-                  ref={tcustRef}
-                />
-              </div>
-            </div>
-            <div className="bill-payments-details-container w100 h70 d-flex-col mh70 hidescrollbar bg">
-              <div className="bill-heading-div w100 p10 d-flex a-center t-center sb sticky-top bg7 br6">
-                <span className="f-label-text w10">उत्पा.क्र</span>
-                <span className="f-label-text w40">उत्पादकाचे नाव</span>
-                <span className="f-label-text w15">लिटर</span>
-                <span className="f-label-text w15">रक्कम</span>
-              </div>
-              {payStatus || payShowStatus ? (
-                <Spinner />
-              ) : filteredPayDetails.length !== 0 ? (
-                filteredPayDetails.map((item, index) => (
-                  <div
-                    key={index}
-                    className="bill-data-div w100 p10 d-flex a-center sb"
-                    style={{
-                      backgroundColor: index % 2 === 0 ? "#faefe3" : "#fff",
-                    }}
-                  >
-                    <span className="info-text w10 t-center">{item.Code}</span>
-                    <span className="info-text w40 t-start">{item.cname}</span>
-                    <span className="info-text w15 t-end">{item.tliters}</span>
-                    <span className="info-text w15 t-end">
-                      {item.namt || 0}
-                    </span>
-                  </div>
-                ))
-              ) : (
-                <div className="box d-flex center">
-                  <span className="label-text">No data Found!</span>
-                </div>
-              )}
-            </div>
-
-            <div className="bill-form-btn-div w100 h10 d-flex j-end">
-              <button className="btn">काढूण टाका</button>
-              <button className="w-btn mx10">सर्व काढूण टाका</button>
-              <button className="btn">बिल रद्द करा </button>
-            </div>
-          </div>
-          <div className="bill-payments-container-div w30 d-flex f-wrap se">
-            <button className="w-btn w45" onClick={() => setShowDeduPage(true)}>
-              पेमेंट कपाती
-            </button>
-            <button className="w-btn w45">संकलन रिपोर्ट </button>
-            <button className="w-btn w45">कपात रिपोर्ट</button>
-            <button className="w-btn w45">संकलन दुरुस्थी </button>
-            <button className="w-btn w45">Payment रजिस्टर </button>
-            <button className="w-btn w45">Payment समरी </button>
-            <button className="w-btn w45">Payment रजिस्टर बँक </button>
-            <button className="w-btn w45">बिल यादी 1 </button>
-            <button className="w-btn w45">Collection Report</button>
-            <button className="w-btn w45">Deduction Report</button>
-            <button className="w-btn w45">Collection Update</button>
-            <button className="w-btn w45">Payment Register</button>
-            <button className="w-btn w45">Payment Summary</button>
-            <button className="w-btn w45">Payment Regi</button>
+          <div className="Voucher-date-div d-flex w100 h1 a-center sb">
+            <label htmlFor="vcdate" className="label-text w40">
+              व्हाऊचर दिनांक :
+            </label>
+            <input
+              id="vcdate"
+              className="data w60"
+              type="date"
+              name="vcDate"
+              value={formData.vcDate}
+              onChange={handleInput}
+              onKeyDown={(e) => handleKeyDown(e, fdateRef)}
+              ref={vcdateRef}
+            />
           </div>
         </div>
+        <div className="payment-dates-container w40 d-flex-col  bg-light-skyblue br6 sa px10">
+          <div className="pay-fromdate-div d-flex w100 h1 a-center sb">
+            <label htmlFor="fdate" className="label-text w40">
+              पंधरवडा दिनांक पासून :
+            </label>
+            <input
+              id="fdate"
+              className="data w50"
+              type="date"
+              name="fromDate"
+              onChange={handleInput}
+              onKeyDown={(e) => handleKeyDown(e, tdateRef)}
+              ref={fdateRef}
+              max={formData.toDate}
+            />
+          </div>
+          <div className="pay-todate-div d-flex w100 h1 a-center sb">
+            <label htmlFor="tdate" className="label-text w40">
+              पंधरवडा दिनांक पर्येंत :
+            </label>
+            <input
+              id="tdate"
+              className="data w50"
+              type="date"
+              name="toDate"
+              value={formData.toDate}
+              onChange={handleInput}
+              ref={tdateRef}
+              max={formData.billDate}
+            />
+          </div>
+        </div>
+        <div className="checkbox-container w10 h1 d-flex-col se a-center">
+          <div className="check-acc-div w100 h50 d-flex a-center sb">
+            <input
+              id="comm"
+              className="w20"
+              type="checkbox"
+              name="commission"
+              onChange={handleInput}
+            />
+            <label htmlFor="comm" className="w70 label-text">
+              कमिशन
+            </label>
+          </div>
+          <div className="Auto-kapat-div w100 h50 d-flex a-center sb">
+            <input
+              id="adeduct"
+              className="w20"
+              name="autodeduct"
+              type="checkbox"
+              onChange={handleInput}
+            />
+            <label htmlFor="adeduct" className="w70 label-text">
+              ऑटो कपात
+            </label>
+          </div>
+        </div>
+        <div className="form-button-div w10 h1 d-flex-col se a-center">
+          <button
+            type="button"
+            className="w-btn"
+            disabled={payShowStatus}
+            onClick={handleShowBtn}
+          >
+            {payShowStatus ? "showing..." : "पाहणे "}
+          </button>
+          <button type="submit" className="w-btn" disabled={payStatus}>
+            {payStatus ? "Generating..." : "बिल निर्माण"}
+          </button>
+        </div>
+      </form>
+      <div className="payment-details-and-report-btn-div w100 h70 d-flex sb">
+        <div className="payment-data-report-btn-div w70 h1 d-flex-col se px10">
+          <div className="customer-code-div w100 h10 d-flex a-center sb px10">
+            <span className="label-text">Payment Details : </span>
+            <div className="cust-code-div d-flex w50 h1 sb a-center">
+              <label htmlFor="cform" className="w30">
+                कोड नं पासून :
+              </label>
+              <input
+                id="cform"
+                className="data w30"
+                type="text"
+                name="custFrom"
+                value={formData.custFrom}
+                onChange={handleInput}
+                onKeyDown={(e) => handleKeyDown(e, tcustRef)}
+                ref={fcustRef}
+              />
+              <label htmlFor="custTo" className="w10 t-center">
+                ते :
+              </label>
+              <input
+                id="custTo"
+                className="data w30"
+                type="text"
+                name="custTo"
+                value={formData.custTo}
+                onChange={handleInput}
+                ref={tcustRef}
+              />
+            </div>
+          </div>
+          <div className="bill-payments-details-container w100 h70 d-flex-col mh70 hidescrollbar bg">
+            <div className="bill-heading-div w100 p10 d-flex a-center t-center sb sticky-top bg7 br6">
+              <span className="f-label-text w10">उत्पा.क्र</span>
+              <span className="f-label-text w40">उत्पादकाचे नाव</span>
+              <span className="f-label-text w15">लिटर</span>
+              <span className="f-label-text w15">रक्कम</span>
+            </div>
+            {payStatus || payShowStatus ? (
+              <Spinner />
+            ) : filteredPayDetails.length !== 0 ? (
+              filteredPayDetails.map((item, index) => (
+                <div
+                  key={index}
+                  className="bill-data-div w100 p10 d-flex a-center sb"
+                  style={{
+                    backgroundColor: index % 2 === 0 ? "#faefe3" : "#fff",
+                  }}
+                >
+                  <span className="info-text w10 t-center">{item.Code}</span>
+                  <span className="info-text w40 t-start">{item.cname}</span>
+                  <span className="info-text w15 t-end">{item.tliters}</span>
+                  <span className="info-text w15 t-end">{item.namt || 0}</span>
+                </div>
+              ))
+            ) : (
+              <div className="box d-flex center">
+                <span className="label-text">No data Found!</span>
+              </div>
+            )}
+          </div>
+
+          <div className="bill-form-btn-div w100 h10 d-flex j-end">
+            <button className="btn">काढूण टाका</button>
+            <button className="w-btn mx10">सर्व काढूण टाका</button>
+            <button className="btn">बिल रद्द करा </button>
+          </div>
+        </div>
+        <div className="bill-payments-container-div w30 d-flex f-wrap se">
+          <button className="w-btn w45" onClick={() => setShowDeduPage(true)}>
+            पेमेंट कपाती
+          </button>
+          <button className="w-btn w45">संकलन रिपोर्ट </button>
+          <button className="w-btn w45">कपात रिपोर्ट</button>
+          <button className="w-btn w45">संकलन दुरुस्थी </button>
+          <button className="w-btn w45">Payment रजिस्टर </button>
+          <button className="w-btn w45">Payment समरी </button>
+          <button className="w-btn w45">Payment रजिस्टर बँक </button>
+          <button className="w-btn w45">बिल यादी 1 </button>
+          <button className="w-btn w45">Collection Report</button>
+          <button className="w-btn w45">Deduction Report</button>
+          <button className="w-btn w45">Collection Update</button>
+          <button className="w-btn w45">Payment Register</button>
+          <button className="w-btn w45">Payment Summary</button>
+          <button className="w-btn w45">Payment Regi</button>
+        </div>
       </div>
-    </>
+    </div>
   );
 };
 

@@ -69,6 +69,10 @@
   .payment-data-report-btn-div .customer-code-div span {
     width: 100%;
   }
+  .payment-data-report-btn-div .customer-code-div .label-text {
+    min-height: 30px;
+    margin-bottom: 10px;
+  }
 
   .customer-code-div .cust-code-div {
     width: 100%;
