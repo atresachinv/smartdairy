@@ -45,6 +45,8 @@ import OthersMaster from "./Sales/Others/OthersMaster";
 import Dealers from "./Inventory/InventroyPages/Dealers/Dealers";
 import Products from "./Inventory/InventroyPages/Products/Products";
 import DayBook from "./Accounts/Credit/DayBook";
+import AccoundStatment from "./Accounts/AccoundStatment/AccoundStatment";
+import TrnCheck from "./Inventory/InventroyPages/TrnCheck/TrnCheck";
 // import MilkReports from "./Reports/MilkReports/MilkReports";
 // import MilkcollectionReports from "./Reports/MilkReports/MilkcollectionReports";
 
@@ -67,11 +69,17 @@ const Mainappviews = ({ index }) => {
       return <StartingStockInfo />;
     case 2.5:
       return <Reports />;
+    case 2.6:
+      return <TrnCheck />;
 
     case 3:
       return <Accounts />;
       case 3.1:
         return <DayBook/>
+        
+      case 3.2:
+        return <AccoundStatment/>;
+
     // Master Submenus
     case 4.1:
       return <MainLedger />;

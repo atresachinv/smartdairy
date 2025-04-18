@@ -147,8 +147,8 @@ const Sanghsales = () => {
                   <input className="data w60" type="text" />
                 </div>
               </div>
-              <div className="rebbit-and-other-experaince w35 h20 px10 d-flex-col ">
-                <div className="prashashikya-rebbit-div w100   d-flex-col a-center">
+              <div className="rebbit-and-other-experaince w35 h20 px10 d-flex-col  ">
+                <div className="prashashikya-rebbit-div w100 d-flex-col a-center">
                   <span className="label-text w100 px10">रॆबिट</span>
                   <input className="data w60" type="text" />
                 </div>

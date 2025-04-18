@@ -1164,8 +1164,8 @@ Total Amount:        ${totalAmount.toFixed(2)}
         <div className="reports-print-buttondiv w100 h1 d-flex-col">
           <div className="fromto-date-sale-report w100 h50 d-flex a-center ">
             <div className="from-to-date-purches-conta d-flex w50  h1">
-              <div className="from-salee-div w60 h1 a-center d-flex  ">
-                <span className=" w20 info-text ">From:</span>
+              <div className="from-salee-div w50 h1 a-center d-flex  ">
+                <span className=" w10 info-text ">From:</span>
                 <input
                   className="w60 data"
                   type="date"
@@ -1176,7 +1176,7 @@ Total Amount:        ${totalAmount.toFixed(2)}
               </div>
 
               <div className="from-salee-div w60 h1 a-center d-flex  ">
-                <span className=" w20 info-text ">To:</span>
+                <span className=" w10 info-text ">To:</span>
                 <input
                   className="w60 data"
                   type="date"

@@ -1,0 +1,18 @@
+.table-heading-trn{
+  background-color: #007bff;
+}
+.second-table-heading-trn{
+  background-color: #007bff;
+}
+.table-heading-trn span{
+  color: #e8eaec;
+}
+.bill-header-bill-details{
+    margin-bottom: 10px;
+}
+.first-table-trndiv{
+    width: 48%;
+}
+.second-table-trndiv{
+ width: 48%;
+}
