@@ -127,9 +127,15 @@ exports.getGroupedVoucher = async (req, res) => {
   });
 }; //get all Voucher by grouping Accode and glcode
 exports.getGroupedStaement = async (req, res) => {
-  const { dairy_id, center_id } = req.user;
-  const { accCode, GLCode, autoCenter, fromVoucherDate, toVoucherDate } =
-    req.query;
+  const { dairy_id } = req.user;
+  const {
+    accCode,
+    GLCode,
+    autoCenter,
+    center_id,
+    fromVoucherDate,
+    toVoucherDate,
+  } = req.query;
   const autoCenterNumber = Number(autoCenter);
 
   if (!GLCode || !fromVoucherDate || !toVoucherDate || !accCode) {
