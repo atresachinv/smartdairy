@@ -6,6 +6,7 @@ import { toast } from "react-toastify";
 import axiosInstance from "../../../../App/axiosInstance";
 import { listCustomer } from "../../../../App/Features/Customers/customerSlice";
 import * as XLSX from "xlsx";
+import jsPDF from "jspdf";
 
 //gett todays date------------>
 const getTodaysDate = () => {
@@ -37,9 +38,7 @@ const LedgerList = () => {
   const [loading, setLoading] = useState(false);
   const dairyInfo = useSelector(
     (state) =>
-      state.dairy.dairyData.marathi_name ||
-      state.dairy.dairyData.SocietyName ||
-      state.dairy.dairyData.center_name
+      state.dairy.dairyData.SocietyName || state.dairy.dairyData.center_name
   );
 
   //set setting
@@ -118,7 +117,7 @@ const LedgerList = () => {
       toast.error("Please fill all the fields");
     }
   };
-
+  //  handle download excel
   const handleExcel = (e) => {
     e.preventDefault();
     if (filterVoucherList.length === 0) {
@@ -139,6 +138,7 @@ const LedgerList = () => {
     XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
     XLSX.writeFile(workbook, `${dairyInfo} Ledger List.xlsx`);
   };
+  //  handle download pdf
   const handlePdf = (e) => {
     e.preventDefault();
     if (filterVoucherList.length === 0) {
@@ -148,19 +148,175 @@ const LedgerList = () => {
 
     // Placeholder for PDF generation logic
     toast.info("PDF generation is a work in progress.");
+
+    const doc = new jsPDF();
+
+    // Define columns and rows
+    const columns = ["SrNo", "Code", "AccName", "Amount", "Credit / Debit"];
+    const rows = filterVoucherList.map((item, index) => [
+      index + 1,
+      item.AccCode,
+      customerList.find((i) => i.srno === item.AccCode)?.cname || "-",
+      item.totalamt,
+      item.totalamt < 0 ? "Debit" : "Credit",
+    ]);
+
+    // Page width for centering text
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const pageHeight = doc.internal.pageSize.getHeight();
+
+    // Define the margin and the height of the box
+    const margin = 10;
+    const boxHeight = pageHeight - 20; // Adjust as needed
+
+    // Add border for the entire content
+    doc.rect(margin, margin, pageWidth - 2 * margin, boxHeight);
+
+    // Add dairy name with border inside the box
+    const dairyName =
+      centerId > 0
+        ? dairyInfo
+        : filter > 0
+        ? centerList.find((i) => Number(i.center_id) === Number(filter))
+            ?.center_name
+        : dairyInfo;
+    doc.setFontSize(16);
+    doc.setFont("helvetica", "bold");
+    const dairyTextWidth = doc.getTextWidth(dairyName);
+    doc.text(dairyName, (pageWidth - dairyTextWidth) / 2, margin + 15);
+
+    // Add "Sale-Info" heading with border
+    doc.setFontSize(14);
+    const invoiceInfo = doc.getTextWidth("Credit Debit List");
+    doc.text("Credit Debit List", (pageWidth - invoiceInfo) / 2, margin + 25);
+
+    // Add table for items with borders and centered text
+    doc.autoTable({
+      head: [columns],
+      body: rows,
+      startY: margin + 35,
+      margin: { top: 10 },
+      styles: {
+        cellPadding: 2,
+        fontSize: 11,
+        halign: "center", // Horizontal alignment for cells (centered)
+        valign: "middle", // Vertical alignment for cells (centered)
+        lineWidth: 0.08, // Line width for the borders
+        lineColor: [0, 0, 0], // Black border color
+      },
+      headStyles: {
+        fontSize: 12,
+        fontStyle: "bold",
+        fillColor: [225, 225, 225], // Light gray background for the header
+        textColor: [0, 0, 0], // Black text color for header
+      },
+      tableLineColor: [0, 0, 0], // Table border color (black)
+      tableLineWidth: 0.1, // Border width
+    });
+
+    // Save the PDF
+    doc.save(`Credits/Debits List.pdf`);
   };
+
+  // Call the function to generate the print
   const handlePrint = (e) => {
     e.preventDefault();
     if (filterVoucherList.length === 0) {
-      toast.warn("No data available to download.");
+      toast.warn("No data available to print.");
       return;
     }
 
-    
+    // Create a new window for printing
+    const printWindow = window.open("", "_blank");
+
+    // Define the HTML content for the print window
+    const printContent = `
+    <html>
+      <head>
+        <title>Print Ledger List</title>
+        <style>
+          body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+          }
+          table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+          }
+          th, td {
+            border: 1px solid #000;
+            padding: 8px;
+            text-align: center;
+          }
+          th {
+            background-color: #f2f2f2;
+          }
+          h2, h3 {
+            text-align: center;
+          }
+        </style>
+      </head>
+      <body>
+        <h2>${
+          centerId > 0
+            ? dairyInfo
+            : filter > 0
+            ? centerList.find((i) => Number(i.center_id) === Number(filter))
+                ?.center_name
+            : dairyInfo
+        }</h2>
+        <h3>Credit Debit List</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>SrNo</th>
+              <th>Code</th>
+              <th>AccName</th>
+              <th>Amount</th>
+              <th>Credit / Debit</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${filterVoucherList
+              .map(
+                (item, index) => `
+                  <tr>
+                    <td>${index + 1}</td>
+                    <td>${item.AccCode}</td>
+                    <td>${
+                      customerList.find((i) => i.srno === item.AccCode)
+                        ?.cname || "-"
+                    }</td>
+                    <td>${item.totalamt}</td>
+                    <td>${item.totalamt < 0 ? "Debit" : "Credit"}</td>
+                  </tr>
+                `
+              )
+              .join("")}
+          </tbody>
+        </table>
+         <script>
+          window.print();
+          window.onafterprint = () => {
+            window.close();
+            window.opener.focus(); // Focus back to the main window
+          };
+        </script>
+      </body>
+    </html>
+  `;
+
+    printWindow.document.open();
+    printWindow.document.write(printContent);
+    printWindow.document.close();
   };
   return (
     <div className="w100 h1 d-flex-col m10 ">
       <div className="w100 p10 bg">
+        <div className="heading my5 w100 d-flex center">
+          येणे देणे खतावणी यादी पाहणे{" "}
+        </div>
         {centerId > 0 ? (
           <></>
         ) : (
@@ -177,7 +333,7 @@ const LedgerList = () => {
                   .sort((a, b) => a.center_id - b.center_id)
                   .map((center, index) => (
                     <option key={index} value={center.center_id}>
-                      {center.center_name}
+                      {center.marathi_name || center.center_name}
                     </option>
                   ))}
             </select>
