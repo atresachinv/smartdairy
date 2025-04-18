@@ -314,6 +314,9 @@ const LedgerList = () => {
   return (
     <div className="w100 h1 d-flex-col m10 ">
       <div className="w100 p10 bg">
+        <div className="heading my5 w100 d-flex center">
+          येणे देणे खतावणी यादी पाहणे{" "}
+        </div>
         {centerId > 0 ? (
           <></>
         ) : (
