@@ -81,6 +81,7 @@ import DairySetup from "./Settings/DairySettings/DairySetup";
 import LedgerList from "./Accounts/LedgerList/LedgerList";
 import MilkColleform from "./Apphome/Appnavviews/Milkcollection/Milkcollform";
 import AccoundStatment from "./Accounts/AccoundStatment/AccoundStatment";
+import TrnCheck from "./Inventory/InventroyPages/TrnCheck/TrnCheck";
 
 const Mainapp = () => {
   const dispatch = useDispatch();
@@ -245,14 +246,18 @@ const Mainapp = () => {
               path="inventory/expired-product/*"
               element={<ExpiredProductsMaster />}
             />
+            <Route path="inventory/trncheck/*" element={<TrnCheck />} />
             {/* accounts routes */}
             <Route path="accounts" element={<ComingSoon />} />
             <Route path="accounts/cash" element={<CashCredit />} />
             <Route path="accounts/transfer" element={<TransferCredit />} />
             <Route path="accounts/daybook" element={<DayBook />} />
-            <Route path="accounts/accoundstatment" element={<AccoundStatment />} />
+            <Route
+              path="accounts/accoundstatment"
+              element={<AccoundStatment />}
+            />
             <Route path="accounts/upload" element={<UploadAccount />} />
-            <Route path="accounts/ledger-list" element={<LedgerList/>} />
+            <Route path="accounts/ledger-list" element={<LedgerList />} />
             {/* master routes */}
             <Route path="master/main-ledger/*" element={<MainLedger />} />
             <Route path="master/sub-ledger/*" element={<SubLedger />} />
