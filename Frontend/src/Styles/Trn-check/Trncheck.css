@@ -4,6 +4,9 @@
 .second-table-heading-trn{
   background-color: #007bff;
 }
+.second-table-heading-trn span{
+  color: #e8eaec;;
+}
 .table-heading-trn span{
   color: #e8eaec;
 }
