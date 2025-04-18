@@ -38,10 +38,7 @@ const LedgerList = () => {
   const [loading, setLoading] = useState(false);
   const dairyInfo = useSelector(
     (state) =>
-      state.dairy.dairyData.marathiName ||
-      state.dairy.dairyData.marathi_name ||
-      state.dairy.dairyData.SocietyName ||
-      state.dairy.dairyData.center_name
+      state.dairy.dairyData.SocietyName || state.dairy.dairyData.center_name
   );
 
   //set setting
@@ -155,13 +152,13 @@ const LedgerList = () => {
     const doc = new jsPDF();
 
     // Define columns and rows
-    const columns = ["SrNo", "कोड", "खातेदार", "रक्कम", "जमा / नावे"];
+    const columns = ["SrNo", "Code", "AccName", "Amount", "Credit / Debit"];
     const rows = filterVoucherList.map((item, index) => [
       index + 1,
       item.AccCode,
-      customerList.find((i) => i.srno === item.AccCode)?.engName || "-",
+      customerList.find((i) => i.srno === item.AccCode)?.cname || "-",
       item.totalamt,
-      item.totalamt < 0 ? "नावे" : "जमा",
+      item.totalamt < 0 ? "Debit" : "Credit",
     ]);
 
     // Page width for centering text
@@ -181,8 +178,6 @@ const LedgerList = () => {
         ? dairyInfo
         : filter > 0
         ? centerList.find((i) => Number(i.center_id) === Number(filter))
-            ?.marathi_name ||
-          centerList.find((i) => Number(i.center_id) === Number(filter))
             ?.center_name
         : dairyInfo;
     doc.setFontSize(16);
@@ -192,18 +187,14 @@ const LedgerList = () => {
 
     // Add "Sale-Info" heading with border
     doc.setFontSize(14);
-    const invoiceInfo = doc.getTextWidth("येणे देणे खतावणी यादी");
-    doc.text(
-      "येणे देणे खतावणी यादी",
-      (pageWidth - invoiceInfo) / 2,
-      margin + 25
-    );
+    const invoiceInfo = doc.getTextWidth("Credit Debit List");
+    doc.text("Credit Debit List", (pageWidth - invoiceInfo) / 2, margin + 25);
 
     // Add table for items with borders and centered text
     doc.autoTable({
       head: [columns],
       body: rows,
-      startY: margin + 45,
+      startY: margin + 35,
       margin: { top: 10 },
       styles: {
         cellPadding: 2,
@@ -224,16 +215,101 @@ const LedgerList = () => {
     });
 
     // Save the PDF
-    doc.save(`येणे देणे खतावणी यादी.pdf`);
+    doc.save(`Credits/Debits List.pdf`);
   };
 
   // Call the function to generate the print
   const handlePrint = (e) => {
     e.preventDefault();
     if (filterVoucherList.length === 0) {
-      toast.warn("No data available to download.");
+      toast.warn("No data available to print.");
       return;
     }
+
+    // Create a new window for printing
+    const printWindow = window.open("", "_blank");
+
+    // Define the HTML content for the print window
+    const printContent = `
+    <html>
+      <head>
+        <title>Print Ledger List</title>
+        <style>
+          body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+          }
+          table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+          }
+          th, td {
+            border: 1px solid #000;
+            padding: 8px;
+            text-align: center;
+          }
+          th {
+            background-color: #f2f2f2;
+          }
+          h2, h3 {
+            text-align: center;
+          }
+        </style>
+      </head>
+      <body>
+        <h2>${
+          centerId > 0
+            ? dairyInfo
+            : filter > 0
+            ? centerList.find((i) => Number(i.center_id) === Number(filter))
+                ?.center_name
+            : dairyInfo
+        }</h2>
+        <h3>Credit Debit List</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>SrNo</th>
+              <th>Code</th>
+              <th>AccName</th>
+              <th>Amount</th>
+              <th>Credit / Debit</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${filterVoucherList
+              .map(
+                (item, index) => `
+                  <tr>
+                    <td>${index + 1}</td>
+                    <td>${item.AccCode}</td>
+                    <td>${
+                      customerList.find((i) => i.srno === item.AccCode)
+                        ?.cname || "-"
+                    }</td>
+                    <td>${item.totalamt}</td>
+                    <td>${item.totalamt < 0 ? "Debit" : "Credit"}</td>
+                  </tr>
+                `
+              )
+              .join("")}
+          </tbody>
+        </table>
+         <script>
+          window.print();
+          window.onafterprint = () => {
+            window.close();
+            window.opener.focus(); // Focus back to the main window
+          };
+        </script>
+      </body>
+    </html>
+  `;
+
+    printWindow.document.open();
+    printWindow.document.write(printContent);
+    printWindow.document.close();
   };
   return (
     <div className="w100 h1 d-flex-col m10 ">
