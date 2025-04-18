@@ -1627,6 +1627,17 @@ exports.saveOtherDeductions = (req, res) => {
     toDate,
   } = formData;
 
+  // console.log(
+  //   id,
+  //   billno,
+  //   billdate,
+  //   totalPayment,
+  //   netPayment,
+  //   netDeduction,
+  //   formDate,
+  //   toDate
+  // );
+
   if (!dairy_id) {
     return res.status(401).json({
       status: 401,
@@ -1639,7 +1650,6 @@ exports.saveOtherDeductions = (req, res) => {
     !billno ||
     !billdate ||
     !totalPayment ||
-    !netPayment ||
     !netDeduction ||
     !formDate ||
     !toDate
@@ -2013,7 +2023,6 @@ exports.fetchTrnRemAmt = async (req, res) => {
   if (!dairy_id) {
     return res.status(401).json({ status: 401, message: "Unauthorised User!" });
   }
-
   if (!toDate) {
     return res
       .status(400)
@@ -2048,7 +2057,7 @@ exports.fetchTrnRemAmt = async (req, res) => {
         WHERE companyid = ? AND center_id = ? AND GLCode IN (${placeholders})
            AND VoucherDate <= ? AND Amt != 0
       GROUP BY AccCode, GLCode
-      ORDER BY AccCode ASC;
+      ORDER BY AccCode ASC
     `;
 
     const queryParams = [dairy_id, center_id, ...glCodeArray, toDate];
@@ -2070,7 +2079,6 @@ exports.fetchTrnRemAmt = async (req, res) => {
           message: "No record found!",
         });
       }
-
       res.status(200).json({ found: true, trnLRemaings: results });
     });
   });

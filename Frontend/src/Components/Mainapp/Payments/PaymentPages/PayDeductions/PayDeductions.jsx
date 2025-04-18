@@ -12,7 +12,7 @@ import {
 } from "../../../../../App/Features/Payments/paymentSlice";
 import { toast } from "react-toastify";
 
-const PayDeductions = () => {
+const PayDeductions = ({ setShowDeduPage }) => {
   const dispatch = useDispatch();
   const inputRefs = useRef([]);
   const submitBtnRef = useRef(null);
@@ -358,26 +358,25 @@ const PayDeductions = () => {
   };
 
   // handle grand total change for all deductions --------------------------------->
- useEffect(() => {
-   const netPayment = formData.netPayable - grandTotal;
-   const rounded = Math.floor(netPayment);
-   const roundAmount = parseFloat((netPayment - rounded).toFixed(1));
+  useEffect(() => {
+    const netPayment = formData.netPayable - grandTotal;
+    const rounded = Math.floor(netPayment);
+    const roundAmount = parseFloat((netPayment - rounded).toFixed(1));
 
-   setFormData((prevData) => ({
-     ...prevData,
-     totalTransport: formData.totalcollection * formData.transport,
-     netDeduction: formData.totalDeduction + grandTotal,
-     netPayment: netPayment - roundAmount,
-     roundAmount: roundAmount,
-   }));
- }, [
-   grandTotal,
-   formData.netPayable,
-   formData.totalDeduction,
-   formData.totalcollection,
-   formData.transport,
- ]);
-
+    setFormData((prevData) => ({
+      ...prevData,
+      totalTransport: formData.totalcollection * formData.transport,
+      netDeduction: formData.totalDeduction + grandTotal,
+      netPayment: netPayment - roundAmount,
+      roundAmount: roundAmount,
+    }));
+  }, [
+    grandTotal,
+    formData.netPayable,
+    formData.totalDeduction,
+    formData.totalcollection,
+    formData.transport,
+  ]);
 
   //handle focus on next input field ----------------------------------------->
 
@@ -403,9 +402,8 @@ const PayDeductions = () => {
       prevIndex === customerList.length ? 1 : prevIndex + 1
     );
 
-    if (inputRefs?.current) {
-      inputRefs.current[0].focus();
-    }
+    inputRefs.current[0].focus();
+
     if (saveres.status === 200) {
       const res = await dispatch(
         fetchPaymentDetails({
@@ -786,6 +784,14 @@ const PayDeductions = () => {
                 disabled={dedStatus === "loading"}
               >
                 {dedStatus === "loading" ? "saving..." : "बिल सेव्ह करा"}
+              </button>
+              <button
+                type="submit"
+                className="btn"
+                ref={submitBtnRef}
+                onClick={() => setShowDeduPage(false)}
+              >
+                बाहेर पडा
               </button>
             </div>
           </div>
