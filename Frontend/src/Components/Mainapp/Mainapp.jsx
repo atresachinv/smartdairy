@@ -82,6 +82,7 @@ import LedgerList from "./Accounts/LedgerList/LedgerList";
 import MilkColleform from "./Apphome/Appnavviews/Milkcollection/Milkcollform";
 import AccountStatment from "./Accounts/AccountStatment/AccountStatment";
 import TrnCheck from "./Inventory/InventroyPages/TrnCheck/TrnCheck";
+import PaymentPages from "./Payments/PaymentPages";
 
 const Mainapp = () => {
   const dispatch = useDispatch();
@@ -300,11 +301,11 @@ const Mainapp = () => {
             />
             <Route path="payment/milk-transfer/*" element={<MilkTransfer />} />{" "}
             <Route path="payment/fill-name/*" element={<DedeutionName />} />
-            <Route
+            {/* <Route
               path="payment/add-deductions/*"
               element={<PayDeductions />}
-            />
-            <Route path="payment/generate/*" element={<Payments />} />
+            /> */}
+            <Route path="payment/generate/*" element={<PaymentPages/>} />
             {/* dairy routes */}
             <Route path="dairy/information" element={<DairyInfo />} />
             <Route path="dairy/initial-info" element={<DairyInitialInfo />} />

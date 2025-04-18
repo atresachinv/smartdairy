@@ -13,7 +13,6 @@ const DairyInfo = () => {
   const dairyInfo = useSelector((state) => state.dairy.dairyData || []);
   const status = useSelector((state) => state.register.dairyinfostatus);
   const [errors, setErrors] = useState({});
-  console.log(dairyInfo);
   const [formData, setFormData] = useState({
     marathiName: "",
     SocietyName: "",
@@ -32,24 +31,25 @@ const DairyInfo = () => {
     PinCode: "",
   });
 
+  // set dairy information ------------------------------------------------>
   useEffect(() => {
     if (dairyInfo) {
       setFormData((prevData) => ({
         ...prevData,
-        marathiName: dairyInfo.marathi_name,
-        SocietyName: dairyInfo.center_name,
-        SocietyCode: dairyInfo.orgid,
+        marathiName: dairyInfo.marathiName || dairyInfo.marathi_name,
+        SocietyName: dairyInfo.SocietyName || dairyInfo.center_name,
+        SocietyCode: dairyInfo.SocietyCode || dairyInfo.orgid,
         prefix: dairyInfo.prefix,
-        startDate: "",
-        RegNo: dairyInfo.reg_no,
-        RegDate: dairyInfo.reg_date,
-        gstno: "",
-        AuditClass: dairyInfo,
-        PhoneNo: dairyInfo.mobile,
+        startDate: dairyInfo.startDate || "",
+        RegNo: dairyInfo.RegNo || dairyInfo.reg_no,
+        RegDate: dairyInfo.RegDate || dairyInfo.reg_date,
+        gstno: dairyInfo.gstno || "",
+        AuditClass: dairyInfo.AuditClass,
+        PhoneNo: dairyInfo.PhoneNo || dairyInfo.mobile,
         email: dairyInfo.email,
         City: dairyInfo.city,
-        tel: dairyInfo.tehsil,
-        dist: dairyInfo.district,
+        tel: dairyInfo.tel || dairyInfo.tehsil,
+        dist: dairyInfo.dist || dairyInfo.district,
         PinCode: dairyInfo.pincode,
       }));
     }
@@ -157,6 +157,7 @@ const DairyInfo = () => {
     return validationErrors;
   };
 
+  // handle form submition -------------------------------------------------->
   const handleSubmit = async (e) => {
     e.preventDefault();
     const validationErrors = validateFields();

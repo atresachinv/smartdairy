@@ -177,6 +177,9 @@ const UploadAccount = () => {
   return (
     <div className="Credit-container w100 h1 d-flex-col p10">
       <div className="Credit-container-scroll d-flex-col h1 w100 bg p10">
+        <div className="heading my5 w100 d-flex center">
+          व्यवहार एक्सेल अपलोड
+        </div>
         <div className="d-flex w100 j-center my10">
           {centerId > 0 ? (
             <></>

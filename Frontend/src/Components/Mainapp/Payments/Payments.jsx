@@ -21,7 +21,7 @@ import {
 import { getAllSalePayment } from "../../../App/Features/Sales/salesSlice";
 import { use } from "react";
 
-const Payments = () => {
+const Payments = ({ setShowDeduPage }) => {
   const dispatch = useDispatch();
   const tDate = useSelector((state) => state.date.toDate);
   const custno = useSelector((state) => state.customer.maxCustNo);
@@ -34,6 +34,8 @@ const Payments = () => {
   const deductionDetails = useSelector(
     (state) => state.deduction.mAdatededuction || []
   );
+  const dedAmts = useSelector((state) => state.payment.trnDeductions);
+  const prevMamt = useSelector((state) => state.payment.lastMamt);
   const centerSetting = useSelector(
     (state) => state.dairySetting.centerSetting
   );
@@ -63,7 +65,8 @@ const Payments = () => {
   const submitbtn = useRef(null);
 
   const autoCenter = settings?.autoCenter;
-
+  // console.log("dedAmts", dedAmts);
+  // console.log("data aaaa", prevMamt);
   // Calculate master on fromdate ----------------------------------------->
   function calculateToDate(fromDate, master) {
     const date = new Date(fromDate);
@@ -130,14 +133,16 @@ const Payments = () => {
     }
   }, [payDetails, customerlist]);
 
+  // handle input change for all inputs ----------------------------------------->
   const handleInput = (e) => {
-    const { name, value } = e.target;
+    const { name, type, checked, value } = e.target;
     setFormData((prevData) => ({
       ...prevData,
-      [name]: value,
+      [name]: type === "checkbox" ? (checked ? 1 : 0) : value,
     }));
   };
 
+  // handle enter kry press ------------------------------------------>
   const handleKeyDown = (e, nextRef) => {
     if (e.key === "Enter" && nextRef.current) {
       e.preventDefault();
@@ -233,13 +238,386 @@ const Payments = () => {
 
       return deductionEntries;
     } catch (error) {
-      console.error("Error in handling deductions:", error);
+      console.error("Error in handling dedAmts:", error);
       return [];
     }
   };
 
-  //get previous payment last remaing amount of deductions ------------------------->
+  //-------------------------------------------------------------------------------->
+  // handle auto deduction --------------------------------------------------------->
 
+  // console.log("deductionDetails", deductionDetails);
+
+  // const handleAllDeductions = async () => {
+  //   try {
+  //     const filteredDeductions = deductionDetails.filter(
+  //       (deduction) => deduction.RatePerLitre !== 0
+  //     );
+
+  //     const deductionEntries = [];
+
+  //     for (const user of payData) {
+  //       const { rno, cname, totalamt, totalLitres, avgSnf, avgFat } = user;
+
+  //       let totalDeduction = 0;
+
+  //       for (const deduction of filteredDeductions) {
+  //         const amt = +(totalLitres * deduction.RatePerLitre).toFixed(2);
+  //         totalDeduction += amt;
+
+  //         deductionEntries.push({
+  //           DeductionId: deduction.DeductionId,
+  //           GLCode: deduction.GLCode,
+  //           rno,
+  //           dname: deduction.dname,
+  //           amt: amt.toFixed(2),
+  //           cname: "",
+  //           totalamt: 0.0,
+  //           totalLitres: 0.0,
+  //           avgSnf: 0.0,
+  //           avgFat: 0.0,
+  //           avgRate: 0.0,
+  //           totalDeduction: 0.0,
+  //           isFix: 1,
+  //         });
+  //       }
+
+  //       const otherDeductions = deductionDetails.filter(
+  //         (deduction) => deduction.RatePerLitre === 0
+  //       );
+  //       console.log("dedAmts", otherDeductions);
+  //       for (const deduction of otherDeductions) {
+  //         // we have data in dedAmts where have AccCode , GLCode, totalamt we have totalamt in -value make it +ve and then calculate
+  //         // also we have data in prevMamt where we have AccCode , GLCode, totalamt  we have totalamt in -value make it +ve and then calculate
+  //         // we have to match dedAmts.AccCode with prevMamt.AccCode
+  //         // then we need totalamt which is above destucture in user
+  //         // now we have perform caculation
+  //         // first we have add  deduAmt = dedAmts.AccCode with prevMamt.AccCode amounts ex 1200 + 1000 = 2200 ex2  1460 + 1000 = 2460
+  //         // then we have to minus this deduAmt from totalamt totalamt = 11000 - 2200 = 8800 for next deduction 8800 - 2460 = 6340
+  //         // in ex we have only two dedAmts so we have to perform this operation only two times
+  //         // do this same for all the deduction
+  //         // until totalamt === 0 or leastPayamt if having dedAmts more
+  //         // now we have to set data totalDeduction = in first 2200 and in second 2460
+  //         // MAMT = prevMamt.totalamt
+  //         // BAMT = if in case totalamt (user) is less than deduction amt then BAMT is  in third ex 6340 -6340 = 0 but
+  //         // we have leastPayamt = 200 then we only deduct 6340 - 6140 = 200 ant last amt should be 200 which is equal to leastPayamt
+  //         // befor this we have to check if leastPayamt (for now create veriable and set value 0 this value we will get from backend)
+  //         // we have to perform dedAmts until  totalamt is remain === leastPayamt
+  //         // do round off deduction as last deduction to ensure payment value is not in decimal value
+  //         // one more thing some time deduction amount is less than totalamt and some time it is more than totalamt
+  //         // ensure function works well without failing in any case
+
+  //         // here we have to deductuct all dedAmts of perticular user
+  //         // first we have to do deduction in Asc order of dedAmts.AccCode
+  //         // dedAmts have AccCode, GLCode , totalamt
+  //         // dedAmts = AccCode :  1, GLCode :  276, totalamt :  -135, ex2 : AccCode :  1, GLCode :  107, totalamt :  -1290
+  //         // match dedAmts.GLCode === otherDeductions.GLCode if present for AccCode we have deduction for that perticlar user
+  //         // we also have to check if their any prev remaing amount present for same user
+  //         // check dedAmts.AccCode === prevMamt.AccCode && dedAmts.GLCode === prevMamt.GLCode
+  //         // if match then perticular GLCode have remaining amt
+  //         // now we have to add totaldeduction = prevMamt.totalamt + dedAmts.totalamt (both value is negative but we want in + output)
+  //         // then above remainingAmt - totaldeduction again update remainingAmt
+  //         // before performing above calculation check totaldeduction is less than or equl to remainingAmt - leastPayamt <= totaldeduction
+  //         // 1400 -200 < = 1100 if condition true do calculations else dont
+
+  //         const amt = +(totalLitres * deduction.RatePerLitre).toFixed(2);
+  //         totalDeduction += amt;
+
+  //         deductionEntries.push({
+  //           DeductionId: deduction.DeductionId,
+  //           GLCode: deduction.GLCode,
+  //           rno,
+  //           dname: deduction.dname,
+  //           MAMT: prevMamt.totalamt,
+  //           BAMT: 0,
+  //           amt: amt.toFixed(2),
+  //           cname: "",
+  //           totalamt: 0.0,
+  //           totalLitres: 0.0,
+  //           avgSnf: 0.0,
+  //           avgFat: 0.0,
+  //           avgRate: 0.0,
+  //           totalDeduction: 0.0,
+  //           isFix: 0,
+  //         });
+  //       }
+
+  //       const avgRate = totalLitres !== 0 ? totalamt / totalLitres : 0;
+  //       const netPayment = +(totalamt - totalDeduction).toFixed(2);
+
+  //       deductionEntries.push({
+  //         DeductionId: 0,
+  //         GLCode: 28,
+  //         rno,
+  //         dname: "",
+  //         amt: netPayment.toFixed(2),
+  //         cname,
+  //         totalamt: totalamt.toFixed(2),
+  //         totalLitres: totalLitres.toFixed(2),
+  //         avgSnf: avgSnf.toFixed(1),
+  //         avgFat: avgFat.toFixed(1),
+  //         avgRate: avgRate.toFixed(1),
+  //         totalDeduction: totalDeduction.toFixed(2),
+  //         isFix: 2,
+  //       });
+  //     }
+
+  //     return deductionEntries;
+  //   } catch (error) {
+  //     console.error("Error in handling dedAmts:", error);
+  //     return [];
+  //   }
+  // };
+
+  // const handleAllDeductions = async () => {
+  //   try {
+  //     const filteredDeductions = deductionDetails.filter(
+  //       (deduction) => deduction.RatePerLitre !== 0
+  //     );
+
+  //     const deductionEntries = [];
+  //     const leastPayamt = 200; // assume this is fetched or fixed
+
+  //     for (const user of payData) {
+  //       const { rno, cname, totalamt, totalLitres, avgSnf, avgFat } = user;
+  //       let totalDeduction = 0;
+  //       let remainingAmt = totalamt; // start from full total
+  //       console.log("remainingAmt", remainingAmt);
+  //       // ✅ 1) FIX DEDUCTIONS (RatePerLitre !== 0)
+  //       for (const deduction of filteredDeductions) {
+  //         const amt = +(totalLitres * deduction.RatePerLitre).toFixed(2);
+  //         totalDeduction += amt;
+  //         remainingAmt -= amt;
+
+  //         deductionEntries.push({
+  //           DeductionId: deduction.DeductionId,
+  //           GLCode: deduction.GLCode,
+  //           rno,
+  //           dname: deduction.dname,
+  //           amt: amt.toFixed(2),
+  //           cname: "",
+  //           totalamt: 0.0,
+  //           totalLitres: 0.0,
+  //           avgSnf: 0.0,
+  //           avgFat: 0.0,
+  //           avgRate: 0.0,
+  //           totalDeduction: 0.0,
+  //           isFix: 1,
+  //         });
+  //       }
+
+  //       // ✅ 2) DYNAMIC DEDUCTIONS (RatePerLitre === 0) with leastPayamt logic
+  //       const otherDeductions = deductionDetails.filter(
+  //         (deduction) => deduction.RatePerLitre === 0
+  //       );
+  //       console.log(otherDeductions, "otherDeductions");
+
+  //       // here we have to deductuct all dedAmts of perticular user
+  //       // first we have to do deduction in Asc order of dedAmts.AccCode
+  //       // dedAmts have AccCode, GLCode , totalamt
+  //       // dedAmts = AccCode :  1, GLCode :  276, totalamt :  -135, ex2 : AccCode :  1, GLCode :  107, totalamt :  -1290
+  //       // match dedAmts.GLCode === otherDeductions.GLCode if present for AccCode we have deduction for that perticlar user
+  //       // we also have to check if their any prev remaing amount present for same user
+  //       // check dedAmts.AccCode === prevMamt.AccCode && dedAmts.GLCode === prevMamt.GLCode
+  //       // if match then perticular GLCode have remaining amt
+  //       // now we have to add totaldeduction = prevMamt.totalamt + dedAmts.totalamt (both value is negative but we want in + output)
+  //       // then above remainingAmt - totaldeduction again update remainingAmt
+  //       // before performing above calculation check totaldeduction is less than or equl to remainingAmt - leastPayamt <= totaldeduction
+  //       // 1400 -200 < = 1100 if condition true do calculations else dont
+
+  //       for (const deduction of otherDeductions) {
+  //         const matchedPrev = prevMamt.find(
+  //           (pm) => pm.AccCode === deduction.AccCode
+  //         );
+
+  //         const prevAmt = matchedPrev ? Math.abs(matchedPrev.totalamt) : 0;
+  //         const currAmt = Math.abs(deduction.totalamt || 0);
+  //         let deduAmt = prevAmt + currAmt;
+  //         console.log("deduAmt", deduAmt);
+  //         // ⛔ Don't go below leastPayamt
+  //         if (remainingAmt - deduAmt < leastPayamt) {
+  //           deduAmt = remainingAmt - leastPayamt;
+  //         }
+
+  //         deduAmt = +deduAmt.toFixed(2);
+
+  //         if (deduAmt <= 0) continue;
+
+  //         totalDeduction += deduAmt;
+  //         remainingAmt -= deduAmt;
+
+  //         deductionEntries.push({
+  //           DeductionId: deduction.DeductionId,
+  //           GLCode: deduction.GLCode,
+  //           rno,
+  //           dname: deduction.dname,
+  //           MAMT: prevAmt.toFixed(2),
+  //           BAMT: currAmt.toFixed(2),
+  //           amt: deduAmt.toFixed(2),
+  //           cname: "",
+  //           totalamt: 0.0,
+  //           totalLitres: 0.0,
+  //           avgSnf: 0.0,
+  //           avgFat: 0.0,
+  //           avgRate: 0.0,
+  //           totalDeduction: 0.0,
+  //           isFix: 0,
+  //         });
+
+  //         if (remainingAmt <= leastPayamt) break;
+  //       }
+
+  //       // ✅ 3) FINAL NET PAYMENT
+  //       const avgRate = totalLitres !== 0 ? totalamt / totalLitres : 0;
+  //       const netPayment = +remainingAmt.toFixed(2);
+  //       console.log("netPayment", netPayment);
+  //       deductionEntries.push({
+  //         DeductionId: 0,
+  //         GLCode: 28,
+  //         rno,
+  //         dname: "",
+  //         amt: netPayment.toFixed(2),
+  //         cname,
+  //         totalamt: totalamt.toFixed(2),
+  //         totalLitres: totalLitres.toFixed(2),
+  //         avgSnf: avgSnf.toFixed(1),
+  //         avgFat: avgFat.toFixed(1),
+  //         avgRate: avgRate.toFixed(1),
+  //         totalDeduction: totalDeduction.toFixed(2),
+  //         isFix: 2,
+  //       });
+  //     }
+
+  //     return deductionEntries;
+  //   } catch (error) {
+  //     console.error("Error in handling dedAmts:", error);
+  //     return [];
+  //   }
+  // };
+
+  const handleAllDeductions = async () => {
+    try {
+      const filteredDeductions = deductionDetails.filter(
+        (deduction) => deduction.RatePerLitre !== 0
+      );
+
+      const deductionEntries = [];
+      const leastPayamt = 200;
+
+      for (const user of payData) {
+        const { rno, cname, totalamt, totalLitres, avgSnf, avgFat } = user;
+        let totalDeduction = 0;
+        let remainingAmt = totalamt;
+
+        // ✅ 1) FIXED DEDUCTIONS
+        for (const deduction of filteredDeductions) {
+          const amt = +(totalLitres * deduction.RatePerLitre).toFixed(2);
+          totalDeduction += amt;
+          remainingAmt -= amt;
+
+          deductionEntries.push({
+            DeductionId: deduction.DeductionId,
+            GLCode: deduction.GLCode,
+            rno,
+            dname: deduction.dname,
+            amt: amt.toFixed(2),
+            cname: "",
+            totalamt: 0.0,
+            totalLitres: 0.0,
+            avgSnf: 0.0,
+            avgFat: 0.0,
+            avgRate: 0.0,
+            totalDeduction: 0.0,
+            isFix: 1,
+          });
+        }
+
+        // ✅ 2) DYNAMIC DEDUCTIONS
+        const otherDeductions = deductionDetails.filter(
+          (deduction) => deduction.RatePerLitre === 0
+        );
+
+        const userDedAmts = dedAmts.filter((item) => item.AccCode === rno);
+        const userPrevMamt = prevMamt.filter((item) => item.AccCode === rno);
+        console.log("userDedAmts", userDedAmts);
+        console.log("userPrevMamt", userPrevMamt);
+        console.log(otherDeductions, "otherDeductions");
+        for (const deduction of otherDeductions) {
+          const matchDedAmt = userDedAmts.find(
+            (item) =>
+              item.GLCode === deduction.GLCode
+          );
+          const matchPrevAmt = userPrevMamt.find(
+            (item) =>
+              item.GLCode === deduction.GLCode
+          );
+          console.log("matchDedAmt", matchDedAmt);
+          console.log("matchPrevAmt", matchPrevAmt);
+          const currAmt = matchDedAmt ? Math.abs(matchDedAmt.totalamt) : 0;
+          const prevAmt = matchPrevAmt ? Math.abs(matchPrevAmt.totalamt) : 0;
+          console.log("currAmt", currAmt);
+          console.log("prevAmt", prevAmt);
+          let deduAmt = +(currAmt + prevAmt).toFixed(2);
+          console.log(deduAmt, "deduAmt");
+          if (remainingAmt - deduAmt < leastPayamt) {
+            deduAmt = +(remainingAmt - leastPayamt).toFixed(2);
+          }
+
+          if (deduAmt <= 0) continue;
+
+          totalDeduction += deduAmt;
+          remainingAmt -= deduAmt;
+
+          deductionEntries.push({
+            DeductionId: deduction.DeductionId,
+            GLCode: deduction.GLCode,
+            rno,
+            dname: deduction.dname,
+            MAMT: prevAmt.toFixed(2),
+            BAMT: currAmt.toFixed(2),
+            amt: deduAmt.toFixed(2),
+            cname: "",
+            totalamt: 0.0,
+            totalLitres: 0.0,
+            avgSnf: 0.0,
+            avgFat: 0.0,
+            avgRate: 0.0,
+            totalDeduction: 0.0,
+            isFix: 0,
+          });
+
+          if (remainingAmt <= leastPayamt) break;
+        }
+
+        // ✅ 3) FINAL NET PAYMENT ENTRY
+        const avgRate = totalLitres !== 0 ? totalamt / totalLitres : 0;
+        const netPayment = +remainingAmt.toFixed(2);
+
+        deductionEntries.push({
+          DeductionId: 0,
+          GLCode: 28,
+          rno,
+          dname: "",
+          amt: netPayment.toFixed(2),
+          cname,
+          totalamt: totalamt.toFixed(2),
+          totalLitres: totalLitres.toFixed(2),
+          avgSnf: avgSnf.toFixed(1),
+          avgFat: avgFat.toFixed(1),
+          avgRate: avgRate.toFixed(1),
+          totalDeduction: totalDeduction.toFixed(2),
+          isFix: 2,
+        });
+      }
+
+      return deductionEntries;
+    } catch (error) {
+      console.error("Error in handleAllDeductions:", error);
+      return [];
+    }
+  };
+
+  //get previous payment last remaing amount of dedAmts ------------------------->
   useEffect(() => {
     if (formData.fromDate && otherDeduction.length > 0) {
       const [year, month, day] = formData.fromDate.split("-").map(Number);
@@ -279,6 +657,110 @@ const Payments = () => {
               toDate: formData.toDate,
             })
           );
+          const saleres = await dispatch(
+            fetchTrnDeductions({
+              fromDate: formData.fromDate,
+              toDate: formData.toDate,
+              GlCodes: otherDeduction,
+            })
+          ).unwrap();
+        } else if (result?.status === 200) {
+          toast.error("Milk correction required!");
+          setPayStatus(false);
+          return;
+        }
+
+        if (payData && deductionDetails) {
+          let deductionData;
+          if (formData.autodeduct === 1) {
+            deductionData = await handleAllDeductions();
+            console.log("deductionData", deductionData);
+            if (deductionData.length === 0) {
+              toast.error("Error in deduction calculations, try again!");
+              setPayStatus(false);
+              return;
+            }
+
+            setPaymentFD(deductionData);
+
+            const saveres = await dispatch(
+              saveMilkPaydata({ formData, PaymentFD: deductionData })
+            ).unwrap();
+
+            const fetchres = await dispatch(
+              fetchPaymentDetails({
+                fromdate: formData.fromDate,
+                todate: formData.toDate,
+              })
+            ).unwrap();
+          }
+          // } else {
+          //   deductionData = await handleFixDeductions();
+
+          //   if (deductionData.length === 0) {
+          //     toast.error("Error in deduction calculations, try again!");
+          //     setPayStatus(false);
+          //     return;
+          //   }
+
+          //   setPaymentFD(deductionData);
+
+          //   const saveres = await dispatch(
+          //     saveMilkPaydata({ formData, PaymentFD: deductionData })
+          //   ).unwrap();
+          // }
+          // if (saveres?.status === 200) {
+          //   const fetchres = await dispatch(
+          //     fetchPaymentDetails({
+          //       fromdate: formData.fromDate,
+          //       todate: formData.toDate,
+          //     })
+          //   ).unwrap();
+          //   if (fetchres?.status === 200) {
+          toast.success("Milk payment Generated successfully!");
+          //   }
+          // } else {
+          // toast.error("Unexpected response. Please try again!");
+          // }
+        }
+      } else if (results?.found === true) {
+        toast.error("Payment already exists for this dates!");
+      } else {
+        toast.error("Unexpected response. Please try again!");
+      }
+    } catch (error) {
+      toast.error("Unexpected error", error);
+    } finally {
+      setPayStatus(false);
+    }
+  };
+
+  const handleGenerateBills = async (e) => {
+    e.preventDefault();
+    setPayStatus(true);
+    try {
+      const results = await dispatch(
+        checkPayExists({ fromDate: formData.fromDate, toDate: formData.toDate })
+      ).unwrap();
+      if (results?.found === false) {
+        const result = await dispatch(
+          checkAmtZero({ fromDate: formData.fromDate, toDate: formData.toDate })
+        ).unwrap();
+
+        if (result?.status === 204) {
+          dispatch(
+            fetchMilkPaydata({
+              fromDate: formData.fromDate,
+              toDate: formData.toDate,
+            })
+          );
+          const saleres = await dispatch(
+            fetchTrnDeductions({
+              fromDate: formData.fromDate,
+              toDate: formData.toDate,
+              GlCodes: otherDeduction,
+            })
+          ).unwrap();
         } else if (result?.status === 200) {
           toast.error("Milk correction required!");
           setPayStatus(false);
@@ -292,15 +774,8 @@ const Payments = () => {
             setPayStatus(false);
             return;
           }
-          setPaymentFD(deductionData);
 
-          const saleres = await dispatch(
-            fetchTrnDeductions({
-              fromDate: formData.fromDate,
-              toDate: formData.toDate,
-              GlCodes: otherDeduction,
-            })
-          ).unwrap();
+          setPaymentFD(deductionData);
 
           const saveres = await dispatch(
             saveMilkPaydata({ formData, PaymentFD: deductionData })
@@ -559,7 +1034,9 @@ const Payments = () => {
             </div>
           </div>
           <div className="bill-payments-container-div w30 d-flex f-wrap se">
-            <button className="w-btn w45">पेमेंट कपाती</button>
+            <button className="w-btn w45" onClick={() => setShowDeduPage(true)}>
+              पेमेंट कपाती
+            </button>
             <button className="w-btn w45">संकलन रिपोर्ट </button>
             <button className="w-btn w45">कपात रिपोर्ट</button>
             <button className="w-btn w45">संकलन दुरुस्थी </button>
