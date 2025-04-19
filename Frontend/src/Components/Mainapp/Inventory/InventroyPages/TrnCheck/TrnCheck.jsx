@@ -39,6 +39,8 @@ const TrnCheck = () => {
 
   const handelCheck = async (e) => {
     e.preventDefault();
+    setDataList([]);
+    setVoucherList([]);
     if (
       !formData.fromDate ||
       !formData.itemgrpcode ||
@@ -57,7 +59,7 @@ const TrnCheck = () => {
       type: formData.type,
       centerId: centerId === 0 ? Number(filter) : Number(centerId),
     };
-    console.log(reqData);
+    // console.log(reqData);
 
     try {
       const res = await axiosInstance.get(`trn-check`, {
@@ -67,6 +69,8 @@ const TrnCheck = () => {
       setVoucherList(res.data?.voucherList || []);
     } catch (error) {
       toast.error("server error");
+      setDataList([]);
+      setVoucherList([]);
     }
   };
   return (
@@ -295,15 +299,22 @@ const TrnCheck = () => {
             <span className="label-text w20">Name</span>
             <span className="label-text w10">Amt</span>
           </div>
-          <div className="trn-first-table-data w100 hidescrollbar d-flex  mx90 sa ">
-            <span className="lable-text w10">1</span>
-            <span className="lable-text w10">9</span>
-            <span className="lable-text w20">36563</span>
-            <span className="lable-text w20">18-06-1999</span>
-            <span className="lable-text w10">8</span>
-            <span className="lable-text w20">Shinde</span>
-            <span className="lable-text w10">1230</span>
-          </div>
+
+          {dataList.length > 0 ? (
+            dataList.map((item, i) => (
+              <div className="trn-first-table-data w100 hidescrollbar d-flex  mx90 sa ">
+                <span className="lable-text w10">{i + 1}</span>
+                <span className="lable-text w10">{item.ReceiptNo}</span>
+                <span className="lable-text 20">
+                  {new Date(item.BillDate).toISOString().split("T")[0]}
+                </span>
+                <span className="lable-text w30">{item.cust_name}</span>
+                <span className="lable-text w20">{item.Amount}</span>
+              </div>
+            ))
+          ) : (
+            <> No Data</>
+          )}
         </div>
         <div className="second-table-trndiv w45 h1 d-flex-col">
           <div className="second-table-heading-trn w100 d-flex  sa">
@@ -315,15 +326,22 @@ const TrnCheck = () => {
             <span className="label-text w20">Name</span>
             <span className="label-text w10">Amt</span>
           </div>
-          <div className="trn-second-table-data w100 hidescrollbar d-flex  mx90 sa ">
-            <span className="lable-text w10">1</span>
-            <span className="lable-text w10">9</span>
-            <span className="lable-text w20">36563</span>
-            <span className="lable-text w20">18-06-1999</span>
-            <span className="lable-text w10">8</span>
-            <span className="lable-text w20"> YOgesh</span>
-            <span className="lable-text w10">1000</span>
-          </div>
+          {voucherList.length > 0 ? (
+            voucherList.map((item, i) => (
+              <div className="trn-second-table-data w100 hidescrollbar d-flex  mx90 sa ">
+                <span className="lable-text w10">{i + 1}</span>
+                <span className="lable-text w10">{i.VoucherNo}</span>
+                <span className="lable-text w20">
+                  {new Date(item.VoucherDate).toISOString().split("T")[0]}
+                </span>
+
+                <span className="lable-text w10">{item.AccCode}</span>
+                <span className="lable-text w20"> {item.Amt}</span>
+              </div>
+            ))
+          ) : (
+            <>No data </>
+          )}
         </div>
       </div>
       <div className="Total-anddifferance-div w100 h10 d-flex">

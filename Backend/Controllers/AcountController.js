@@ -245,56 +245,37 @@ exports.getCheckTrn = async (req, res) => {
           message: "Server query execution failed",
         });
       }
-      res.status(200).json({
-        success: true,
-        message: "Tally data fetched successfully",
-        data: tallyResult,
+
+      let masterQuery = "";
+      let masterParams = [dairy_id, fromDate, toDate, cn, itemgrpcode];
+
+      if (type === "1") {
+        masterQuery = ` SELECT * FROM salesmaster WHERE companyid = ? AND BillDate BETWEEN ? AND ? AND cn = ? AND ItemGroupCode = ? `;
+      } else if (type === "2") {
+        masterQuery = ` SELECT * FROM PurchaseMaster WHERE dairy_id = ? AND purchasedate BETWEEN ? AND ? AND cn = ? AND itemgroupcode = ? `;
+      } else {
+        connection.release();
+        return res.status(400).json({
+          success: false,
+          message: "Invalid type provided",
+        });
+      }
+      connection.query(masterQuery, masterParams, (err, masterResult) => {
+        if (err) {
+          console.error("Query error:", err);
+          return res.status(500).json({
+            success: false,
+            message: "Server query execution failed",
+          });
+        }
+        res.status(200).json({
+          success: true,
+          message: "Tally data fetched successfully",
+          voucherList: tallyResult,
+          dataList: masterResult,
+        });
       });
     });
-    // connection.query(tallyQuery, tallyParams, (err, tallyResult) => {
-    //   if (err) {
-    //     connection.release();
-    //     console.error("Tally query error:", err);
-    //     return res.status(500).json({
-    //       success: false,
-    //       message: "Server query execution failed for tally_trnfile",
-    //     });
-    //   }
-
-    //   // Query for salemaster or purchasemaster based on type
-    //   let masterQuery = "";
-    //   let masterParams = [dairy_id, fromDate, toDate, cn, itemgrpcode];
-
-    //   if (type === "1") {
-    //     masterQuery = `SELECT * FROM salemaster WHERE companyid = ? AND VoucherDate BETWEEN ? AND ? AND cn = ? AND itemgrpcode = ?`;
-    //   } else if (type === "2") {
-    //     masterQuery = `SELECT * FROM purchasemaster WHERE companyid = ? AND VoucherDate BETWEEN ? AND ? AND cn = ? AND itemgrpcode = ?`;
-    //   } else {
-    //     connection.release();
-    //     return res.status(400).json({
-    //       success: false,
-    //       message: "Invalid type provided",
-    //     });
-    //   }
-
-    //   connection.query(masterQuery, masterParams, (err, masterResult) => {
-    //     connection.release();
-    //     if (err) {
-    //       console.error("Master query error:", err);
-    //       return res.status(500).json({
-    //         success: false,
-    //         message: "Server query execution failed for master table",
-    //       });
-    //     }
-
-    //     // Combine results from both queries
-    //     res.status(200).json({
-    //       success: true,
-    //       tallyData: tallyResult,
-    //       masterData: masterResult,
-    //     });
-    //   });
-    // });
   });
 };
 
