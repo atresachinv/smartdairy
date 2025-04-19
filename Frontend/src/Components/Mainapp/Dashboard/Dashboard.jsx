@@ -498,62 +498,60 @@ const Dashboard = () => {
               <h3 className="heading">{t("c-center-info")} : </h3>
               <div className="center-sales-details-container w100 h1 d-flex f-wrap sb p10">
                 {centersmergedData.length > 0 ? (
-                  centersmergedData.map((center) => (
-                    <>
-                      <div
-                        key={center.center_id}
-                        className="center-sales-card w45 h30 d-flex-col sb bg-light-green br9 p10"
-                      >
-                        <div className="card-title w100 h25 d-flex sb">
-                          <span className="w30 text">{t("c-centerno")} : </span>
-                          <span className="w70 info-text t-start">
-                            {center.center_id}
+                  centersmergedData.map((center, index) => (
+                    <div
+                      key={index}
+                      className="center-sales-card w45 h30 d-flex-col sb bg-light-green br9 p10"
+                    >
+                      <div className="card-title w100 h25 d-flex sb">
+                        <span className="w30 text">{t("c-centerno")} : </span>
+                        <span className="w70 info-text t-start">
+                          {center.center_id}
+                        </span>
+                      </div>
+                      <div className="card-title w100 h25 d-flex sb">
+                        {/* <span className="w30 info-text">Center Name : </span> */}
+                        <span className="w100 label-text t-start">
+                          {center.center_name}
+                        </span>
+                      </div>
+                      <div className="card-other-outer-details w100 h50 d-flex sa">
+                        <div className="card-other-details w30 h1 d-flex-col a-center sa br6 bg5">
+                          <span className="text">{t("c-customer")}</span>
+                          <span className="label-text">
+                            {center.total_customers}
                           </span>
                         </div>
-                        <div className="card-title w100 h25 d-flex sb">
-                          {/* <span className="w30 info-text">Center Name : </span> */}
-                          <span className="w100 label-text t-start">
-                            {center.center_name}
+                        <div className="card-other-details w30 h1 d-flex-col a-center sa br6 bg5">
+                          <span className="text">{t("c-liters")}</span>
+                          <span
+                            className="label-text"
+                            onClick={(e) =>
+                              handlemilkUserSummary({
+                                center_id: center.center_id,
+                                e,
+                              })
+                            }
+                          >
+                            {center.total_litres} {t("c-ltr")}
                           </span>
                         </div>
-                        <div className="card-other-outer-details w100 h50 d-flex sa">
-                          <div className="card-other-details w30 h1 d-flex-col a-center sa br6 bg5">
-                            <span className="text">{t("c-customer")}</span>
-                            <span className="label-text">
-                              {center.total_customers}
-                            </span>
-                          </div>
-                          <div className="card-other-details w30 h1 d-flex-col a-center sa br6 bg5">
-                            <span className="text">{t("c-liters")}</span>
-                            <span
-                              className="label-text"
-                              onClick={(e) =>
-                                handlemilkUserSummary({
-                                  center_id: center.center_id,
-                                  e,
-                                })
-                              }
-                            >
-                              {center.total_litres} {t("c-ltr")}
-                            </span>
-                          </div>
-                          <div className="card-other-details w30 h1 d-flex-col a-center sa br6 bg5">
-                            <span className="text">{t("c-purch-amt")}</span>
-                            <span
-                              className="label-text "
-                              onClick={(e) =>
-                                handlemilkUserSummary({
-                                  center_id: center.center_id,
-                                  e,
-                                })
-                              }
-                            >
-                              {center.total_amount} {t("c-rs")}
-                            </span>
-                          </div>
+                        <div className="card-other-details w30 h1 d-flex-col a-center sa br6 bg5">
+                          <span className="text">{t("c-purch-amt")}</span>
+                          <span
+                            className="label-text "
+                            onClick={(e) =>
+                              handlemilkUserSummary({
+                                center_id: center.center_id,
+                                e,
+                              })
+                            }
+                          >
+                            {center.total_amount} {t("c-rs")}
+                          </span>
                         </div>
                       </div>
-                    </>
+                    </div>
                   ))
                 ) : (
                   <div className="box d-flex center">
