@@ -347,11 +347,20 @@ const TrnCheck = () => {
       <div className="Total-anddifferance-div w100 h10 d-flex">
         <div className="fisrdt-table-total w50 d-flex a-center ">
           <span className="label-text w30">TotalAmt</span>
-          <input className="data w30" type="text" />
+          <input
+            className="data w30"
+            type="text"
+            value={dataList.reduce((sum, item) => sum + (item.Amount || 0), 0)}
+          />
         </div>
         <div className="fisrdt-table-total w30 d-flex a-center ">
           <span className="label-text w30">TotalAmt</span>
-          <input className="data w30" type="text" />
+
+          <input
+            className="data w30"
+            type="text"
+            value={voucherList.reduce((sum, item) => sum + (item.Amt || 0), 0)}
+          />
         </div>
         <div className="deffrance-price-div w20 d-flex a-center">
           <span className="label-text w30">फारक</span>
