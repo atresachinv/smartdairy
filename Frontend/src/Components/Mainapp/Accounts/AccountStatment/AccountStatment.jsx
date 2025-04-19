@@ -39,7 +39,7 @@ const AccountStatment = () => {
   const [filter, setFilter] = useState(0);
   const [settings, setSettings] = useState({});
   const [showReport, setShowReport] = useState(false);
-    const reportRef = useRef();
+  const reportRef = useRef();
 
   // console.log(voucherList);
 
@@ -170,46 +170,44 @@ const AccountStatment = () => {
     }
   };
 
-
   // Dummy data fetching function
-const generatePDF = () => {
-  if (!Array.isArray(voucherList)) {
-    console.error("Invalid voucher list: not an array", voucherList);
-    return;
-  }
+  const generatePDF = () => {
+    if (!Array.isArray(voucherList)) {
+      console.error("Invalid voucher list: not an array", voucherList);
+      return;
+    }
 
+    const doc = new jsPDF();
+    doc.setFontSize(14);
+    doc.text("डेअरी नाव: My Dairy", 10, 10);
+    doc.text("शहर: Pune", 10, 18);
+    doc.text("अहवाल: खाते स्टेटमेंट", 10, 26);
 
-  const doc = new jsPDF();
-  doc.setFontSize(14);
-  doc.text("डेअरी नाव: My Dairy", 10, 10);
-  doc.text("शहर: Pune", 10, 18);
-  doc.text("अहवाल: खाते स्टेटमेंट", 10, 26);
+    const tableData = voucherList.map((item) => [
+      item.VoucherNo,
+      new Date(item.VoucherDate).toLocaleDateString(),
+      item.Narration || "",
+      item.Vtype === 0 || item.Vtype === 1 ? item.Narration1 : "",
+      (item.Vtype === 3 || item.Vtype === 4) && item.Amt > 0 ? item.Amt : "",
+      item.Amt < 0 ? -item.Amt : "",
+    ]);
 
-  const tableData = voucherList.map((item) => [
-    item.VoucherNo,
-    new Date(item.VoucherDate).toLocaleDateString(),
-    item.Narration || "",
-    item.Vtype === 0 || item.Vtype === 1 ? item.Narration1 : "",
-    (item.Vtype === 3 || item.Vtype === 4) && item.Amt > 0 ? item.Amt : "",
-    item.Amt < 0 ? -item.Amt : "",
-  ]);
+    doc.autoTable({
+      head: [["चलन नं.", "चलन तारीख", "तपशील", "नावे", "जमा", "रक्कम"]],
+      body: tableData,
+      startY: 32,
+    });
 
-  doc.autoTable({
-    head: [["चलन नं.", "चलन तारीख", "तपशील", "नावे", "जमा", "रक्कम"]],
-    body: tableData,
-    startY: 32,
-  });
+    doc.save("report.pdf");
+  };
 
-  doc.save("report.pdf");
-};
+  const handlePrint = () => {
+    const printWindow = window.open("", "_blank", "width=800,height=600");
+    if (!printWindow) return;
 
-const handlePrint = () => {
-  const printWindow = window.open("", "_blank", "width=800,height=600");
-  if (!printWindow) return;
-
-  const tableRows = voucherList
-    .map((item) => {
-      return `
+    const tableRows = voucherList
+      .map((item) => {
+        return `
         <tr>
           <td>${item.VoucherNo}</td>
           <td>${new Date(item.VoucherDate).toLocaleDateString()}</td>
@@ -225,10 +223,10 @@ const handlePrint = () => {
           <td>${item.Amt < 0 ? -item.Amt : ""}</td>
         </tr>
       `;
-    })
-    .join("");
+      })
+      .join("");
 
-  printWindow.document.write(`
+    printWindow.document.write(`
     <html>
       <head>
         <title>Report</title>
@@ -257,12 +255,11 @@ const handlePrint = () => {
       </body>
     </html>
   `);
-  printWindow.document.close();
-  printWindow.focus();
-  printWindow.print();
-  printWindow.close();
-};
-
+    printWindow.document.close();
+    printWindow.focus();
+    printWindow.print();
+    printWindow.close();
+  };
 
   return (
     <div className="account-statment-container w100 h1 d-flex">
@@ -403,77 +400,74 @@ const handlePrint = () => {
               </button>
             </div>
             <div className="Print-statment-buttons w70 h20 px10 d-flex a-center">
-              <button
-                className="w-btn"
-                type="button"
-                onClick={handlePrint}
-              >
+              <button className="w-btn" type="button" onClick={handlePrint}>
                 Print{" "}
               </button>
             </div>
             <div className="Pdf-statment-buttons w70 h20 px10 d-flex a-center">
-              <button
-                className="w-btn"
-                type="button"
-                onClick={generatePDF}
-              >
+              <button className="w-btn" type="button" onClick={generatePDF}>
                 pdf{" "}
               </button>
             </div>
           </div>
-
-          {showReport && (
-            <div className="report-content   ">
-              <table
-                className=""
-                border="1"
-                cellPadding="5"
-                style={{
-                  borderCollapse: "collapse",
-                  marginTop: "10px",
-                  width: "100%",
-                }}
-              >
-                <thead className="">
-                  <tr></tr>
-                  <tr>
-                    <th>चलन नं.</th>
-                    <th>चलन तारीख</th>
-                    <th>तपशील</th>
-                    <th>नावे</th>
-                    <th>जमा</th>
-                    <th>रक्कम</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {voucherList.map((item, index) => (
-                    <tr key={index}>
-                      <td>{item.VoucherNo}</td>
-                      <td>{new Date(item.VoucherDate).toLocaleDateString()}</td>
-                      <td>{item.Narration}</td>
-
-                      {/* नावे column: only show if Vtype is 0 or 1 */}
-                      <td>
-                        {item.Vtype === 0 || item.Vtype === 1
-                          ? item.Narration1
-                          : ""}
-                      </td>
-
-                      {/* जमा column: only show if Vtype is 3 or 4 and Amt > 0 */}
-                      <td>
-                        {(item.Vtype === 3 || item.Vtype === 4) && item.Amt > 0
-                          ? item.Amt
-                          : ""}
-                      </td>
-
-                      {/* रक्कम column: always show if Amt < 0 */}
-                      <td>{item.Amt < 0 ? -item.Amt : ""}</td>
+          <div className="table-section-acoundstatment w100 h40 d-flex-col">
+            {showReport && (
+              <div className="report-content   ">
+                <table
+                  className=""
+                  border="1"
+                  cellPadding="5"
+                  style={{
+                    borderCollapse: "collapse",
+                    marginTop: "10px",
+                    width: "140%",
+                    overflow:"auto",
+                  }}
+                >
+                  <thead className="">
+                    <tr></tr>
+                    <tr>
+                      <th>चलन नं.</th>
+                      <th>चलन तारीख</th>
+                      <th>तपशील</th>
+                      <th>नावे</th>
+                      <th>जमा</th>
+                      <th>रक्कम</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
+                  </thead>
+                  <tbody>
+                    {voucherList.map((item, index) => (
+                      <tr key={index}>
+                        <td>{item.VoucherNo}</td>
+                        <td>
+                          {new Date(item.VoucherDate).toLocaleDateString()}
+                        </td>
+                        <td>{item.Narration}</td>
+
+                        {/* नावे column: only show if Vtype is 0 or 1 */}
+                        <td>
+                          {item.Vtype === 0 || item.Vtype === 1
+                            ? item.Narration1
+                            : ""}
+                        </td>
+
+                        {/* जमा column: only show if Vtype is 3 or 4 and Amt > 0 */}
+                        <td>
+                          {(item.Vtype === 3 || item.Vtype === 4) &&
+                          item.Amt > 0
+                            ? item.Amt
+                            : ""}
+                        </td>
+
+                        {/* रक्कम column: always show if Amt < 0 */}
+                        <td>{item.Amt < 0 ? -item.Amt : ""}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>
