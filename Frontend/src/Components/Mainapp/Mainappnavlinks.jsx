@@ -456,13 +456,13 @@ const Mainappnavlinks = ({ setselected, handleSidebar }) => {
           path: "payment/fill-name",
           role: ["admin", "super_admin", "manager"],
         },
-        {
-          name: `${t("pay-deduction")}`,
-          icon: <BsGridFill className="icon" />,
-          index: 7.4,
-          path: "payment/add-deductions",
-          role: ["admin", "super_admin", "manager"],
-        },
+        // {
+        //   name: `${t("pay-deduction")}`,
+        //   icon: <BsGridFill className="icon" />,
+        //   index: 7.4,
+        //   path: "payment/add-deductions",
+        //   role: ["admin", "super_admin", "manager"],
+        // },
         {
           name: `${t("gen-payments")}`,
           icon: <BsGridFill className="icon" />,
