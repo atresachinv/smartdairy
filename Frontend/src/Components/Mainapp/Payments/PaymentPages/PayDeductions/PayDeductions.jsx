@@ -76,6 +76,7 @@ const PayDeductions = ({ setShowDeduPage }) => {
   }); // form data for the payment deduction
 
   // console.log("first", filteredPayData2, formData);
+  // console.log(data);
 
   const autoCenter = settings?.autoCenter;
   //set setting
@@ -218,7 +219,8 @@ const PayDeductions = ({ setShowDeduPage }) => {
 
       // Find the current customer and set customerName
       const currentCustomer = updatedPayData.find(
-        (entry) => parseInt(entry.Code, 10) === currentIndex
+        (entry) =>
+          parseInt(entry.Code, 10) === currentIndex && entry.DeductionId === 0
       );
       if (currentCustomer) {
         setCustomerName(currentCustomer.cname || ""); // Set customer name or empty if not found
@@ -234,7 +236,7 @@ const PayDeductions = ({ setShowDeduPage }) => {
           toDate: currentCustomer.ToDate.slice(0, 10) || "",
           totalPayment: currentCustomer.pamt || 0.0,
           totalDeduction: currentCustomer.damt || 0.0,
-          netPayable: currentCustomer.namt || 0.0,
+          netPayment: currentCustomer.namt || 0.0,
         }));
       } else {
         // Reset formData and customerName if no matching customer is found
@@ -249,7 +251,7 @@ const PayDeductions = ({ setShowDeduPage }) => {
           toDate: "",
           totalPayment: 0.0,
           totalDeduction: 0.0,
-          netPayable: 0.0,
+          netPayment: 0.0,
         }));
       }
     } else {
@@ -265,11 +267,28 @@ const PayDeductions = ({ setShowDeduPage }) => {
         toDate: "",
         totalPayment: 0.0,
         totalDeduction: 0.0,
-        netPayable: 0.0,
+        netPayment: 0.0,
       }));
     }
   }, [currentIndex, data, customerlist]);
 
+  // set round off amount for perticular customers ------------------------------------->
+  useEffect(() => {
+    if (data && data.length > 0 && customerlist && customerlist.length > 0) {
+      const currentDedu = data.find(
+        (entry) =>
+          parseInt(entry.Code, 10) === currentIndex && entry.DeductionId === 9
+      );
+      if (currentDedu) {
+        setFormData((prevData) => ({
+          ...prevData,
+          roundAmount: parseFloat(currentDedu.Amt) || 0.0,
+        }));
+      }
+    }
+  }, [currentIndex, data, customerlist]);
+
+  // console.log(formData)
   // fiter paydata for the current customer ------------------------------------->
   useEffect(() => {
     if (payData && currentIndex) {
@@ -361,14 +380,14 @@ const PayDeductions = ({ setShowDeduPage }) => {
   useEffect(() => {
     const netPayment = formData.netPayable - grandTotal;
     const rounded = Math.floor(netPayment);
-    const roundAmount = parseFloat((netPayment - rounded).toFixed(1));
+    // const roundAmount = parseFloat((netPayment - rounded).toFixed(1));
 
     setFormData((prevData) => ({
       ...prevData,
       totalTransport: formData.totalcollection * formData.transport,
       netDeduction: formData.totalDeduction + grandTotal,
-      netPayment: netPayment - roundAmount,
-      roundAmount: roundAmount,
+      // netPayment: netPayment - formData.roundAmount,
+      // roundAmount: roundAmount,
     }));
   }, [
     grandTotal,
@@ -458,7 +477,9 @@ const PayDeductions = ({ setShowDeduPage }) => {
                   }
                 />
               </div>
-              <button className="btn">संकलन तपशील दर्शवा </button>
+              <button type="button" className="btn">
+                संकलन तपशील दर्शवा{" "}
+              </button>
             </div>
             <div className="customer-details-container w100 h30 d-flex a-center sb">
               <div className="btn-code-container w35 h1 d-flex a-center sb">
@@ -488,7 +509,7 @@ const PayDeductions = ({ setShowDeduPage }) => {
               />
             </div>
           </div>
-          <div className="bil-payment-deduction-first-half w50 h1 d-flex-col sa">
+          <div className="bill-payment-deduction-first-half w50 h1 d-flex-col sa">
             <div className="morening-evening-all-collection w100 d-flex sb">
               <div className="morening-liter-compoentv w32 d-flex a-center sb">
                 <label htmlFor="mrgltrtxt" className="label-text w60">
@@ -537,7 +558,7 @@ const PayDeductions = ({ setShowDeduPage }) => {
               </div>
             </div>
             <div className="collection-commision-all-commission w100 sb d-flex">
-              <div className="morening-commision-compoent w32 d-flex a-center sb">
+              <div className="commision-compoent w32 d-flex a-center sb">
                 <label htmlFor="mcomtxt" className="label-text w60">
                   स.कमिशन:
                 </label>
@@ -552,7 +573,7 @@ const PayDeductions = ({ setShowDeduPage }) => {
                   onChange={handleFormDataChange}
                 />
               </div>
-              <div className="Eveninng-commission-compoent w32 d-flex a-center sb">
+              <div className="commision-compoent w32 d-flex a-center sb">
                 <label htmlFor="ecommtxt" className="label-text w60">
                   सायं.कमिशन:
                 </label>
@@ -567,7 +588,7 @@ const PayDeductions = ({ setShowDeduPage }) => {
                   onChange={handleFormDataChange}
                 />
               </div>
-              <div className="all-commission w32 d-flex a-center sb">
+              <div className="commision-compoent w32 d-flex a-center sb">
                 <label htmlFor="tcommtxt" className="label-text w60">
                   एकूण कमिशन :
                 </label>
@@ -583,8 +604,8 @@ const PayDeductions = ({ setShowDeduPage }) => {
                 />
               </div>
             </div>
-            <div className="sari-all-commission-container w100 sb d-flex">
-              <div className="sari-all-commission-compoent w32 d-flex a-center sb">
+            <div className="rebet-commission-container w100 sb d-flex">
+              <div className="commission-compoent w32 d-flex a-center sb">
                 <label htmlFor="mrebettxt" className="label-text w60">
                   स. रीबेट क. :
                 </label>
@@ -599,7 +620,7 @@ const PayDeductions = ({ setShowDeduPage }) => {
                   onChange={handleFormDataChange}
                 />
               </div>
-              <div className="evening-ri-compoentv w32 d-flex a-center sb">
+              <div className="commission-compoent w32 d-flex a-center sb">
                 <label htmlFor="erebettxt" className="label-text w60">
                   सायं. रीबेट क. :
                 </label>
@@ -614,7 +635,7 @@ const PayDeductions = ({ setShowDeduPage }) => {
                   onChange={handleFormDataChange}
                 />
               </div>
-              <div className="all-ri-liter-compoentv w32 d-flex a-center sb">
+              <div className="commission-compoent w32 d-flex a-center sb">
                 <label htmlFor="trebettxt" className="label-text w60">
                   एकूण रीबेट क. :
                 </label>
