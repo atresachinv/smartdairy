@@ -42,7 +42,6 @@ const TrnCheck = () => {
     if (
       !formData.fromDate ||
       !formData.itemgrpcode ||
-      !formData.cn ||
       !formData.toDate ||
       !formData.type
     ) {
@@ -61,14 +60,11 @@ const TrnCheck = () => {
     console.log(reqData);
 
     try {
-      const res = await axiosInstance.get(``, {
+      const res = await axiosInstance.get(`trn-check`, {
         params: { ...reqData },
       });
       setDataList(res.data?.dataList || []);
-      const res1 = await axiosInstance.get(``, {
-        params: { ...reqData },
-      });
-      setVoucherList(res1.data?.voucherList || []);
+      setVoucherList(res.data?.voucherList || []);
     } catch (error) {
       toast.error("server error");
     }
