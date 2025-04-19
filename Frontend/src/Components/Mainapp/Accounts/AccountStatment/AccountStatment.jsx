@@ -262,12 +262,12 @@ const AccountStatment = () => {
   };
 
   return (
-    <div className="account-statment-container w100 h1 d-flex">
-      <div className="GL-customer-date-first-half-container w70 h1 d-flex-col">
+    <div className="account-statment-container w100 h1 d-flex center  ">
+      <div className="GL-customer-date-first-half-container w70 h1 d-flex-col bg3 ">
         <span className="px10 heading">Account Statement</span>
         {centerId > 0 ? null : (
           <div className=" select-center-div d-flex a-center mx10">
-            <span className="info-text">सेंटर निवडा :</span>
+            <span className="info-text w15">सेंटर निवडा :</span>
             <select
               className="data w50 a-center my5 mx5"
               name="center"
@@ -293,8 +293,8 @@ const AccountStatment = () => {
             </select>
           </div>
         )}
-        <div className="GL-number-Accound w100 row sb d-flex my5">
-          <span className="info-text">खतावणी नं.</span>
+        <div className="GL-number-Accound w70 row sb d-flex my5">
+          <span className="info-text w20 px10">खतावणी नं.</span>
           <input
             type="text"
             id="GLCode"
@@ -331,7 +331,7 @@ const AccountStatment = () => {
           />
         </div>
         <div className="customer-number-span-inputdiv w100 h10 d-flex a-center">
-          <span className="label-text w15">ग्राहक</span>
+          <span className="info-text w15 px10">ग्राहक</span>
           <input
             type="text"
             id="accCode"
@@ -367,11 +367,11 @@ const AccountStatment = () => {
             }}
           />
         </div>
-        <div className="from-to-date-account-statment w70 h10 d-flex a-center sb">
-          <div className="date-from-account-statment w50 d-flex a-center sa">
-            <span className="label-text w50">दिनाक पासून</span>
+        <div className="from-to-date-account-statment w100 h10 d-flex a-center ">
+          <div className="date-from-account-statment w50 d-flex a-center ">
+            <span className="info-text w30 px10 ">दिनाक पासून</span>
             <input
-              className="data w60"
+              className="data w40"
               type="date"
               value={formData.fromVoucherDate}
               onChange={(e) =>
@@ -379,10 +379,10 @@ const AccountStatment = () => {
               }
             />
           </div>
-          <div className="date-from-account-statment w50 d-flex a-center sa">
-            <span className="label-text w50">दिनाक पर्येंत</span>
+          <div className="date-from-account-statment w50 d-flex a-center ">
+            <span className="info-text w30">दिनाक पर्येंत</span>
             <input
-              className="data w60"
+              className="data w40"
               type="date"
               value={formData.toVoucherDate}
               onChange={(e) =>
@@ -420,8 +420,8 @@ const AccountStatment = () => {
                   style={{
                     borderCollapse: "collapse",
                     marginTop: "10px",
-                    width: "140%",
-                    overflow:"auto",
+                    width: "100",
+                    overflow: "auto",
                   }}
                 >
                   <thead className="">

@@ -2,7 +2,7 @@ import React from "react";
  import "../../../../../Styles/Trn-check/Trncheck.css";
 const TrnCheck = () => {
   return (
-    <div className="Trncheck-container w100 h1 d-flex-col ">
+    <div className="Trncheck-container w100 h1 d-flex-col  ">
       <span className="px10 heading">TRN Check</span>
       <div className="trn-first-half-div w100 h40 d-flex-col  sa ">
         <div className="centerwise-data-selection-div w100 d-flex a-center h15">
