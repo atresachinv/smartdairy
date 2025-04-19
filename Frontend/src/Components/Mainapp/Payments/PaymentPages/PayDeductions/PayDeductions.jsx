@@ -23,7 +23,7 @@ const PayDeductions = ({ setShowDeduPage }) => {
   const customerlist = useSelector(
     (state) => state.customers.customerlist || []
   );
-  const data = useSelector((state) => state.payment.paymentDetails);
+  const data = useSelector((state) => state.payment.paymentDetails); // milk payment data
   const milkData = useSelector((state) => state.payment.paymentData);
   const deductionDetails = useSelector(
     (state) => state.deduction.deductionDetails || []
