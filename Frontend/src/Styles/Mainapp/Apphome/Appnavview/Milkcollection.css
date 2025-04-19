@@ -92,10 +92,16 @@
 /* ------------------------------------------> */
 /* Responcsive CSS */
 /* ------------------------------------------> */
-
+/* Milk Collection form css */
 @media screen and (max-width: 426px) {
-  .milk-form-list-container {
+  .milk-collection-outer-main-container {
+    width: 100%;
+    min-height: auto;
     flex-direction: column;
+  }
+  .milk-collection-outer-main-container .milk-form-list-container {
+    min-height: fit-content;
+    width: 100%;
   }
   .toggle-button {
     padding: 5px 8px;
@@ -103,6 +109,11 @@
   }
   .form-div .form-inputs {
     padding: 7px;
+  }
+  .milk-collection-outer-main-container .milk-col-form {
+    width: 100%;
+    min-height: fit-content;
+    margin-bottom: 10px;
   }
   .milk-col-form .form-setting {
     width: 100%;
@@ -161,8 +172,19 @@
   .milk-form-list-container .milk-coll-list-div {
     margin: 10px 0 0 0;
   }
+
+  /* milk collection list */
+  .milk-collection-outer-main-container .milk-collection-list {
+    width: 100%;
+    min-height: 50%;
+  }
+  .milk-collection-outer-main-container .milk-collection-list .title-container {
+    min-height: fit-content;
+  }
 }
+
 /* Mobile Milk Collection form css*/
+
 @media screen and (max-width: 426px) {
   .apphome-nav-views {
     padding: 5px;
@@ -222,6 +244,7 @@
     margin-top: 10px;
   }
 }
+
 /* css for Milk Collector reports */
 @media screen and (max-width: 426px) {
   .milk-collector-reports .select-milk-collector-conatiner {
@@ -243,6 +266,7 @@
     margin-bottom: 5px;
   }
 }
+
 /* complete mobile milk collection form */
 @media screen and (max-width: 426px) {
   .apphome-nav-views .complete-mobile-milk-container {
@@ -271,6 +295,7 @@
     flex-direction: row;
   }
 }
+
 /* Mobile Milk Collection Report css*/
 @media screen and (max-width: 426px) {
   .apphome-nav-views .mobile-milk-collection-report .milk-collection-info-div {
@@ -286,14 +311,5 @@
   }
   .mobile-milk-collection-report .d-icons {
     display: none;
-  }
-}
-/* milk collection list and remaing customer */
-@media screen and (max-width: 426px) {
-  .milk-collection-list {
-    min-height: fit-content;
-  }
-  .milk-collection-list .title-container {
-    min-height: fit-content;
   }
 }
