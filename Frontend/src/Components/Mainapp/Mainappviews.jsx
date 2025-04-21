@@ -47,6 +47,7 @@ import Products from "./Inventory/InventroyPages/Products/Products";
 import DayBook from "./Accounts/Credit/DayBook";
 import AccoundStatment from "./Accounts/AccoundStatment/AccoundStatment";
 import TrnCheck from "./Inventory/InventroyPages/TrnCheck/TrnCheck";
+import FatSnfCompromise from "./Payments/FatSnfCompromise/FatSnfCompromise";
 // import MilkReports from "./Reports/MilkReports/MilkReports";
 // import MilkcollectionReports from "./Reports/MilkReports/MilkcollectionReports";
 
@@ -137,6 +138,8 @@ const Mainappviews = ({ index }) => {
       return <PayDeductions />;
     case 8.4:
       return <Payments />;
+    case 8.5:
+      return <FatSnfCompromise/>;
     //Dairy Submenus
     case 9.1:
       return <DairyInfo />;
