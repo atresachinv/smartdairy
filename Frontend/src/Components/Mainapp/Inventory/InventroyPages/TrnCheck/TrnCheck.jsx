@@ -278,11 +278,11 @@ const TrnCheck = () => {
         <div className="bill-header-bill-details w100 d-flex h20">
           <div className="Bill-header-trn-div w45 d-flex a-center">
             <span className="w30 label-text px10">BILL HEADER</span>
-            <button className="w-btn w50 "> Delete Select in Header</button>
+            <button className="w-btn w50 "> Delete Header</button>
           </div>
           <div className="Bill-details-trn-div w45 d-flex a-center">
             <span className="w30 label-text px10">BILL DETAILS</span>
-            <button className="w-btn w50 "> Delete Select in Header</button>
+            <button className="w-btn w50 "> Delete Header</button>
           </div>
           <div className="button-cheks-trn w10 d-flex">
             <button
