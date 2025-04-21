@@ -1627,16 +1627,180 @@ exports.saveOtherDeductions = (req, res) => {
     toDate,
   } = formData;
 
-  // console.log(
-  //   id,
-  //   billno,
-  //   billdate,
-  //   totalPayment,
-  //   netPayment,
-  //   netDeduction,
-  //   formDate,
-  //   toDate
-  // );
+  if (!dairy_id) {
+    return res.status(401).json({
+      status: 401,
+      message: "Dairy ID or center ID missing!",
+    });
+  }
+
+  if (
+    !id ||
+    !billno ||
+    !billdate ||
+    !totalPayment ||
+    !netDeduction ||
+    !formDate ||
+    !toDate
+  ) {
+    return res.status(400).json({
+      status: 400,
+      message: "form Data is required!",
+    });
+  }
+
+  if (!Array.isArray(PaymentFD) || PaymentFD.length === 0) {
+    return res.status(400).json({
+      status: 400,
+      message: "No payment data provided!",
+    });
+  }
+
+  pool.getConnection((err, connection) => {
+    if (err) {
+      console.error("Connection error:", err);
+      return res.status(500).json({
+        status: 500,
+        message: "Database connection failed!",
+      });
+    }
+
+    connection.beginTransaction((err) => {
+      if (err) {
+        connection.release();
+        return res.status(500).json({
+          status: 500,
+          message: "Failed to start transaction!",
+        });
+      }
+
+      // First update existing record
+      const updateQuery = `
+        UPDATE custbilldetails
+        SET Amt = ?, pamt = ?, namt = ?, damt = ?
+        WHERE id = ?
+      `;
+      const updateValues = [
+        Number(parseFloat(netPayment || 0).toFixed(2)),
+        Number(parseFloat(totalPayment || 0).toFixed(2)),
+        Number(parseFloat(netPayment || 0).toFixed(2)),
+        Number(parseFloat(netDeduction || 0).toFixed(2)),
+        id,
+      ];
+
+      connection.query(updateQuery, updateValues, (err, result) => {
+        if (err) {
+          return connection.rollback(() => {
+            connection.release();
+            console.error("Update error:", err);
+            return res.status(500).json({
+              status: 500,
+              message: "Failed to update existing bill record!",
+            });
+          });
+        }
+
+        // Group PaymentFD by code
+        const groupedByRno = PaymentFD.reduce((acc, row) => {
+          const rno = row.code || "no_rno"; // fallback
+          if (!acc[rno]) acc[rno] = [];
+          acc[rno].push(row);
+          return acc;
+        }, {});
+
+        const rnoKeys = Object.keys(groupedByRno);
+        const processNextGroup = (groupIndex) => {
+          if (groupIndex >= rnoKeys.length) {
+            return connection.commit((commitErr) => {
+              connection.release();
+              if (commitErr) {
+                console.error("Commit error:", commitErr);
+                return res.status(500).json({
+                  status: 500,
+                  message: "Failed to commit transaction!",
+                });
+              }
+              return res.status(200).json({
+                status: 200,
+                message: "Deductions saved successfully.",
+              });
+            });
+          }
+
+          const groupRows = groupedByRno[rnoKeys[groupIndex]];
+
+          const insertNextRecord = (recIndex) => {
+            if (recIndex >= groupRows.length) {
+              return processNextGroup(groupIndex + 1);
+            }
+
+            const row = groupRows[recIndex];
+            const { AccCode, GLCode, DeductionId, dname, Amt, MAMT, netamt } =
+              row;
+            
+            const insertQuery = `
+              INSERT INTO custbilldetails
+              (companyid, center_id, CBId, BillNo, BillDate, VoucherNo, VoucherDate,
+               GLCode, Code, FromDate, ToDate, dname, DeductionId, Amt, MAMT, BAMT)
+              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            `;
+
+            const values = [
+              dairy_id,
+              center_id,
+              0,
+              billno,
+              billdate,
+              billno,
+              toDate,
+              GLCode || null,
+              AccCode,
+              formDate,
+              toDate,
+              dname || null,
+              DeductionId,
+              Number(parseFloat(Amt || 0).toFixed(2)),
+              Number(parseFloat(MAMT || 0).toFixed(2)), // MAMT
+              Number(parseFloat(netamt || 0).toFixed(2)), // BAMT
+            ];
+
+            connection.query(insertQuery, values, (err, results) => {
+              if (err) {
+                return connection.rollback(() => {
+                  connection.release();
+                  console.error("Insert error:", err);
+                  return res.status(500).json({
+                    status: 500,
+                    message: "Failed to insert deduction data!",
+                  });
+                });
+              }
+              insertNextRecord(recIndex + 1);
+            });
+          };
+
+          insertNextRecord(0);
+        };
+
+        processNextGroup(0);
+      });
+    });
+  });
+};
+
+exports.saveOtherDeductions = (req, res) => {
+  const { dairy_id, center_id } = req.user;
+  const { formData, PaymentFD } = req.body;
+  const {
+    id,
+    billno,
+    billdate,
+    totalPayment,
+    netPayment,
+    netDeduction,
+    formDate,
+    toDate,
+  } = formData;
 
   if (!dairy_id) {
     return res.status(401).json({

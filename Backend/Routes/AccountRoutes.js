@@ -9,6 +9,7 @@ const {
   manyNewVoucher,
   getGroupedVoucher,
   getGroupedStaement,
+  getCheckTrn,
 } = require("../Controllers/AcountController");
 
 const router = express.Router();
@@ -21,4 +22,8 @@ router.route("/voucher/upload").post(verifyToken, manyNewVoucher); //upload vouc
 router.route("/voucher/update").patch(verifyToken, updateVoucher); //update voucher
 router.route("/voucher/delete").delete(verifyToken, deleteVoucher); //delete voucher
 router.route("/balance").get(verifyToken, generateBalance); //generate balance
+
+//TRN Check routes
+router.route("/trn-check").get(verifyToken, getCheckTrn); //get getCheckTrn data sale/purchase and voucher
+
 module.exports = router;
