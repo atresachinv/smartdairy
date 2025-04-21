@@ -48,7 +48,7 @@ const TrnCheck = () => {
       !formData.toDate ||
       !formData.type
     ) {
-      toast.error("Please All fields are required");
+      toast.error("Please fill all fields");
       return;
     }
 
@@ -285,8 +285,13 @@ const TrnCheck = () => {
             <button className="w-btn w50 "> Delete Select in Header</button>
           </div>
           <div className="button-cheks-trn w10 d-flex">
-            <button className="w-btn" type="button" onClick={handelCheck}>
-              Check
+            <button
+              className="w-btn"
+              type="button"
+              onClick={handelCheck}
+              disabled={loading}
+            >
+              {loading ? "Loading..." : "Check"}
             </button>
           </div>
         </div>
@@ -375,6 +380,7 @@ const TrnCheck = () => {
               (sum, item) => sum + Math.abs(item.Amount || item.amount),
               0
             )}
+            readOnly
           />
         </div>
         <div className="fisrdt-table-total w30 d-flex a-center ">
@@ -387,6 +393,7 @@ const TrnCheck = () => {
               (sum, item) => sum + Math.abs(item.Amt || item.amt),
               0
             )}
+            readOnly
           />
         </div>
         <div className="deffrance-price-div w20 d-flex a-center">
@@ -404,6 +411,7 @@ const TrnCheck = () => {
                 0
               )
             }
+            readOnly
           />
         </div>
       </div>
