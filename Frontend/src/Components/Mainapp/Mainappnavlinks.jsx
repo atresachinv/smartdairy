@@ -239,7 +239,7 @@ const Mainappnavlinks = ({ setselected, handleSidebar }) => {
           role: ["admin", "manager"],
         },
         {
-          name: `${t("inventory:nv-TrnCheck")}`,
+          name: `${t("खरेदी विक्री TRN चेक")}`,
           icon: <GiEdgeCrack className="icon" />,
           path: "inventory/trncheck",
           index: 3.12,

@@ -207,72 +207,90 @@ exports.getCheckTrn = async (req, res) => {
     glCodeQuery = `SELECT * FROM itemgroupmaster WHERE center_id = ? AND companyid = ? AND ItemGroupCode=? `;
     queryParams = [centerId, dairy_id, itemgrpcode];
 
-    // // Query for tally_trnfile
+    // Query for tally_trnfile
     let tallyQuery = `SELECT * FROM tally_trnfile WHERE companyid = ? and center_id=? AND VoucherDate BETWEEN ? AND ? AND cn = ? `;
     let tallyParams = [dairy_id, centerId, fromDate, toDate, cn];
 
     connection.query(glCodeQuery, queryParams, (err, result) => {
       if (err) {
-        console.error("Query error:", err);
-        return res.status(500).json({
-          success: false,
-          message: "Server query execution failed",
-        });
-      }
-
-      if (cn === 0 && type === 1) {
-        tallyQuery += ` GLCode = ? `;
-        tallyParams.push(result[0].VikriYeneNo);
-      } else if (cn === 1 && type === 1) {
-        tallyQuery += ` GLCode = ? `;
-        tallyParams.push(result[0].VikriYeneNo);
-      } else if (cn === 2 && type === 1) {
-        tallyQuery += ` GLCode = ? `;
-        tallyParams.push(result[0].GhatnashakNo);
-      } else if (cn === 0 && type === 2) {
-        tallyQuery += ` GLCode = ? `;
-        tallyParams.push(result[0].kharediDeneNo);
-      } else if (cn === 1 && type === 2) {
-        tallyQuery += ` GLCode = ? `;
-        tallyParams.push(result[0].kharediDeneNo);
-      }
-    });
-    connection.query(tallyQuery, tallyParams, (err, tallyResult) => {
-      if (err) {
-        console.error("Query error:", err);
-        return res.status(500).json({
-          success: false,
-          message: "Server query execution failed",
-        });
-      }
-
-      let masterQuery = "";
-      let masterParams = [dairy_id, fromDate, toDate, cn, itemgrpcode];
-
-      if (type === "1") {
-        masterQuery = ` SELECT * FROM salesmaster WHERE companyid = ? AND BillDate BETWEEN ? AND ? AND cn = ? AND ItemGroupCode = ? `;
-      } else if (type === "2") {
-        masterQuery = ` SELECT * FROM PurchaseMaster WHERE dairy_id = ? AND purchasedate BETWEEN ? AND ? AND cn = ? AND itemgroupcode = ? `;
-      } else {
         connection.release();
-        return res.status(400).json({
+        console.error("Query error:", err);
+        return res.status(500).json({
           success: false,
-          message: "Invalid type provided",
+          message: "Server query execution failed",
         });
       }
-      connection.query(masterQuery, masterParams, (err, masterResult) => {
+
+      if (result.length === 0) {
+        connection.release();
+        return res.status(404).json({
+          success: false,
+          message: "Item group not found",
+        });
+      }
+
+      if (Number(cn) === 0 && Number(type) === 1) {
+        tallyQuery += ` AND GLCode = ? `;
+        tallyParams.push(result[0].vikriUtpannaNo);
+      } else if (Number(cn) === 1 && Number(type) === 1) {
+        tallyQuery += ` AND GLCode = ? `;
+        tallyParams.push(result[0].VikriYeneNo);
+      } else if (Number(cn) === 2 && Number(type) === 1) {
+        tallyQuery += ` AND GLCode = ? `;
+        tallyParams.push(result[0].GhatnashakNo);
+      } else if (Number(cn) === 0 && Number(type) === 2) {
+        tallyQuery += ` AND GLCode = ? `;
+        tallyParams.push(result[0].kharediDeneNo);
+      } else if (Number(cn) === 1 && Number(type) === 2) {
+        tallyQuery += ` AND GLCode = ? `;
+        tallyParams.push(result[0].kharediKharchNo);
+      } else if (Number(cn) === 2 && Number(type) === 2) {
+        tallyQuery += ` AND GLCode = ? `;
+        tallyParams.push("null");
+      }
+
+      connection.query(tallyQuery, tallyParams, (err, tallyResult) => {
         if (err) {
+          connection.release();
           console.error("Query error:", err);
           return res.status(500).json({
             success: false,
             message: "Server query execution failed",
           });
         }
-        res.status(200).json({
-          success: true,
-          message: "Tally data fetched successfully",
-          voucherList: tallyResult,
-          dataList: masterResult,
+
+        let masterQuery = "";
+        let masterParams = [dairy_id, fromDate, toDate, cn, itemgrpcode];
+
+        if (Number(type) === 1) {
+          masterQuery = ` SELECT * FROM salesmaster WHERE companyid = ? AND BillDate BETWEEN ? AND ? AND cn = ? AND ItemGroupCode = ? `;
+        } else if (Number(type) === 2) {
+          masterQuery = ` SELECT * FROM PurchaseMaster WHERE dairy_id = ? AND purchasedate BETWEEN ? AND ? AND cn = ? AND itemgroupcode = ? `;
+        } else {
+          connection.release();
+          return res.status(400).json({
+            success: false,
+            message: "Invalid type provided",
+          });
+        }
+
+        connection.query(masterQuery, masterParams, (err, masterResult) => {
+          connection.release(); // Release connection after final query
+
+          if (err) {
+            console.error("Query error:", err);
+            return res.status(500).json({
+              success: false,
+              message: "Server query execution failed",
+            });
+          }
+
+          res.status(200).json({
+            success: true,
+            message: "Tally data fetched successfully",
+            voucherList: tallyResult,
+            dataList: masterResult,
+          });
         });
       });
     });

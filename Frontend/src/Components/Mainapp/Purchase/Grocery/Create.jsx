@@ -22,7 +22,7 @@ const Create = () => {
     localStorage.getItem("receiptpurno3") || 1
   );
   const [dealerList, setDealerList] = useState([]);
-  const [billNo, setBillNo] = useState("9112");
+  // const [billNo, setBillNo] = useState("9112");
   const [sellrate, setSellrate] = useState(0);
   const [errors, setErrors] = useState({});
   const centerId = useSelector((state) => state.dairy.dairyData.center_id);
@@ -159,7 +159,7 @@ const Create = () => {
           receiptno: rctno, // Receipt No
           dealerCode: fcode,
           dealerName: cname,
-          billno: billNo,
+          // billno: billNo,
           itemcode: selectedItem?.id,
           itemname: selectedItem?.ItemName,
           purchasedate: date + " 00:00:00",
@@ -192,13 +192,13 @@ const Create = () => {
   };
 
   // Generate a new bill number using the current timestamp
-  useEffect(() => {
-    const generateBillNo = () => {
-      const timestamp = Date.now();
-      setBillNo(`9${timestamp}`);
-    };
-    generateBillNo();
-  }, [rctno]);
+  // useEffect(() => {
+  //   const generateBillNo = () => {
+  //     const timestamp = Date.now();
+  //     setBillNo(`9${timestamp}`);
+  //   };
+  //   generateBillNo();
+  // }, [rctno]);
 
   // Delete an item from the cart
   const handleDeleteItem = async (id) => {

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import axiosInstance from "../../../../../../../App/axiosInstance";
 import { useSelector } from "react-redux";
 import { MdDeleteOutline } from "react-icons/md";
@@ -25,7 +25,8 @@ const CreateDealerMedi = () => {
   const [rate, setRate] = useState(0);
   const [itemList, setItemList] = useState([]);
   const [dealerList, setDealerList] = useState([]);
-  const [billNo, setBillNo] = useState("9112");
+  const centerId = useSelector((state) => state.dairy.dairyData.center_id);
+  // const [billNo, setBillNo] = useState("9112");
   const dairyInfo = useSelector(
     (state) =>
       state.dairy.dairyData.SocietyName || state.dairy.dairyData.center_name
@@ -129,13 +130,13 @@ const CreateDealerMedi = () => {
   }, [rate, qty]);
 
   // Generate a new bill number using the current timestamp
-  useEffect(() => {
-    const generateBillNo = () => {
-      const timestamp = Date.now();
-      setBillNo(`9${timestamp}`);
-    };
-    generateBillNo();
-  }, [rctno]);
+  // useEffect(() => {
+  //   const generateBillNo = () => {
+  //     const timestamp = Date.now();
+  //     setBillNo(`9${timestamp}`);
+  //   };
+  //   generateBillNo();
+  // }, [rctno]);
 
   // Add item to the cart
   const handleAddToCart = () => {
@@ -145,7 +146,8 @@ const CreateDealerMedi = () => {
       );
       const newCartItem = {
         receiptno: rctno, // Receipt No
-        BillNo: billNo,
+        // BillNo: billNo,
+        center_id: centerId,
         itemcode: selectedItem?.ItemCode,
         itemname: selectedItem?.ItemName,
         purchasedate: date + " 00:00:00",
@@ -205,8 +207,8 @@ const CreateDealerMedi = () => {
           setRctno(parseInt(rctno) + 1);
           setSelectitemcode(0);
           toast.success(res.data.message);
-          const timestamp = Date.now();
-          setBillNo(`9${timestamp}`);
+          // const timestamp = Date.now();
+          // setBillNo(`9${timestamp}`);
           localStorage.setItem("dealretreceiptno2", parseInt(rctno) + 1);
         }
       } catch (error) {
@@ -362,7 +364,7 @@ const CreateDealerMedi = () => {
     const totalAmountTextStr = `${convertToWords(totalAmount)}`;
     const totalAmountLabel = `Total Amount: ${totalAmount}`;
 
-    const totalAmountTextWidth = doc.getTextWidth(totalAmountTextStr);
+    // const totalAmountTextWidth = doc.getTextWidth(totalAmountTextStr);
     const totalAmountLabelWidth = doc.getTextWidth(totalAmountLabel);
 
     // Add borders for total amount text
