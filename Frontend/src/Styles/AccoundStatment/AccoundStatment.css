@@ -7,3 +7,37 @@
 .date-from-acc-statment{
     margin-left: 10px;
 }
+
+@media  screen and (max-width:426px) {
+    .account-statment-container .GL-customer-date-first-half-container{
+        width: 100%;
+    }
+    .select-center-div{
+     width: 100%;
+    }
+    .select-center-div span{
+     width: 120px;
+    }
+    .select-center-div select{
+     width: 230px;
+    }
+     .GL-customer-date-first-half-container .GL-number-Accound{
+          width: 100%;
+          flex-direction: row;
+         
+    }
+     .GL-customer-date-first-half-container .GL-number-Accound span{
+       width: 100px;
+    }
+       .GL-customer-date-first-half-container .from-to-date-account-statment{
+        width: 100%;
+    }
+       .GL-customer-date-first-half-container .from-to-date-account-statment .date-from-account-statment span{
+        width:150px ;
+        font-size: small;
+    }
+       .GL-customer-date-first-half-container .from-to-date-account-statment .date-from-account-statment input{
+        width:110px ;
+        font-size: small;
+    }
+}

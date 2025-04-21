@@ -4,6 +4,9 @@
 .second-table-heading-trn{
   background-color: #007bff;
 }
+.second-table-heading-trn span{
+  color: #e8eaec;;
+}
 .table-heading-trn span{
   color: #e8eaec;
 }
@@ -15,4 +18,13 @@
 }
 .second-table-trndiv{
  width: 48%;
+}
+@media screen and (max-width:426px) {
+  .centerwise-data-selection-div .select-centers-div-trn select {
+     width: 70%;
+  }
+  .from-to-date-andradio-button{
+     max-height: auto;
+     
+  }
 }

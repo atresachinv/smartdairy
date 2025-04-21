@@ -470,6 +470,13 @@ const Mainappnavlinks = ({ setselected, handleSidebar }) => {
           path: "payment/generate",
           role: ["admin", "super_admin", "manager"],
         },
+        {
+          name: `${t(" Fat Snf तडजोड")}`,
+          icon: <BsGridFill className="icon" />,
+          index: 7.6,
+          path: "payment/fatsnf",
+          role: ["admin", "super_admin", "manager"],
+        },
       ],
     },
     {

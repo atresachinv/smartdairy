@@ -77,17 +77,17 @@ const TrnCheck = () => {
     }
   };
   return (
-    <div className="Trncheck-container w100 h1 d-flex-col ">
+    <div className="Trncheck-container w100 h1 d-flex-col  ">
       <span className="px10 heading">TRN Check</span>
       <div className="trn-first-half-div w100 h40 d-flex-col  sa ">
         <div className="centerwise-data-selection-div w100 d-flex a-center h15">
           {centerId > 0 ? (
             <></>
           ) : (
-            <div className="d-flex a-center mx10">
+            <div className=" select-centers-div-trn flex a-center w100 mx10">
               <span className="info-text">सेंटर निवडा :</span>
               <select
-                className="data w50 a-center  my5 mx5"
+                className="data w30 a-center  my5 mx5"
                 name="center"
                 value={filter}
                 onChange={(e) => setFilter(e.target.value)}
@@ -297,10 +297,10 @@ const TrnCheck = () => {
         </div>
       </div>
       <div className="Trn-table-container w100 d-flex h50 sa    ">
-        <div className="first-table-trndiv w45 h1 d-flex-col ">
+        <div className="first-table-trndiv w45 h1 d-flex-col bg3 ">
           <div className="table-heading-trn w100 d-flex  sa">
             <span className="label-text w10">ID</span>
-            <span className="label-text w10">Recipt</span>
+            <span className="label-text w20">Recipt</span>
             <span className="label-text w20 ">Bill.No</span>
             <span className="label-text w20">Date</span>
             <span className="label-text w10">Cust</span>
@@ -337,10 +337,10 @@ const TrnCheck = () => {
             <> {loading ? "Loading..." : "No Data"}</>
           )}
         </div>
-        <div className="second-table-trndiv w45 h1 d-flex-col">
+        <div className="second-table-trndiv w45 h1 d-flex-col bg3">
           <div className="second-table-heading-trn w100 d-flex  sa">
             <span className="label-text w10">ID</span>
-            <span className="label-text w10">Recipt</span>
+            <span className="label-text w20">Recipt</span>
             <span className="label-text w20 ">Bill.No</span>
             <span className="label-text w20">Date</span>
             <span className="label-text w10">Cust</span>
@@ -372,7 +372,7 @@ const TrnCheck = () => {
       </div>
       <div className="Total-anddifferance-div w100 h10 d-flex">
         <div className="fisrdt-table-total w50 d-flex a-center ">
-          <span className="label-text w30">TotalAmt</span>
+          <span className="label-text w30 px10">TotalAmt</span>
           <input
             className="data w30"
             type="text"

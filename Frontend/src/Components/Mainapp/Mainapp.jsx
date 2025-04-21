@@ -83,6 +83,7 @@ import MilkColleform from "./Apphome/Appnavviews/Milkcollection/Milkcollform";
 import AccountStatment from "./Accounts/AccountStatment/AccountStatment";
 import TrnCheck from "./Inventory/InventroyPages/TrnCheck/TrnCheck";
 import PaymentPages from "./Payments/PaymentPages";
+import FatSnfCompromise from "./Payments/FatSnfCompromise/FatSnfCompromise";
 
 const Mainapp = () => {
   const dispatch = useDispatch();
@@ -253,10 +254,7 @@ const Mainapp = () => {
             <Route path="accounts/cash" element={<CashCredit />} />
             <Route path="accounts/transfer" element={<TransferCredit />} />
             <Route path="accounts/daybook" element={<DayBook />} />
-            <Route
-              path="accounts/statments"
-              element={<AccountStatment />}
-            />
+            <Route path="accounts/statments" element={<AccountStatment />} />
             <Route path="accounts/upload" element={<UploadAccount />} />
             <Route path="accounts/ledger-list" element={<LedgerList />} />
             {/* master routes */}
@@ -305,7 +303,8 @@ const Mainapp = () => {
               path="payment/add-deductions/*"
               element={<PayDeductions />}
             /> */}
-            <Route path="payment/generate/*" element={<PaymentPages/>} />
+            <Route path="payment/generate/*" element={<PaymentPages />} />
+            <Route path="payment/fatsnf/*" element={<FatSnfCompromise />} />
             {/* dairy routes */}
             <Route path="dairy/information" element={<DairyInfo />} />
             <Route path="dairy/initial-info" element={<DairyInitialInfo />} />
