@@ -515,56 +515,75 @@ exports.createPurchases = async (req, res) => {
       console.error("Error getting MySQL connection: ", err);
       return res.status(500).json({ message: "Database connection error" });
     }
-
     try {
-      // Step 1: Build the bulk INSERT query dynamically, including dairy_id and center_id
-      let insertQuery =
-        "INSERT INTO PurchaseMaster (purchasedate, itemcode, qty, dealerCode, dairy_id,createdby";
-      const insertValues = [];
-      const valuePlaceholders = [];
-
-      for (const purchase of purchaseData) {
-        const { purchasedate, itemcode, qty, dealerCode, ...otherFields } =
-          purchase;
-        const rowValues = [
-          purchasedate,
-          itemcode,
-          qty,
-          dealerCode,
-          dairy_id,
-          user_id,
-        ];
-
-        for (const key of Object.keys(otherFields)) {
-          if (!insertQuery.includes(key)) {
-            insertQuery += `, ${key}`;
+      // Step 1: Get the max BillNo for the company and center
+      connection.query(
+        "SELECT MAX(billno) AS maxBillNo FROM PurchaseMaster WHERE dairy_id = ? ",
+        [dairy_id],
+        (err, countResult) => {
+          if (err) {
+            connection.release();
+            console.error("Error fetching max BillNo:", err);
+            return res
+              .status(500)
+              .json({ success: false, message: "Error fetching max BillNo" });
           }
-          rowValues.push(otherFields[key]);
+
+          let newBillNo = countResult[0].maxBillNo
+            ? countResult[0].maxBillNo + 1
+            : 1; // Increment once
+
+          // Step 2: Build the bulk INSERT query dynamically, including dairy_id and center_id
+          let insertQuery =
+            "INSERT INTO PurchaseMaster (billno,purchasedate, itemcode, qty, dealerCode, dairy_id,createdby";
+          const insertValues = [];
+          const valuePlaceholders = [];
+
+          for (const purchase of purchaseData) {
+            const { purchasedate, itemcode, qty, dealerCode, ...otherFields } =
+              purchase;
+            const rowValues = [
+              newBillNo,
+              purchasedate,
+              itemcode,
+              qty,
+              dealerCode,
+              dairy_id,
+              user_id,
+            ];
+
+            for (const key of Object.keys(otherFields)) {
+              if (!insertQuery.includes(key)) {
+                insertQuery += `, ${key}`;
+              }
+              rowValues.push(otherFields[key]);
+            }
+
+            insertValues.push(...rowValues);
+            valuePlaceholders.push(`(${rowValues.map(() => "?").join(", ")})`);
+          }
+
+          insertQuery += `) VALUES ${valuePlaceholders.join(", ")}`;
+
+          // Step 3: Execute the bulk INSERT query
+          connection.query(insertQuery, insertValues, (err, result) => {
+            connection.release();
+
+            if (err) {
+              console.error("Error inserting purchase records: ", err);
+              return res
+                .status(500)
+                .json({ message: "Error creating purchase records" });
+            }
+
+            res.status(201).json({
+              success: true,
+              message: "Purchase records created successfully",
+              insertedRows: result.affectedRows,
+            });
+          });
         }
-
-        insertValues.push(...rowValues);
-        valuePlaceholders.push(`(${rowValues.map(() => "?").join(", ")})`);
-      }
-
-      insertQuery += `) VALUES ${valuePlaceholders.join(", ")}`;
-
-      // Step 2: Execute the bulk INSERT query
-      connection.query(insertQuery, insertValues, (err, result) => {
-        connection.release();
-
-        if (err) {
-          console.error("Error inserting purchase records: ", err);
-          return res
-            .status(500)
-            .json({ message: "Error creating purchase records" });
-        }
-
-        res.status(201).json({
-          success: true,
-          message: "Purchase records created successfully",
-          insertedRows: result.affectedRows,
-        });
-      });
+      );
     } catch (error) {
       connection.release();
       console.error("Unexpected error: ", error);

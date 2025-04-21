@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import "../../../../../Styles/Trn-check/Trncheck.css";
 import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
@@ -12,7 +12,7 @@ const getTodaysDate = () => {
 const TrnCheck = () => {
   const [voucherList, setVoucherList] = useState([]);
   const [dataList, setDataList] = useState([]);
-
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     fromDate: getTodaysDate(),
     toDate: getTodaysDate(),
@@ -38,6 +38,7 @@ const TrnCheck = () => {
   }, [centerSetting]);
 
   const handelCheck = async (e) => {
+    setLoading(true);
     e.preventDefault();
     setDataList([]);
     setVoucherList([]);
@@ -67,7 +68,9 @@ const TrnCheck = () => {
       });
       setDataList(res.data?.dataList || []);
       setVoucherList(res.data?.voucherList || []);
+      setLoading(false);
     } catch (error) {
+      setLoading(false);
       toast.error("server error");
       setDataList([]);
       setVoucherList([]);
@@ -302,18 +305,31 @@ const TrnCheck = () => {
 
           {dataList.length > 0 ? (
             dataList.map((item, i) => (
-              <div className="trn-first-table-data w100 hidescrollbar d-flex  mx90 sa ">
+              <div
+                key={i}
+                className="trn-first-table-data w100 hidescrollbar d-flex  mx90 sa "
+              >
                 <span className="lable-text w10">{i + 1}</span>
-                <span className="lable-text w10">{item.ReceiptNo}</span>
-                <span className="lable-text 20">
-                  {new Date(item.BillDate).toISOString().split("T")[0]}
+                <span className="lable-text w10">
+                  {item.ReceiptNo || item.receiptno}
                 </span>
-                <span className="lable-text w30">{item.cust_name}</span>
-                <span className="lable-text w20">{item.Amount}</span>
+                <span className="lable-text 20">
+                  {
+                    new Date(item.BillDate || item.purchasedate)
+                      .toISOString()
+                      .split("T")[0]
+                  }
+                </span>
+                <span className="lable-text w30">
+                  {item.cust_name || item.dealerName}
+                </span>
+                <span className="lable-text w20">
+                  {Math.abs(item.Amount || item.amount)}
+                </span>
               </div>
             ))
           ) : (
-            <> No Data</>
+            <> {loading ? "Loading..." : "No Data"}</>
           )}
         </div>
         <div className="second-table-trndiv w45 h1 d-flex-col">
@@ -328,19 +344,24 @@ const TrnCheck = () => {
           </div>
           {voucherList.length > 0 ? (
             voucherList.map((item, i) => (
-              <div className="trn-second-table-data w100 hidescrollbar d-flex  mx90 sa ">
+              <div
+                key={i}
+                className="trn-second-table-data w100 hidescrollbar d-flex  mx90 sa "
+              >
                 <span className="lable-text w10">{i + 1}</span>
-                <span className="lable-text w10">{i.VoucherNo}</span>
+                <span className="lable-text w10">{item.VoucherNo}</span>
                 <span className="lable-text w20">
                   {new Date(item.VoucherDate).toISOString().split("T")[0]}
                 </span>
 
                 <span className="lable-text w10">{item.AccCode}</span>
-                <span className="lable-text w20"> {item.Amt}</span>
+                <span className="lable-text w20">
+                  {Math.abs(item.Amt || item.amt)}
+                </span>
               </div>
             ))
           ) : (
-            <>No data </>
+            <> {loading ? "Loading..." : "No data"}</>
           )}
         </div>
       </div>
@@ -350,7 +371,10 @@ const TrnCheck = () => {
           <input
             className="data w30"
             type="text"
-            value={dataList.reduce((sum, item) => sum + (item.Amount || 0), 0)}
+            value={dataList.reduce(
+              (sum, item) => sum + Math.abs(item.Amount || item.amount),
+              0
+            )}
           />
         </div>
         <div className="fisrdt-table-total w30 d-flex a-center ">
@@ -359,12 +383,28 @@ const TrnCheck = () => {
           <input
             className="data w30"
             type="text"
-            value={voucherList.reduce((sum, item) => sum + (item.Amt || 0), 0)}
+            value={voucherList.reduce(
+              (sum, item) => sum + Math.abs(item.Amt || item.amt),
+              0
+            )}
           />
         </div>
         <div className="deffrance-price-div w20 d-flex a-center">
           <span className="label-text w30">फारक</span>
-          <input className="data w40" type="text" />
+          <input
+            className="data w40"
+            type="text"
+            value={
+              dataList.reduce(
+                (sum, item) => sum + Math.abs(item.Amount || item.amount),
+                0
+              ) -
+              voucherList.reduce(
+                (sum, item) => sum + Math.abs(item.Amt || item.amt),
+                0
+              )
+            }
+          />
         </div>
       </div>
     </div>
