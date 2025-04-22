@@ -583,35 +583,7 @@ exports.createPurchases = async (req, res) => {
             });
           });
         }
-<<<<<<< HEAD
-
-        insertValues.push(...rowValues);
-        valuePlaceholders.push(`(${rowValues.map(() => "?").join(", ")})`);
-      }
-
-      insertQuery += `) VALUES ${valuePlaceholders.join(", ")}`;
-      console.log("Generated SQL:", insertQuery);
-      console.log("Insert Values:", insertValues);
-      // Step 2: Execute the bulk INSERT query
-      connection.query(insertQuery, insertValues, (err, result) => {
-        connection.release();
-
-        if (err) {
-          console.error("Error inserting purchase records: ", err);
-          return res
-            .status(500)
-            .json({ message: "Error creating purchase records" });
-        }
-
-        res.status(201).json({
-          success: true,
-          message: "Purchase records created successfully",
-          insertedRows: result.affectedRows,
-        });
-      });
-=======
       );
->>>>>>> 438e7367b6540b856f61ba10accb737281576508
     } catch (error) {
       connection.release();
       console.error("Unexpected error: ", error);
