@@ -239,7 +239,7 @@ const Mainappnavlinks = ({ setselected, handleSidebar }) => {
           role: ["admin", "manager"],
         },
         {
-          name: `${t("inventory:nv-TrnCheck")}`,
+          name: `${t("खरेदी विक्री TRN चेक")}`,
           icon: <GiEdgeCrack className="icon" />,
           path: "inventory/trncheck",
           index: 3.12,
@@ -468,6 +468,13 @@ const Mainappnavlinks = ({ setselected, handleSidebar }) => {
           icon: <BsGridFill className="icon" />,
           index: 7.5,
           path: "payment/generate",
+          role: ["admin", "super_admin", "manager"],
+        },
+        {
+          name: `${t(" Fat Snf तडजोड")}`,
+          icon: <BsGridFill className="icon" />,
+          index: 7.6,
+          path: "payment/fatsnf",
           role: ["admin", "super_admin", "manager"],
         },
       ],

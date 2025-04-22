@@ -85,6 +85,7 @@ import TrnCheck from "./Inventory/InventroyPages/TrnCheck/TrnCheck";
 import PaymentPages from "./Payments/PaymentPages";
 import CustomerList from "./Masters/MasterPages/CustomerMaster/CustomerList";
 import CreateCustomer from "./Masters/MasterPages/CustomerMaster/CreateCustomer";
+import FatSnfCompromise from "./Payments/FatSnfCompromise/FatSnfCompromise";
 
 const Mainapp = () => {
   const dispatch = useDispatch();
@@ -305,7 +306,8 @@ const Mainapp = () => {
               path="payment/add-deductions/*"
               element={<PayDeductions />}
             /> */}
-            <Route path="payment/generate/*" element={<PaymentPages />} />
+            <Route path="payment/generate/*" element={<PaymentPages  />} />
+            <Route path="payment/fatsnf/*" element={<FatSnfCompromise />} />
             {/* dairy routes */}
             <Route path="dairy/information" element={<DairyInfo />} />
             <Route path="dairy/initial-info" element={<DairyInitialInfo />} />

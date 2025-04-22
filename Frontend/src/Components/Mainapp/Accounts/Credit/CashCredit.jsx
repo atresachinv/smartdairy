@@ -18,10 +18,10 @@ const getTodaysDate = () => {
 };
 
 // Extract balance fetching logic into a separate function
-const fetchBal = async (autoCenter) => {
+const fetchBal = async (autoCenter, VoucherDate, center_id) => {
   try {
     const res = await axiosInstance.get("/balance", {
-      params: { autoCenter },
+      params: { autoCenter, VoucherDate, center_id },
     });
     return res.data.statementData;
   } catch (error) {
@@ -280,7 +280,11 @@ const CashCredit = () => {
             })
           );
           // Fetch updated balance after successful submission
-          const newBalanceData = await fetchBal(autoCenter);
+          const newBalanceData = await fetchBal(
+            autoCenter,
+            updatedFormData.VoucherDate,
+            centerId === 0 ? filter : centerId
+          );
           setBalanceData(newBalanceData);
         }
       } catch (error) {
@@ -324,7 +328,11 @@ const CashCredit = () => {
           setEdit(false);
           setOnclickChalan(false);
           // Fetch updated balance after successful update
-          const newBalanceData = await fetchBal(autoCenter);
+          const newBalanceData = await fetchBal(
+            autoCenter,
+            updatedFormData.VoucherDate,
+            centerId === 0 ? filter : centerId
+          );
           setBalanceData(newBalanceData);
         }
       } catch (error) {
@@ -392,6 +400,13 @@ const CashCredit = () => {
               filter: 1,
             })
           );
+          // Fetch updated balance after successful deletion
+          const newBalanceData = await fetchBal(
+            autoCenter,
+            formData.VoucherDate,
+            centerId === 0 ? filter : centerId
+          );
+          setBalanceData(newBalanceData);
         } else {
           toast.error("Failed to delete the voucher.");
         }
@@ -427,11 +442,15 @@ const CashCredit = () => {
   //get balance
   useEffect(() => {
     const getBalance = async () => {
-      const data = await fetchBal(autoCenter);
+      const data = await fetchBal(
+        autoCenter,
+        formData.VoucherDate,
+        centerId === 0 ? filter : centerId
+      );
       setBalanceData(data);
     };
     getBalance();
-  }, [autoCenter]);
+  }, [autoCenter, formData.VoucherDate, centerId, filter]);
 
   //set balance
   useEffect(() => {
