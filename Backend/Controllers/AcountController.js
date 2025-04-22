@@ -154,8 +154,25 @@ exports.getGroupedStaement = async (req, res) => {
         .json({ success: false, message: "Database connection error" });
     }
 
-    let query = `SELECT * FROM tally_trnfile WHERE companyid = ? `;
+    // Calculate opening balance for exactly one day before fromVoucherDate
+    const openingBalanceQuery = `
+      SELECT SUM(Amt) as openingBalance 
+      FROM tally_trnfile 
+      WHERE companyid = ? 
+      AND GLCode = ? 
+      AND AccCode = ? 
+      AND VoucherDate = DATE_SUB(?, INTERVAL 1 DAY)
+    `;
 
+    const openingBalanceParams = [dairy_id, GLCode, accCode, fromVoucherDate];
+
+    if (autoCenterNumber === 1 || center_id > 0) {
+      openingBalanceQuery += " AND center_id = ?";
+      openingBalanceParams.push(center_id);
+    }
+
+    // Main query for statement data
+    let query = `SELECT * FROM tally_trnfile WHERE companyid = ? `;
     let queryParams = [dairy_id];
 
     if (autoCenterNumber === 1 || center_id > 0) {
@@ -171,17 +188,39 @@ exports.getGroupedStaement = async (req, res) => {
 
     query += " ORDER BY VoucherDate ASC";
 
-    connection.query(query, queryParams, (err, result) => {
-      connection.release();
-      if (err) {
-        console.error("Query error:", err);
-        return res.status(500).json({
-          success: false,
-          message: "Server query execution failed",
+    // Execute opening balance query first
+    connection.query(
+      openingBalanceQuery,
+      openingBalanceParams,
+      (err, openingResult) => {
+        if (err) {
+          connection.release();
+          console.error("Opening balance query error:", err);
+          return res.status(500).json({
+            success: false,
+            message: "Server query execution failed",
+          });
+        }
+
+        // Then execute main query
+        connection.query(query, queryParams, (err, result) => {
+          connection.release();
+          if (err) {
+            console.error("Query error:", err);
+            return res.status(500).json({
+              success: false,
+              message: "Server query execution failed",
+            });
+          }
+
+          res.status(200).json({
+            success: true,
+            openingBalance: openingResult[0]?.openingBalance || 0,
+            statementData: result,
+          });
         });
       }
-      res.status(200).json({ success: true, statementData: result });
-    });
+    );
   });
 };
 //get all Voucher by grouping Accode and glcode
@@ -475,8 +514,8 @@ exports.deleteVoucher = async (req, res) => {
 
 //get balance
 exports.generateBalance = async (req, res) => {
-  const { autoCenter } = req.query;
-  const { dairy_id, center_id } = req.user;
+  const { autoCenter, VoucherDate, center_id } = req.query;
+  const { dairy_id } = req.user;
   const autoCenterNumber = Number(autoCenter);
   pool.getConnection((err, connection) => {
     if (err) {
@@ -486,9 +525,13 @@ exports.generateBalance = async (req, res) => {
         .json({ success: false, message: "Database connection error" });
     }
 
-    let query = `SELECT GLCode, AccCode, center_id, SUM(Amt) AS Amt FROM tally_trnfile WHERE companyid = ?`;
+    let query = `SELECT GLCode, AccCode, center_id, SUM(Amt) AS Amt FROM tally_trnfile WHERE companyid = ? `;
     const queryParams = [dairy_id];
 
+    if (VoucherDate) {
+      query += " AND VoucherDate <= ?";
+      queryParams.push(VoucherDate);
+    }
     if (autoCenterNumber === 1) {
       // If autoCenter is enabled, fetch only for the specific center
       query += " AND center_id = ?";
