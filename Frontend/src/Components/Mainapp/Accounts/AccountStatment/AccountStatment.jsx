@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import "../../../../Styles/AccoundStatment/AccoundStatment.css";
 import { useDispatch, useSelector } from "react-redux";
 import { listSubLedger } from "../../../../App/Features/Mainapp/Masters/ledgerSlice";
@@ -7,7 +7,7 @@ import Select from "react-select";
 import axiosInstance from "../../../../App/axiosInstance";
 import { toast } from "react-toastify";
 import jsPDF from "jspdf";
-import html2canvas from "html2canvas";
+// import html2canvas from "html2canvas";
 
 // Utility functions for date handling
 const getTodaysDate = () => {
@@ -39,7 +39,7 @@ const AccountStatment = () => {
   const [filter, setFilter] = useState(0);
   const [settings, setSettings] = useState({});
   const [showReport, setShowReport] = useState(false);
-  const reportRef = useRef();
+  // const reportRef = useRef();
 
   // console.log(voucherList);
 
@@ -260,7 +260,7 @@ const AccountStatment = () => {
     printWindow.print();
     printWindow.close();
   };
-
+  let runningBalance = 0;
   return (
     <div className="account-statment-container w100 h1 d-flex center  ">
       <div className="GL-customer-date-first-half-container w70 h1 d-flex-col bg3 ">
@@ -436,33 +436,41 @@ const AccountStatment = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {voucherList.map((item, index) => (
-                      <tr key={index}>
-                        <td>{item.VoucherNo}</td>
-                        <td>
-                          {new Date(item.VoucherDate).toLocaleDateString()}
-                        </td>
-                        <td>{item.Narration}</td>
+                    {/* let runningBalance = 0; */}
+                    {voucherList.map((item, index) => {
+                      runningBalance += item.Amt;
 
-                        {/* नावे column: only show if Vtype is 0 or 1 */}
-                        <td>
-                          {item.Vtype === 0 || item.Vtype === 1
-                            ? item.Narration1
-                            : ""}
-                        </td>
+                      return (
+                        <tr key={index}>
+                          <td>{item.VoucherNo}</td>
+                          <td>
+                            {new Date(item.VoucherDate).toLocaleDateString()}
+                          </td>
+                          <td>{item.Narration}</td>
 
-                        {/* जमा column: only show if Vtype is 3 or 4 and Amt > 0 */}
-                        <td>
-                          {(item.Vtype === 3 || item.Vtype === 4) &&
-                          item.Amt > 0
-                            ? item.Amt
-                            : ""}
-                        </td>
+                          {/* नावे column: show only for Vtype 0 or 1 */}
+                          <td>
+                            {item.Vtype === 0 || item.Vtype === 1
+                              ? item.Amt
+                              : ""}
+                          </td>
 
-                        {/* रक्कम column: always show if Amt < 0 */}
-                        <td>{item.Amt < 0 ? -item.Amt : ""}</td>
-                      </tr>
-                    ))}
+                          {/* जमा column: show only for Vtype 3 or 4 and Amt > 0 */}
+                          <td>
+                            {(item.Vtype === 3 || item.Vtype === 4) &&
+                            item.Amt > 0
+                              ? item.Amt
+                              : ""}
+                          </td>
+
+                          {/* रक्कम column: running balance */}
+                          <td>
+                            {runningBalance}
+                            {runningBalance < 0 ? " नावे" : " जमा"}
+                          </td>
+                        </tr>
+                      );
+                    })}
                   </tbody>
                 </table>
               </div>
