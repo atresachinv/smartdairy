@@ -25,7 +25,7 @@ const getFinancialDate = () => {
 
 const AccountStatment = () => {
   const dispatch = useDispatch();
-
+  const [openingBalance, setOpeningBalance] = useState(0);
   // State management
   const [formData, setFormData] = useState({
     accCode: "",
@@ -107,40 +107,7 @@ const AccountStatment = () => {
     });
     setVoucherList([]);
   };
-
-  // Handle Report generation
-  // const handleReport = async () => {
-  //   const selectedCenterId = centerId > 0 ? centerId : filter;
-  //   const reportData = {
-  //     accCode: formData.accCode,
-  //     GLCode: formData.GLCode,
-  //     autoCenter: autoCenter,
-  //     fromVoucherDate: formData.fromVoucherDate,
-  //     toVoucherDate: formData.toVoucherDate,
-  //     center_id: selectedCenterId,
-  //   };
-
-  //   try {
-  //     const res = await axiosInstance.get("/statements", {
-  //       params: { ...reportData },
-  //     });
-
-  //     if (res.data.success) {
-  //       setVoucherList(res.data.statementData || []);
-  //     } else {
-  //       toast.error("Failed to fetch report data");
-  //     }
-  //   } catch (error) {
-  //     toast.error("Error fetching report data");
-  //   }
-  // };
-  // //..... report Show
-  // const handleeReport = async () => {
-  //   // Simulate fetching data
-  //   const fetchedData = await fetchVoucherData();
-  //   setVoucherList(fetchedData);
-  //   setShowReport(true);
-  // };
+  // handle report
   const handleReport = async () => {
     const selectedCenterId = centerId > 0 ? centerId : filter;
     const reportData = {
@@ -159,6 +126,7 @@ const AccountStatment = () => {
 
       if (res.data.success) {
         setVoucherList(res.data.statementData || []);
+        setOpeningBalance(res.data.openingBalance || 0);
         setShowReport(true); // 👈 Show report on success
       } else {
         toast.error("Failed to fetch report data");
@@ -260,7 +228,7 @@ const AccountStatment = () => {
     printWindow.print();
     printWindow.close();
   };
-  let runningBalance = 0;
+  let runningBalance = openingBalance;
   return (
     <div className="account-statment-container w100 h1 d-flex center  ">
       <div className="GL-customer-date-first-half-container w70 h1 d-flex-col bg3 ">
@@ -436,7 +404,7 @@ const AccountStatment = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {/* let runningBalance = 0; */}
+                    {/* let openingBalance = 0; */}
                     {voucherList.map((item, index) => {
                       runningBalance += item.Amt;
 

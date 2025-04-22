@@ -90,9 +90,9 @@ const voucherService = {
     const response = await axiosInstance.delete(`/voucher/delete?id=${id}`);
     return response.data;
   },
-  getBalance: async (autoCenter) => {
+  getBalance: async (autoCenter, VoucherDate, center_id) => {
     const response = await axiosInstance.get("/balance", {
-      params: { autoCenter },
+      params: { autoCenter, VoucherDate, center_id },
     });
     return response.data;
   },
@@ -156,13 +156,17 @@ const TransferCredit = () => {
   // Optimize fetchBal with proper error handling
   const fetchBal = useCallback(async () => {
     try {
-      const res = await voucherService.getBalance(autoCenter);
+      const res = await voucherService.getBalance(
+        autoCenter,
+        formData.VoucherDate,
+        centerId === 0 ? filter : centerId
+      );
       setBalanceData(res.statementData);
     } catch (error) {
       console.error("Failed to fetch balance:", error);
       toast.error("Failed to fetch balance data");
     }
-  }, [autoCenter]);
+  }, [autoCenter, formData.VoucherDate, centerId, filter]);
 
   useEffect(() => {
     fetchBal();
@@ -495,9 +499,10 @@ const TransferCredit = () => {
       balanceData,
       formData.GLCode,
       formData.AccCode
+      // formData.VoucherDate
     );
     setBalance(balance);
-  }, [formData.GLCode, formData.AccCode, balanceData]);
+  }, [formData.VoucherDate, formData.GLCode, formData.AccCode, balanceData]);
 
   const checkHaveSubAcc = useCallback(() => {
     const subAcc = sledgerlist.find(
