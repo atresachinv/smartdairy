@@ -46,10 +46,13 @@
     width: 140px;
   }
   .sale-and-purches-trn-div .saleing-trn-div {
-    width: 150px;
+    width: 130px;
   }
   .sale-and-purches-trn-div .purches-trn-div {
-    width: 150px;
+    width: 130px;
+  }
+      .first-radio-and-span-inputbtn  .purches-trn-div span{
+       width: 120px;
   }
   .Trn-table-container {
     flex-direction: column;
