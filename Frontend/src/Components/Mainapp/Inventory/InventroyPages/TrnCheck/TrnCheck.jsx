@@ -276,15 +276,9 @@ const TrnCheck = () => {
           </div>
         </div>
         <div className="bill-header-bill-details w100 d-flex h20">
-          <div className="Bill-header-trn-div w45 d-flex a-center">
-            <span className="w30 label-text px10">BILL HEADER</span>
-            <button className="w-btn w50 "> Delete Header</button>
-          </div>
-          <div className="Bill-details-trn-div w45 d-flex a-center">
-            <span className="w30 label-text px10">BILL DETAILS</span>
-            <button className="w-btn w50 "> Delete Header</button>
-          </div>
-          <div className="button-cheks-trn w10 d-flex">
+        
+          
+          <div className="button-cheks-trn w10 d-flex px10">
             <button
               className="w-btn"
               type="button"
@@ -298,6 +292,7 @@ const TrnCheck = () => {
       </div>
       <div className="Trn-table-container w100 d-flex h50 sa    ">
         <div className="first-table-trndiv w45 h1 d-flex-col bg3 ">
+          <span className="">BILL HEADER</span>
           <div className="table-heading-trn w100 d-flex  sa">
             <span className="label-text w10">ID</span>
             <span className="label-text w20">Recipt</span>
@@ -338,6 +333,7 @@ const TrnCheck = () => {
           )}
         </div>
         <div className="second-table-trndiv w45 h1 d-flex-col bg3">
+          <span className="">BILL DETAILS</span>
           <div className="second-table-heading-trn w100 d-flex  sa">
             <span className="label-text w10">ID</span>
             <span className="label-text w20">Recipt</span>

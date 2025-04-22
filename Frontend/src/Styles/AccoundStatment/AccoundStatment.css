@@ -1,43 +1,72 @@
 .GL-number-span-inputdiv input {
-    margin-right: 10px;
+  margin-right: 10px;
 }
-.customer-number-span-inputdiv input{
-    margin-right: 10px;
+.customer-number-span-inputdiv input {
+  margin-right: 10px;
 }
-.date-from-acc-statment{
-    margin-left: 10px;
+.date-from-acc-statment {
+  margin-left: 10px;
 }
 
-@media  screen and (max-width:426px) {
-    .account-statment-container .GL-customer-date-first-half-container{
-        width: 100%;
-    }
-    .select-center-div{
-     width: 100%;
-    }
-    .select-center-div span{
-     width: 120px;
-    }
-    .select-center-div select{
-     width: 230px;
-    }
-     .GL-customer-date-first-half-container .GL-number-Accound{
-          width: 100%;
-          flex-direction: row;
-         
-    }
-     .GL-customer-date-first-half-container .GL-number-Accound span{
-       width: 100px;
-    }
-       .GL-customer-date-first-half-container .from-to-date-account-statment{
-        width: 100%;
-    }
-       .GL-customer-date-first-half-container .from-to-date-account-statment .date-from-account-statment span{
-        width:150px ;
-        font-size: small;
-    }
-       .GL-customer-date-first-half-container .from-to-date-account-statment .date-from-account-statment input{
-        width:110px ;
-        font-size: small;
-    }
+/* table */
+
+.report-acc-statment .table-heading-acc-statment {
+    padding: 10px;
+  border-radius: 8px;
+}
+.table-section-acoundstatment .report-acc-statment {
+overflow-x: auto; /* Enables horizontal scrolling */
+  width: 100%; /* Ensures the container spans the full width */
+  margin-top: 10px;
+  height: 300px;
+   
+}
+.table-section-acoundstatment .report-acc-statment .table {
+overflow-x: auto; /* Enables horizontal scrolling */
+  width: 100%; /* Ensures the container spans the full width */
+  margin-top: 10px;
+   
+}
+.table-heading-acc-statment  {
+ position: sticky;
+ 
+}
+
+@media screen and (max-width: 426px) {
+  .account-statment-container .GL-customer-date-first-half-container {
+    width: 100%;
+  }
+  .select-center-div {
+    width: 100%;
+  }
+  .select-center-div span {
+    width: 120px;
+  }
+  .select-center-div select {
+    width: 230px;
+  }
+  .GL-customer-date-first-half-container .GL-number-Accound {
+    width: 100%;
+    flex-direction: row;
+  }
+  .GL-customer-date-first-half-container .GL-number-Accound span {
+    width: 100px;
+  }
+  .GL-customer-date-first-half-container .from-to-date-account-statment {
+    width: 100%;
+  }
+  .GL-customer-date-first-half-container
+    .from-to-date-account-statment
+    .date-from-account-statment
+    span {
+    width: 150px;
+    font-size: small;
+  }
+  .GL-customer-date-first-half-container
+    .from-to-date-account-statment
+    .date-from-account-statment
+    input {
+    width: 110px;
+    font-size: small;
+  }
 }
