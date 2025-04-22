@@ -168,7 +168,7 @@ const Create = () => {
           rate: rate,
           amount: qty * rate,
           salerate: parseInt(sellrate),
-          cn: 0,
+          cn: "0",
           center_id: !autoCenter
             ? centerId === 0
               ? filter

@@ -547,7 +547,8 @@ exports.createPurchases = async (req, res) => {
       }
 
       insertQuery += `) VALUES ${valuePlaceholders.join(", ")}`;
-
+      console.log("Generated SQL:", insertQuery);
+      console.log("Insert Values:", insertValues);
       // Step 2: Execute the bulk INSERT query
       connection.query(insertQuery, insertValues, (err, result) => {
         connection.release();
