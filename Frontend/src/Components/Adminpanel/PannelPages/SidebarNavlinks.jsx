@@ -59,6 +59,12 @@ const SidebarNavlinks = () => {
           path: "whatsapp-sms",
           index: 2.2,
         },
+        {
+          name: "Milk Filter Data",
+          icon: <BsGridFill className="color-icon" />,
+          path: "milk-filter-data",
+          index: 2.3,
+        },
       ],
     },
   ];

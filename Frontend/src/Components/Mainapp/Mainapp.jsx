@@ -87,6 +87,7 @@ import CustomerList from "./Masters/MasterPages/CustomerMaster/CustomerList";
 import CreateCustomer from "./Masters/MasterPages/CustomerMaster/CreateCustomer";
 import FatSnfCompromise from "./Payments/FatSnfCompromise/FatSnfCompromise";
 import GeneralLedger from "./Accounts/GeneralLedger/GeneralLedger";
+import AdvancesPosting from "./Accounts/AdvancesPosting/AdvancesPosting";
 
 const Mainapp = () => {
   const dispatch = useDispatch();
@@ -262,6 +263,7 @@ const Mainapp = () => {
             <Route path="accounts/upload" element={<UploadAccount />} />
             <Route path="accounts/ledger-list" element={<LedgerList />} />
             <Route path="accounts/general-ledger" element={<GeneralLedger />} />
+            <Route path="accounts/advances" element={<AdvancesPosting />} />
             {/* master routes */}
             <Route path="master/main-ledger/*" element={<MainLedger />} />
             <Route path="master/sub-ledger/*" element={<SubLedger />} />
