@@ -23,7 +23,7 @@
   margin-bottom: 15px;
 }
 .sanghasales-table-table-heading {
-  background-color: #007bff;
+    background-color: #17acc0;
   position: sticky;
 }
 .sanghasales-table-table-heading span {
@@ -70,7 +70,7 @@
   justify-content: flex-start;
   align-items: center;
   font-weight: bold;
-  background-color: #007bff;
+    background-color: #17acc0;
 
   border-bottom: 1px solid #ccc;
 
@@ -130,33 +130,9 @@
   margin-bottom: px;
 }
 @media screen and (max-width: 426px) {
-  .table-heading-container-div {
-    display: flex;
-    justify-content: flex-start;
-    align-items: center;
-    font-weight: bold;
-    background-color: #007bff;
-
-    border-bottom: 1px solid #ccc;
-    overflow-x: auto;
-
-    flex-shrink: 0; /* Prevents the header from shrinking */
-    position: sticky;
-    top: 0;
-    z-index: 10;
-  }
 
   /* Scrollable data */
-  .sangha-table-data {
-    display: flex;
-    overflow-x: auto;
-    align-items: center;
-    padding: 10px;
-    gap: 10px;
-    background: #ffffff;
-    white-space: nowrap;
-    flex-grow: 1;
-  }
+
   .sangha-sale-container {
     min-height: auto;
   }
@@ -343,22 +319,35 @@
   .changle-dudh-kami-container .rebbit-and-other-experaince .prashashikya-div {
     flex-direction: row;
     margin-top: 5px;
-
   }
-   .other-expence-rebbit-nashli .rebbit-and-other-experaince  .prashashikya-rebbit-div{
-         height: 100px;
+  .other-expence-rebbit-nashli
+    .rebbit-and-other-experaince
+    .prashashikya-rebbit-div {
+    height: 100px;
   }
-   .other-expence-rebbit-nashli .rebbit-and-other-experaince  .prashashikya-rebbit-div span{
-          margin-left: 90px;
+  .other-expence-rebbit-nashli
+    .rebbit-and-other-experaince
+    .prashashikya-rebbit-div
+    span {
+    margin-left: 90px;
   }
-   .other-expence-rebbit-nashli .rebbit-and-other-experaince  .prashashikya-shitkaran-div span{
-          margin-left: 90px;
+  .other-expence-rebbit-nashli
+    .rebbit-and-other-experaince
+    .prashashikya-shitkaran-div
+    span {
+    margin-left: 90px;
   }
-   .other-expence-rebbit-nashli .rebbit-and-other-experaince  .prashashikynash-div span{
-          margin-left: 90px;
+  .other-expence-rebbit-nashli
+    .rebbit-and-other-experaince
+    .prashashikynash-div
+    span {
+    margin-left: 90px;
   }
-   .other-expence-rebbit-nashli .rebbit-and-other-experaince  .prashashikya-div-all span{
-          margin-left: 90px;
+  .other-expence-rebbit-nashli
+    .rebbit-and-other-experaince
+    .prashashikya-div-all
+    span {
+    margin-left: 90px;
   }
   .changle-dudh-kami-container
     .rebbit-and-other-experaince
@@ -439,4 +428,34 @@
     flex-direction: column;
     justify-content: space-between;
   }
+  .first-table-div-sangha {
+    overflow-x: auto;
+  }
+  .table-heading-container-div{
+     min-width: 800px;
+    position: sticky;
+    top: 0;
+    background-color: #17acc0;
+
+  }
+  .sangha-table-data{
+     min-width: 800px;
+  }
+  
+  .second-table-div-sangha{
+    overflow-x: auto;
+  }
+  .table-heading-container-div{
+     min-width: 800px;
+    position: sticky;
+    top: 0;
+    background-color: #17acc0;
+
+  }
+  .sangha-table-data{
+     min-width: 800px;
+  }
+
+ 
+  
 }

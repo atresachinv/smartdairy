@@ -424,7 +424,7 @@ console.log(sales);
               />
             </div>
             <div className="stock-report-dispaly-btn-div">
-              <button className="btn" onClick={salefetchData}>
+              <button className=" btn" onClick={salefetchData}>
                 {" "}
                 show
               </button>

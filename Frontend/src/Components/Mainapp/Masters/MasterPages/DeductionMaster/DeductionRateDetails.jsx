@@ -444,7 +444,7 @@ const DeductionRateDetails = () => {
           </div>
         </div>
         <div className="Deduction-details-table-container-div w100 h60 mh60 hidescrollbar d-flex-col ">
-          <div className="table-heading-deduction-details w100 d-flex h10 a-center t-center sa sticky-top">
+          <div className="table-heading-deduction-details w100 d-flex h15 a-center t-center sa sticky-top">
             <span className="f-label-text w5">Edit </span>
             <span className="f-label-text w15">कपात </span>
             <span className="f-label-text w20">खतावणी </span>

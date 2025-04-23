@@ -11,7 +11,7 @@
   margin-top: 10px;
 }
 .table-heading-deduction-details {
-  background: #007bff;
+     background-color: #17acc0;
   color: white;
   position: sticky;
   top: 0;
@@ -35,14 +35,14 @@
   .deduction-name-div .w10 {
     width: 90px;
   }
-  .deduction-code-and-date span{
-     width: 50px;
+  .deduction-code-and-date span {
+    width: 50px;
   }
-  .deduction-code-date-div span{
-     width: 100px;
+  .deduction-code-date-div span {
+    width: 100px;
   }
-  .deduction-code-date-div input{
-     width: 100px;
+  .deduction-code-date-div input {
+    width: 100px;
   }
 
   .deduction-details-first-half-div .deduction-code-and-date {
@@ -93,7 +93,7 @@
   .deduction-details-first-half-div .deduction-rate-div span {
     width: 120px;
   }
-  .Deduction-details-button{
+  .Deduction-details-button {
     margin-top: 0px;
   }
 }
@@ -104,14 +104,14 @@
   .deduction-name-div .w10 {
     width: 90px;
   }
-  .deduction-code-and-date span{
-     width: 50px;
+  .deduction-code-and-date span {
+    width: 50px;
   }
-  .deduction-code-date-div span{
-     width: 100px;
+  .deduction-code-date-div span {
+    width: 100px;
   }
-  .deduction-code-date-div input{
-     width: 100px;
+  .deduction-code-date-div input {
+    width: 100px;
   }
 
   .deduction-details-first-half-div .deduction-code-and-date {
@@ -162,7 +162,20 @@
   .deduction-details-first-half-div .deduction-rate-div span {
     width: 120px;
   }
-  .Deduction-details-button{
+  .Deduction-details-button {
     margin-top: 0px;
+  }
+  .Deduction-details-table-container-div {
+    overflow-x: auto;
+  }
+  .tabltable-heading-container-div {
+    min-width: 800px;
+    position: sticky;
+    top: 0;
+    background-color: #17acc0;
+    padding: 5px 0;
+  }
+  .Deductionhead-table-data-container {
+    min-width: 800px;
   }
 }
