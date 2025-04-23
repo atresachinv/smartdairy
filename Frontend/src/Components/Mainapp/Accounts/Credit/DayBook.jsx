@@ -23,10 +23,6 @@ const DayBook = () => {
   const sledgerlist = useSelector((state) => state.ledger.sledgerlist);
 
   useEffect(() => {
-    dispatch(listSubLedger());
-  });
-
-  useEffect(() => {
     if (centerSetting?.length > 0) {
       setSettings(centerSetting[0]);
     }
