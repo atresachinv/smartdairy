@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import axiosInstance from "../../../../App/axiosInstance";
-
+import "./centers.css";
 const WhatsappSms = () => {
   const [whsms, setWhsms] = useState([]);
   const [balance, setBalance] = useState(0);
@@ -42,7 +42,7 @@ const WhatsappSms = () => {
   };
 
   return (
-    <div className="d-flex-col h1 w100">
+    <div className="whatsapp-sms-container d-flex-col h1 w100">
       <div className="w100 h10 d-flex heading j-center a-center">
         Whatsapp Messages History
       </div>
@@ -53,43 +53,47 @@ const WhatsappSms = () => {
           Your Balance : {balance - whsms.length}
         </span>
       </div>
-      <div className="bg p10 m10">
-        <table>
-          <thead>
-            <tr>
-              <th>SrNo</th>
-              <th>Cust Code</th>
-              <th>mono</th>
-              <th>status</th>
-              <th>smsDate</th>
-              <th>template</th>
-            </tr>
-          </thead>
-          <tbody>
-            {loading ? (
-              <div className="d-flex j-center a-center">Loading...</div>
-            ) : whsms.length > 0 ? (
-              whsms
-                .sort((a, b) => new Date(b.smsDate) - new Date(a.smsDate))
-                .map((item, index) => (
-                  <tr key={index}>
-                    <td>{index + 1}</td>
-                    <td>{item.custCode}</td>
-                    <td>{item.mono}</td>
-                    <td>{item.smsStatus}</td>
-                    <td>{formatDate(item.smsDate)}</td>
-                    <td>{JSON.parse(item.smsText).template.name}</td>
+      <div className="whatsapp-sms-container-scroll  bg p10 m10">
+        <div className=" whatsapp-sms-table   d-flex-col w100">
+          <div className="whatsapp-sms-container-container">
+            <table className="table">
+              <thead>
+                <tr>
+                  <th>SrNo</th>
+                  <th>Cust Code</th>
+                  <th>mono</th>
+                  <th>status</th>
+                  <th>smsDate</th>
+                  <th>template</th>
+                </tr>
+              </thead>
+              <tbody>
+                {loading ? (
+                  <div className="d-flex j-center a-center">Loading...</div>
+                ) : whsms.length > 0 ? (
+                  whsms
+                    .sort((a, b) => new Date(b.smsDate) - new Date(a.smsDate))
+                    .map((item, index) => (
+                      <tr key={index}>
+                        <td>{index + 1}</td>
+                        <td>{item.custCode}</td>
+                        <td>{item.mono}</td>
+                        <td>{item.smsStatus}</td>
+                        <td>{formatDate(item.smsDate)}</td>
+                        <td>{JSON.parse(item.smsText).template.name}</td>
+                      </tr>
+                    ))
+                ) : (
+                  <tr>
+                    <td colSpan="6" style={{ textAlign: "center" }}>
+                      No data available
+                    </td>
                   </tr>
-                ))
-            ) : (
-              <tr>
-                <td colSpan="6" style={{ textAlign: "center" }}>
-                  No data available
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
     </div>
   );
