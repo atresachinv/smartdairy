@@ -86,6 +86,7 @@ import PaymentPages from "./Payments/PaymentPages";
 import CustomerList from "./Masters/MasterPages/CustomerMaster/CustomerList";
 import CreateCustomer from "./Masters/MasterPages/CustomerMaster/CreateCustomer";
 import FatSnfCompromise from "./Payments/FatSnfCompromise/FatSnfCompromise";
+import GeneralLedger from "./Accounts/GeneralLedger/GeneralLedger";
 
 const Mainapp = () => {
   const dispatch = useDispatch();
@@ -260,6 +261,7 @@ const Mainapp = () => {
             <Route path="accounts/statments" element={<AccountStatment />} />
             <Route path="accounts/upload" element={<UploadAccount />} />
             <Route path="accounts/ledger-list" element={<LedgerList />} />
+            <Route path="accounts/general-ledger" element={<GeneralLedger />} />
             {/* master routes */}
             <Route path="master/main-ledger/*" element={<MainLedger />} />
             <Route path="master/sub-ledger/*" element={<SubLedger />} />
@@ -306,7 +308,7 @@ const Mainapp = () => {
               path="payment/add-deductions/*"
               element={<PayDeductions />}
             /> */}
-            <Route path="payment/generate/*" element={<PaymentPages  />} />
+            <Route path="payment/generate/*" element={<PaymentPages />} />
             <Route path="payment/fatsnf/*" element={<FatSnfCompromise />} />
             {/* dairy routes */}
             <Route path="dairy/information" element={<DairyInfo />} />
