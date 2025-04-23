@@ -13,10 +13,7 @@ import {
   fetchTrnDeductions,
   saveMilkPaydata,
 } from "../../../App/Features/Payments/paymentSlice";
-import {
-  fetchMaxApplyDeductions,
-} from "../../../App/Features/Deduction/deductionSlice";
-
+import { fetchMaxApplyDeductions } from "../../../App/Features/Deduction/deductionSlice";
 
 const Payments = ({ setShowDeduPage }) => {
   const dispatch = useDispatch();
@@ -299,22 +296,26 @@ const Payments = ({ setShowDeduPage }) => {
           const matchPrevAmt = userPrevMamt.find(
             (item) => item.GLCode === deduction.GLCode
           );
-          // console.log("matchDedAmt", matchDedAmt);
-          // console.log("matchPrevAmt", matchPrevAmt);
+
+          console.log("matchDedAmt", matchDedAmt);
+          console.log("matchPrevAmt", matchPrevAmt);
           const currAmt = matchDedAmt ? Math.abs(matchDedAmt.totalamt) : 0;
           const prevAmt = matchPrevAmt ? Math.abs(matchPrevAmt.totalamt) : 0;
-          // console.log("currAmt", currAmt);
-          // console.log("prevAmt", prevAmt);
+          console.log("currAmt", currAmt);
+          console.log("prevAmt", prevAmt);
           let deduAmt = +(currAmt + prevAmt).toFixed(2);
-          // console.log(deduAmt, "deduAmt");
+
           if (remainingAmt - deduAmt < leastPayamt) {
             deduAmt = +(remainingAmt - leastPayamt).toFixed(2);
           }
-
+          console.log(deduAmt, "deduAmt");
           if (deduAmt <= 0) continue;
 
           totalDeduction += deduAmt;
           remainingAmt -= deduAmt;
+
+          let BAmt = +(currAmt - deduAmt).toFixed(2);
+          console.log("BAmt", BAmt);
 
           deductionEntries.push({
             DeductionId: deduction.DeductionId,
@@ -322,10 +323,10 @@ const Payments = ({ setShowDeduPage }) => {
             rno,
             dname: deduction.dname,
             MAMT: prevAmt.toFixed(2),
-            BAMT: currAmt.toFixed(2),
+            BAMT: BAmt.toFixed(2),
             amt: deduAmt.toFixed(2),
             cname: "",
-            totalamt: 0.0,
+            totalamt: currAmt.toFixed(2),
             totalLitres: 0.0,
             avgSnf: 0.0,
             avgFat: 0.0,
@@ -467,16 +468,16 @@ const Payments = ({ setShowDeduPage }) => {
 
             setPaymentFD(deductionData);
 
-            const saveres = await dispatch(
-              saveMilkPaydata({ formData, PaymentFD: deductionData })
-            ).unwrap();
+              const saveres = await dispatch(
+                saveMilkPaydata({ formData, PaymentFD: deductionData })
+              ).unwrap();
 
-            const fetchres = await dispatch(
-              fetchPaymentDetails({
-                fromdate: formData.fromDate,
-                todate: formData.toDate,
-              })
-            ).unwrap();
+              const fetchres = await dispatch(
+                fetchPaymentDetails({
+                  fromdate: formData.fromDate,
+                  todate: formData.toDate,
+                })
+              ).unwrap();
           }
           // } else {
           //   deductionData = await handleFixDeductions();

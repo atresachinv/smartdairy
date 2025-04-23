@@ -83,6 +83,8 @@ import MilkColleform from "./Apphome/Appnavviews/Milkcollection/Milkcollform";
 import AccountStatment from "./Accounts/AccountStatment/AccountStatment";
 import TrnCheck from "./Inventory/InventroyPages/TrnCheck/TrnCheck";
 import PaymentPages from "./Payments/PaymentPages";
+import CustomerList from "./Masters/MasterPages/CustomerMaster/CustomerList";
+import CreateCustomer from "./Masters/MasterPages/CustomerMaster/CreateCustomer";
 import FatSnfCompromise from "./Payments/FatSnfCompromise/FatSnfCompromise";
 
 const Mainapp = () => {
@@ -200,10 +202,11 @@ const Mainapp = () => {
             <Route path="milk/collection/*" element={<Apphome />} />
             <Route path="milk/collection/:time" element={<MilkColleform />} />
             <Route path="milk/collection/:time" element={<MilkColleform />} />
-            <Route
-              path="milk/customer/master/*"
-              element={<CustomersMaster />}
-            />
+            <Route path="milk/customer/master" element={<CustomersMaster />}>
+              <Route path="list" element={<CustomerList />} />
+              <Route path="add-new" element={<CreateCustomer />} />
+              <Route path="add-new/:cust_code" element={<CreateCustomer />} />
+            </Route>
             <Route path="milk/rate/master/*" element={<MilkRateMaster />} />
             <Route path="milk/payment/master/*" element={<Payments />} />
             <Route
@@ -303,7 +306,7 @@ const Mainapp = () => {
               path="payment/add-deductions/*"
               element={<PayDeductions />}
             /> */}
-            <Route path="payment/generate/*" element={<PaymentPages />} />
+            <Route path="payment/generate/*" element={<PaymentPages  />} />
             <Route path="payment/fatsnf/*" element={<FatSnfCompromise />} />
             {/* dairy routes */}
             <Route path="dairy/information" element={<DairyInfo />} />

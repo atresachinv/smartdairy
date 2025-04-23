@@ -25,7 +25,7 @@ const getFinancialDate = () => {
 
 const AccountStatment = () => {
   const dispatch = useDispatch();
-
+  const [openingBalance, setOpeningBalance] = useState(0);
   // State management
   const [formData, setFormData] = useState({
     accCode: "",
@@ -112,40 +112,7 @@ const AccountStatment = () => {
     });
     setVoucherList([]);
   };
-
-  // Handle Report generation
-  // const handleReport = async () => {
-  //   const selectedCenterId = centerId > 0 ? centerId : filter;
-  //   const reportData = {
-  //     accCode: formData.accCode,
-  //     GLCode: formData.GLCode,
-  //     autoCenter: autoCenter,
-  //     fromVoucherDate: formData.fromVoucherDate,
-  //     toVoucherDate: formData.toVoucherDate,
-  //     center_id: selectedCenterId,
-  //   };
-
-  //   try {
-  //     const res = await axiosInstance.get("/statements", {
-  //       params: { ...reportData },
-  //     });
-
-  //     if (res.data.success) {
-  //       setVoucherList(res.data.statementData || []);
-  //     } else {
-  //       toast.error("Failed to fetch report data");
-  //     }
-  //   } catch (error) {
-  //     toast.error("Error fetching report data");
-  //   }
-  // };
-  // //..... report Show
-  // const handleeReport = async () => {
-  //   // Simulate fetching data
-  //   const fetchedData = await fetchVoucherData();
-  //   setVoucherList(fetchedData);
-  //   setShowReport(true);
-  // };
+  // handle report
   const handleReport = async () => {
     const selectedCenterId = centerId > 0 ? centerId : filter;
     const reportData = {
@@ -164,6 +131,7 @@ const AccountStatment = () => {
 
       if (res.data.success) {
         setVoucherList(res.data.statementData || []);
+        setOpeningBalance(res.data.openingBalance || 0);
         setShowReport(true); // 👈 Show report on success
       } else {
         toast.error("Failed to fetch report data");
@@ -175,36 +143,6 @@ const AccountStatment = () => {
     }
   };
 
-  // Dummy data fetching function
-  // const generatePDF = () => {
-  //   if (!Array.isArray(voucherList)) {
-  //     console.error("Invalid voucher list: not an array", voucherList);
-  //     return;
-  //   }
-
-  //    const doc = new jsPDF();
-  //    doc.setFontSize(14);
-  //    doc.text(`डेअरी नाव: ${dairyname || "N/A"}`, 10, 10);
-  //    doc.text(`शहर: ${CityName || "N/A"}`, 10, 18);
-  //    doc.text("अहवाल: खाते स्टेटमेंट", 10, 26);
-
-  //   const tableData = voucherList.map((item) => [
-  //     item.VoucherNo,
-  //     new Date(item.VoucherDate).toLocaleDateString(),
-  //     item.Narration || "",
-  //     item.Vtype === 0 || item.Vtype === 1 ? item.Narration1 : "",
-  //     (item.Vtype === 3 || item.Vtype === 4) && item.Amt > 0 ? item.Amt : "",
-  //     item.Amt < 0 ? -item.Amt : "",
-  //   ]);
-
-  //   doc.autoTable({
-  //     head: [["चलन नं.", "चलन तारीख", "तपशील", "नावे", "जमा", "रक्कम"]],
-  //     body: tableData,
-  //     startY: 32,
-  //   });
-
-  //   doc.save("report.pdf");
-  // };
   const generatePDF = () => {
     if (!Array.isArray(voucherList)) {
       console.error("Invalid voucher list: not an array", voucherList);
@@ -321,8 +259,7 @@ const AccountStatment = () => {
     printWindow.close();
   };
 
-  
-  let runningBalance = 0;
+  let runningBalance = openingBalance;
   return (
     <div className="account-statment-container w100 h1 d-flex center  ">
       <div className="GL-customer-date-first-half-container w70 h1 d-flex-col bg3 ">
@@ -497,7 +434,7 @@ const AccountStatment = () => {
                   </thead>
                   <tbody className="table-data-acc-statment mx90">
                     {(() => {
-                      let runningBalance = 0;
+                      let openingBalance = 0;
                       let totalNave = 0;
                       let totalJama = 0;
 

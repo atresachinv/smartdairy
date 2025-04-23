@@ -1429,8 +1429,9 @@ exports.getMilkPayAmt = async (req, res) => {
 };
 
 // ----------------------------------------------------------------------------------->
-/* Save bill on generate button click ------------------------------------------------>
-  Save FIx Deduction And Deduction 0 Entries */ //------------------------------------>
+// Save bill on generate button click ------------------------------------------------>
+// Save FIx Deduction And Deduction 0 Entries ---------------------------------------->
+// if autodeduction save all  deduction with total entry ----------------------------->
 //------------------------------------------------------------------------------------>
 
 exports.saveFixDeductions = (req, res) => {
@@ -1545,14 +1546,17 @@ exports.saveFixDeductions = (req, res) => {
               avgSnf,
               avgRate,
               totalDeduction,
+              MAMT,
+              BAMT,
+              dtype,
             } = row;
 
             const insertQuery = `
               INSERT INTO custbilldetails
               (companyid, center_id, CBId, BillNo, BillDate, VoucherNo, VoucherDate,
                GLCode, Code, FromDate, ToDate, dname, DeductionId, Amt, MAMT, BAMT,
-               tliters, afat, asnf, arate, pamt, damt, namt)
-              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+               tliters, afat, asnf, arate, pamt, damt, namt, dtype)
+              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             `;
 
             const values = [
@@ -1570,8 +1574,8 @@ exports.saveFixDeductions = (req, res) => {
               dname || null,
               DeductionId,
               Number(parseFloat(amt || 0).toFixed(2)),
-              0.0,
-              0.0,
+              MAMT,
+              BAMT,
               Number(parseFloat(totalLitres || 0).toFixed(2)),
               Number(parseFloat(avgFat || 0).toFixed(1)),
               Number(parseFloat(avgSnf || 0).toFixed(1)),
@@ -1579,6 +1583,7 @@ exports.saveFixDeductions = (req, res) => {
               Number(parseFloat(totalamt || 0).toFixed(2)),
               Number(parseFloat(totalDeduction || 0).toFixed(2)),
               Number(parseFloat(amt || 0).toFixed(2)),
+              dtype,
             ];
 
             connection.query(insertQuery, values, (err, results) => {
@@ -1737,7 +1742,7 @@ exports.saveOtherDeductions = (req, res) => {
             const row = groupRows[recIndex];
             const { AccCode, GLCode, DeductionId, dname, Amt, MAMT, netamt } =
               row;
-            
+
             const insertQuery = `
               INSERT INTO custbilldetails
               (companyid, center_id, CBId, BillNo, BillDate, VoucherNo, VoucherDate,

@@ -14,9 +14,13 @@ import "../../../../../Styles/Mainapp/Masters/CustomerMaster.css";
 import { listRateCharts } from "../../../../../App/Features/Mainapp/Masters/rateChartSlice";
 import { useTranslation } from "react-i18next";
 import { getBankList } from "../../../../../App/Features/Mainapp/Masters/bankSlice";
+import { useParams, useSearchParams } from "react-router-dom";
 
 const CreateCustomer = () => {
   const dispatch = useDispatch();
+  const { cust_code } = useParams();
+  const [searchParams] = useSearchParams();
+  const isedit = searchParams.get("isedit") === "true";
   const { t } = useTranslation(["master", "common"]);
   const bankList = useSelector((state) => state.bank.banksList || []);
   const [isActive, setIsActive] = useState(true);
@@ -71,19 +75,34 @@ const CreateCustomer = () => {
     h_dairyrebet: 0,
     h_transportation: 0,
   });
-
+  // console.log("first,", cust_code, isedit);
   useState(() => {
     dispatch(listRateCharts());
     dispatch(getBankList());
     dispatch(getMaxCustNo());
   }, [dispatch]);
 
+  // useEffect(() => {
+  //   setFormData((prevData) => ({
+  //     ...prevData,
+  //     cust_no: custno,
+  //   }));
+  // }, [dispatch, custno]);
+
   useEffect(() => {
-    setFormData((prevData) => ({
-      ...prevData,
-      cust_no: custno,
-    }));
-  }, [dispatch, custno]);
+    if (isedit) {
+      setIsEditing(true); // Set editing mode explicitly
+
+      setFormData((prevData) => ({
+        ...prevData,
+        cust_no: cust_code,
+      }));
+
+      // You can fetch customer data here if needed
+    } else {
+      setIsEditing(false); // Optional: reset if not in edit mode
+    }
+  }, [isedit, cust_code]);
 
   const handleEditClick = () => {
     setIsEditing((prev) => !prev);
@@ -179,7 +198,7 @@ const CreateCustomer = () => {
       });
     }
   };
-  
+
   // ----------------------------------------------------------------------------------->
   // validate fields ------------------------------------------------------------------->
 
@@ -381,7 +400,9 @@ const CreateCustomer = () => {
         const result = await dispatch(updateCustomer(formData)).unwrap();
         if (result.status === 200) {
           dispatch(listCustomer());
-          toast.success(result.message);
+          resetForm();
+          setIsEditing(false);
+          toast.success("Customer updated successfully.");
         } else {
           toast.error(result.message);
         }
@@ -392,7 +413,7 @@ const CreateCustomer = () => {
           dispatch(listCustomer());
           dispatch(getMaxCustNo());
           resetForm();
-          toast.success(result.message);
+          toast.success("Customer created successfully.");
         } else {
           toast.error(result.message);
         }
@@ -1013,13 +1034,13 @@ const CreateCustomer = () => {
         </div>
 
         <div className="button-container w100 h10 d-flex j-end">
-          <button
+          {/* <button
             className="w-btn mx10"
             type="submit"
             onClick={handleEditClick}
           >
             {isEditing ? `${t("m-create")}` : `${t("m-edit")}`}
-          </button>
+          </button> */}
           {isEditing ? (
             <button
               className="w-btn"

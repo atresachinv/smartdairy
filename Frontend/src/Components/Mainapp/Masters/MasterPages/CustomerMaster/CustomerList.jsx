@@ -2,6 +2,8 @@ import React, { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import * as XLSX from "xlsx";
 import { FaDownload } from "react-icons/fa6";
+import { useNavigate } from "react-router-dom";
+import { MdEdit } from "react-icons/md";
 import Spinner from "../../../../Home/Spinner/Spinner";
 import { useTranslation } from "react-i18next";
 import "../../../../../Styles/Mainapp/Masters/CustomerMaster.css";
@@ -10,6 +12,7 @@ import { centersLists } from "../../../../../App/Features/Dairy/Center/centerSli
 
 const CustomerList = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { t } = useTranslation(["master", "milkcollection", "common"]);
   const customerlist = useSelector(
     (state) => state.customers.customerlist || []
@@ -30,7 +33,6 @@ const CustomerList = () => {
     dispatch(listCustomer());
     dispatch(centersLists());
   }, [dispatch]);
-  console.log("list from ", customerlist);
   useEffect(() => {
     setFilteredData(customerlist);
   }, [customerlist]);
@@ -92,6 +94,12 @@ const CustomerList = () => {
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, "Customer Data");
     XLSX.writeFile(workbook, fileName);
+  };
+
+  // handle edit customer icon click  ----------------------------------------------------->
+  const handleEdit = (cust_code) => {
+    console.log(cust_code);
+    navigate(`/mainapp/milk/customer/master/add-new/${cust_code}?isedit=true`);
   };
 
   //  save only lgoin center customer list in local storage --------------------------------------->
@@ -191,6 +199,7 @@ const CustomerList = () => {
           <div className="customer-list-table w100 h1 d-flex-col bg">
             <div className="customer-heading-title-scroller w100 h1 mh100 hidescrollbar d-flex-col">
               <div className="customer-data-headings-div p10 d-flex center t-center sb">
+                <span className="f-info-text w5">{t("Edit")}</span>
                 <span className="f-info-text w5">{t("master:m-ccode")}</span>
                 <span className="f-info-text w25">{t("master:m-cname")}</span>
                 <span className="f-info-text w10">{t("master:m-mobile")}</span>
@@ -221,6 +230,12 @@ const CustomerList = () => {
                       backgroundColor: index % 2 === 0 ? "#faefe3" : "#fff",
                     }}
                   >
+                    <span
+                      className="text w5"
+                      onClick={() => handleEdit(customer.srno)} // pass code
+                    >
+                      <MdEdit className="color-icon" />
+                    </span>
                     <span className="text w5">{customer.srno}</span>
                     <span className="text w25 t-start">{customer.cname}</span>
                     <span className="text w10">
