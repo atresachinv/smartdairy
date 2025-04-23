@@ -162,8 +162,8 @@ const GeneralLedger = () => {
             }}
           />
         </div>
-        <div className="d-flex my10">
-          <div>
+        <div className=" Jounral-ledgerfrom-to-date-div  d-flex my10">
+          <div className="from-to-datejornal-legder">
             <span className="info-text w30 px10 ">दिनाक पासून</span>
             <input
               className="data "
@@ -174,7 +174,7 @@ const GeneralLedger = () => {
               }
             />
           </div>
-          <div className="mx10">
+          <div className="to-date-journal-div mx10">
             <span className="info-text w30">दिनाक पर्येंत</span>
             <input
               className="data  "
@@ -185,17 +185,17 @@ const GeneralLedger = () => {
               }
             />
           </div>
-          <div className="mx10 d-flex a-center">
+          <div className=" pahane-button-journal mx10 d-flex a-center">
             <button className="btn" type="button" onClick={handleShow}>
               पाहणे
             </button>
           </div>
         </div>
       </div>
-      <div className="w100  ">
-        <div className="d-flex w100 px10  j-end">
+      <div className="   jounral-ledger-table-section w100   ">
+        <div className=" opening-balnce-div   d-flex w100 px10  j-end">
           <input
-            className="data w30  m5 "
+            className="data w30  m5 my10 "
             value={`Opening Balance : ${balance}`}
           />
         </div>
