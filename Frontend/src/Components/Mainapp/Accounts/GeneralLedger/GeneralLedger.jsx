@@ -4,6 +4,7 @@ import Select from "react-select";
 import { listSubLedger } from "../../../../App/Features/Mainapp/Masters/ledgerSlice";
 import axiosInstance from "../../../../App/axiosInstance";
 import { toast } from "react-toastify";
+import "../../../../Styles/GeneralLedger/GeneralLedger.css";
 
 // Utility functions for date handling
 const getTodaysDate = () => {
@@ -92,9 +93,9 @@ const GeneralLedger = () => {
   let runningBalance = balance;
 
   return (
-    <div className=" w100 h1 m10  p10 bg">
+    <div className=" jounrall-ledger-container w100 h1 m10  p10 bg">
       <div className="heading w100 d-flex center my5">जनरल लेजर </div>
-      <div className="w100 ">
+      <div className=" center-select-journal-div  w100 ">
         {centerId > 0 ? null : (
           <div className=" select-center-div d-flex a-center mx10">
             <span className="info-text w15">सेंटर निवडा :</span>
@@ -123,7 +124,7 @@ const GeneralLedger = () => {
             </select>
           </div>
         )}
-        <div className="d-flex">
+        <div className=" khatavni-number-jounral-div d-flex a-center">
           <span className="info-text">खतावणी नं.</span>
           <input
             type="text"
@@ -138,7 +139,7 @@ const GeneralLedger = () => {
           />
           <Select
             options={options}
-            className="   w70"
+            className="    w70"
             placeholder=""
             isSearchable
             styles={{
@@ -192,15 +193,15 @@ const GeneralLedger = () => {
           </div>
         </div>
       </div>
-      <div className="   jounral-ledger-table-section w100   ">
+      <div className="   scrollable-table-container w100   ">
         <div className=" opening-balnce-div   d-flex w100 px10  j-end">
           <input
             className="data w30  m5 my10 "
             value={`Opening Balance : ${balance}`}
           />
         </div>
-        <table>
-          <thead>
+        <table className="table-section-journal w100  ">
+          <thead className="table-heading-journal-ledger">
             <tr>
               <th> दिनांक </th>
               <th>जमा रक्कम</th>
