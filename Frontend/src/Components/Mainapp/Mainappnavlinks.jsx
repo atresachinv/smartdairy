@@ -302,6 +302,13 @@ const Mainappnavlinks = ({ setselected, handleSidebar }) => {
           path: "accounts/upload",
           role: ["admin", "super_admin", "manager"],
         },
+        {
+          name: `${t("अँडव्हान्स व्याज पोस्टिंग")}`,
+          icon: <FaFileInvoice className="icon" />,
+          index: 4.8,
+          path: "accounts/advances",
+          role: ["admin", "super_admin", "manager"],
+        },
       ],
     },
     {
