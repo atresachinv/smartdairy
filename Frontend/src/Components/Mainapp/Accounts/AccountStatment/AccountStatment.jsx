@@ -41,7 +41,12 @@ const AccountStatment = () => {
   const [showReport, setShowReport] = useState(false);
   // const reportRef = useRef();
 
-  // console.log(voucherList);
+  //....
+  const dairyname = useSelector(
+    (state) =>
+      state.dairy.dairyData.SocietyName || state.dairy.dairyData.center_name
+  );
+  const CityName = useSelector((state) => state.dairy.dairyData.city);
 
   // Redux selectors
   const centerList = useSelector(
@@ -138,30 +143,46 @@ const AccountStatment = () => {
     }
   };
 
-  // Dummy data fetching function
   const generatePDF = () => {
     if (!Array.isArray(voucherList)) {
       console.error("Invalid voucher list: not an array", voucherList);
       return;
     }
 
+    let runningBalance = 0;
+
     const doc = new jsPDF();
     doc.setFontSize(14);
-    doc.text("डेअरी नाव: My Dairy", 10, 10);
-    doc.text("शहर: Pune", 10, 18);
-    doc.text("अहवाल: खाते स्टेटमेंट", 10, 26);
+    doc.text(`Dairy name: ${dairyname || "N/A"}`, 10, 10);
+    doc.text(`City: ${CityName || "N/A"}`, 10, 18);
+    doc.text("Report: Account Statement", 10, 26);
 
-    const tableData = voucherList.map((item) => [
-      item.VoucherNo,
-      new Date(item.VoucherDate).toLocaleDateString(),
-      item.Narration || "",
-      item.Vtype === 0 || item.Vtype === 1 ? item.Narration1 : "",
-      (item.Vtype === 3 || item.Vtype === 4) && item.Amt > 0 ? item.Amt : "",
-      item.Amt < 0 ? -item.Amt : "",
-    ]);
+    const tableData = voucherList.map((item) => {
+      runningBalance += item.Amt;
+
+      return [
+        item.VoucherNo,
+        new Date(item.VoucherDate).toLocaleDateString(),
+        item.Narration || "",
+        item.Vtype === 0 || item.Vtype === 1 ? item.Amt : "",
+        (item.Vtype === 3 || item.Vtype === 4) && item.Amt > 0 ? item.Amt : "",
+        `${Math.abs(runningBalance)} ${
+          runningBalance < 0 ? "Name" : "Accumulated"
+        }`,
+      ];
+    });
 
     doc.autoTable({
-      head: [["चलन नं.", "चलन तारीख", "तपशील", "नावे", "जमा", "रक्कम"]],
+      head: [
+        [
+          "Currency No.",
+          "Currency Date",
+          "Detail",
+          "Name",
+          "Accumulated",
+          "Amount",
+        ],
+      ],
       body: tableData,
       startY: 32,
     });
@@ -173,22 +194,26 @@ const AccountStatment = () => {
     const printWindow = window.open("", "_blank", "width=800,height=600");
     if (!printWindow) return;
 
+    let runningBalance = 0;
+
     const tableRows = voucherList
       .map((item) => {
+        runningBalance += item.Amt;
+
         return `
         <tr>
           <td>${item.VoucherNo}</td>
           <td>${new Date(item.VoucherDate).toLocaleDateString()}</td>
           <td>${item.Narration || ""}</td>
-          <td>${
-            item.Vtype === 0 || item.Vtype === 1 ? item.Narration1 : ""
-          }</td>
+          <td>${item.Vtype === 0 || item.Vtype === 1 ? item.Amt : ""}</td>
           <td>${
             (item.Vtype === 3 || item.Vtype === 4) && item.Amt > 0
               ? item.Amt
               : ""
           }</td>
-          <td>${item.Amt < 0 ? -item.Amt : ""}</td>
+          <td>${Math.abs(runningBalance)} ${
+          runningBalance < 0 ? "नावे" : "जमा"
+        }</td>
         </tr>
       `;
       })
@@ -202,11 +227,15 @@ const AccountStatment = () => {
           body { font-family: sans-serif; padding: 20px; }
           table { border-collapse: collapse; width: 100%; }
           th, td { border: 1px solid #000; padding: 8px; text-align: left; }
-          h2 { text-align: center; }
+          h2 { text-align: center; line-height: 1.5; }
         </style>
       </head>
       <body>
-        <h2>डेअरी नाव: My Dairy<br/>शहर: Pune<br/>अहवाल: खाते स्टेटमेंट</h2>
+        <h2>
+          डेअरी नाव: ${dairyname || "N/A"}<br/>
+          शहर: ${CityName || "N/A"}<br/>
+          अहवाल: खाते स्टेटमेंट
+        </h2>
         <table>
           <thead>
             <tr>
@@ -223,11 +252,13 @@ const AccountStatment = () => {
       </body>
     </html>
   `);
+
     printWindow.document.close();
     printWindow.focus();
     printWindow.print();
     printWindow.close();
   };
+
   let runningBalance = openingBalance;
   return (
     <div className="account-statment-container w100 h1 d-flex center  ">
@@ -380,20 +411,18 @@ const AccountStatment = () => {
           </div>
           <div className="table-section-acoundstatment w100 h40 d-flex-col">
             {showReport && (
-              <div className="report-content   ">
+              <div className="report-acc-statment">
                 <table
-                  className=""
                   border="1"
                   cellPadding="5"
                   style={{
                     borderCollapse: "collapse",
                     marginTop: "10px",
-                    width: "100",
+                    width: "100%",
                     overflow: "auto",
                   }}
                 >
-                  <thead className="">
-                    <tr></tr>
+                  <thead className="table-heading-acc-statment">
                     <tr>
                       <th>चलन नं.</th>
                       <th>चलन तारीख</th>
@@ -403,42 +432,73 @@ const AccountStatment = () => {
                       <th>रक्कम</th>
                     </tr>
                   </thead>
-                  <tbody>
-                    {/* let openingBalance = 0; */}
-                    {voucherList.map((item, index) => {
-                      runningBalance += item.Amt;
+                  <tbody className="table-data-acc-statment mx90">
+                    {(() => {
+                      let openingBalance = 0;
+                      let totalNave = 0;
+                      let totalJama = 0;
 
                       return (
-                        <tr key={index}>
-                          <td>{item.VoucherNo}</td>
-                          <td>
-                            {new Date(item.VoucherDate).toLocaleDateString()}
-                          </td>
-                          <td>{item.Narration}</td>
+                        <>
+                          {voucherList.map((item, index) => {
+                            runningBalance += item.Amt;
 
-                          {/* नावे column: show only for Vtype 0 or 1 */}
-                          <td>
-                            {item.Vtype === 0 || item.Vtype === 1
-                              ? item.Amt
-                              : ""}
-                          </td>
+                            // Calculate totals for नावे and जमा
+                            if (item.Vtype === 0 || item.Vtype === 1) {
+                              totalNave += item.Amt;
+                            }
+                            if (
+                              (item.Vtype === 3 || item.Vtype === 4) &&
+                              item.Amt > 0
+                            ) {
+                              totalJama += item.Amt;
+                            }
 
-                          {/* जमा column: show only for Vtype 3 or 4 and Amt > 0 */}
-                          <td>
-                            {(item.Vtype === 3 || item.Vtype === 4) &&
-                            item.Amt > 0
-                              ? item.Amt
-                              : ""}
-                          </td>
+                            return (
+                              <tr key={index}>
+                                <td>{item.VoucherNo}</td>
+                                <td>
+                                  {new Date(
+                                    item.VoucherDate
+                                  ).toLocaleDateString()}
+                                </td>
+                                <td>{item.Narration}</td>
+                                <td>
+                                  {item.Vtype === 0 || item.Vtype === 1
+                                    ? item.Amt
+                                    : ""}
+                                </td>
+                                <td>
+                                  {(item.Vtype === 3 || item.Vtype === 4) &&
+                                  item.Amt > 0
+                                    ? item.Amt
+                                    : ""}
+                                </td>
+                                <td>
+                                  {Math.abs(runningBalance)}{" "}
+                                  {runningBalance < 0 ? "नावे" : "जमा"}
+                                </td>
+                              </tr>
+                            );
+                          })}
 
-                          {/* रक्कम column: running balance */}
-                          <td>
-                            {runningBalance}
-                            {runningBalance < 0 ? " नावे" : " जमा"}
-                          </td>
-                        </tr>
+                          {/* Totals Row */}
+                          <tr
+                            style={{
+                              fontWeight: "bold",
+                              backgroundColor: "#f0f0f0",
+                            }}
+                          >
+                            <td colSpan="3" style={{ textAlign: "right" }}>
+                              एकूण:
+                            </td>
+                            <td>{totalNave}</td>
+                            <td>{totalJama}</td>
+                            <td></td>
+                          </tr>
+                        </>
                       );
-                    })}
+                    })()}
                   </tbody>
                 </table>
               </div>

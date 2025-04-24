@@ -14,7 +14,7 @@
   margin-bottom: 10px;
 }
 .Deductionhead-table-heading-container {
-  background: #007bff;
+  background-color: #17acc0;
   color: white;
   position: sticky;
   top: 0;
@@ -162,4 +162,19 @@
     height: 30px;
     margin-bottom: 13px;
   }
+
+  .Deductionhead-table-section-container {
+  overflow-x: auto;
+}
+.Deductionhead-table-heading-container {
+  min-width: 800px;
+  position: sticky;
+  top: 0;
+  background-color: #17acc0;
+  padding: 5px 0;
+}
+.Deductionhead-table-data-container {
+  min-width: 800px;
+}
+
 }

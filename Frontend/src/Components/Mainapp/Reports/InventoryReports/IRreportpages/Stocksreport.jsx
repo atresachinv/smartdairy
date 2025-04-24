@@ -85,7 +85,8 @@ const Stocksreport = () => {
 
   //   fetchPurchaseData();
   // }, [fromdate, todate]);
-
+  
+  
 
   const salefetchData = async (e) => {
     e.preventDefault(); // Prevent default action (form submission)
@@ -424,7 +425,7 @@ console.log(sales);
               />
             </div>
             <div className="stock-report-dispaly-btn-div">
-              <button className="btn" onClick={salefetchData}>
+              <button className=" btn" onClick={salefetchData}>
                 {" "}
                 show
               </button>

@@ -27,6 +27,9 @@
   .payment-deduction-info-container .headings-pay-register-totals-container {
     width: 100%;
   }
+    .from-to-date-button-container .date-from-to-div .from-div-container input{
+    font-size: 0.77em;
+  }
 }
 
 

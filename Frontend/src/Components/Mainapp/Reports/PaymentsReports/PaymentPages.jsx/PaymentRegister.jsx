@@ -263,7 +263,7 @@ const PaymentRegister = () => {
       >
         <div className="date-from-to-div w40 d-flex h50 ">
           <div className="from-div-container w50 d-flex h1 a-center sa">
-            <span className="label-text w20">From:</span>
+            <span className="label-text w30">From:</span>
             <input
               className="data  w70"
               type="date"

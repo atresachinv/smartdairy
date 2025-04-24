@@ -203,13 +203,11 @@ const Sanghsales = () => {
                 <span className="label-text">वजावट</span>
                 <span className="label-text">रक्कम</span>
               </div>
-              <div className="sanghasales-table-data w100 d-flex-col  mx90 hidescrollbar">
-                <div className="sanghatable-section-data w100 sa d-flex ">
-                  <span className="label-text">001</span>
-                  <span className="label-text">राऊंड ऑफ </span>
-                  <span className="label-text">2500</span>
-                  <span className="label-text">12500</span>
-                </div>
+              <div className="sanghasales-table-data w100 d-flex sa  mx90 hidescrollbar">
+                <span className="label-text">001</span>
+                <span className="label-text">राऊंड ऑफ </span>
+                <span className="label-text">2500</span>
+                <span className="label-text">12500</span>
               </div>
             </div>
             <div className="khatavni-setup-span-input w40 h1 d-flex-col">
