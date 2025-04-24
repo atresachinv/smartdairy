@@ -445,17 +445,20 @@ const DeductionHead = () => {
           </div>
         </div>
         <div className="Deductionhead-table-section-container w100 h60 d-flex-col">
-          <div className="Deductionhead-table-heading-container w100  h10 p10 d-flex sa a-center">
+          <div className="Deductionhead-table-heading-container w100 p10 d-flex sa a-center ">
             <span className="w10">Edit</span>
-            <span className="w10"> Code</span>
+            <span className="w20"> Code</span>
             <span className="w25"> Name</span>
-            <span className="w10">GL Number</span>
+            <span className="w20">GL No</span>
             <span className="w25">GL Name</span>
             <span className="w10">Action</span>
           </div>
           {deductionData &&
             deductionData.map((item) => (
-              <div className="w100  h20 d-flex sa a-center" key={item.id}>
+              <div
+                className="Deductionhead-table-data-container w100  h20 d-flex sa a-center"
+                key={item.id}
+              >
                 <span
                   className="w10"
                   onClick={() => handleEdit(item.id)}
@@ -463,9 +466,9 @@ const DeductionHead = () => {
                 >
                   <FaRegEdit />
                 </span>
-                <span className="w10">{item.PriorityNo}</span>
+                <span className="w20">{item.PriorityNo}</span>
                 <span className="w25">{item.DeductionName}</span>
-                <span className="w10">{item.GLCode}</span>
+                <span className="w20">{item.GLCode}</span>
                 <span className="w25">
                   {(sledgerlist &&
                     sledgerlist.find((i) => i.lno === item.GLCode)

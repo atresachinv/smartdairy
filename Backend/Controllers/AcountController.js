@@ -127,7 +127,7 @@ exports.getGroupedVoucher = async (req, res) => {
   });
 };
 //get all Voucher by grouping Accode and glcode
-exports.getGroupedStaement = async (req, res) => {
+exports.getGroupedStatement = async (req, res) => {
   const { dairy_id } = req.user;
   const {
     accCode,
@@ -217,6 +217,123 @@ exports.getGroupedStaement = async (req, res) => {
             success: true,
             openingBalance: openingResult[0]?.openingBalance || 0,
             statementData: result,
+          });
+        });
+      }
+    );
+  });
+};
+//get all Voucher by grouping GLCode and VoucherDate
+exports.getGeneralLedgerStatements = async (req, res) => {
+  const { dairy_id } = req.user;
+  const { GLCode, autoCenter, center_id, fromVoucherDate, toVoucherDate } =
+    req.query;
+  const autoCenterNumber = Number(autoCenter);
+
+  if (!GLCode || !fromVoucherDate || !toVoucherDate) {
+    return res.status(400).json({
+      success: false,
+      message: "GLCode and VoucherDate are required",
+    });
+  }
+
+  pool.getConnection((err, connection) => {
+    if (err) {
+      console.error("Connection error:", err);
+      return res
+        .status(500)
+        .json({ success: false, message: "Database connection error" });
+    }
+
+    // Calculate opening balance for exactly one day before fromVoucherDate
+    const openingBalanceQuery = `
+      SELECT SUM(Amt) as openingBalance 
+      FROM tally_trnfile 
+      WHERE companyid = ? 
+      AND GLCode = ? 
+      AND VoucherDate < ?
+    `;
+
+    const openingBalanceParams = [dairy_id, GLCode, fromVoucherDate];
+
+    if (autoCenterNumber === 1 || center_id > 0) {
+      openingBalanceQuery += " AND center_id = ?";
+      openingBalanceParams.push(center_id);
+    }
+
+    // Main query for statement data
+    let query = `SELECT  VoucherDate,Vtype, SUM(Amt) as totalAmt 
+                 FROM tally_trnfile 
+                 WHERE companyid = ? `;
+    let queryParams = [dairy_id];
+
+    if (autoCenterNumber === 1 || center_id > 0) {
+      query += " AND center_id = ?";
+      queryParams.push(center_id);
+    }
+
+    query += " AND GLCode = ? ";
+    queryParams.push(GLCode);
+
+    query += " AND VoucherDate BETWEEN ? AND ?";
+    queryParams.push(fromVoucherDate, toVoucherDate);
+
+    query += " GROUP BY  VoucherDate, Vtype ORDER BY VoucherDate, Vtype ASC";
+
+    // Execute opening balance query first
+    connection.query(
+      openingBalanceQuery,
+      openingBalanceParams,
+      (err, openingResult) => {
+        if (err) {
+          connection.release();
+          console.error("Opening balance query error:", err);
+          return res.status(500).json({
+            success: false,
+            message: "Server query execution failed",
+          });
+        }
+
+        // Then execute main query
+        connection.query(query, queryParams, (err, result) => {
+          connection.release();
+          if (err) {
+            console.error("Query error:", err);
+            return res.status(500).json({
+              success: false,
+              message: "Server query execution failed",
+            });
+          }
+          const groupedData = result.reduce((acc, item) => {
+            const key = `${item.VoucherDate} `;
+            if (!acc[key]) {
+              acc[key] = {
+                VoucherDate: item.VoucherDate,
+                naveAmt:
+                  Number(item.Vtype) === 0 || Number(item.Vtype) === 1
+                    ? Number(item.totalAmt)
+                    : 0,
+                jamaAmt:
+                  Number(item.Vtype) === 4 || Number(item.Vtype) === 3
+                    ? Number(item.totalAmt)
+                    : 0,
+              };
+            } else {
+              acc[key].naveAmt +=
+                Number(item.Vtype) === 0 || Number(item.Vtype) === 1
+                  ? Number(item.totalAmt)
+                  : 0;
+              acc[key].jamaAmt +=
+                Number(item.Vtype) === 4 || Number(item.Vtype) === 3
+                  ? Number(item.totalAmt)
+                  : 0;
+            }
+            return acc;
+          }, {});
+          res.status(200).json({
+            success: true,
+            openingBalance: openingResult[0]?.openingBalance || 0,
+            GLStatementData: Object.values(groupedData),
           });
         });
       }

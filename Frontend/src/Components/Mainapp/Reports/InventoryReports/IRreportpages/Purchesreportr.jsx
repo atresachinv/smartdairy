@@ -1165,7 +1165,7 @@ Total Amount:        ${totalAmount.toFixed(2)}
           <div className="fromto-date-sale-report w100 h50 d-flex a-center ">
             <div className="from-to-date-purches-conta d-flex w50  h1">
               <div className="from-salee-div w50 h1 a-center d-flex  ">
-                <span className=" w10 info-text ">From:</span>
+                <span className=" w20 info-text ">From:</span>
                 <input
                   className="w60 data"
                   type="date"

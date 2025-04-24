@@ -24,8 +24,7 @@ const SanghReport = () => {
           </div>
         </div>
         <div className="sangha-details-table-section w100 h70 d-flex-col bg">
-          <div className="scroll-container">
-            <div className="sangha-sale-table-header w100 h15
+            <div className="sangha-sale-report-table-header w100 h15
              d-flex sa  ">
               <span className="label-text w10">बिल न</span>
               <span className="label-text w20">बिल दिनांक </span>
@@ -35,8 +34,7 @@ const SanghReport = () => {
               <span className="label-text w15">पासून</span>
               <span className="label-text w15">पर्येंत</span>
             </div>
-            <div className="sangha-tabledata-section-div w100 d-flex-col  mh90 hidescrollbar">
-              <div className="datasanghasales-div w100 d-flex mh90 sa">
+            <div className="sangha-report-tabledata-section-div w100 d-flex sa  mh90 hidescrollbar">
                 <span className="label-text w10">001</span>
                 <span className="label-text w20">03/02/2025 </span>
                 <span className="label-text w20 ">HariomDSk </span>
@@ -44,8 +42,8 @@ const SanghReport = () => {
                 <span className="label-text w10">125063</span>
                 <span className="label-text w15">02/03/2025</span>
                 <span className="label-text w15">25/04/2025</span>
-              </div>
-            </div>
+      
+        
           </div>
         </div>
 

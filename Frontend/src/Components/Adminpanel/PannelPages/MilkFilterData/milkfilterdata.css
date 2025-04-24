@@ -1,0 +1,29 @@
+.milkfilterdata-hide-scroll {
+  overflow: hidden;
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.milkfilterdata-hide-scroll .milkfilterdata-table-container {
+  flex: 1;
+  overflow: hidden;
+  position: relative;
+  background: #fff;
+  /* margin: 10px; */
+  border-radius: 8px;
+  width: 100%;
+  height: 100%;
+}
+
+.Scroll-table-milkfilterdata {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  overflow-y: scroll;
+}
