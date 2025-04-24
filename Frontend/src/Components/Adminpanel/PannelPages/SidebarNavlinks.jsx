@@ -45,7 +45,7 @@ const SidebarNavlinks = () => {
       name: "Message Settings",
       icon: <BsGridFill className="color-icon" />,
       index: 3,
-      path: "dairy-settings",
+      // path: "dairy-settings",
       submenus: [
         {
           name: "Milk Collection",
@@ -59,12 +59,18 @@ const SidebarNavlinks = () => {
           path: "whatsapp-sms",
           index: 2.2,
         },
-        {
-          name: "Milk Filter Data",
-          icon: <BsGridFill className="color-icon" />,
-          path: "milk-filter-data",
-          index: 2.3,
-        },
+          {
+            name: "Milk Filter Data",
+            icon: <BsGridFill className="color-icon" />,
+            path: "milk-filter-data",
+            index: 2.3,
+          },
+          {
+            name: "Upload Milk Entrys",
+            icon: <BsGridFill className="color-icon" />,
+            path: "upload-milk-entrys",
+            index: 2.4,
+          },
       ],
     },
   ];
