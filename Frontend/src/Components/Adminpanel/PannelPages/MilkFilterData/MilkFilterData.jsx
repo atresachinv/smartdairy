@@ -2,28 +2,40 @@ import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
 import React from "react";
 import "./milkfilterdata.css";
+import { toast } from "react-toastify";
 
 const MilkFilterData = () => {
   const [uniqueCenters, setUniqueCenters] = React.useState([]);
   const [structured, setStructured] = React.useState([]);
   const [filteredStructured, setFilteredStructured] = React.useState([]);
+  const [progress, setProgress] = React.useState(0);
 
   const handleFileUpload = async (e) => {
     const file = e.target.files[0];
+    if (!file) {
+      setProgress(0);
+      toast.error("Please upload a file");
+      return;
+    }
+
+    setProgress(10); // Start progress
     const data = await file.arrayBuffer();
+    setProgress(30);
+
     const workbook = XLSX.read(data, { type: "buffer" });
+    setProgress(50);
+
     const sheet = workbook.Sheets[workbook.SheetNames[0]];
     const rawData = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+    setProgress(70);
 
     let currentCenter = "";
     let tempStructured = [];
     let centerIndex = new Map();
     let centerCount = 0;
 
-    rawData.forEach((row) => {
+    rawData.forEach((row, i) => {
       const rowStr = row.join(" ");
-
-      // Extract center name if the row contains it
       const centerMatch = rowStr.match(/\*(.*?दुध संकलन केंद्र.*?)\*/);
       if (centerMatch) {
         currentCenter = centerMatch[1].trim();
@@ -43,7 +55,6 @@ const MilkFilterData = () => {
         const snfMatch = rowStr.match(/SNF:\s*\*(\d+(\.\d+)?)\*/);
         const rateMatch = rowStr.match(/दर:\s*\*(\d+(\.\d+)?)\*/);
         const amountMatch = rowStr.match(/एकूण रक्कम:\s*\*(\d+(\.\d+)?)\*/);
-
         const timeType = dateMatch?.[1] ?? "सकाळ";
         const numericType = timeType === "सकाळ" ? 0 : 1;
 
@@ -62,9 +73,12 @@ const MilkFilterData = () => {
           Animal: 0,
         });
       }
+
+      if (i % 50 === 0) {
+        setProgress((prev) => Math.min(prev + 5, 90)); // Simulate in steps
+      }
     });
 
-    // Update unique centers with their indices
     const centers = Array.from(centerIndex.entries()).map(([name, index]) => ({
       name,
       index,
@@ -72,11 +86,25 @@ const MilkFilterData = () => {
     setUniqueCenters(centers);
     setStructured(tempStructured);
     setFilteredStructured(tempStructured);
+    setProgress(100); // Complete
+    setTimeout(() => setProgress(0), 800); // Hide after brief pause
   };
 
   const handleExport = () => {
+    const exportData = filteredStructured.map((item) => ({
+      Date: item.Date,
+      Time: item.Time,
+      Code: item.Code,
+      Liters: item.Liters,
+      Fat: item.Fat,
+      SNF: item.SNF,
+      Name: item.Name,
+      Rate: item.Rate,
+      Amount: item.Amount,
+      Animal: item.Animal,
+    }));
     // Create new workbook
-    const newSheet = XLSX.utils.json_to_sheet(filteredStructured);
+    const newSheet = XLSX.utils.json_to_sheet(exportData);
     const newWorkbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(newWorkbook, newSheet, "CleanedData");
 
@@ -118,7 +146,9 @@ const MilkFilterData = () => {
               accept=".xlsx, .xls"
               onChange={handleFileUpload}
             />
+            {progress > 0 && <progress value={progress} max="100"></progress>}
           </div>
+
           <select
             className="data w30"
             name=""
