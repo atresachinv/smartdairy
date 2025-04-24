@@ -8,6 +8,8 @@ import CreateAccess from "./CreateAccess";
 import MilkCollAccess from "./PannelPages/DairyAccesses/MilkCollAccess";
 import WhatsappSms from "./PannelPages/DairyAccesses/WhatsappSms";
 import WhRechargeHistory from "./PannelPages/DairyAccesses/WhRechargeHistory";
+import MilkFilterData from "./PannelPages/MilkFilterData/MilkFilterData";
+import UploadMilkEntrys from "./PannelPages/UploadMilkEntrys/UploadMilkEntrys";
 
 const AdminPannel = () => {
   return (
@@ -26,6 +28,8 @@ const AdminPannel = () => {
             <Route path="milk-collection/access" element={<MilkCollAccess />} />
             <Route path="whatsapp-sms" element={<WhRechargeHistory />} />
             <Route path="whatsapp-sms/add" element={<WhatsappSms />} />
+            <Route path="milk-filter-data" element={<MilkFilterData />} />
+            <Route path="upload-milk-entrys" element={<UploadMilkEntrys />} />
             <Route path="*" element={<Dashboard />} />
           </Routes>
         </div>
