@@ -1,0 +1,11 @@
+.advanceposting-width {
+  width: 50%;
+}
+@media (max-width: 768px) {
+  .mobile-flex-column-advances-posting {
+    flex-direction: column;
+  }
+  .advanceposting-width {
+    width: 100%;
+  }
+}
