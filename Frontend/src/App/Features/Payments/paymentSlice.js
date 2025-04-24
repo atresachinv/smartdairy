@@ -10,7 +10,10 @@ const initialState = {
   transferedMilkData: [],
   lastMamt: [],
   trnDeductions: [],
+  paymasters: [],
   status: "idle",
+  pmaststatus: "idle",
+  upaystatus: "idle",
   lastMamtstatus: "idle",
   trnstatus: "idle",
   transtatus: "idle",
@@ -291,11 +294,11 @@ export const transferToShift = createAsyncThunk(
     }
   }
 );
-//----------------------------------------------------->
-// generate payment ---------------------------------------->
-//----------------------------------------------------->
+//--------------------------------------------------------------------------------->
+// generate payment --------------------------------------------------------------->
+//--------------------------------------------------------------------------------->
 
-//get total milk payment amt----------------------------------------------------->
+//get total milk payment amt------------------------------------------------------->
 export const checkPayExists = createAsyncThunk(
   "payment/checkPayExists",
   async ({ fromDate, toDate }, { rejectWithValue }) => {
@@ -315,7 +318,7 @@ export const checkPayExists = createAsyncThunk(
   }
 );
 
-//get total milk payment amt----------------------------------------------------->
+//get total milk payment amt------------------------------------------------------->
 export const checkAmtZero = createAsyncThunk(
   "payment/checkAmtZero",
   async ({ fromDate, toDate }, { rejectWithValue }) => {
@@ -338,7 +341,7 @@ export const checkAmtZero = createAsyncThunk(
   }
 );
 
-//get total milk payment amt----------------------------------------------------->
+//get total milk payment amt------------------------------------------------------->
 
 export const fetchMilkPaydata = createAsyncThunk(
   "payment/fetchMilkPaydata",
@@ -359,7 +362,7 @@ export const fetchMilkPaydata = createAsyncThunk(
   }
 );
 
-//get trn deduction amt----------------------------------------------------->
+//get trn deduction amt------------------------------------------------------------>
 
 export const fetchTrnDeductions = createAsyncThunk(
   "payment/fetchTrnDeductions",
@@ -380,7 +383,7 @@ export const fetchTrnDeductions = createAsyncThunk(
     }
   }
 );
-//get trn deduction amt----------------------------------------------------->
+//get trn deduction amt------------------------------------------------------------->
 
 export const fetchLastMAMT = createAsyncThunk(
   "payment/fetchLastMAMT",
@@ -401,7 +404,7 @@ export const fetchLastMAMT = createAsyncThunk(
   }
 );
 
-//save milk payment Fix deductions and other deductions ------------------------->
+//save milk payment Fix deductions and other deductions --------------------------->
 
 export const saveMilkPaydata = createAsyncThunk(
   "payment/saveMilkPaydata",
@@ -439,20 +442,39 @@ export const saveOtherDeductions = createAsyncThunk(
   }
 );
 
-//lock milk payment ------------------------------------------------------------>
+//update milk payment deduction and main payment ---------------------------------->
 
-export const lockMilkPaydata = createAsyncThunk(
-  "payment/savMilkPaydata",
+export const updatePayInfo = createAsyncThunk(
+  "payment/updatePayInfo",
   async ({ formData, PaymentFD }, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.post("/save/milk/payment", {
+      const response = await axiosInstance.put("/update/payment/deductions", {
         formData,
         PaymentFD,
       });
       return response.data;
     } catch (error) {
       const errorMessage =
-        error.response?.data?.message || "Failed to save milk payment details.";
+        error.response?.data?.message || "Failed to update payment details.";
+      return rejectWithValue(errorMessage);
+    }
+  }
+);
+
+//lock milk payment ------------------------------------------------------------>
+
+export const lockMilkPaydata = createAsyncThunk(
+  "payment/lockMilkPaydata",
+  async ({ updates }, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.put("/update/payment/lock", {
+        updates,
+      });
+      return response.data;
+    } catch (error) {
+      const errorMessage =
+        error.response?.data?.message ||
+        "Failed to update payment lock status.";
       return rejectWithValue(errorMessage);
     }
   }
@@ -474,6 +496,21 @@ export const fetchPaymentDetails = createAsyncThunk(
     } catch (error) {
       const errorMessage =
         error.response?.data?.message || "Failed to save milk payment details.";
+      return rejectWithValue(errorMessage);
+    }
+  }
+);
+//Fetch selected milk payment ------------------------------------------------------------>
+
+export const getPayMasters = createAsyncThunk(
+  "payment/getPayMasters",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.get("/fetch/payment/masters");
+      return response.data.payMasters;
+    } catch (error) {
+      const errorMessage =
+        error.response?.data?.message || "Failed to save milk payment master!.";
       return rejectWithValue(errorMessage);
     }
   }
@@ -668,6 +705,17 @@ const paymentSlice = createSlice({
       .addCase(saveOtherDeductions.rejected, (state, action) => {
         state.savededstatus = "failed";
         state.error = action.payload;
+      }) //update milk payment details ------------------------------------------->
+      .addCase(updatePayInfo.pending, (state) => {
+        state.upaystatus = "loading";
+        state.error = null;
+      })
+      .addCase(updatePayInfo.fulfilled, (state) => {
+        state.upaystatus = "succeeded";
+      })
+      .addCase(updatePayInfo.rejected, (state, action) => {
+        state.upaystatus = "failed";
+        state.error = action.payload;
       }) //fetch trn deductions ------------------------------------------->
       .addCase(fetchTrnDeductions.pending, (state) => {
         state.trnstatus = "loading";
@@ -715,6 +763,18 @@ const paymentSlice = createSlice({
       })
       .addCase(fetchPaymentDetails.rejected, (state, action) => {
         state.paystatus = "failed";
+        state.error = action.payload;
+      }) // get payment masters ------------------------------------------------>
+      .addCase(getPayMasters.pending, (state) => {
+        state.pmaststatus = "loading";
+        state.error = null;
+      })
+      .addCase(getPayMasters.fulfilled, (state, action) => {
+        state.pmaststatus = "succeeded";
+        state.paymasters = action.payload;
+      })
+      .addCase(getPayMasters.rejected, (state, action) => {
+        state.pmaststatus = "failed";
         state.error = action.payload;
       });
   },

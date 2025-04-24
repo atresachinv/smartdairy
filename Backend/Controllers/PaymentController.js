@@ -785,7 +785,7 @@ exports.milkTrasferToShift = async (req, res) => {
 // ----------------------------------------------------------------------------------->
 // COPY MILK COLLECTION -------------------------------------------------------------->
 // ----------------------------------------------------------------------------------->
-
+// updated --> 23/4/25
 exports.copyMilkCollection = async (req, res) => {
   const { currentdate, updatedate, fromCode, toCode, time, updatetime } =
     req.body;
@@ -841,11 +841,15 @@ exports.copyMilkCollection = async (req, res) => {
           connection.release();
           return res.status(404).json({ message: "No records found!" });
         }
-
+        const today = new Date();
+        const formattedDate = today
+          .toISOString()
+          .slice(0, 19)
+          .replace("T", " ");
         // Step 2: Insert new records with updated ReceiptDate
         const insertRecordQuery = `
             INSERT INTO ${dairy_table} 
-            (userid, ReceiptDate, ME, CB, Litres, Amt, AccCode, fat, snf, rate, cname, rno, center_id) 
+            (userid, ReceiptDate, ME, CB, Litres, Amt, AccCode, fat, snf, rate, cname, rno, center_id, UpdatedBy, updatedOn ) 
             VALUES ?
         `;
 
@@ -863,6 +867,8 @@ exports.copyMilkCollection = async (req, res) => {
           record.cname,
           record.rno,
           center_id,
+          user_id,
+          formattedDate,
         ]);
 
         connection.query(insertRecordQuery, [insertData], (err, result) => {
@@ -924,10 +930,10 @@ exports.copyMilkCollection = async (req, res) => {
 // ----------------------------------------------------------------------------------->
 // DELETE MILK COLLECTION ------------------------------------------------------------>
 // ----------------------------------------------------------------------------------->
-
+// updated isDeleted --> 23/4/25
 exports.deleteMilkCollection = async (req, res) => {
   const { values } = req.body;
-  const dairy_id = req.user?.dairy_id;
+  const { dairy_id, user_id } = req.user;
 
   // Validate request body
   if (!values || Object.keys(values).length === 0) {
@@ -944,6 +950,9 @@ exports.deleteMilkCollection = async (req, res) => {
     });
   }
 
+  const today = new Date();
+  const formattedDate = today.toISOString().slice(0, 19).replace("T", " ");
+
   pool.getConnection((err, connection) => {
     if (err) {
       console.error("Error getting MySQL connection: ", err);
@@ -959,20 +968,37 @@ exports.deleteMilkCollection = async (req, res) => {
 
       if (time === 2) {
         deleteQuery = `
-          DELETE FROM ${dairy_table}
+          UPDATE ${dairy_table} 
+          SET isDeleted = 1 , deletedBy = ?, deletedOn = ?
           WHERE ReceiptDate BETWEEN ? AND ? 
           AND rno BETWEEN ? AND ? 
           AND ME IN (0, 1)
         `;
-        queryParams = [fromDate, toDate, fromCode, toCode];
+        queryParams = [
+          user_id,
+          formattedDate,
+          fromDate,
+          toDate,
+          fromCode,
+          toCode,
+        ];
       } else if (time !== undefined) {
         deleteQuery = `
-          DELETE FROM ${dairy_table}
+          UPDATE ${dairy_table} 
+          SET isDeleted = 1 , deletedBy = ?, deletedOn = ?
           WHERE ReceiptDate BETWEEN ? AND ? 
           AND rno BETWEEN ? AND ? 
           AND ME = ?
         `;
-        queryParams = [fromDate, toDate, fromCode, toCode, time];
+        queryParams = [
+          user_id,
+          formattedDate,
+          fromDate,
+          toDate,
+          fromCode,
+          toCode,
+          time,
+        ];
       } else {
         return res.status(400).json({ message: "Invalid time value!" });
       }
@@ -1325,7 +1351,7 @@ exports.checkZeroAmt = async (req, res) => {
 
     const milkCollectionQuery = `
       SELECT rno FROM ${dairy_table}
-        WHERE ReceiptDate BETWEEN ? AND ? AND center_id = ? AND Amt = 0
+        WHERE ReceiptDate BETWEEN ? AND ? AND center_id = ? AND Amt = 0 
         ORDER BY rno ASC;
       `;
 
@@ -1358,7 +1384,7 @@ exports.checkZeroAmt = async (req, res) => {
 // ----------------------------------------------------------------------------------->
 // get payment Amount ---------------------------------------------------------------->
 // ----------------------------------------------------------------------------------->
-
+// updated isDeleted --> 23/4/25
 exports.getMilkPayAmt = async (req, res) => {
   const { dairy_id, center_id } = req.user;
   const { fromDate, toDate } = req.query;
@@ -1397,7 +1423,7 @@ exports.getMilkPayAmt = async (req, res) => {
             ${dairy_table}
         WHERE 
             ReceiptDate BETWEEN ? AND ? 
-            AND center_id = ?
+            AND center_id = ? AND isDeleted = 0
         GROUP BY 
             rno, cname
         ORDER BY 
@@ -1793,8 +1819,13 @@ exports.saveOtherDeductions = (req, res) => {
   });
 };
 
-exports.saveOtherDeductions = (req, res) => {
-  const { dairy_id, center_id } = req.user;
+// ----------------------------------------------------------------------------------->
+// Save bill on button click --------------------------------------------------------->
+//   update Deduction and main payment ----------------------------------------------->
+//------------------------------------------------------------------------------------>
+
+exports.updatePaymentDetails = (req, res) => {
+  const { dairy_id } = req.user;
   const { formData, PaymentFD } = req.body;
   const {
     id,
@@ -1854,17 +1885,17 @@ exports.saveOtherDeductions = (req, res) => {
         });
       }
 
-      // First update existing record
+
       const updateQuery = `
         UPDATE custbilldetails
         SET Amt = ?, pamt = ?, namt = ?, damt = ?
         WHERE id = ?
       `;
       const updateValues = [
-        Number(parseFloat(netPayment || 0).toFixed(2)),
-        Number(parseFloat(totalPayment || 0).toFixed(2)),
-        Number(parseFloat(netPayment || 0).toFixed(2)),
-        Number(parseFloat(netDeduction || 0).toFixed(2)),
+        parseFloat(parseFloat(netPayment).toFixed(2)),
+        parseFloat(parseFloat(totalPayment).toFixed(2)),
+        parseFloat(parseFloat(netPayment).toFixed(2)),
+        parseFloat(parseFloat(netDeduction).toFixed(2)),
         id,
       ];
 
@@ -1880,15 +1911,15 @@ exports.saveOtherDeductions = (req, res) => {
           });
         }
 
-        // Group PaymentFD by code
         const groupedByRno = PaymentFD.reduce((acc, row) => {
-          const rno = row.code || "no_rno"; // fallback
+          const rno = row.code || "no_rno";
           if (!acc[rno]) acc[rno] = [];
           acc[rno].push(row);
           return acc;
         }, {});
 
         const rnoKeys = Object.keys(groupedByRno);
+
         const processNextGroup = (groupIndex) => {
           if (groupIndex >= rnoKeys.length) {
             return connection.commit((commitErr) => {
@@ -1902,7 +1933,7 @@ exports.saveOtherDeductions = (req, res) => {
               }
               return res.status(200).json({
                 status: 200,
-                message: "Deductions saved successfully.",
+                message: "Main Payment saved successfully.",
               });
             });
           }
@@ -1915,48 +1946,35 @@ exports.saveOtherDeductions = (req, res) => {
             }
 
             const row = groupRows[recIndex];
-            const { AccCode, GLCode, DeductionId, dname, Amt, MAMT, netamt } =
-              row;
+            const Amt = parseFloat(parseFloat(row.Amt).toFixed(2));
+            const MAMT = parseFloat(parseFloat(row.MAMT).toFixed(2));
+            const BAMT = parseFloat(parseFloat(row.BAMT).toFixed(2));
+            const id = row.id;
 
-            const insertQuery = `
-              INSERT INTO custbilldetails
-              (companyid, center_id, CBId, BillNo, BillDate, VoucherNo, VoucherDate,
-               GLCode, Code, FromDate, ToDate, dname, DeductionId, Amt, MAMT, BAMT)
-              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            const updateQuery = `
+              UPDATE custbilldetails
+              SET Amt = ?, MAMT = ?, BAMT = ?
+              WHERE id = ?
             `;
 
-            const values = [
-              dairy_id,
-              center_id,
-              0,
-              billno,
-              billdate,
-              billno,
-              toDate,
-              GLCode || null,
-              AccCode,
-              formDate,
-              toDate,
-              dname || null,
-              DeductionId,
-              Number(parseFloat(Amt || 0).toFixed(2)),
-              Number(parseFloat(MAMT || 0).toFixed(2)), // MAMT
-              Number(parseFloat(netamt || 0).toFixed(2)), // BAMT
-            ];
-
-            connection.query(insertQuery, values, (err, results) => {
-              if (err) {
-                return connection.rollback(() => {
-                  connection.release();
-                  console.error("Insert error:", err);
-                  return res.status(500).json({
-                    status: 500,
-                    message: "Failed to insert deduction data!",
+            connection.query(
+              updateQuery,
+              [Amt, MAMT, BAMT, id],
+              (err, results) => {
+                if (err) {
+                  return connection.rollback(() => {
+                    connection.release();
+                    console.error("Update error:", err);
+                    return res.status(500).json({
+                      status: 500,
+                      message: "Failed to update payment data!",
+                    });
                   });
-                });
+                }
+
+                insertNextRecord(recIndex + 1);
               }
-              insertNextRecord(recIndex + 1);
-            });
+            );
           };
 
           insertNextRecord(0);
@@ -2045,68 +2063,54 @@ exports.saveNewUpdateLastBill = async (req, res) => {
 
 exports.lockMilkPayment = async (req, res) => {
   const { dairy_id, center_id } = req.user;
-  const { fromDate, toDate } = req.query;
+  const updates = req.body.updates;
 
   if (!dairy_id) {
-    return res
-      .status(400)
-      .json({ message: "Dairy ID not found in the request!" });
-  }
-  if (!fromDate || !toDate) {
-    return res
-      .status(400)
-      .json({ message: "fromDate and toDate are required!" });
+    return res.status(400).json({ message: "Dairy ID not found!" });
   }
 
-  const dairy_table = `dailymilkentry_${dairy_id}`;
+  if (!Array.isArray(updates) || updates.length === 0) {
+    return res.status(400).json({ message: "No updates provided!" });
+  }
 
   pool.getConnection((err, connection) => {
     if (err) {
-      console.error("Error getting MySQL connection: ", err.message);
+      console.error("MySQL connection error: ", err.message);
       return res.status(500).json({ message: "Database connection error" });
     }
 
-    const milkPaymentDataquery = `
-      SELECT 
-            rno, 
-            cname,
-            SUM(Litres) AS totalLitres,
-            SUM(Litres * rate) AS totalamt,
-            MIN(ReceiptDate) AS min_receipt_date,
-            SUM(Litres * fat) / SUM(Litres) AS avgFat, 
-            SUM(Litres * snf) / SUM(Litres) AS avgSnf
-        FROM 
-            ${dairy_table}
-        WHERE 
-            ReceiptDate BETWEEN ? AND ? 
-            AND center_id = ?
-        GROUP BY 
-            rno, cname
-        ORDER BY 
-            CAST(rno AS UNSIGNED) ASC;
-      `;
+    const promises = updates.map(({ fromDate, toDate, islock }) => {
+      return new Promise((resolve, reject) => {
+        const updateQuery = `
+          UPDATE custbilldetails
+          SET islock = ?
+          WHERE companyid = ? AND center_id = ? AND FromDate = ? AND ToDate = ?
+        `;
+        connection.query(
+          updateQuery,
+          [islock, dairy_id, center_id, fromDate, toDate],
+          (err, results) => {
+            if (err) reject(err);
+            else resolve(results);
+          }
+        );
+      });
+    });
 
-    connection.query(
-      milkPaymentDataquery,
-      [fromDate, toDate, center_id],
-      (err, results) => {
+    Promise.all(promises)
+      .then(() => {
         connection.release();
-
-        if (err) {
-          console.error("Error executing query: ", err.message);
-          return res.status(500).json({ message: "Error executing query" });
-        }
-
-        if (results.length === 0) {
-          return res.status(200).json({
-            paymentData: [],
-            message: "No record found!",
-          });
-        }
-
-        res.status(200).json({ status: 200, paymentData: results });
-      }
-    );
+        res
+          .status(200)
+          .json({ status: 200, message: "All payment statuses updated!" });
+      })
+      .catch((err) => {
+        connection.release();
+        console.error("Query error: ", err.message);
+        res
+          .status(500)
+          .json({ message: "Failed to update some or all records." });
+      });
   });
 };
 
@@ -2254,64 +2258,51 @@ exports.fetchTrnRemAmt = async (req, res) => {
 };
 
 // ----------------------------------------------------------------------------------->
-// fetch Last Remaining amount ------------------------------------------------------->
+// Fetch all payment masters --------------------------------------------------------->
 // ----------------------------------------------------------------------------------->
 
-// exports.fetchLastReAmt = async (req, res) => {
-//   const { dairy_id, center_id } = req.user;
-//   const { fromdate, todate } = req.query;
+exports.fetchPaymentMasters = async (req, res) => {
+  const { dairy_id, center_id } = req.user;
+  if (!dairy_id) {
+    return res.status(401).json({ status: 401, message: "Unauthorised User!" });
+  }
 
-//   if (!dairy_id) {
-//     return res.status(401).json({ status: 401, message: "Unauthorised User!" });
-//   }
+  pool.getConnection((err, connection) => {
+    if (err) {
+      console.error("Error getting MySQL connection: ", err.message);
+      return res
+        .status(500)
+        .json({ status: 500, message: "Database connection error" });
+    }
 
-//   if (!fromdate || !todate) {
-//     return res
-//       .status(400)
-//       .json({ status: 400, message: "fromDate and toDate are required!" });
-//   }
+    const fetchQuery = `
+      SELECT DISTINCT FromDate, ToDate, islock
+      FROM custbilldetails
+      WHERE companyid = ? AND center_id = ?
+      ORDER BY FromDate DESC, ToDate DESC;
+    `;
 
-//   pool.getConnection((err, connection) => {
-//     if (err) {
-//       console.error("Error getting MySQL connection: ", err.message);
-//       return res
-//         .status(500)
-//         .json({ status: 500, message: "Database connection error" });
-//     }
+    connection.query(fetchQuery, [dairy_id, center_id], (err, results) => {
+      connection.release();
 
-//     const fetchPaymentquery = `
-//       SELECT  DeductionId, dname, MAMT, BAMT, GLCode
-//         FROM custbilldetails
-//         WHERE companyid = ? AND center_id = ? AND BillDate = ?
-//         ORDER BY DeductionId ASC, Code ASC;
-//       `;
+      if (err) {
+        console.error("Error executing query: ", err.message);
+        return res
+          .status(500)
+          .json({ status: 500, message: "Error executing query" });
+      }
 
-//     connection.query(
-//       fetchPaymentquery,
-//       [dairy_id, center_id, fromdate, todate],
-//       (err, results) => {
-//         connection.release();
-
-//         if (err) {
-//           console.error("Error executing query: ", err.message);
-//           return res
-//             .status(500)
-//             .json({ status: 500, message: "Error executing query" });
-//         }
-
-//         if (results.length === 0) {
-//           return res.status(204).json({
-//             status: 204,
-//             lastRemAmt: [],
-//             message: "No record found!",
-//           });
-//         }
-//         const lastRemAmt = results;
-//         res.status(200).json({ status: 200, lastRemAmt });
-//       }
-//     );
-//   });
-// };
+      if (results.length === 0) {
+        return res.status(204).json({
+          status: 204,
+          payMasters: [],
+          message: "No record found!",
+        });
+      }
+      res.status(200).json({ status: 200, payMasters: results });
+    });
+  });
+};
 
 // ----------------------------------------------------------------------------------->
 // View Selected Payment ------------------------------------------------------------->

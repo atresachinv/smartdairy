@@ -15,7 +15,7 @@ import {
 } from "../../../App/Features/Payments/paymentSlice";
 import { fetchMaxApplyDeductions } from "../../../App/Features/Deduction/deductionSlice";
 
-const Payments = ({ setShowDeduPage }) => {
+const Payments = ({ setCurrentPage }) => {
   const dispatch = useDispatch();
   const tDate = useSelector((state) => state.date.toDate);
   const custno = useSelector((state) => state.customer.maxCustNo);
@@ -208,6 +208,7 @@ const Payments = ({ setShowDeduPage }) => {
             avgFat: 0.0,
             avgRate: 0.0,
             totalDeduction: 0.0,
+            dtype: 0,
           });
         }
 
@@ -227,6 +228,7 @@ const Payments = ({ setShowDeduPage }) => {
           avgFat: avgFat.toFixed(1),
           avgRate: avgRate.toFixed(1),
           totalDeduction: totalDeduction.toFixed(2),
+          dtype: 2,
         });
       }
 
@@ -423,98 +425,77 @@ const Payments = ({ setShowDeduPage }) => {
   }, [formData.fromDate, otherDeduction]);
 
   //generate payment bill ---------------------------------------------------------->
+
   const handleGenerateBill = async (e) => {
     e.preventDefault();
     setPayStatus(true);
+
     try {
       const results = await dispatch(
         checkPayExists({ fromDate: formData.fromDate, toDate: formData.toDate })
       ).unwrap();
-      if (results?.found === false) {
-        const result = await dispatch(
-          checkAmtZero({ fromDate: formData.fromDate, toDate: formData.toDate })
+
+      if (results?.found) {
+        toast.error("Payment already exists for this date range!");
+        return;
+      }
+
+      const result = await dispatch(
+        checkAmtZero({ fromDate: formData.fromDate, toDate: formData.toDate })
+      ).unwrap();
+
+      if (result?.status === 200) {
+        toast.error("Milk correction required!");
+        return;
+      }
+
+      await dispatch(
+        fetchMilkPaydata({
+          fromDate: formData.fromDate,
+          toDate: formData.toDate,
+        })
+      );
+      await dispatch(
+        fetchTrnDeductions({
+          fromDate: formData.fromDate,
+          toDate: formData.toDate,
+          GlCodes: otherDeduction,
+        })
+      ).unwrap();
+
+      let deductionData =
+        formData.autodeduct === 1
+          ? await handleAllDeductions()
+          : await handleFixDeductions();
+
+      if (deductionData.length === 0) {
+        toast.error("Error in deduction calculations, try again!");
+        return;
+      }
+
+      setPaymentFD(deductionData);
+
+      const saveres = await dispatch(
+        saveMilkPaydata({ formData, PaymentFD: deductionData })
+      ).unwrap();
+
+      if (saveres?.status === 200) {
+        const fetchres = await dispatch(
+          fetchPaymentDetails({
+            fromdate: formData.fromDate,
+            todate: formData.toDate,
+          })
         ).unwrap();
 
-        if (result?.status === 204) {
-          dispatch(
-            fetchMilkPaydata({
-              fromDate: formData.fromDate,
-              toDate: formData.toDate,
-            })
-          );
-          const saleres = await dispatch(
-            fetchTrnDeductions({
-              fromDate: formData.fromDate,
-              toDate: formData.toDate,
-              GlCodes: otherDeduction,
-            })
-          ).unwrap();
-        } else if (result?.status === 200) {
-          toast.error("Milk correction required!");
-          setPayStatus(false);
-          return;
+        if (fetchres?.status === 200) {
+          toast.success("Milk payment generated successfully!");
         }
-
-        if (payData && deductionDetails) {
-          let deductionData;
-          if (formData.autodeduct === 1) {
-            deductionData = await handleAllDeductions();
-            console.log("deductionData", deductionData);
-            if (deductionData.length === 0) {
-              toast.error("Error in deduction calculations, try again!");
-              setPayStatus(false);
-              return;
-            }
-
-            setPaymentFD(deductionData);
-
-              const saveres = await dispatch(
-                saveMilkPaydata({ formData, PaymentFD: deductionData })
-              ).unwrap();
-
-              const fetchres = await dispatch(
-                fetchPaymentDetails({
-                  fromdate: formData.fromDate,
-                  todate: formData.toDate,
-                })
-              ).unwrap();
-          }
-          // } else {
-          //   deductionData = await handleFixDeductions();
-
-          //   if (deductionData.length === 0) {
-          //     toast.error("Error in deduction calculations, try again!");
-          //     setPayStatus(false);
-          //     return;
-          //   }
-
-          //   setPaymentFD(deductionData);
-
-          //   const saveres = await dispatch(
-          //     saveMilkPaydata({ formData, PaymentFD: deductionData })
-          //   ).unwrap();
-          // }
-          // if (saveres?.status === 200) {
-          //   const fetchres = await dispatch(
-          //     fetchPaymentDetails({
-          //       fromdate: formData.fromDate,
-          //       todate: formData.toDate,
-          //     })
-          //   ).unwrap();
-          //   if (fetchres?.status === 200) {
-          toast.success("Milk payment Generated successfully!");
-          //   }
-          // } else {
-          // toast.error("Unexpected response. Please try again!");
-          // }
-        }
-      } else if (results?.found === true) {
-        toast.error("Payment already exists for this dates!");
       } else {
         toast.error("Unexpected response. Please try again!");
       }
     } catch (error) {
-      toast.error("Unexpected error", error);
+      console.error("Error in handleGenerateBill:", error);
+      toast.error("Unexpected error occurred!");
     } finally {
       setPayStatus(false);
     }
@@ -635,9 +616,17 @@ const Payments = ({ setShowDeduPage }) => {
 
   return (
     <div className="Bil-list-container w100 h1 d-flex-col sb p10">
-      <label className="heading py10" htmlFor="">
-        दुध बिले बनवा :
-      </label>
+      <div className="page-title-select-center-container w100 h10 d-flex a-center">
+        <label className="heading py10 mx10" htmlFor="">
+          दुध बिले बनवा :
+        </label>
+        <label className="label-text py10 mx10" htmlFor="">
+          सेंटर निवडा :
+        </label>
+        <select className="data w35 mx10" name="" id="">
+          <option value="">mian center</option>
+        </select>
+      </div>
       <form
         onSubmit={handleGenerateBill}
         className="generate-bill-form-container w100 h20 d-flex sb br6"
@@ -747,7 +736,7 @@ const Payments = ({ setShowDeduPage }) => {
         </div>
       </form>
       <div className="payment-details-and-report-btn-div w100 h70 d-flex sb">
-        <div className="payment-data-report-btn-div w70 h1 d-flex-col se px10">
+        <div className="payment-data-report-btn-div w80 h1 d-flex-col se px10">
           <div className="customer-code-div w100 h10 d-flex a-center sb px10">
             <span className="label-text">Payment Details : </span>
             <div className="cust-code-div d-flex w50 h1 sb a-center">
@@ -810,28 +799,35 @@ const Payments = ({ setShowDeduPage }) => {
           </div>
 
           <div className="bill-form-btn-div w100 h10 d-flex j-end">
-            <button className="btn">काढूण टाका</button>
-            <button className="w-btn mx10">सर्व काढूण टाका</button>
-            <button className="btn">बिल रद्द करा </button>
+            <button type="button" className="btn">
+              बिल लॉक करा
+            </button>
+            <button type="button" className="btn">
+              काढूण टाका
+            </button>
+            <button type="button" className="w-btn mx10">
+              सर्व काढूण टाका
+            </button>
           </div>
         </div>
-        <div className="bill-payments-container-div w30 d-flex f-wrap se">
-          <button className="w-btn w45" onClick={() => setShowDeduPage(true)}>
+        <div className="bill-payments-container-div w15 d-flex-col se">
+          <button
+            className="btn w100"
+            onClick={() => setCurrentPage("deductions")}
+          >
             पेमेंट कपाती
           </button>
-          <button className="w-btn w45">संकलन रिपोर्ट </button>
-          <button className="w-btn w45">कपात रिपोर्ट</button>
-          <button className="w-btn w45">संकलन दुरुस्थी </button>
-          <button className="w-btn w45">Payment रजिस्टर </button>
-          <button className="w-btn w45">Payment समरी </button>
-          <button className="w-btn w45">Payment रजिस्टर बँक </button>
-          <button className="w-btn w45">बिल यादी 1 </button>
-          <button className="w-btn w45">Collection Report</button>
-          <button className="w-btn w45">Deduction Report</button>
-          <button className="w-btn w45">Collection Update</button>
-          <button className="w-btn w45">Payment Register</button>
-          <button className="w-btn w45">Payment Summary</button>
-          <button className="w-btn w45">Payment Regi</button>
+          <button
+            className="btn w100"
+            onClick={() => setCurrentPage("lockbill")}
+          >
+            बिल लॉक करा
+          </button>
+          <button className="w-btn w100">कपात रिपोर्ट</button>
+          <button className="w-btn w100">संकलन दुरुस्थी </button>
+          <button className="w-btn w100">Payment रजिस्टर </button>
+          <button className="w-btn w100">Payment समरी </button>
+          <button className="w-btn w100">Payment रजिस्टर बँक </button>
         </div>
       </div>
     </div>

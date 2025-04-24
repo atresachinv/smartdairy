@@ -1,5 +1,5 @@
 .bill-payments-container-div button {
-  width: 45%;
+  width: 100%;
 }
 
 @media screen and (max-width: 426px) {

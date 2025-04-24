@@ -1468,7 +1468,7 @@ exports.fetchPrevLiters = async (req, res) => {
 //------------------------------------------------------------------------------------------------------------------->
 // (Update) fetch Mobile Milk Collection to complete milk collection
 //------------------------------------------------------------------------------------------------------------------->
-
+// updated isDeleted --> 23/4/25
 exports.fetchMobileMilkCollection = async (req, res) => {
   const dairy_id = req.user.dairy_id;
   const center_id = req.user.center_id;
@@ -1493,7 +1493,7 @@ exports.fetchMobileMilkCollection = async (req, res) => {
       const milkcollReport = `
         SELECT userid, Litres, cname, rno, SampleNo , ME
         FROM ${dairy_table}
-        WHERE ReceiptDate = ?  AND center_id = ?  AND Driver = 1 
+        WHERE ReceiptDate = ?  AND center_id = ? AND isDeleted = 0  AND Driver = 1 
         ORDER BY id ASC
       `;
 
@@ -1524,7 +1524,7 @@ exports.fetchMobileMilkCollection = async (req, res) => {
 //------------------------------------------------------------------------------------------------------------------->
 // Update Mobile Milk Collection
 //------------------------------------------------------------------------------------------------------------------->
-
+// updated isDeleted --> 23/4/25
 exports.updateMobileCollection = async (req, res) => {
   const { code, fat, snf, amt, degree, rate, acccode, sample } = req.body;
 
@@ -1600,7 +1600,7 @@ exports.updateMobileCollection = async (req, res) => {
 //------------------------------------------------------------------------------------------------------------------->
 // Milk Collection Report (use to Fillter) and to show on dashboard
 //------------------------------------------------------------------------------------------------------------------->
-
+// updated isDeleted --> 23/4/25
 exports.allMilkCollReport = async (req, res) => {
   const { fromDate, toDate } = req.query;
   const { dairy_id, center_id } = req.user;
@@ -1622,7 +1622,7 @@ exports.allMilkCollReport = async (req, res) => {
       let milkCollectionQuery = `
         SELECT id, userid, ReceiptDate, ME, CB, Litres, fat, snf, rate, Amt, cname, rno, AccCode, center_id
         FROM ${dairy_table}
-        WHERE ReceiptDate BETWEEN ? AND ?`;
+        WHERE ReceiptDate BETWEEN ? AND ? AND isDeleted = 0`;
 
       const values = [fromDate, toDate];
 
@@ -1662,7 +1662,7 @@ exports.allMilkCollReport = async (req, res) => {
 // Milk Collection of MilkCollector (for admin)
 //------------------------------------------------------------------------------------------------------------------->
 
-//v2 function
+//v2 function // updated isDeleted --> 23/4/25
 exports.allMilkCollection = async (req, res) => {
   const { fromDate, toDate } = req.query;
 
@@ -1692,7 +1692,7 @@ exports.allMilkCollection = async (req, res) => {
           SELECT 
             id , userid, ReceiptDate, ME, CB, Litres, fat, snf, rate, Amt, cname, rno, SampleNo
           FROM ${dairy_table}
-          WHERE ReceiptDate BETWEEN ? AND ? AND Driver IN (0, 1)
+          WHERE ReceiptDate BETWEEN ? AND ? AND isDeleted = 0 AND Driver IN (0, 1)
         `;
         queryParams = [fromDate, toDate];
       } else {
@@ -1701,7 +1701,7 @@ exports.allMilkCollection = async (req, res) => {
           SELECT 
            id, userid, ReceiptDate, ME, CB, Litres, fat, snf, rate, Amt, cname, rno, SampleNo
           FROM ${dairy_table}
-          WHERE center_id = ? AND ReceiptDate BETWEEN ? AND ? AND Driver IN (0, 1)
+          WHERE center_id = ? AND ReceiptDate BETWEEN ? AND ? AND isDeleted = 0 AND Driver IN (0, 1)
         `;
         queryParams = [center_id, fromDate, toDate];
       }
@@ -1734,7 +1734,7 @@ exports.allMilkCollection = async (req, res) => {
 //------------------------------------------------------------------------------------------------------------------->
 // Fetch dairy Milk Collection Report
 //------------------------------------------------------------------------------------------------------------------->
-
+// updated isDeleted --> 23/4/25
 exports.todaysMilkCollReport = async (req, res) => {
   const { date } = req.query; // Read from `req.query`
 
@@ -1760,7 +1760,7 @@ exports.todaysMilkCollReport = async (req, res) => {
         SELECT 
           ReceiptDate, ME, CB, Litres, fat, snf, rate, Amt, cname, rno
         FROM ${dairy_table}
-        WHERE center_id = ? AND ReceiptDate = ?
+        WHERE center_id = ? AND ReceiptDate = ? AND isDeleted = 0
       `;
 
       connection.query(todaysMilkQuery, [center_id, date], (err, results) => {
@@ -1791,7 +1791,7 @@ exports.todaysMilkCollReport = async (req, res) => {
 //------------------------------------------------------------------------------------------------------------------->
 // Fetch dairy Milk Collection Report Customer Wise
 //------------------------------------------------------------------------------------------------------------------->
-
+// updated isDeleted --> 23/4/25
 exports.custWiseMilkCReort = async (req, res) => {
   const { fromDate, toDate } = req.body;
 
@@ -1808,17 +1808,17 @@ exports.custWiseMilkCReort = async (req, res) => {
       morning: `
         SELECT fat, snf, rate, Litres, Amt 
         FROM dailymilkentry_102 
-        WHERE ReceiptDate BETWEEN ? AND ? AND ME = 0 AND dairy_id = ? AND center_id = ?
+        WHERE ReceiptDate BETWEEN ? AND ? AND ME = 0 AND dairy_id = ? AND center_id = ? AND isDeleted = 0
       `,
       evening: `
         SELECT fat, snf, rate, Litres, Amt 
-        FROM dailymilkentry_102 
-        WHERE ReceiptDate BETWEEN ? AND ? AND ME = 1 AND dairy_id = ? AND center_id = ?
+        FROM dailymilkentry_102  
+        WHERE ReceiptDate BETWEEN ? AND ? AND ME = 1 AND dairy_id = ? AND center_id = ? AND isDeleted = 0
       `,
       total: `
         SELECT SUM(Litres) AS totalLitres, COUNT(DISTINCT AccCode) AS totalCustomers, SUM(Amt) AS totalAmount
-        FROM dailymilkentry_102 
-        WHERE ReceiptDate BETWEEN ? AND ? AND dairy_id = ? AND center_id = ?
+        FROM dailymilkentry_102  
+        WHERE ReceiptDate BETWEEN ? AND ? AND dairy_id = ? AND center_id = ? AND isDeleted = 0
       `,
     };
 
@@ -1875,7 +1875,7 @@ exports.DeleteAllMilkCollCustomer = async (req, res) => {};
 //------------------------------------------------------------------------------------------------------------------->
 // todays milk report for Admin
 //------------------------------------------------------------------------------------------------------------------->
-
+// updated isDeleted --> 23/4/25
 exports.todaysReport = async (req, res) => {
   const { formDate, toDate } = req.body;
 
@@ -1891,17 +1891,17 @@ exports.todaysReport = async (req, res) => {
     const morningQuery = `
       SELECT fat, snf, rate, Litres, Amt 
       FROM dailymilkentry_102 
-      WHERE ReceiptDate BETWEEN ? AND ? AND ME = 0 AND dairy_id = ? AND center_id = ?
+      WHERE ReceiptDate BETWEEN ? AND ? AND ME = 0 AND dairy_id = ? AND center_id = ? AND isDeleted = 0
     `;
     const eveningQuery = `
       SELECT fat, snf, rate, Litres, Amt 
       FROM dailymilkentry_102 
-      WHERE ReceiptDate BETWEEN ? AND ? AND ME = 1 AND dairy_id = ? AND center_id = ?
+      WHERE ReceiptDate BETWEEN ? AND ? AND ME = 1 AND dairy_id = ? AND center_id = ? AND isDeleted = 0
     `;
     const totalMilkQuery = `
       SELECT SUM(Litres) AS totalLitres, COUNT(DISTINCT AccCode) AS totalCustomers, SUM(Amt) AS totalAmount
       FROM dailymilkentry_102 
-      WHERE ReceiptDate = ?
+      WHERE ReceiptDate = ? AND isDeleted = 0
     `;
 
     Promise.all([
@@ -1948,7 +1948,7 @@ exports.todaysReport = async (req, res) => {
 //------------------------------------------------------------------------------------------------------------------->
 // milk report for customer
 //------------------------------------------------------------------------------------------------------------------->
-
+// updated isDeleted --> 23/4/25
 exports.milkReport = async (req, res) => {
   const { fromDate, toDate } = req.body;
 
@@ -1973,7 +1973,7 @@ exports.milkReport = async (req, res) => {
       const checkDatesQuery = `
         SELECT COUNT(*) AS recordCount
         FROM ${dairy_table}
-        WHERE ReceiptDate BETWEEN ? AND ? AND AccCode = ?;
+        WHERE ReceiptDate BETWEEN ? AND ? AND AccCode = ? AND isDeleted = 0;
       `;
 
       connection.query(
@@ -2001,7 +2001,7 @@ exports.milkReport = async (req, res) => {
           SELECT 
             ReceiptDate, ME, CB, Litres, fat, snf, Rate, Amt
           FROM ${dairy_table} 
-          WHERE ReceiptDate BETWEEN ? AND ? AND AccCode = ?
+          WHERE ReceiptDate BETWEEN ? AND ? AND AccCode = ? AND isDeleted = 0
           ORDER BY ReceiptDate ASC;
         `;
 
@@ -2012,7 +2012,7 @@ exports.milkReport = async (req, res) => {
             AVG(snf) AS avgSNF,
             SUM(Amt) AS totalAmount
           FROM ${dairy_table}
-          WHERE ReceiptDate BETWEEN ? AND ? AND AccCode = ?;
+          WHERE ReceiptDate BETWEEN ? AND ? AND AccCode = ? AND isDeleted = 0;
         `;
 
           connection.query(
@@ -2061,7 +2061,7 @@ exports.milkReport = async (req, res) => {
 //------------------------------------------------------------------------------------------------------------------->
 // Dashboard Info Admin
 //------------------------------------------------------------------------------------------------------------------->
-
+// updated isDeleted --> 23/4/25
 exports.dashboardInfo = async (req, res) => {
   const { fromDate, toDate } = req.body;
 
@@ -2088,7 +2088,7 @@ exports.dashboardInfo = async (req, res) => {
                 SUM(Litres) AS dailyLiters,
                 SUM(Amt) AS dailyAmount
               FROM ${dairy_table}
-              WHERE ReceiptDate BETWEEN ? AND ? 
+              WHERE ReceiptDate BETWEEN ? AND ? AND isDeleted = 0
               GROUP BY ReceiptDate WITH ROLLUP;
       `;
 
@@ -2142,7 +2142,7 @@ exports.dashboardInfo = async (req, res) => {
 // Complete Milk Collection Report
 //------------------------------------------------------------------------------------------------------------------->
 
-// update driver 2 to retive only driver done collection
+// updated isDeleted --> 23/4/25
 exports.completedMilkReport = async (req, res) => {
   const { date, time } = req.query;
 
@@ -2177,7 +2177,7 @@ exports.completedMilkReport = async (req, res) => {
       const completedCollReport = `
         SELECT ReceiptDate, ME, rno, Litres, fat, snf, cname, rate, Amt, CB 
         FROM ${dairy_table}
-        WHERE center_id = ? AND ReceiptDate = ? AND ME = ? AND Driver = 2
+        WHERE center_id = ? AND ReceiptDate = ? AND ME = ? AND isDeleted = 0 AND Driver = 2
       `;
 
       // Execute the query

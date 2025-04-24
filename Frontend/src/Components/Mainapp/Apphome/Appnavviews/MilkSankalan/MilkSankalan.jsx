@@ -294,7 +294,7 @@ const MilkSankalan = () => {
     setIsSaving(true); // Disable button
     try {
       const result = await dispatch(mobileMilkCollection(values)).unwrap();
-      if (result.status === 200) {
+      if (result?.status === 200) {
         setValues(initialValues);
         toast.success("Milk Collection Saved Successfully!");
         setCollCount(collCount + 1);
