@@ -276,8 +276,6 @@ const TrnCheck = () => {
           </div>
         </div>
         <div className="bill-header-bill-details w100 d-flex h20">
-        
-          
           <div className="button-cheks-trn w10 d-flex px10">
             <button
               className="w-btn"
@@ -290,82 +288,83 @@ const TrnCheck = () => {
           </div>
         </div>
       </div>
-      <div className="Trn-table-container w100 d-flex h50 sa    ">
-        <div className="first-table-trndiv w45 h1 d-flex-col bg3 ">
+
+      <div className="Trn-table-container w100 d-flex h50 sa">
+        {/* BILL HEADER */}
+        <div className="first-table-trndiv w45 h1 d-flex-col bg3">
           <span className="">BILL HEADER</span>
-          <div className="table-heading-trn w100 d-flex  sa">
+          <div className="table-heading-trn w100 d-flex sa">
             <span className="label-text w10">ID</span>
             <span className="label-text w20">Recipt</span>
-            <span className="label-text w20 ">Bill.No</span>
             <span className="label-text w20">Date</span>
-            <span className="label-text w10">Cust</span>
-            <span className="label-text w20">Name</span>
+            <span className="label-text w20">Cust Name</span>
             <span className="label-text w10">Amt</span>
           </div>
 
-          {dataList.length > 0 ? (
-            dataList.map((item, i) => (
-              <div
-                key={i}
-                className="trn-first-table-data w100 hidescrollbar d-flex  mx90 sa "
-              >
-                <span className="lable-text w10">{i + 1}</span>
-                <span className="lable-text w10">
-                  {item.ReceiptNo || item.receiptno}
-                </span>
-                <span className="lable-text 20">
-                  {
-                    new Date(item.BillDate || item.purchasedate)
-                      .toISOString()
-                      .split("T")[0]
-                  }
-                </span>
-                <span className="lable-text w30">
-                  {item.cust_name || item.dealerName}
-                </span>
-                <span className="lable-text w20">
-                  {Math.abs(item.Amount || item.amount)}
-                </span>
-              </div>
-            ))
-          ) : (
-            <> {loading ? "Loading..." : "No Data"}</>
-          )}
+          <div className="first-table-scroll-area">
+            {dataList.length > 0 ? (
+              dataList.map((item, i) => (
+                <div key={i} className="trn-first-table-data w100 d-flex sa">
+                  <span className="lable-text w10">{i + 1}</span>
+                  <span className="lable-text w10">
+                    {item.ReceiptNo || item.receiptno}
+                  </span>
+                  <span className="lable-text w20">
+                    {
+                      new Date(item.BillDate || item.purchasedate)
+                        .toISOString()
+                        .split("T")[0]
+                    }
+                  </span>
+                  <span className="lable-text w30">
+                    {item.cust_name || item.dealerName}
+                  </span>
+                  <span className="lable-text w10">
+                    {Math.abs(item.Amount || item.amount)}
+                  </span>
+                </div>
+              ))
+            ) : (
+              <>{loading ? "Loading..." : "No Data"}</>
+            )}
+          </div>
         </div>
+
+        {/* BILL DETAILS */}
         <div className="second-table-trndiv w45 h1 d-flex-col bg3">
           <span className="">BILL DETAILS</span>
-          <div className="second-table-heading-trn w100 d-flex  sa">
+          <div className="second-table-heading-trn w100 d-flex sa">
             <span className="label-text w10">ID</span>
             <span className="label-text w20">Recipt</span>
-            <span className="label-text w20 ">Bill.No</span>
+
             <span className="label-text w20">Date</span>
-            <span className="label-text w10">Cust</span>
-            <span className="label-text w20">Name</span>
+            <span className="label-text w20">Cust Name</span>
+
             <span className="label-text w10">Amt</span>
           </div>
-          {voucherList.length > 0 ? (
-            voucherList.map((item, i) => (
-              <div
-                key={i}
-                className="trn-second-table-data w100 hidescrollbar d-flex  mx90 sa "
-              >
-                <span className="lable-text w10">{i + 1}</span>
-                <span className="lable-text w10">{item.VoucherNo}</span>
-                <span className="lable-text w20">
-                  {new Date(item.VoucherDate).toISOString().split("T")[0]}
-                </span>
 
-                <span className="lable-text w10">{item.AccCode}</span>
-                <span className="lable-text w20">
-                  {Math.abs(item.Amt || item.amt)}
-                </span>
-              </div>
-            ))
-          ) : (
-            <> {loading ? "Loading..." : "No data"}</>
-          )}
+          <div className="second-table-scroll-area">
+            {voucherList.length > 0 ? (
+              voucherList.map((item, i) => (
+                <div key={i} className="trn-second-table-data w100 d-flex sa">
+                  <span className="lable-text w10">{i + 1}</span>
+                  <span className="lable-text w10">{item.VoucherNo}</span>
+                  <span className="lable-text w20">
+                    {new Date(item.VoucherDate).toISOString().split("T")[0]}
+                  </span>
+                  <span className="lable-text w10">{item.AccCode}</span>
+                  <span className="lable-text w10">
+                    {Math.abs(item.Amt || item.amt)}
+                  </span>
+                </div>
+              ))
+            ) : (
+              <>{loading ? "Loading..." : "No data"}</>
+            )}
+          </div>
         </div>
       </div>
+
       <div className="Total-anddifferance-div w100 h10 d-flex">
         <div className="fisrdt-table-total w50 d-flex a-center ">
           <span className="label-text w30 px10">TotalAmt</span>

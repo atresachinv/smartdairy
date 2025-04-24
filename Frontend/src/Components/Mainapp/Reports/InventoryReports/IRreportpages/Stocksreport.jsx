@@ -85,7 +85,8 @@ const Stocksreport = () => {
 
   //   fetchPurchaseData();
   // }, [fromdate, todate]);
-
+  
+  
 
   const salefetchData = async (e) => {
     e.preventDefault(); // Prevent default action (form submission)

@@ -19,6 +19,26 @@
 .second-table-trndiv {
   width: 48%;
 }
+.first-table-scroll-area,
+.second-table-scroll-area {
+  max-height: 200px; /* Set height as per layout */
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: thin;
+}
+
+.first-table-scroll-area::-webkit-scrollbar,
+.second-table-scroll-area::-webkit-scrollbar {
+  width: 6px;
+}
+
+.first-table-scroll-area::-webkit-scrollbar-thumb,
+.second-table-scroll-area::-webkit-scrollbar-thumb {
+  background-color: #ccc;
+  border-radius: 4px;
+}
+
+
 @media screen and (max-width: 426px) {
   .Trncheck-container {
     min-height: auto;
