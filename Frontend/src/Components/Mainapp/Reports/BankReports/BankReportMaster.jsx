@@ -1052,20 +1052,36 @@ const BankReportMaster = () => {
   }, [bankData, customerlist]);
 
   // Filter and transform the data
+  // const combinedFilteredData = mergedData.filter((item) => {
+  //   // Check Show All Customers filter
+  //   const passesCustomerFilter = showAllCustomers
+  //     ? item.DeductionId === 0 // Show all customers
+  //     : item.DeductionId === 0 && item.namt > 0; // Only show customers with namt > 0 if unchecked
+
+  //   // Check From-To Code filter
+  //   const isCodeInRange =
+  //     (fromCode === "" || item.Code >= fromCode) &&
+  //     (toCode === "" || item.Code <= toCode); // Check if code is in range
+
+  //   // Combine both filters
+  //   return passesCustomerFilter && isCodeInRange;
+  // });
   const combinedFilteredData = mergedData.filter((item) => {
-    // Check Show All Customers filter
+    // Convert codes to numbers safely
+    const itemCode = Number(item.Code);
+    const from = fromCode !== "" ? Number(fromCode) : null;
+    const to = toCode !== "" ? Number(toCode) : null;
+
     const passesCustomerFilter = showAllCustomers
       ? item.DeductionId === 0 // Show all customers
       : item.DeductionId === 0 && item.namt > 0; // Only show customers with namt > 0 if unchecked
 
-    // Check From-To Code filter
     const isCodeInRange =
-      (fromCode === "" || item.Code >= fromCode) &&
-      (toCode === "" || item.Code <= toCode); // Check if code is in range
+      (from === null || itemCode >= from) && (to === null || itemCode <= to); // Check if code is in range
 
-    // Combine both filters
     return passesCustomerFilter && isCodeInRange;
   });
+
 
   // Log mergedData and combinedFilteredData for debugging
   useEffect(() => {
