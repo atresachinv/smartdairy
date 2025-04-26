@@ -1768,12 +1768,11 @@ exports.saveOtherDeductions = (req, res) => {
             const row = groupRows[recIndex];
             const { AccCode, GLCode, DeductionId, dname, Amt, MAMT, netamt } =
               row;
-
             const insertQuery = `
               INSERT INTO custbilldetails
               (companyid, center_id, CBId, BillNo, BillDate, VoucherNo, VoucherDate,
-               GLCode, Code, FromDate, ToDate, dname, DeductionId, Amt, MAMT, BAMT)
-              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+               GLCode, Code, FromDate, ToDate, dname, DeductionId, Amt, MAMT, BAMT, pamt, afat, asnf, arate, tliters, namt, damt)
+              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             `;
 
             const values = [
@@ -1793,6 +1792,13 @@ exports.saveOtherDeductions = (req, res) => {
               Number(parseFloat(Amt || 0).toFixed(2)),
               Number(parseFloat(MAMT || 0).toFixed(2)), // MAMT
               Number(parseFloat(netamt || 0).toFixed(2)), // BAMT
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
             ];
 
             connection.query(insertQuery, values, (err, results) => {
@@ -1884,7 +1890,6 @@ exports.updatePaymentDetails = (req, res) => {
           message: "Failed to start transaction!",
         });
       }
-
 
       const updateQuery = `
         UPDATE custbilldetails
@@ -2159,7 +2164,7 @@ exports.fetchTrnDeductionData = async (req, res) => {
         WHERE companyid = ? AND center_id = ? AND GLCode IN (${placeholders})
            AND VoucherDate BETWEEN ? AND ? AND Amt != 0
         GROUP BY AccCode, GLCode
-        ORDER BY AccCode ASC;
+        ORDER BY AccCode ASC
     `;
 
     const queryParams = [dairy_id, center_id, ...glCodeArray, fromDate, toDate];
@@ -2362,5 +2367,134 @@ exports.fetchSelectedPayAmt = async (req, res) => {
         res.status(200).json({ status: 200, paymentDetails });
       }
     );
+  });
+};
+
+// ----------------------------------------------------------------------------------->
+// Delete selcted Bill Payment ------------------------------------------------------->
+// ----------------------------------------------------------------------------------->
+
+exports.deleteSelectedMilkPays = async (req, res) => {
+  const { BillNo } = req.body;
+  const { dairy_id, center_id } = req.user;
+  if (!Array.isArray(BillNo) || BillNo.length === 0) {
+    return res.status(400).json({
+      status: 400,
+      message: "At least one BillNo is required!",
+    });
+  }
+
+  if (!dairy_id) {
+    return res.status(401).json({
+      status: 401,
+      message: "Unauthorized User!",
+    });
+  }
+
+  pool.getConnection((err, connection) => {
+    if (err) {
+      console.error("MySQL connection error:", err);
+      return res.status(500).json({ message: "Database connection error" });
+    }
+
+    try {
+      const deleteQuery = `
+        DELETE FROM custbilldetails
+        WHERE companyid = ? AND center_id = ? AND BillNo IN (?)
+      `;
+
+      connection.query(
+        deleteQuery,
+        [dairy_id, center_id, BillNo],
+        (err, result) => {
+          connection.release();
+
+          if (err) {
+            console.error("Delete query error:", err);
+            return res.status(500).json({ message: "Query execution error" });
+          }
+
+          if (result.affectedRows === 0) {
+            return res.status(200).json({
+              status: 201,
+              message: "No matching records found to delete.",
+            });
+          }
+
+          res.status(200).json({
+            status: 200,
+            message: "Records deleted successfully!",
+          });
+        }
+      );
+    } catch (error) {
+      console.error("Processing error:", error);
+      return res.status(500).json({ message: "Internal server error" });
+    }
+  });
+};
+
+// ----------------------------------------------------------------------------------->
+// Delete All Bill Payment ----------------------------------------------------------->
+// ----------------------------------------------------------------------------------->
+
+exports.deleteAllMilkPay = async (req, res) => {
+  const { FromDate, ToDate } = req.body;
+  const { dairy_id, center_id } = req.user;
+
+  if (!FromDate || !ToDate) {
+    return res.status(400).json({
+      status: 400,
+      message: "fromDate and toDate is required!",
+    });
+  }
+
+  if (!dairy_id) {
+    return res.status(401).json({
+      status: 401,
+      message: "Unauthorized User!",
+    });
+  }
+
+  pool.getConnection((err, connection) => {
+    if (err) {
+      console.error("Error getting MySQL connection: ", err);
+      return res.status(500).json({ message: "Database connection error" });
+    }
+
+    try {
+      const deleteQuery = `
+          DELETE FROM custbilldetails 
+           WHERE companyid = ? AND center_id = ? AND FromDate = ? AND ToDate = ?
+        `;
+
+      connection.query(
+        deleteQuery,
+        [dairy_id, center_id, FromDate, ToDate],
+        (err, result) => {
+          connection.release();
+
+          if (err) {
+            console.error("Error executing delete query: ", err);
+            return res.status(500).json({ message: "Query execution error" });
+          }
+
+          if (result.affectedRows === 0) {
+            return res.status(200).json({
+              status: 201,
+              message: "No records found to delete!",
+            });
+          }
+
+          res.status(200).json({
+            status: 200,
+            message: "Records deleted successfully!",
+          });
+        }
+      );
+    } catch (error) {
+      console.error("Error processing request: ", error);
+      return res.status(500).json({ message: "Internal server error" });
+    }
   });
 };

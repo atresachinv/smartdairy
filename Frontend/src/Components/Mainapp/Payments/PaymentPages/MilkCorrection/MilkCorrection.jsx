@@ -22,7 +22,7 @@ import {
 } from "../../../../../App/Features/Payments/paymentSlice";
 import "../../../../../Styles/Mainapp/Payments/MilkCorrection.css";
 
-const MilkCorrection = () => {
+const MilkCorrection = ({ showbtn, setCurrentPage }) => {
   const { t } = useTranslation(["common", "milkcollection"]);
   const dispatch = useDispatch();
   const date = useSelector((state) => state.date.toDate);
@@ -386,7 +386,19 @@ const MilkCorrection = () => {
 
   return (
     <div className="milk-correction-container w100 h1 d-flex-col">
-      <span className="heading p10">Milk Correction</span>
+      <div className="title-btn-container w100 h10 d-flex a-center sb">
+        <span className="heading mx10">Milk Correction</span>
+        {showbtn ? (
+          <button
+            className="btn-danger mx10"
+            onClick={() => setCurrentPage("main")}
+          >
+            बाहेर पडा
+          </button>
+        ) : (
+          ""
+        )}
+      </div>
       <div className="milk-collection-date-fillter-container w100 h20 d-flex">
         <div className="form-customer-details-container w50 h1 d-flex-col mx10 sb">
           <div className="custmize-report-div w65 h40 px10 d-flex a-center sb">
@@ -451,7 +463,8 @@ const MilkCorrection = () => {
         <div className="data-fillter-container w50 h1 d-flex-col">
           <div className="fillter-selection-container w100 h25 d-flex a-center sb">
             <input
-              className="checkbx data w5 h70"
+              disabled
+              className="checkbx w5 h70"
               type="checkbox"
               name="mmc"
               id="mmc"
@@ -460,7 +473,8 @@ const MilkCorrection = () => {
           </div>
           <div className="fillter-selection-container w100 h25 d-flex a-center sb">
             <input
-              className="checkbx data w5 h70"
+              disabled
+              className="checkbx w5 h70"
               type="checkbox"
               name="mmic"
               id="mmic"
@@ -488,7 +502,7 @@ const MilkCorrection = () => {
               morningData.map((milk, index) => (
                 <div
                   key={index}
-                  className={`correction-data-container w100 h10 d-flex a-center t-center sb`}
+                  className={`correction-data-container w100 p10 d-flex a-center t-center sb`}
                   style={{
                     backgroundColor:
                       selectedMorningItems.includes(milk.id) ||
@@ -585,7 +599,7 @@ const MilkCorrection = () => {
               eveningData.map((milk, index) => (
                 <div
                   key={index}
-                  className={`correction-data-container w100 h10 d-flex a-center t-center sb ${
+                  className={`correction-data-container w100 p10 d-flex a-center t-center sb ${
                     index % 2 === 0 ? "bg-light" : "bg-dark"
                   }`}
                   style={{
@@ -696,7 +710,7 @@ const MilkCorrection = () => {
           </button>
           <button
             type="button"
-            className="danger-btn"
+            className="btn-danger"
             onClick={handleDeleteRecord}
           >
             Delete

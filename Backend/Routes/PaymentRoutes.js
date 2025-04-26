@@ -25,6 +25,8 @@ const {
   updatePaymentDetails,
   fetchPaymentMasters,
   lockMilkPayment,
+  deleteSelectedMilkPays,
+  deleteAllMilkPay,
 } = require("../Controllers/PaymentController");
 
 const router = express.Router();
@@ -69,5 +71,9 @@ router.route("/fetch/payment/mamt").get(verifyToken, fetchTrnRemAmt);
 router.route("/fetch/payment").get(verifyToken, fetchSelectedPayAmt);
 router.route("/update/payment/lock").put(verifyToken, lockMilkPayment);
 router.route("/fetch/payment/masters").get(verifyToken, fetchPaymentMasters);
+router
+  .route("/delete/selected/bill")
+  .delete(verifyToken, deleteSelectedMilkPays);
+router.route("/delete/all/payment").delete(verifyToken, deleteAllMilkPay);
 
 module.exports = router;

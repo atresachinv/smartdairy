@@ -12,6 +12,8 @@ const initialState = {
   trnDeductions: [],
   paymasters: [],
   status: "idle",
+  delOnestatus: "idle",
+  delAllstatus: "idle",
   pmaststatus: "idle",
   upaystatus: "idle",
   lastMamtstatus: "idle",
@@ -516,6 +518,40 @@ export const getPayMasters = createAsyncThunk(
   }
 );
 
+// Delete milk collection ------------------>
+export const deleteSelectedBill = createAsyncThunk(
+  "payment/deleteSelectedBill",
+  async ({ BillNo }, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.delete("/delete/selected/bill", {
+        data: { BillNo },
+      });
+      return response.data;
+    } catch (error) {
+      const errorMessage =
+        error.response?.data?.message || "Failed to delete selected bills.";
+      return rejectWithValue(errorMessage);
+    }
+  }
+);
+
+// Delete milk collection ------------------>
+export const deleteAllPayment = createAsyncThunk(
+  "payment/deleteAllPayment",
+  async ({ FromDate, ToDate }, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.delete("/delete/all/payment", {
+        data: { FromDate, ToDate },
+      });
+      return response.data;
+    } catch (error) {
+      const errorMessage =
+        error.response?.data?.message || "Failed to delete all milk Payment!.";
+      return rejectWithValue(errorMessage);
+    }
+  }
+);
+
 const paymentSlice = createSlice({
   name: "payment",
   initialState,
@@ -775,6 +811,28 @@ const paymentSlice = createSlice({
       })
       .addCase(getPayMasters.rejected, (state, action) => {
         state.pmaststatus = "failed";
+        state.error = action.payload;
+      }) // delete selected payment ------------------------------------------------>
+      .addCase(deleteSelectedBill.pending, (state) => {
+        state.delOnestatus = "loading";
+        state.error = null;
+      })
+      .addCase(deleteSelectedBill.fulfilled, (state) => {
+        state.delOnestatus = "succeeded";
+      })
+      .addCase(deleteSelectedBill.rejected, (state, action) => {
+        state.delOnestatus = "failed";
+        state.error = action.payload;
+      }) // delete all payment ------------------------------------------------>
+      .addCase(deleteAllPayment.pending, (state) => {
+        state.delAllstatus = "loading";
+        state.error = null;
+      })
+      .addCase(deleteAllPayment.fulfilled, (state) => {
+        state.delAllstatus = "succeeded";
+      })
+      .addCase(deleteAllPayment.rejected, (state, action) => {
+        state.delAllstatus = "failed";
         state.error = action.payload;
       });
   },

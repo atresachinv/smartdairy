@@ -7,10 +7,13 @@ import Spinner from "../../Home/Spinner/Spinner";
 import {
   checkAmtZero,
   checkPayExists,
+  deleteAllPayment,
+  deleteSelectedBill,
   fetchLastMAMT,
   fetchMilkPaydata,
   fetchPaymentDetails,
   fetchTrnDeductions,
+  getPayMasters,
   saveMilkPaydata,
 } from "../../../App/Features/Payments/paymentSlice";
 import { fetchMaxApplyDeductions } from "../../../App/Features/Deduction/deductionSlice";
@@ -19,25 +22,35 @@ const Payments = ({ setCurrentPage }) => {
   const dispatch = useDispatch();
   const tDate = useSelector((state) => state.date.toDate);
   const custno = useSelector((state) => state.customer.maxCustNo);
+  const center_id = useSelector(
+    (state) =>
+      state.dairy.dairyData.center_id || state.dairy.dairyData.center_id
+  );
+  const centerList = useSelector(
+    (state) => state.center.centersList.centersDetails || []
+  );
   const customerlist = useSelector(
     (state) => state.customers.customerlist || []
   );
-  const SalesData = useSelector((state) => state.sales.allSalesPay);
-  const payData = useSelector((state) => state.payment.paymentData);
+  const payMasters = useSelector((state) => state.payment.paymasters || []); // is payment lock
+  const payData = useSelector((state) => state.payment.paymentData); // milk collection amount
   const payDetails = useSelector((state) => state.payment.paymentDetails);
+  const delOneStatus = useSelector((state) => state.payment.delOnestatus); // delete selected bill status
+  const delAllStatus = useSelector((state) => state.payment.delAllstatus); // delete All bill status
   const deductionDetails = useSelector(
     (state) => state.deduction.mAdatededuction || []
-  );
-  const dedAmts = useSelector((state) => state.payment.trnDeductions);
+  ); // deduction list
+  const dedAmts = useSelector((state) => state.payment.trnDeductions); // deduction from trn table
   const prevMamt = useSelector((state) => state.payment.lastMamt);
   const centerSetting = useSelector(
     (state) => state.dairySetting.centerSetting
-  );
+  ); // center settings
   const [settings, setSettings] = useState({});
   const [PaymentFD, setPaymentFD] = useState([]);
   const [otherDeduction, setOtherDeduction] = useState([]);
   const [filteredPayDetails, setFilteredPayDetails] = useState([]);
   const [payStatus, setPayStatus] = useState(false);
+  const [selectedCenter, setSelectedCenter] = useState("");
   const [payShowStatus, setPayShowStatus] = useState(false);
   const initialData = {
     billDate: "",
@@ -48,8 +61,11 @@ const Payments = ({ setCurrentPage }) => {
     custTo: "",
     commission: "",
     autodeduct: "",
+    center_id: 0,
   };
   const [formData, setFormData] = useState(initialData);
+  const [isLocked, setIsLocked] = useState(false);
+  const [selectedBills, setSelectedBills] = useState([]); // selected bills to delete
   const bdateRef = useRef(null);
   const vcdateRef = useRef(null);
   const fdateRef = useRef(null);
@@ -57,10 +73,30 @@ const Payments = ({ setCurrentPage }) => {
   const fcustRef = useRef(null);
   const tcustRef = useRef(null);
   const submitbtn = useRef(null);
-
   const autoCenter = settings?.autoCenter;
-  // console.log("dedAmts", dedAmts);
-  // console.log("data aaaa", prevMamt);
+
+  // ----------------------------------------------------------------------->
+  // check if payment is lock or not ------------------------------------->
+
+  useEffect(() => {
+    if (!payMasters || payMasters.length === 0) {
+      dispatch(getPayMasters());
+    }
+  }, [dispatch, payMasters]);
+
+  useEffect(() => {
+    if (formData.fromDate && formData.toDate) {
+      const foundLocked = payMasters.some(
+        (master) =>
+          master.FromDate.slice(0, 10) === formData.fromDate.slice(0, 10) &&
+          master.ToDate.slice(0, 10) === formData.toDate.slice(0, 10) &&
+          master.islock === 1
+      );
+
+      setIsLocked(foundLocked);
+    }
+  }, [formData.fromDate, formData.toDate, payMasters]);
+
   // Calculate master on fromdate ----------------------------------------->
   function calculateToDate(fromDate, master) {
     const date = new Date(fromDate);
@@ -501,78 +537,6 @@ const Payments = ({ setCurrentPage }) => {
     }
   };
 
-  const handleGenerateBills = async (e) => {
-    e.preventDefault();
-    setPayStatus(true);
-    try {
-      const results = await dispatch(
-        checkPayExists({ fromDate: formData.fromDate, toDate: formData.toDate })
-      ).unwrap();
-      if (results?.found === false) {
-        const result = await dispatch(
-          checkAmtZero({ fromDate: formData.fromDate, toDate: formData.toDate })
-        ).unwrap();
-
-        if (result?.status === 204) {
-          dispatch(
-            fetchMilkPaydata({
-              fromDate: formData.fromDate,
-              toDate: formData.toDate,
-            })
-          );
-          const saleres = await dispatch(
-            fetchTrnDeductions({
-              fromDate: formData.fromDate,
-              toDate: formData.toDate,
-              GlCodes: otherDeduction,
-            })
-          ).unwrap();
-        } else if (result?.status === 200) {
-          toast.error("Milk correction required!");
-          setPayStatus(false);
-          return;
-        }
-
-        if (payData && deductionDetails) {
-          const deductionData = await handleFixDeductions();
-          if (deductionData.length === 0) {
-            toast.error("Error in deduction calculations, try again!");
-            setPayStatus(false);
-            return;
-          }
-
-          setPaymentFD(deductionData);
-
-          const saveres = await dispatch(
-            saveMilkPaydata({ formData, PaymentFD: deductionData })
-          ).unwrap();
-
-          if (saveres?.status === 200) {
-            const fetchres = await dispatch(
-              fetchPaymentDetails({
-                fromdate: formData.fromDate,
-                todate: formData.toDate,
-              })
-            ).unwrap();
-            if (fetchres?.status === 200) {
-              toast.success("Milk payment Generated successfully!");
-            }
-          } else {
-            toast.error("Unexpected response. Please try again!");
-          }
-        }
-      } else if (results?.found === true) {
-        toast.error("Payment already exists for this dates!");
-      } else {
-        toast.error("Unexpected response. Please try again!");
-      }
-    } catch (error) {
-      toast.error("Unexpected error", error);
-    } finally {
-      setPayStatus(false);
-    }
-  };
-
   const handleShowBtn = async (e) => {
     e.preventDefault();
     setPayShowStatus(true);
@@ -614,6 +578,76 @@ const Payments = ({ setCurrentPage }) => {
     }
   };
 
+  // handle row click data --------------------------------------------------------->
+  const handleRowClick = (billNo) => {
+    setSelectedBills((prev) =>
+      prev.includes(billNo)
+        ? prev.filter((id) => id !== billNo)
+        : [...prev, billNo]
+    );
+  };
+
+  //  handle selected bill delete function ---------------------------------------->
+
+  const deleteOneBill = async (e) => {
+    e.preventDefault();
+    if (isLocked) {
+      toast.error("Milk Payment is Lock, Unlock and try again!");
+      return;
+    }
+
+    if (selectedBills.length === 0) {
+      toast.error("Please select at least one bill to delete.");
+      return;
+    }
+
+    const response = await dispatch(
+      deleteSelectedBill({ BillNo: selectedBills })
+    ).unwrap();
+
+    if (response?.status === 200) {
+      const fetchres = await dispatch(
+        fetchPaymentDetails({
+          fromdate: formData.fromDate,
+          todate: formData.toDate,
+        })
+      ).unwrap();
+      toast.success("Selected bill deleted successfully!");
+      setSelectedBills([]);
+    } else {
+      toast.error("Failed to delete bill!");
+    }
+  };
+
+  // all pyamnet delete function ------------------------------------------------->
+
+  const deleteAllBills = async (e) => {
+    e.preventDefault();
+    if (isLocked) {
+      toast.error("Milk Payment is Lock, Unlock and try again!");
+      return;
+    }
+    const responce = await dispatch(
+      deleteAllPayment({
+        FromDate: formData.fromDate,
+        ToDate: formData.toDate,
+      })
+    ).unwrap();
+
+    if (responce?.status === 200) {
+      const fetchres = await dispatch(
+        fetchPaymentDetails({
+          fromdate: formData.fromDate,
+          todate: formData.toDate,
+        })
+      ).unwrap();
+      await setFilteredPayDetails([]);
+      toast.success("Milk payment deleted successfully!");
+    } else {
+      toast.error("Bills not found to delete!");
+    }
+  };
+
   return (
     <div className="Bil-list-container w100 h1 d-flex-col sb p10">
       <div className="page-title-select-center-container w100 h10 d-flex a-center">
@@ -623,9 +657,23 @@ const Payments = ({ setCurrentPage }) => {
         <label className="label-text py10 mx10" htmlFor="">
           सेंटर निवडा :
         </label>
-        <select className="data w35 mx10" name="" id="">
-          <option value="">mian center</option>
-        </select>
+        {center_id === 0 ? (
+          <select
+            className="data w40"
+            name="center_id"
+            id=""
+            onChange={handleInput}
+          >
+            <option value="">-- Select Center --</option>
+            {centerList.map((center, index) => (
+              <option key={index} value={center.center_id}>
+                {center.center_name}
+              </option>
+            ))}
+          </select>
+        ) : (
+          ""
+        )}
       </div>
       <form
         onSubmit={handleGenerateBill}
@@ -777,20 +825,31 @@ const Payments = ({ setCurrentPage }) => {
             {payStatus || payShowStatus ? (
               <Spinner />
             ) : filteredPayDetails.length !== 0 ? (
-              filteredPayDetails.map((item, index) => (
-                <div
-                  key={index}
-                  className="bill-data-div w100 p10 d-flex a-center sb"
-                  style={{
-                    backgroundColor: index % 2 === 0 ? "#faefe3" : "#fff",
-                  }}
-                >
-                  <span className="info-text w10 t-center">{item.Code}</span>
-                  <span className="info-text w40 t-start">{item.cname}</span>
-                  <span className="info-text w15 t-end">{item.tliters}</span>
-                  <span className="info-text w15 t-end">{item.namt || 0}</span>
-                </div>
-              ))
+              filteredPayDetails.map((item, index) => {
+                const isSelected = selectedBills.includes(item.BillNo);
+
+                return (
+                  <div
+                    key={index}
+                    className="bill-data-div w100 p10 d-flex a-center sb pointer"
+                    onClick={() => handleRowClick(item.BillNo)}
+                    style={{
+                      backgroundColor: isSelected
+                        ? "#ffe1cc"
+                        : index % 2 === 0
+                        ? "#faefe3"
+                        : "#fff",
+                    }}
+                  >
+                    <span className="info-text w10 t-center">{item.Code}</span>
+                    <span className="info-text w40 t-start">{item.cname}</span>
+                    <span className="info-text w15 t-end">{item.tliters}</span>
+                    <span className="info-text w15 t-end">
+                      {item.namt || 0}
+                    </span>
+                  </div>
+                );
+              })
             ) : (
               <div className="box d-flex center">
                 <span className="label-text">No data Found!</span>
@@ -799,14 +858,23 @@ const Payments = ({ setCurrentPage }) => {
           </div>
 
           <div className="bill-form-btn-div w100 h10 d-flex j-end">
-            <button type="button" className="btn">
-              बिल लॉक करा
+            <button
+              type="button"
+              className="btn-danger mx10"
+              onClick={deleteOneBill}
+              disabled={delOneStatus === "loading"}
+            >
+              {delOneStatus === "loading" ? "काढूण टाकत आहे..." : "काढूण टाका"}
             </button>
-            <button type="button" className="btn">
-              काढूण टाका
-            </button>
-            <button type="button" className="w-btn mx10">
-              सर्व काढूण टाका
+            <button
+              type="button"
+              className="btn-danger"
+              onClick={deleteAllBills}
+              disabled={delAllStatus === "loading"}
+            >
+              {delAllStatus === "loading"
+                ? "काढूण टाकत आहे..."
+                : "सर्व काढूण टाका"}
             </button>
           </div>
         </div>
@@ -818,13 +886,18 @@ const Payments = ({ setCurrentPage }) => {
             पेमेंट कपाती
           </button>
           <button
+            className="w-btn w100"
+            onClick={() => setCurrentPage("milkcorrection")}
+          >
+            संकलन दुरुस्थी{" "}
+          </button>
+          <button
             className="btn w100"
             onClick={() => setCurrentPage("lockbill")}
           >
             बिल लॉक करा
           </button>
           <button className="w-btn w100">कपात रिपोर्ट</button>
-          <button className="w-btn w100">संकलन दुरुस्थी </button>
           <button className="w-btn w100">Payment रजिस्टर </button>
           <button className="w-btn w100">Payment समरी </button>
           <button className="w-btn w100">Payment रजिस्टर बँक </button>

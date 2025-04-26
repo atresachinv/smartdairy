@@ -14,7 +14,7 @@ import {
 } from "../../../../../App/Features/Payments/paymentSlice";
 import { toast } from "react-toastify";
 
-const PayDeductions = ({ setCurrentPage }) => {
+const PayDeductions = ({ showbtn, setCurrentPage }) => {
   const dispatch = useDispatch();
   const inputRefs = useRef([]);
   const submitBtnRef = useRef(null);
@@ -44,6 +44,7 @@ const PayDeductions = ({ setCurrentPage }) => {
   const [filteredPayData2, setFilteredPayData2] = useState({});
   const [mergedDeductions, setMergedDeductions] = useState([]);
   const [allDeductions, setAllDeductions] = useState([]);
+  const [totalAmt, setTotalAmt] = useState(0);
 
   const [isLocked, setIsLocked] = useState(false);
   const [settings, setSettings] = useState({});
@@ -79,7 +80,9 @@ const PayDeductions = ({ setCurrentPage }) => {
     netPayment: 0.0,
     minPayAmount: 0.0,
   }); // form data for the payment deduction
-  console.log("otherDPayData", data);
+  // console.log("otherDPayData", data);
+  // console.log("deductions", deductions);
+  // console.log("mergedDeductions", mergedDeductions);
   const autoCenter = settings?.autoCenter;
   //set setting
   useEffect(() => {
@@ -222,6 +225,127 @@ const PayDeductions = ({ setCurrentPage }) => {
     }
   }, [milkData, customerlist, currentIndex]);
 
+  // set round off amount for perticular customers ------------------------------------->
+  useEffect(() => {
+    if (data && data.length > 0 && customerlist && customerlist.length > 0) {
+      const currentDedu = data.find(
+        (entry) =>
+          parseInt(entry.Code, 10) === currentIndex && entry.DeductionId === 9
+      );
+      if (currentDedu) {
+        setFormData((prevData) => ({
+          ...prevData,
+          roundAmount: parseFloat(currentDedu.Amt) || 0.0,
+        }));
+      }
+    }
+  }, [currentIndex, data, customerlist]);
+
+  //----------------------------------------------------------------------------------->
+  // manual deduction calculations ---------------------------------------------------->
+  //----------------------------------------------------------------------------------->
+
+  // mearge data deductions and deductionDetails -------------------------------------->
+  useEffect(() => {
+    if (deductionDetails && deductions && prevMamt) {
+      const merged = deductions.map((deduction) => {
+        const matchedDeduction = deductionDetails.find(
+          (sub) => sub.GLCode === deduction.GLCode
+        );
+        const matchedPrevMamt = prevMamt.find(
+          (prev) => prev.GLCode === deduction.GLCode
+        );
+        return {
+          ...deduction,
+          dname: matchedDeduction ? matchedDeduction.dname : "",
+          DeductionId: matchedDeduction ? matchedDeduction.DeductionId : "",
+          MAMT: matchedPrevMamt ? matchedPrevMamt.MAMT : 0.0,
+        };
+      });
+      setMergedDeductions(merged);
+    }
+  }, [deductions, deductionDetails, prevMamt]);
+
+  //calculate total deduction for the customer ---------------------------------->
+  useEffect(() => {
+    if (custTrnDedu && custTrnDedu.length > 0) {
+      const withCalculated = custTrnDedu.map((item) => {
+        const mam = Math.abs(Number(item.MAMT) || 0);
+        const total = Math.abs(Number(item.totalamt) || 0); // force +ve
+        const amt = Math.abs(Number(item.Amt) || 0); // force +ve
+        // console.log("first all deductions",mam, total, amt)
+        const net = mam + total - amt;
+
+        return {
+          ...item,
+          Amt: amt,
+          netamt: net,
+        };
+      });
+
+      setAllDeductions(withCalculated);
+    }
+  }, [custTrnDedu]);
+
+  // Handle amount change for each deduction --------------------------------->
+  const handleAmtChange = (index, value) => {
+    const updated = [...allDeductions];
+    const current = { ...updated[index] };
+
+    const oldAmt = Math.abs(parseFloat(current.Amt)) || 0;
+    const amt = Math.abs(parseFloat(value)) || 0;
+    const diff = parseFloat((amt - oldAmt).toFixed(2));
+
+    const mam = Math.abs(current.MAMT || 0);
+    const total = Math.abs(custTrnDedu[index]?.totalamt || 0);
+    const netAmt = parseFloat((mam + total - amt).toFixed(2));
+
+    current.Amt = amt;
+    current.netamt = netAmt;
+
+    updated[index] = current;
+    setAllDeductions(updated);
+
+    setFormData((prev) => ({
+      ...prev,
+      netDeduction: parseFloat((prev.netDeduction + diff).toFixed(2)),
+      netPayment: parseFloat((prev.netPayment - diff).toFixed(2)),
+    }));
+  };
+
+  // handle deduction for perticular customer ----------------------------------->
+  useEffect(() => {
+    const customerdeductions = mergedDeductions.filter((item) => {
+      return item.AccCode === currentIndex;
+    });
+    setCustTrnDedu(customerdeductions);
+  }, [mergedDeductions, currentIndex]);
+
+  //----------------------------------------------------------------------------------->
+  // auto deduction calculations ------------------------------------------------------>
+  //----------------------------------------------------------------------------------->
+
+  // fiter paydata for the current customer ------------------------------------->
+  useEffect(() => {
+    if (payData && currentIndex) {
+      const fixDeduData = payData.filter(
+        (item) => item.Code === currentIndex && item.dtype === 0
+      );
+      const otherDeduData = payData.filter(
+        (item) =>
+          item.Code === currentIndex && item.dtype === 1 && item.GLCode !== 2
+      );
+
+      const mDeduData = payData.filter(
+        (item) => item.Code === currentIndex && item.dtype === 2
+      );
+
+      setFilteredPayData(fixDeduData);
+      setOtherDPayData(otherDeduData);
+      setFilteredPayData2(mDeduData);
+    }
+  }, [payData, currentIndex]);
+
   //----------------------------------------------------------------------------->
   // Filter milk collection data for the current customer
 
@@ -297,95 +421,7 @@ const PayDeductions = ({ setCurrentPage }) => {
     }
   }, [currentIndex, data, customerlist]);
 
-  // set round off amount for perticular customers ------------------------------------->
-  useEffect(() => {
-    if (data && data.length > 0 && customerlist && customerlist.length > 0) {
-      const currentDedu = data.find(
-        (entry) =>
-          parseInt(entry.Code, 10) === currentIndex && entry.DeductionId === 9
-      );
-      if (currentDedu) {
-        setFormData((prevData) => ({
-          ...prevData,
-          roundAmount: parseFloat(currentDedu.Amt) || 0.0,
-        }));
-      }
-    }
-  }, [currentIndex, data, customerlist]);
-
-  // fiter paydata for the current customer ------------------------------------->
-  useEffect(() => {
-    if (payData && currentIndex) {
-      const fixDeduData = payData.filter(
-        (item) => item.Code === currentIndex && item.dtype === 0
-      );
-      const otherDeduData = payData.filter(
-        (item) =>
-          item.Code === currentIndex && item.dtype === 1 && item.GLCode !== 2
-      );
-
-      const mDeduData = payData.filter(
-        (item) => item.Code === currentIndex && item.dtype === 2
-      );
-
-      setFilteredPayData(fixDeduData);
-      setOtherDPayData(otherDeduData);
-      setFilteredPayData2(mDeduData);
-    }
-  }, [payData, allDeductions, currentIndex]);
-
-  // mearge data deductions and deductionDetails -------------------------------------->
-  useEffect(() => {
-    if (deductionDetails && deductions && prevMamt) {
-      const merged = deductions.map((deduction) => {
-        const matchedDeduction = deductionDetails.find(
-          (sub) => sub.GLCode === deduction.GLCode
-        );
-        const matchedPrevMamt = prevMamt.find(
-          (prev) => prev.GLCode === deduction.GLCode
-        );
-        return {
-          ...deduction,
-          dname: matchedDeduction ? matchedDeduction.dname : "",
-          DeductionId: matchedDeduction ? matchedDeduction.DeductionId : "",
-          MAMT: matchedPrevMamt ? matchedPrevMamt.MAMT : 0.0,
-        };
-      });
-      setMergedDeductions(merged);
-    }
-  }, [deductions, deductionDetails, prevMamt]);
-
-  // handle deduction for perticular customer ----------------------------------->
-  useEffect(() => {
-    const customerdeductions = mergedDeductions.filter((item) => {
-      return item.AccCode === currentIndex;
-    });
-    setCustTrnDedu(customerdeductions);
-  }, [mergedDeductions, currentIndex]);
-
-  //calculate total deduction for the customer ---------------------------------->
-  useEffect(() => {
-    if (custTrnDedu && custTrnDedu.length > 0) {
-      const withCalculated = custTrnDedu.map((item) => {
-        const mam = Math.abs(Number(item.MAMT) || 0);
-        const total = Math.abs(Number(item.totalamt) || 0); // force +ve
-        const amt = Math.abs(Number(item.Amt) || 0); // force +ve
-        // console.log("first all deductions",mam, total, amt)
-        const net = mam + total - amt;
-
-        return {
-          ...item,
-          Amt: amt,
-          netamt: net,
-        };
-      });
-
-      setAllDeductions(withCalculated);
-    }
-  }, [custTrnDedu]);
-
   // Handle amount change for each deduction ------------------------------------>
-
   const handleAmtChanges = (index, newAmt) => {
     const updatedData = [...otherDPayData];
     const oldAmt = Math.abs(parseFloat(updatedData[index].Amt)) || 0;
@@ -408,25 +444,7 @@ const PayDeductions = ({ setCurrentPage }) => {
     }));
   };
 
-  // Handle amount change for each deduction ------------------------------------>
-  const handleAmtChange = (index, value) => {
-    const amt = Math.abs(parseFloat(value)) || 0;
-
-    const updated = [...allDeductions];
-    const current = { ...updated[index] };
-
-    const mam = Math.abs(current.MAMT || 0);
-    const total = Math.abs(custTrnDedu[index]?.totalamt || 0);
-
-    current.Amt = amt;
-    current.netamt = mam + total - amt;
-
-    updated[index] = current;
-    setAllDeductions(updated);
-  };
-
-  // handle grand total change for all deductions ------------------------------>
-
+  // calculate total transfer amount -------------------------->
   useEffect(() => {
     setFormData((prevData) => ({
       ...prevData,
@@ -435,7 +453,6 @@ const PayDeductions = ({ setCurrentPage }) => {
   }, [formData.totalcollection, formData.transport]);
 
   //handle focus on next input field ----------------------------------------->
-
   const handleEnterKey = (e, index) => {
     if (e.key === "Enter") {
       e.preventDefault();
@@ -448,21 +465,19 @@ const PayDeductions = ({ setCurrentPage }) => {
     }
   };
 
+  // handle bill save function ----------------------------------------------->
   const handleBillSave = async (e) => {
     e.preventDefault();
     let saveres;
     if (!otherDPayData || otherDPayData.length === 0) {
       saveres = await dispatch(
-        saveOtherDeductions({ formData, PaymentFD: filteredPayData2 })
+        saveOtherDeductions({ formData, PaymentFD: allDeductions })
       ).unwrap();
     } else {
       saveres = await dispatch(
         updatePayInfo({ formData, PaymentFD: otherDPayData })
       ).unwrap();
     }
-    setCurrentIndex((prevIndex) =>
-      prevIndex === customerList.length ? 1 : prevIndex + 1
-    );
 
     inputRefs.current[0].focus();
 
@@ -475,6 +490,9 @@ const PayDeductions = ({ setCurrentPage }) => {
       ).unwrap();
 
       toast.success("Bill saved successfully!");
+      setCurrentIndex((prevIndex) =>
+        prevIndex === customerList.length ? 1 : prevIndex + 1
+      );
     } else {
       toast.error("Failed to save bill!");
     }
@@ -756,8 +774,8 @@ const PayDeductions = ({ setCurrentPage }) => {
             ) : (
               <></>
             )}
-            {filteredPayData2 && filteredPayData2.length > 0 ? (
-              filteredPayData2.map((item, index) => (
+            {allDeductions && allDeductions.length > 0 ? (
+              allDeductions.map((item, index) => (
                 <div
                   key={index}
                   className="deduction-heading-container w100 p10 sa d-flex t-center a-center"
@@ -773,12 +791,12 @@ const PayDeductions = ({ setCurrentPage }) => {
                   <input
                     type="number"
                     className="data w20"
+                    readOnly={isLocked}
                     onChange={(e) => handleAmtChange(index, e.target.value)}
                     ref={(el) => (inputRefs.current[index] = el)}
                     onKeyDown={(e) => handleEnterKey(e, index)}
                     style={{ textAlign: "center" }}
                   />
-
                   <span className="info-text w10">{item.netamt || 0}</span>
                 </div>
               ))
@@ -875,14 +893,17 @@ const PayDeductions = ({ setCurrentPage }) => {
               >
                 {dedStatus === "loading" ? "saving..." : "बिल सेव्ह करा"}
               </button>
-              <button
-                type="submit"
-                className="btn"
-                ref={submitBtnRef}
-                onClick={() => setCurrentPage("main")}
-              >
-                बाहेर पडा
-              </button>
+              {showbtn ? (
+                <button
+                  type="submit"
+                  className="btn-danger mx10"
+                  onClick={() => setCurrentPage("main")}
+                >
+                  बाहेर पडा
+                </button>
+              ) : (
+                ""
+              )}
             </div>
           </div>
         </div>
