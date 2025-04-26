@@ -16,13 +16,15 @@ const LockPayments = ({ showbtn, setCurrentPage }) => {
 
   // Fetch payment masters ----------------------------------------->
   useEffect(() => {
-    dispatch(getPayMasters());
-  }, [dispatch]);
+    if (payMasters.length === 0) {
+      dispatch(getPayMasters());
+    }
+  }, []);
 
   // Sync local copy when payMasters change ------------------------->
   useEffect(() => {
     setUpdatedPayMasters(payMasters.map((item) => ({ ...item })));
-  }, [payMasters]);
+  }, []);
 
   // Handle checkbox change
   const handleCheckboxChange = (e, index) => {
