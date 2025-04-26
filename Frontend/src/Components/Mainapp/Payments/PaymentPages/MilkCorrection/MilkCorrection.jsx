@@ -14,13 +14,13 @@ import { getAllMilkCollReport } from "../../../../../App/Features/Mainapp/Milk/M
 import { getRateCharts } from "../../../../../App/Features/Mainapp/Masters/rateChartSlice";
 import {
   deleteMilkRecord,
-  transferTOCustomer,
-  transferTODate,
+  getPayMasters,
   transferTOEvening,
   transferTOMorning,
   updateMilkData,
 } from "../../../../../App/Features/Payments/paymentSlice";
 import "../../../../../Styles/Mainapp/Payments/MilkCorrection.css";
+import { selectPaymasters } from "../../../../../App/Features/Payments/paymentSelectors";
 
 const MilkCorrection = ({ showbtn, setCurrentPage }) => {
   const { t } = useTranslation(["common", "milkcollection"]);
@@ -29,10 +29,11 @@ const MilkCorrection = ({ showbtn, setCurrentPage }) => {
 
   const manualMaster = useSelector((state) => state.manualMasters.masterlist);
   const data = useSelector((state) => state.milkCollection.allMilkColl);
+  const payMasters = useSelector(selectPaymasters); // is payment lock
+  const milkcollRatechart = useSelector((state) => state.ratechart.rateChart); // rate to update rates
   //Local State
   const [customerList, setCustomerList] = useState([]); // customerlist
   const [customerName, setCustomerName] = useState(""); // customername
-  const [milkRateChart, setMilkRatechart] = useState([]); // milk ratechart
   const [currentIndex, setCurrentIndex] = useState(1); // corrent index of selected customer
   const [selectedMaster, setSelectedMaster] = useState([]); // corrent index of selected customer
   const [morningData, setMorningData] = useState([]);
@@ -41,6 +42,7 @@ const MilkCorrection = ({ showbtn, setCurrentPage }) => {
   const [editeveIndex, setEditeveIndex] = useState(null);
   const [selectedMorningItems, setSelectedMorningItems] = useState([]);
   const [selectedEveningItems, setSelectedEveningItems] = useState([]);
+  const [isLocked, setIsLocked] = useState(false); // is payment master lock
 
   const initialData = {
     id: "",
@@ -52,6 +54,26 @@ const MilkCorrection = ({ showbtn, setCurrentPage }) => {
     liters: "",
   };
   const [editedData, setEditedData] = useState(initialData);
+  // ----------------------------------------------------------------------->
+  // check if payment is lock or not ------------------------------------->
+  useEffect(() => {
+    if (!payMasters || payMasters.length === 0) {
+      dispatch(getPayMasters());
+    }
+  }, [dispatch, payMasters]);
+
+  useEffect(() => {
+    if (selectedMaster) {
+      const foundLocked = payMasters.some(
+        (master) =>
+          master.FromDate.slice(0, 10) === selectedMaster.start.slice(0, 10) &&
+          master.ToDate.slice(0, 10) === selectedMaster.end.slice(0, 10) &&
+          master.islock === 1
+      );
+
+      setIsLocked(foundLocked);
+    }
+  }, [selectedMaster, payMasters]);
 
   //----------------------------------------------------------------->
   // Get master dates and list customer
@@ -76,7 +98,6 @@ const MilkCorrection = ({ showbtn, setCurrentPage }) => {
       );
     }
   };
-
   //----------------------------------------------------------------->
   // Effect to load customer list from local storage
   useEffect(() => {
@@ -85,25 +106,6 @@ const MilkCorrection = ({ showbtn, setCurrentPage }) => {
       setCustomerList(JSON.parse(storedCustomerList));
     }
   }, [dispatch]);
-
-  //----------------------------------------------------------------->
-  // Retrieve the stored rate chart from localStorage on component mount
-  useEffect(() => {
-    const storedRateChart = localStorage.getItem("milkcollrcharts");
-    if (storedRateChart) {
-      try {
-        const parsedRateChart = JSON.parse(storedRateChart);
-        setMilkRatechart(parsedRateChart);
-      } catch (error) {
-        console.error(
-          "Failed to parse milkcollrchart from localStorage:",
-          error
-        );
-      }
-    } else {
-      console.log("No data found in localStorage for milkcollrchart");
-    }
-  }, []);
 
   //----------------------------------------------------------------->
   // Implemetation of customer prev next buttons and display customer name
@@ -169,6 +171,7 @@ const MilkCorrection = ({ showbtn, setCurrentPage }) => {
       snf: milk.snf,
       rate: milk.rate,
       amt: milk.Amt,
+      rctype: milk.rctype,
     });
   };
 
@@ -181,6 +184,7 @@ const MilkCorrection = ({ showbtn, setCurrentPage }) => {
       snf: milk.snf,
       rate: milk.rate,
       amt: milk.Amt,
+      rctype: milk.rctype,
     });
   };
 
@@ -190,12 +194,6 @@ const MilkCorrection = ({ showbtn, setCurrentPage }) => {
 
   const handleSaveData = async (milk) => {
     try {
-      // if (parseFloat(editedData.rate) === parseFloat(milk.rate)) {
-      //   setEditedData(initialData);
-      //   setEditmrgIndex(null);
-      //   setEditeveIndex(null);
-      //   return;
-      // }
       dispatch(updateMilkData({ data: editedData }));
       const handler = setTimeout(() => {
         dispatch(
@@ -217,36 +215,18 @@ const MilkCorrection = ({ showbtn, setCurrentPage }) => {
   };
 
   // Claculate rate and amount on value change >>>>>----------->
-
-  // Retrieve the stored ratechart from localStorage on component mount
-  useEffect(() => {
-    const storedRateChart = localStorage.getItem("milkcollrcharts");
-    if (storedRateChart) {
-      try {
-        const parsedRateChart = JSON.parse(storedRateChart);
-        setMilkRatechart(parsedRateChart);
-      } catch (error) {
-        console.error(
-          "Failed to parse milkcollrchart from localStorage:",
-          error
-        );
-      }
-    } else {
-      console.log("No data found in localStorage for milkcollrchart");
-    }
-  }, []);
-
   const calculateRateAndAmount = async () => {
     try {
-      const { fat, snf, liters } = editedData;
+      const { fat, snf, liters, rctype } = editedData;
       const parsedFat = parseFloat(fat);
       const parsedSnf = parseFloat(snf);
       const parsedLiters = parseFloat(liters);
-
-      const rateEntry = milkRateChart.find(
-        (entry) => entry.fat === parsedFat && entry.snf === parsedSnf
+      const rateEntry = milkcollRatechart.find(
+        (entry) =>
+          entry.fat === parsedFat &&
+          entry.snf === parsedSnf &&
+          entry.rctypename === rctype
       );
-
       if (rateEntry) {
         const rate = parseFloat(rateEntry.rate);
         const amount = rate * parsedLiters;
@@ -299,6 +279,10 @@ const MilkCorrection = ({ showbtn, setCurrentPage }) => {
   // morning to evening -------------------->
 
   const handleTransferToEvening = () => {
+    if (isLocked) {
+      toast.error("Payment Master is lock, Unlock and try again!");
+      return;
+    }
     try {
       dispatch(transferTOEvening({ records: selectedMorningItems }));
       setSelectedMorningItems([]);
@@ -314,38 +298,41 @@ const MilkCorrection = ({ showbtn, setCurrentPage }) => {
       return () => clearTimeout(handler);
     } catch (error) {
       toast.error("Failed to transfer records or fetch updated data.");
-      console.error("Error during handleTransferToEvening: ", error);
+      console.error("Error during Transfer milk Evening: ", error);
     }
   };
 
   // evening to morning -------------------->
   const handleTransferToMorning = () => {
-    dispatch(transferTOMorning({ records: selectedEveningItems }));
-    setSelectedEveningItems([]);
-    const handler = setTimeout(() => {
-      dispatch(
-        getAllMilkCollReport({
-          fromDate: selectedMaster.start,
-          toDate: selectedMaster.end,
-        })
-      );
-      toast.success("Selected records Tranferred to Morning successfully!");
-    }, 500);
-    return () => clearTimeout(handler);
-  };
-
-  // customer to customer ------------------>
-  const handleTransferToCustomer = () => {
-    dispatch(transferTOCustomer());
-  };
-
-  // date to date -------------------------->
-  const handleTransferToDate = () => {
-    dispatch(transferTODate());
+    if (isLocked) {
+      toast.error("Payment Master is lock, Unlock and try again!");
+      return;
+    }
+    try {
+      dispatch(transferTOMorning({ records: selectedEveningItems }));
+      setSelectedEveningItems([]);
+      const handler = setTimeout(() => {
+        dispatch(
+          getAllMilkCollReport({
+            fromDate: selectedMaster.start,
+            toDate: selectedMaster.end,
+          })
+        );
+        toast.success("Selected records Tranferred to Morning successfully!");
+      }, 500);
+      return () => clearTimeout(handler);
+    } catch (error) {
+      toast.error("Failed to transfer records or fetch updated data.");
+      console.error("Error during Transfer milk Evening: ", error);
+    }
   };
 
   // delete selected record ---------------->
   const handleDeleteRecord = () => {
+    if (isLocked) {
+      toast.error("Payment Master is lock, Unlock and try again!");
+      return;
+    }
     if (
       selectedMorningItems.length === 0 &&
       selectedEveningItems.length === 0
@@ -431,7 +418,7 @@ const MilkCorrection = ({ showbtn, setCurrentPage }) => {
               ))}
             </select>
           </div>
-          <div className="customer-details-container w100 h50 d-flex a-center">
+          <div className="customer-details-container w100 h60 d-flex a-center">
             <div className="btn-code-container w25 h1 d-flex a-center sb">
               <button className="btn" onClick={handlePrev}>
                 <BsChevronDoubleLeft className="icon " />
@@ -460,7 +447,7 @@ const MilkCorrection = ({ showbtn, setCurrentPage }) => {
             />
           </div>
         </div>
-        <div className="data-fillter-container w50 h1 d-flex-col">
+        <div className="data-fillter-container w40 h1 d-flex-col sa">
           <div className="fillter-selection-container w100 h25 d-flex a-center sb">
             <input
               disabled
@@ -469,7 +456,9 @@ const MilkCorrection = ({ showbtn, setCurrentPage }) => {
               name="mmc"
               id="mmc"
             />
-            <span className="label-text w90">Misplaced Milk Collection</span>
+            <label htmlFor="mmc" className="label-text w90">
+              Misplaced Milk Collection
+            </label>
           </div>
           <div className="fillter-selection-container w100 h25 d-flex a-center sb">
             <input
@@ -479,9 +468,9 @@ const MilkCorrection = ({ showbtn, setCurrentPage }) => {
               name="mmic"
               id="mmic"
             />
-            <span className="label-text w90">
+            <label htmlFor="mmic" className="label-text w90">
               Misplaced Milk To Inactive Customer
-            </span>
+            </label>
           </div>
         </div>
       </div>
@@ -493,7 +482,7 @@ const MilkCorrection = ({ showbtn, setCurrentPage }) => {
               <span className="f-info-text w20">Date</span>
               <span className="f-info-text w10">Liters</span>
               <span className="f-info-text w10">Fat</span>
-              <span className="f-info-text w10">Deg</span>
+              {/* <span className="f-info-text w10">Deg</span> */}
               <span className="f-info-text w10">Snf</span>
               <span className="f-info-text w10">Rate</span>
               <span className="f-info-text w15">Amount</span>
@@ -552,7 +541,7 @@ const MilkCorrection = ({ showbtn, setCurrentPage }) => {
                           }
                         />
                       </span>
-                      <span className="text w10">{milk.degree || 0}</span>
+                      {/* <span className="text w10">{milk.degree || 0}</span> */}
                       <span className="text w10">
                         <input
                           className="data w100 h1 d-flex center t-center"
@@ -570,7 +559,7 @@ const MilkCorrection = ({ showbtn, setCurrentPage }) => {
                     <>
                       <span className="text w10">{milk.Litres}</span>
                       <span className="text w10">{milk.fat}</span>
-                      <span className="text w10">{milk.degree || 0}</span>
+                      {/* <span className="text w10">{milk.degree || 0}</span> */}
                       <span className="text w10">{milk.snf}</span>
                       <span className="text w10">{milk.rate}</span>
                       <span className="text w15">{milk.Amt}</span>
@@ -590,7 +579,7 @@ const MilkCorrection = ({ showbtn, setCurrentPage }) => {
               <span className="f-info-text w20">Date</span>
               <span className="f-info-text w10">Liters</span>
               <span className="f-info-text w10">Fat</span>
-              <span className="f-info-text w10">Deg</span>
+              {/* <span className="f-info-text w10">Deg</span> */}
               <span className="f-info-text w10">Snf</span>
               <span className="f-info-text w10">Rate</span>
               <span className="f-info-text w15">Amount</span>
@@ -659,7 +648,7 @@ const MilkCorrection = ({ showbtn, setCurrentPage }) => {
                           }
                         />
                       </span>
-                      <span className="text w10">{milk.degree || 0}</span>
+                      {/* <span className="text w10">{milk.degree || 0}</span> */}
                       <span className="text w10">
                         <input
                           className="data w100 h1 d-flex center t-center"
@@ -678,7 +667,7 @@ const MilkCorrection = ({ showbtn, setCurrentPage }) => {
                     <>
                       <span className="text w10">{milk.Litres}</span>
                       <span className="text w10">{milk.fat}</span>
-                      <span className="text w10">{milk.degree || 0}</span>
+                      {/* <span className="text w10">{milk.degree || 0}</span> */}
                       <span className="text w10">{milk.snf}</span>
                       <span className="text w10">{milk.rate}</span>
                       <span className="text w15">{milk.Amt}</span>
@@ -710,7 +699,7 @@ const MilkCorrection = ({ showbtn, setCurrentPage }) => {
           </button>
           <button
             type="button"
-            className="btn-danger"
+            className="btn-danger del"
             onClick={handleDeleteRecord}
           >
             Delete

@@ -1620,9 +1620,10 @@ exports.allMilkCollReport = async (req, res) => {
 
     try {
       let milkCollectionQuery = `
-        SELECT id, userid, ReceiptDate, ME, CB, Litres, fat, snf, rate, Amt, cname, rno, AccCode, center_id
+        SELECT id, userid, ReceiptDate, ME, CB, Litres, fat, snf, rate, Amt, cname, rno, AccCode, center_id, rctype
         FROM ${dairy_table}
-        WHERE ReceiptDate BETWEEN ? AND ? AND isDeleted = 0`;
+        WHERE ReceiptDate BETWEEN ? AND ? AND isDeleted = 0
+        `;
 
       const values = [fromDate, toDate];
 

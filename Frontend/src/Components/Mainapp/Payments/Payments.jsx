@@ -4,6 +4,7 @@ import "../../../Styles/Mainapp/Payments/Payments.css";
 import { useDispatch, useSelector } from "react-redux";
 import { getMaxCustNo } from "../../../App/Features/Mainapp/Masters/custMasterSlice";
 import Spinner from "../../Home/Spinner/Spinner";
+
 import {
   checkAmtZero,
   checkPayExists,
@@ -17,6 +18,7 @@ import {
   saveMilkPaydata,
 } from "../../../App/Features/Payments/paymentSlice";
 import { fetchMaxApplyDeductions } from "../../../App/Features/Deduction/deductionSlice";
+import { selectPaymasters } from "../../../App/Features/Payments/paymentSelectors";
 
 const Payments = ({ setCurrentPage }) => {
   const dispatch = useDispatch();
@@ -32,7 +34,7 @@ const Payments = ({ setCurrentPage }) => {
   const customerlist = useSelector(
     (state) => state.customers.customerlist || []
   );
-  const payMasters = useSelector((state) => state.payment.paymasters || []); // is payment lock
+  const payMasters = useSelector(selectPaymasters); // is payment lock
   const payData = useSelector((state) => state.payment.paymentData); // milk collection amount
   const payDetails = useSelector((state) => state.payment.paymentDetails);
   const delOneStatus = useSelector((state) => state.payment.delOnestatus); // delete selected bill status
@@ -64,7 +66,7 @@ const Payments = ({ setCurrentPage }) => {
     center_id: 0,
   };
   const [formData, setFormData] = useState(initialData);
-  const [isLocked, setIsLocked] = useState(false);
+  const [isLocked, setIsLocked] = useState(false); // is payment master lock
   const [selectedBills, setSelectedBills] = useState([]); // selected bills to delete
   const bdateRef = useRef(null);
   const vcdateRef = useRef(null);
@@ -664,7 +666,6 @@ const Payments = ({ setCurrentPage }) => {
             id=""
             onChange={handleInput}
           >
-            <option value="">-- Select Center --</option>
             {centerList.map((center, index) => (
               <option key={index} value={center.center_id}>
                 {center.center_name}

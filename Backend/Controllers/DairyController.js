@@ -730,7 +730,11 @@ exports.getAllcenters = async (req, res) => {
     }
 
     try {
-      const allCenterDetailsQuery = `SELECT * FROM centermaster WHERE orgid = ?`;
+      const allCenterDetailsQuery = `
+        SELECT * FROM centermaster 
+          WHERE orgid = ?
+          ORDER BY center_id ASC
+        `;
 
       connection.query(allCenterDetailsQuery, [dairy_id], (err, result) => {
         connection.release();
