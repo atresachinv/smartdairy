@@ -489,6 +489,7 @@
   background-color: var(--bg-gray-color);
 }
 .bg7 {
+  border-radius: 8px 8px 0 0;
   background-color: #17acc0;
 }
 .bg-light-green {
@@ -575,7 +576,7 @@ body {
   );
 }
 
-.danger-btn {
+.btn-danger {
   width: auto;
   height: 40px;
   display: flex;
@@ -584,7 +585,7 @@ body {
   padding: 10px;
   border: none;
   border-radius: 6px;
-  font-weight: 500;
+  font-weight: 700;
   color: #fff;
   transition: all 0.3s ease-in-out;
   background: linear-gradient(
@@ -594,7 +595,7 @@ body {
   );
 }
 
-.danger-btn:hover {
+.btn-danger:hover {
   background: linear-gradient(
     40deg,
     rgb(225, 126, 13) 10%,

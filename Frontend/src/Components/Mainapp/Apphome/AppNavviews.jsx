@@ -1,9 +1,7 @@
 import React from "react";
-import Milkcollection from "./Appnavviews/Milkcollection/Milkcollection";
 import MilkSankalan from "./Appnavviews/MilkSankalan/MilkSankalan";
 import SankalanReport from "./Appnavviews/MilkSankalan/SankalanReport";
 import CompleteMilkColl from "./Appnavviews/Milkcollection/CompleteMilkColl";
-import UpdateCollection from "./Appnavviews/Milkcollection/UpdateCollection";
 import MilkCollectorsReports from "./Appnavviews/Milkcollection/MilkCollectorsReports";
 import CreateCattleFeed from "../Sales/CattleFeed/CreateCattleFeed";
 import MilksalesReport from "./Appnavviews/MilksalesPages/MilksalesReport";
@@ -11,14 +9,15 @@ import Milksales from "./Appnavviews/MilksalesPages/Milksales";
 import AdminSalesReports from "./Appnavviews/MilkSankalan/AdminSalesReports";
 import SalesReports from "./Appnavviews/MilkSankalan/SalesReports";
 import StockReport from "./Appnavviews/Sales/StockReport";
+import MilkColleform from "./Appnavviews/Milkcollection/Milkcollform";
 
 const AppNavViews = ({ index }) => {
   switch (index) {
     case "collection/morning":
-      return <Milkcollection times={"morning"} />;
+      return <MilkColleform times={"morning"} />;
       break;
     case "collection/evening":
-      return <Milkcollection times={"evening"} />;
+      return <MilkColleform times={"evening"} />;
       break;
     case "vehicle/collection":
       return <MilkSankalan />;

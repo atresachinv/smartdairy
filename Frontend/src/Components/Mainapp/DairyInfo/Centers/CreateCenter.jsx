@@ -36,6 +36,7 @@ const CreateCenter = () => {
   //
   //     generatePrefix();
   //   }, []);
+  
   const initialValues = {
     marathi_name: "",
     center_name: "",
@@ -60,7 +61,7 @@ const CreateCenter = () => {
     const generatePrefix = () => {
       const alphabets = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
       let prefix = "C";
-      for (let i = 0; i < 2; i++) {
+      for (let i = 0; i < 3; i++) {
         const randomIndex = Math.floor(Math.random() * alphabets.length);
         prefix += alphabets[randomIndex];
       }

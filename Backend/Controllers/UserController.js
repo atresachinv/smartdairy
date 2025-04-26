@@ -221,7 +221,10 @@ exports.userRegister = async (req, res) => {
             BillNo INT,
             BillDate DATE,
             UpdatedBy VARCHAR(60),
-            updatedOn DATE
+            updatedOn DATE,
+            isDeleted INT DEFAULT 0,
+            deletedBy VARCHAR(60) null,
+            deletedOn DATETIME null
           )`
         );
 
