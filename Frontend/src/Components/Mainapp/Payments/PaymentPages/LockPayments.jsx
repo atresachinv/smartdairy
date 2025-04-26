@@ -11,14 +11,13 @@ const LockPayments = ({ showbtn, setCurrentPage }) => {
   const dispatch = useDispatch();
   const payMasters = useSelector((state) => state.payment.paymasters || []);
   const payMstatus = useSelector((state) => state.payment.pmaststatus);
+  const lockPaystatus = useSelector((state) => state.payment.lockPaytstatus);
   const [updatedPayMasters, setUpdatedPayMasters] = useState([]);
 
   // Fetch payment masters ----------------------------------------->
   useEffect(() => {
-    if (!payMasters || payMasters.length === 0) {
-      dispatch(getPayMasters());
-    }
-  }, [dispatch, payMasters]);
+    dispatch(getPayMasters());
+  }, [dispatch]);
 
   // Sync local copy when payMasters change ------------------------->
   useEffect(() => {
@@ -109,9 +108,9 @@ const LockPayments = ({ showbtn, setCurrentPage }) => {
           <button
             className="btn mx10"
             onClick={handleSubmitLocked}
-            disabled={payMstatus === "loading"}
+            disabled={lockPaystatus === "loading"}
           >
-            {payMstatus === "loading" ? "updating..." : "Update"}
+            {lockPaystatus === "loading" ? "updating..." : "Update"}
           </button>
         </div>
       </div>

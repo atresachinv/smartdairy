@@ -12,6 +12,7 @@ const initialState = {
   trnDeductions: [],
   paymasters: [],
   status: "idle",
+  lockPaytstatus: "idle",
   delOnestatus: "idle",
   delAllstatus: "idle",
   pmaststatus: "idle",
@@ -811,6 +812,18 @@ const paymentSlice = createSlice({
       })
       .addCase(getPayMasters.rejected, (state, action) => {
         state.pmaststatus = "failed";
+        state.error = action.payload;
+      }) // Lock Perticular payment masters ------------------------------------------------>
+      .addCase(lockMilkPaydata.pending, (state) => {
+        state.lockPaytstatus = "loading";
+        state.error = null;
+      })
+      .addCase(lockMilkPaydata.fulfilled, (state, action) => {
+        state.lockPaytstatus = "succeeded";
+        state.paymasters = action.payload;
+      })
+      .addCase(lockMilkPaydata.rejected, (state, action) => {
+        state.lockPaytstatus = "failed";
         state.error = action.payload;
       }) // delete selected payment ------------------------------------------------>
       .addCase(deleteSelectedBill.pending, (state) => {
