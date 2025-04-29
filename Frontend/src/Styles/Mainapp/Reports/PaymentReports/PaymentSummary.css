@@ -1,0 +1,68 @@
+@media screen and (max-width: 426px) {
+  .payment-register-container {
+    min-height: auto;
+  }
+  .payment-register-container .from-too-date-button-container {
+    height: fit-content;
+  }
+  .filter-container .date-from-too-div {
+    width: 100%;
+    margin-bottom: 50px;
+  }
+  .from-too-date-button-container {
+    flex-direction: column;
+  }
+  .from-too-date-button-container .date-from-toocontainer {
+    width: 100%;
+    height: fit-content;
+  }
+  .from-too-date-button-container
+    .date-from-toocontainer
+    .from-date-div-container {
+    width: 40%;
+  }
+  .from-too-date-button-container
+    .date-from-toocontainer
+    .from-date-div-container
+    input {
+    font-size: 0.7rem;
+    width: 108px;
+  }
+  .from-too-date-button-container
+    .date-from-toocontainer
+    .from-date-div-container
+    span {
+    font-size: small;
+  }
+  .from-too-date-button-container
+    .date-from-toocontainer
+    .to-date-div-container {
+    width: 40%;
+  }
+  .from-too-date-button-container
+    .date-from-toocontainer
+    .to-date-div-container
+    input {
+    font-size: 0.7rem;
+    width: 108px;
+  }
+  .from-too-date-button-container
+    .date-from-toocontainer
+    .to-date-div-container
+    span {
+    font-size: small;
+    width: 25px;
+    margin-left: 5px;
+  }
+  .from-too-date-button-container
+    .date-from-toocontainer
+    .report-show-button-div {
+    width: 20%;
+  }
+  .from-too-date-button-container .combined-filter-div {
+    width: 100%;
+  }
+  .button-and-customer-name-wise-div .button-print-export-div {
+    width: 100%;
+  }
+}

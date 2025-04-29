@@ -7,6 +7,7 @@ const initialState = {
   alldeductionInfo: [],
   deductionData: [],
   deductionDetails: [],
+  getPaymentsDeductionInfo:[],
   mAdatededuction: [],
   status: "idle",
   maxAddSatus: "idle",

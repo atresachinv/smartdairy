@@ -13,15 +13,10 @@
 }
 
 /* Style the table inside */
-.report-table table {
-  width: 100%;
-  border-collapse: collapse;
-  background: #f9f9f9;
-}
 
 /* Table header styling */
 .report-table th {
-  background: #007bff;
+  background-color: #17acc0;
   color: white;
   padding: 10px;
   text-align: left;
@@ -44,9 +39,6 @@
   background: #e0e0e0;
 }
 
-
-
-
 /* Heading */
 .sub-heading {
   font-size: 20px;
@@ -57,12 +49,6 @@
 }
 
 /* Item Selection */
-.item-name-item-no-container {
-  width: 100%;
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 15px;
-}
 
 .item-no-div,
 .item-name-div {
@@ -83,6 +69,7 @@
   border: 1px solid #ccc;
   border-radius: 4px;
   font-size: 14px;
+
   width: 100%;
 }
 
@@ -145,7 +132,6 @@ p {
   margin: 0; /* Remove default margins */
 }
 
-
 /* Popup Animation */
 @keyframes fadeIn {
   from {
@@ -184,9 +170,7 @@ p {
   .date-container-sales .from-and-to-date-both {
     width: 100%;
   }
-  .first-half-container-sales-report {
 
-  }
   .first-half-container-sales-report
     .date-container-sales
     .from-and-to-date-both
@@ -249,15 +233,17 @@ p {
     .item-no-itemname-div {
     margin-top: 3px;
   }
-  
+
   .first-half-container-sales-report
     .itemwise-data-show-checkbox-div
-    .item-no-itemname-div .item-no-salesdiv span {
-      font-size: small;
+    .item-no-itemname-div
+    .item-no-salesdiv
+    span {
+    font-size: small;
   }
-    .sale-regsiter-reports .print-button-div button{
-          margin-left: 20px;
-          width: 43px;
+  .sale-regsiter-reports .print-button-div button {
+    margin-left: 20px;
+    width: 43px;
   }
 
   .itemwise-data-show-checkbox-div
@@ -269,11 +255,12 @@ p {
   .itemwise-data-show-checkbox-div .item-no-itemname-div .item-name-sale-div {
     width: 200px;
     margin-right: 20px;
-    
   }
-  .itemwise-data-show-checkbox-div .item-no-itemname-div .item-name-sale-div select {
-     font-size: small;
-    
+  .itemwise-data-show-checkbox-div
+    .item-no-itemname-div
+    .item-name-sale-div
+    select {
+    font-size: small;
   }
   .itemwise-data-show-checkbox-div
     .item-no-itemname-div
@@ -285,8 +272,8 @@ p {
   .Report-show-and-Pdf-Print-Function button {
     margin-right: 5px;
   }
-    .from-and-to-date-both{
-     margin-right: 20px;
+  .from-and-to-date-both {
+    margin-right: 20px;
   }
 }
 /* @media screen and (max-width: 768px) {

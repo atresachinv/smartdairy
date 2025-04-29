@@ -1,3 +1,4 @@
+
 import React, { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 // import "../../../../Styles/MachineSettings/MachineSettings.css";
@@ -7,8 +8,8 @@ import { toast } from "react-toastify";
 import Spinner from "../../../../Home/Spinner/Spinner";
 import { getPaymentsDeductionInfo } from "../../../../../App/Features/Deduction/deductionSlice";
 import "../../../../../Styles/Mainapp/Reports/PaymentReports/PaymentRegister.css";
-
-const PaymentRegister = () => {
+  // PAYMENT SUMMARY
+const PaymentSummary = () => {
   const dispatch = useDispatch();
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
@@ -386,4 +387,4 @@ const PaymentRegister = () => {
   );
 };
 
-export default PaymentRegister;
+export default PaymentSummary;
