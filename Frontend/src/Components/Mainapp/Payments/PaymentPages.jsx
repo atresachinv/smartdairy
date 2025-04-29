@@ -4,7 +4,7 @@ import Payments from "./Payments";
 import LockPayments from "./PaymentPages/LockPayments";
 import MilkCorrection from "./PaymentPages/MilkCorrection/MilkCorrection";
 import PaymentRegister from "../Reports/PaymentsReports/PaymentPages/PaymentRegister";
-import BankReportMaster from "../Reports/BankReports/BankReportMaster";
+import PaymentSummary from "../Reports/PaymentsReports/PaymentPages/PaymentSummary";
 
 const PaymentPages = () => {
   const [currentPage, setCurrentPage] = useState("main");
@@ -19,14 +19,13 @@ const PaymentPages = () => {
         return (
           <MilkCorrection setCurrentPage={setCurrentPage} showbtn={true} />
         );
-
-      case "paysummary":
+      case "payregister":
         return (
           <PaymentRegister setCurrentPage={setCurrentPage} showbtn={true} />
         );
-      case "payregister":
+      case "paysummary":
         return (
-          <BankReportMaster setCurrentPage={setCurrentPage} showbtn={true} />
+          <PaymentSummary setCurrentPage={setCurrentPage} showbtn={true} />
         );
       case "main":
       default:

@@ -6,12 +6,11 @@ import "jspdf-autotable";
 import * as XLSX from "xlsx"; // Library for Excel export
 import { getPaymentsDeductionInfo } from "../../../../../App/Features/Deduction/deductionSlice";
 /// PAYMENT Register
-const PaymentRegister = () => {
+const PaymentRegister = ({ showbtn, setCurrentPage }) => {
   const dispatch = useDispatch();
 
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
-  const [filter, setFilter] = useState("");
   const [filteredData, setFilteredData] = useState([]);
   const [dnames, setDnames] = useState([]);
   const [groupedData, setGroupedData] = useState([]);
@@ -21,14 +20,12 @@ const PaymentRegister = () => {
   const customerlist = useSelector((state) => state.customer.customerlist);
   const [showCustomerwiseDateFilter, setShowCustomerwiseDateFilter] =
     useState(true);
-  const [showAllCustomers, setShowAllCustomers] = useState(false);
   const [fromCode, setFromCode] = useState("");
   const [toCode, setToCode] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [dataAvailable, setDataAvailable] = useState(true);
   const [customerName, setCustomerName] = useState("");
   const [isCNameWiseChecked, setIsCNameWiseChecked] = useState(false);
-  const [filterType, setFilterType] = useState("code"); // 'code' or 'name'
   const [isCodewiseChecked, setIsCodewiseChecked] = useState(false);
   const manualMaster = useSelector((state) => state.manualMasters.masterlist);
 
@@ -49,7 +46,6 @@ const PaymentRegister = () => {
 
       // Store selected master in localStorage
       localStorage.setItem("selectedMaster", JSON.stringify(selectedDates));
-      console.log(" Manual MAster", manualMaster);
       dispatch(
         getPaymentsDeductionInfo({
           fromDate: selectedDates.start,
@@ -486,7 +482,19 @@ const PaymentRegister = () => {
 
   return (
     <div className="payment-register-container w100 h1 d-flex-col ">
-      <span className="heading">Payment Register</span>
+      <div className="title-back-btn-container w100 h10 d-flex a-center sb">
+        <span className="heading py10">Payment Register :</span>
+        {showbtn ? (
+          <button
+            className="btn-danger mx10"
+            onClick={() => setCurrentPage("main")}
+          >
+            बाहेर पडा
+          </button>
+        ) : (
+          ""
+        )}
+      </div>
       <div className="filter-container d-flex-col  w100 h30 bg sa">
         <div className="from-too-date-button-container w100 h30  d-flex">
           <div className="date-from-toocontainer w60 d-flex h1 sa ">
@@ -589,14 +597,14 @@ const PaymentRegister = () => {
         </div>
         <div className="button-and-customer-name-wise-div w100 h60 d-flex a-center">
           <div className="button-print-export-div w40 h1 a-center d-flex sa j-end ">
-            <button className="w-btn" onClick={exportToExcel}>
+            <button type="button" className="w-btn" onClick={exportToExcel}>
               Excel
             </button>
-            <button className="w-btn" onClick={handlePrint}>
+            <button type="button" className="w-btn" onClick={handlePrint}>
               Print
             </button>
-            <button className="w-btn" onClick={exportToPDF}>
-              PDF{" "}
+            <button type="button" className="w-btn" onClick={exportToPDF}>
+              PDF
             </button>
           </div>
         </div>
