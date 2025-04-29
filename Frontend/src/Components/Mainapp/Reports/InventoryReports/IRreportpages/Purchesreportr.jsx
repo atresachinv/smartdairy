@@ -21,6 +21,7 @@ const Purchesreportr = () => {
   const [columns, setColumns] = useState([]);
   const [isClearEnabled, setIsClearEnabled] = useState(false);
   const toDates = useRef(null);
+  const fromDate = useRef(null);
   const [isChecked, setIsChecked] = useState(false);
 
   const dairyname = useSelector(
@@ -30,16 +31,19 @@ const Purchesreportr = () => {
   const CityName = useSelector((state) => state.dairy.dairyData.city);
 
   // ......  purches APi Calling
+  
+
   // useEffect(() => {
+  //   console.log("fromdate:", fromdate, "todate:", todate); // Check their values
   //   const fetchData = async () => {
   //     if (!fromdate || !todate) {
   //       return;
   //     }
   //     try {
-  //  const response = await axiosInstance.get("/stock/purchase/all", {
-  //    params: { fromdate, todate },
-  //  });
-
+  //       const response = await axiosInstance.get("/stock/purchase/all", {
+  //         params: { fromdate, todate },
+  //       });
+  //       console.log("Response:", response); // Check what the API returns
   //       SetSales(response.data.purchaseData);
   //       setShowTable(true); // Show table after fetching data
   //     } catch (error) {
@@ -54,29 +58,33 @@ const Purchesreportr = () => {
   // }, [fromdate, todate]); // Run useEffect when fromDate or toDate changes
 
   useEffect(() => {
-    console.log("fromdate:", fromdate, "todate:", todate); // Check their values
-    const fetchData = async () => {
-      if (!fromdate || !todate) {
-        return;
-      }
-      try {
-        const response = await axiosInstance.get("/stock/purchase/all", {
-          params: { fromdate, todate },
-        });
-        console.log("Response:", response); // Check what the API returns
-        SetSales(response.data.purchaseData);
-        setShowTable(true); // Show table after fetching data
-      } catch (error) {
-        console.error(
-          "Error Handling:",
-          error.response ? error.response.data : error.message
-        );
+    const salefetchData = async () => {
+      // Only fetch data if both fromdate and todate are available
+      if (fromdate && todate) {
+        try {
+          const response = await axiosInstance.get("/stock/purchase/all", {
+            params: { fromdate, todate },
+          });
+          SetSales(response.data.purchaseData); // Set the fetched sales data
+          setShowTable(true);
+        } catch (error) {
+          console.log(
+            "Error Handling:",
+            error.response ? error.response.data : error.message
+          );
+        }
       }
     };
 
-    fetchData();
-  }, [fromdate, todate]); // Run useEffect when fromDate or toDate changes
-
+    // Run API call if both dates are selected, otherwise run other functionality
+    if (fromdate && todate) {
+      salefetchData();
+    } else {
+      // Handle other functionality when dates are not selected
+      console.log("No date selected yet. Please select a date range.");
+    }
+  }, [fromdate, todate]); 
+  
   console.log("Sales", sales);
   //---------------------------DealerWise Report --------------------------------------->>
   useEffect(() => {
@@ -155,9 +163,10 @@ const Purchesreportr = () => {
     if (selectedType === "Purches Register") {
       filteredData = allSales;
     } else if (selectedType === "Distrubuted Purches") {
-      filteredData = allSales.filter(
-        (sale) => sale.soldqty > 0 && sale.soldqty < sale.qty
-      );
+      filteredData = allSales;
+      // filteredData = allSales.filter(
+      //   (sale) => sale.soldqty > 0 && sale.soldqty < sale.qty
+      // );
     } else if (selectedType === "Dealername Wise") {
       // 'dealerName' वरून विक्री अल्फाबेटिकल क्रमाने सॉर्ट करा
       filteredData = [...allSales].sort((a, b) =>
@@ -978,9 +987,7 @@ Total Amount:        ${totalAmount.toFixed(2)}
       setDealerCode(""); // Reset if not found
     }
   };
-  //...const handleDealerCodeChange = (e) => setDealerCode(e.target.value);
-  const handleeDealerCodeChange = (e) => setDealerCode(e.target.value);
-  const handleDeealerNameChange = (e) => setDealerName(e.target.value);
+
   const DealergeneratePDF = () => {
     if (!dealerCode || dealerCode.toString().trim() === "") {
       alert("Please enter Dealer Code");
@@ -1144,17 +1151,9 @@ Total Amount:        ${totalAmount.toFixed(2)}
   };
 
   //.... Filter checkbox  COde  ANd  Name
-
+  console.log("filteredSales", filteredSales);
   const handleCheckboxChange = () => {
     setIsChecked((prevState) => !prevState); // Toggle checkbox state
-  };
-
-  const handleDealerCodeeChange = (e) => {
-    setDealerCode(e.target.value);
-  };
-
-  const handleDealerNameeChange = (e) => {
-    setDealerName(e.target.value);
   };
 
   return (
@@ -1169,7 +1168,7 @@ Total Amount:        ${totalAmount.toFixed(2)}
                 <input
                   className="w60 data"
                   type="date"
-                  onKeyDown={(e) => handleKeyDown(e, toDates)}
+                  onKeyDown={(e) => handleKeyDown(e, fromDate)}
                   value={fromdate}
                   onChange={(e) => setFromDate(e.target.value)}
                 />

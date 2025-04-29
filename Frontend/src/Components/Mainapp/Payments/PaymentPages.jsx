@@ -3,7 +3,7 @@ import PayDeductions from "./PaymentPages/PayDeductions/PayDeductions";
 import Payments from "./Payments";
 import LockPayments from "./PaymentPages/LockPayments";
 import MilkCorrection from "./PaymentPages/MilkCorrection/MilkCorrection";
-import PaymentRegister from "../Reports/PaymentsReports/PaymentPages.jsx/PaymentRegister";
+import PaymentRegister from "../Reports/PaymentsReports/PaymentPages/PaymentRegister";
 import BankReportMaster from "../Reports/BankReports/BankReportMaster";
 
 const PaymentPages = () => {

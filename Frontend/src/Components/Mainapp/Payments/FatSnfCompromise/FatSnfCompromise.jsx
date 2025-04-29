@@ -46,16 +46,16 @@ const FatSnfCompromise = () => {
             <legend className="label-text ">FAT</legend>
             <div className="radio-button1-div w80 d-flex ">
               <div className="jounral-radio-button w30 d-flex px10 a-center">
-                <input className="w10" type="radio" />
+                <input className="w10 h50" type="radio" />
                 <span className="label-text w30">जरनल</span>
               </div>
               <div className="Back-day-radio-button w30 d-flex px10 a-center">
-                <input className="w10" type="radio" />
+                <input className="w10 h50" type="radio" />
                 <span className="label-text w50">जुनी FAT</span>
               </div>
 
-              <div className="differance-radio-button w20 d-flex px10 a-center">
-                <input className="w10" type="radio" />
+              <div className="differance-radio-button w30 d-flex px10 a-center">
+                <input className="w10 h50" type="radio" />
                 <span className="label-text w50">फरक </span>
               </div>
             </div>
@@ -72,16 +72,16 @@ const FatSnfCompromise = () => {
             <legend className="label-text ">CLB</legend>
             <div className="radio-button1-div w80 d-flex ">
               <div className="jounral-radio-button w30 d-flex px10 a-center">
-                <input className="w10" type="radio" />
+                <input className="w10 h50" type="radio" />
                 <span className="label-text w30">जरनल</span>
               </div>
               <div className="Back-day-radio-button w30 d-flex px10 a-center">
-                <input className="w10" type="radio" />
+                <input className="w10 h50" type="radio" />
                 <span className="label-text w50">जुनी FAT</span>
               </div>
 
-              <div className="differance-radio-button w20 d-flex px10 a-center">
-                <input className="w10" type="radio" />
+              <div className="differance-radio-button w30 d-flex px10 a-center">
+                <input className="w10 h50 " type="radio" />
                 <span className="label-text w50">फरक </span>
               </div>
             </div>
@@ -98,16 +98,16 @@ const FatSnfCompromise = () => {
             <legend className="label-text ">SNF</legend>
             <div className="radio-button1-div w80 d-flex ">
               <div className="jounral-radio-button w30 d-flex px10 a-center">
-                <input className="w10" type="radio" />
+                <input className="w10 h50" type="radio" />
                 <span className="label-text w30">जरनल</span>
               </div>
               <div className="Back-day-radio-button w30 d-flex px10 a-center">
-                <input className="w10" type="radio" />
+                <input className="w10 h50 h50 " type="radio" />
                 <span className="label-text w50">जुनी FAT</span>
               </div>
 
-              <div className="differance-radio-button w20 d-flex px10 a-center">
-                <input className="w10" type="radio" />
+              <div className="differance-radio-button w30 d-flex px10 a-center">
+                <input className="w10 h50" type="radio" />
                 <span className="label-text w50">फरक </span>
               </div>
             </div>
@@ -124,17 +124,17 @@ const FatSnfCompromise = () => {
             <legend className="label-text ">LITER</legend>
             <div className="radio-button1-div w80 d-flex ">
               <div className="jounral-radio-button w30 d-flex px10 a-center">
-                <input className="w10" type="radio" />
-                <span className="label-text w30">जरनल</span>
+                <input className="w10 h50" type="radio" />
+                <span className="label-text w30">प्रति लिटर</span>
               </div>
               <div className="Back-day-radio-button w30 d-flex px10 a-center">
-                <input className="w10" type="radio" />
-                <span className="label-text w50">जुनी FAT</span>
+                <input className="w10 h50" type="radio" />
+                <span className="label-text w50">एकासारखे</span>
               </div>
 
-              <div className="differance-radio-button w20 d-flex px10 a-center">
-                <input className="w10" type="radio" />
-                <span className="label-text w50">फरक </span>
+              <div className="differance-radio-button w30 d-flex px10 a-center">
+                <input className="w10 h50" type="radio" />
+                <span className="label-text w50"> दर </span>
               </div>
             </div>
             <div className="input-filed-updated-button-div w20 d-flex">

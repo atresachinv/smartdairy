@@ -293,7 +293,7 @@ const totals = useMemo(() => {
     <div className="Day-Book-container w100  h1 d-flex-col ">
       <span className="heading px10">डे बुक </span>
 
-      <div className="first-day-book-half-div w100 h40 d-flex ">
+      <div className="first-day-book-half-div bg w100 h40 d-flex  ">
         <div className="back-front-date-div w30 h1 d-flex-col sa">
           <div className="dates-books-div w100 h30 d-flex a-center">
             <span className="label-text w30 px10">दिनांक</span>
@@ -342,7 +342,7 @@ const totals = useMemo(() => {
         <div className="print-rokh-milk-payment div w35 h1 d-flex-col sa">
           <div className="print-payment-rokh-div w100 d-flex sa h30">
             <button className="w-btn" onClick={handlePrint}>
-              प्रिंट1
+              प्रिंट 1
             </button>
             <button
               onClick={(e) => {
@@ -365,7 +365,7 @@ const totals = useMemo(() => {
           </div>
           <div className="print-payment-rokh-div w100 d-flex sa h30">
             <button className="w-btn" onClick={handlePrint2}>
-              प्रिंट2
+              प्रिंट 2
             </button>
             <button
               onClick={(e) => {
@@ -486,7 +486,7 @@ const totals = useMemo(() => {
       <div className="day-book-table-section w100 h50 d-flex-col bg">
         <div className="scroll-container">
           <div className="heading-tableof-dy-book w100 h15 sa d-flex">
-            <span className="label-text w5">खतावणी न</span>
+            <span className="label-text w5">ख. न</span>
             <span className="label-text w20">खतावणी नाव</span>
             <span className="label-text w10">जमा कॅश</span>
             <span className="label-text w10">जमा ट्रान्सफर</span>
@@ -527,15 +527,16 @@ const totals = useMemo(() => {
                 </div>
               ))
             ) : (
-              <div className="text-center text-gray-500 p-4">
-                डेटा उपलब्ध नाही
+              <div className="  not-data-message text-center text-gray-500   p-4">
+            माहिती मिळाली  नाही
               </div>
             )}
           </div>
         </div>
       </div>
 
-      <div className="arabhichi-remening-qtyall-nameamt-transer w100 h15 d-flex bg3">
+      <div className="arabhichi-remening-qtyall-nameamt-transer w100 h15 d-flex bg3
+      ">
         <div className="satring-remining-qty w15 a-center d-flex-col">
           <span className="label-text">आरंभीची शिल्लक</span>
           <input

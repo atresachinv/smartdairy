@@ -19,7 +19,7 @@ const TrnCheck = () => {
     cn: 0,
     itemgrpcode: 1,
     type: 1,
-  });
+  });`  `
   const centerList = useSelector(
     (state) => state.center.centersList.centersDetails || []
   );

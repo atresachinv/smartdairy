@@ -8,7 +8,7 @@ import Spinner from "../../../../Home/Spinner/Spinner";
 import { getPaymentsDeductionInfo } from "../../../../../App/Features/Deduction/deductionSlice";
 import "../../../../../Styles/Mainapp/Reports/PaymentReports/PaymentRegister.css";
 
-const PaymentRegister = ({ showbtn, setCurrentPage }) => {
+const PaymentSummary = ({ showbtn, setCurrentPage }) => {
   const dispatch = useDispatch();
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
@@ -398,4 +398,4 @@ const PaymentRegister = ({ showbtn, setCurrentPage }) => {
   );
 };
 
-export default PaymentRegister;
+export default PaymentSummary;

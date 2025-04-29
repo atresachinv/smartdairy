@@ -2,13 +2,16 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import jsPDF from "jspdf";
 import * as XLSX from "xlsx";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { getBankList } from "../../../../App/Features/Mainapp/Masters/bankSlice";
 const BankReportMaster = () => {
+  const dispatch = useDispatch();
   const [fromDate, setFromDate] = useState(""); // Make sure fromDate and toDate are set correctly
   const [toDate, setToDate] = useState("");
   const [bankData, setBankData] = useState([]);
   const customerlist = useSelector((state) => state.customer.customerlist); //api call Using reducx
   const [mergedData, setMergedData] = useState([]);
+  const bankList = useSelector((state) => state.bank.banksList || []);
   const [filteredDeduction, setFilteredDeduction] = useState([]);
   const [loading, setLoading] = useState(false);
   const [showBankWise, setShowBankWise] = useState(true);
@@ -18,6 +21,9 @@ const BankReportMaster = () => {
     useState(false); // State for Customerwise checkbox
   const [fromCode, setFromCode] = useState(""); // State for From code input
   const [toCode, setToCode] = useState(""); // State for To code input
+  const [selectedCode, setSelectedCode] = useState("");
+  const [selectedBank, setSelectedBank] = useState("");
+
 
   //......   Dairy name And City name   for PDf heading
   const dairyname = useSelector(
@@ -76,19 +82,14 @@ const BankReportMaster = () => {
   ];
 
   // Fetch Data
-
   const handlefetchData = async () => {
     if (!fromDate || !toDate) {
       alert("Please select both From and To dates.");
       return;
     }
-
     try {
-router.route("/bank/update").put(verifyToken, updateBankDetails);
-const response = await axios.post("/bank/list", { fromDate, toDate });
-      
-      
-      console.log("API Response Data:", response.data.Deduction); // Log the response data
+      const response = await axios.post("/bank/list", { fromDate, toDate });
+      console.log("API Response Data:", response.data.Deduction);
       setBankData(response.data.Deduction);
     } catch (error) {
       console.error(
@@ -97,11 +98,15 @@ const response = await axios.post("/bank/list", { fromDate, toDate });
       );
       alert("Failed to fetch data. Please try again later.");
     }
+
     handleTableClick();
   };
 
+  //.. banklist
+  useEffect(() => {
+    dispatch(getBankList());
+  }, [dispatch]);
   //.... AddC BAnk Excel
-
   const exportADDCToExcel = () => {
     if (loading) {
       alert("Data is still loading. Please wait.");
@@ -174,6 +179,7 @@ const response = await axios.post("/bank/list", { fromDate, toDate });
     const excelFileName = "ADCC_Bank_Report.xlsx";
     XLSX.writeFile(workbook, excelFileName);
   };
+  console.log("Bankdata", bankList);
 
   //.... AddCB BAnk Excel
   const exportADCCBToExcel = () => {
@@ -999,7 +1005,7 @@ const response = await axios.post("/bank/list", { fromDate, toDate });
     "Canara Bank": exportCANARABANKExcel,
   };
 
-  const handleBankSelection = (event) => {
+  const  handleBankSelection = (event) => {
     const selectedBank = event.target.value;
 
     if (selectedBank && BankExportFunctions[selectedBank]) {
@@ -1014,7 +1020,7 @@ const response = await axios.post("/bank/list", { fromDate, toDate });
 
   useEffect(() => {
     // Extract unique AccCodes from bank data
-    const uniqueAccCodes = [...new Set(bankData.map((item) => item.AccCode))];
+    const uniqueAccCodes = [...new Set(bankList.map((item) => item.AccCode))];
 
     // Find matching customers based on AccCode
     const matchingCustomers = uniqueAccCodes
@@ -1026,7 +1032,7 @@ const response = await axios.post("/bank/list", { fromDate, toDate });
       .filter(Boolean); // Filter out undefined values
 
     // Merge customer details into bank data
-    const updatedDeduction = bankData.map((deductionItem) => {
+    const updatedDeduction = bankList.map((deductionItem) => {
       const matchingCustomer = matchingCustomers.find(
         (customer) => String(customer.cid) === String(deductionItem.AccCode)
       );
@@ -1046,20 +1052,36 @@ const response = await axios.post("/bank/list", { fromDate, toDate });
   }, [bankData, customerlist]);
 
   // Filter and transform the data
+  // const combinedFilteredData = mergedData.filter((item) => {
+  //   // Check Show All Customers filter
+  //   const passesCustomerFilter = showAllCustomers
+  //     ? item.DeductionId === 0 // Show all customers
+  //     : item.DeductionId === 0 && item.namt > 0; // Only show customers with namt > 0 if unchecked
+
+  //   // Check From-To Code filter
+  //   const isCodeInRange =
+  //     (fromCode === "" || item.Code >= fromCode) &&
+  //     (toCode === "" || item.Code <= toCode); // Check if code is in range
+
+  //   // Combine both filters
+  //   return passesCustomerFilter && isCodeInRange;
+  // });
   const combinedFilteredData = mergedData.filter((item) => {
-    // Check Show All Customers filter
+    // Convert codes to numbers safely
+    const itemCode = Number(item.Code);
+    const from = fromCode !== "" ? Number(fromCode) : null;
+    const to = toCode !== "" ? Number(toCode) : null;
+
     const passesCustomerFilter = showAllCustomers
       ? item.DeductionId === 0 // Show all customers
       : item.DeductionId === 0 && item.namt > 0; // Only show customers with namt > 0 if unchecked
 
-    // Check From-To Code filter
     const isCodeInRange =
-      (fromCode === "" || item.Code >= fromCode) &&
-      (toCode === "" || item.Code <= toCode); // Check if code is in range
+      (from === null || itemCode >= from) && (to === null || itemCode <= to); // Check if code is in range
 
-    // Combine both filters
     return passesCustomerFilter && isCodeInRange;
   });
+
 
   // Log mergedData and combinedFilteredData for debugging
   useEffect(() => {
@@ -1082,15 +1104,39 @@ const response = await axios.post("/bank/list", { fromDate, toDate });
       // Add other properties as needed or leave null
     });
   }
+  //... map the bank code and bank list
+  const handleCodeChange = (e) => {
+    const code = e.target.value;
+    setSelectedCode(code);
+
+    const matchedBank = bankList.find(
+      (bank) => String(bank.code).trim() === code.trim()
+    );
+
+    setSelectedBank(matchedBank ? matchedBank.name : "");
+  };
+
+
+  // When bank name is selected
+ const handleBankChange = (e) => {
+   const name = e.target.value;
+   setSelectedBank(name);
+
+   const matchedBank = bankList.find(
+     (bank) => bank.name.trim().toLowerCase() === name.trim().toLowerCase()
+   );
+
+   setSelectedCode(matchedBank ? String(matchedBank.code) : "");
+ };
 
   return (
     <div className="bank-register-container w100 h1 d-flex-col bg">
       <span className="heading">Bank Register Report</span>
 
       {/* First Part */}
-      <div className="bank-first-container w100 h30 d-flex-col">
-        <div className="date-from-to-bank d-flex w100 h30 p10 bg">
-          <div className="from-date-bank-div w30 d-flex h1 a-center">
+      <div className="bank-first-container w100 h40 d-flex-col sa">
+        <div className="date-from-to-bank d-flex w100 h20 p10 bg">
+          <div className="from-date-bank-div w30 d-flex  a-center">
             <span className="label-text w20">from:</span>
             <input
               value={fromDate}
@@ -1114,8 +1160,8 @@ const response = await axios.post("/bank/list", { fromDate, toDate });
             </button>
           </div>
         </div>
-        <div className="checkbox-side-div w100 h50 d-flex bg a-center">
-          <div className="amt-checkbox-div w20 h1 d-flex a-center p10">
+        <div className="checkbox-side-div w100  d-flex bg a-center">
+          <div className="amt-checkbox-div w20  d-flex a-center p10">
             <input
               className="w20"
               type="checkbox"
@@ -1148,6 +1194,46 @@ const response = await axios.post("/bank/list", { fromDate, toDate });
             </button>
           </div>
         </div>
+        <div v className="bank-code-div w90  d-flex a-center">
+          <div className="bank-textfield-div w30  a-center p10 ">
+            <span className="w70 label-text px10 ">Bank Code:</span>
+            <input
+              className="w30 data"
+              value={selectedCode}
+              onChange={handleCodeChange}
+              type="text"
+            />
+          </div>
+          <div className="bank-reprts-dropdown  w40 h30 d-flex a-center ">
+            <span className=" label-text w40 "> Select Bank:</span>
+            <select className="data w60" value={selectedBank} onChange={handleBankChange}>
+              <option value="">-- Select Bank --</option>
+              {bankList.map((bank) => (
+                <option key={bank.code} value={bank.name}>
+                  {bank.name}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="bank-regsiter-buttons-pdf-excel w40 sa d-flex">
+            <div className="report-show-button w30  px10 d-flex a-center">
+              <button className="w-btn" onClick={exportToPDF}>
+                pdf
+              </button>
+            </div>
+            <div className="report-old-bank d-flex w30 h90 a-center">
+              <button className="btn" onClick={exportToNEWPDF}>
+                English Excel
+              </button>
+            </div>
+            <div className="report-old-bank d-flex w30 h90 a-center">
+              <button className="btn" onClick={exportToMarathiPDF}>
+                Marathi Excel
+              </button>
+            </div>
+          </div>
+        </div>
+
         {showCustomerwiseDateFilter && (
           <div className=" hide-from-to-code w100 h10 d-flex ">
             <div className="from-date-bank-div w20 d-flex h1 a-center">
@@ -1177,9 +1263,9 @@ const response = await axios.post("/bank/list", { fromDate, toDate });
       {/* Second Part */}
 
       {/* Add Button to Toggle Views */}
-      <div className="toggle-buttons-div  w100 h10 d-flex a-center ">
-        <div className="bank-data-div w20 h60">
-          <button onClick={handleBankWiseClick} className="w-btn">
+      {/* <div className="toggle-buttons-div  w100 h10 d-flex a-center ">
+        <div className="bank-data-div w20 h60 px10 ">
+          <button onClick={handleBankWiseClick} className="w-btn ">
             Bank
           </button>
         </div>
@@ -1188,8 +1274,8 @@ const response = await axios.post("/bank/list", { fromDate, toDate });
             pdf
           </button>
         </div>
-      </div>
-      {showBankWise ? (
+      </div> */}
+      {/* {showBankWise ? (
         <div className="bankwise-list-container w100 h60 d-flex-col bg">
           <div className="list-and-all-banks-div w100 h10 d-flex ">
             <div className="collected-list-checkbox w50 h1 d-flex a-center">
@@ -1202,16 +1288,6 @@ const response = await axios.post("/bank/list", { fromDate, toDate });
             </div>
           </div>
 
-          <div className="bank-code-div w90 h20 d-flex a-center">
-            <div className="bank-textfield-div w40 h1 a-center p10">
-              <span className="w70 label-text">Bank Code:</span>
-              <input className="w30 data" type="text" />
-            </div>
-            <div className="textfield-div w50 h1 a-center">
-              <input className="w70 data" type="text" />
-            </div>
-          </div>
-
           <div className="bank-selection-div-container w100 h70 d-flex">
             <div className="a-list-button-and-report-div w40 h30 d-flex-col  j-center  my10">
               <div className="dropdown-bank-div w100 h80 d-flex a-center p10 ">
@@ -1220,16 +1296,6 @@ const response = await axios.post("/bank/list", { fromDate, toDate });
                 </select>
               </div>
               <div className="button-section-div w100 h80 a-center d-flex">
-                <div className="report-old-bank d-flex w80 h90 a-center">
-                  <button className="btn" onClick={exportToNEWPDF}>
-                    English Excel
-                  </button>
-                </div>
-                <div className="report-old-bank d-flex w80 h90 a-center">
-                  <button className="btn" onClick={exportToMarathiPDF}>
-                    Marathi Excel
-                  </button>
-                </div>
                 <div className="report-old-bank d-flex w80 h90 a-center">
                   <button className="btn">Update hold PMT</button>
                 </div>
@@ -1240,104 +1306,47 @@ const response = await axios.post("/bank/list", { fromDate, toDate });
               <span className="heading label-text  ">
                 Bankwise Report Download:
               </span>
-              <div className="bank-reprts-dropdown  w60 h20 d-flex a ">
-                <span className=" label-text w40 h20"> Select Bank:</span>
-                <select
-                  className="select-with-scroll w60 data"
-                  name="bank"
-                  id="001"
-                  onChange={handleBankSelection}
-                >
-                  <option value="">Select Bank</option>
-                  <option value="ADCC Report">ADCC Report</option>
-                  <option value="ADCCB Report">ADCCB Report</option>
-                  <option value="Union Bank">Union Bank</option>
-                  <option value="SBI Bank">SBI Bank</option>
-                  <option value="AXIS Bank">AXIS Bank</option>
-                  <option value="IDBI Bank">IDBI Bank</option>
-                  <option value="Badodara Bank">Badodara Bank</option>
-                  <option value="Overseas Bank">Overseas Bank</option>
-                  <option value="Canara Bank">Canara Bank</option>
-                </select>
-              </div>
             </div>
           </div>
         </div>
       ) : (
-        // Step 2: Demo Table Section
-        // <div className="demo-table-section w100 h60 d-flex-col bg">
-        //   <span className="heading"> Table</span>
+         */}
+      <div className="demo-table-section w100 h60 d-flex-col bg">
+        <span className="heading">Table</span>
 
-        //   {/* Add your table-related functionalities or interactions here */}
+        {/* Add your table-related functionalities or interactions here */}
 
-        //   {combinedFilteredData.length > 0 ? (
-        //     <div className="table-container">
-        //       <table className="styled-table">
-        //         <thead>
-        //           <tr>
-        //             <th>Code</th>
-        //             <th>Customer Name</th>
-        //             <th>Bank ACC No</th>
-        //             <th>All payment</th>
-        //             {showIfscCode && <th>IFSC Code</th>}{" "}
-        //             {/* Conditionally render IFSC column */}
-        //           </tr>
-        //         </thead>
-        //         <tbody>
-        //           {combinedFilteredData.map((item, index) => (
-        //             <tr key={index}>
-        //               <td>{item.Code}</td> {/* Display Code */}
-        //               <td>{item.customerName}</td> {/* Display Customer Name */}
-        //               <td>{item.cust_accno}</td> {/* Display Amount */}
-        //               <td>{item.namt}</td> {/* Display Deduction */}
-        //               {showIfscCode && <td>{item.cust_ifsc}</td>}{" "}
-        //               {/* Conditionally render IFSC code */}
-        //             </tr>
-        //           ))}
-        //         </tbody>
-        //       </table>
-        //     </div>
-        //   ) : (
-        //     <p>No data available.</p>
-        //   )}
-        // </div>
-        <div className="demo-table-section w100 h60 d-flex-col bg">
-          <span className="heading">Table</span>
-
-          {/* Add your table-related functionalities or interactions here */}
-
-          {combinedFilteredData.length > 0 ? (
-            <div className="table-container">
-              <table className="styled-table">
-                <thead>
-                  <tr>
-                    <th>Code</th>
-                    <th>Customer Name</th>
-                    <th>Bank ACC No</th>
-                    <th>All payment</th>
-                    {showIfscCode && <th>IFSC Code</th>}{" "}
-                    {/* Conditionally render IFSC column */}
+        {combinedFilteredData.length > 0 ? (
+          <div className="table-container">
+            <table className="styled-table">
+              <thead>
+                <tr>
+                  <th>Code</th>
+                  <th>Customer Name</th>
+                  <th>Bank ACC No</th>
+                  <th>All payment</th>
+                  {showIfscCode && <th>IFSC Code</th>}{" "}
+                  {/* Conditionally render IFSC column */}
+                </tr>
+              </thead>
+              <tbody>
+                {combinedFilteredData.map((item, index) => (
+                  <tr key={index}>
+                    <td>{item.Code}</td> {/* Display Code */}
+                    <td>{item.customerName}</td> {/* Display Customer Name */}
+                    <td>{item.cust_accno}</td> {/* Display Account No */}
+                    <td>{item.namt}</td> {/* Display Payment */}
+                    {showIfscCode && <td>{item.cust_ifsc}</td>}{" "}
+                    {/* Conditionally render IFSC code */}
                   </tr>
-                </thead>
-                <tbody>
-                  {combinedFilteredData.map((item, index) => (
-                    <tr key={index}>
-                      <td>{item.Code}</td> {/* Display Code */}
-                      <td>{item.customerName}</td> {/* Display Customer Name */}
-                      <td>{item.cust_accno}</td> {/* Display Account No */}
-                      <td>{item.namt}</td> {/* Display Payment */}
-                      {showIfscCode && <td>{item.cust_ifsc}</td>}{" "}
-                      {/* Conditionally render IFSC code */}
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          ) : (
-            <p>No data available.</p>
-          )}
-        </div>
-      )}
+                ))}
+              </tbody>
+            </table>
+          </div>
+        ) : (
+          <p>No data available.</p>
+        )}
+      </div>
     </div>
   );
 };
