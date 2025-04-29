@@ -5,11 +5,9 @@ import jsPDF from "jspdf";
 import "jspdf-autotable";
 import * as XLSX from "xlsx"; // Library for Excel export
 import { getPaymentsDeductionInfo } from "../../../../../App/Features/Deduction/deductionSlice";
-// import { getPaymentsDeductionInfo } from "../../../../App/Features/Deduction/deductionSlice";
 /// PAYMENT Register
 const PaymentRegister = () => {
   const dispatch = useDispatch();
-
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
   const [filter, setFilter] = useState("");
@@ -22,14 +20,12 @@ const PaymentRegister = () => {
   const customerlist = useSelector((state) => state.customer.customerlist);
   const [showCustomerwiseDateFilter, setShowCustomerwiseDateFilter] =
     useState(true);
-  const [showAllCustomers, setShowAllCustomers] = useState(false);
   const [fromCode, setFromCode] = useState("");
   const [toCode, setToCode] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [dataAvailable, setDataAvailable] = useState(true);
   const [customerName, setCustomerName] = useState("");
   const [isCNameWiseChecked, setIsCNameWiseChecked] = useState(false);
-  const [filterType, setFilterType] = useState("code"); // 'code' or 'name'
   const [isCodewiseChecked, setIsCodewiseChecked] = useState(false);
   const manualMaster = useSelector((state) => state.manualMasters.masterlist);
 
@@ -42,23 +38,7 @@ const PaymentRegister = () => {
 
   //...
 
-  const handleSelectChange = async (e) => {
-    const selectedIndex = e.target.value;
-    if (selectedIndex !== "") {
-      const selectedDates = manualMaster[selectedIndex];
-      setSelectedMaster(selectedDates);
-
-      // Store selected master in localStorage
-      localStorage.setItem("selectedMaster", JSON.stringify(selectedDates));
-      console.log(" Manual MAster", manualMaster);
-      dispatch(
-        getPaymentsDeductionInfo({
-          fromDate: selectedDates.start,
-          toDate: selectedDates.end,
-        })
-      );
-    }
-  };
+  
 
   // Fetch data on date change
   useEffect(() => {

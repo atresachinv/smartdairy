@@ -1,7 +1,7 @@
 import React from "react";
-import DeductionReports from "./PaymentPages.jsx/DeductionReports";
-import PaymentRegister from "./PaymentPages.jsx/PaymentRegister";
-import PaymentSummary from "./PaymentPages.jsx/PaymentSummary";
+import DeductionReports from "./PaymentPages/DeductionReports";
+import PaymentRegister from "./PaymentPages/PaymentRegister";
+import PaymentSummary from "./PaymentPages/PaymentSummary";
 
 const PaymentViews = ({ index }) => {
   switch (index) {

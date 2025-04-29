@@ -12,14 +12,17 @@ import { useDispatch, useSelector } from "react-redux";
 import Spinner from "../../../../Home/Spinner/Spinner";
 import {
   getMilkToTransfer,
+  getPayMasters,
   getTransferedMilk,
   transferTOCustomer,
 } from "../../../../../App/Features/Payments/paymentSlice";
+import { selectPaymasters } from "../../../../../App/Features/Payments/paymentSelectors";
 
 const CustomerMilkTransfer = () => {
   const dispatch = useDispatch();
   const { t } = useTranslation(["common", "milkcollection"]);
   const tDate = useSelector((state) => state.date.toDate);
+  const payMasters = useSelector(selectPaymasters); // is payment lock
   const MilkData = useSelector((state) => state.payment.customerMilkData);
   const customerlist = useSelector(
     (state) => state.customers.customerlist || []
@@ -29,6 +32,7 @@ const CustomerMilkTransfer = () => {
   );
   const milkStatus = useSelector((state) => state.payment.getMilkstatus);
   const tranStatus = useSelector((state) => state.payment.transferedMilkstatus);
+  const [isLocked, setIsLocked] = useState(false); // is payment master lock
   const [customerList, setCustomerList] = useState([]);
   const [changedDate, setChangedDate] = useState("");
   const [errors, setErrors] = useState({});
@@ -140,7 +144,29 @@ const CustomerMilkTransfer = () => {
     setErrors(validationErrors);
     return validationErrors;
   };
-  // console.log(customerList);
+  // ----------------------------------------------------------------------->
+  // check if payment is lock or not ------------------------------------->
+  useEffect(() => {
+    if (!payMasters || payMasters.length === 0) {
+      dispatch(getPayMasters());
+    }
+  }, [dispatch, payMasters]);
+
+  useEffect(() => {
+    if (values.fromDate && values.toDate) {
+      const foundLocked = payMasters.some(
+        (master) =>
+          master.FromDate?.slice(0, 10) === values.fromDate.slice(0, 10) &&
+          master.ToDate?.slice(0, 10) === values.toDate.slice(0, 10) &&
+          master.islock === 1
+      );
+
+      setIsLocked(foundLocked);
+    } else {
+      setIsLocked(false);
+    }
+  }, [values, payMasters]);
+  // ----------------------------------------------------------------------->
 
   // Effect to load customer list from local storage
   useEffect(() => {
@@ -149,38 +175,6 @@ const CustomerMilkTransfer = () => {
       setCustomerList(JSON.parse(storedCustomerList));
     }
   }, [dispatch]);
-
-  //   const findCustomerByCname = (cname) => {
-  //     if (!cname) {
-  //       setValues((prev) => ({ ...prev, cname: "" }));
-  //       return;
-  //     }
-  //     // Ensure the code is a string for comparison
-  //     const customer = customerList.find((customer) =>
-  //       customer.cname.toLowerCase().includes(values.cname.toLowerCase())
-  //     );
-  // console.log(customer);
-  //
-  //     if (customer) {
-  //       setValues((prev) => ({
-  //         ...prev,
-  //         code: customer.srno,
-  //         cname: customer.cname,
-  //         acccode: customer.cid,
-  //       }));
-  //     } else {
-  //       setValues((prev) => ({ ...prev, cname: "" })); // Clear cname if not found
-  //     }
-  //   };
-  //
-  //   useEffect(() => {
-  //     if (values.cname) {
-  //       const handler = setTimeout(() => {
-  //         findCustomerByCname();
-  //       }, 500);
-  //       return () => clearTimeout(handler);
-  //     }
-  //   }, [values.cname]);
 
   const findCustomerByCode = (code) => {
     if (!code) {
@@ -276,6 +270,10 @@ const CustomerMilkTransfer = () => {
 
   const UpdateCustomerMilkRecords = async (e) => {
     e.preventDefault();
+    if (isLocked) {
+      toast.error("Payment Master is lock, Unlock and try again!");
+      return;
+    }
 
     if (!values.updatecode || !values.updatecname || !values.acccode) {
       toast.error("Please enter customer code to transfer milk!");
@@ -295,7 +293,7 @@ const CustomerMilkTransfer = () => {
           uacccode: values.acccode,
           fromDate: values.fromDate,
           toDate: values.toDate,
-          records: MilkData || [], // Ensure MilkData is not undefined
+          records: MilkData || [],
         })
       ).unwrap();
 

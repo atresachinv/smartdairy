@@ -897,7 +897,6 @@ const SalesReport = () => {
     }
   };
 
-  console.log("saledata", saledata);
   const renderTable = () => {
     if (!selectedReport) {
       return (
@@ -1134,7 +1133,6 @@ const SalesReport = () => {
       return acc;
     }, {});
   }, [saledata]);
-  console.log(itemNo);
   // ✅ Apply filter for selected ItemCode
   const filteredDataa =
     setItemNo === ""

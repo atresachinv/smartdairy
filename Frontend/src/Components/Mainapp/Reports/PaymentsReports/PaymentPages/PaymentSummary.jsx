@@ -1,4 +1,3 @@
-
 import React, { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 // import "../../../../Styles/MachineSettings/MachineSettings.css";
@@ -8,8 +7,8 @@ import { toast } from "react-toastify";
 import Spinner from "../../../../Home/Spinner/Spinner";
 import { getPaymentsDeductionInfo } from "../../../../../App/Features/Deduction/deductionSlice";
 import "../../../../../Styles/Mainapp/Reports/PaymentReports/PaymentRegister.css";
-  // PAYMENT SUMMARY
-const PaymentSummary = () => {
+
+const PaymentSummary = ({ showbtn, setCurrentPage }) => {
   const dispatch = useDispatch();
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
@@ -257,7 +256,19 @@ const PaymentSummary = () => {
 
   return (
     <div className="payment-register-container w100 h1 d-flex-col p10">
-      <span className="heading">Payment summary</span>
+      <div className="title-back-btn-container w100 h10 d-flex a-center sb">
+        <span className="heading py10">Payment Summary :</span>
+        {showbtn ? (
+          <button
+            className="btn-danger mx10"
+            onClick={() => setCurrentPage("main")}
+          >
+            बाहेर पडा
+          </button>
+        ) : (
+          ""
+        )}
+      </div>
       <form
         onSubmit={handlefetchData}
         className="from-to-date-button-container w100 h20 d-flex"
@@ -346,7 +357,7 @@ const PaymentSummary = () => {
                   className="w100 h50 d-flex center label-text"
                   style={{ backgroundColor: "#faefe3" }}
                 >
-                  {totals.pamt.toFixed(2) - totals.damt.toFixed(2)}
+                  {(totals.pamt - totals.damt).toFixed(2)}
                 </span>
               </div>
             </div>

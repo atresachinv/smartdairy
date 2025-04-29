@@ -63,18 +63,19 @@ const MilkCorrection = ({ showbtn, setCurrentPage }) => {
   }, [dispatch, payMasters]);
 
   useEffect(() => {
-    if (selectedMaster) {
+    if (selectedMaster && selectedMaster.start && selectedMaster.end) {
       const foundLocked = payMasters.some(
         (master) =>
-          master.FromDate.slice(0, 10) === selectedMaster.start.slice(0, 10) &&
-          master.ToDate.slice(0, 10) === selectedMaster.end.slice(0, 10) &&
+          master.FromDate?.slice(0, 10) === selectedMaster.start.slice(0, 10) &&
+          master.ToDate?.slice(0, 10) === selectedMaster.end.slice(0, 10) &&
           master.islock === 1
       );
 
       setIsLocked(foundLocked);
+    } else {
+      setIsLocked(false);
     }
   }, [selectedMaster, payMasters]);
-
   //----------------------------------------------------------------->
   // Get master dates and list customer
   useEffect(() => {
@@ -163,6 +164,10 @@ const MilkCorrection = ({ showbtn, setCurrentPage }) => {
   //----------------------------------------------------------------->
   //functions to edit and save the displayed data
   const handleEditMrgClick = (index, milk) => {
+    if (isLocked) {
+      toast.error("Payment Master is lock, Unlock and try again!");
+      return;
+    }
     setEditmrgIndex(index);
     setEditedData({
       id: milk.id,
@@ -176,6 +181,10 @@ const MilkCorrection = ({ showbtn, setCurrentPage }) => {
   };
 
   const handleEditEveClick = (index, milk) => {
+    if (isLocked) {
+      toast.error("Payment Master is lock, Unlock and try again!");
+      return;
+    }
     setEditeveIndex(index);
     setEditedData({
       id: milk.id,
@@ -193,6 +202,13 @@ const MilkCorrection = ({ showbtn, setCurrentPage }) => {
   };
 
   const handleSaveData = async (milk) => {
+    if (isLocked) {
+      toast.error("Payment Master is lock, Unlock and try again!");
+      setEditedData(initialData);
+      setEditmrgIndex(null);
+      setEditeveIndex(null);
+      return;
+    }
     try {
       dispatch(updateMilkData({ data: editedData }));
       const handler = setTimeout(() => {

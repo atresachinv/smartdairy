@@ -3,11 +3,14 @@ import { useDispatch, useSelector } from "react-redux";
 import { listCustomer } from "../../../../../App/Features/Customers/customerSlice";
 import { copyCollection } from "../../../../../App/Features/Payments/paymentSlice";
 import { toast } from "react-toastify";
+import { selectPaymasters } from "../../../../../App/Features/Payments/paymentSelectors";
 
 const MilkCopyPaste = () => {
   const dispatch = useDispatch();
   const tDate = useSelector((state) => state.date.toDate); // today's date
   const status = useSelector((state) => state.payment.copyCollstatus);
+  const payMasters = useSelector(selectPaymasters); // is payment lock
+  const [isLocked, setIsLocked] = useState(false); // is payment master lock
   const [customerList, setCustomerList] = useState([]); // customerlist
   const [currentDate, setCurrentDate] = useState(""); //current date
   const [updatedDate, setUpdatedDate] = useState(""); //updated date
@@ -147,11 +150,59 @@ const MilkCopyPaste = () => {
     }
   }, []);
 
+  // ----------------------------------------------------------------------->
+  // check if payment is lock or not ------------------------------------->
+  useEffect(() => {
+    if (!payMasters || payMasters.length === 0) {
+      dispatch(getPayMasters());
+    }
+  }, [dispatch, payMasters]);
+
+  useEffect(() => {
+    if (values.currentdate || values.updatedate) {
+      const foundLocked = payMasters.some((master) => {
+        const fromDate = new Date(master.FromDate);
+        const toDate = new Date(master.ToDate);
+
+        const currentdate = values.currentdate
+          ? new Date(values.currentdate)
+          : null;
+        const updatedate = values.updatedate
+          ? new Date(values.updatedate)
+          : null;
+
+        const isCurrentBetween =
+          currentdate && currentdate >= fromDate && currentdate <= toDate;
+        const isUpdateBetween =
+          updatedate && updatedate >= fromDate && updatedate <= toDate;
+
+        return (isCurrentBetween || isUpdateBetween) && master.islock === 1;
+      });
+
+      setIsLocked(foundLocked);
+    } else {
+      setIsLocked(false);
+    }
+  }, [values, payMasters]);
+  // ----------------------------------------------------------------------->
+
   // ------------------------------------------------------------------->
   // Milk copy to database function ------------------------------------>
 
   const handleMilkCopy = async (e) => {
     e.preventDefault();
+    if (isLocked) {
+      toast.error("Payment Master is lock, Unlock and try again!");
+      setValues({
+        currentdate: tDate,
+        updatedate: tDate,
+        fromCode: 1,
+        toCode: customerList.length,
+        time: 2,
+        updatetime: 2,
+      });
+      return;
+    }
     try {
       const result = await dispatch(
         copyCollection({
