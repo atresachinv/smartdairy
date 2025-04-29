@@ -35,7 +35,6 @@ const Stocksreport = () => {
       nextRef.current.focus();
     }
   };
-  console.log ("salesdata",sales);
 
   // Fetch Purchase Data
   useEffect(() => {
@@ -54,38 +53,7 @@ const Stocksreport = () => {
       fetchData();
     }
   }, [fromdate, todate]);
-  // useEffect(() => {
-  //   const fetchPurchaseData = async () => {
-  //     if (!fromdate || !todate) {
-  //       console.warn("From and To date are required to fetch data.");
-  //       return;
-  //     }
-
-  //     try {
-  //       console.log("Fetching purchase data for:", fromdate, todate);
-
-  //       const response = await axiosInstance.put  ("/stock/purchase/all", {
-  //         params: {
-  //           fromdate: fromdate,
-  //           todate: todate,
-  //         },
-  //       });
-
-  //       if (response.data && response.data.purchaseData) {
-  //         console.log("PURCHASE DATA:", response.data.purchaseData);
-  //         SetSales(response.data.purchaseData);
-  //       } else {
-  //         console.warn("No purchase data received");
-  //         SetSales([]); // Clear if no data
-  //       }
-  //     } catch (error) {
-  //       console.error("Error fetching purchase data:", error);
-  //     }
-  //   };
-
-  //   fetchPurchaseData();
-  // }, [fromdate, todate]);
-  
+ 
   
 
   const salefetchData = async (e) => {
@@ -99,7 +67,6 @@ const Stocksreport = () => {
           params: { fromdate, todate },
         });
 
-        console.log("stock/sale/all", response.data.salesData);
         // Set state with the fetched data
         SetSaleData(response.data.salesData);
       } catch (error) {
@@ -112,15 +79,12 @@ const Stocksreport = () => {
 
 
 
-console.log(sales);
   // Process the purchase and sale data to create all stock data
   useEffect(() => {
-    console.log("All Data" ,sales, saledata);
     const processedData = sales.map((purchase) => {
       const matchingSale = saledata.find(
         (sale) => sale.ItemCode === purchase.itemcode
       );
-      console.log("matchingSale", matchingSale);
       return {
         itemcode: purchase.itemcode,
         itemname: purchase.itemname,
@@ -397,7 +361,6 @@ console.log(sales);
     printWindow.document.close();
     printWindow.print();
   };
-  console.log("filteredStock", filteredStock);
   return (
     <div className="Stocks-reports-container w100 h1 d-flex-col bg">
       <span className="heading">Stock Report</span>

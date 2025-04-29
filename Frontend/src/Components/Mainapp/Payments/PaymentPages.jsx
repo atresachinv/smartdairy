@@ -3,25 +3,38 @@ import PayDeductions from "./PaymentPages/PayDeductions/PayDeductions";
 import Payments from "./Payments";
 import LockPayments from "./PaymentPages/LockPayments";
 import MilkCorrection from "./PaymentPages/MilkCorrection/MilkCorrection";
+import PaymentRegister from "../Reports/PaymentsReports/PaymentPages.jsx/PaymentRegister";
+import BankReportMaster from "../Reports/BankReports/BankReportMaster";
 
 const PaymentPages = () => {
-   const [currentPage, setCurrentPage] = useState("main");
+  const [currentPage, setCurrentPage] = useState("main");
 
-   const renderPage = () => {
-     switch (currentPage) {
-       case "deductions":
-         return <PayDeductions setCurrentPage={setCurrentPage} showbtn={true} />;
-       case "lockbill":
-         return <LockPayments setCurrentPage={setCurrentPage} showbtn={true} />;
-       case "milkcorrection":
-         return <MilkCorrection setCurrentPage={setCurrentPage} showbtn={true} />;
-       case "main":
-       default:
-         return <Payments setCurrentPage={setCurrentPage} />;
-     }
-   };
+  const renderPage = () => {
+    switch (currentPage) {
+      case "deductions":
+        return <PayDeductions setCurrentPage={setCurrentPage} showbtn={true} />;
+      case "lockbill":
+        return <LockPayments setCurrentPage={setCurrentPage} showbtn={true} />;
+      case "milkcorrection":
+        return (
+          <MilkCorrection setCurrentPage={setCurrentPage} showbtn={true} />
+        );
 
-   return <>{renderPage()}</>;
+      case "paysummary":
+        return (
+          <PaymentRegister setCurrentPage={setCurrentPage} showbtn={true} />
+        );
+      case "payregister":
+        return (
+          <BankReportMaster setCurrentPage={setCurrentPage} showbtn={true} />
+        );
+      case "main":
+      default:
+        return <Payments setCurrentPage={setCurrentPage} />;
+    }
+  };
+
+  return <>{renderPage()}</>;
 };
 
 export default PaymentPages;

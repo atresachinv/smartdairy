@@ -3,11 +3,14 @@ import { useDispatch, useSelector } from "react-redux";
 import { listCustomer } from "../../../../../App/Features/Customers/customerSlice";
 import { toast } from "react-toastify";
 import { transferToShift } from "../../../../../App/Features/Payments/paymentSlice";
+import { selectPaymasters } from "../../../../../App/Features/Payments/paymentSelectors";
 
 const ShiftMilkTransfer = () => {
   const dispatch = useDispatch();
   const tDate = useSelector((state) => state.date.toDate); // today's date
   const status = useSelector((state) => state.payment.transferCollshiftstatus); // today's date
+  const payMasters = useSelector(selectPaymasters); // is payment lock
+  const [isLocked, setIsLocked] = useState(false); // is payment master lock
   const [customerList, setCustomerList] = useState([]); // customerlist
   const [currentDate, setCurrentDate] = useState(""); //current date
   const [updatedDate, setUpdatedDate] = useState(""); //updated date
@@ -148,10 +151,50 @@ const ShiftMilkTransfer = () => {
     }
   }, []);
 
+  // ----------------------------------------------------------------------->
+  // check if payment is lock or not ------------------------------------->
+  useEffect(() => {
+    if (!payMasters || payMasters.length === 0) {
+      dispatch(getPayMasters());
+    }
+  }, [dispatch, payMasters]);
+
+  useEffect(() => {
+    if (values.currentdate || values.updatedate) {
+      const foundLocked = payMasters.some((master) => {
+        const fromDate = new Date(master.FromDate);
+        const toDate = new Date(master.ToDate);
+
+        const currentdate = values.currentdate
+          ? new Date(values.currentdate)
+          : null;
+        const updatedate = values.updatedate
+          ? new Date(values.updatedate)
+          : null;
+
+        const isCurrentBetween =
+          currentdate && currentdate >= fromDate && currentdate <= toDate;
+        const isUpdateBetween =
+          updatedate && updatedate >= fromDate && updatedate <= toDate;
+
+        return (isCurrentBetween || isUpdateBetween) && master.islock === 1;
+      });
+
+      setIsLocked(foundLocked);
+    } else {
+      setIsLocked(false);
+    }
+  }, [values, payMasters]);
+  // ----------------------------------------------------------------------->
+
   // ------------------------------------------------------------------->
   // Milk copy to database function ------------------------------------>
   const handleMilkTransferToShift = async (e) => {
     e.preventDefault();
+    if (isLocked) {
+      toast.error("Payment Master is lock, Unlock and try again!");
+      return;
+    }
     try {
       const result = await dispatch(
         transferToShift({

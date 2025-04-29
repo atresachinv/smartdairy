@@ -26,9 +26,9 @@ const BankReportMaster = () => {
   );
   const CityName = useSelector((state) => state.dairy.dairyData.city);
 
-  console.log(" Hiii", fromDate, toDate);
-  console.log("mergedData", mergedData);
-  console.log("customerlist", customerlist);
+  // console.log(" Hiii", fromDate, toDate);
+  // console.log("mergedData", mergedData);
+  // console.log("customerlist", customerlist);
 
   // referesh button
 

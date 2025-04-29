@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { BsCalendar3 } from "react-icons/bs";
-import { BsPencilSquare, BsTrash3 } from "react-icons/bs";
 import "../../../../../Styles/Mainapp/Apphome/Appnavview/Reports.css";
 import { useDispatch, useSelector } from "react-redux";
 import { getAllMilkCollReport } from "../../../../../App/Features/Mainapp/Milk/MilkCollectionSlice";
@@ -79,66 +78,6 @@ const MilkReports = () => {
     filterAndGroupData({ ...filters, [name]: checked });
   };
 
-  //   const filterAndGroupData = (currentFilters) => {
-  //     let filteredData = collection;
-  //
-  //     // Filter by Customer
-  //     if (currentFilters.customer) {
-  //       filteredData = filteredData.filter((record) => record.rno);
-  //       // Group by rno (customer) and sort in ascending order
-  //       const groupedByCustomer = filteredData.reduce((groups, record) => {
-  //         if (!groups[record.rno]) {
-  //           groups[record.rno] = [];
-  //         }
-  //         groups[record.rno].push(record);
-  //         return groups;
-  //       }, {});
-  //
-  //       // Sort each group in ascending order of rno
-  //       const sortedGroupedByCustomer = Object.keys(groupedByCustomer)
-  //         .sort((a, b) => a.localeCompare(b)) // Sort keys (rno) alphabetically
-  //         .reduce((sortedGroups, rno) => {
-  //           sortedGroups[rno] = groupedByCustomer[rno];
-  //           return sortedGroups;
-  //         }, {});
-  //
-  //       setGroupedData(sortedGroupedByCustomer);
-  //       return;
-  //     }
-  //
-  //     // Group by Animal Type (cb)
-  //     if (currentFilters.animal) {
-  //       const groupedByCB = filteredData.reduce(
-  //         (groups, record) => {
-  //           groups[record.cb].push(record);
-  //           return groups;
-  //         },
-  //         { 0: [], 1: [] }
-  //       );
-  //       setGroupedData(groupedByCB);
-  //       return;
-  //     }
-  //
-  //     // Filter by Time (ME)
-  //     if (currentFilters.time) {
-  //       const groupedByTime = filteredData.reduce(
-  //         (groups, record) => {
-  //           const timeSlot = record.ME === 0 ? "Morning" : "Evening";
-  //           if (!groups[timeSlot]) {
-  //             groups[timeSlot] = [];
-  //           }
-  //           groups[timeSlot].push(record);
-  //           return groups;
-  //         },
-  //         { Morning: [], Evening: [] }
-  //       );
-  //       setGroupedData(groupedByTime);
-  //       return;
-  //     }
-  //
-  //     setGroupedData({ all: filteredData });
-  //   };
-
   const filterAndGroupData = (currentFilters) => {
     let filteredData = collection;
 
@@ -164,16 +103,6 @@ const MilkReports = () => {
       }, {});
 
       setGroupedData(grouped);
-
-      // setGroupedData(
-      //   Object.keys(grouped)
-      //     .sort()
-      //     .reduce((obj, key) => {
-      //       obj[key] = grouped[key];
-      //       return obj;
-      //     }, {})
-      // );
-      console.log("customer", grouped);
       return;
     }
 
@@ -185,7 +114,6 @@ const MilkReports = () => {
       }, {});
 
       setGroupedData(grouped);
-      console.log("animal", grouped);
       return;
     }
     // By Time (ME)
@@ -201,8 +129,7 @@ const MilkReports = () => {
       setGroupedData(grouped);
       return;
     }
-    console.log("animal", filteredData);
-    // Default (all data)
+  
     setGroupedData({ all: filteredData });
   };
 
@@ -212,74 +139,6 @@ const MilkReports = () => {
 
   return (
     <div className="milk-collection-details-container w100 h1 d-flex">
-      {/* <div className="title-container w100 h10 p10">
-        <h2 className="subtitle">Today's Milk Collection Report</h2>
-      </div> */}
-      {/* <div className="milk-main-details w100 h10 d-flex sa my10">
-        <div className="details-container w20 h1 d-flex-col a-center bg">
-          <span className="sub-heading">Total Collection</span>
-          <span className="text">{totalMilk} ltr</span>
-        </div>
-        <div className="details-container w20 h1 d-flex-col a-center bg">
-          <span className="sub-heading">Total Customers</span>
-          <span className="text">{totalCustomers}</span>
-        </div>
-        <div className="details-container w20 h1 d-flex-col a-center bg">
-          <span className="sub-heading">Total Amount</span>
-          <span className="text">{totalAmount} Rs.</span>
-        </div>
-      </div> */}
-
-      {/* <div className="milk-collection-time-wise w100 h80 d-flex-col">
-        <div className="div title w100 h10 d-flex">
-          <span className="heading h10">Milk Collection Details </span>
-        </div>
-        <div className="time-wise-milk-collection w100 h90 d-flex sa p10">
-          <div className="morning-milk-collection w45 h1 d-flex-col bg">
-            <span className="heading p10">Morning Collection</span>
-            <div className="details-info-div w100 h10 d-flex a-center sa bg6 p10">
-              <span className="w15 heading d-flex center">FAT</span>
-              <span className="w15 heading d-flex center">SNF</span>
-              <span className="w15 heading d-flex center">Litre</span>
-              <span className="w15 heading d-flex center">Rate</span>
-              <span className="w15 heading d-flex center">Amount</span>
-              <span className="w15 heading d-flex center">Edit</span>
-              <span className="w15 heading d-flex center">Delete</span>
-            </div>
-            <div className="amt-info-details-div w100 mh100 hidescrollbar d-flex-col">
-              <div className="amt-info-div w100 h10 d-flex a-center sa">
-                <span className="w15 text d-flex center">00</span>
-                <span className="w15 text d-flex center">00</span>
-                <span className="w15 text d-flex center">00</span>
-                <span className="w15 text d-flex center">00</span>
-                <span className="w15 text d-flex center">00</span>
-              </div>
-            </div>
-          </div>
-          <div className="evening-milk-collection w45 h1 d-flex-col bg">
-            <span className="heading p10">Evening Collection</span>
-            <div className="details-info-div w100 h10 d-flex a-center sa bg6 p10">
-              <span className="w15 heading d-flex center">FAT</span>
-              <span className="w15 heading d-flex center">SNF</span>
-              <span className="w15 heading d-flex center">Litre</span>
-              <span className="w15 heading d-flex center">Rate</span>
-              <span className="w15 heading d-flex center">Amount</span>
-              <span className="w15 heading d-flex center">Edit</span>
-              <span className="w15 heading d-flex center">Delete</span>
-            </div>
-            <div className="amt-info-details-div w100  mh100 hidescrollbar d-flex-col">
-              <div className="amt-info-div w100 h10 d-flex a-center sa">
-                <span className="w15 text d-flex center">00</span>
-                <span className="w15 text d-flex center">00</span>
-                <span className="w15 text d-flex center">00</span>
-                <span className="w15 text d-flex center">00</span>
-                <span className="w15 text d-flex center">00</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div> */}
-
       <div className="fillter-menu-div w80 h1 d-flex-col ">
         <span className="subtitle t-center">Reports</span>
         <div className="fillter-report-display-container w100 h1 d-flex-col mh90 hidescrollbar">
@@ -356,38 +215,6 @@ const MilkReports = () => {
            
           </div>
         </div>
-
-        {/* <div className="report-results w100 d-flex-col mt20">
-          {filters.animal ? (
-            <>
-              <h3>Grouped by Animal Type</h3>
-              {Object.keys(groupedData).map((key) => (
-                <div key={key}>
-                  <h4>Group CB {key}</h4>
-                  <ul>
-                    {groupedData[key].map((record, index) => (
-                      <li key={index}>
-                        animal-- {record.CB}-rno - {record.rno}-date-
-                        {record.ReceiptDate} - Litres: {record.Litres} - Amt:{" "}
-                        {record.Amt} - {record.ME} - {record.CB}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              ))}
-            </>
-          ) : (
-            <div>
-              <h3>Filtered Results</h3>
-              {groupedData.all?.map((record, index) => (
-                <div key={index}>
-                  time- {record.ME}-{record.ReceiptDate} - Litres:{" "}
-                  {record.Litres} - Amt: {record.Amt} - {record.CB}
-                </div>
-              ))}
-            </div>
-          )}
-        </div> */}
       </div>
 
       <div className="fillter-menu-div w20 h1 d-flex-col  bg5">

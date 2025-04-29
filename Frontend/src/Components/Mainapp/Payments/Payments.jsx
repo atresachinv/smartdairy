@@ -859,6 +859,9 @@ const Payments = ({ setCurrentPage }) => {
           </div>
 
           <div className="bill-form-btn-div w100 h10 d-flex j-end">
+            <button className="btn" onClick={() => setCurrentPage("lockbill")}>
+              बिल लॉक करा
+            </button>
             <button
               type="button"
               className="btn-danger mx10"
@@ -880,28 +883,30 @@ const Payments = ({ setCurrentPage }) => {
           </div>
         </div>
         <div className="bill-payments-container-div w15 d-flex-col se">
-          <button
-            className="btn w100"
-            onClick={() => setCurrentPage("deductions")}
-          >
+          <button className="btn" onClick={() => setCurrentPage("deductions")}>
             पेमेंट कपाती
           </button>
           <button
-            className="w-btn w100"
+            className="w-btn"
             onClick={() => setCurrentPage("milkcorrection")}
           >
-            संकलन दुरुस्थी{" "}
+            संकलन दुरुस्थी
+          </button>
+          <button className="w-btn">कपात रिपोर्ट</button>
+          <button
+            className="w-btn"
+            onClick={() => setCurrentPage("payregister")}
+          >
+            पेमेंट रजिस्टर
           </button>
           <button
-            className="btn w100"
-            onClick={() => setCurrentPage("lockbill")}
+            className="w-btn"
+            onClick={() => setCurrentPage("paysummary")}
           >
-            बिल लॉक करा
+            पेमेंट समरी
           </button>
-          <button className="w-btn w100">कपात रिपोर्ट</button>
-          <button className="w-btn w100">Payment रजिस्टर </button>
-          <button className="w-btn w100">Payment समरी </button>
-          <button className="w-btn w100">Payment रजिस्टर बँक </button>
+          <button className="w-btn">पेमेंट रजि. बँकेसाठी</button>
+          <button className="w-btn">प्रिंट बिल</button>
         </div>
       </div>
     </div>
