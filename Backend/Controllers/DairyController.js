@@ -1032,7 +1032,7 @@ exports.sendOTPMessage = (req, res) => {
 //--------------------------------------------------------------------------------------------------------->
 
 exports.saveOTP = (req, res) => {
-  const { otp, username } = req.body;
+  const { otp, username, mobile } = req.body;
   pool.getConnection((err, connection) => {
     if (err) {
       console.error("Error getting MySQL connection: ", err);
@@ -1043,10 +1043,11 @@ exports.saveOTP = (req, res) => {
 
     try {
       const updateQuery = `     
-          UPDATE users SET otp = ? WHERE username = ?
+          UPDATE users SET otp = ?
+          WHERE username = ? AND mobile = ?
       `;
 
-      connection.query(updateQuery, [otp, username], (err, result) => {
+      connection.query(updateQuery, [otp, username, mobile], (err, result) => {
         connection.release();
         if (err) {
           console.error("Error executing summary query: ", err);

@@ -694,6 +694,7 @@ const Payments = ({ setCurrentPage }) => {
               value={formData.billDate || ""}
               onKeyDown={(e) => handleKeyDown(e, vcdateRef)}
               ref={bdateRef}
+              readOnly
             />
           </div>
           <div className="Voucher-date-div d-flex w100 h1 a-center sb">
@@ -906,7 +907,9 @@ const Payments = ({ setCurrentPage }) => {
             पेमेंट समरी
           </button>
           <button className="w-btn">पेमेंट रजि. बँकेसाठी</button>
-          <button className="w-btn">प्रिंट बिल</button>
+          <button className="w-btn" onClick={() => setCurrentPage("upass")}>
+            प्रिंट बिल
+          </button>
         </div>
       </div>
     </div>

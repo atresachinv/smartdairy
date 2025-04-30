@@ -883,82 +883,90 @@ exports.sendOtp = async (req, res) => {
 
 //........................................Verify OTP
 
-exports.verifyOtp = async (req, res) => {
-  const { otp } = req.body;
+// exports.verifyOtp = async (req, res) => {
+//   const { otp } = req.body;
 
-  pool.getConnection((err, connection) => {
-    if (err) {
-      console.error("Error getting MySQL connection: ", err);
-      return res.status(500).json({ message: "Database connection error" });
-    }
-    try {
-      // Check if the OTP matches in the database
-      const verifyOtp = `SELECT username FROM users WHERE otp = ?`;
+//   pool.getConnection((err, connection) => {
+//     if (err) {
+//       console.error("Error getting MySQL connection: ", err);
+//       return res.status(500).json({ message: "Database connection error" });
+//     }
+//     try {
+//       // Check if the OTP matches in the database
+//       const verifyOtp = `SELECT username FROM users WHERE otp = ?`;
 
-      connection.query(verifyOtp, [otp], (err, result) => {
-        connection.release();
-        if (err) {
-          console.error("Error executing query: ", err);
-          return res.status(500).json({ message: "Database query error" });
-        }
+//       connection.query(verifyOtp, [otp], (err, result) => {
+//         connection.release();
+//         if (err) {
+//           console.error("Error executing query: ", err);
+//           return res.status(500).json({ message: "Database query error" });
+//         }
 
-        if (result.length === 0) {
-          return res.status(400).json({ message: "Invalid OTP!" });
-        }
-        const user_id = result.username;
-        // Send the result as a response
-        res.status(200).json({
-          user_id: user_id,
-          message: "OTP verified successfully",
-        });
-      });
-    } catch (error) {
-      connection.release(); // Ensure the connection is released in case of an error
-      console.error("Error processing request: ", error);
-      return res.status(500).json({ message: "Internal server error" });
-    }
-  });
-};
+//         if (result.length === 0) {
+//           return res.status(400).json({ message: "Invalid OTP!" });
+//         }
+//         const user_id = result.username;
+//         // Send the result as a response
+//         res.status(200).json({
+//           user_id: user_id,
+//           message: "OTP verified successfully",
+//         });
+//       });
+//     } catch (error) {
+//       connection.release(); // Ensure the connection is released in case of an error
+//       console.error("Error processing request: ", error);
+//       return res.status(500).json({ message: "Internal server error" });
+//     }
+//   });
+// };
 
 //.........................................Update Password
 
 exports.updatePassword = (req, res) => {
-  const { password, user_id } = req.body;
+  const { username, mobile, password } = req.body;
   pool.getConnection((err, connection) => {
     if (err) {
       console.error("Error getting MySQL connection: ", err);
-      return res.status(500).json({ message: "Database connection error" });
+      return res
+        .status(500)
+        .json({ status: 500, message: "Database connection error" });
     }
     try {
       const hashedPassword = bcrypt.hashSync(password, 10);
 
       // Update the password in the database
-      const updatePassword = `UPDATE users SET password = ? WHERE userId = ?`; //change userid
+      const updatePassword = `UPDATE users SET password = ? WHERE username = ? AND mobile = ?`; //change userid
 
       connection.query(
         updatePassword,
-        [hashedPassword, user_id],
+        [hashedPassword, username, mobile],
         (err, result) => {
           connection.release();
           if (err) {
             console.error("Error executing query: ", err);
-            return res.status(500).json({ message: "Database query error" });
+            return res
+              .status(500)
+              .json({ status: 500, message: "Database query error" });
           }
 
           if (result.length === 0) {
-            return res.status(400).json({ message: "user not found!" });
+            return res
+              .status(400)
+              .json({ status: 400, message: "user not found!" });
           }
 
           // Send the result as a response
-          res.status(200).json({
-            message: "Password updated successfully",
-          });
+          res
+            .status(200)
+            .json({ status: 200, message: "Password updated successfully" });
         }
       );
     } catch (error) {
       connection.release(); // Ensure the connection is released in case of an error
       console.error("Error processing request: ", error);
-      return res.status(500).json({ message: "Internal server error" });
+      return res
+        .status(500)
+        .json({ status: 500, message: "Internal server error" });
     }
   });
 };
@@ -1004,11 +1012,118 @@ exports.getmobileSendOtp = (req, res) => {
       if (result.length === 0) {
         return res.status(404).json({ status: 404, message: "User not found" });
       }
-      console.log(result[0]);
       res.status(200).json({
         status: 200,
-        userMobile: result[0].mobile, // Return just the mobile number
+        userMobile: result[0], // Return just the mobile number
       });
     });
+  });
+};
+
+//---------------------------------------------------------------------------------->
+// get Mobile to Send Otp ---------------------------------------------------------->
+//---------------------------------------------------------------------------------->
+
+exports.saveOtp = (req, res) => {
+  const { user_id } = req.body;
+  if (!user_id) {
+    return res
+      .status(400)
+      .json({ status: 400, message: "user_id is required" });
+  }
+
+  if (user_id === "vikern") {
+    return res
+      .status(500)
+      .json({ status: 500, message: "Database query error" });
+  }
+
+  pool.getConnection((err, connection) => {
+    if (err) {
+      console.error("MySQL connection error:", err);
+      return res
+        .status(500)
+        .json({ status: 500, message: "Database connection error" });
+    }
+
+    const selectQuery = `SELECT username, mobile FROM users WHERE username = ?`;
+
+    connection.query(selectQuery, [user_id], (queryErr, result) => {
+      connection.release();
+
+      if (queryErr) {
+        console.error("Query execution error:", queryErr);
+        return res
+          .status(500)
+          .json({ status: 500, message: "Database query error" });
+      }
+
+      if (result.length === 0) {
+        return res.status(404).json({ status: 404, message: "User not found" });
+      }
+      res.status(200).json({
+        status: 200,
+        userMobile: result[0], // Return just the mobile number
+      });
+    });
+  });
+};
+
+//---------------------------------------------------------------------------------->
+// verify user otp with saved otp -------------------------------------------------->
+//---------------------------------------------------------------------------------->
+
+exports.verifyOtp = async (req, res) => {
+  const { otp, username, mobile } = req.body;
+
+  pool.getConnection((err, connection) => {
+    if (err) {
+      console.error("Error getting MySQL connection: ", err);
+      return res
+        .status(500)
+        .json({ status: 500, message: "Database connection error" });
+    }
+
+    try {
+      const verifyOtpQuery = `
+        SELECT COUNT(username) AS countUser 
+        FROM users 
+        WHERE username = ? AND mobile = ? AND otp = ?
+      `;
+
+      connection.query(
+        verifyOtpQuery,
+        [username, mobile, otp],
+        (err, results) => {
+          connection.release();
+
+          if (err) {
+            console.error("Error executing query: ", err);
+            return res
+              .status(500)
+              .json({ status: 500, message: "Database query error" });
+          }
+
+          const count = results[0].countUser;
+
+          if (count === 0) {
+            return res
+              .status(400)
+              .json({ status: 400, message: "Invalid OTP!" });
+          }
+
+          res.status(200).json({
+            status: 200,
+            message: "OTP verified successfully",
+          });
+        }
+      );
+    } catch (error) {
+      connection.release();
+      console.error("Error processing request: ", error);
+      return res
+        .status(500)
+        .json({ status: 500, message: "Internal server error" });
+    }
   });
 };

@@ -27,6 +27,7 @@ const {
   sendOTPMessage,
   saveOTP,
 } = require("../Controllers/DairyController");
+const { verifyOtp } = require("../Controllers/UserController");
 const router = express.Router();
 
 //dairy routes
@@ -40,9 +41,11 @@ router.route("/update/centerdetails").post(verifyToken, updateCenterInfo);
 router.route("/center/details").post(verifyToken, getCenterDetails);
 router.route("/all/centerdetails").post(verifyToken, getAllcenters);
 router.route("/send-message").post(verifyToken, sendMessage); //send whats app message
-router.route("/send-message/otp").post(sendOTPMessage); //send otp on whatsapp
-router.route("/save-otp").post(saveOTP); //send otp on whatsapp
 router.route("/save-message").post(verifyToken, saveMessage); //save whats app message
+router.route("/send-message/otp").post(sendOTPMessage); //send otp on whatsapp
+router.route("/save-otp").put(saveOTP); //save otp
+router.route("/verify-otp").post(verifyOtp); //verify otp
+router.route("/update/user/password").post(verifyOtp); //verify otp
 router.route("/center/setting").post(verifyToken, getCenterSetting);
 router.route("/center/setting/one").post(verifyToken, getOneCenterSetting);
 router.route("/center/update-setting").post(verifyToken, updateCenterSetting);

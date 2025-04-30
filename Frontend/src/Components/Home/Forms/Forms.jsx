@@ -25,8 +25,8 @@ const Forms = () => {
   const switchVerify = () => {
     setCurrentForm("VerifyOtp");
   };
-  const switchToUpdatePassword = () => {
-    setCurrentForm("forgotPassword");
+  const switchToUPass = () => {
+    setCurrentForm("updatePassword");
   };
 
   return (
@@ -54,7 +54,12 @@ const Forms = () => {
         )}
         {currentForm === "VerifyOtp" && (
           <VerifyOtp
-            switchToUpdatePassword={switchToUpdatePassword}
+            switchToUPass={switchToUPass}
+            switchToLogin={switchToLogin}
+          />
+        )}
+        {currentForm === "updatePassword" && (
+          <UpdatePassword
             switchToLogin={switchToLogin}
           />
         )}

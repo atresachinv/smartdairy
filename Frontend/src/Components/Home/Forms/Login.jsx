@@ -123,10 +123,11 @@ const Login = ({ switchToRegister, switchToOptSend }) => {
       toast.error("Plaese Enter Username!");
       return;
     }
+    setIsSaving(true);
     const res = await dispatch(fetchUserMobile(values.user_id)).unwrap();
-    switchToOptSend();
+    setIsSaving(false);
     if (res?.status === 200) {
-      console.log(res);
+      switchToOptSend();
     } else {
       toast.error("Your Mobile Number not available!");
     }

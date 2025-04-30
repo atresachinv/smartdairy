@@ -111,37 +111,57 @@ export const fetchUserMobile = createAsyncThunk(
   }
 );
 
-// fetch User Mobile to send otp------------------------------------------------------------>
+// save otp to users table ------------------------------------------------------------>
 export const saveOtptext = createAsyncThunk(
   "auth/saveOtptext",
-  async ({ otp, username }, { rejectWithValue }) => {
+  async ({ otp, username, mobile }, { rejectWithValue }) => {
     try {
       const response = await axiosInstance.put("/save-otp", {
         otp,
         username,
+        mobile,
       });
       return response.data;
     } catch (error) {
-      const errorMessage =
-        error.response.data.message || "Failed to save otp!";
+      const errorMessage = error.response.data.message || "Failed to save otp!";
       return rejectWithValue(errorMessage);
     }
   }
 );
 
-// fetch User Mobile to send otp------------------------------------------------------------>
+// confirm otp------------------------------------------------------------>
 export const confirmOtptext = createAsyncThunk(
   "auth/confirmOtptext",
-  async ({ otp, username }, { rejectWithValue }) => {
+  async ({ otp, username, mobile }, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.post("/confirm-otp", {
+      const response = await axiosInstance.post("/verify-otp", {
         otp,
         username,
+        mobile,
       });
       return response.data;
     } catch (error) {
       const errorMessage =
         error.response.data.message || "Failed to fetch user mobile!";
+      return rejectWithValue(errorMessage);
+    }
+  }
+);
+
+// update user password ------------------------------------------------------------>
+export const uUserPassword = createAsyncThunk(
+  "auth/uUserPassword",
+  async ({ password, username, mobile }, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.put("/update/user/password", {
+        password,
+        username,
+        mobile,
+      });
+      return response.data;
+    } catch (error) {
+      const errorMessage =
+        error.response.data.message || "Failed to update user password!";
       return rejectWithValue(errorMessage);
     }
   }
@@ -162,6 +182,7 @@ const authSlice = createSlice({
     isAuthenticated: !!localStorage.getItem("token"),
     loading: false,
     status: "idle",
+    upassstatus: "idle",
     otpstatus: "idle",
     sotpstatus: "idle",
     cotpstatus: "idle",
@@ -274,6 +295,16 @@ const authSlice = createSlice({
       })
       .addCase(confirmOtptext.rejected, (state, action) => {
         state.cotpstatus = "failed";
+        state.error = action.payload;
+      }) // confirm otp ------------------------------------>
+      .addCase(uUserPassword.pending, (state) => {
+        state.upassstatus = "loading";
+      })
+      .addCase(uUserPassword.fulfilled, (state) => {
+        state.upassstatus = "succeeded";
+      })
+      .addCase(uUserPassword.rejected, (state, action) => {
+        state.upassstatus = "failed";
         state.error = action.payload;
       });
   },

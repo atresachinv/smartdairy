@@ -4,9 +4,11 @@ import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import { saveMessage } from "../../../App/Features/Mainapp/Dairyinfo/smsSlice";
 import axiosInstance from "../../../App/axiosInstance";
+import { saveOtptext } from "../../../App/Features/Users/authSlice";
 
 const SendOtp = ({ switchVerify, switchToLogin }) => {
-  const userMobile = useSelector((state) => state.users.mobile.userMobile);
+  const dispatch = useDispatch();
+  const userMobile = useSelector((state) => state.users.userInfo.userMobile);
   const [otp, setOtp] = useState(null);
 
   const generateOTP = () => {
@@ -19,7 +21,7 @@ const SendOtp = ({ switchVerify, switchToLogin }) => {
     const requestBody = {
       messaging_product: "whatsapp",
       recipient_type: "individual",
-      to: `91${userMobile}`,
+      to: `91${userMobile.mobile}`,
       type: "template",
       template: {
         name: "acc_updates_message",
@@ -53,19 +55,27 @@ const SendOtp = ({ switchVerify, switchToLogin }) => {
     const newOtp = generateOTP();
     if (newOtp) {
       sendMessage(newOtp);
-      useDispatch(saveOtptext(userMobile, newOtp));
-      switchVerify(newOtp);
+      dispatch(
+        saveOtptext({
+          username: userMobile.username,
+          mobile: userMobile.mobile,
+          otp: newOtp,
+        })
+      );
+      switchVerify();
       toast.success("Otp is Sent on your number!");
     } else {
       toast.error("Failed to generate otp.");
     }
   };
+
   return (
     <form className="update-container w80 h90 d-flex-col a-center">
       <span className="heading t-center">Forget Password</span>
-      {userMobile && userMobile.length >= 6 ? (
+      {userMobile.mobile && userMobile.mobile.length >= 6 ? (
         <span className="info-text t-center my10">
-          Send OTP on <strong>Whatsapp</strong> {userMobile.slice(0, 6)}XXXX
+          Send OTP on <strong>Whatsapp</strong> {userMobile.mobile.slice(0, 6)}
+          XXXX
         </span>
       ) : (
         <span className="info-text t-center my10">
