@@ -49,9 +49,14 @@ const Forms = () => {
         {currentForm === "register" && (
           <Register switchToLogin={switchToLogin} />
         )}
-        {currentForm === "SendOtp" && <SendOtp switchVerify={switchVerify} />}
+        {currentForm === "SendOtp" && (
+          <SendOtp switchVerify={switchVerify} switchToLogin={switchToLogin} />
+        )}
         {currentForm === "VerifyOtp" && (
-          <VerifyOtp switchToUpdatePassword={switchToUpdatePassword} />
+          <VerifyOtp
+            switchToUpdatePassword={switchToUpdatePassword}
+            switchToLogin={switchToLogin}
+          />
         )}
       </div>
     </div>

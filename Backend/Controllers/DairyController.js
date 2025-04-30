@@ -1002,6 +1002,73 @@ exports.sendMessage = (req, res) => {
 };
 
 //--------------------------------------------------------------------------------------------------------->
+// Send OTP on Whatsapp ----------------------------------------------------------------------------------->
+//--------------------------------------------------------------------------------------------------------->
+
+exports.sendOTPMessage = (req, res) => {
+  try {
+    const response = axios.post(
+      "https://partnersv1.pinbot.ai/v3/560504630471076/messages",
+      req.body,
+      {
+        headers: {
+          apikey: "0a4a47a3-d03c-11ef-bb5a-02c8a5e042bd",
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    return res.json({ success: true, res: response.data }); // Return the response from the API call
+  } catch (error) {
+    console.error("Error sending message:", error.message);
+    return res.status(500).json({
+      success: false,
+      error: error.message,
+    });
+  }
+};
+
+//--------------------------------------------------------------------------------------------------------->
+// Save OTP in Users Table ----------------------------------------------------------------------------------->
+//--------------------------------------------------------------------------------------------------------->
+
+exports.saveOTP = (req, res) => {
+  const { otp, username } = req.body;
+  pool.getConnection((err, connection) => {
+    if (err) {
+      console.error("Error getting MySQL connection: ", err);
+      return res
+        .status(500)
+        .json({ status: 500, message: "Database connection error" });
+    }
+
+    try {
+      const updateQuery = `     
+          UPDATE users SET otp = ? WHERE username = ?
+      `;
+
+      connection.query(updateQuery, [otp, username], (err, result) => {
+        connection.release();
+        if (err) {
+          console.error("Error executing summary query: ", err);
+          return res
+            .status(500)
+            .json({ status: 500, message: "query execution error" });
+        }
+
+        res
+          .status(200)
+          .json({ status: 200, message: "Otp saved successfully!" });
+      });
+    } catch (error) {
+      console.error("Error processing request: ", error);
+      return res
+        .status(500)
+        .json({ status: 500, message: "Internal server error" });
+    }
+  });
+};
+
+//--------------------------------------------------------------------------------------------------------->
 // save Whats app  message --------------------------------------------------------------------------------->
 //--------------------------------------------------------------------------------------------------------->
 

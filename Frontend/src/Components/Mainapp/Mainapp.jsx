@@ -88,6 +88,9 @@ import CreateCustomer from "./Masters/MasterPages/CustomerMaster/CreateCustomer"
 import FatSnfCompromise from "./Payments/FatSnfCompromise/FatSnfCompromise";
 import GeneralLedger from "./Accounts/GeneralLedger/GeneralLedger";
 import AdvancesPosting from "./Accounts/AdvancesPosting/AdvancesPosting";
+import SendOtp from "../Home/Forms/SendOtp";
+import UpdatePassword from "../Home/Forms/UpdatePassword";
+import ConfirmOtp from "../Home/Forms/ConfirmOtp";
 
 const Mainapp = () => {
   const dispatch = useDispatch();
@@ -201,6 +204,9 @@ const Mainapp = () => {
             {userRoutes.includes("vehicle/milk/collection/*") && (
               <Route path="vehicle/milk/collection/*" element={<Apphome />} />
             )}
+            <Route path="/sendotp" element={<SendOtp />} />
+            <Route path="/verify" element={<ConfirmOtp />} />
+            <Route path="/update/password" element={<UpdatePassword />} />
             <Route path="milk/collection/*" element={<Apphome />} />
             <Route path="milk/collection/:time" element={<MilkColleform />} />
             <Route path="milk/collection/:time" element={<MilkColleform />} />

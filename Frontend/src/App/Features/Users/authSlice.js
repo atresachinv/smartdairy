@@ -93,12 +93,66 @@ export const checkCurrentSession = createAsyncThunk(
     }
   }
 );
+// fetch User Mobile to send otp------------------------------------------------------------>
+
+export const fetchUserMobile = createAsyncThunk(
+  "auth/fetchUserMobile",
+  async (user_id, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.post("/get/user/mobile", {
+        user_id,
+      });
+      return response.data;
+    } catch (error) {
+      const errorMessage =
+        error.response.data.message || "Failed to fetch user mobile!";
+      return rejectWithValue(errorMessage);
+    }
+  }
+);
+
+// fetch User Mobile to send otp------------------------------------------------------------>
+export const saveOtptext = createAsyncThunk(
+  "auth/saveOtptext",
+  async ({ otp, username }, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.put("/save-otp", {
+        otp,
+        username,
+      });
+      return response.data;
+    } catch (error) {
+      const errorMessage =
+        error.response.data.message || "Failed to save otp!";
+      return rejectWithValue(errorMessage);
+    }
+  }
+);
+
+// fetch User Mobile to send otp------------------------------------------------------------>
+export const confirmOtptext = createAsyncThunk(
+  "auth/confirmOtptext",
+  async ({ otp, username }, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.post("/confirm-otp", {
+        otp,
+        username,
+      });
+      return response.data;
+    } catch (error) {
+      const errorMessage =
+        error.response.data.message || "Failed to fetch user mobile!";
+      return rejectWithValue(errorMessage);
+    }
+  }
+);
 
 const authSlice = createSlice({
   name: "auth",
   initialState: {
+    confirmOtp: "",
     userRole: "",
-    // user: {},
+    userInfo: [],
     username: "",
     dairyname: "",
     // token: null,
@@ -108,28 +162,12 @@ const authSlice = createSlice({
     isAuthenticated: !!localStorage.getItem("token"),
     loading: false,
     status: "idle",
+    otpstatus: "idle",
+    sotpstatus: "idle",
+    cotpstatus: "idle",
     error: null,
   },
   reducers: {
-    // setLogin: (state, action) => {
-    //   state.isAuthenticated = true;
-    //   state.userRole = action.payload.userRole; // Save userRole to state
-    // },
-    // logout: (state) => {
-    //   state.userRole = null;
-    //   state.isAuthenticated = false;
-    //   localStorage.removeItem("user_id");
-    //   localStorage.removeItem("user_password");
-    //   localStorage.removeItem("rememberMe");
-    // },
-    // setUser: (state, action) => {
-    //   state.user = action.payload.user || {};
-    //   state.token = action.payload.token || null;
-    // },
-    // logout: (state) => {
-    //   state.user = null;
-    //   state.token = null;
-    // },
     setLogin: (state, action) => {
       const { user, token } = action.payload;
       state.user = user;
@@ -204,6 +242,38 @@ const authSlice = createSlice({
       .addCase(checkCurrentSession.rejected, (state, action) => {
         state.status = "failed";
         state.loading = false;
+        state.error = action.payload;
+      }) // fetch user mobile to send otp ------------------------------------>
+      .addCase(fetchUserMobile.pending, (state) => {
+        state.otpstatus = "loading";
+      })
+      .addCase(fetchUserMobile.fulfilled, (state, action) => {
+        state.otpstatus = "succeeded";
+        state.userInfo = action.payload;
+      })
+      .addCase(fetchUserMobile.rejected, (state, action) => {
+        state.otpstatus = "failed";
+        state.error = action.payload;
+      }) // save otp ------------------------------------>
+      .addCase(saveOtptext.pending, (state) => {
+        state.sotpstatus = "loading";
+      })
+      .addCase(saveOtptext.fulfilled, (state) => {
+        state.sotpstatus = "succeeded";
+      })
+      .addCase(saveOtptext.rejected, (state, action) => {
+        state.sotpstatus = "failed";
+        state.error = action.payload;
+      }) // confirm otp ------------------------------------>
+      .addCase(confirmOtptext.pending, (state) => {
+        state.cotpstatus = "loading";
+      })
+      .addCase(confirmOtptext.fulfilled, (state, action) => {
+        state.cotpstatus = "succeeded";
+        state.confirmOtp = action.payload;
+      })
+      .addCase(confirmOtptext.rejected, (state, action) => {
+        state.cotpstatus = "failed";
         state.error = action.payload;
       });
   },

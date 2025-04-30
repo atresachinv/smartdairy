@@ -2,8 +2,6 @@ import React from "react";
 import "../../../Styles/Home/Forms.css";
 
 const UpdatePassword = () => {
-
-
   return (
     <div className="update-password w80 h90 d-flex-col">
       <span className="heading t-center">Update New Password</span>
