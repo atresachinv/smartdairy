@@ -3,7 +3,7 @@ import "../../../../../Styles/Mainapp/Payments/MilkTransfer.css";
 import { useDispatch, useSelector } from "react-redux";
 import { listCustomer } from "../../../../../App/Features/Customers/customerSlice";
 import { toast } from "react-toastify";
-import { deleteCollection } from "../../../../../App/Features/Payments/paymentSlice";
+import { deleteCollection, getPayMasters } from "../../../../../App/Features/Payments/paymentSlice";
 import { selectPaymasters } from "../../../../../App/Features/Payments/paymentSelectors";
 
 const DeleteCollection = () => {
