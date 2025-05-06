@@ -9,6 +9,8 @@ const {
   sendOtp,
   getUserProfile,
   verifySession,
+  getmobileSendOtp,
+  updatePassword,
 } = require("../Controllers/UserController");
 
 const router = express.Router();
@@ -23,6 +25,8 @@ router.route("/logout").post(verifyToken, userLogout);
 router.route("/verify-session").post(verifyToken, verifySession);
 router.route("/profile/info").post(verifyToken, getUserProfile);
 router.route("/send/otp").post(sendOtp);
+router.route("/get/user/mobile").post(getmobileSendOtp);
+router.route("/update/user/password").put(updatePassword);
 
 // Customer Routes
 module.exports = router;

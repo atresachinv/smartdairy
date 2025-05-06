@@ -5,6 +5,7 @@ import LockPayments from "./PaymentPages/LockPayments";
 import MilkCorrection from "./PaymentPages/MilkCorrection/MilkCorrection";
 import PaymentRegister from "../Reports/PaymentsReports/PaymentPages/PaymentRegister";
 import PaymentSummary from "../Reports/PaymentsReports/PaymentPages/PaymentSummary";
+import UpdatePassword from "../../Home/Forms/UpdatePassword";
 
 const PaymentPages = () => {
   const [currentPage, setCurrentPage] = useState("main");

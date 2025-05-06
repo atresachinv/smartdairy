@@ -2,81 +2,134 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchAllDairyInfo } from "../../../../App/Features/Admin/Dairyinfo/dairySlice";
 import "../../../../Styles/AdminPannel/AccessControls/MilkAccess.css";
+import Select from "react-select";
+
+const customStyles = {
+  control: (provided, state) => ({
+    ...provided,
+    minHeight: "38px",
+    borderRadius: "8px",
+    borderColor: state.isFocused ? "#4A90E2" : "#ccc",
+    boxShadow: state.isFocused ? "0 0 0 1px #4A90E2" : "none",
+    "&:hover": {
+      borderColor: "#4A90E2",
+    },
+  }),
+
+  option: (provided, state) => ({
+    ...provided,
+    backgroundColor: state.isSelected
+      ? "#4A90E2"
+      : state.isFocused
+      ? "#f0f8ff"
+      : "white",
+    color: "black",
+    padding: 10,
+  }),
+
+  menu: (provided) => ({
+    ...provided,
+    zIndex: 200,
+    padding: 10,
+  }),
+
+  placeholder: (provided) => ({
+    ...provided,
+    color: "#aaa",
+  }),
+
+  singleValue: (provided) => ({
+    ...provided,
+    color: "#333",
+  }),
+};
 
 const MilkCollAccess = () => {
   const dispatch = useDispatch();
   const dairyList = useSelector((state) => state.dairy.allDairyData);
   const [dairylist, setDairyList] = useState([]);
+  const [accessRights, setAccessRights] = useState([]);
 
   const initialValues = {
-    dairyid: 0,
-    dairyname: "",
+    dairy_id: 0,
     vehicle_milk: 0, // Store 0 for false, 1 for true
     retail_sales: 0,
   };
 
   const [values, setValues] = useState(initialValues);
-
+  // console.log("values", values);
   useEffect(() => {
     dispatch(fetchAllDairyInfo());
     setDairyList(dairyList);
   }, []);
 
-  console.log(dairyList);
+  // console.log(accessRights);
 
-  const handleToggle = (name) => {
-    setValues((prevValues) => ({
-      ...prevValues,
-      [name]: prevValues[name] === 0 ? 1 : 0, // Toggle between 1 and 0
-    }));
+  const handleToggle = (value) => {
+    setAccessRights((prevAccessRights) => {
+      if (prevAccessRights.includes(value)) {
+        // If already present, remove it
+        return prevAccessRights.filter((item) => item !== value);
+      } else {
+        // Otherwise, add it
+        return [...prevAccessRights, value];
+      }
+    });
   };
 
-  // Effect to search for dairy when dairyid changes
-  //   useEffect(() => {
-  //     if (values.dairyid.trim().length > 0) {
-  //       const handler = setTimeout(() => {
-  //         // Ensure `code` has valid content before making API calls
-  //         findCustomerBydairyid(values.dairyid.trim());
-  //         getToken();
-  //       }, 500);
-
-  //       return () => clearTimeout(handler);
-  //     }
-  //   }, [values.dairyid, dispatch]);
-
-  //finding customer name
-  //   const findCustomerBydairyid = (code) => {
-  //     if (!code) {
-  //       setValues((prev) => ({ ...prev, cname: "" }));
-  //       return;
-  //     }
-  //     // Ensure the dairyid is a string for comparison
-  //     const dairy = dairylist.find(
-  //       (dairy) => dairy.SocietyCode.toString() === dairyid
-  //     );
-
-  //     if (dairy) {
-  //       setValues((prev) => ({
-  //         ...prev,
-  //         dairyname: dairy.SocietyName,
-  //       }));
-  //     } else {
-  //       setValues((prev) => ({ ...prev, dairyname: "" })); // Clear cname if not found
-  //     }
-  //   };
+  const dairyOptions = dairyList.map((item) => ({
+    value: item.SocietyCode,
+    label: `${item.SocietyName}`,
+  }));
+  const dairyOptions1 = dairyList.map((item) => ({
+    value: item.SocietyCode,
+    label: `${item.SocietyCode}`,
+  }));
 
   return (
     <div className="milk-access-container w100 h1 d-flex-col">
       <div className="select-dairy-to-add-remove-access w100 h10 d-flex a-center">
-        <label htmlFor="select_dairy">Search Dairy</label>
-        <input className="data w5 mx10" type="number" />
-        <input className="data w30" type="text" placeholder="dairy name" />
+        <div className="label-text">Select Dairy :</div>
+        <Select
+          options={dairyOptions1}
+          className="mx5 w10"
+          placeholder=""
+          isSearchable
+          styles={customStyles}
+          value={
+            values.dairy_id
+              ? dairyOptions1.find(
+                  (option) => option.value === Number(values.dairy_id)
+                )
+              : null
+          }
+          onChange={(selectedOption) => {
+            setValues({ ...values, dairy_id: selectedOption.value });
+          }}
+        />
+        <Select
+          options={dairyOptions}
+          className="mx5 w40"
+          placeholder=""
+          isSearchable
+          styles={customStyles}
+          value={
+            values.dairy_id
+              ? dairyOptions.find(
+                  (option) => option.value === Number(values.dairy_id)
+                )
+              : null
+          }
+          onChange={(selectedOption) => {
+            setValues({ ...values, dairy_id: selectedOption.value });
+          }}
+        />
       </div>
-      <div className="main-access-add-remove-container w100 h80 d-flex-col">
+      <div className="main-access-add-remove-outer-container w100 h80 d-flex-col">
         <span className="w100 heading">Milk Collection Access</span>
         <div className="main-access-add-remove-container w100 h90 d-flex">
           {/* Vehicle Milk Collection */}
-          <div className="access-controller-div w20 h20 d-flex-col bg p10">
+          <div className="access-controller-div h20 d-flex-col bg p10">
             <label htmlFor="milk-access" className="label-text t-center">
               Vehicle Milk Collection
             </label>
@@ -85,7 +138,7 @@ const MilkCollAccess = () => {
               <label className="switch">
                 <input
                   type="checkbox"
-                  checked={values.vehicle_milk === 1}
+                  checked={accessRights.includes("vehicle_milk")}
                   onChange={() => handleToggle("vehicle_milk")}
                 />
                 <span className="slider"></span>
@@ -94,7 +147,7 @@ const MilkCollAccess = () => {
           </div>
 
           {/* Retail Milk Sales */}
-          <div className="access-controller-div w20 h20 d-flex-col bg p10 mx10">
+          <div className="access-controller-div h20 d-flex-col bg p10">
             <label htmlFor="milk-access" className="label-text t-center">
               Retail Milk Sales
             </label>
@@ -103,8 +156,93 @@ const MilkCollAccess = () => {
               <label className="switch">
                 <input
                   type="checkbox"
-                  checked={values.retail_sales === 1}
+                  checked={accessRights.includes("retail_sales")}
                   onChange={() => handleToggle("retail_sales")}
+                />
+                <span className="slider"></span>
+              </label>
+            </div>
+          </div>
+          {/* Whatsapp Message */}
+          <div className="access-controller-div h20 d-flex-col bg p10">
+            <label htmlFor="milk-access" className="label-text t-center">
+              Whatsapp Message
+            </label>
+            <div className="toggle-container w100 h50 d-flex center">
+              <span>{values.retail_sales === 1 ? "ON" : "OFF"}</span>
+              <label className="switch">
+                <input
+                  type="checkbox"
+                  checked={accessRights.includes("whatsapp_message")}
+                  onChange={() => handleToggle("whatsapp_message")}
+                />
+                <span className="slider"></span>
+              </label>
+            </div>
+          </div>
+          {/* Generate PDF */}
+          <div className="access-controller-div h20 d-flex-col bg p10">
+            <label htmlFor="milk-access" className="label-text t-center">
+              Generate PDF
+            </label>
+            <div className="toggle-container w100 h50 d-flex center">
+              <span>{values.retail_sales === 1 ? "ON" : "OFF"}</span>
+              <label className="switch">
+                <input
+                  type="checkbox"
+                  checked={accessRights.includes("generate_pdf")}
+                  onChange={() => handleToggle("generate_pdf")}
+                />
+                <span className="slider"></span>
+              </label>
+            </div>
+          </div>
+          {/* Create Center */}
+          <div className="access-controller-div h20 d-flex-col bg p10">
+            <label htmlFor="milk-access" className="label-text t-center">
+              Create Center
+            </label>
+            <div className="toggle-container w100 h50 d-flex center">
+              <span>{values.retail_sales === 1 ? "ON" : "OFF"}</span>
+              <label className="switch">
+                <input
+                  type="checkbox"
+                  checked={accessRights.includes("create_center")}
+                  onChange={() => handleToggle("create_center")}
+                />
+                <span className="slider"></span>
+              </label>
+            </div>
+          </div>
+          {/* Generate Center Payment */}
+          <div className="access-controller-div h20 d-flex-col bg p10">
+            <label htmlFor="milk-access" className="label-text t-center">
+              Generate Center Payment
+            </label>
+            <div className="toggle-container w100 h50 d-flex center">
+              <span>{values.retail_sales === 1 ? "ON" : "OFF"}</span>
+              <label className="switch">
+                <input
+                  type="checkbox"
+                  checked={accessRights.includes("gen_center_payment")}
+                  onChange={() => handleToggle("gen_center_payment")}
+                />
+                <span className="slider"></span>
+              </label>
+            </div>
+          </div>
+          {/* Create Sub Ladger */}
+          <div className="access-controller-div h20 d-flex-col bg p10">
+            <label htmlFor="milk-access" className="label-text t-center">
+              Create Sub Ladger
+            </label>
+            <div className="toggle-container w100 h50 d-flex center">
+              <span>{values.retail_sales === 1 ? "ON" : "OFF"}</span>
+              <label className="switch">
+                <input
+                  type="checkbox"
+                  checked={accessRights.includes("add_subledger")}
+                  onChange={() => handleToggle("add_subledger")}
                 />
                 <span className="slider"></span>
               </label>

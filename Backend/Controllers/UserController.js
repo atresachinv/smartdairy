@@ -189,9 +189,9 @@ exports.userRegister = async (req, res) => {
           connection,
           `
           INSERT INTO users 
-          (username, password, designation, isAdmin, SocietyCode) 
-          VALUES (?, ?, ?, ?, ?)`,
-          [user_name, hashedPassword, "Admin", "1", newSocietyCode]
+          (username, password, designation, isAdmin, mobile, SocietyCode) 
+          VALUES (?, ?, ?, ?, ?, ?)`,
+          [user_name, hashedPassword, "Admin", "1", user_phone, newSocietyCode]
         );
 
         //  Create Milk Entry Table
@@ -289,7 +289,6 @@ const queryPromise = (connection, sql, params = []) => {
   });
 };
 
-
 // saving hashed passwords ------------------------------------------------------------------>
 // exports.userRegister = async (req, res) => {
 //   const {
@@ -357,8 +356,8 @@ const queryPromise = (connection, sql, params = []) => {
 //         const tableName = `dailymilkentry_${newSocietyCode}`;
 
 //         const createDairyQuery = `
-//           INSERT INTO societymaster 
-//           (SocietyCode, SocietyName, marathiName, PhoneNo, city, PinCode, prefix, terms, startdate, enddate) 
+//           INSERT INTO societymaster
+//           (SocietyCode, SocietyName, marathiName, PhoneNo, city, PinCode, prefix, terms, startdate, enddate)
 //           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
 //         connection.query(
@@ -385,8 +384,8 @@ const queryPromise = (connection, sql, params = []) => {
 //             }
 
 //             const createCenterQuery = `
-//               INSERT INTO centermaster 
-//               (center_id, center_name, marathi_name, mobile, city, pincode, orgid, prefix) 
+//               INSERT INTO centermaster
+//               (center_id, center_name, marathi_name, mobile, city, pincode, orgid, prefix)
 //               VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
 
 //             connection.query(
@@ -411,8 +410,8 @@ const queryPromise = (connection, sql, params = []) => {
 //                 }
 
 //                 const createUserQuery = `
-//                   INSERT INTO users 
-//                   (username, password, designation, isAdmin, SocietyCode) 
+//                   INSERT INTO users
+//                   (username, password, designation, isAdmin, SocietyCode)
 //                   VALUES (?, ?, ?, ?, ?)`;
 
 //                 connection.query(
@@ -466,8 +465,8 @@ const queryPromise = (connection, sql, params = []) => {
 //                       }
 
 //                       const saveRatesQuery = `
-//                         INSERT INTO ratecharttype 
-//                         (companyid, center_id, rctypeid, rctypename) 
+//                         INSERT INTO ratecharttype
+//                         (companyid, center_id, rctypeid, rctypename)
 //                         VALUES (?, ?, ?, ?)`;
 
 //                       connection.query(
@@ -519,90 +518,6 @@ const queryPromise = (connection, sql, params = []) => {
 //---------------------------------------------------------------------------->
 // Login --------------------------------------------------------------------->
 //---------------------------------------------------------------------------->
-
-// updated function with session token ------------------------>
-// exports.userLogin = async (req, res) => {
-//   const { user_id, user_password } = req.body;
-
-//   pool.getConnection((err, connection) => {
-//     if (err) {
-//       console.error("Error getting MySQL connection: ", err);
-//       return res.status(500).json({ message: "Database connection error" });
-//     }
-
-//     try {
-//       const checkUser =
-//         "SELECT username, isActive, designation, SocietyCode, pcode, center_id FROM users WHERE username = ? AND password = ?";
-
-//       connection.query(checkUser, [user_id, user_password], (err, result) => {
-//         if (err) {
-//           connection.release();
-//           return res.status(500).json({ message: "Database query error" });
-//         }
-
-//         if (result.length === 0) {
-//           connection.release();
-//           return res
-//             .status(401)
-//             .json({ message: "Invalid User ID or password!" });
-//         }
-
-//         const user = result[0];
-
-//         // Generate a new session token
-//         const sessionToken = crypto.randomBytes(32).toString("hex");
-
-//         // Generate JWT token
-//         const token = jwt.sign(
-//           {
-//             user_id: user.username,
-//             user_code: user.pcode,
-//             is_active: user.isActive,
-//             user_role: user.designation,
-//             dairy_id: user.SocietyCode,
-//             center_id: user.center_id,
-//           },
-//           process.env.SECRET_KEY,
-//           { expiresIn: "4h" }
-//         );
-
-//         // Invalidate any existing session before setting a new one
-//         const updateSession =
-//           "UPDATE users SET session_token = ? WHERE username = ?";
-//         connection.query(
-//           updateSession,
-//           [sessionToken, user.username],
-//           (err) => {
-//             connection.release();
-//             if (err) {
-//               return res
-//                 .status(500)
-//                 .json({ message: "Error updating session" });
-//             }
-
-//             // Set token in cookie
-//             res.cookie("token", token, {
-//               httpOnly: true,
-//               sameSite: "strict",
-//               maxAge: 4 * 60 * 60 * 1000, // 4 hours
-//             });
-
-//             res.status(200).json({
-//               message: "Login successful",
-//               token,
-//               user_role: user.designation,
-//               sessionToken,
-//             });
-//           }
-//         );
-//       });
-//     } catch (error) {
-//       connection.release();
-//       console.error("Error processing request: ", error);
-//       return res.status(500).json({ message: "Internal server error" });
-//     }
-//   });
-// };
 
 // updated to check hashed passwords --------------------------------------->
 
@@ -968,82 +883,247 @@ exports.sendOtp = async (req, res) => {
 
 //........................................Verify OTP
 
-exports.verifyOtp = async (req, res) => {
-  const { otp } = req.body;
+// exports.verifyOtp = async (req, res) => {
+//   const { otp } = req.body;
 
-  pool.getConnection((err, connection) => {
-    if (err) {
-      console.error("Error getting MySQL connection: ", err);
-      return res.status(500).json({ message: "Database connection error" });
-    }
-    try {
-      // Check if the OTP matches in the database
-      const verifyOtp = `SELECT username FROM users WHERE otp = ?`;
+//   pool.getConnection((err, connection) => {
+//     if (err) {
+//       console.error("Error getting MySQL connection: ", err);
+//       return res.status(500).json({ message: "Database connection error" });
+//     }
+//     try {
+//       // Check if the OTP matches in the database
+//       const verifyOtp = `SELECT username FROM users WHERE otp = ?`;
 
-      connection.query(verifyOtp, [otp], (err, result) => {
-        connection.release();
-        if (err) {
-          console.error("Error executing query: ", err);
-          return res.status(500).json({ message: "Database query error" });
-        }
+//       connection.query(verifyOtp, [otp], (err, result) => {
+//         connection.release();
+//         if (err) {
+//           console.error("Error executing query: ", err);
+//           return res.status(500).json({ message: "Database query error" });
+//         }
 
-        if (result.length === 0) {
-          return res.status(400).json({ message: "Invalid OTP!" });
-        }
-        const user_id = result.username;
-        // Send the result as a response
-        res.status(200).json({
-          user_id: user_id,
-          message: "OTP verified successfully",
-        });
-      });
-    } catch (error) {
-      connection.release(); // Ensure the connection is released in case of an error
-      console.error("Error processing request: ", error);
-      return res.status(500).json({ message: "Internal server error" });
-    }
-  });
-};
+//         if (result.length === 0) {
+//           return res.status(400).json({ message: "Invalid OTP!" });
+//         }
+//         const user_id = result.username;
+//         // Send the result as a response
+//         res.status(200).json({
+//           user_id: user_id,
+//           message: "OTP verified successfully",
+//         });
+//       });
+//     } catch (error) {
+//       connection.release(); // Ensure the connection is released in case of an error
+//       console.error("Error processing request: ", error);
+//       return res.status(500).json({ message: "Internal server error" });
+//     }
+//   });
+// };
 
 //.........................................Update Password
 
 exports.updatePassword = (req, res) => {
-  const { password, user_id } = req.body;
+  const { username, mobile, password } = req.body;
   pool.getConnection((err, connection) => {
     if (err) {
       console.error("Error getting MySQL connection: ", err);
-      return res.status(500).json({ message: "Database connection error" });
+      return res
+        .status(500)
+        .json({ status: 500, message: "Database connection error" });
     }
     try {
       const hashedPassword = bcrypt.hashSync(password, 10);
 
       // Update the password in the database
-      const updatePassword = `UPDATE users SET password = ? WHERE userId = ?`; //change userid
+      const updatePassword = `UPDATE users SET password = ? WHERE username = ? AND mobile = ?`; //change userid
 
       connection.query(
         updatePassword,
-        [hashedPassword, user_id],
+        [hashedPassword, username, mobile],
         (err, result) => {
           connection.release();
           if (err) {
             console.error("Error executing query: ", err);
-            return res.status(500).json({ message: "Database query error" });
+            return res
+              .status(500)
+              .json({ status: 500, message: "Database query error" });
           }
 
           if (result.length === 0) {
-            return res.status(400).json({ message: "user not found!" });
+            return res
+              .status(400)
+              .json({ status: 400, message: "user not found!" });
           }
 
           // Send the result as a response
-          res.status(200).json({
-            message: "Password updated successfully",
-          });
+          res
+            .status(200)
+            .json({ status: 200, message: "Password updated successfully" });
         }
       );
     } catch (error) {
       connection.release(); // Ensure the connection is released in case of an error
       console.error("Error processing request: ", error);
-      return res.status(500).json({ message: "Internal server error" });
+      return res
+        .status(500)
+        .json({ status: 500, message: "Internal server error" });
+    }
+  });
+};
+
+//---------------------------------------------------------------------------------->
+// getMobileSendOtp ---------------------------------------------------------------->
+//---------------------------------------------------------------------------------->
+
+exports.getmobileSendOtp = (req, res) => {
+  const { user_id } = req.body;
+  if (!user_id) {
+    return res
+      .status(400)
+      .json({ status: 400, message: "user_id is required" });
+  }
+
+  if (user_id === "vikern") {
+    return res
+      .status(500)
+      .json({ status: 500, message: "Database query error" });
+  }
+
+  pool.getConnection((err, connection) => {
+    if (err) {
+      console.error("MySQL connection error:", err);
+      return res
+        .status(500)
+        .json({ status: 500, message: "Database connection error" });
+    }
+
+    const selectQuery = `SELECT username, mobile FROM users WHERE username = ?`;
+
+    connection.query(selectQuery, [user_id], (queryErr, result) => {
+      connection.release();
+
+      if (queryErr) {
+        console.error("Query execution error:", queryErr);
+        return res
+          .status(500)
+          .json({ status: 500, message: "Database query error" });
+      }
+
+      if (result.length === 0) {
+        return res.status(404).json({ status: 404, message: "User not found" });
+      }
+      res.status(200).json({
+        status: 200,
+        userMobile: result[0], // Return just the mobile number
+      });
+    });
+  });
+};
+
+//---------------------------------------------------------------------------------->
+// get Mobile to Send Otp ---------------------------------------------------------->
+//---------------------------------------------------------------------------------->
+
+exports.saveOtp = (req, res) => {
+  const { user_id } = req.body;
+  if (!user_id) {
+    return res
+      .status(400)
+      .json({ status: 400, message: "user_id is required" });
+  }
+
+  if (user_id === "vikern") {
+    return res
+      .status(500)
+      .json({ status: 500, message: "Database query error" });
+  }
+
+  pool.getConnection((err, connection) => {
+    if (err) {
+      console.error("MySQL connection error:", err);
+      return res
+        .status(500)
+        .json({ status: 500, message: "Database connection error" });
+    }
+
+    const selectQuery = `SELECT username, mobile FROM users WHERE username = ?`;
+
+    connection.query(selectQuery, [user_id], (queryErr, result) => {
+      connection.release();
+
+      if (queryErr) {
+        console.error("Query execution error:", queryErr);
+        return res
+          .status(500)
+          .json({ status: 500, message: "Database query error" });
+      }
+
+      if (result.length === 0) {
+        return res.status(404).json({ status: 404, message: "User not found" });
+      }
+      res.status(200).json({
+        status: 200,
+        userMobile: result[0], // Return just the mobile number
+      });
+    });
+  });
+};
+
+//---------------------------------------------------------------------------------->
+// verify user otp with saved otp -------------------------------------------------->
+//---------------------------------------------------------------------------------->
+
+exports.verifyOtp = async (req, res) => {
+  const { otp, username, mobile } = req.body;
+
+  pool.getConnection((err, connection) => {
+    if (err) {
+      console.error("Error getting MySQL connection: ", err);
+      return res
+        .status(500)
+        .json({ status: 500, message: "Database connection error" });
+    }
+
+    try {
+      const verifyOtpQuery = `
+        SELECT COUNT(username) AS countUser 
+        FROM users 
+        WHERE username = ? AND mobile = ? AND otp = ?
+      `;
+
+      connection.query(
+        verifyOtpQuery,
+        [username, mobile, otp],
+        (err, results) => {
+          connection.release();
+
+          if (err) {
+            console.error("Error executing query: ", err);
+            return res
+              .status(500)
+              .json({ status: 500, message: "Database query error" });
+          }
+
+          const count = results[0].countUser;
+
+          if (count === 0) {
+            return res
+              .status(400)
+              .json({ status: 400, message: "Invalid OTP!" });
+          }
+
+          res.status(200).json({
+            status: 200,
+            message: "OTP verified successfully",
+          });
+        }
+      );
+    } catch (error) {
+      connection.release();
+      console.error("Error processing request: ", error);
+      return res
+        .status(500)
+        .json({ status: 500, message: "Internal server error" });
     }
   });
 };

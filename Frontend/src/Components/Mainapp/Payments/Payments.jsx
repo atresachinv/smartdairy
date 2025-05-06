@@ -19,6 +19,7 @@ import {
 } from "../../../App/Features/Payments/paymentSlice";
 import { fetchMaxApplyDeductions } from "../../../App/Features/Deduction/deductionSlice";
 import { selectPaymasters } from "../../../App/Features/Payments/paymentSelectors";
+import { getCenterSetting } from "../../../App/Features/Mainapp/Settings/dairySettingSlice";
 
 const Payments = ({ setCurrentPage }) => {
   const dispatch = useDispatch();
@@ -33,6 +34,9 @@ const Payments = ({ setCurrentPage }) => {
   );
   const customerlist = useSelector(
     (state) => state.customers.customerlist || []
+  );
+  const leastPayamt = useSelector(
+    (state) => state.dairySetting.centerSetting[0].minPayment
   );
   const payMasters = useSelector(selectPaymasters); // is payment lock
   const payData = useSelector((state) => state.payment.paymentData); // milk collection amount
@@ -79,6 +83,10 @@ const Payments = ({ setCurrentPage }) => {
 
   // ----------------------------------------------------------------------->
   // check if payment is lock or not ------------------------------------->
+
+  useEffect(() => {
+    dispatch(getCenterSetting());
+  }, []);
 
   useEffect(() => {
     if (!payMasters || payMasters.length === 0) {
@@ -216,6 +224,9 @@ const Payments = ({ setCurrentPage }) => {
     setOtherDeduction(otherDeductionGLCodes);
   }, [deductionDetails]);
 
+  //-------------------------------------------------------------------------------->
+  // handle auto deduction --------------------------------------------------------->
+
   const handleFixDeductions = async () => {
     try {
       const filteredDeductions = deductionDetails.filter(
@@ -289,7 +300,7 @@ const Payments = ({ setCurrentPage }) => {
       );
 
       const deductionEntries = [];
-      const leastPayamt = 200;
+      // const leastPayamt = 200;
 
       for (const user of payData) {
         const { rno, cname, totalamt, totalLitres, avgSnf, avgFat } = user;
@@ -337,12 +348,12 @@ const Payments = ({ setCurrentPage }) => {
             (item) => item.GLCode === deduction.GLCode
           );
 
-          console.log("matchDedAmt", matchDedAmt);
-          console.log("matchPrevAmt", matchPrevAmt);
+          // console.log("matchDedAmt", matchDedAmt);
+          // console.log("matchPrevAmt", matchPrevAmt);
           const currAmt = matchDedAmt ? Math.abs(matchDedAmt.totalamt) : 0;
           const prevAmt = matchPrevAmt ? Math.abs(matchPrevAmt.totalamt) : 0;
-          console.log("currAmt", currAmt);
-          console.log("prevAmt", prevAmt);
+          // console.log("currAmt", currAmt);
+          // console.log("prevAmt", prevAmt);
           let deduAmt = +(currAmt + prevAmt).toFixed(2);
 
           if (remainingAmt - deduAmt < leastPayamt) {
@@ -694,6 +705,7 @@ const Payments = ({ setCurrentPage }) => {
               value={formData.billDate || ""}
               onKeyDown={(e) => handleKeyDown(e, vcdateRef)}
               ref={bdateRef}
+              readOnly
             />
           </div>
           <div className="Voucher-date-div d-flex w100 h1 a-center sb">

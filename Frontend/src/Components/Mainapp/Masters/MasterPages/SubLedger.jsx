@@ -290,7 +290,10 @@ const SubLedger = () => {
               />
             </div>
             <div className="ledger-group-div w80 d-flex a-center sb">
-              <label htmlFor="ledger-gno" className="ledger-gtxt label-text w25">
+              <label
+                htmlFor="ledger-gno"
+                className="ledger-gtxt label-text w25"
+              >
                 Select Group :
               </label>
               <input
@@ -612,7 +615,7 @@ const SubLedger = () => {
           </div>
         </div>
       </form>
-      <div className="ledgers-list-container w100 h70 d-flex-col">
+      <div className="ledgers-list-container w100 h65 d-flex-col">
         <label htmlFor="listtitle" className="heading">
           Ledger List :
         </label>

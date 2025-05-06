@@ -261,14 +261,14 @@ const AccountStatment = () => {
 
   let runningBalance = openingBalance;
   return (
-    <div className="account-statment-container w100 h1 d-flex center  ">
-      <div className="GL-customer-date-first-half-container w70 h1 d-flex-col bg3 ">
-        <span className="px10 heading">Account Statement</span>
+    <div className="account-statment-container w100 h1 d-flex-col center">
+      <span className="px10 heading">Account Statement</span>
+      <div className="GL-customer-date-first-half-container w70 h50 d-flex-col bg br9 sa p10">
         {centerId > 0 ? null : (
-          <div className=" select-center-div d-flex a-center mx10">
-            <span className="info-text w15">सेंटर निवडा :</span>
+          <div className=" select-center-div d-flex w70 h10 a-center">
+            <span className="label-text w20">सेंटर निवडा :</span>
             <select
-              className="data w50 a-center my5 mx5"
+              className="data w70 a-center"
               name="center"
               value={filter}
               onChange={(e) => {
@@ -292,8 +292,8 @@ const AccountStatment = () => {
             </select>
           </div>
         )}
-        <div className="GL-number-Accound w70 row sb d-flex my5">
-          <span className="info-text w20 px10">खतावणी नं.</span>
+        <div className="GL-number-Accound w70 h10 row sb d-flex my5">
+          <span className="label-text w20">खतावणी नं. :</span>
           <input
             type="text"
             id="GLCode"
@@ -308,7 +308,7 @@ const AccountStatment = () => {
           />
           <Select
             options={options}
-            className="mx10 w50"
+            className="w50"
             placeholder=""
             isSearchable
             styles={{
@@ -345,12 +345,13 @@ const AccountStatment = () => {
           />
           <Select
             options={custOptions1}
-            className="mx10 w50"
+            className="mx5 w40"
             placeholder=""
             isSearchable
             styles={{
               menu: (provided) => ({
                 ...provided,
+                padding: 10,
                 zIndex: 200,
               }),
             }}
@@ -366,11 +367,11 @@ const AccountStatment = () => {
             }}
           />
         </div>
-        <div className="from-to-date-account-statment w100 h10 d-flex a-center ">
-          <div className="date-from-account-statment w50 d-flex a-center ">
-            <span className="info-text w30 px10 ">दिनाक पासून</span>
+        <div className="from-to-date-account-statment w100 h10 d-flex a-center sb">
+          <div className="date-from-account-statment w40 d-flex a-center ">
+            <span className="info-text w40">दिनाक पासून</span>
             <input
-              className="data w40"
+              className="data w50"
               type="date"
               value={formData.fromVoucherDate}
               onChange={(e) =>
@@ -378,10 +379,10 @@ const AccountStatment = () => {
               }
             />
           </div>
-          <div className="date-from-account-statment w50 d-flex a-center ">
-            <span className="info-text w30">दिनाक पर्येंत</span>
+          <div className="date-from-account-statment w40 d-flex a-center ">
+            <span className="info-text w40">दिनाक पर्येंत</span>
             <input
-              className="data w40"
+              className="data w50"
               type="date"
               value={formData.toVoucherDate}
               onChange={(e) =>
@@ -389,123 +390,117 @@ const AccountStatment = () => {
               }
             />
           </div>
+          <button className="w-btn" type="button" onClick={handleReport}>
+            दाखवा
+          </button>
         </div>
+        <div className="report-pdf-print w100 h10 d-flex sb">
+          <div className="export-btns-div w30 d-flex sb">
+            <button className="w-btn" type="button" onClick={handlePrint}>
+              Print{" "}
+            </button>
 
-        <div className="report-container ">
-          <div className="report-pdf-print w100 d-flex">
-            <div className="account-statment-buttons w70 h20 px10 d-flex a-center">
-              <button className="w-btn" type="button" onClick={handleReport}>
-                रिपोर्ट
-              </button>
-            </div>
-            <div className="Print-statment-buttons w70 h20 px10 d-flex a-center">
-              <button className="w-btn" type="button" onClick={handlePrint}>
-                Print{" "}
-              </button>
-            </div>
-            <div className="Pdf-statment-buttons w70 h20 px10 d-flex a-center">
-              <button className="w-btn" type="button" onClick={generatePDF}>
-                pdf{" "}
-              </button>
-            </div>
-          </div>
-          <div className="table-section-acoundstatment w100 h40 d-flex-col">
-            {showReport && (
-              <div className="report-acc-statment">
-                <table
-                  border="1"
-                  cellPadding="5"
-                  style={{
-                    borderCollapse: "collapse",
-                    marginTop: "10px",
-                    width: "100%",
-                    overflow: "auto",
-                  }}
-                >
-                  <thead className="table-heading-acc-statment">
-                    <tr>
-                      <th>चलन नं.</th>
-                      <th>चलन तारीख</th>
-                      <th>तपशील</th>
-                      <th>नावे</th>
-                      <th>जमा</th>
-                      <th>रक्कम</th>
-                    </tr>
-                  </thead>
-                  <tbody className="table-data-acc-statment mx90">
-                    {(() => {
-                      let openingBalance = 0;
-                      let totalNave = 0;
-                      let totalJama = 0;
-
-                      return (
-                        <>
-                          {voucherList.map((item, index) => {
-                            runningBalance += item.Amt;
-
-                            // Calculate totals for नावे and जमा
-                            if (item.Vtype === 0 || item.Vtype === 1) {
-                              totalNave += item.Amt;
-                            }
-                            if (
-                              (item.Vtype === 3 || item.Vtype === 4) &&
-                              item.Amt > 0
-                            ) {
-                              totalJama += item.Amt;
-                            }
-
-                            return (
-                              <tr key={index}>
-                                <td>{item.VoucherNo}</td>
-                                <td>
-                                  {new Date(
-                                    item.VoucherDate
-                                  ).toLocaleDateString()}
-                                </td>
-                                <td>{item.Narration}</td>
-                                <td>
-                                  {item.Vtype === 0 || item.Vtype === 1
-                                    ? item.Amt
-                                    : ""}
-                                </td>
-                                <td>
-                                  {(item.Vtype === 3 || item.Vtype === 4) &&
-                                  item.Amt > 0
-                                    ? item.Amt
-                                    : ""}
-                                </td>
-                                <td>
-                                  {Math.abs(runningBalance)}{" "}
-                                  {runningBalance < 0 ? "नावे" : "जमा"}
-                                </td>
-                              </tr>
-                            );
-                          })}
-
-                          {/* Totals Row */}
-                          <tr
-                            style={{
-                              fontWeight: "bold",
-                              backgroundColor: "#f0f0f0",
-                            }}
-                          >
-                            <td colSpan="3" style={{ textAlign: "right" }}>
-                              एकूण:
-                            </td>
-                            <td>{totalNave}</td>
-                            <td>{totalJama}</td>
-                            <td></td>
-                          </tr>
-                        </>
-                      );
-                    })()}
-                  </tbody>
-                </table>
-              </div>
-            )}
+            <button className="w-btn" type="button" onClick={generatePDF}>
+              pdf{" "}
+            </button>
           </div>
         </div>
       </div>
+      {/* <div className="report-container w100 h50 d-flex-col"> */}
+      <div className="table-section-acoundstatment w100 h50 d-flex-col">
+        {showReport && (
+          <div className="report-acc-statment">
+            <table
+              border="1"
+              cellPadding="5"
+              style={{
+                borderCollapse: "collapse",
+                marginTop: "10px",
+                width: "100%",
+                overflow: "auto",
+              }}
+            >
+              <thead className="table-heading-acc-statment">
+                <tr>
+                  <th>चलन नं.</th>
+                  <th>चलन तारीख</th>
+                  <th>तपशील</th>
+                  <th>नावे</th>
+                  <th>जमा</th>
+                  <th>रक्कम</th>
+                </tr>
+              </thead>
+              <tbody className="table-data-acc-statment mx90">
+                {(() => {
+                  let openingBalance = 0;
+                  let totalNave = 0;
+                  let totalJama = 0;
+
+                  return (
+                    <>
+                      {voucherList.map((item, index) => {
+                        runningBalance += item.Amt;
+
+                        // Calculate totals for नावे and जमा
+                        if (item.Vtype === 0 || item.Vtype === 1) {
+                          totalNave += item.Amt;
+                        }
+                        if (
+                          (item.Vtype === 3 || item.Vtype === 4) &&
+                          item.Amt > 0
+                        ) {
+                          totalJama += item.Amt;
+                        }
+
+                        return (
+                          <tr key={index}>
+                            <td>{item.VoucherNo}</td>
+                            <td>
+                              {new Date(item.VoucherDate).toLocaleDateString()}
+                            </td>
+                            <td>{item.Narration}</td>
+                            <td>
+                              {item.Vtype === 0 || item.Vtype === 1
+                                ? item.Amt
+                                : ""}
+                            </td>
+                            <td>
+                              {(item.Vtype === 3 || item.Vtype === 4) &&
+                              item.Amt > 0
+                                ? item.Amt
+                                : ""}
+                            </td>
+                            <td>
+                              {Math.abs(runningBalance)}{" "}
+                              {runningBalance < 0 ? "नावे" : "जमा"}
+                            </td>
+                          </tr>
+                        );
+                      })}
+
+                      {/* Totals Row */}
+                      <tr
+                        style={{
+                          fontWeight: "bold",
+                          backgroundColor: "#f0f0f0",
+                        }}
+                      >
+                        <td colSpan="3" style={{ textAlign: "right" }}>
+                          एकूण:
+                        </td>
+                        <td>{Math.abs(totalNave)}</td>
+                        <td>{totalJama}</td>
+                        <td></td>
+                      </tr>
+                    </>
+                  );
+                })()}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+      {/* </div> */}
     </div>
   );
 };

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { listCustomer } from "../../../../../App/Features/Customers/customerSlice";
-import { copyCollection } from "../../../../../App/Features/Payments/paymentSlice";
+import { copyCollection, getPayMasters } from "../../../../../App/Features/Payments/paymentSlice";
 import { toast } from "react-toastify";
 import { selectPaymasters } from "../../../../../App/Features/Payments/paymentSelectors";
 

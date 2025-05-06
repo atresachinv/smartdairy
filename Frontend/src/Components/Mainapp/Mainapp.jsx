@@ -10,11 +10,9 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchDairyInfo } from "../../App/Features/Admin/Dairyinfo/dairySlice";
 import { listCustomer } from "../../App/Features/Customers/customerSlice";
 import Apphome from "./Apphome/Apphome";
-import Dashboard from "./Dashboard/Dashboard";
 import { Route, Routes, useNavigate } from "react-router-dom";
 import CattleFeedMaster from "./Sales/CattleFeed/CattleFeedMaster";
 import Dealers from "./Inventory/InventroyPages/Dealers/Dealers";
-import Accounts from "./Accounts/Accounts";
 import MainLedger from "./Masters/MasterPages/MainLedger";
 import SubLedger from "./Masters/MasterPages/SubLedger";
 import CustomersMaster from "./Masters/MasterPages/CustomerMaster/CustomersMaster";
@@ -35,7 +33,6 @@ import MedicinesMaster from "./Sales/Medicines/MedicinesMaster";
 import OthersMaster from "./Sales/Others/OthersMaster";
 import MilkCorrection from "./Payments/PaymentPages/MilkCorrection/MilkCorrection";
 import MilkTransfer from "./Payments/PaymentPages/MilkTransfers/MilkTransfer";
-import PayDeductions from "./Payments/PaymentPages/PayDeductions/PayDeductions";
 import Payments from "./Payments/Payments";
 import DairyInfo from "./DairyInfo/DairyInfo";
 import DairyInitialInfo from "./DairyInfo/DairyInitialInfo";
@@ -56,14 +53,11 @@ import Milksales from "./Apphome/Appnavviews/MilksalesPages/Milksales";
 import MilksalesReport from "./Apphome/Appnavviews/MilksalesPages/MilksalesReport";
 import AdminSalesReports from "./Apphome/Appnavviews/MilkSankalan/AdminSalesReports";
 import MilkCollectorsReports from "./Apphome/Appnavviews/Milkcollection/MilkCollectorsReports";
-import Milkcollection from "./Apphome/Appnavviews/Milkcollection/Milkcollection";
 import DeliveryStockMaster from "./Inventory/InventroyPages/Stocks/DeliveryStock/DeliveryStockMaster";
 import CustReturns from "./Inventory/InventroyPages/Returns/CustomerReturns/CustReturns";
 import SellRateMaster from "./Inventory/InventroyPages/Stocks/SellRate/SellRateMaster";
 import ExpiredProductsMaster from "./Inventory/InventroyPages/Stocks/ExpiredProduct/ExpiredProductsMaster";
-import DashboardTabs from "./Dashboard/DashboardTabs/DashboardTabs";
 import ComingSoon from "./ComingSoon";
-import MilkSankalan from "./Apphome/Appnavviews/MilkSankalan/MilkSankalan";
 import { getCenterSetting } from "../../App/Features/Mainapp/Settings/dairySettingSlice";
 import DeductionMaster from "./Masters/MasterPages/DeductionMaster/DeductionMaster";
 import BankReportMaster from "./Reports/BankReports/BankReportMaster";
@@ -88,6 +82,7 @@ import CreateCustomer from "./Masters/MasterPages/CustomerMaster/CreateCustomer"
 import FatSnfCompromise from "./Payments/FatSnfCompromise/FatSnfCompromise";
 import GeneralLedger from "./Accounts/GeneralLedger/GeneralLedger";
 import AdvancesPosting from "./Accounts/AdvancesPosting/AdvancesPosting";
+
 
 const Mainapp = () => {
   const dispatch = useDispatch();

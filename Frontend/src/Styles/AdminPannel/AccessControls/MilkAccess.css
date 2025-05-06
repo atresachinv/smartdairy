@@ -50,3 +50,12 @@ input:checked + .slider {
 input:checked + .slider::before {
   transform: translateX(24px);
 }
+
+.main-access-add-remove-outer-container .main-access-add-remove-container {
+  flex-wrap: wrap;
+  gap: 25px;
+}
+
+.access-controller-div {
+  width: 23%;
+}

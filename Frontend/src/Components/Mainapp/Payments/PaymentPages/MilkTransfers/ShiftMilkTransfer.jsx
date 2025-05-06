@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { listCustomer } from "../../../../../App/Features/Customers/customerSlice";
 import { toast } from "react-toastify";
-import { transferToShift } from "../../../../../App/Features/Payments/paymentSlice";
+import { getPayMasters, transferToShift } from "../../../../../App/Features/Payments/paymentSlice";
 import { selectPaymasters } from "../../../../../App/Features/Payments/paymentSelectors";
 
 const ShiftMilkTransfer = () => {

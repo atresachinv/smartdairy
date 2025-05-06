@@ -146,6 +146,23 @@
   }
 }
 
+/* ----------------------------  Register page css --------------------------- */
+@media screen and (max-width: 426px) {
+  .form-container {
+    min-height: auto;
+  }
+  .form-container .signup-form {
+    min-height: fit-content;
+  }
+  .signup-form .data-outer {
+    min-height: fit-content;
+    flex-direction: column;
+  }
+  .data-outer .data-div-2 {
+    width: 100%;
+  }
+}
+
 /* <<------------------ css loader --------------------->> */
 
 .loader {

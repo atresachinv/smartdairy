@@ -8,6 +8,7 @@ const initialState = {
   status: "idle",
   updateStatus: "idle",
   centerStatus: "idle",
+  cupdateStatus: "idle",
   error: null,
 };
 
@@ -35,6 +36,28 @@ export const updateDairySettings = createAsyncThunk(
       const response = await axiosInstance.post("/center/update-setting", data);
       if (response.data.success) {
         toast.success("Update SuccessFully");
+      }
+      return response.data;
+    } catch (error) {
+      const errorMessage = error.response
+        ? error.response.data
+        : "Failed to update dairy settings.";
+      return rejectWithValue(errorMessage);
+    }
+  }
+);
+
+// Update dairy center settings
+export const updateDairySetup = createAsyncThunk(
+  "dairySettings/updateDairySetup",
+  async (formData, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.post(
+        "/center/update/setting",
+        formData
+      );
+      if (response.data.success) {
+        toast.success("Dairy setting update SuccessFully");
       }
       return response.data;
     } catch (error) {
@@ -101,6 +124,18 @@ const dairySettingSlice = createSlice({
       })
       .addCase(getCenterSetting.rejected, (state, action) => {
         state.centerStatus = "failed";
+        state.error = action.payload;
+      })
+      .addCase(updateDairySetup.pending, (state) => {
+        state.cupdateStatus = "loading";
+        state.error = null;
+      })
+      .addCase(updateDairySetup.fulfilled, (state, action) => {
+        state.cupdateStatus = "succeeded";
+        state.centerSetting = action.payload;
+      })
+      .addCase(updateDairySetup.rejected, (state, action) => {
+        state.cupdateStatus = "failed";
         state.error = action.payload;
       });
   },

@@ -405,7 +405,7 @@ const CustomerMilkTransfer = () => {
               </button>
             </div>
           </form>
-          <div className="cutsomer-details w45 h1 d-flex-col ">
+          <div className="cutsomer-details w45 h1 d-flex-col">
             <div className="to-customer-details-container w100 h50 d-flex a-center sb">
               <label htmlFor="updatecode" className="label-text ">
                 Customer

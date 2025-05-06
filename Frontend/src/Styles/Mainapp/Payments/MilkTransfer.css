@@ -10,25 +10,30 @@
 @media screen and (max-width: 426px) {
   .milk-collection-data-container {
     flex-direction: column;
-    min-height: fit-content;
+    min-height: auto;
     padding: 10px;
   }
   .view-milk-collection-container .customer-details-container {
     flex-direction: column;
-    min-height: 30%;
+    min-height: fit-content;
     padding: 0 10px;
   }
   .customer-details-container .from-cutsomer-details {
     width: 100%;
-    min-height: 60%;
+    min-height: fit-content;
     margin-bottom: 10px;
   }
   .cutsomer-detail .to-customer-details-container input {
     margin: 0;
   }
+  .customer-details-container .from-customer-details-container,
+  .customer-details-container .date-container {
+    margin-bottom: 10px;
+  }
+
   .customer-details-container .cutsomer-details {
     width: 100%;
-    min-height: 30%;
+    min-height: fit-content;
   }
   .milk-collection-data-container .morning-milk-collection-data,
   .milk-collection-data-container .evening-milk-collection-data {

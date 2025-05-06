@@ -8,35 +8,35 @@ import { NavLink } from "react-router-dom";
 const MilkTransferNavlinks = ({ isselected, setIsSelected }) => {
   const milkNavlinks = [
     {
-      name: "Transfer To Customer",
+      name: "Customer To Cust",
       path: "to-customer",
       icon: <BiTransfer className="icon" />,
       index: 0,
       role: ["super_admin", "admin", "manager"],
     },
     {
-      name: "Transfer To Date",
+      name: "Date To Date",
       path: "to-date",
       icon: <GrDocumentTransfer className="icon" />,
       index: 1,
       role: ["super_admin", "admin", "manager"],
     },
     {
-      name: "Transfer To Shift",
+      name: "Shift To Shift",
       path: "to-shift",
       icon: <GrDocumentTransfer className="icon" />,
       index: 2,
       role: ["super_admin", "admin", "manager"],
     },
     {
-      name: "Copy Paste ",
+      name: "Copy Paste",
       path: "copy-paste",
       icon: <MdContentCopy className="icon" />,
       index: 3,
       role: ["super_admin", "admin", "manager"],
     },
     {
-      name: "Delete Collection",
+      name: "Delete",
       path: "delete-collection",
       icon: <RiDeleteBin6Line className="icon" />,
       index: 4,
@@ -57,7 +57,7 @@ const MilkTransferNavlinks = ({ isselected, setIsSelected }) => {
           }}
         >
           <NavLink to={button.path} className={"sub-navlinks f-label-text"}>
-            {button.icon}
+            <span className="nav-icons">{button.icon}</span>
             <span>{button.name}</span>
           </NavLink>
         </li>
