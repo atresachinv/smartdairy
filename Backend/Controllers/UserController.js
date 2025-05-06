@@ -189,9 +189,9 @@ exports.userRegister = async (req, res) => {
           connection,
           `
           INSERT INTO users 
-          (username, password, designation, isAdmin, SocietyCode) 
-          VALUES (?, ?, ?, ?, ?)`,
-          [user_name, hashedPassword, "Admin", "1", newSocietyCode]
+          (username, password, designation, isAdmin, mobile, SocietyCode) 
+          VALUES (?, ?, ?, ?, ?, ?)`,
+          [user_name, hashedPassword, "Admin", "1", user_phone, newSocietyCode]
         );
 
         //  Create Milk Entry Table

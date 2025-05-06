@@ -10,11 +10,14 @@ import {
   saveMilkEntry,
 } from "../../../../../App/Features/Mainapp/Milksales/milkSalesSlice";
 import "../../../../../Styles/Mainapp/Apphome/Appnavview/MilkSales.css";
+import { getCenterSetting } from "../../../../../App/Features/Mainapp/Settings/dairySettingSlice";
 
 const Milksales = ({ switchToSettings }) => {
   const dispatch = useDispatch();
   const { t } = useTranslation(["milkcollection", "msales", "common"]);
-
+  const milkRate = useSelector(
+    (state) => state.dairySetting.centerSetting[0].milkRate
+  );
   const tDate = useSelector((state) => state.date.toDate);
   const retailCustomers = useSelector((state) => state.milksales.customers);
   // const token = useSelector((state) => state.notify.fcmToken);
@@ -54,6 +57,7 @@ const Milksales = ({ switchToSettings }) => {
 
   useEffect(() => {
     dispatch(getretailCustomer());
+    dispatch(getCenterSetting());
   }, []);
 
   const handleInputs = (e) => {
@@ -66,7 +70,7 @@ const Milksales = ({ switchToSettings }) => {
     const { name, value } = e.target;
     const { liters } = values;
     const parsedLiters = parseFloat(liters) || 0; // Ensure valid number
-    const amount = parsedLiters * 40;
+    const amount = parsedLiters * milkRate;
 
     setValues((prevValues) => {
       const updatedValues = {
@@ -100,10 +104,10 @@ const Milksales = ({ switchToSettings }) => {
     try {
       const { liters } = values;
       const parsedLiters = parseFloat(liters);
-      const amount = parsedLiters * 40;
+      const amount = parsedLiters * milkRate;
       setValues((prev) => ({
         ...prev,
-        rate: 40,
+        rate: milkRate,
         amt: amount.toFixed(2),
       }));
     } catch (error) {

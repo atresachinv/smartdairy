@@ -1,0 +1,34 @@
+@media screen and (max-width: 426px) {
+  .sanstha-setup-container {
+    min-height: auto;
+  }
+  .sanstha-setup-container .dairy-setup-inner-container {
+    flex-direction: column;
+    min-height: fit-content;
+    padding: 0;
+  }
+  .dairy-setup-inner-container .dairy-setup-form {
+    width: 100%;
+    flex-direction: row;
+    margin: 5px 0;
+  }
+  .dairy-setup-form label {
+    width: 65%;
+  }
+  .dairy-setup-form .printer-txt {
+    width: 40%;
+  }
+  .dairy-setup-form input {
+    width: 30%;
+  }
+  .dairy-setup-form select {
+    width: 55%;
+  }
+  .dairy-setup-inner-container .sms-setting-container {
+    min-height: fit-content;
+  }
+  .sms-setting-container .option-setting-container {
+    flex-wrap: nowrap;
+    flex-direction: column;
+  }
+}

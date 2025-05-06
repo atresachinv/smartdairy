@@ -236,7 +236,7 @@ exports.deleteSelectedMilkRecord = async (req, res) => {
       const placeholders = records.map(() => "?").join(", ");
 
       const updateRecordQuery = `
-        DELETE FROM ${dairy_table}
+        UPDATE ${dairy_table} SET isDeleted = 1
         WHERE id IN (${placeholders})
       `;
 

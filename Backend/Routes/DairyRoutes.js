@@ -26,6 +26,7 @@ const {
   fetchDairyInitInfo,
   sendOTPMessage,
   saveOTP,
+  updateCenterSetup,
 } = require("../Controllers/DairyController");
 const { verifyOtp } = require("../Controllers/UserController");
 const router = express.Router();
@@ -49,6 +50,7 @@ router.route("/update/user/password").post(verifyOtp); //verify otp
 router.route("/center/setting").post(verifyToken, getCenterSetting);
 router.route("/center/setting/one").post(verifyToken, getOneCenterSetting);
 router.route("/center/update-setting").post(verifyToken, updateCenterSetting);
+router.route("/center/update/setting").post(verifyToken, updateCenterSetup);
 // Dashboard data display routes -------------------------------------------------------------------->
 router
   .route("/dashboard/centers-data")

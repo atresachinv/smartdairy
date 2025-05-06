@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { useDispatch, useSelector } from "react-redux";
 import { listCustomer } from "../../../../../App/Features/Customers/customerSlice";
-import { transferTODate } from "../../../../../App/Features/Payments/paymentSlice";
+import { getPayMasters, transferTODate } from "../../../../../App/Features/Payments/paymentSlice";
 import { selectPaymasters } from "../../../../../App/Features/Payments/paymentSelectors";
 
 const DateMilkTransfer = () => {
@@ -224,7 +224,7 @@ const DateMilkTransfer = () => {
       onSubmit={handleMilkTransferToShift}
       className="shift-wise-milk-transfer-container w100 h1 d-flex-col a-center "
     >
-      <span className="heading p10">Transfer Shift Wise Milk Collection</span>
+      <span className="heading p10">Transfer Date Wise Milk Collection</span>
       <div className="milk-date-transfer-container w50 h90 d-flex-col sa bg p10">
         <span className="sub-heading t-center">From This Date</span>
         <div className="transfer-dates-container w100 h40 d-flex-col sa bg3 br6 p10">

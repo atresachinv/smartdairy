@@ -28,10 +28,6 @@ const PaymentPages = () => {
         return (
           <PaymentSummary setCurrentPage={setCurrentPage} showbtn={true} />
         );
-      case "upass":
-        return (
-          <UpdatePassword setCurrentPage={setCurrentPage} showbtn={true} />
-        );
       case "main":
       default:
         return <Payments setCurrentPage={setCurrentPage} />;

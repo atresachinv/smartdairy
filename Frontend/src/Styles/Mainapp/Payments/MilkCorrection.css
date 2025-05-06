@@ -119,6 +119,21 @@
     width: 40%;
     margin-bottom: 10px;
   }
+  .home-nav-item {
+    width: fit-content;
+  }
+  .home-nav-item .sub-navlinks .nav-icons {
+    display: none;
+  }
+  .home-nav-item .sub-navlinks span {
+    /* font-size: 12px; */
+    display: block;
+  }
+  .milk-correction-navlinks-conatainer {
+    overflow-x: auto;
+    white-space: nowrap;
+    min-width: 100%;
+  }
 }
 
 /* Milk correction css end */

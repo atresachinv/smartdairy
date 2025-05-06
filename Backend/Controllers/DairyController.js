@@ -1422,6 +1422,144 @@ exports.updateCenterSetting = (req, res) => {
   });
 };
 
+//-------------------------------------------------------------------------------------------------------->
+// center wise setting create or update (shubham) -------------------------------------------------------->
+//-------------------------------------------------------------------------------------------------------->
+
+exports.updateCenterSetup = (req, res) => {
+  const { dairy_id, user_id } = req.user;
+  const formData = req.body;
+  const currentDate = new Date().toISOString().slice(0, 10);
+
+  const {
+    id,
+    center_id,
+    billDays,
+    minPayment,
+    milkRate,
+    pType,
+    vSalesms,
+    millcoll,
+    printmilKcoll,
+    salesms,
+    printSales,
+    vMillcoll,
+    cmillcoll,
+    noRatesms,
+  } = formData;
+
+  const parsedMinPayment = parseFloat(minPayment) || 0.0;
+  const parsedMilkRate = parseFloat(milkRate) || 0.0;
+
+  pool.getConnection((err, connection) => {
+    if (err) {
+      console.error("Error getting MySQL connection: ", err);
+      return res.status(500).json({
+        status: 500,
+        success: false,
+        message: "Database connection error",
+      });
+    }
+
+    if (id) {
+      const updateQuery = `
+        UPDATE setting_Master 
+        SET  pType = ?, salesms = ?, printSales = ?, vSalesms = ?, millcoll = ?, printmilKcoll = ?, vMillcoll = ?,
+         cmillcoll = ?, noRatesms = ?, billDays =?, minPayment =?, milkRate = ? , updatedBy = ?, updatedDate = ?
+        WHERE id = ?
+      `;
+
+      connection.query(
+        updateQuery,
+        [
+          pType,
+          salesms,
+          printSales,
+          vSalesms,
+          millcoll,
+          printmilKcoll,
+          vMillcoll,
+          cmillcoll,
+          noRatesms,
+          billDays,
+          parsedMinPayment,
+          parsedMilkRate,
+          user_id,
+          currentDate,
+          id,
+        ],
+        (err, results) => {
+          connection.release();
+
+          if (err) {
+            console.error("Error executing update query: ", err);
+            return res.status(500).json({
+              status: 500,
+              success: false,
+              message: "Error updating settings",
+            });
+          }
+
+          return res.status(200).json({
+            status: 200,
+            success: true,
+            message:
+              results.affectedRows > 0
+                ? "Settings updated successfully"
+                : "No changes made",
+          });
+        }
+      );
+    } else {
+      const insertQuery = `
+    INSERT INTO setting_Master 
+    (center_id, dairy_id, millcoll, printmilKcoll, vMillcoll, pType, salesms, printSales, vSalesms, cmillcoll,
+     noRatesms, billDays, minPayment, milkRate, updatedBy, updatedDate)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `;
+
+      const insertValues = [
+        center_id,
+        dairy_id,
+        millcoll,
+        printmilKcoll,
+        vMillcoll,
+        pType,
+        salesms,
+        printSales,
+        vSalesms,
+        cmillcoll,
+        noRatesms,
+        billDays,
+        parsedMinPayment,
+        parsedMilkRate,
+        user_id,
+        currentDate,
+      ];
+
+      connection.query(insertQuery, insertValues, (err, results) => {
+        connection.release();
+
+        if (err) {
+          console.error("Error executing insert query: ", err);
+          return res.status(500).json({
+            status: 500,
+            success: false,
+            message: "Error inserting settings",
+          });
+        }
+
+        return res.status(200).json({
+          status: 200,
+          success: true,
+          message: "Settings inserted successfully",
+          insertedData: results,
+        });
+      });
+    }
+  });
+};
+
 // <<<<<<<<<----------------------------- Sangha ---------------------------->>>>>>>>>>>>
 
 //-------------------------------------------------------------------------------------------------------->

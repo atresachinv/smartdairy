@@ -5,7 +5,7 @@ import { IoMdEye, IoMdEyeOff } from "react-icons/io";
 import { toast } from "react-toastify";
 import { uUserPassword } from "../../../App/Features/Users/authSlice";
 
-const UpdatePassword = ({ showbtn, setCurrentPage, switchToLogin }) => {
+const UpdatePassword = ({switchToLogin }) => {
   const dispatch = useDispatch();
   const userMobile = useSelector((state) => state.users.userInfo.userMobile);
   const status = useSelector((state) => state.users.upassstatus);
@@ -87,6 +87,13 @@ const UpdatePassword = ({ showbtn, setCurrentPage, switchToLogin }) => {
       })
     ).unwrap();
     if (res?.status === 200) {
+      dispatch(
+        saveOtptext({
+          username: userMobile.username,
+          mobile: userMobile.mobile,
+          otp: 0,
+        })
+      );
       switchToLogin();
     } else {
       toast.error("Failed to update password, try again!");
@@ -96,19 +103,6 @@ const UpdatePassword = ({ showbtn, setCurrentPage, switchToLogin }) => {
   return (
     <div className="update-password w80 h90 d-flex-col">
       <span className="heading t-center">Update New Password</span>
-      <div className="title-back-btn-container w100 h10 d-flex a-center sb">
-        <span className="heading py10">Lock / Unlock Payments :</span>
-        {showbtn ? (
-          <button
-            className="btn-danger mx10"
-            onClick={() => setCurrentPage("main")}
-          >
-            बाहेर पडा
-          </button>
-        ) : (
-          ""
-        )}
-      </div>
       <form
         className="login-form w100 h50 d-flex-col"
         onSubmit={updatePassword}

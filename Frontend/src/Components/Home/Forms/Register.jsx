@@ -293,7 +293,7 @@ const Register = ({ switchToLogin }) => {
         className="signup-form w100 d-flex-col align-center p10"
       >
         <span className="title t-center">Register Now</span>
-        <div className="data-div w100">
+        <div className="data-div w100 h10">
           <label htmlFor="dairy_name" className="text">
             Enter Dairy Name <span className="req">*</span>{" "}
           </label>
@@ -318,7 +318,7 @@ const Register = ({ switchToLogin }) => {
             </span>
           )}
         </div>
-        <div className="data-div w100">
+        <div className="data-div w100 h10">
           <label htmlFor="m-name" className="text">
             Marathi Dairy Name <span className="req">*</span>
           </label>
@@ -336,7 +336,7 @@ const Register = ({ switchToLogin }) => {
             <span className="error-message">Invalid marathi name.</span>
           )}
         </div>
-        <div className="data-outer w100 d-flex sb">
+        <div className="data-outer w100 h10 d-flex sb">
           <div className="data-div-2">
             <label htmlFor="user_name" className="text">
               Enter Username <span className="req">*</span>
@@ -385,7 +385,7 @@ const Register = ({ switchToLogin }) => {
         </div>
 
         {/* City and Pincode */}
-        <div className="data-outer w100 d-flex sb">
+        <div className="data-outer w100 h10 d-flex sb">
           {/* City */}
           <div className="data-div-2">
             <label htmlFor="user_city" className="text">
@@ -428,7 +428,7 @@ const Register = ({ switchToLogin }) => {
         </div>
 
         {/* Password and Confirm Password */}
-        <div className="data-outer w100 d-flex sb">
+        <div className="data-outer w100 h10 d-flex sb">
           {/* Password */}
           <div className="data-div-2">
             <label htmlFor="user_password" className="text">

@@ -493,9 +493,7 @@ exports.milkCollectionOneEntry = async (req, res) => {
     allow,
   } = req.body;
 
-  const dairy_id = req.user.dairy_id;
-  const user_role = req.user.user_role;
-  const center_id = req.user.center_id;
+  const { dairy_id, center_id, user_role } = req.user;
 
   if (
     !date ||
@@ -2601,6 +2599,32 @@ exports.centerReMilkReports = async (req, res) => {
 //     try {
 //       const dairyMilkSummary = `
 //         SELECT * from ${dairy_table} WHERE ReceiptDate = ? `;
+//     } catch (error) {
+//       connection.release();
+//       console.error("Error processing request: ", error);
+//       return res.status(500).json({ message: "Internal server error" });
+//     }
+//   });
+// };
+
+// ----------------------------------------------------------------------------------------------->
+// Upload milk collection from excel or csv file ------------------------------------------------->
+// ----------------------------------------------------------------------------------------------->
+// exports.uploadMilkCollection = async (req, res) => {
+//   const { dairy_id, center_id } = req.user;
+//   const { exceldata } = req.body;
+//   if (!dairy_id) {
+//     return res.status(401).json({ staus: 401, message: "Unauthorized User!" });
+//   }
+//   const dairy_table = `dailymilkentry_${dairy_id}`;
+//   pool.getConnection((err, connection) => {
+//     if (err) {
+//       console.error("Error getting MySQL connection: ", err);
+//       return res.status(500).json({ message: "Database connection error" });
+//     }
+//     try {
+//       const dairyMilkSummary = `
+//         INSERT INTO ${dairy_table} () VALUES () `;
 //     } catch (error) {
 //       connection.release();
 //       console.error("Error processing request: ", error);
