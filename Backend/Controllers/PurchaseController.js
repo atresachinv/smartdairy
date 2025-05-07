@@ -316,65 +316,6 @@ exports.allPaymentDetails = async (req, res) => {
 //Payment Deduction Admin Route ----------------------------------------->
 //----------------------------------------------------------------------->
 
-// exports.paymentDeductionInfo = async (req, res) => {
-//   const { fromDate, toDate } = req.body;
-//   console.log(`deduction function`);
-//
-//   pool.getConnection((err, connection) => {
-//     if (err) {
-//       console.error("Error getting MySQL connection: ", err);
-//       return res.status(500).json({ message: "Database connection error" });
-//     }
-//
-//     try {
-//       const dairy_id = req.user.dairy_id;
-//       const center_id = req.user.center_id;
-//
-//       if (!dairy_id) {
-//         return res.status(400).json({ message: "Dairy ID not found!" });
-//       }
-//
-//       const deductionInfo = `
-//         SELECT BillNo, AccCode, Code, dname, DeductionId, AMT, pamt, namt , damt, tliters
-//         FROM custbilldetails
-//         WHERE companyid = ? AND center_id = ? AND ToDate BETWEEN ? AND ?
-//       `;
-//       // WHERE companyid = ? AND center_id = ? AND ToDate BETWEEN ? AND ? AND  DeductionId <> 0
-//       connection.query(
-//         deductionInfo,
-//         [dairy_id, center_id, fromDate, toDate],
-//         (err, result) => {
-//           connection.release();
-//           if (err) {
-//             console.error("Error executing query: ", err);
-//             return res.status(500).json({ message: "Query execution error" });
-//           }
-//
-//           if (result.length === 0) {
-//             return res.status(404).json({ message: "No records found!" });
-//           }
-//
-//           // Filter the main deduction (Deductionid "0") and additional deductions (based on dname)
-//           // const mainDeduction = result.find((item) => item.DeductionId === 0);
-//           // const additionalDeductions = result.filter(
-//           //   (item) => item.DeductionId !== 0
-//           // );
-//
-//           // Send the response with separated data
-//           res.status(200).json({
-//             // mainDeduction: mainDeduction || null,
-//             // otherDeductions: additionalDeductions || [],
-//             AllDeductions: result,
-//           });
-//         }
-//       );
-//     } catch (error) {
-//       console.error("Error processing request: ", error);
-//       return res.status(500).json({ message: "Internal server error" });
-//     }
-//   });
-// };
-
 exports.paymentDeductionInfo = async (req, res) => {
   const { fromDate, toDate } = req.body;
 
@@ -393,7 +334,7 @@ exports.paymentDeductionInfo = async (req, res) => {
   }
 
   const query = `
-    SELECT id , ToDate, BillNo, AccCode, Code, dname, DeductionId, AMT, pamt, namt, damt, tliters
+    SELECT id , ToDate, BillNo, AccCode, Code, dname, DeductionId, AMT, arate, pamt, namt, damt, tliters
     FROM custbilldetails
     WHERE companyid = ? AND center_id = ? AND FromDate = ? AND ToDate = ? 
     ORDER BY Code ASC
