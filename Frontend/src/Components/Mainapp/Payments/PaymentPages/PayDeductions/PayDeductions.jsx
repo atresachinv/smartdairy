@@ -6,7 +6,6 @@ import { use } from "react";
 import { listSubLedger } from "../../../../../App/Features/Mainapp/Masters/ledgerSlice";
 import { getDeductionDetails } from "../../../../../App/Features/Deduction/deductionSlice";
 import {
-  fetchLastMAMT,
   fetchPaymentDetails,
   getPayMasters,
   saveOtherDeductions,
@@ -617,16 +616,7 @@ const PayDeductions = ({ showbtn, setCurrentPage }) => {
                 <button className="btn" onClick={handlePrev}>
                   <BsChevronDoubleLeft className="icon " />
                 </button>
-                {/* <input
-                  className="data w45 t-center mx5"
-                  type="number"
-                  value={currentIndex || ""}
-                  name="code"
-                  placeholder="code"
-                  onChange={handleInputChange}
-                  onKeyDown={handleKeyDown}
-                /> */}
-
+                
                 <input
                   className="data w45 t-center mx5"
                   type="number"

@@ -38,6 +38,9 @@ const Payments = ({ setCurrentPage }) => {
   const leastPayamt = useSelector(
     (state) => state.dairySetting.centerSetting[0].minPayment
   );
+  const master = useSelector(
+    (state) => state.dairySetting.centerSetting[0].billDays
+  );
   const payMasters = useSelector(selectPaymasters); // is payment lock
   const payData = useSelector((state) => state.payment.paymentData); // milk collection amount
   const payDetails = useSelector((state) => state.payment.paymentDetails);
@@ -117,7 +120,7 @@ const Payments = ({ setCurrentPage }) => {
     return `${yyyy}-${mm}-${dd}`;
   }
 
-  const master = 10; // to set master days ---------------------------------->
+  // const master = 10; // to set master days ---------------------------------->
 
   useEffect(() => {
     const toDate = calculateToDate(formData.fromDate, master);
@@ -359,14 +362,14 @@ const Payments = ({ setCurrentPage }) => {
           if (remainingAmt - deduAmt < leastPayamt) {
             deduAmt = +(remainingAmt - leastPayamt).toFixed(2);
           }
-          console.log(deduAmt, "deduAmt");
+          // console.log(deduAmt, "deduAmt");
           if (deduAmt <= 0) continue;
 
           totalDeduction += deduAmt;
           remainingAmt -= deduAmt;
 
           let BAmt = +(currAmt - deduAmt).toFixed(2);
-          console.log("BAmt", BAmt);
+          // console.log("BAmt", BAmt);
 
           deductionEntries.push({
             DeductionId: deduction.DeductionId,

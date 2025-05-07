@@ -13,10 +13,12 @@ const PaymentRegister = ({ showbtn, setCurrentPage }) => {
   const [toDate, setToDate] = useState("");
   const [filteredData, setFilteredData] = useState([]);
   const [dnames, setDnames] = useState([]);
-  const [groupedData, setGroupedData] = useState([]);
+  const [processedDeductions, setProcessedDeductions] = useState([]);
   const [mergedData, setMergedData] = useState([]);
   const tableRef = useRef(null);
-  const deduction = useSelector((state) => state.deduction.alldeductionInfo);
+  const allDeductions = useSelector(
+    (state) => state.deduction.alldeductionInfo
+  );
   const customerlist = useSelector((state) => state.customer.customerlist);
   const [showCustomerwiseDateFilter, setShowCustomerwiseDateFilter] =
     useState(true);
@@ -55,150 +57,7 @@ const PaymentRegister = ({ showbtn, setCurrentPage }) => {
     }
   };
 
-  // Fetch data on date change
-  useEffect(() => {
-    if (fromDate && toDate) {
-      dispatch(getPaymentsDeductionInfo({ fromDate, toDate }));
-    }
-  }, [dispatch, fromDate, toDate]);
-
-  // Merge customer names into deduction records
-  useEffect(() => {
-    if (deduction.length > 0 && customerlist.length > 0) {
-      const updatedData = deduction.map((deductionItem) => {
-        const matchingCustomer = customerlist.find(
-          (customer) => String(customer.cid) === String(deductionItem.AccCode)
-        );
-        return {
-          ...deductionItem,
-          customerName: matchingCustomer?.cname || "Unknown",
-          Code: matchingCustomer?.srno || "Unknown",
-          Arate: matchingCustomer?.arate || "Unknown",
-        };
-      });
-      setMergedData(updatedData);
-    }
-  }, [deduction, customerlist]);
-
-  // Group and summarize data
-  useEffect(() => {
-    if (mergedData.length > 0) {
-      const grouped = mergedData.reduce((acc, item) => {
-        const {
-          AMT,
-          dname,
-          DeductionId,
-          tliters,
-          pamt,
-          damt,
-          namt,
-          Code,
-          customerName,
-        } = item;
-
-        if (!acc[Code]) {
-          acc[Code] = {
-            Code,
-            customerName,
-            tliters: 0,
-            pamt: 0,
-            damt: 0,
-            namt: 0,
-            additionalDeductions: {},
-          };
-        }
-
-        acc[Code].tliters += tliters || 0;
-        acc[Code].pamt += pamt || 0;
-        acc[Code].damt += damt || 0;
-        acc[Code].namt += namt || 0;
-
-        if (DeductionId !== 0) {
-          if (!acc[Code].additionalDeductions[dname]) {
-            acc[Code].additionalDeductions[dname] = 0;
-          }
-          acc[Code].additionalDeductions[dname] += AMT || 0;
-        }
-
-        return acc;
-      }, {});
-
-      const groupedArray = Object.values(grouped);
-      setGroupedData(groupedArray);
-
-      const allDnames = new Set();
-      groupedArray.forEach((item) =>
-        Object.keys(item.additionalDeductions).forEach((dname) =>
-          allDnames.add(dname)
-        )
-      );
-      setDnames([...allDnames]);
-    }
-  }, [mergedData]);
-
-  // Filter data by code (with the 'Codewise' filter)
-  useEffect(() => {
-    const filtered = groupedData.filter((data) => {
-      // Apply the code filter only if the "showCustomerwiseDateFilter" is true
-      const isCodeInRange =
-        (fromCode === "" || data.Code >= fromCode) &&
-        (toCode === "" || data.Code <= toCode);
-
-      return showCustomerwiseDateFilter ? isCodeInRange : true; // Only filter by code if enabled
-    });
-    setFilteredData(filtered);
-  }, [fromCode, toCode, groupedData, showCustomerwiseDateFilter]);
-  // filter data by customerwise
-
-  useEffect(() => {
-    const filtered = groupedData.filter((data) => {
-      // Apply the code range filter only if showCustomerwiseDateFilter is true
-      const isCodeInRange =
-        (fromCode === "" || data.Code >= fromCode) &&
-        (toCode === "" || data.Code <= toCode);
-
-      // Apply the customer name filter (if customerName is provided)
-      const isCustomerNameMatch =
-        customerName === "" ||
-        (data.customerName &&
-          data.customerName.toLowerCase().includes(customerName.toLowerCase()));
-
-      // Combine the filters
-      return (
-        (showCustomerwiseDateFilter ? isCodeInRange : true) &&
-        isCustomerNameMatch
-      );
-    });
-
-    // Set the filtered data
-    setFilteredData(filtered);
-  }, [fromCode, toCode, groupedData, showCustomerwiseDateFilter, customerName]);
-
-  // Calculate totals
-  const calculateTotals = () => {
-    const totals = {
-      tliters: 0,
-      pamt: 0,
-      damt: 0,
-      namt: 0,
-      ...Object.fromEntries(dnames.map((name) => [name, 0])),
-    };
-
-    filteredData.forEach((data) => {
-      totals.tliters += data.tliters || 0;
-      totals.pamt += data.pamt || 0;
-      totals.damt += data.damt || 0;
-      totals.namt += data.namt || 0;
-
-      dnames.forEach((name) => {
-        totals[name] += data.additionalDeductions[name] || 0;
-      });
-    });
-
-    return totals;
-  };
-
-  const totals = calculateTotals();
+ 
 
   // Export data to Excel
   const exportToExcel = () => {
@@ -225,14 +84,15 @@ const PaymentRegister = ({ showbtn, setCurrentPage }) => {
     XLSX.writeFile(workbook, "PaymentData.xlsx");
   };
 
-  // Fetch Data Handler
-  const fetchData = () => {
-    if (fromDate && toDate) {
-      dispatch(getPaymentsDeductionInfo({ fromDate, toDate }));
-    } else {
-      alert("Please select a valid date range.");
-    }
-  };
+  // // Fetch Data Handler
+  // const fetchData = () => {
+  //   if (fromDate && toDate) {
+  //     dispatch(getPaymentsDeductionInfo({ fromDate, toDate }));
+  //   } else {
+  //     alert("Please select a valid date range.");
+  //   }
+  // };
+
   const handlePrint = () => {
     if (!tableRef.current) {
       console.error("Table element not found.");
@@ -456,7 +316,7 @@ const PaymentRegister = ({ showbtn, setCurrentPage }) => {
     doc.save("Deduction_Report.pdf");
   };
 
-  const fetchDataa = async () => {
+  const fetchData = async () => {
     setIsLoading(true); // Set loading to true when data fetching starts
     setDataAvailable(true); // Assume data is available initially
 
@@ -464,11 +324,6 @@ const PaymentRegister = ({ showbtn, setCurrentPage }) => {
       // Simulate data fetch (replace this with actual API call)
       if (fromDate && toDate) {
         await dispatch(getPaymentsDeductionInfo({ fromDate, toDate }));
-
-        // After fetching, check if data exists
-        if (!deduction.length) {
-          setDataAvailable(false); // Set to false if no data is found
-        }
       } else {
         alert("Please select a valid date range.");
       }
@@ -479,6 +334,45 @@ const PaymentRegister = ({ showbtn, setCurrentPage }) => {
       setIsLoading(false); // Set loading to false once the fetch is complete
     }
   };
+
+useEffect(() => {
+  if (allDeductions.length > 0 && customerlist.length > 0) {
+    const grouped = {};
+    const dnameSet = new Set(); // To store unique dnames
+
+    allDeductions.forEach((item) => {
+      const code = item.Code;
+
+      if (item.DeductionId === 0) {
+        const customer = customerlist.find((cust) => cust.srno === code);
+        grouped[code] = {
+          ...item,
+          customerName: customer ? customer.cname : "",
+        };
+      } else {
+        if (item.dname && item.AMT !== undefined) {
+          const cleanDname = item.dname.replace(/\s+/g, "_"); // Replace spaces with underscores
+          dnameSet.add(cleanDname); // collect sanitized dnames
+
+          if (!grouped[code]) {
+            grouped[code] = {};
+          }
+
+          grouped[code][cleanDname] = item.AMT; // Add sanitized key
+        }
+      }
+    });
+
+    const finalData = Object.values(grouped);
+    setProcessedDeductions(finalData);
+
+    // Set unique cleaned dnames
+    setDnames(Array.from(dnameSet));
+  }
+}, [allDeductions, customerlist]);
+
+
+
 
   return (
     <div className="payment-register-container w100 h1 d-flex-col ">
@@ -495,9 +389,9 @@ const PaymentRegister = ({ showbtn, setCurrentPage }) => {
           ""
         )}
       </div>
-      <div className="filter-container d-flex-col  w100 h30 bg sa">
+      <div className="filter-container d-flex-col  w100 h30 sa">
         <div className="from-too-date-button-container w100 h30  d-flex">
-          <div className="date-from-toocontainer w60 d-flex h1 sa ">
+          <div className="date-from-toocontainer w60 h50 d-flex sa ">
             <div className="from-date-div-container w30 d-flex h1 a-center ">
               <span className="info-text w40">From:</span>
               <input
@@ -520,7 +414,7 @@ const PaymentRegister = ({ showbtn, setCurrentPage }) => {
             </div>
 
             <div className="report-show-button-div w20 d-flex h1 a-center">
-              <button className="w-btn" onClick={fetchDataa}>
+              <button className="w-btn" onClick={fetchData}>
                 Show
               </button>
             </div>
@@ -640,13 +534,12 @@ const PaymentRegister = ({ showbtn, setCurrentPage }) => {
               </tr>
             </thead>
             <tbody>
-              {filteredData.map((data, index) => (
+              {processedDeductions.map((data, index) => (
                 <tr key={index}>
                   <td>{data.Code}</td>
                   <td>{data.customerName}</td>
-                  {dnames.map((dname) => (
-                    <td key={dname}>{data.additionalDeductions[dname] || 0}</td>
-                  ))}
+                  
+                  <td>{data.Round_Off || 0}</td>
                   <td>{data.tliters}</td>
                   <td>
                     {/* Calculate Average Rate */}
@@ -659,25 +552,6 @@ const PaymentRegister = ({ showbtn, setCurrentPage }) => {
                   <td>{data.namt}</td>
                 </tr>
               ))}
-
-              {/* Totals row below the data */}
-              <tr className="total-row">
-                <td>Total</td>
-                <td></td> {/* Empty for the "Customer Name" column */}
-                <td>{totals.tliters?.toLocaleString()}</td>
-                {dnames.map((dname) => (
-                  <td key={dname}>{totals[dname]?.toLocaleString()}</td>
-                ))}
-                <td>
-                  {/* Total Average Rate */}
-                  {totals.tliters > 0
-                    ? (totals.pamt / totals.tliters).toFixed(2)
-                    : "N/A"}
-                </td>
-                <td>{totals.pamt?.toLocaleString()}</td>
-                <td>{totals.damt?.toLocaleString()}</td>
-                <td>{totals.namt?.toLocaleString()}</td>
-              </tr>
             </tbody>
           </table>
         </div>

@@ -59,6 +59,7 @@ exports.getAllDeductions = async (req, res) => {
     });
   });
 };
+
 exports.getDeductionsDid = async (req, res) => {
   const { dairy_id, center_id } = req.user;
   const { autoCenter } = req.query;
