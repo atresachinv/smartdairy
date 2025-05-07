@@ -1638,7 +1638,6 @@ exports.getMilkPayAmt = async (req, res) => {
 //   });
 // };
 
-
 exports.saveFixDeductions = async (req, res) => {
   const { dairy_id, center_id } = req.user;
   const { formData, PaymentFD } = req.body;
@@ -1710,6 +1709,14 @@ exports.saveFixDeductions = async (req, res) => {
             amt,
             totalamt,
             totalLitres,
+            mrgComm,
+            eveComm,
+            tComm,
+            mrgRebet,
+            eveRebet,
+            tRebet,
+            allComm,
+            transport,
             avgFat,
             avgSnf,
             avgRate,
@@ -1737,6 +1744,14 @@ exports.saveFixDeductions = async (req, res) => {
             MAMT,
             BAMT,
             Number(parseFloat(totalLitres || 0).toFixed(2)),
+            Number(parseFloat(mrgComm || 0).toFixed(2)),
+            Number(parseFloat(eveComm || 0).toFixed(2)),
+            Number(parseFloat(tComm || 0).toFixed(2)),
+            Number(parseFloat(mrgRebet || 0).toFixed(2)),
+            Number(parseFloat(eveRebet || 0).toFixed(2)),
+            Number(parseFloat(tRebet || 0).toFixed(2)),
+            Number(parseFloat(allComm || 0).toFixed(2)),
+            Number(parseFloat(transport || 0).toFixed(2)),
             Number(parseFloat(avgFat || 0).toFixed(1)),
             Number(parseFloat(avgSnf || 0).toFixed(1)),
             Number(parseFloat(avgRate || 0).toFixed(2)),
@@ -1752,7 +1767,8 @@ exports.saveFixDeductions = async (req, res) => {
           INSERT INTO custbilldetails
           (companyid, center_id, CBId, BillNo, BillDate, VoucherNo, VoucherDate,
           GLCode, Code, FromDate, ToDate, dname, DeductionId, Amt, MAMT, BAMT,
-          tliters, afat, asnf, arate, pamt, damt, namt, dtype)
+          tliters, tmor, teve, tcommor, tcomeve, tcom, tcomribetmor, tcomribeteve,
+          tcomribet, allComm, transport, afat, asnf, arate, pamt, damt, namt, dtype)
           VALUES ?
         `;
 

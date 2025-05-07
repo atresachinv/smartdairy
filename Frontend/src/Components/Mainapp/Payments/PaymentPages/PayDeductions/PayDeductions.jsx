@@ -86,7 +86,9 @@ const PayDeductions = ({ showbtn, setCurrentPage }) => {
     netPayment: 0.0,
     minPayAmount: 0.0,
   }); // form data for the payment deduction
+
   // console.log("otherDPayData", allDeductions);
+  // console.log("filteredPayData", filteredPayData);
   // console.log("deductions", deductions);
   // console.log("mergedDeductions", mergedDeductions);
 
@@ -616,7 +618,7 @@ const PayDeductions = ({ showbtn, setCurrentPage }) => {
                 <button className="btn" onClick={handlePrev}>
                   <BsChevronDoubleLeft className="icon " />
                 </button>
-                
+
                 <input
                   className="data w45 t-center mx5"
                   type="number"

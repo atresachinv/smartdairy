@@ -120,6 +120,7 @@ const Payments = ({ setCurrentPage }) => {
     return `${yyyy}-${mm}-${dd}`;
   }
 
+  // console.log("payData", payData);
   // const master = 10; // to set master days ---------------------------------->
 
   useEffect(() => {
@@ -296,6 +297,167 @@ const Payments = ({ setCurrentPage }) => {
 
   // console.log("deductionDetails", deductionDetails);
 
+  // const handleAllDeductions = async () => {
+  //   try {
+  //     const filteredDeductions = deductionDetails.filter(
+  //       (deduction) => deduction.RatePerLitre !== 0
+  //     );
+
+  //     const deductionEntries = [];
+  //     // const leastPayamt = 200;
+
+  //     for (const user of payData) {
+  //       const { rno, cname, totalamt, totalLitres, avgSnf, avgFat } = user;
+  //       let totalDeduction = 0;
+  //       let remainingAmt = totalamt;
+
+  //       // FIXED DEDUCTIONS ----------------------------------------->
+  //       for (const deduction of filteredDeductions) {
+  //         const amt = +(totalLitres * deduction.RatePerLitre).toFixed(2);
+  //         totalDeduction += amt;
+  //         remainingAmt -= amt;
+
+  //         deductionEntries.push({
+  //           DeductionId: deduction.DeductionId,
+  //           GLCode: deduction.GLCode,
+  //           rno,
+  //           dname: deduction.dname,
+  //           amt: amt.toFixed(2),
+  //           cname: "",
+  //           totalamt: 0.0,
+  //           totalLitres: 0.0,
+  //           avgSnf: 0.0,
+  //           avgFat: 0.0,
+  //           avgRate: 0.0,
+  //           totalDeduction: 0.0,
+  //           dtype: 0,
+  //         });
+  //       }
+
+  //       // OTHER DEDUCTIONS ----------------------------------------->
+  //       const otherDeductions = deductionDetails.filter(
+  //         (deduction) => deduction.RatePerLitre === 0
+  //       );
+
+  //       const userDedAmts = dedAmts.filter((item) => item.AccCode === rno);
+  //       const userPrevMamt = prevMamt.filter((item) => item.AccCode === rno);
+  //       // console.log("userDedAmts", userDedAmts);
+  //       // console.log("userPrevMamt", userPrevMamt);
+  //       // console.log(otherDeductions, "otherDeductions");
+  //       for (const deduction of otherDeductions) {
+  //         const matchDedAmt = userDedAmts.find(
+  //           (item) => item.GLCode === deduction.GLCode
+  //         );
+  //         const matchPrevAmt = userPrevMamt.find(
+  //           (item) => item.GLCode === deduction.GLCode
+  //         );
+
+  //         // console.log("matchDedAmt", matchDedAmt);
+  //         // console.log("matchPrevAmt", matchPrevAmt);
+  //         const currAmt = matchDedAmt ? Math.abs(matchDedAmt.totalamt) : 0;
+  //         const prevAmt = matchPrevAmt ? Math.abs(matchPrevAmt.totalamt) : 0;
+  //         // console.log("currAmt", currAmt);
+  //         // console.log("prevAmt", prevAmt);
+  //         let deduAmt = +(currAmt + prevAmt).toFixed(2);
+
+  //         if (remainingAmt - deduAmt < leastPayamt) {
+  //           deduAmt = +(remainingAmt - leastPayamt).toFixed(2);
+  //         }
+  //         // console.log(deduAmt, "deduAmt");
+  //         if (deduAmt <= 0) continue;
+
+  //         totalDeduction += deduAmt;
+  //         remainingAmt -= deduAmt;
+
+  //         let BAmt = +(currAmt - deduAmt).toFixed(2);
+  //         // console.log("BAmt", BAmt);
+
+  //         deductionEntries.push({
+  //           DeductionId: deduction.DeductionId,
+  //           GLCode: deduction.GLCode,
+  //           rno,
+  //           dname: deduction.dname,
+  //           MAMT: prevAmt.toFixed(2),
+  //           BAMT: BAmt.toFixed(2),
+  //           amt: deduAmt.toFixed(2),
+  //           cname: "",
+  //           totalamt: currAmt.toFixed(2),
+  //           totalLitres: 0.0,
+  //           avgSnf: 0.0,
+  //           avgFat: 0.0,
+  //           avgRate: 0.0,
+  //           totalDeduction: 0.0,
+  //           dtype: 1,
+  //         });
+
+  //         if (remainingAmt <= leastPayamt) break;
+  //       }
+
+  //       // Round OFF -------------------------------------------------->
+  //       const roundOffDedu = deductionDetails.find(
+  //         (deduction) => deduction.RatePerLitre === 0 && deduction.GLCode === 2
+  //       );
+
+  //       const flooredAmt = Math.floor(remainingAmt);
+  //       const roundAmt = Math.floor((remainingAmt - flooredAmt) * 100) / 100;
+
+  //       // console.log("roundOffDedu", roundOffDedu);
+  //       // console.log("remainingAmt", remainingAmt);
+  //       // console.log("flooredAmt", flooredAmt);
+  //       // console.log("roundAmt", roundAmt);
+
+  //       if (roundAmt > 0) {
+  //         totalDeduction += roundAmt;
+  //         remainingAmt = flooredAmt;
+
+  //         deductionEntries.push({
+  //           DeductionId: roundOffDedu.DeductionId,
+  //           GLCode: roundOffDedu.GLCode,
+  //           rno,
+  //           dname: roundOffDedu.dname,
+  //           MAMT: 0.0,
+  //           BAMT: 0.0,
+  //           amt: roundAmt.toFixed(2),
+  //           cname: "",
+  //           totalamt: 0.0,
+  //           totalLitres: 0.0,
+  //           avgSnf: 0.0,
+  //           avgFat: 0.0,
+  //           avgRate: 0.0,
+  //           totalDeduction: 0.0,
+  //           dtype: 1,
+  //         });
+  //       }
+  //       // console.log("remainingAmt aftre round off", remainingAmt);
+  //       //  FINAL NET PAYMENT ---------------------------------------------------------->
+  //       const avgRate = totalLitres !== 0 ? totalamt / totalLitres : 0;
+  //       const netPayment = +remainingAmt.toFixed(2);
+
+  //       deductionEntries.push({
+  //         DeductionId: 0,
+  //         GLCode: 28,
+  //         rno,
+  //         dname: "",
+  //         amt: netPayment.toFixed(2),
+  //         cname,
+  //         totalamt: totalamt.toFixed(2),
+  //         totalLitres: totalLitres.toFixed(2),
+  //         avgSnf: avgSnf.toFixed(1),
+  //         avgFat: avgFat.toFixed(1),
+  //         avgRate: avgRate.toFixed(1),
+  //         totalDeduction: totalDeduction.toFixed(2),
+  //         dtype: 2,
+  //       });
+  //     }
+
+  //     return deductionEntries;
+  //   } catch (error) {
+  //     console.error("Error in handleAllDeductions:", error);
+  //     return [];
+  //   }
+  // };
+  //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
   const handleAllDeductions = async () => {
     try {
       const filteredDeductions = deductionDetails.filter(
@@ -306,7 +468,16 @@ const Payments = ({ setCurrentPage }) => {
       // const leastPayamt = 200;
 
       for (const user of payData) {
-        const { rno, cname, totalamt, totalLitres, avgSnf, avgFat } = user;
+        const {
+          rno,
+          cname,
+          totalamt,
+          totalLitres,
+          avgSnf,
+          avgFat,
+          mrgMilk,
+          eveMilk,
+        } = user;
         let totalDeduction = 0;
         let remainingAmt = totalamt;
 
@@ -392,13 +563,32 @@ const Payments = ({ setCurrentPage }) => {
           if (remainingAmt <= leastPayamt) break;
         }
 
+        // get customer total commission ------------------------------------------>
+        // total commission and total rebet --------------------------------------->
+
+        const customer = customerlist.find(
+          (entry) => parseInt(entry.srno, 10) === parseInt(rno)
+        );
+
+        const comm = customer.commission;
+        const rebet = customer.rebet;
+        const mComm = mrgMilk * comm;
+        const eComm = eveMilk * comm;
+        const tComm = mComm + eComm;
+        const mRebet = mrgMilk * rebet;
+        const eRebet = eveMilk * rebet;
+        const tRebet = mRebet + eRebet;
+        const allComm = tComm + tRebet;
+        const transport = customer.transportation;
         // Round OFF -------------------------------------------------->
         const roundOffDedu = deductionDetails.find(
           (deduction) => deduction.RatePerLitre === 0 && deduction.GLCode === 2
         );
 
-        const flooredAmt = Math.floor(remainingAmt);
-        const roundAmt = Math.floor((remainingAmt - flooredAmt) * 100) / 100;
+        const totalPay = (remainingAmt + allComm).toFixed(2);
+
+        const flooredAmt = Math.floor(totalPay);
+        const roundAmt = Math.floor((totalPay - flooredAmt) * 100) / 100;
 
         // console.log("roundOffDedu", roundOffDedu);
         // console.log("remainingAmt", remainingAmt);
@@ -441,6 +631,16 @@ const Payments = ({ setCurrentPage }) => {
           cname,
           totalamt: totalamt.toFixed(2),
           totalLitres: totalLitres.toFixed(2),
+          mrgLitres: mrgMilk.toFixed(2),
+          eveLitres: eveMilk.toFixed(2),
+          mrgComm: mComm.toFixed(2),
+          eveComm: eComm.toFixed(2),
+          tComm: tComm.toFixed(2),
+          mrgRebet: mRebet.toFixed(2),
+          eveRebet: eRebet.toFixed(2),
+          tRebet: tRebet.toFixed(2),
+          allComm: allComm.toFixed(2),
+          transport: transport.toFixed(2),
           avgSnf: avgSnf.toFixed(1),
           avgFat: avgFat.toFixed(1),
           avgRate: avgRate.toFixed(1),
