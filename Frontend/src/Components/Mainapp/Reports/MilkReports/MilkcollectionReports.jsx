@@ -20,6 +20,7 @@ const MilkcollectionReports = () => {
   const data = useSelector((state) => state.milkCollection.allMilkColl);
   const status = useSelector((state) => state.milkCollection.allmilkstatus);
   const manualMaster = useSelector((state) => state.manualMasters.masterlist);
+  const profile = useSelector((state) => state.userinfo.profile)
   const [filteredData, setFilteredData] = useState([]); // data to be displayed in ui
   const [collectionData, setCollectionData] = useState([]);
   const [summaryData, setSummaryData] = useState([]); // data to be displayed in ui for daswada report
@@ -913,7 +914,7 @@ const MilkcollectionReports = () => {
       milkData: filteredMilkData,
     });
   }, [selectedCenterId, summaryData, filteredData]); // Re-run when selectedCenterId or data changes
-
+  //  console.log(centerData);
   return (
     <>
       <div className="Milkcollection-container w100 h1 d-flex-col sb">
@@ -988,35 +989,40 @@ const MilkcollectionReports = () => {
             {isChecked && (
               <div className="heided-conatiner-div w100 h1 d-flex-col sa">
                 <div className="fillter-conditions-div w100 h80 d-flex  a-center  px10 sb">
-                  <div className="centerwisee-data-show w40 h1 d-flex a-center ">
-                    <span className="info-text w20">Center:</span>
-                    <select
-                      className="data w70 my10 "
-                      name="selection"
-                      id="001"
-                      onChange={handleCenterChange}
-                    >
-                      {centerList &&
-                        centerList.length > 0 &&
-                        centerList.map((center, index) => {
-                          if (dairyinfo.center_id === 0) {
-                            return (
-                              <option key={index} value={center.center_id}>
-                                {center.name || center.center_name}
-                              </option>
-                            );
-                          } else if (dairyinfo.center_id === center.center_id) {
-                            return (
-                              <option key={index} value={center.center_id}>
-                                {center.name || center.center_name}
-                              </option>
-                            );
-                          } else {
-                            return null;
-                          }
-                        })}
-                    </select>
-                  </div>
+                  {profile.designation !== "milkcollector" ? (
+                    <div className="centerwisee-data-show w40 h1 d-flex a-center ">
+                      <span className="info-text w20">Center:</span>
+                      <select
+                        className="data w70 my10"
+                        name="selection"
+                        id="001"
+                        onChange={handleCenterChange}
+                      >
+                        {centerList &&
+                          centerList.length > 0 &&
+                          centerList.map((center, index) => {
+                            if (dairyinfo.center_id === 0) {
+                              return (
+                                <option key={index} value={center.center_id}>
+                                  {center.name || center.center_name}
+                                </option>
+                              );
+                            } else if (
+                              dairyinfo.center_id === center.center_id
+                            ) {
+                              return (
+                                <option key={index} value={center.center_id}>
+                                  {center.name || center.center_name}
+                                </option>
+                              );
+                            } else {
+                              return null;
+                            }
+                          })}
+                      </select>
+                    </div>
+                  ) : null}
+
                   <div className="custmoer-number-no w45 h50 d-flex a-center px10 sb">
                     <label htmlFor="code" className="info-text w30">
                       Customer :

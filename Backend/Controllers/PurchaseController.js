@@ -319,7 +319,6 @@ exports.allPaymentDetails = async (req, res) => {
 exports.paymentDeductionInfo = async (req, res) => {
   const { fromDate, toDate } = req.body;
 
-  console.log("dates", fromDate, toDate);
   if (!fromDate || !toDate) {
     return res
       .status(400)

@@ -64,12 +64,12 @@ const DeductionReports = () => {
   };
 
   // Retrieve selected master from localStorage on component mount
-  useEffect(() => {
-    const savedMaster = localStorage.getItem("selectedMaster");
-    if (savedMaster) {
-      setSelectedMaster(JSON.parse(savedMaster));
-    }
-  }, []);
+useEffect(() => {
+  const savedMaster = localStorage.getItem("selectedMaster");
+  if (savedMaster && savedMaster !== "undefined") {
+    setSelectedMaster(JSON.parse(savedMaster));
+  }
+}, []);
 
   //Extract Unique Acc Code and Merge customer names into deduction records ------------->
   useEffect(() => {

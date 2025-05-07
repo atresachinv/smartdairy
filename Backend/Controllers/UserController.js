@@ -740,7 +740,10 @@ exports.getUserProfile = async (req, res) => {
     const user_id = req.user.user_id;
 
     try {
-      const getUserInfo = `SELECT emp_name, emp_mobile, emp_city, emp_tal, emp_dist, designation FROM employeemaster WHERE dairy_id = ? AND center_id = ? AND emp_mobile = ?`;
+      const getUserInfo = `
+      SELECT emp_name, emp_mobile, emp_city, emp_tal,
+       emp_dist, designation FROM employeemaster 
+       WHERE dairy_id = ? AND center_id = ? AND emp_mobile = ?`;
 
       connection.query(
         getUserInfo,
