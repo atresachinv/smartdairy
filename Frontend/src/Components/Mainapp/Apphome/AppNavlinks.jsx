@@ -141,7 +141,7 @@ const AppNavlinks = ({ isselected, setIsSelected }) => {
           onClick={() => setIsSelected(button.path)}
         >
           <NavLink to={button.path} className={"sub-navlinks f-label-text"}>
-            <span>{button.icon}</span>
+            <span className="nav-icon">{button.icon}</span>
             {button.name}
           </NavLink>
 

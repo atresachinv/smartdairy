@@ -1,7 +1,6 @@
-const jwt = require("jsonwebtoken");
+const util = require("util");
 const dotenv = require("dotenv");
 const pool = require("../Configs/Database");
-const { current } = require("@reduxjs/toolkit");
 dotenv.config({ path: "Backend/.env" });
 
 //-----------------------------MILK CORRECTION FUNCTIONS------------------------------//
@@ -1460,16 +1459,193 @@ exports.getMilkPayAmt = async (req, res) => {
 // if autodeduction save all  deduction with total entry ----------------------------->
 //------------------------------------------------------------------------------------>
 
-exports.saveFixDeductions = (req, res) => {
+// exports.saveFixDeductions = (req, res) => {
+//   const { dairy_id, center_id } = req.user;
+//   const { formData, PaymentFD } = req.body;
+//   const { billDate, vcDate, fromDate, toDate } = formData;
+
+//   // Validate required fields
+//   if (!dairy_id) {
+//     return res
+//       .status(401)
+//       .json({ status: 401, message: "Dairy ID or center ID missing!" });
+//   }
+//   if (!fromDate || !toDate) {
+//     return res
+//       .status(400)
+//       .json({ status: 400, message: "fromDate and toDate are required!" });
+//   }
+//   if (!Array.isArray(PaymentFD) || PaymentFD.length === 0) {
+//     return res
+//       .status(400)
+//       .json({ status: 400, message: "No payment data provided!" });
+//   }
+
+//   pool.getConnection((err, connection) => {
+//     if (err) {
+//       console.error("Connection error:", err);
+//       return res
+//         .status(500)
+//         .json({ status: 500, message: "Database connection failed!" });
+//     }
+
+//     connection.beginTransaction((err) => {
+//       if (err) {
+//         connection.release();
+//         return res
+//           .status(500)
+//           .json({ status: 500, message: "Failed to start transaction!" });
+//       }
+
+//       const query = `
+//         SELECT MAX(CAST(BillNo AS UNSIGNED)) AS maxBillNo
+//         FROM custbilldetails
+//         WHERE companyid = ? AND center_id = ?
+//       `;
+//       connection.query(query, [dairy_id, center_id], (err, billRows) => {
+//         if (err) {
+//           return connection.rollback(() => {
+//             connection.release();
+//             return res
+//               .status(500)
+//               .json({ status: 500, message: "Failed to fetch bill number!" });
+//           });
+//         }
+
+//         let billCounter = billRows[0].maxBillNo
+//           ? parseInt(billRows[0].maxBillNo)
+//           : 0;
+
+//         // Group PaymentFD by rno
+//         const groupedByRno = PaymentFD.reduce((acc, row) => {
+//           const rno = row.rno || "no_rno"; // Use a fallback key if rno is undefined
+//           if (!acc[rno]) {
+//             acc[rno] = [];
+//           }
+//           acc[rno].push(row);
+//           return acc;
+//         }, {});
+
+//         // Process each group
+//         const rnoKeys = Object.keys(groupedByRno);
+//         const processNextGroup = (groupIndex) => {
+//           if (groupIndex >= rnoKeys.length) {
+//             // All groups processed; commit the transaction
+//             return connection.commit((commitErr) => {
+//               connection.release();
+//               if (commitErr) {
+//                 console.error("Commit error:", commitErr);
+//                 return res.status(500).json({
+//                   status: 500,
+//                   message: "Failed to commit transaction!",
+//                 });
+//               }
+//               return res.status(200).json({
+//                 status: 200,
+//                 message: "Deductions saved successfully.",
+//               });
+//             });
+//           }
+
+//           // Assign a new bill number for the current group
+//           billCounter++;
+//           const billNo = billCounter.toString().padStart(4, "0");
+//           const groupRows = groupedByRno[rnoKeys[groupIndex]];
+
+//           // Insert each record in the group
+//           const insertNextRecord = (recIndex) => {
+//             if (recIndex >= groupRows.length) {
+//               // Group finished; process next group
+//               return processNextGroup(groupIndex + 1);
+//             }
+
+//             const row = groupRows[recIndex];
+//             const {
+//               GLCode,
+//               DeductionId,
+//               dname,
+//               amt,
+//               totalamt,
+//               totalLitres,
+//               avgFat,
+//               avgSnf,
+//               avgRate,
+//               totalDeduction,
+//               MAMT,
+//               BAMT,
+//               dtype,
+//             } = row;
+
+//             const insertQuery = `
+//               INSERT INTO custbilldetails
+//               (companyid, center_id, CBId, BillNo, BillDate, VoucherNo, VoucherDate,
+//                GLCode, Code, FromDate, ToDate, dname, DeductionId, Amt, MAMT, BAMT,
+//                tliters, afat, asnf, arate, pamt, damt, namt, dtype)
+//               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+//             `;
+
+//             const values = [
+//               dairy_id,
+//               center_id,
+//               0,
+//               billNo,
+//               billDate,
+//               billNo,
+//               vcDate,
+//               GLCode || null,
+//               row.rno !== undefined ? row.rno : null,
+//               fromDate,
+//               toDate,
+//               dname || null,
+//               DeductionId,
+//               Number(parseFloat(amt || 0).toFixed(2)),
+//               MAMT,
+//               BAMT,
+//               Number(parseFloat(totalLitres || 0).toFixed(2)),
+//               Number(parseFloat(avgFat || 0).toFixed(1)),
+//               Number(parseFloat(avgSnf || 0).toFixed(1)),
+//               Number(parseFloat(avgRate || 0).toFixed(2)),
+//               Number(parseFloat(totalamt || 0).toFixed(2)),
+//               Number(parseFloat(totalDeduction || 0).toFixed(2)),
+//               Number(parseFloat(amt || 0).toFixed(2)),
+//               dtype,
+//             ];
+
+//             connection.query(insertQuery, values, (err, results) => {
+//               if (err) {
+//                 return connection.rollback(() => {
+//                   connection.release();
+//                   console.error("Insert error:", err);
+//                   return res.status(500).json({
+//                     status: 500,
+//                     message: "Failed to insert deduction data!",
+//                   });
+//                 });
+//               }
+//               // Insert next record in this group
+//               insertNextRecord(recIndex + 1);
+//             });
+//           };
+
+//           // Start inserting records for this group
+//           insertNextRecord(0);
+//         };
+
+//         // Start processing groups
+//         processNextGroup(0);
+//       });
+//     });
+//   });
+// };
+
+
+exports.saveFixDeductions = async (req, res) => {
   const { dairy_id, center_id } = req.user;
   const { formData, PaymentFD } = req.body;
   const { billDate, vcDate, fromDate, toDate } = formData;
 
-  // Validate required fields
   if (!dairy_id) {
-    return res
-      .status(401)
-      .json({ status: 401, message: "Dairy ID or center ID missing!" });
+    return res.status(401).json({ status: 401, message: "Unauthorised User!" });
   }
   if (!fromDate || !toDate) {
     return res
@@ -1482,7 +1658,7 @@ exports.saveFixDeductions = (req, res) => {
       .json({ status: 400, message: "No payment data provided!" });
   }
 
-  pool.getConnection((err, connection) => {
+  pool.getConnection(async (err, connection) => {
     if (err) {
       console.error("Connection error:", err);
       return res
@@ -1490,152 +1666,119 @@ exports.saveFixDeductions = (req, res) => {
         .json({ status: 500, message: "Database connection failed!" });
     }
 
-    connection.beginTransaction((err) => {
-      if (err) {
-        connection.release();
-        return res
-          .status(500)
-          .json({ status: 500, message: "Failed to start transaction!" });
+    const query = util.promisify(connection.query).bind(connection);
+    const beginTransaction = util
+      .promisify(connection.beginTransaction)
+      .bind(connection);
+    const commit = util.promisify(connection.commit).bind(connection);
+    const rollback = util.promisify(connection.rollback).bind(connection);
+    const release = connection.release.bind(connection);
+
+    try {
+      await beginTransaction();
+
+      // Get max BillNo
+      const billResult = await query(
+        `SELECT MAX(CAST(BillNo AS UNSIGNED)) AS maxBillNo FROM custbilldetails WHERE companyid = ? AND center_id = ?`,
+        [dairy_id, center_id]
+      );
+
+      let billCounter = billResult[0].maxBillNo
+        ? parseInt(billResult[0].maxBillNo)
+        : 0;
+
+      // Group by rno
+      const groupedByRno = PaymentFD.reduce((acc, row) => {
+        const rno = row.rno || "no_rno";
+        if (!acc[rno]) acc[rno] = [];
+        acc[rno].push(row);
+        return acc;
+      }, {});
+
+      const rnoKeys = Object.keys(groupedByRno);
+
+      for (const rnoKey of rnoKeys) {
+        billCounter++;
+        const billNo = String(billCounter).padStart(6, "0");
+        const groupRows = groupedByRno[rnoKey];
+
+        const valuesArray = groupRows.map((row) => {
+          const {
+            GLCode,
+            DeductionId,
+            dname,
+            amt,
+            totalamt,
+            totalLitres,
+            avgFat,
+            avgSnf,
+            avgRate,
+            totalDeduction,
+            MAMT,
+            BAMT,
+            dtype,
+          } = row;
+
+          return [
+            dairy_id,
+            center_id,
+            0,
+            billNo,
+            billDate,
+            billNo,
+            vcDate,
+            GLCode || null,
+            row.rno !== undefined ? row.rno : null,
+            fromDate,
+            toDate,
+            dname || null,
+            DeductionId,
+            Number(parseFloat(amt || 0).toFixed(2)),
+            MAMT,
+            BAMT,
+            Number(parseFloat(totalLitres || 0).toFixed(2)),
+            Number(parseFloat(avgFat || 0).toFixed(1)),
+            Number(parseFloat(avgSnf || 0).toFixed(1)),
+            Number(parseFloat(avgRate || 0).toFixed(2)),
+            Number(parseFloat(totalamt || 0).toFixed(2)),
+            Number(parseFloat(totalDeduction || 0).toFixed(2)),
+            Number(parseFloat(amt || 0).toFixed(2)),
+            dtype,
+          ];
+        });
+
+        // Perform bulk insert
+        const insertQuery = `
+          INSERT INTO custbilldetails
+          (companyid, center_id, CBId, BillNo, BillDate, VoucherNo, VoucherDate,
+          GLCode, Code, FromDate, ToDate, dname, DeductionId, Amt, MAMT, BAMT,
+          tliters, afat, asnf, arate, pamt, damt, namt, dtype)
+          VALUES ?
+        `;
+
+        // Batch if needed (for huge rows per group)
+        const batchSize = 500;
+        for (let i = 0; i < valuesArray.length; i += batchSize) {
+          const batch = valuesArray.slice(i, i + batchSize);
+          await query(insertQuery, [batch]);
+        }
       }
 
-      const query = `
-        SELECT MAX(CAST(BillNo AS UNSIGNED)) AS maxBillNo 
-        FROM custbilldetails 
-        WHERE companyid = ? AND center_id = ?
-      `;
-      connection.query(query, [dairy_id, center_id], (err, billRows) => {
-        if (err) {
-          return connection.rollback(() => {
-            connection.release();
-            return res
-              .status(500)
-              .json({ status: 500, message: "Failed to fetch bill number!" });
-          });
-        }
-
-        let billCounter = billRows[0].maxBillNo
-          ? parseInt(billRows[0].maxBillNo)
-          : 0;
-
-        // Group PaymentFD by rno
-        const groupedByRno = PaymentFD.reduce((acc, row) => {
-          const rno = row.rno || "no_rno"; // Use a fallback key if rno is undefined
-          if (!acc[rno]) {
-            acc[rno] = [];
-          }
-          acc[rno].push(row);
-          return acc;
-        }, {});
-
-        // Process each group
-        const rnoKeys = Object.keys(groupedByRno);
-        const processNextGroup = (groupIndex) => {
-          if (groupIndex >= rnoKeys.length) {
-            // All groups processed; commit the transaction
-            return connection.commit((commitErr) => {
-              connection.release();
-              if (commitErr) {
-                console.error("Commit error:", commitErr);
-                return res.status(500).json({
-                  status: 500,
-                  message: "Failed to commit transaction!",
-                });
-              }
-              return res.status(200).json({
-                status: 200,
-                message: "Deductions saved successfully.",
-              });
-            });
-          }
-
-          // Assign a new bill number for the current group
-          billCounter++;
-          const billNo = billCounter.toString().padStart(4, "0");
-          const groupRows = groupedByRno[rnoKeys[groupIndex]];
-
-          // Insert each record in the group
-          const insertNextRecord = (recIndex) => {
-            if (recIndex >= groupRows.length) {
-              // Group finished; process next group
-              return processNextGroup(groupIndex + 1);
-            }
-
-            const row = groupRows[recIndex];
-            const {
-              GLCode,
-              DeductionId,
-              dname,
-              amt,
-              totalamt,
-              totalLitres,
-              avgFat,
-              avgSnf,
-              avgRate,
-              totalDeduction,
-              MAMT,
-              BAMT,
-              dtype,
-            } = row;
-
-            const insertQuery = `
-              INSERT INTO custbilldetails
-              (companyid, center_id, CBId, BillNo, BillDate, VoucherNo, VoucherDate,
-               GLCode, Code, FromDate, ToDate, dname, DeductionId, Amt, MAMT, BAMT,
-               tliters, afat, asnf, arate, pamt, damt, namt, dtype)
-              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-            `;
-
-            const values = [
-              dairy_id,
-              center_id,
-              0,
-              billNo,
-              billDate,
-              billNo,
-              vcDate,
-              GLCode || null,
-              row.rno !== undefined ? row.rno : null,
-              fromDate,
-              toDate,
-              dname || null,
-              DeductionId,
-              Number(parseFloat(amt || 0).toFixed(2)),
-              MAMT,
-              BAMT,
-              Number(parseFloat(totalLitres || 0).toFixed(2)),
-              Number(parseFloat(avgFat || 0).toFixed(1)),
-              Number(parseFloat(avgSnf || 0).toFixed(1)),
-              Number(parseFloat(avgRate || 0).toFixed(2)),
-              Number(parseFloat(totalamt || 0).toFixed(2)),
-              Number(parseFloat(totalDeduction || 0).toFixed(2)),
-              Number(parseFloat(amt || 0).toFixed(2)),
-              dtype,
-            ];
-
-            connection.query(insertQuery, values, (err, results) => {
-              if (err) {
-                return connection.rollback(() => {
-                  connection.release();
-                  console.error("Insert error:", err);
-                  return res.status(500).json({
-                    status: 500,
-                    message: "Failed to insert deduction data!",
-                  });
-                });
-              }
-              // Insert next record in this group
-              insertNextRecord(recIndex + 1);
-            });
-          };
-
-          // Start inserting records for this group
-          insertNextRecord(0);
-        };
-
-        // Start processing groups
-        processNextGroup(0);
+      await commit();
+      release();
+      return res
+        .status(200)
+        .json({ status: 200, message: "Deductions saved successfully." });
+    } catch (error) {
+      await rollback();
+      release();
+      console.error("Transaction error:", error.sqlMessage || error.message);
+      return res.status(500).json({
+        status: 500,
+        message: "Transaction failed!",
+        error: error.sqlMessage || error.message,
       });
-    });
+    }
   });
 };
 
