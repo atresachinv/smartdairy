@@ -36,8 +36,8 @@ const PaymentRegister = ({ showbtn, setCurrentPage }) => {
   const CityName = useSelector((state) => state.dairy.dairyData.city);
 
   //...
-
-  console.log(filteredData);
+  console.log("deduction", deduction);
+  console.log("Filterdata", groupedData);
   const handleSelectChange = async (e) => {
     const selectedIndex = e.target.value;
     if (selectedIndex !== "") {
@@ -46,7 +46,7 @@ const PaymentRegister = ({ showbtn, setCurrentPage }) => {
 
       // Store selected master in localStorage
       localStorage.setItem("selectedMaster", JSON.stringify(selectedDates));
-      console.log(" Manual MAster", manualMaster);
+
       dispatch(
         getPaymentsDeductionInfo({
           fromDate: selectedDates.start,
@@ -64,22 +64,26 @@ const PaymentRegister = ({ showbtn, setCurrentPage }) => {
   }, [dispatch, fromDate, toDate]);
 
   // Merge customer names into deduction records
-  useEffect(() => {
-    if (deduction.length > 0 && customerlist.length > 0) {
-      const updatedData = deduction.map((deductionItem) => {
-        const matchingCustomer = customerlist.find(
-          (customer) => String(customer.cid) === String(deductionItem.AccCode)
-        );
-        return {
-          ...deductionItem,
-          customerName: matchingCustomer?.cname || "Unknown",
-          Code: matchingCustomer?.srno || "Unknown",
-          Arate: matchingCustomer?.arate || "Unknown",
-        };
-      });
-      setMergedData(updatedData);
-    }
-  }, [deduction, customerlist]);
+useEffect(() => {
+  if (deduction.length > 0 && customerlist.length > 0) {
+    const updatedData = deduction.map((deductionItem) => {
+      const matchingCustomer = customerlist.find(
+        (customer) => String(customer.cid) === String(deductionItem.AccCode)
+      );
+
+      return {
+        ...deductionItem,
+        customerName: matchingCustomer?.cname ?? "Unknown",
+        Code: matchingCustomer?.srno ?? "Unknown",
+        Arate: matchingCustomer?.arate ?? "Unknown",
+      };
+    });
+        console.log( "customerlist", customerlist);
+    setMergedData(updatedData);
+  } else {
+    setMergedData([]); // Clear data if either list is empty
+  }
+}, [deduction, customerlist]);
 
   // Group and summarize data
   useEffect(() => {
@@ -457,29 +461,31 @@ const PaymentRegister = ({ showbtn, setCurrentPage }) => {
     doc.save("Deduction_Report.pdf");
   };
 
-  const fetchDataa = async () => {
-    setIsLoading(true); // Set loading to true when data fetching starts
-    setDataAvailable(true); // Assume data is available initially
+const fetchDataa = async () => {
+  setIsLoading(true); // Start loading
+  setDataAvailable(true); // Assume data is available initially
 
-    try {
-      // Simulate data fetch (replace this with actual API call)
-      if (fromDate && toDate) {
-        await dispatch(getPaymentsDeductionInfo({ fromDate, toDate }));
+  try {
+    if (fromDate && toDate) {
+      const result = await dispatch(
+        getPaymentsDeductionInfo({ fromDate, toDate })
+      ).unwrap();
 
-        // After fetching, check if data exists
-        if (!deduction.length) {
-          setDataAvailable(false); // Set to false if no data is found
-        }
-      } else {
-        alert("Please select a valid date range.");
+      // Check if the result has data
+      if (!result || result.length === 0) {
+        setDataAvailable(false); // No data found
       }
-    } catch (error) {
-      console.error("Error fetching data:", error);
-      setDataAvailable(false); // Set to false if there was an error
-    } finally {
-      setIsLoading(false); // Set loading to false once the fetch is complete
+    } else {
+      alert("Please select a valid date range.");
     }
-  };
+  } catch (error) {
+    console.error("Error fetching data:", error);
+    setDataAvailable(false); // Error occurred
+  } finally {
+    setIsLoading(false); // Stop loading
+  }
+};
+
 
   return (
     <div className="payment-register-container w100 h1 d-flex-col ">
