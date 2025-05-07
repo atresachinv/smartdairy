@@ -372,7 +372,7 @@ const Mainappnavlinks = ({ setselected, handleSidebar }) => {
       name: `${t("nv-reports")}`,
       icon: <TbMilk className="icon" />,
       index: 6,
-      role: ["super_admin", "admin", "manager"],
+      role: ["super_admin", "admin", "manager", "milkcollector"],
       submenus: [
         ...(center_id === 0
           ? [
@@ -390,7 +390,7 @@ const Mainappnavlinks = ({ setselected, handleSidebar }) => {
           icon: <FaFileContract className="icon" />,
           index: 6.2,
           path: "reports/milk",
-          role: ["admin", "super_admin", "manager"],
+          role: ["admin", "super_admin", "manager", "milkcollector"],
         },
         {
           name: `${t("cust-report")}`,

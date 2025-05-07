@@ -29,6 +29,7 @@ const PaymentRegister = ({ showbtn, setCurrentPage }) => {
   const [isCNameWiseChecked, setIsCNameWiseChecked] = useState(false);
   const [isCodewiseChecked, setIsCodewiseChecked] = useState(false);
   const manualMaster = useSelector((state) => state.manualMasters.masterlist);
+  const [filteredDeductions, setFilteredDeductions] = useState([]);
 
   //......   Dairy name And City name   for PDf heading
   const dairyname = useSelector(
@@ -37,62 +38,45 @@ const PaymentRegister = ({ showbtn, setCurrentPage }) => {
   );
   const CityName = useSelector((state) => state.dairy.dairyData.city);
 
-  //...
-  // console.log("deduction", deduction);
-  // console.log("Filterdata", groupedData);
-  const handleSelectChange = async (e) => {
-    const selectedIndex = e.target.value;
-    if (selectedIndex !== "") {
-      const selectedDates = manualMaster[selectedIndex];
-      setSelectedMaster(selectedDates);
-
-      // Store selected master in localStorage
-      localStorage.setItem("selectedMaster", JSON.stringify(selectedDates));
-
-      dispatch(
-        getPaymentsDeductionInfo({
-          fromDate: selectedDates.start,
-          toDate: selectedDates.end,
-        })
-      );
-    }
-  };
-
  console.log(processedDeductions);
 
   // Export data to Excel
-  const exportToExcel = () => {
-    const flattenedData = filteredData.map((data) => {
-      const baseData = {
-        Code: data.Code,
-        CustomerName: data.customerName,
-        TotalLiters: data.tliters,
-        Pamt: data.pamt,
-        Damt: data.damt,
-        Namt: data.namt,
-      };
 
-      dnames.forEach((dname) => {
-        baseData[dname] = data.additionalDeductions[dname] || 0;
-      });
 
-      return baseData;
+const exportToExcel = () => {
+  if (!processedDeductions || processedDeductions.length === 0) {
+    alert("No data available to export.");
+    return;
+  }
+
+  const flattenedData = processedDeductions.map((data) => {
+    const baseData = {
+      Code: data.Code || "",
+      CustomerName: data.customerName || "",
+      TotalLiters: Number(data.tliters) || 0,
+      Pamt: Number(data.pamt) || 0,
+      Damt: Number(data.damt) || 0,
+      Namt: Number(data.namt) || 0,M 
+    };
+
+    const deductions = data.additionalDeductions || {}; // fallback to empty object
+    dnames.forEach((dname) => {
+      baseData[dname] = Number(deductions[dname]) || 0;
+      
     });
 
-    const worksheet = XLSX.utils.json_to_sheet(flattenedData);
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Payment Data");
-    XLSX.writeFile(workbook, "PaymentData.xlsx");
-  };
+    return baseData;
+  });
 
-  // // Fetch Data Handler
-  // const fetchData = () => {
-  //   if (fromDate && toDate) {
-  //     dispatch(getPaymentsDeductionInfo({ fromDate, toDate }));
-  //   } else {
-  //     alert("Please select a valid date range.");
-  //   }
-  // };
+  const worksheet = XLSX.utils.json_to_sheet(flattenedData);
+  const workbook = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(workbook, worksheet, "Payment Data");
+
+  // Save the file
+  XLSX.writeFile(workbook, "PaymentData.xlsx");
+};
+
+
 
   const handlePrint = () => {
     if (!tableRef.current) {
@@ -110,7 +94,7 @@ const PaymentRegister = ({ showbtn, setCurrentPage }) => {
     const formattedToDate = formatDate(toDate); // To Date
 
     // Ensure mergedData is available
-    if (!mergedData || mergedData.length === 0) {
+    if (!processedDeductions || processedDeductions.length === 0) {
       console.error("No merged data found.");
       return;
     }
@@ -164,177 +148,159 @@ const PaymentRegister = ({ showbtn, setCurrentPage }) => {
   };
 
   //.. Pdf
-  const exportToPDF = () => {
-    if (filteredData.length === 0) {
-      alert("No data available to export.");
-      return;
-    }
+const exportToPDF = () => {
+  if (processedDeductions.length === 0) {
+    alert("No data available to export.");
+    return;
+  }
 
-    const doc = new jsPDF("p", "mm", "a4"); // Portrait orientation, millimeters, A4 size
+  const doc = new jsPDF("p", "mm", "a4"); // Portrait, mm, A4
 
-    // Helper function to format dates
-    const formatDate = (date) => (date ? date.split("T")[0] : "N/A");
-
-    // // Format the date range
-    // const selectedFromDate = formatDate(fromDate);
-    // const selectedToDate = formatDate(toDate);
-
-    // Page width for centering text
-    const pageWidth = doc.internal.pageSize.getWidth();
-
-    // Add header with dairy name
-    doc.setFontSize(12); // Reduced font size
-    doc.setFont("helvetica", "bold");
-    const dairyTextWidth = doc.getTextWidth(dairyname);
-    doc.text(dairyname, (pageWidth - dairyTextWidth) / 2, 10);
-
-    // Add city name below the heading
-    doc.setFontSize(10);
-    doc.setFont("helvetica", "normal");
-    // const cityTextWidth = doc.getTextWidth(City: ${CityName});
-    // doc.text(City: ${CityName}, (pageWidth - cityTextWidth) / 2, 15);
-
-    // Add report title
-    const reportTitle = "Deduction Report";
-    const titleTextWidth = doc.getTextWidth(reportTitle);
-    doc.text(reportTitle, (pageWidth - titleTextWidth) / 2, 20);
-
-    // Add date range below the title
-    // const dateText = From: ${selectedFromDate}  To: ${selectedToDate};
-    doc.setFontSize(8);
-    const dateTextWidth = doc.getTextWidth(dateText);
-    doc.text(dateText, (pageWidth - dateTextWidth) / 2, 25);
-
-    // Define columns dynamically with smaller font sizes and tighter spacing
-    const columns = [
-      { header: "Code", dataKey: "Code" },
-      { header: "Customer Name", dataKey: "customerName" },
-      { header: "TLiters", dataKey: "tliters" },
-      { header: "Pamt", dataKey: "pamt" },
-      { header: "Damt", dataKey: "damt" },
-      { header: "Namt", dataKey: "namt" },
-      ...dnames.map((name) => ({ header: name, dataKey: name })),
-    ];
-
-    // Prepare rows with rounded values
-    const rows = filteredData.map((data) => {
-      const row = {
-        Code: data.Code,
-        customerName: data.customerName,
-        tliters: Math.round(data.tliters || 0),
-        pamt: Math.round(data.pamt || 0),
-        damt: Math.round(data.damt || 0),
-        namt: Math.round(data.namt || 0),
-      };
-      dnames.forEach((name) => {
-        row[name] = Math.round(data.additionalDeductions[name] || 0);
-      });
-      return row;
-    });
-
-    // Calculate totals with rounded values
-    const totals = {
-      Code: "Total",
-      customerName: "",
-      tliters: Math.round(
-        filteredData.reduce((sum, item) => sum + (item.tliters || 0), 0)
-      ),
-      pamt: Math.round(
-        filteredData.reduce((sum, item) => sum + (item.pamt || 0), 0)
-      ),
-      damt: Math.round(
-        filteredData.reduce((sum, item) => sum + (item.damt || 0), 0)
-      ),
-      namt: Math.round(
-        filteredData.reduce((sum, item) => sum + (item.namt || 0), 0)
-      ),
-    };
-    dnames.forEach((name) => {
-      totals[name] = Math.round(
-        filteredData.reduce(
-          (sum, item) => sum + (item.additionalDeductions[name] || 0),
-          0
-        )
-      );
-    });
-
-    // Append totals row
-    rows.push(totals);
-
-    // Add table to the PDF with optimized settings
-    doc.autoTable({
-      columns,
-      body: rows,
-      startY: 30, // Adjusted starting position to save vertical space
-      theme: "grid",
-      headStyles: {
-        fillColor: [22, 160, 133], // Header color
-        textColor: [255, 255, 255], // Header text color
-        fontSize: 8, // Smaller font size for headers
-      },
-      bodyStyles: {
-        fontSize: 7, // Smaller font size for body rows
-        cellPadding: 1, // Reduce padding to save space
-        valign: "middle",
-      },
-      footStyles: {
-        fontStyle: "bold", // Bold totals
-        fillColor: [200, 200, 200], // Footer background color
-      },
-      styles: {
-        cellPadding: 1.5,
-        overflow: "linebreak", // Wrap text in cells
-      },
-      columnStyles: {
-        customerName: { cellWidth: 40 }, // Adjust specific column widths
-        tliters: { halign: "right" },
-        pamt: { halign: "right" },
-        damt: { halign: "right" },
-        namt: { halign: "right" },
-        ...Object.fromEntries(
-          dnames.map((name) => [name, { halign: "right" }])
-        ),
-      },
-      willDrawCell: (data) => {
-        if (data.section === "head") {
-          data.cell.styles.minCellHeight = 8; // Maintain height for readability
-        }
-      },
-      didDrawPage: (data) => {
-        // Draw header on every page
-        const pageWidth = doc.internal.pageSize.getWidth();
-        doc.setFontSize(8);
-        doc.setTextColor(40);
-        doc.text(
-          // Page ${doc.internal.getNumberOfPages()},
-          pageWidth - 20,
-          doc.internal.pageSize.getHeight() - 10
-        );
-      },
-    });
-
-    // Save the PDF
-    doc.save("Deduction_Report.pdf");
+  // Format date function
+  const formatDate = (date) => {
+    if (!date) return "N/A";
+    const d = new Date(date);
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(
+      2,
+      "0"
+    )}-${String(d.getDate()).padStart(2, "0")}`;
   };
 
-  // const fetchData = async () => {
-  //   setIsLoading(true); // Set loading to true when data fetching starts
-  //   setDataAvailable(true); // Assume data is available initially
+  const selectedFromDate = formatDate(fromDate);
+  const selectedToDate = formatDate(toDate);
+  const dateText = `From ${selectedFromDate} To ${selectedToDate}`;
+  const pageWidth = doc.internal.pageSize.getWidth();
 
-  //   try {
-  //     // Simulate data fetch (replace this with actual API call)
-  //     if (fromDate && toDate) {
-  //       await dispatch(getPaymentsDeductionInfo({ fromDate, toDate }));
-  //     } else {
-  //       alert("Please select a valid date range.");
-  //     }
-  //   } catch (error) {
-  //     console.error("Error fetching data:", error);
-  //     setDataAvailable(false); // Set to false if there was an error
-  //   } finally {
-  //     setIsLoading(false); // Set loading to false once the fetch is complete
-  //   }
-  // };
+  // Dairy name
+  const dairyTitle = dairyname || "Dairy Name";
+  doc.setFontSize(12);
+  doc.setFont("helvetica", "bold");
+  const dairyTextWidth = doc.getTextWidth(dairyTitle);
+  doc.text(dairyTitle, (pageWidth - dairyTextWidth) / 2, 10);
+
+  // Report title
+  const reportTitle = "Deduction Report";
+  doc.setFontSize(10);
+  const titleTextWidth = doc.getTextWidth(reportTitle);
+  doc.text(reportTitle, (pageWidth - titleTextWidth) / 2, 16);
+
+  // Date range text
+  doc.setFontSize(8);
+  const dateTextWidth = doc.getTextWidth(dateText);
+  doc.text(dateText, (pageWidth - dateTextWidth) / 2, 21);
+
+  // Table columns (dynamic)
+  const columns = [
+    { header: "Code", dataKey: "Code" },
+    { header: "Customer Name", dataKey: "customerName" },
+    { header: "TLiters", dataKey: "tliters" },
+
+    ...dnames.map((name) => ({ header: name, dataKey: name })),
+    { header: "Pamt", dataKey: "pamt" },
+    { header: "Damt", dataKey: "damt" },
+    { header: "Namt", dataKey: "namt" },
+  ];
+
+  // Table rows
+  const rows = processedDeductions.map((data) => {
+    const row = {
+      Code: data.Code,
+      customerName: data.customerName,
+      tliters: Math.round(data.tliters || 0),
+      pamt: Math.round(data.pamt || 0),
+      damt: Math.round(data.damt || 0),
+      namt: Math.round(data.namt || 0),
+    };
+
+      const deductions = data.additionalDeductions || {};
+
+      dnames.forEach((name) => {
+        row[name] = Math.round(Number(deductions[name]) || 0);
+      });
+
+    return row;
+  });
+
+  // Totals row
+  const totals = {
+    Code: "Total",
+    customerName: "",
+    tliters: Math.round(
+      processedDeductions.reduce((sum, item) => sum + (item.tliters || 0), 0)
+    ),
+    pamt: Math.round(
+      processedDeductions.reduce((sum, item) => sum + (item.pamt || 0), 0)
+    ),
+    damt: Math.round(
+      processedDeductions.reduce((sum, item) => sum + (item.damt || 0), 0)
+    ),
+    namt: Math.round(
+      processedDeductions.reduce((sum, item) => sum + (item.namt || 0), 0)
+    ),
+  };
+
+  dnames.forEach((name) => {
+    totals[name] = Math.round(
+      processedDeductions.reduce(
+        (sum, item) => sum + (item.additionalDeductions?.[name] || 0),
+        0
+      )
+    );
+  });
+
+  rows.push(totals); // Add totals row
+
+  // Generate table
+  doc.autoTable({
+    columns,
+    body: rows,
+    startY: 28,
+    theme: "grid",
+    headStyles: {
+      fillColor: [22, 160, 133],
+      textColor: [255, 255, 255],
+      fontSize: 8,
+    },
+    bodyStyles: {
+      fontSize: 7,
+      cellPadding: 1,
+      valign: "middle",
+    },
+    footStyles: {
+      fontStyle: "bold",
+      fillColor: [230, 230, 230],
+    },
+    styles: {
+      cellPadding: 1.5,
+      overflow: "linebreak",
+    },
+    columnStyles: {
+      customerName: { cellWidth: 40 },
+      tliters: { halign: "right" },
+      pamt: { halign: "right" },
+      damt: { halign: "right" },
+      namt: { halign: "right" },
+      ...Object.fromEntries(dnames.map((name) => [name, { halign: "right" }])),
+    },
+    willDrawCell: (data) => {
+      if (data.section === "head") {
+        data.cell.styles.minCellHeight = 8;
+      }
+    },
+    didDrawPage: () => {
+      doc.setFontSize(8);
+      doc.setTextColor(40);
+      doc.text(
+        `Page ${doc.internal.getNumberOfPages()}`,
+        pageWidth - 30,
+        doc.internal.pageSize.getHeight() - 10
+      );
+    },
+  });
+
+  doc.save("Deduction_Report.pdf");
+};
+
 
   const fetchData = async () => {
     setIsLoading(true); // Start loading
@@ -396,6 +362,37 @@ useEffect(() => {
   }
 }, [allDeductions, customerlist]);
 
+
+//Code Wise And Cnamewise Filter
+useEffect(() => {
+  let filtered = [...processedDeductions];
+
+  // Apply Codewise filtering
+  if (isCodewiseChecked && fromCode && toCode) {
+    filtered = filtered.filter((item) => {
+      const code = parseInt(item.Code, 10);
+      return code >= parseInt(fromCode, 10) && code <= parseInt(toCode, 10);
+    });
+  }
+
+  // Apply Customer Name filtering (case-insensitive)
+  if (isCNameWiseChecked && customerName.trim() !== "") {
+    filtered = filtered.filter((item) =>
+      item.customerName
+        .toLowerCase()
+        .includes(customerName.trim().toLowerCase())
+    );
+  }
+
+  setFilteredDeductions(filtered);
+}, [
+  isCodewiseChecked,
+  fromCode,
+  toCode,
+  isCNameWiseChecked,
+  customerName,
+  processedDeductions,
+]);
 
 
 
@@ -564,9 +561,8 @@ useEffect(() => {
                   <td>{data.Code}</td>
                   <td>{data.customerName}</td>
 
-                  {/* Render dynamic columns */}
                   {dnames.map((dname) => (
-                    <td key={dname}>{data[dname] || 0}</td> // fallback to 0 if not present
+                    <td key={dname}>{data[dname] || 0}</td>
                   ))}
 
                   <td>{data.tliters}</td>
@@ -581,6 +577,60 @@ useEffect(() => {
                 </tr>
               ))}
             </tbody>
+
+            <tfoot>
+              <tr>
+                <td colSpan={2}>
+                  <strong>Total</strong>
+                </td>
+                {/* Totals for dynamic columns */}
+                {dnames.map((dname) => {
+                  const total = processedDeductions.reduce(
+                    (sum, item) => sum + (parseFloat(item[dname]) || 0),
+                    0
+                  );
+                  return (
+                    <td key={dname}>
+                      <strong>{total.toFixed(2)}</strong>
+                    </td>
+                  );
+                })}
+                {/* Static totals */}
+                <td>
+                  <strong>
+                    {processedDeductions
+                      .reduce((sum, item) => sum + (item.tliters || 0), 0)
+                      .toFixed(2)}
+                  </strong>
+                </td>
+                <td>-</td> {/* AVG Rate column doesn't need a total */}
+                <td>
+                  <strong>
+                    {processedDeductions
+                      .reduce((sum, item) => sum + (item.pamt || 0), 0)
+                      .toFixed(2)}
+                  </strong>
+                </td>
+                <td>
+                  <strong>
+                    {processedDeductions
+                      .reduce((sum, item) => sum + (item.damt || 0), 0)
+                      .toFixed(2)}
+                  </strong>
+                </td>
+                <td>
+                  <strong>
+                    {processedDeductions
+                      .reduce(
+                        (sum, item) =>
+                          sum + ((item.pamt || 0) - (item.damt || 0)),
+                        0
+                      )
+                      .toFixed(2)}
+                  </strong>
+                </td>
+              </tr>
+            </tfoot>
           </table>
         </div>
       </div>

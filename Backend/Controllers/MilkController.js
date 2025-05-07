@@ -493,7 +493,7 @@ exports.milkCollectionOneEntry = async (req, res) => {
     allow,
   } = req.body;
 
-  const { dairy_id, center_id, user_role } = req.user;
+  const { dairy_id, center_id, user_id, user_role } = req.user;
 
   if (
     !date ||
@@ -554,6 +554,8 @@ exports.milkCollectionOneEntry = async (req, res) => {
         }
       }
 
+      const userid = user_role !== "milkcollector" ?  user_role: user_id;
+      
       // Insert milk collection entry
       const insertMilkCollectionQuery = `
         INSERT INTO ${dairy_table} 
@@ -562,7 +564,7 @@ exports.milkCollectionOneEntry = async (req, res) => {
       `;
 
       await query(insertMilkCollectionQuery, [
-        user_role,
+        userid,
         date,
         shift,
         animal,
@@ -1601,8 +1603,8 @@ exports.updateMobileCollection = async (req, res) => {
 // updated isDeleted --> 23/4/25
 exports.allMilkCollReport = async (req, res) => {
   const { fromDate, toDate } = req.query;
-  const { dairy_id, center_id } = req.user;
-
+  const { dairy_id, center_id, user_id } = req.user;
+  console.log(user_id);
   if (!dairy_id) {
     return res
       .status(400)
@@ -1620,10 +1622,10 @@ exports.allMilkCollReport = async (req, res) => {
       let milkCollectionQuery = `
         SELECT id, userid, ReceiptDate, ME, CB, Litres, fat, snf, rate, Amt, cname, rno, AccCode, center_id, rctype
         FROM ${dairy_table}
-        WHERE ReceiptDate BETWEEN ? AND ? AND isDeleted = 0
+        WHERE ReceiptDate BETWEEN ? AND ? AND userid = ? AND isDeleted = 0
         `;
 
-      const values = [fromDate, toDate];
+      const values = [fromDate, toDate, user_id];
 
       if (center_id !== 0) {
         milkCollectionQuery += " AND center_id = ?";
