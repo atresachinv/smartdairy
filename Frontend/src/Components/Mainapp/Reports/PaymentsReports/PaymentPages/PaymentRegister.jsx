@@ -22,21 +22,26 @@ const PaymentRegister = ({ showbtn, setCurrentPage }) => {
   const [showCustomerwiseDateFilter, setShowCustomerwiseDateFilter] =
     useState(true);
   const [fromCode, setFromCode] = useState("");
-  const [toCode, setToCode] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const [dataAvailable, setDataAvailable] = useState(true);
-  const [customerName, setCustomerName] = useState("");
-  const [isCNameWiseChecked, setIsCNameWiseChecked] = useState(false);
-  const [isCodewiseChecked, setIsCodewiseChecked] = useState(false);
-  const manualMaster = useSelector((state) => state.manualMasters.masterlist);
-  const [filteredDeductions, setFilteredDeductions] = useState([]);
-
+   const [filterCode, setFilterCode] = useState("");
+   const [isloading, setIsLoading] = useState("");
+   const [dataavailable, setDataAvailable] = useState("");
+   const [customerName, setCustomerName] = useState("");
+   const centerList = useSelector(
+     (state) => state.center.centersList.centersDetails
+   );
+  const dairyinfo = useSelector((state) => state.dairy.dairyData);
+  const [selectedCenterId, setSelectedCenterId] = useState("");
+  const [codeFilter, setCodeFilter] = useState("");
+  const [customerNameFilter, setCustomerNameFilter] = useState("");
+  
   //......   Dairy name And City name   for PDf heading
   const dairyname = useSelector(
     (state) =>
       state.dairy.dairyData.SocietyName || state.dairy.dairyData.center_name
   );
   const CityName = useSelector((state) => state.dairy.dairyData.city);
+
+
 
  console.log(processedDeductions);
 
@@ -362,55 +367,33 @@ useEffect(() => {
   }
 }, [allDeductions, customerlist]);
 
+//..
+const filteredDeductions = processedDeductions.filter((item) => {
+  const matchesCenter =
+    selectedCenterId === "" || item.center_id?.toString() === selectedCenterId;
 
-//Code Wise And Cnamewise Filter
-useEffect(() => {
-  let filtered = [...processedDeductions];
+  const matchesCode =
+    !filterCode ||
+    item.Code?.toString().toLowerCase().includes(filterCode.toLowerCase());
 
-  // Apply Codewise filtering
-  if (isCodewiseChecked && fromCode && toCode) {
-    filtered = filtered.filter((item) => {
-      const code = parseInt(item.Code, 10);
-      return code >= parseInt(fromCode, 10) && code <= parseInt(toCode, 10);
-    });
-  }
+  const matchesName =
+    !customerName ||
+    item.customerName?.toLowerCase().includes(customerName.toLowerCase());
 
-  // Apply Customer Name filtering (case-insensitive)
-  if (isCNameWiseChecked && customerName.trim() !== "") {
-    filtered = filtered.filter((item) =>
-      item.customerName
-        .toLowerCase()
-        .includes(customerName.trim().toLowerCase())
-    );
-  }
+  return matchesCenter && matchesCode && matchesName;
+});
 
-  setFilteredDeductions(filtered);
-}, [
-  isCodewiseChecked,
-  fromCode,
-  toCode,
-  isCNameWiseChecked,
-  customerName,
-  processedDeductions,
-]);
-
+// centerchange
+  const handleCenterChange = (e) => {
+    setSelectedCenterId(e.target.value); // Update selected center ID
+  };
+  
+ 
 
 
   return (
     <div className="payment-register-container w100 h1 d-flex-col ">
-      <div className="title-back-btn-container w100 h10 d-flex a-center sb">
-        <span className="heading py10">Payment Register :</span>
-        {showbtn ? (
-          <button
-            className="btn-danger mx10"
-            onClick={() => setCurrentPage("main")}
-          >
-            बाहेर पडा
-          </button>
-        ) : (
-          ""
-        )}
-      </div>
+      <span className="heading h10 ">Payment Register :</span>
       <div className="filter-container d-flex-col  w100 h30 sa">
         <div className="from-too-date-button-container w100 h30  d-flex">
           <div className="date-from-toocontainer w60 h50 d-flex sa ">
@@ -441,74 +424,45 @@ useEffect(() => {
               </button>
             </div>
           </div>
+          <div className="filter-cname-andcust-name-div w50 d-flex">
+            {/* Filter Inputs */}
 
-          <div className="combined-filter-div w40 h1 d-flex  a-center">
-            {/* Codewise Checkbox */}
-            <div className="filter-option w50 h1 d-flex a-center">
-              <input
-                type="checkbox"
-                className="w10"
-                id="codeFilter"
-                checked={isCodewiseChecked}
-                onChange={(e) => setIsCodewiseChecked(e.target.checked)}
-              />
-              <label htmlFor="codeFilter" className="info-text w30">
-                Codewise
-              </label>
+            {/* Filtered Result Display */}
+            <div className="filtered-results">
+              {filteredDeductions.length > 0 &&
+                filteredDeductions.map((item, index) => (
+                  <div
+                    key={index}
+                    className="filtered-item border p10 my5"
+                  ></div>
+                ))}
             </div>
 
-            {/* CNameWise Checkbox */}
-            <div className="filter-option w50 h1 d-flex a-center">
-              <input
-                type="checkbox"
-                className="w10"
-                id="nameFilter"
-                checked={isCNameWiseChecked}
-                onChange={(e) => setIsCNameWiseChecked(e.target.checked)}
-              />
-              <label htmlFor="nameFilter" className="info-text w30">
-                CNameWise
+            <div className="payment-register-filter-customer-name-code-wise w100 h50 d-flex a-center px10 sb">
+              <label htmlFor="code" className="info-text w30">
+                Customer :
               </label>
-            </div>
-
-            {/* Conditional Rendering for Codewise */}
-            {isCodewiseChecked && (
-              <div className="codewise-filter w100 h50 d-flex">
-                <div className="from-date-bank-div w50 d-flex h1 a-center">
-                  <span className="info-text w30">From:</span>
-                  <input
-                    type="number"
-                    className="data w60"
-                    value={fromCode}
-                    onChange={(e) => setFromCode(e.target.value)}
-                    placeholder="001"
-                  />
-                </div>
-                <div className="to-date-bank-div w50 d-flex h1 a-center">
-                  <span className="info-text w30">To:</span>
-                  <input
-                    type="number"
-                    className="data w60"
-                    value={toCode}
-                    onChange={(e) => setToCode(e.target.value)}
-                    placeholder="002"
-                  />
-                </div>
-              </div>
-            )}
-
-            {/* Conditional Rendering for CNameWise */}
-            {isCNameWiseChecked && (
-              <div className="customername-wise-filter-div w50 h40 a-center j-center">
+              <div className="payment-customer-name-customer-number-div w70 d-flex j-end sb">
                 <input
-                  className="data w60"
                   type="text"
+                  className="w25 data"
+                  name="code"
+                  id="code"
+                  placeholder="Code"
+                  value={filterCode}
+                  onChange={(e) => setFilterCode(e.target.value)}
+                />
+                <input
+                  type="text"
+                  className="w70 data"
+                  name="name"
+                  id="name"
                   value={customerName}
                   onChange={(e) => setCustomerName(e.target.value)}
-                  placeholder="CName"
+                  placeholder="Customer Name"
                 />
               </div>
-            )}
+            </div>
           </div>
         </div>
         <div className="button-and-customer-name-wise-div w100 h60 d-flex a-center">
@@ -522,6 +476,33 @@ useEffect(() => {
             <button type="button" className="w-btn" onClick={exportToPDF}>
               PDF
             </button>
+          </div>
+          <div className="payment-register-centerwisee-data-show w40 h1 d-flex a-center">
+            <span className="info-text w20">Center:</span>
+            <select
+              className="data w70 my10"
+              name="selection"
+              id="001"
+              value={selectedCenterId}
+              onChange={(e) => setSelectedCenterId(e.target.value)}
+            >
+              <option value="">All Centers</option>
+              {centerList &&
+                centerList.length > 0 &&
+                centerList.map((center, index) => {
+                  if (
+                    dairyinfo.center_id === 0 ||
+                    dairyinfo.center_id === center.center_id
+                  ) {
+                    return (
+                      <option key={index} value={center.center_id}>
+                        {center.name || center.center_name}
+                      </option>
+                    );
+                  }
+                  return null;
+                })}
+            </select>
           </div>
         </div>
       </div>
@@ -556,15 +537,13 @@ useEffect(() => {
               </tr>
             </thead>
             <tbody>
-              {processedDeductions.map((data, index) => (
+              {filteredDeductions.map((data, index) => (
                 <tr key={index}>
                   <td>{data.Code}</td>
                   <td>{data.customerName}</td>
-
                   {dnames.map((dname) => (
                     <td key={dname}>{data[dname] || 0}</td>
                   ))}
-
                   <td>{data.tliters}</td>
                   <td>
                     {data.tliters > 0
@@ -577,15 +556,13 @@ useEffect(() => {
                 </tr>
               ))}
             </tbody>
-
             <tfoot>
               <tr>
                 <td colSpan={2}>
                   <strong>Total</strong>
                 </td>
-                {/* Totals for dynamic columns */}
                 {dnames.map((dname) => {
-                  const total = processedDeductions.reduce(
+                  const total = filteredDeductions.reduce(
                     (sum, item) => sum + (parseFloat(item[dname]) || 0),
                     0
                   );
@@ -595,32 +572,31 @@ useEffect(() => {
                     </td>
                   );
                 })}
-                {/* Static totals */}
                 <td>
                   <strong>
-                    {processedDeductions
+                    {filteredDeductions
                       .reduce((sum, item) => sum + (item.tliters || 0), 0)
                       .toFixed(2)}
                   </strong>
                 </td>
-                <td>-</td> {/* AVG Rate column doesn't need a total */}
+                <td>-</td>
                 <td>
                   <strong>
-                    {processedDeductions
+                    {filteredDeductions
                       .reduce((sum, item) => sum + (item.pamt || 0), 0)
                       .toFixed(2)}
                   </strong>
                 </td>
                 <td>
                   <strong>
-                    {processedDeductions
+                    {filteredDeductions
                       .reduce((sum, item) => sum + (item.damt || 0), 0)
                       .toFixed(2)}
                   </strong>
                 </td>
                 <td>
                   <strong>
-                    {processedDeductions
+                    {filteredDeductions
                       .reduce(
                         (sum, item) =>
                           sum + ((item.pamt || 0) - (item.damt || 0)),

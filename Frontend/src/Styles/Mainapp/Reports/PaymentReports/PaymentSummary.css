@@ -4,6 +4,9 @@
   }
   .payment-register-container .from-too-date-button-container {
     height: fit-content;
+    flex-direction: column;
+
+    justify-content: space-between;
   }
   .filter-container .date-from-too-div {
     width: 100%;
@@ -54,15 +57,20 @@
     width: 25px;
     margin-left: 5px;
   }
-  .from-too-date-button-container
-    .date-from-toocontainer
-    .report-show-button-div {
-    width: 20%;
-  }
-  .from-too-date-button-container .combined-filter-div {
+  .from-too-date-button-container .filter-cname-andcust-name-div {
     width: 100%;
+    height: 65%;
+  }
+  .payment-register-container .filter-container {
+    height: fit-content;
+  }
+  .button-and-customer-name-wise-div {
+    flex-direction: column;
   }
   .button-and-customer-name-wise-div .button-print-export-div {
+    width: 100%;
+  }
+  .button-and-customer-name-wise-div .payment-register-centerwisee-data-show{
     width: 100%;
   }
 }
