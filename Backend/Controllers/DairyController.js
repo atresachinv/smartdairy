@@ -2,6 +2,7 @@ const jwt = require("jsonwebtoken");
 const dotenv = require("dotenv");
 const bcrypt = require("bcryptjs");
 const pool = require("../Configs/Database");
+const evpool = require("../Configs/EverleapDB");
 dotenv.config({ path: "Backend/.env" });
 const NodeCache = require("node-cache");
 const cache = new NodeCache({});
@@ -772,6 +773,7 @@ exports.getAllcenters = async (req, res) => {
 
 exports.masterDates = async (req, res) => {
   const { yearStart, yearEnd } = req.body;
+  const { dairy_id } = req.user;
 
   pool.getConnection((err, connection) => {
     if (err) {
@@ -788,27 +790,85 @@ exports.masterDates = async (req, res) => {
           DATE(fromDate) AS fromDate, 
           DATE(toDate) AS toDate 
         FROM custbilldetails 
-        WHERE fromDate BETWEEN ? AND ? 
-        ORDER BY fromDate ASC`; // Ascending to get earliest dates first
+        WHERE companyid = ? AND fromDate BETWEEN ? AND ? 
+        ORDER BY fromDate DESC`;
 
-      connection.query(getMasters, [yearStart, yearEnd], (err, result) => {
-        connection.release();
+      connection.query(
+        getMasters,
+        [dairy_id, yearStart, yearEnd],
+        (err, result) => {
+          connection.release();
 
-        if (err) {
-          console.error("master query execution error: ", err);
-          return res
-            .status(500)
-            .json({ status: 500, message: "master query execution error" });
+          if (err) {
+            console.error("master query execution error: ", err);
+            return res
+              .status(500)
+              .json({ status: 500, message: "master query execution error" });
+          }
+
+          // Map result to desired format
+          const formattedResult = result.map((record) => ({
+            fromDate: record.fromDate,
+            toDate: record.toDate,
+          }));
+
+          res.status(200).json({ status: 200, getMasters: formattedResult });
         }
+      );
+    } catch (error) {
+      console.error("Error processing request: ", error);
+      return res
+        .status(500)
+        .json({ status: 500, message: "Internal server error" });
+    }
+  });
+};
 
-        // Map result to desired format
-        const formattedResult = result.map((record) => ({
-          fromDate: record.fromDate,
-          toDate: record.toDate,
-        }));
+// Everleap data ------------------------------------------------>
+exports.mastersDates = async (req, res) => {
+  const { yearStart, yearEnd } = req.body;
+  const { dairy_id } = req.user;
 
-        res.status(200).json({ status: 200, getMasters: formattedResult });
-      });
+  evpool.getConnection((err, connection) => {
+    if (err) {
+      console.error("Error getting MySQL connection: ", err);
+      return res
+        .status(500)
+        .json({ status: 500, message: "Database connection error" });
+    }
+
+    try {
+      // Use DATE() function to ensure only date parts are retrieved
+      const getMasters = `
+        SELECT DISTINCT 
+          DATE(fromDate) AS fromDate, 
+          DATE(toDate) AS toDate 
+        FROM custbilldetails 
+        WHERE companyid = ? AND fromDate BETWEEN ? AND ? 
+        ORDER BY fromDate DESC`;
+
+      connection.query(
+        getMasters,
+        [dairy_id, yearStart, yearEnd],
+        (err, result) => {
+          connection.release();
+
+          if (err) {
+            console.error("master query execution error: ", err);
+            return res
+              .status(500)
+              .json({ status: 500, message: "master query execution error" });
+          }
+
+          // Map result to desired format
+          const formattedResult = result.map((record) => ({
+            fromDate: record.fromDate,
+            toDate: record.toDate,
+          }));
+
+          res.status(200).json({ status: 200, getMasters: formattedResult });
+        }
+      );
     } catch (error) {
       console.error("Error processing request: ", error);
       return res

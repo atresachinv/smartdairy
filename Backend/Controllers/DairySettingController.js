@@ -89,7 +89,6 @@ exports.centerList = async (req, res) => {
 exports.rechargeWhatsappSms = async (req, res) => {
   const { user_id } = req.user;
   const { dairy_id, center_id, balance } = req.body;
-  // console.log(dairy_id, center_id, balance);
   if (!dairy_id || center_id === null || !balance) {
     return res
       .status(400)

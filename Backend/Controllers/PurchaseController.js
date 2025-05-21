@@ -1,6 +1,7 @@
 const jwt = require("jsonwebtoken");
 const dotenv = require("dotenv");
 const pool = require("../Configs/Database");
+const evpool = require("../Configs/EverleapDB");
 dotenv.config({ path: "Backend/.env" });
 
 //------------------------------------------------------------------>
@@ -83,65 +84,6 @@ exports.purchaseInfo = async (req, res) => {
   });
 };
 
-//.......................................................//
-//.................Deduction Routes......................//
-//.......................................................//
-
-exports.paymentDetails = async (req, res) => {
-  const { fromDate, toDate } = req.body;
-
-  // Validate request body
-  if (!fromDate || !toDate) {
-    return res
-      .status(400)
-      .json({ message: "fromDate and toDate are required!" });
-  }
-
-  pool.getConnection((err, connection) => {
-    if (err) {
-      console.error("Error getting MySQL connection: ", err);
-      return res.status(500).json({ message: "Database connection error" });
-    }
-
-    try {
-      const dairy_id = req.user.dairy_id;
-      const user_code = req.user.user_code;
-
-      if (!dairy_id) {
-        connection.release(); // Release connection in case of early exit
-        return res.status(400).json({ message: "Dairy ID not found!" });
-      }
-
-      const paymentInfoQuery = `
-        SELECT ToDate, BillNo, arate, tliters, pamt, damt, namt , MAMT, BAMT
-        FROM custbilldetails 
-        WHERE companyid = ? AND AccCode = ? AND ToDate BETWEEN ? AND ? AND DeductionId = 0
-      `;
-
-      connection.query(
-        paymentInfoQuery,
-        [dairy_id, user_code, fromDate, toDate],
-        (err, result) => {
-          connection.release(); // Always release the connection
-          if (err) {
-            console.error("Error executing query: ", err);
-            return res.status(500).json({ message: "Query execution error" });
-          }
-
-          if (result.length === 0) {
-            return res.status(404).json({ message: "No records found!" });
-          }
-
-          // Return the results
-          res.status(200).json({ payment: result });
-        }
-      );
-    } catch (error) {
-      console.error("Error processing request: ", error);
-      return res.status(500).json({ message: "Internal server error" });
-    }
-  });
-};
 
 //............................................
 //Deduction Customer Route....................
@@ -193,6 +135,57 @@ exports.deductionInfo = async (req, res) => {
     }
   });
 };
+
+// everleap data --------------------------------------------------------------->
+
+exports.deductionsInfo = async (req, res) => {
+  const { fromDate, toDate } = req.body;
+
+  evpool.getConnection((err, connection) => {
+    if (err) {
+      console.error("Error getting MySQL connection: ", err);
+      return res.status(500).json({ message: "Database connection error" });
+    }
+
+    try {
+      const dairy_id = req.user.dairy_id;
+      const user_code = req.user.user_code;
+
+      if (!dairy_id) {
+        return res.status(400).json({ message: "Dairy ID not found!" });
+      }
+
+      const deductionInfo = `
+        SELECT ToDate, BillNo, dname, Amt, arate, tliters, pamt, damt, namt
+        FROM custbilldetails 
+        WHERE companyid = ? AND AccCode = ? AND ToDate BETWEEN ? AND ? AND  DeductionId <> 0
+      `;
+
+      connection.query(
+        deductionInfo,
+        [dairy_id, user_code, fromDate, toDate],
+        (err, result) => {
+          if (err) {
+            console.error("Error executing query: ", err);
+            return res.status(500).json({ message: "Query execution error" });
+          }
+
+          if (result.length === 0) {
+            return res.status(404).json({ message: "No records found!" });
+          }
+          res.status(200).json({ otherDeductions: result });
+        }
+      );
+    } catch (error) {
+      console.error("Error processing request: ", error);
+      return res.status(500).json({ message: "Internal server error" });
+    } finally {
+      connection.release();
+    }
+  });
+};
+
+// ---------------------------------- end ---------------------------------------//
 
 // exports.deductionInfo = async (req, res) => {
 //   const { fromDate, toDate } = req.body;
@@ -711,7 +704,6 @@ exports.deletePurchase = async (req, res) => {
   const { purchaseid } = req.params;
   const { dairy_id, center_id } = req.user;
 
-  // console.log(purchaseid, " ", dairy_id, " ", center_id);
   // Validate input
   if (!purchaseid || !dairy_id) {
     return res.status(400).json({

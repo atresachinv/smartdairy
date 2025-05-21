@@ -27,12 +27,14 @@ const {
   sendOTPMessage,
   saveOTP,
   updateCenterSetup,
+  mastersDates,
 } = require("../Controllers/DairyController");
 const { verifyOtp } = require("../Controllers/UserController");
 const router = express.Router();
 
 //dairy routes
-router.route("/dairy/masters").post(masterDates);
+router.route("/dairy/masters").post(verifyToken, masterDates);
+router.route("/dairy/masters/dates").post(verifyToken, mastersDates);
 router.route("/dairy/dashboard").post(verifyToken, dairyDashboardInfo);
 router.route("/dairyinfo").post(verifyToken, dairyInfo);
 router.route("/update/dairyinfo").put(verifyToken, updatedetails);

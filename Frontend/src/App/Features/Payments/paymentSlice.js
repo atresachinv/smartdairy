@@ -53,6 +53,27 @@ export const getPaymentInfo = createAsyncThunk(
   }
 );
 
+// everleap data ------------------------------------------------->
+// Retriving Payments Data
+export const getPaymentsInfo = createAsyncThunk(
+  "payment/getPaymentsInfo",
+  async ({ fromDate, toDate }, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.post("/payments-info", {
+        fromDate,
+        toDate,
+      });
+      return response.data;
+    } catch (error) {
+      const errorMessage = error.response
+        ? error.response.data
+        : "Failed to fetch payment information.";
+      return rejectWithValue(errorMessage);
+    }
+  }
+);
+
+
 // Transfer Milk Morning TO Evening ------------>
 export const updateMilkData = createAsyncThunk(
   "payment/updateMilkData",
@@ -571,6 +592,20 @@ const paymentSlice = createSlice({
         state.payment = action.payload.payment;
       })
       .addCase(getPaymentInfo.rejected, (state, action) => {
+        state.loading = false;
+        state.status = "failed";
+        state.error = action.payload;
+      }) // everleap data ------------------------------------------->
+      .addCase(getPaymentsInfo .pending, (state) => {
+        state.status = "loading";
+        state.error = null;
+      })
+      .addCase(getPaymentsInfo .fulfilled, (state, action) => {
+        state.loading = false;
+        state.status = "succeeded";
+        state.payment = action.payload.payment;
+      })
+      .addCase(getPaymentsInfo .rejected, (state, action) => {
         state.loading = false;
         state.status = "failed";
         state.error = action.payload;

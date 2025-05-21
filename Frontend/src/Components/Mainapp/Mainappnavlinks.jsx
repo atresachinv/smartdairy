@@ -579,7 +579,7 @@ const Mainappnavlinks = ({ setselected, handleSidebar }) => {
       icon: <FaUserCircle className="icon" />,
       index: 10,
       path: "profile-info",
-      role: ["milkcollector", "mobilecollector"],
+      role: ["mobilecollector"],
     },
   ];
 

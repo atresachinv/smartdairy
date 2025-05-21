@@ -87,9 +87,9 @@ const PayDeductions = ({ showbtn, setCurrentPage }) => {
     minPayAmount: 0.0,
   }); // form data for the payment deduction
 
-  // console.log("otherDPayData", allDeductions);
+  // console.log("allDeductions", allDeductions);
   // console.log("filteredPayData", filteredPayData);
-  // console.log("deductions", deductions);
+  // console.log("otherDPayData", otherDPayData);
   // console.log("mergedDeductions", mergedDeductions);
 
   useEffect(() => {
@@ -175,18 +175,6 @@ const PayDeductions = ({ showbtn, setCurrentPage }) => {
 
   // // Handling Prev Next Buttons ------------------------------------------------>
 
-  // const handleNext = () => {
-  //   setCurrentIndex((prevIndex) =>
-  //     prevIndex === customerList.length ? 1 : prevIndex + 1
-  //   );
-  // };
-
-  // const handlePrev = () => {
-  //   setCurrentIndex((prevIndex) =>
-  //     prevIndex === 1 ? customerList.length : prevIndex - 1
-  //   );
-  // };
-
   const handleNext = () => {
     const currentIndex = customerCodes.indexOf(currentCode);
     if (currentIndex !== -1 && currentIndex < customerCodes.length - 1) {
@@ -215,58 +203,58 @@ const PayDeductions = ({ showbtn, setCurrentPage }) => {
   };
 
   // Handle Milk Data display --------------------------------------------------->
-  useEffect(() => {
-    if (milkData && milkData.length > 0) {
-      const currentCustomer = milkData.find(
-        (entry) => parseInt(entry.rno, 10) === parseInt(currentCode)
-      );
-      if (currentCustomer) {
-        setFormData((prevData) => ({
-          ...prevData,
-          morningliters: currentCustomer.mrgMilk,
-          eveningliters: currentCustomer.eveMilk,
-          totalcollection: currentCustomer.mrgMilk + currentCustomer.eveMilk,
-        }));
-      } else {
-        setFormData((prevData) => ({
-          ...prevData,
-          morningliters: 0.0,
-          eveningliters: 0.0,
-          totalcollection: 0.0,
-        }));
-      }
-      const customer = customerlist.find(
-        (entry) => parseInt(entry.srno, 10) === parseInt(currentCode)
-      );
-      if (currentCustomer) {
-        setFormData((prevData) => ({
-          ...prevData,
-          morningcommission: currentCustomer.mrgMilk * customer.commission,
-          eveningcommission: currentCustomer.eveMilk * customer.commission,
-          totalcommission:
-            currentCustomer.mrgMilk * customer.commission +
-            currentCustomer.eveMilk * customer.commission,
-          morningrebate: currentCustomer.mrgMilk * customer.rebet,
-          eveningrebate: currentCustomer.eveMilk * customer.rebet,
-          totalrebate:
-            currentCustomer.mrgMilk * customer.rebet +
-            currentCustomer.eveMilk * customer.rebet,
-          transport: customer.transportation,
-        }));
-      } else if (!currentCustomer || !customer) {
-        setFormData((prevData) => ({
-          ...prevData,
-          morningcommission: 0.0,
-          eveningcommission: 0.0,
-          totalcommission: 0.0,
-          morningrebate: 0.0,
-          eveningrebate: 0.0,
-          totalrebate: 0.0,
-          transport: 0.0,
-        }));
-      }
-    }
-  }, [milkData, customerlist, currentCode]);
+  // useEffect(() => {
+  //   if (milkData && milkData.length > 0) {
+  //     const currentCustomer = milkData.find(
+  //       (entry) => parseInt(entry.rno, 10) === parseInt(currentCode)
+  //     );
+  //     if (currentCustomer) {
+  //       setFormData((prevData) => ({
+  //         ...prevData,
+  //         morningliters: currentCustomer.mrgMilk,
+  //         eveningliters: currentCustomer.eveMilk,
+  //         totalcollection: currentCustomer.mrgMilk + currentCustomer.eveMilk,
+  //       }));
+  //     } else {
+  //       setFormData((prevData) => ({
+  //         ...prevData,
+  //         morningliters: 0.0,
+  //         eveningliters: 0.0,
+  //         totalcollection: 0.0,
+  //       }));
+  //     }
+  //     const customer = customerlist.find(
+  //       (entry) => parseInt(entry.srno, 10) === parseInt(currentCode)
+  //     );
+  //     if (currentCustomer) {
+  //       setFormData((prevData) => ({
+  //         ...prevData,
+  //         morningcommission: currentCustomer.mrgMilk * customer.commission,
+  //         eveningcommission: currentCustomer.eveMilk * customer.commission,
+  //         totalcommission:
+  //           currentCustomer.mrgMilk * customer.commission +
+  //           currentCustomer.eveMilk * customer.commission,
+  //         morningrebate: currentCustomer.mrgMilk * customer.rebet,
+  //         eveningrebate: currentCustomer.eveMilk * customer.rebet,
+  //         totalrebate:
+  //           currentCustomer.mrgMilk * customer.rebet +
+  //           currentCustomer.eveMilk * customer.rebet,
+  //         transport: customer.transportation,
+  //       }));
+  //     } else if (!currentCustomer || !customer) {
+  //       setFormData((prevData) => ({
+  //         ...prevData,
+  //         morningcommission: 0.0,
+  //         eveningcommission: 0.0,
+  //         totalcommission: 0.0,
+  //         morningrebate: 0.0,
+  //         eveningrebate: 0.0,
+  //         totalrebate: 0.0,
+  //         transport: 0.0,
+  //       }));
+  //     }
+  //   }
+  // }, [milkData, customerlist, currentCode]);
 
   // set round off amount for perticular customers ------------------------------------->
   useEffect(() => {
@@ -330,7 +318,7 @@ const PayDeductions = ({ showbtn, setCurrentPage }) => {
     }
   }, [custTrnDedu]);
 
-  // Handle amount change for each deduction --------------------------------->
+  // Handle amount change for each deduction ------------------------------------>
   const handleAmtChange = (index, value) => {
     const updated = [...allDeductions];
     const current = { ...updated[index] };
@@ -364,9 +352,9 @@ const PayDeductions = ({ showbtn, setCurrentPage }) => {
     setCustTrnDedu(customerdeductions);
   }, [mergedDeductions, currentCode]);
 
-  //----------------------------------------------------------------------------------->
-  // auto deduction calculations ------------------------------------------------------>
-  //----------------------------------------------------------------------------------->
+  //----------------------------------------------------------------------------->
+  // auto deduction calculations ------------------------------------------------>
+  //----------------------------------------------------------------------------->
 
   // fiter paydata for the current customer ------------------------------------->
   useEffect(() => {
@@ -396,6 +384,7 @@ const PayDeductions = ({ showbtn, setCurrentPage }) => {
     const payCodes = [...new Set(paycustomer.map((item) => item.Code))];
     setCustomerCodes(payCodes);
   };
+
   useEffect(() => {
     payCustomer(payData);
   }, [payData]);
@@ -418,7 +407,6 @@ const PayDeductions = ({ showbtn, setCurrentPage }) => {
         (entry) =>
           parseInt(entry.Code, 10) === currentCode && entry.DeductionId === 0
       );
-
       if (currentCustomer) {
         setCustomerName(currentCustomer.cname || "");
         setFormData((prevData) => ({
@@ -438,6 +426,17 @@ const PayDeductions = ({ showbtn, setCurrentPage }) => {
           totalPayment: Math.abs(currentCustomer.pamt || 0.0),
           netDeduction: Math.abs(currentCustomer.damt || 0.0),
           netPayment: Math.abs(currentCustomer.namt || 0.0),
+          netCommission: currentCustomer.allComm,
+          morningliters: currentCustomer.tmor,
+          eveningliters: currentCustomer.teve,
+          totalcollection: currentCustomer.tliters,
+          morningcommission: currentCustomer.tcommor,
+          eveningcommission: currentCustomer.tcomeve,
+          totalcommission: currentCustomer.tcom,
+          morningrebate: currentCustomer.tcomribetmor,
+          eveningrebate: currentCustomer.tcomribeteve,
+          totalrebate: currentCustomer.tcomribet,
+          transport: currentCustomer.transport,
         }));
       } else {
         setCustomerName("");
@@ -494,24 +493,6 @@ const PayDeductions = ({ showbtn, setCurrentPage }) => {
       netPayment: parseFloat((prev.netPayment - diff).toFixed(2)),
     }));
   };
-
-  // calculate total transfer amount -------------------------->
-  useEffect(() => {
-    setFormData((prevData) => ({
-      ...prevData,
-      netCommission: formData.totalcommission + formData.totalrebate,
-      totalPayment:
-        Number(formData.totalPayment) + Number(formData.netCommission),
-      totalTransport: formData.totalcollection * formData.transport,
-      netPayment: Number(formData.netPayment) + Number(formData.netCommission),
-    }));
-  }, [
-    formData.totalcommission,
-    formData.netCommission,
-    formData.totalrebate,
-    formData.totalcollection,
-    formData.transport,
-  ]);
 
   //handle focus on next input field ----------------------------------------->
   const handleEnterKey = (e, index) => {
@@ -812,11 +793,9 @@ const PayDeductions = ({ showbtn, setCurrentPage }) => {
                 </div>
               ))
             ) : (
-              <div className="w100 p10 d-flex a-center j-center">
-                <span className="label-text">No fix deduction data found!</span>
-              </div>
+              <></>
             )}
-            {otherDPayData && !allDeductions && otherDPayData.length > 0 ? (
+            {otherDPayData && otherDPayData.length > 0 ? (
               otherDPayData.map((item, index) => (
                 <div
                   key={index}
@@ -846,7 +825,7 @@ const PayDeductions = ({ showbtn, setCurrentPage }) => {
             ) : (
               <></>
             )}
-            {allDeductions && allDeductions.length > 0 ? (
+            {allDeductions && otherDPayData.length === 0 && allDeductions.length > 0 ? (
               allDeductions.map((item, index) => (
                 <div
                   key={index}
@@ -864,6 +843,7 @@ const PayDeductions = ({ showbtn, setCurrentPage }) => {
                     type="number"
                     className="data w20"
                     readOnly={isLocked}
+                    value={item.Amt || ""}
                     onChange={(e) => handleAmtChange(index, e.target.value)}
                     ref={(el) => (inputRefs.current[index] = el)}
                     onKeyDown={(e) => handleEnterKey(e, index)}
@@ -911,7 +891,7 @@ const PayDeductions = ({ showbtn, setCurrentPage }) => {
                   id=""
                   className="data h60 t-center label-text read-onlytxt"
                 >
-                  {formData.totalTransport || 0.0}
+                  {formData.transport || 0.0}
                 </span>
               </div>
             </div>

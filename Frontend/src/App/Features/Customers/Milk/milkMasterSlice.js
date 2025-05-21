@@ -32,6 +32,24 @@ export const getMasterReports = createAsyncThunk(
   }
 );
 
+export const getMastersReport = createAsyncThunk(
+  "masterreport/getMastersReport",
+  async ({ fromDate, toDate }, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.post("/customer/masters/report", {
+        fromDate,
+        toDate,
+      });
+      return response.data; // Assuming the API response directly matches the initialState structure
+    } catch (error) {
+      const errorMessage = error.response
+        ? error.response.data
+        : "Failed to fetch master milk reports.";
+      return rejectWithValue(errorMessage);
+    }
+  }
+);
+
 const milkMasterSlice = createSlice({
   name: "milk",
   initialState,
@@ -49,6 +67,21 @@ const milkMasterSlice = createSlice({
         state.msummary = action.payload.summary;
       })
       .addCase(getMasterReports.rejected, (state, action) => {
+        state.loading = false;
+        state.status = "failed";
+        state.error = action.payload;
+      })
+      .addCase(getMastersReport.pending, (state) => {
+        state.status = "loading";
+        state.error = null;
+      })
+      .addCase(getMastersReport.fulfilled, (state, action) => {
+        state.loading = false;
+        state.status = "succeeded";
+        state.mrecords = action.payload.records;
+        state.msummary = action.payload.summary;
+      })
+      .addCase(getMastersReport.rejected, (state, action) => {
         state.loading = false;
         state.status = "failed";
         state.error = action.payload;
