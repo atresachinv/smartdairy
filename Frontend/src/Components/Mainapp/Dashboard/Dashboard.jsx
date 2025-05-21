@@ -355,14 +355,14 @@ const Dashboard = () => {
       <div className="dashboard-scrll-container w100 h1 mh100 hidescrollbar ">
         <div className="Milk-sale-details-container w100 hidescrollbar">
           <form className="selection-container w100 h10 d-flex a-center j-start">
-            <div className="select-data-text w60 h10 d-flex a-center p10">
-              <span className="w30 info-text">{t("c-select-period")} :</span>
-              <div className="custmize-report-div w70 h1 data px10 d-flex a-center sb">
+            <div className="select-data-text w60 h10 d-flex a-center px10">
+              <span className="w35 info-text">{t("c-select-period")} :</span>
+              <div className="custmize-report-div w65 h1 data d-flex a-center sb">
                 <span className="cl-icon w10 d-flex center">
                   <BsCalendar3 />
                 </span>
                 <select
-                  className="custom-select label-text w90 h1 d-flex p10"
+                  className="custom-select label-text w90 h1 d-flex"
                   onChange={handleSelectChange}
                 >
                   <option className="label-text w100 d-flex" value={""}>
