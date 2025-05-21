@@ -33,6 +33,26 @@ export const getDeductionInfo = createAsyncThunk(
   }
 );
 
+// everleap data ------------------------------------------------>
+// payment deductions ------------------------------------------->
+export const getDeductionsInfo = createAsyncThunk(
+  "deduction/getDeductionsInfo",
+  async ({ fromDate, toDate }, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.post("/deductions-info", {
+        fromDate,
+        toDate,
+      });
+      return response.data;
+    } catch (error) {
+      const errorMessage = error.response
+        ? error.response.data
+        : "Failed to fetch deduction information.";
+      return rejectWithValue(errorMessage);
+    }
+  }
+);
+
 // get payment deduction for admin
 export const getPaymentsDeductionInfo = createAsyncThunk(
   "deduction/getPaymentsDeductionInfo",
@@ -123,6 +143,21 @@ const deductionSlice = createSlice({
         state.subdeductions = action.payload.otherDeductions;
       })
       .addCase(getDeductionInfo.rejected, (state, action) => {
+        state.loading = false;
+        state.status = "failed";
+        state.error = action.payload;
+      }) // everleap data -------------------------------------------------->
+      .addCase(getDeductionsInfo.pending, (state) => {
+        state.status = "loading";
+        state.error = null;
+      })
+      .addCase(getDeductionsInfo.fulfilled, (state, action) => {
+        state.loading = false;
+        state.status = "succeeded";
+        state.deductionInfo = action.payload.mainDeduction;
+        state.subdeductions = action.payload.otherDeductions;
+      })
+      .addCase(getDeductionsInfo.rejected, (state, action) => {
         state.loading = false;
         state.status = "failed";
         state.error = action.payload;

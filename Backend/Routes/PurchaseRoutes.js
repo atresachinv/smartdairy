@@ -11,18 +11,22 @@ const {
   updatePurchase,
   deletePurchase,
   getAllProductSaleRate,
+  deductionsInfo,
 } = require("../Controllers/PurchaseController");
 const router = express.Router();
+// ------------------------ customer app routes -------------------------------//
 
+router.route("/deduction-info").post(verifyToken, deductionInfo);
+router.route("/deductions-info").post(verifyToken, deductionsInfo);
+
+// -------------------------------- end ---------------------------------------//
 //purchase Routes
 
 router.route("/sales/report").post(verifyToken, purchaseInfo);
 
 //Deduction Routes
 
-router.route("/payment-info").post(verifyToken, paymentDetails);
 router.route("/payment/details").post(verifyToken, allPaymentDetails);
-router.route("/deduction-info").post(verifyToken, deductionInfo);
 router.route("/payment/deduction-info").post(verifyToken, paymentDeductionInfo);
 
 //dev pramod

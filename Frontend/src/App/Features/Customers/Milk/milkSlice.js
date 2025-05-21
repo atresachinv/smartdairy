@@ -32,6 +32,8 @@ export const getMilkReports = createAsyncThunk(
   }
 );
 
+
+
 const milkSlice = createSlice({
   name: "milk",
   initialState,
@@ -52,7 +54,8 @@ const milkSlice = createSlice({
         state.loading = false;
         state.status = "failed";
         state.error = action.payload;
-      });
+      })
+     ;
   },
 });
 

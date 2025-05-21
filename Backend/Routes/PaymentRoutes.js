@@ -27,9 +27,19 @@ const {
   lockMilkPayment,
   deleteSelectedMilkPays,
   deleteAllMilkPay,
+  paymentDetails,
+  paymentsDetail,
 } = require("../Controllers/PaymentController");
 
 const router = express.Router();
+
+// --------------------- customer app routes ----------------------------//
+
+router.route("/payment-info").post(verifyToken, paymentDetails);
+router.route("/payments-info").post(verifyToken, paymentsDetail);
+
+// ------------------------------ end --=--------------------------------//
+
 router.route("/update/milk-data").patch(verifyToken, updateSelectedRecord);
 router
   .route("/transfer/milk-time/evening")

@@ -1,6 +1,7 @@
 const jwt = require("jsonwebtoken");
 const dotenv = require("dotenv");
 const pool = require("../Configs/Database");
+const evpool = require("../Configs/EverleapDB");
 dotenv.config({ path: "Backend/.env" });
 const NodeCache = require("node-cache");
 const cache = new NodeCache({});
@@ -1025,6 +1026,65 @@ exports.customMilkReport = async (req, res) => {
   });
 };
 
+// everleap data function ---------------------------------------------------------------->
+
+exports.customrMilkReport = async (req, res) => {
+  const { fromDate, toDate } = req.body;
+  const { dairy_id, user_code } = req.user;
+
+  if (!dairy_id) {
+    return res.status(400).json({ message: "Dairy ID not found!" });
+  }
+
+  evpool.getConnection((err, connection) => {
+    if (err) {
+      console.error("Error getting MySQL connection: ", err);
+      return res.status(500).json({ message: "Database connection error" });
+    }
+
+    try {
+      const dairy_table = `dailymilkentry_${dairy_id}`;
+
+      const milkreportQuery = `
+       SELECT d.ReceiptDate, d.ME, d.CB, d.Litres, d.fat, d.snf, d.Rate, d.Amt,
+          totals.totalLiters, totals.avgFat, totals.avgSNF, totals.avgRate, totals.totalAmount
+        FROM ${dairy_table} d
+        CROSS JOIN (
+        SELECT  SUM(Litres) AS totalLiters, AVG(fat) AS avgFat, AVG(snf) AS avgSNF, AVG(Rate) AS avgRate, SUM(Amt) AS totalAmount
+        FROM ${dairy_table} WHERE ReceiptDate BETWEEN ? AND ? AND AccCode = ?
+        ) totals
+        WHERE d.ReceiptDate BETWEEN ? AND ? AND d.AccCode = ?
+        ORDER BY d.ReceiptDate ASC
+      `;
+
+      const params = [fromDate, toDate, user_code, fromDate, toDate, user_code];
+
+      connection.query(milkreportQuery, params, (err, results) => {
+        connection.release();
+
+        if (err) {
+          console.error("Error executing milk report query: ", err);
+          return res.status(500).json({ message: "Query execution error" });
+        }
+
+        const summaryData = {
+          totalLiters: results[0]?.totalLiters || 0,
+          avgFat: results[0]?.avgFat || 0,
+          avgSNF: results[0]?.avgSNF || 0,
+          avgRate: results[0]?.avgRate || 0,
+          totalAmount: results[0]?.totalAmount || 0,
+        };
+
+        res.status(200).json({ records: results, summary: summaryData });
+      });
+    } catch (error) {
+      console.error("Error processing request: ", error);
+      return res.status(500).json({ message: "Internal server error" });
+    }
+  });
+};
+
+// ------------------------------------ end -------------------------------------------- //
 // ..................................................
 // App Customer Milk Report..........................
 // ..................................................

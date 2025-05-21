@@ -4,62 +4,112 @@ import jsPDF from "jspdf";
 import "jspdf-autotable";
 import { BsCalendar3 } from "react-icons/bs";
 import Spinner from "../../Home/Spinner/Spinner";
-import { getMasterReports } from "../../../App/Features/Customers/Milk/milkMasterSlice";
+import { getMasterReports, getMastersReport } from "../../../App/Features/Customers/Milk/milkMasterSlice";
 import {
   getPaymentInfo,
+  getPaymentsInfo,
   resetPayment,
 } from "../../../App/Features/Payments/paymentSlice";
 import "../../../Styles/Customer/CustNavViews/CustPurchase.css";
 import { useTranslation } from "react-i18next";
 import {
   getDeductionInfo,
+  getDeductionsInfo,
   resetDeduction,
 } from "../../../App/Features/Deduction/deductionSlice";
-import { generateMaster } from "../../../App/Features/Customers/Date/masterdateSlice";
+import {
+  getMasterDates,
+  getMastersDates,
+} from "../../../App/Features/Customers/Date/masterSlice";
 
 const CustPayment = () => {
   const { t } = useTranslation("common");
   const dispatch = useDispatch();
   const dairyinfo = useSelector((state) => state.dairy.dairyData);
   const date = useSelector((state) => state.date.toDate);
-  const manualMaster = useSelector((state) => state.manualMasters.masterlist);
+  const paymasters = useSelector((state) => state.masterdates.masterlist);
   const records = useSelector((state) => state.mMilk.mrecords);
   const subdeduction = useSelector((state) => state.deduction.subdeductions);
   const payment = useSelector((state) => state.payment.payment);
   const status = useSelector((state) => state.mMilk.status);
   const [selectedPeriod, setSelectedPeriod] = useState(null);
+  const [fyearStart, setYearStart] = useState(null);
+  const [payStatus, setPayStatus] = useState(false);
 
-  // Generate master dates based on the initial date
+
   useEffect(() => {
-    dispatch(generateMaster(date));
+    const [year, month, day] = date.split("-").map(Number); // Assuming format is DD-MM-YYYY
+    const financialYearStartYear = month >= 4 ? year : year - 1;
+    const yearStart = `${financialYearStartYear}-04-01`;
+
+    setYearStart(yearStart);
+
+    // Now you can use yearStart with date as needed
   }, [date]);
 
-  const handleSelectChange = (e) => {
+  // ----------------------------------------------------------->
+  useEffect(() => {
+    if (fyearStart && date && dairyinfo.SocietyCode > 140) {
+      dispatch(getMasterDates({ yearStart: fyearStart, yearEnd: date }));
+    } else {
+      dispatch(getMastersDates({ yearStart: fyearStart, yearEnd: date }));
+    }
+  }, [fyearStart, date]);
+
+  const handleSelectChange = async (e) => {
     const selectedIndex = e.target.value;
-    if (selectedIndex !== "") {
-      const selectedDates = manualMaster[selectedIndex];
+    if (selectedIndex !== "" && dairyinfo.SocietyCode > 140) {
+      const selectedDates = paymasters[selectedIndex];
       setSelectedPeriod(selectedDates);
-      dispatch(
+      setPayStatus(true);
+      const res = await dispatch(
         getMasterReports({
-          fromDate: selectedDates.start,
-          toDate: selectedDates.end,
+          fromDate: selectedDates.fromDate,
+          toDate: selectedDates.toDate,
         })
-      );
+      ).unwrap();
 
       dispatch(resetDeduction());
-      dispatch(
+      const res1 = await dispatch(
         getDeductionInfo({
-          fromDate: selectedDates.start,
-          toDate: selectedDates.end,
+          fromDate: selectedDates.fromDate,
+          toDate: selectedDates.toDate,
         })
-      );
+      ).unwrap();
       dispatch(resetPayment());
-      dispatch(
+      const res2 = await dispatch(
         getPaymentInfo({
-          fromDate: selectedDates.start,
-          toDate: selectedDates.end,
+          fromDate: selectedDates.fromDate,
+          toDate: selectedDates.toDate,
         })
-      );
+      ).unwrap();
+      setPayStatus(false);
+    } else {
+      const selectedDates = paymasters[selectedIndex];
+      setSelectedPeriod(selectedDates);
+      setPayStatus(true);
+     const res = await dispatch(
+        getMastersReport({
+          fromDate: selectedDates.fromDate,
+          toDate: selectedDates.toDate,
+        })
+      ).unwrap();
+
+      dispatch(resetDeduction());
+      const res1 = await dispatch(
+        getDeductionsInfo({
+          fromDate: selectedDates.fromDate,
+          toDate: selectedDates.toDate,
+        })
+      ).unwrap();
+      dispatch(resetPayment());
+      const res2 = await dispatch(
+        getPaymentsInfo({
+          fromDate: selectedDates.fromDate,
+          toDate: selectedDates.toDate,
+        })
+      ).unwrap();
+      setPayStatus(false);
     }
   };
 
@@ -74,8 +124,8 @@ const CustPayment = () => {
     const doc = new jsPDF();
 
     const formatDate = selectedPeriod;
-    const fromDate = formatDate.start;
-    const toDate = formatDate.end.slice(0, 10);
+    const fromDate = formatDate.fromDate.slice(0, 10);
+    const toDate = formatDate.toDate.slice(0, 10);
 
     const dairyName = dairyinfo.SocietyName.toUpperCase();
     const pageWidth = doc.internal.pageSize.getWidth();
@@ -215,19 +265,19 @@ const CustPayment = () => {
             <option className="label-text w100 d-flex">
               --{t("c-select-master")}--
             </option>
-            {manualMaster.map((dates, index) => (
+            {paymasters.map((dates, index) => (
               <option
                 className="label-text w100 d-flex sa"
                 key={index}
                 value={index}
               >
-                {new Date(dates.start).toLocaleDateString("en-GB", {
+                {new Date(dates.fromDate).toLocaleDateString("en-GB", {
                   day: "2-digit",
                   month: "short", // Abbreviated month format
                   year: "numeric",
                 })}
                 To :
-                {new Date(dates.end).toLocaleDateString("en-GB", {
+                {new Date(dates.toDate).toLocaleDateString("en-GB", {
                   day: "2-digit",
                   month: "short", // Abbreviated month format
                   year: "numeric",
@@ -242,7 +292,7 @@ const CustPayment = () => {
           <div className="w100 h1 d-flex sb a-center">
             <span className="heading">{t("c-no-data-avai")}</span>{" "}
           </div>
-        ) : status === "loading" ? (
+        ) : payStatus ? (
           <div className="w100 h80 d-flex center">
             <Spinner />
           </div>
@@ -262,8 +312,8 @@ const CustPayment = () => {
               <span className="heading px10">{t("c-page-title-milk")} :</span>
               <div className="invoice-of-collection-div w100 d-flex-col">
                 <div className="content-titles-div w100 d-flex center t-center sa p10">
-                  <span className="text w15">{t("c-date")}</span>
-                  <span className="text w5">{t("c-m/e")}</span>
+                  <span className="text w20">{t("c-date")}</span>
+                  <span className="text w10">{t("c-m/e")}</span>
                   <span className="text w10">{t("c-c/b")}</span>
                   <span className="text w10">{t("c-liters")}</span>
                   <span className="text w5">FAT</span>
@@ -278,7 +328,7 @@ const CustPayment = () => {
                         key={index}
                         className="content-values-div w100 p10 d-flex center t-center sb"
                       >
-                        <span className="text w15">
+                        <span className="text w20">
                           {new Date(report.ReceiptDate).toLocaleDateString(
                             "en-GB",
                             {
@@ -288,7 +338,7 @@ const CustPayment = () => {
                             }
                           )}
                         </span>
-                        <span className="text w5">
+                        <span className="text w10">
                           {report.ME === 0 ? `${t("c-m")}` : `${t("c-e")}`}
                         </span>
                         <span className="text w10">

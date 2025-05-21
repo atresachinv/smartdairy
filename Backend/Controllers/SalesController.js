@@ -482,7 +482,7 @@ exports.fetchAllSales = (req, res) => {
               message: "No sales record found with the given criteria.",
             });
           }
-          // console.log(result);
+
           res.status(200).json({
             allSales: result,
           });

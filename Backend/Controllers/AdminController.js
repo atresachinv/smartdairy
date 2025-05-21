@@ -48,7 +48,6 @@ exports.createNewAccess = async (req, res) => {
     console.log("access_name not recived!");
     return;
   }
-  console.log(access_name, access_desc);
 
   pool.getConnection((err, connection) => {
     if (err) {
@@ -74,7 +73,6 @@ exports.createNewAccess = async (req, res) => {
             console.error("Error executing query: ", err);
             return res.status(500).json({ message: "Query execution error" });
           }
-          console.log("affected rows", result.affectedRows);
           res.status(200).json({ message: "New access created successfully!" });
         }
       );

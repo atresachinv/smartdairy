@@ -16,11 +16,17 @@ const {
   deleteCustomer,
   updateDealer,
   getMaxDealNo,
+  customrMilkReport,
 } = require("../Controllers/CustomerController");
 
 const router = express.Router();
 
 // Customer Routes
+
+// ------------------------ customer routes ---------------------------//
+router.route("/customer/master/report").post(verifyToken, customMilkReport); // smartdairy data
+router.route("/customer/masters/report").post(verifyToken, customrMilkReport); // everleap data
+// ------------------------------- end --------------------------------//
 
 router.route("/customer/maxcustno").post(verifyToken, getMaxCustNo);
 router.route("/create/customer").post(verifyToken, createCustomer);
@@ -29,7 +35,6 @@ router.route("/customer/list").post(verifyToken, customerList);
 router.route("/customer/profile").post(verifyToken, profileInfo);
 router.route("/customer/dashboard").post(verifyToken, custDashboardInfo);
 router.route("/customer/milkreport").post(verifyToken, milkcollReport);
-router.route("/customer/master/report").post(verifyToken, customMilkReport);
 router.route("/upload/customer/excel").post(verifyToken, uploadExcelCustomer);
 
 //Ratechart Routes

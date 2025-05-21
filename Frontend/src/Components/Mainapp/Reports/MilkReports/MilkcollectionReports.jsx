@@ -265,40 +265,6 @@ const MilkcollectionReports = () => {
     );
   };
 
-  // >>>>> Excel ----
-  // const exportToExcel = () => {
-  //   if (!data || data.length === 0) {
-  //     alert("No data available to export!");
-  //     return;
-  //   }
-  //   const reportDate = selectedDay || selectedDate.end.slice(0, 10);
-  //   const formatDate = (dateString) => {
-  //     const date = new Date(dateString);
-  //     const day = String(date.getDate()).padStart(2, "0");
-  //     const month = String(date.getMonth() + 1).padStart(2, "0");
-  //     const year = date.getFullYear();
-  //     return `${day}/${month}/${year}`;
-  //   };
-
-  //   const worksheet = XLSX.utils.json_to_sheet(
-  //     filteredData.map((row) => ({
-  //       Date: formatDate(row.ReceiptDate),
-  //       Time: row.ME,
-  //       Code: row.rno,
-  //       Liters: row.Litres,
-  //       Fat: row.fat,
-  //       SNF: row.snf,
-  //       Name: row.cname,
-  //       "Rate/Liter (₹)": row.rate,
-  //       "Amount (₹)": row.Amt,
-  //       Animal: row.CB,
-  //     }))
-  //   );
-
-  //   const workbook = XLSX.utils.book_new();
-  //   XLSX.utils.book_append_sheet(workbook, worksheet, "sheet1");
-  //   XLSX.writeFile(workbook, `milk-collection-report_${reportDate}.xlsx`);
-  // };
   const exportToExcel = () => {
     if (!data || data.length === 0) {
       alert("No data available to export!");

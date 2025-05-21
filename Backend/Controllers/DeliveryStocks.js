@@ -169,7 +169,7 @@ exports.getDeliverStocks = async (req, res) => {
 // Get user Delivery Stocks with Date Range Filter
 exports.getUserDeliverStocks = async (req, res) => {
   const { dairy_id, center_id, user_id } = req.user;
-  // console.log(user_id);
+
   const { from_date, to_date, ...filters } = req.query;
   const today = new Date().toISOString().split("T")[0];
 
