@@ -43,7 +43,6 @@ const DayBook = () => {
     }
   };
 
-
   //.......PRINT Function
 
   const handlePrint = () => {
@@ -217,65 +216,61 @@ const DayBook = () => {
     printWindow.print();
   };
 
- 
-const mergedVoucherList = useMemo(() => {
-  const temp = [];
+  const mergedVoucherList = useMemo(() => {
+    const temp = [];
 
-  voucherList.forEach((voucher) => {
-    const key = voucher.GLCode;
-    const existing = temp.find((v) => v.key === key);
+    voucherList.forEach((voucher) => {
+      const key = voucher.GLCode;
+      const existing = temp.find((v) => v.key === key);
 
-    const amt = Math.abs(voucher.Amt || 0);
+      const amt = Math.abs(voucher.Amt || 0);
 
-    if (existing) {
-      if (voucher.Vtype === 3) existing.cashIn = (existing.cashIn || 0) + amt; // जमा कॅश
-      if (voucher.Vtype === 4)
-        existing.transferIn = (existing.transferIn || 0) + amt; // जमा ट्रान्सफर
-      if (voucher.Vtype === 0) existing.cashOut = (existing.cashOut || 0) + amt; // नावे कॅश
-      if (voucher.Vtype === 1)
-        existing.transferOut = (existing.transferOut || 0) + amt; // नावे ट्रान्सफर
-    } else {
-      temp.push({
-        key,
-        GLCode: voucher.GLCode,
-        cashIn: voucher.Vtype === 3 ? amt : 0,
-        transferIn: voucher.Vtype === 4 ? amt : 0,
-        cashOut: voucher.Vtype === 0 ? amt : 0,
-        transferOut: voucher.Vtype === 1 ? amt : 0,
-      });
-    }
-  });
+      if (existing) {
+        if (voucher.Vtype === 3) existing.cashIn = (existing.cashIn || 0) + amt; // जमा कॅश
+        if (voucher.Vtype === 4)
+          existing.transferIn = (existing.transferIn || 0) + amt; // जमा ट्रान्सफर
+        if (voucher.Vtype === 0)
+          existing.cashOut = (existing.cashOut || 0) + amt; // नावे कॅश
+        if (voucher.Vtype === 1)
+          existing.transferOut = (existing.transferOut || 0) + amt; // नावे ट्रान्सफर
+      } else {
+        temp.push({
+          key,
+          GLCode: voucher.GLCode,
+          cashIn: voucher.Vtype === 3 ? amt : 0,
+          transferIn: voucher.Vtype === 4 ? amt : 0,
+          cashOut: voucher.Vtype === 0 ? amt : 0,
+          transferOut: voucher.Vtype === 1 ? amt : 0,
+        });
+      }
+    });
 
-  return temp;
-}, [voucherList]);
+    return temp;
+  }, [voucherList]);
 
- 
-  
   //.....
-const totals = useMemo(() => {
-  let jamaCash = 0;
-  let jamaTransfer = 0;
-  let naveCash = 0;
-  let naveTransfer = 0;
+  const totals = useMemo(() => {
+    let jamaCash = 0;
+    let jamaTransfer = 0;
+    let naveCash = 0;
+    let naveTransfer = 0;
 
-  mergedVoucherList.forEach((voucher) => {
-    jamaCash += voucher.cashIn || 0;
-    jamaTransfer += voucher.transferIn || 0;
-    naveCash += voucher.cashOut || 0;
-    naveTransfer += voucher.transferOut || 0;
-  });
+    mergedVoucherList.forEach((voucher) => {
+      jamaCash += voucher.cashIn || 0;
+      jamaTransfer += voucher.transferIn || 0;
+      naveCash += voucher.cashOut || 0;
+      naveTransfer += voucher.transferOut || 0;
+    });
 
-  return {
-    openingBalance: 0, // use actual value if needed
-    closingBalance: jamaCash + jamaTransfer - naveCash - naveTransfer,
-    jamaCash,
-    jamaTransfer,
-    naveCash,
-    naveTransfer,
-  };
-}, [mergedVoucherList]);
-
-
+    return {
+      openingBalance: 0, // use actual value if needed
+      closingBalance: jamaCash + jamaTransfer - naveCash - naveTransfer,
+      jamaCash,
+      jamaTransfer,
+      naveCash,
+      naveTransfer,
+    };
+  }, [mergedVoucherList]);
 
   const handlePreviousDate = () => {
     const newDate = new Date(selectedDate);
@@ -496,53 +491,70 @@ const totals = useMemo(() => {
             <span className="label-text w10">एकूण नावे</span>
           </div>
 
-        
           <div className="day-book-table-data-section w100 mx90 hidescrollbar d-flex-col">
             {mergedVoucherList.length > 0 ? (
               mergedVoucherList.map((voucher, index) => (
                 <div key={index} className="daybook-data w100 h1 sa d-flex">
                   <span className="label-text w5">{voucher.GLCode}</span>
+
                   <span className="label-text w20">
                     {sledgerlist.find((i) => i.lno === voucher.GLCode)
                       ?.marathi_name || ""}
                   </span>
+
                   <span className="label-text w10 highlight-in">
-                    {voucher.cashIn || ""}
+                    {voucher.cashIn !== undefined
+                      ? Number(voucher.cashIn).toFixed(2)
+                      : ""}
                   </span>
+
                   <span className="label-text w10 highlight-in">
-                    {voucher.transferIn || ""}
+                    {voucher.transferIn !== undefined
+                      ? Number(voucher.transferIn).toFixed(2)
+                      : ""}
                   </span>
+
                   <span className="label-text w10 highlight-in">
-                    {(voucher.cashIn || 0) + (voucher.transferIn || 0) || ""}
+                    {Number(
+                      (voucher.cashIn || 0) + (voucher.transferIn || 0)
+                    ).toFixed(2)}
                   </span>
+
                   <span className="label-text w10 highlight-out">
-                    {voucher.cashOut || ""}
+                    {voucher.cashOut !== undefined
+                      ? Number(voucher.cashOut).toFixed(2)
+                      : ""}
                   </span>
+
                   <span className="label-text w10 highlight-out">
-                    {voucher.transferOut || ""}
+                    {voucher.transferOut !== undefined
+                      ? Number(voucher.transferOut).toFixed(2)
+                      : ""}
                   </span>
+
                   <span className="label-text w10 highlight-out">
-                    {(voucher.cashOut || 0) + (voucher.transferOut || 0) || ""}
+                    {Number(
+                      (voucher.cashOut || 0) + (voucher.transferOut || 0)
+                    ).toFixed(2)}
                   </span>
                 </div>
               ))
             ) : (
-              <div className="  not-data-message text-center text-gray-500   p-4">
-            माहिती मिळाली  नाही
+              <div className="not-data-message text-center text-gray-500 p-4">
+                माहिती मिळाली नाही
               </div>
             )}
           </div>
         </div>
       </div>
 
-      <div className="arabhichi-remening-qtyall-nameamt-transer w100 h15 d-flex bg3
-      ">
+      <div className="arabhichi-remening-qtyall-nameamt-transer w100 h15 d-flex bg3">
         <div className="satring-remining-qty w15 a-center d-flex-col">
           <span className="label-text">आरंभीची शिल्लक</span>
           <input
             className="data w60"
             type="text"
-            value={totals.openingBalance}
+            value={Number(totals.openingBalance).toFixed(2)}
             readOnly
           />
         </div>
@@ -551,7 +563,7 @@ const totals = useMemo(() => {
           <input
             className="data w60"
             type="text"
-            value={totals.closingBalance}
+            value={Number(totals.closingBalance).toFixed(2)}
             readOnly
           />
         </div>
@@ -560,7 +572,7 @@ const totals = useMemo(() => {
           <input
             className="data  w60"
             type="text"
-            value={totals.jamaCash}
+            value={Number(totals.jamaCash).toFixed(2)}
             readOnly
           />
         </div>
@@ -569,7 +581,7 @@ const totals = useMemo(() => {
           <input
             className="data w60"
             type="text"
-            value={totals.jamaTransfer}
+            value={Number(totals.jamaTransfer).toFixed(2)}
             readOnly
           />
         </div>
@@ -578,7 +590,7 @@ const totals = useMemo(() => {
           <input
             className="data w60"
             type="text"
-            value={totals.naveCash}
+            value={Number(totals.naveCash).toFixed(2)}
             readOnly
           />
         </div>
@@ -587,7 +599,7 @@ const totals = useMemo(() => {
           <input
             className="data w60"
             type="text"
-            value={totals.naveTransfer}
+            value={Number(totals.naveTransfer).toFixed(2)}
             readOnly
           />
         </div>

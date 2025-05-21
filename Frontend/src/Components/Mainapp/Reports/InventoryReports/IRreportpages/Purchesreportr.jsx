@@ -31,31 +31,6 @@ const Purchesreportr = () => {
   const CityName = useSelector((state) => state.dairy.dairyData.city);
 
   // ......  purches APi Calling
-  
-
-  // useEffect(() => {
-  //   console.log("fromdate:", fromdate, "todate:", todate); // Check their values
-  //   const fetchData = async () => {
-  //     if (!fromdate || !todate) {
-  //       return;
-  //     }
-  //     try {
-  //       const response = await axiosInstance.get("/stock/purchase/all", {
-  //         params: { fromdate, todate },
-  //       });
-  //       console.log("Response:", response); // Check what the API returns
-  //       SetSales(response.data.purchaseData);
-  //       setShowTable(true); // Show table after fetching data
-  //     } catch (error) {
-  //       console.error(
-  //         "Error Handling:",
-  //         error.response ? error.response.data : error.message
-  //       );
-  //     }
-  //   };
-
-  //   fetchData();
-  // }, [fromdate, todate]); // Run useEffect when fromDate or toDate changes
 
   useEffect(() => {
     const salefetchData = async () => {
@@ -83,14 +58,16 @@ const Purchesreportr = () => {
       // Handle other functionality when dates are not selected
       console.log("No date selected yet. Please select a date range.");
     }
-  }, [fromdate, todate]); 
-  
+  }, [fromdate, todate]);
+
   console.log("Sales", sales);
   //---------------------------DealerWise Report --------------------------------------->>
   useEffect(() => {
     const fetchData = async () => {
       try {
         const responce = await axiosInstance.post("/dealer");
+
+        //... handle report change
         SetDealer(responce.data.customerList);
       } catch (error) {
         console.log(
@@ -123,38 +100,6 @@ const Purchesreportr = () => {
 
   // Chatgpt
   // useEffect(() => {
-  //   const fetchAllData = async () => {
-  //     if (!fromdate || !todate) {
-  //       console.warn("Missing fromdate or todate");
-  //       return;
-  //     }
-
-  //     try {
-  //       console.log("Fetching data from:", fromdate, "to:", todate);
-
-  //       const response = await axiosInstance.get("/stock/purchase/all", {
-  //         params: { fromdate, todate },
-  //       });
-
-  //       console.log("Fetched data:", response.data);
-
-  //       if (response.data && response.data.purchaseData) {
-  //         setAllSales(response.data.purchaseData);
-  //       } else {
-  //         toast.warning("No data received.");
-  //         setAllSales([]);
-  //       }
-  //     } catch (error) {
-  //       console.error("Error fetching data:", error);
-  //       toast.error("Failed to fetch purchase data.");
-  //     }
-  //   };
-
-  //   fetchAllData();
-  // }, [fromdate, todate]);
-
-  //... handle report change
-
   const handleReportChange = (event) => {
     const selectedType = event.target.value;
     setSelectedReport(selectedType);
@@ -1269,66 +1214,7 @@ Total Amount:        ${totalAmount.toFixed(2)}
           </div>
         </div>
       </div>
-      {/* <div className="container mx-auto p-4 h60 w100">
-        {filteredSales.length > 0 && (
-          <div className="table-container mt-4 overflow-y-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  {columns.map((col) => (
-                    <th
-                      key={col.accessor}
-                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                    >
-                      {col.header}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {filteredSales.map((sale, index) => (
-                  <tr key={index} className="hover:bg-gray-100">
-                    {columns.map((col) => (
-                      <td
-                        key={col.accessor}
-                        className="px-6 py-4 whitespace-nowrap text-sm text-gray-700"
-                      >
-                        {col.accessor === "purchasedate"
-                          ? sale[col.accessor]?.slice(0, 10) // Formats date
-                          : sale[col.accessor]}
-                      </td>
-                    ))}
-                  </tr>
-                ))}
-              </tbody>
-              <tfoot className="bg-gray-100 font-bold">
-                <tr>
-                  {columns.map((col, index) => (
-                    <td
-                      key={col.accessor}
-                      className="px-6 py-4 text-sm text-gray-700"
-                    >
-                      {col.accessor === "quantity"
-                        ? filteredSales.reduce(
-                            (sum, sale) => sum + (sale.quantity || 0),
-                            0
-                          ) // Sum up all quantities
-                        : col.accessor === "amount"
-                        ? filteredSales.reduce(
-                            (sum, sale) => sum + (sale.amount || 0),
-                            0
-                          ) // Sum up all amounts
-                        : index === 0
-                        ? "Total"
-                        : ""}
-                    </td>
-                  ))}
-                </tr>
-              </tfoot>
-            </table>
-          </div>
-        )}
-      </div> */}
+
       <div className="container mx-auto p-4 h60 w100">
         <div className="table-container mt-4 overflow-y-auto">
           <table className="min-w-full divide-y divide-gray-200">

@@ -294,6 +294,7 @@ const Mainapp = () => {
             <Route path="reports/payment/*" element={<PaymentReports />} />
             <Route path="reports/bank/*" element={<BankReportMaster />} />
             <Route path="reports/deduction/*" element={<Deductionlist />} />
+           
             {/* payment routes */}
             <Route
               path="payment/milk-correction/*"
