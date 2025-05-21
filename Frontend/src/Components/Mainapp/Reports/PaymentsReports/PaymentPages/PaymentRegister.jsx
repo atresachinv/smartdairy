@@ -22,14 +22,17 @@ const PaymentRegister = ({ showbtn, setCurrentPage }) => {
   const [showCustomerwiseDateFilter, setShowCustomerwiseDateFilter] =
     useState(true);
   const [fromCode, setFromCode] = useState("");
-  const [toCode, setToCode] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const [dataAvailable, setDataAvailable] = useState(true);
+  const [filterCode, setFilterCode] = useState("");
+  const [isloading, setIsLoading] = useState("");
+  const [dataavailable, setDataAvailable] = useState("");
   const [customerName, setCustomerName] = useState("");
-  const [isCNameWiseChecked, setIsCNameWiseChecked] = useState(false);
-  const [isCodewiseChecked, setIsCodewiseChecked] = useState(false);
-  const manualMaster = useSelector((state) => state.manualMasters.masterlist);
-  const [filteredDeductions, setFilteredDeductions] = useState([]);
+  const centerList = useSelector(
+    (state) => state.center.centersList.centersDetails
+  );
+  const dairyinfo = useSelector((state) => state.dairy.dairyData);
+  const [selectedCenterId, setSelectedCenterId] = useState("");
+  const [codeFilter, setCodeFilter] = useState("");
+  const [customerNameFilter, setCustomerNameFilter] = useState("");
 
   //......   Dairy name And City name   for PDf heading
   const dairyname = useSelector(
@@ -38,45 +41,42 @@ const PaymentRegister = ({ showbtn, setCurrentPage }) => {
   );
   const CityName = useSelector((state) => state.dairy.dairyData.city);
 
- console.log(processedDeductions);
+  console.log(processedDeductions);
 
   // Export data to Excel
 
+  const exportToExcel = () => {
+    if (!processedDeductions || processedDeductions.length === 0) {
+      alert("No data available to export.");
+      return;
+    }
 
-const exportToExcel = () => {
-  if (!processedDeductions || processedDeductions.length === 0) {
-    alert("No data available to export.");
-    return;
-  }
+    const flattenedData = processedDeductions.map((data) => {
+      const baseData = {
+        Code: data.Code || "",
+        CustomerName: data.customerName || "",
+        TotalLiters: Number(data.tliters) || 0,
+        Pamt: Number(data.pamt) || 0,
+        Damt: Number(data.damt) || 0,
+        Namt: Number(data.namt) || 0,
+        M,
+      };
 
-  const flattenedData = processedDeductions.map((data) => {
-    const baseData = {
-      Code: data.Code || "",
-      CustomerName: data.customerName || "",
-      TotalLiters: Number(data.tliters) || 0,
-      Pamt: Number(data.pamt) || 0,
-      Damt: Number(data.damt) || 0,
-      Namt: Number(data.namt) || 0,M 
-    };
+      const deductions = data.additionalDeductions || {}; // fallback to empty object
+      dnames.forEach((dname) => {
+        baseData[dname] = Number(deductions[dname]) || 0;
+      });
 
-    const deductions = data.additionalDeductions || {}; // fallback to empty object
-    dnames.forEach((dname) => {
-      baseData[dname] = Number(deductions[dname]) || 0;
-      
+      return baseData;
     });
 
-    return baseData;
-  });
+    const worksheet = XLSX.utils.json_to_sheet(flattenedData);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Payment Data");
 
-  const worksheet = XLSX.utils.json_to_sheet(flattenedData);
-  const workbook = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(workbook, worksheet, "Payment Data");
-
-  // Save the file
-  XLSX.writeFile(workbook, "PaymentData.xlsx");
-};
-
-
+    // Save the file
+    XLSX.writeFile(workbook, "PaymentData.xlsx");
+  };
 
   const handlePrint = () => {
     if (!tableRef.current) {
@@ -148,159 +148,158 @@ const exportToExcel = () => {
   };
 
   //.. Pdf
-const exportToPDF = () => {
-  if (processedDeductions.length === 0) {
-    alert("No data available to export.");
-    return;
-  }
+  const handlePDF = () => {
+    if (!tableRef.current) {
+      console.error("Table element not found.");
+      return;
+    }
 
-  const doc = new jsPDF("p", "mm", "a4"); // Portrait, mm, A4
-
-  // Format date function
-  const formatDate = (date) => {
-    if (!date) return "N/A";
-    const d = new Date(date);
-    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(
-      2,
-      "0"
-    )}-${String(d.getDate()).padStart(2, "0")}`;
-  };
-
-  const selectedFromDate = formatDate(fromDate);
-  const selectedToDate = formatDate(toDate);
-  const dateText = `From ${selectedFromDate} To ${selectedToDate}`;
-  const pageWidth = doc.internal.pageSize.getWidth();
-
-  // Dairy name
-  const dairyTitle = dairyname || "Dairy Name";
-  doc.setFontSize(12);
-  doc.setFont("helvetica", "bold");
-  const dairyTextWidth = doc.getTextWidth(dairyTitle);
-  doc.text(dairyTitle, (pageWidth - dairyTextWidth) / 2, 10);
-
-  // Report title
-  const reportTitle = "Deduction Report";
-  doc.setFontSize(10);
-  const titleTextWidth = doc.getTextWidth(reportTitle);
-  doc.text(reportTitle, (pageWidth - titleTextWidth) / 2, 16);
-
-  // Date range text
-  doc.setFontSize(8);
-  const dateTextWidth = doc.getTextWidth(dateText);
-  doc.text(dateText, (pageWidth - dateTextWidth) / 2, 21);
-
-  // Table columns (dynamic)
-  const columns = [
-    { header: "Code", dataKey: "Code" },
-    { header: "Customer Name", dataKey: "customerName" },
-    { header: "TLiters", dataKey: "tliters" },
-
-    ...dnames.map((name) => ({ header: name, dataKey: name })),
-    { header: "Pamt", dataKey: "pamt" },
-    { header: "Damt", dataKey: "damt" },
-    { header: "Namt", dataKey: "namt" },
-  ];
-
-  // Table rows
-  const rows = processedDeductions.map((data) => {
-    const row = {
-      Code: data.Code,
-      customerName: data.customerName,
-      tliters: Math.round(data.tliters || 0),
-      pamt: Math.round(data.pamt || 0),
-      damt: Math.round(data.damt || 0),
-      namt: Math.round(data.namt || 0),
+    const formatDate = (date) => {
+      if (!date) return "N/A";
+      const d = new Date(date);
+      return !isNaN(d.getTime()) ? d.toISOString().split("T")[0] : "N/A";
     };
 
-      const deductions = data.additionalDeductions || {};
+    const formattedFromDate = formatDate(fromDate);
+    const formattedToDate = formatDate(toDate);
 
-      dnames.forEach((name) => {
-        row[name] = Math.round(Number(deductions[name]) || 0);
-      });
+    if (!processedDeductions || processedDeductions.length === 0) {
+      console.error("No data found.");
+      return;
+    }
 
-    return row;
-  });
+    const doc = new jsPDF("p", "mm", "a4");
+    const dairyName = dairyname || "Dairy Name";
+    const cityName = CityName || "City";
+    const reportTitle = "Payment Register";
 
-  // Totals row
-  const totals = {
-    Code: "Total",
-    customerName: "",
-    tliters: Math.round(
-      processedDeductions.reduce((sum, item) => sum + (item.tliters || 0), 0)
-    ),
-    pamt: Math.round(
-      processedDeductions.reduce((sum, item) => sum + (item.pamt || 0), 0)
-    ),
-    damt: Math.round(
-      processedDeductions.reduce((sum, item) => sum + (item.damt || 0), 0)
-    ),
-    namt: Math.round(
-      processedDeductions.reduce((sum, item) => sum + (item.namt || 0), 0)
-    ),
+    // Background banner for heading
+    doc.setFillColor(200, 220, 255);
+    doc.rect(0, 10, 210, 30, "F");
+
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(16);
+    doc.setTextColor(0, 0, 0);
+    doc.text(dairyName, 105, 18, { align: "center" });
+
+    doc.setFontSize(12);
+    doc.setFont("helvetica", "normal");
+    doc.text(`City: ${cityName}`, 105, 24, { align: "center" });
+    doc.text(`${reportTitle}`, 105, 30, { align: "center" });
+    doc.text(
+      `Date Range: ${formattedFromDate} to ${formattedToDate}`,
+      105,
+      36,
+      {
+        align: "center",
+      }
+    );
+
+    // Extract table data
+    const table = tableRef.current;
+    const headers = Array.from(table.querySelectorAll("thead th")).map((th) =>
+      th.innerText.trim()
+    );
+    const rows = Array.from(table.querySelectorAll("tbody tr")).map((tr) =>
+      Array.from(tr.querySelectorAll("td")).map((td) => td.innerText.trim())
+    );
+
+    // Compute totals for numeric columns
+    const totalRow = headers.map((_, colIndex) => {
+      const isNumericColumn = rows.every(
+        (row) => !isNaN(parseFloat(row[colIndex])) && row[colIndex] !== ""
+      );
+      if (colIndex === 0) return "Total"; // First column label
+      if (isNumericColumn) {
+        const total = rows.reduce((sum, row) => {
+          const val = parseFloat(row[colIndex]);
+          return sum + (isNaN(val) ? 0 : val);
+        }, 0);
+        return total.toFixed(2); // Two decimals
+      }
+      return ""; // Leave non-numeric columns blank
+    });
+
+    // Render the table
+    doc.autoTable({
+      startY: 42,
+      head: [headers],
+      body: rows,
+      foot: [totalRow], // ✅ Add total row
+      styles: {
+        fontSize: 8.5,
+        cellPadding: 2,
+        overflow: "linebreak",
+        valign: "middle",
+      },
+      headStyles: {
+        fillColor: [60, 100, 255],
+        textColor: 255,
+        fontStyle: "bold",
+        halign: "center",
+      },
+      footStyles: {
+        fillColor: [240, 240, 240],
+        fontStyle: "bold",
+        textColor: [0, 0, 0],
+        halign: "right",
+      },
+      bodyStyles: {
+        halign: "left",
+      },
+      alternateRowStyles: {
+        fillColor: [245, 245, 245],
+      },
+      tableWidth: "auto",
+      margin: { top: 10, left: 5, right: 5 },
+      didDrawCell: (data) => {
+        const textWidth =
+          (doc.getStringUnitWidth(data.cell.text[0]) *
+            data.cell.styles.fontSize) /
+          doc.internal.scaleFactor;
+        if (textWidth > data.cell.width) {
+          data.cell.styles.fontSize -= 0.5;
+        }
+      },
+    });
+
+    // Save the PDF
+    doc.save(
+      `${reportTitle.replace(
+        /\s+/g,
+        "_"
+      )}_${formattedFromDate}_to_${formattedToDate}.pdf`
+    );
   };
 
-  dnames.forEach((name) => {
-    totals[name] = Math.round(
-      processedDeductions.reduce(
-        (sum, item) => sum + (item.additionalDeductions?.[name] || 0),
-        0
-      )
-    );
-  });
+  const handleExportExcel = () => {
+    if (!tableRef.current) {
+      console.error("Table element not found.");
+      return;
+    }
 
-  rows.push(totals); // Add totals row
+    const table = tableRef.current;
 
-  // Generate table
-  doc.autoTable({
-    columns,
-    body: rows,
-    startY: 28,
-    theme: "grid",
-    headStyles: {
-      fillColor: [22, 160, 133],
-      textColor: [255, 255, 255],
-      fontSize: 8,
-    },
-    bodyStyles: {
-      fontSize: 7,
-      cellPadding: 1,
-      valign: "middle",
-    },
-    footStyles: {
-      fontStyle: "bold",
-      fillColor: [230, 230, 230],
-    },
-    styles: {
-      cellPadding: 1.5,
-      overflow: "linebreak",
-    },
-    columnStyles: {
-      customerName: { cellWidth: 40 },
-      tliters: { halign: "right" },
-      pamt: { halign: "right" },
-      damt: { halign: "right" },
-      namt: { halign: "right" },
-      ...Object.fromEntries(dnames.map((name) => [name, { halign: "right" }])),
-    },
-    willDrawCell: (data) => {
-      if (data.section === "head") {
-        data.cell.styles.minCellHeight = 8;
-      }
-    },
-    didDrawPage: () => {
-      doc.setFontSize(8);
-      doc.setTextColor(40);
-      doc.text(
-        `Page ${doc.internal.getNumberOfPages()}`,
-        pageWidth - 30,
-        doc.internal.pageSize.getHeight() - 10
-      );
-    },
-  });
+    // Convert the HTML table to a worksheet
+    const worksheet = XLSX.utils.table_to_sheet(table);
 
-  doc.save("Deduction_Report.pdf");
-};
+    // Add metadata
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "CustomerReport");
 
+    // Format filename with date range
+    const formatDate = (date) => {
+      if (!date) return "N/A";
+      const d = new Date(date);
+      return !isNaN(d.getTime()) ? d.toISOString().split("T")[0] : "N/A";
+    };
+    const formattedFromDate = formatDate(fromDate);
+    const formattedToDate = formatDate(toDate);
+    const fileName = `Customer_Report_${formattedFromDate}_to_${formattedToDate}.xlsx`;
+
+    // Save the Excel file
+    XLSX.writeFile(workbook, fileName);
+  };
 
   const fetchData = async () => {
     setIsLoading(true); // Start loading
@@ -326,91 +325,99 @@ const exportToPDF = () => {
     }
   };
 
-useEffect(() => {
-  if (allDeductions.length > 0 && customerlist.length > 0) {
-    const grouped = {};
-    const dnameSet = new Set(); // To store unique dnames
+  useEffect(() => {
+    if (allDeductions.length > 0 && customerlist.length > 0) {
+      const grouped = {};
+      const dnameSet = new Set(); // To store unique dnames
 
-    allDeductions.forEach((item) => {
-      const code = item.Code;
+      allDeductions.forEach((item) => {
+        const code = item.Code;
 
-      if (item.DeductionId === 0) {
-        const customer = customerlist.find((cust) => cust.srno === code);
-        grouped[code] = {
-          ...item,
-          customerName: customer ? customer.cname : "",
-        };
-      } else {
-        if (item.dname && item.AMT !== undefined) {
-          const cleanDname = item.dname.replace(/\s+/g, "_"); // Replace spaces with underscores
-          dnameSet.add(cleanDname); // collect sanitized dnames
+        if (item.DeductionId === 0) {
+          const customer = customerlist.find((cust) => cust.srno === code);
+          grouped[code] = {
+            ...item,
+            customerName: customer ? customer.cname : "",
+          };
+        } else {
+          if (item.dname && item.AMT !== undefined) {
+            const cleanDname = item.dname.replace(/\s+/g, "_"); // Replace spaces with underscores
+            dnameSet.add(cleanDname); // collect sanitized dnames
 
-          if (!grouped[code]) {
-            grouped[code] = {};
+            if (!grouped[code]) {
+              grouped[code] = {};
+            }
+
+            grouped[code][cleanDname] = item.AMT; // Add sanitized key
           }
-
-          grouped[code][cleanDname] = item.AMT; // Add sanitized key
         }
-      }
-    });
+      });
 
-    const finalData = Object.values(grouped);
-    setProcessedDeductions(finalData);
+      const finalData = Object.values(grouped);
+      setProcessedDeductions(finalData);
 
-    // Set unique cleaned dnames
-    setDnames(Array.from(dnameSet));
-  }
-}, [allDeductions, customerlist]);
+      // Set unique cleaned dnames
+      setDnames(Array.from(dnameSet));
+    }
+  }, [allDeductions, customerlist]);
 
+  //..
+  const filteredDeductions = processedDeductions.filter((item) => {
+    const matchesCenter =
+      selectedCenterId === "" ||
+      item.center_id?.toString() === selectedCenterId;
 
-//Code Wise And Cnamewise Filter
-useEffect(() => {
-  let filtered = [...processedDeductions];
+    const matchesCode =
+      !filterCode ||
+      item.Code?.toString().toLowerCase().includes(filterCode.toLowerCase());
 
-  // Apply Codewise filtering
-  if (isCodewiseChecked && fromCode && toCode) {
-    filtered = filtered.filter((item) => {
-      const code = parseInt(item.Code, 10);
-      return code >= parseInt(fromCode, 10) && code <= parseInt(toCode, 10);
-    });
-  }
+    const matchesName =
+      !customerName ||
+      item.customerName?.toLowerCase().includes(customerName.toLowerCase());
 
-  // Apply Customer Name filtering (case-insensitive)
-  if (isCNameWiseChecked && customerName.trim() !== "") {
-    filtered = filtered.filter((item) =>
-      item.customerName
-        .toLowerCase()
-        .includes(customerName.trim().toLowerCase())
-    );
-  }
+    return matchesCenter && matchesCode && matchesName;
+  });
 
-  setFilteredDeductions(filtered);
-}, [
-  isCodewiseChecked,
-  fromCode,
-  toCode,
-  isCNameWiseChecked,
-  customerName,
-  processedDeductions,
-]);
+  // Function to handle selection Centerchange
+  const handleCenterChange = (event) => {
+    setSelectedCenterId(event.target.value);
+  };
+  const filteredCenterCustomer = customerlist?.filter(
+    (row) => String(row.centerid) === String(selectedCenterId) // Ensure type match
+  );
+  //.........
+  const displayedData = selectedCenterId
+    ? filteredCenterCustomer
+    : filteredData;
 
+  useEffect(() => {
+    const savedFrom = localStorage.getItem("fromDate");
+    const savedTo = localStorage.getItem("toDate");
+    if (savedFrom) setFromDate(savedFrom);
+    if (savedTo) setToDate(savedTo);
+  }, []);
 
+  // Save to localStorage when values change
+  useEffect(() => {
+    localStorage.setItem("fromDate", fromDate);
+  }, [fromDate]);
+
+  useEffect(() => {
+    localStorage.setItem("toDate", toDate);
+  }, [toDate]);
+
+  // Your fetchData and component JSX...
+  /// Handlekey move to next
+  const handleKeyDown = (e, nextRef) => {
+    if (e.key === "Enter" && nextRef.current) {
+      e.preventDefault();
+      nextRef.current.focus();
+    }
+  };
 
   return (
-    <div className="payment-register-container w100 h1 d-flex-col ">
-      <div className="title-back-btn-container w100 h10 d-flex a-center sb">
-        <span className="heading py10">Payment Register :</span>
-        {showbtn ? (
-          <button
-            className="btn-danger mx10"
-            onClick={() => setCurrentPage("main")}
-          >
-            बाहेर पडा
-          </button>
-        ) : (
-          ""
-        )}
-      </div>
+    <div className="payment-register-container w100 h1 d-flex-col bg ">
+      <span className="heading h10 ">Payment Register :</span>
       <div className="filter-container d-flex-col  w100 h30 sa">
         <div className="from-too-date-button-container w100 h30  d-flex">
           <div className="date-from-toocontainer w60 h50 d-flex sa ">
@@ -441,87 +448,80 @@ useEffect(() => {
               </button>
             </div>
           </div>
+          <div className="filter-cname-andcust-name-div w50 d-flex">
+            {/* Filter Inputs */}
 
-          <div className="combined-filter-div w40 h1 d-flex  a-center">
-            {/* Codewise Checkbox */}
-            <div className="filter-option w50 h1 d-flex a-center">
-              <input
-                type="checkbox"
-                className="w10"
-                id="codeFilter"
-                checked={isCodewiseChecked}
-                onChange={(e) => setIsCodewiseChecked(e.target.checked)}
-              />
-              <label htmlFor="codeFilter" className="info-text w30">
-                Codewise
-              </label>
+            {/* Filtered Result Display */}
+            <div className="filtered-results">
+              {filteredDeductions.length > 0 &&
+                filteredDeductions.map((item, index) => (
+                  <div
+                    key={index}
+                    className="filtered-item border p10 my5"
+                  ></div>
+                ))}
             </div>
 
-            {/* CNameWise Checkbox */}
-            <div className="filter-option w50 h1 d-flex a-center">
-              <input
-                type="checkbox"
-                className="w10"
-                id="nameFilter"
-                checked={isCNameWiseChecked}
-                onChange={(e) => setIsCNameWiseChecked(e.target.checked)}
-              />
-              <label htmlFor="nameFilter" className="info-text w30">
-                CNameWise
+            <div className="payment-register-filter-customer-name-code-wise w100 h50 d-flex a-center px10 sb">
+              <label htmlFor="code" className="info-text w30">
+                Customer :
               </label>
-            </div>
-
-            {/* Conditional Rendering for Codewise */}
-            {isCodewiseChecked && (
-              <div className="codewise-filter w100 h50 d-flex">
-                <div className="from-date-bank-div w50 d-flex h1 a-center">
-                  <span className="info-text w30">From:</span>
-                  <input
-                    type="number"
-                    className="data w60"
-                    value={fromCode}
-                    onChange={(e) => setFromCode(e.target.value)}
-                    placeholder="001"
-                  />
-                </div>
-                <div className="to-date-bank-div w50 d-flex h1 a-center">
-                  <span className="info-text w30">To:</span>
-                  <input
-                    type="number"
-                    className="data w60"
-                    value={toCode}
-                    onChange={(e) => setToCode(e.target.value)}
-                    placeholder="002"
-                  />
-                </div>
-              </div>
-            )}
-
-            {/* Conditional Rendering for CNameWise */}
-            {isCNameWiseChecked && (
-              <div className="customername-wise-filter-div w50 h40 a-center j-center">
+              <div className="payment-customer-name-customer-number-div w70 d-flex j-end sb">
                 <input
-                  className="data w60"
                   type="text"
+                  className="w25 data"
+                  name="code"
+                  id="code"
+                  placeholder="Code"
+                  value={filterCode}
+                  onChange={(e) => setFilterCode(e.target.value)}
+                />
+                <input
+                  type="text"
+                  className="w70 data"
+                  name="name"
+                  id="name"
                   value={customerName}
                   onChange={(e) => setCustomerName(e.target.value)}
-                  placeholder="CName"
+                  placeholder="Customer Name"
                 />
               </div>
-            )}
+            </div>
           </div>
         </div>
         <div className="button-and-customer-name-wise-div w100 h60 d-flex a-center">
           <div className="button-print-export-div w40 h1 a-center d-flex sa j-end ">
-            <button type="button" className="w-btn" onClick={exportToExcel}>
+            <button type="button" className="w-btn" onClick={handleExportExcel}>
               Excel
             </button>
             <button type="button" className="w-btn" onClick={handlePrint}>
               Print
             </button>
-            <button type="button" className="w-btn" onClick={exportToPDF}>
+            <button type="button" className="w-btn" onClick={handlePDF}>
               PDF
             </button>
+          </div>
+          <div className="payment-register-centerwisee-data-show w40 h1 d-flex a-center">
+            <span className="info-text w20">Center:</span>
+            <select
+              className="data w60 my10"
+              name="selection"
+              id="001"
+              onChange={handleCenterChange}
+            >
+              <option value="">Select Center</option>
+              {centerList && centerList.length > 0 ? (
+                centerList.map((center, index) => (
+                  <option key={index} value={center.center_id}>
+                    {center.name || center.center_name}
+                  </option>
+                ))
+              ) : (
+                <option value="" disabled>
+                  No Centers Available
+                </option>
+              )}
+            </select>
           </div>
         </div>
       </div>
@@ -556,15 +556,13 @@ useEffect(() => {
               </tr>
             </thead>
             <tbody>
-              {processedDeductions.map((data, index) => (
+              {filteredDeductions.map((data, index) => (
                 <tr key={index}>
                   <td>{data.Code}</td>
                   <td>{data.customerName}</td>
-
                   {dnames.map((dname) => (
                     <td key={dname}>{data[dname] || 0}</td>
                   ))}
-
                   <td>{data.tliters}</td>
                   <td>
                     {data.tliters > 0
@@ -577,15 +575,13 @@ useEffect(() => {
                 </tr>
               ))}
             </tbody>
-
             <tfoot>
               <tr>
                 <td colSpan={2}>
                   <strong>Total</strong>
                 </td>
-                {/* Totals for dynamic columns */}
                 {dnames.map((dname) => {
-                  const total = processedDeductions.reduce(
+                  const total = filteredDeductions.reduce(
                     (sum, item) => sum + (parseFloat(item[dname]) || 0),
                     0
                   );
@@ -595,32 +591,31 @@ useEffect(() => {
                     </td>
                   );
                 })}
-                {/* Static totals */}
                 <td>
                   <strong>
-                    {processedDeductions
+                    {filteredDeductions
                       .reduce((sum, item) => sum + (item.tliters || 0), 0)
                       .toFixed(2)}
                   </strong>
                 </td>
-                <td>-</td> {/* AVG Rate column doesn't need a total */}
+                <td>-</td>
                 <td>
                   <strong>
-                    {processedDeductions
+                    {filteredDeductions
                       .reduce((sum, item) => sum + (item.pamt || 0), 0)
                       .toFixed(2)}
                   </strong>
                 </td>
                 <td>
                   <strong>
-                    {processedDeductions
+                    {filteredDeductions
                       .reduce((sum, item) => sum + (item.damt || 0), 0)
                       .toFixed(2)}
                   </strong>
                 </td>
                 <td>
                   <strong>
-                    {processedDeductions
+                    {filteredDeductions
                       .reduce(
                         (sum, item) =>
                           sum + ((item.pamt || 0) - (item.damt || 0)),

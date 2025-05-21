@@ -1,0 +1,88 @@
+@media (max-width: 426px) {
+  .bank-register-container .bank-first-container {
+    height: auto;
+  }
+  .bank-first-container .date-from-to-bank .from-to-date-containerr {
+    width: 100%;
+    margin-bottom: 10px;
+  }
+  .bank-first-container .date-from-to-bank .report-show-button {
+    width: 100%;
+    margin-bottom: 60px;
+  }
+  .bank-first-container .date-from-to-bank .report-show-button button {
+    width: 400px;
+    margin-left: 3px;
+    margin-right: 3px;
+  }
+  .bank-first-container .date-from-to-bank {
+    flex-direction: column;
+    max-height: fit-content;
+  }
+  .bank-first-container .date-from-to-bank .from-date-bank-div {
+    width: 50%;
+  }
+
+  .bank-first-container .date-from-to-bank .from-date-bank-div span {
+    width: 150px;
+  }
+  .bank-first-container .date-from-to-bank .from-date-bank-div input {
+    width: 145px;
+    margin-right: 2px;
+  }
+
+  .bank-first-container .date-from-to-bank .bank-to-date-div {
+    width: 50%;
+  }
+  .bank-first-container .date-from-to-bank .bank-to-date-div input {
+    width: 145px;
+  }
+  .bank-code-select-bank-span-input {
+    margin-bottom: 10px;
+  }
+  .bank-first-container .checkbox-side-div .amt-checkbox-div input {
+    width: 30px;
+    margin-right: 2px;
+  }
+  .bank-first-container .checkbox-side-div .amt-checkbox-div {
+    width: 150px;
+  }
+  .bank-first-container .checkbox-side-div .amt-checkbox-div span {
+    width: 200px;
+    margin-left: 10px;
+  }
+  .bank-first-container .checkbox-side-div .centerwise-checkbox-div span {
+    width: 200px;
+    margin-left: 10px;
+  }
+  .bank-first-container .checkbox-side-div .customerwise-checkbox-div {
+    width: 200px;
+  }
+  .bank-first-container .checkbox-side-div .customerwise-checkbox-div span {
+    width: 200px;
+  }
+  .bank-first-container .bank-code-div {
+    width: 100%;
+    flex-direction: column;
+  }
+  .bank-first-container .bank-code-div .bank-code-select-bank-span-input {
+    width: 100%;
+  }
+  .bank-first-container .bank-code-div .bank-textfield-div {
+    width: 40%;
+    margin-right: 10px;
+
+  }
+  .bank-first-container .bank-code-div .bank-textfield-div span {
+    width: 130px;
+  }
+  .bank-first-container .bank-code-div .bank-reprts-dropdown {
+    width: 60%;
+  }
+  .bank-first-container .bank-code-div .bank-reprts-dropdown select {
+    width: 210px;
+  }
+  .bank-first-container .bank-code-div .bank-regsiter-buttons-pdf-excel {
+    width: 100%;
+  }
+}

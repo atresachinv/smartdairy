@@ -30,38 +30,8 @@ const DeductionReports = () => {
   const [dnameOptions, setDnameOptions] = useState([]);
   const [selectedDname, setSelectedDname] = useState("");
   console.log(selectedMaster);
-  //----------------------------------------------------------------->
-  // Handle the date selection
-  // const handleSelectChange = async (e) => {
-  //   const selectedIndex = e.target.value;
-  //   if (selectedIndex !== "") {
-  //     const selectedDates = manualMaster[selectedIndex];
-  //     setSelectedMaster(selectedDates);
-  //     dispatch(
-  //       getPaymentsDeductionInfo({
-  //         fromDate: selectedDates.start,
-  //         toDate: selectedDates.end,
-  //       })
-  //     );
-  //   }
-  // };
-  const handleSelectChange = async (e) => {
-    const selectedIndex = e.target.value;
-    if (selectedIndex !== "") {
-      const selectedDates = manualMaster[selectedIndex];
-      setSelectedMaster(selectedDates);
+ 
 
-      // Store selected master in localStorage
-      localStorage.setItem("selectedMaster", JSON.stringify(selectedDates));
-      console.log(" Manual MAster", manualMaster);
-      dispatch(
-        getPaymentsDeductionInfo({
-          fromDate: selectedDates.start,
-          toDate: selectedDates.end,
-        })
-      );
-    }
-  };
 
   // Retrieve selected master from localStorage on component mount
 useEffect(() => {
@@ -288,6 +258,12 @@ useEffect(() => {
     printWindow.print(); // Trigger the print dialog
   };
 
+    const handleSelectChange = (e) => {
+      const index = e.target.value;
+      const selected = manualMaster[index];
+      setSelectedMaster(selected);
+      localStorage.setItem("selectedMaster", JSON.stringify(selected));
+    };
   return (
     <div className="deduction-report-container w100 h1 d-flex-col sb">
       <span className="heading  ">Deduction Report</span>

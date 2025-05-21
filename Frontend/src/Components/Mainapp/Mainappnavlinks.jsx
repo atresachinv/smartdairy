@@ -441,6 +441,7 @@ const Mainappnavlinks = ({ setselected, handleSidebar }) => {
           path: "reports/deduction",
           role: ["admin", "super_admin", "manager"],
         },
+        
       ],
     },
     {

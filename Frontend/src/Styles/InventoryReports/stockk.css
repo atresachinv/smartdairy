@@ -158,4 +158,7 @@
   .stock-report-dispaly-btn-div {
     margin-left: 5px;
   }
+    .stocks-from-todate-reports-div .fromto-date-Stock-report .fromto-date-Stock-report{
+      flex-direction: column;
+  }
 }

@@ -253,6 +253,23 @@ const PaymentSummary = ({ showbtn, setCurrentPage }) => {
       console.error("Failed to open print window.");
     }
   };
+  // Date holding 
+   useEffect(() => {
+     const savedFromDate = localStorage.getItem("fromDate");
+     const savedToDate = localStorage.getItem("toDate");
+
+     if (savedFromDate) setFromDate(savedFromDate);
+     if (savedToDate) setToDate(savedToDate);
+   }, []);
+
+   // Save dates to localStorage on change
+   useEffect(() => {
+     localStorage.setItem("fromDate", fromDate);
+   }, [fromDate]);
+
+   useEffect(() => {
+     localStorage.setItem("toDate", toDate);
+   }, [toDate]);
 
   return (
     <div className="payment-register-container w100 h1 d-flex-col p10">

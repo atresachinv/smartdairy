@@ -366,29 +366,33 @@ const Stocksreport = () => {
       <span className="heading">Stock Report</span>
       <div className="first-half-span-input-div w100 h25 d-flex">
         <div className="stocks-from-todate-reports-div d-flex-col w100 h60">
-          <div className="fromto-date-Stock-report w70 h70 d-flex">
-            <div className="fromdate-sale-stock-div w100 h1 d-flex a-center">
-              <span className="w20 info-text p30">From:</span>
-              <input
-                className="w70 data"
-                type="date"
-                onKeyDown={(e) => handleKeyDown(e, toDates)}
-                value={fromdate}
-                onChange={(e) => setFromDate(e.target.value)}
-              />
+          <div className="fromto-date-Stock-report w100 h70
+          
+          d-flex">
+            <div className="stock-report-from-to-date-div d-flex w80">
+              <div className="fromdate-sale-stock-div w50 h1 d-flex a-center">
+                <span className="w20 info-text p30">From:</span>
+                <input
+                  className="w70 data"
+                  type="date"
+                  onKeyDown={(e) => handleKeyDown(e, toDates)}
+                  value={fromdate}
+                  onChange={(e) => setFromDate(e.target.value)}
+                />
+              </div>
+              <div className="to-date-sale-stock-div w50 h1 a-center d-flex">
+                <span className="w20 info-text p30">To:</span>
+                <input
+                  className="w70 data"
+                  type="date"
+                  value={todate}
+                  ref={toDates}
+                  onChange={(e) => setToDate(e.target.value)}
+                />
+              </div>
             </div>
-            <div className="to-date-sale-stock-div w100 h1 a-center d-flex">
-              <span className="w20 info-text p30">To:</span>
-              <input
-                className="w70 data"
-                type="date"
-                value={todate}
-                ref={toDates}
-                onChange={(e) => setToDate(e.target.value)}
-              />
-            </div>
-            <div className="stock-report-dispaly-btn-div">
-              <button className=" btn" onClick={salefetchData}>
+            <div className="stock-report-dispaly-btn-div w20 d-flex a-center">
+              <button className=" w-btn" onClick={salefetchData}>
                 {" "}
                 show
               </button>

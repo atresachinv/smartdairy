@@ -23,6 +23,7 @@ const initialState = {
   ckeckPaystatus: "idle",
   pzerostatus: "idle",
   paystatus: "idle",
+  fpaystatus: "idle",
   savepaystatus: "idle", //save fix dedu m pay
   savededstatus: "idle", //save other dedu m pay
   getMilkstatus: "idle",
@@ -826,15 +827,15 @@ const paymentSlice = createSlice({
         state.error = action.payload;
       }) //get milk payment details ------------------------------------------->
       .addCase(fetchPaymentDetails.pending, (state) => {
-        state.paystatus = "loading";
+        state.fpaystatus = "loading";
         state.error = null;
       })
       .addCase(fetchPaymentDetails.fulfilled, (state, action) => {
-        state.paystatus = "succeeded";
+        state.fpaystatus = "succeeded";
         state.paymentDetails = action.payload;
       })
       .addCase(fetchPaymentDetails.rejected, (state, action) => {
-        state.paystatus = "failed";
+        state.fpaystatus = "failed";
         state.error = action.payload;
       }) // get payment masters ------------------------------------------------>
       .addCase(getPayMasters.pending, (state) => {
