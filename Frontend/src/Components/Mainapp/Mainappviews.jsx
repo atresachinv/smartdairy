@@ -48,7 +48,7 @@ import DayBook from "./Accounts/Credit/DayBook";
 import AccoundStatment from "./Accounts/AccoundStatment/AccoundStatment";
 import TrnCheck from "./Inventory/InventroyPages/TrnCheck/TrnCheck";
 import FatSnfCompromise from "./Payments/FatSnfCompromise/FatSnfCompromise";
-import Milkcollector from "./Reports/MilkCollectorreport/Milkcollector";
+
 // import MilkReports from "./Reports/MilkReports/MilkReports";
 // import MilkcollectionReports from "./Reports/MilkReports/MilkcollectionReports";
 
@@ -130,8 +130,7 @@ const Mainappviews = ({ index }) => {
       return <PaymentReports />;
     case 7.8:
       return <IRPurchesReport />;
-    case 7.9:
-      return <Milkcollector/>;
+   
     //Payments Submenus
     case 8.1:
       return <MilkCorrection />;
