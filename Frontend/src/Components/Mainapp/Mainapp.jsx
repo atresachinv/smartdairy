@@ -82,7 +82,7 @@ import CreateCustomer from "./Masters/MasterPages/CustomerMaster/CreateCustomer"
 import FatSnfCompromise from "./Payments/FatSnfCompromise/FatSnfCompromise";
 import GeneralLedger from "./Accounts/GeneralLedger/GeneralLedger";
 import AdvancesPosting from "./Accounts/AdvancesPosting/AdvancesPosting";
-
+import Milkcollector from "./Reports/MilkCollectorreport/Milkcollector";
 
 const Mainapp = () => {
   const dispatch = useDispatch();
@@ -294,6 +294,7 @@ const Mainapp = () => {
             <Route path="reports/payment/*" element={<PaymentReports />} />
             <Route path="reports/bank/*" element={<BankReportMaster />} />
             <Route path="reports/deduction/*" element={<Deductionlist />} />
+            <Route path="reports/milkcollector/*" element={<Milkcollector/>} />
             {/* payment routes */}
             <Route
               path="payment/milk-correction/*"

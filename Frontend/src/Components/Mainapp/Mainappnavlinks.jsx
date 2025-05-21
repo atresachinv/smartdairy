@@ -441,6 +441,13 @@ const Mainappnavlinks = ({ setselected, handleSidebar }) => {
           path: "reports/deduction",
           role: ["admin", "super_admin", "manager"],
         },
+        {
+          name: `${t("Milkcollector")}`,
+          icon: <FaFileInvoiceDollar className="icon" />,
+          index: 6.10,
+          path: "reports/milkcollector",
+          role: ["admin", "super_admin", "manager"],
+        },
       ],
     },
     {
