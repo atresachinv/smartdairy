@@ -3,11 +3,11 @@ import axios from "axios";
 import autoTable from "jspdf-autotable";
 import jsPDF from "jspdf";
 import * as XLSX from "xlsx";
-import { useDispatch, useSelector } from "react-redux";   
+import { useDispatch, useSelector } from "react-redux";
 import { getBankList } from "../../../../App/Features/Mainapp/Masters/bankSlice";
 import { fetchPaymentDetails } from "../../../../App/Features/Payments/paymentSlice";
 import { listCustomer } from "../../../../App/Features/Customers/customerSlice";
-import "../../../../Styles/Reportsbanks/Bankreport.css"
+import "../../../../Styles/Reportsbanks/Bankreport.css";
 const BankReportMaster = () => {
   const dispatch = useDispatch();
   const customerlist = useSelector((state) => state.customer.customerlist); //api call Using reducx
@@ -22,8 +22,6 @@ const BankReportMaster = () => {
   const [filteredBankDetails, setFilteredBankDetails] = useState([]);
   const [showIFSC, setShowIFSC] = useState(false);
   const [amtCustFilter, setAmtCustFilter] = useState(false);
-
-
 
   const dairyname = useSelector(
     (state) =>
@@ -163,7 +161,7 @@ const BankReportMaster = () => {
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
   };
-  // Marathi Excel 
+  // Marathi Excel
   const exportToExcelMarathi = () => {
     const dataSource =
       filteredBankDetails.length > 0 ? filteredBankDetails : bankdetails;
@@ -209,9 +207,6 @@ const BankReportMaster = () => {
     for (let i = 0; i < s.length; i++) view[i] = s.charCodeAt(i) & 0xff;
     return buf;
   };
-  
-
-
 
   //pdf Function
   const generatePDF = () => {
@@ -276,8 +271,7 @@ const BankReportMaster = () => {
 
     doc.save("bank-details-report.pdf");
   };
-  
-  
+
   const displayedBankDetails = useMemo(() => {
     const source =
       filteredBankDetails.length > 0 ? filteredBankDetails : bankdetails;
@@ -285,15 +279,15 @@ const BankReportMaster = () => {
       ? source.filter((b) => parseFloat(b.pamt) > 0)
       : source;
   }, [amtCustFilter, filteredBankDetails, bankdetails]);
-  
-//. total payment
-const totalPayment = displayedBankDetails.reduce(
-  (sum, bank) => sum + parseFloat(bank.pamt || 0),
-  0
-);
+
+  //. total payment
+  const totalPayment = displayedBankDetails.reduce(
+    (sum, bank) => sum + parseFloat(bank.pamt || 0),
+    0
+  );
 
   return (
-    <div className="bank-register-container w100 h1 d-flex-col bg">
+    <div className="bank-register-container w100 h1 d-flex-col  bg ">
       <span className="heading">Bank Register Report</span>
       {/* First Part */}
       <div className="bank-first-container w100 h40 d-flex-col sa">
@@ -329,7 +323,7 @@ const totalPayment = displayedBankDetails.reduce(
             </button>
           </div>
         </div>
-        <div className="checkbox-side-div w100  d-flex bg a-center">
+        <div className="checkbox-side-div w100  d-flex a-center">
           <div className="amt-checkbox-div w30 d-flex a-center p10">
             <input
               className="w20"
@@ -400,53 +394,60 @@ const totalPayment = displayedBankDetails.reduce(
           </div>
         </div>
       </div>
-
-      <div className="demo-table-section w100 h60 d-flex-col bg">
-        <span className="heading">Table</span>
-        {/* Add your table-related functionalities or interactions here */}
+      <div className="demo-table-section w100 h60 d-flex-col">
         <div className="table-container">
-          <table className="bank-details-table">
-            <thead>
-              <tr>
-                <th>Code</th>
-                <th>Cust_Code</th>
-                <th>Bank Name</th>
-                {showIFSC && <th>Bank IFSC</th>}
-                <th>Bank ACC No</th>
-                <th>All payment</th>
-              </tr>
-            </thead>
-            <tbody>
-              {displayedBankDetails.map((bank, index) => (
-                <tr key={index}>
-                  <td>{bank.bankcode}</td>
-                  <td>{bank.srno}</td>
-                  <td>{bank.bankname}</td>
-                  {showIFSC && <td>{bank.bankIFSC}</td>}
-                  <td>{bank.accno || "N/A"}</td>
-                  <td>{parseFloat(bank.pamt || 0).toFixed(2)}</td>
+          {Array.isArray(displayedBankDetails) &&
+          displayedBankDetails.length > 0 ? (
+            <table className="bank-details-table">
+              <thead>
+                <tr>
+                  <th>Code</th>
+                  <th>Cust_Code</th>
+                  <th>Bank Name</th>
+                  {showIFSC && <th>Bank IFSC</th>}
+                  <th>Bank ACC No</th>
+                  <th>All payment</th>
                 </tr>
-              ))}
-            </tbody>
-
-            <tfoot>
-              <tr>
-                {/* Span columns depending on showIFSC */}
-                <td
-                  colSpan={showIFSC ? 5 : 4}
-                  style={{ textAlign: "right", fontWeight: "bold" }}
-                >
-                  Total
-                </td>
-                <td style={{ fontWeight: "bold" }}>
-                  {totalPayment.toFixed(2)}
-                </td>
-              </tr>
-            </tfoot>
-          </table>
+              </thead>
+              <tbody>
+                {displayedBankDetails.map((bank, index) => (
+                  <tr key={index}>
+                    <td>{bank.bankcode}</td>
+                    <td>{bank.srno}</td>
+                    <td>{bank.bankname}</td>
+                    {showIFSC && <td>{bank.bankIFSC}</td>}
+                    <td>{bank.accno || "N/A"}</td>
+                    <td>{parseFloat(bank.pamt || 0).toFixed(2)}</td>
+                  </tr>
+                ))}
+              </tbody>
+              <tfoot>
+                <tr>
+                  <td
+                    colSpan={showIFSC ? 5 : 4}
+                    style={{ textAlign: "right", fontWeight: "bold" }}
+                  >
+                    Total
+                  </td>
+                  <td style={{ fontWeight: "bold" }}>
+                    {totalPayment.toFixed(2)}
+                  </td>
+                </tr>
+              </tfoot>
+            </table>
+          ) : (
+            <div
+              style={{
+                textAlign: "center",
+                padding: "20px",
+                fontSize: "16px",
+                fontWeight: "500",
+              }}
+            >
+              No data available
+            </div>
+          )}
         </div>
-
-        <p>No data available.</p>
       </div>
     </div>
   );
