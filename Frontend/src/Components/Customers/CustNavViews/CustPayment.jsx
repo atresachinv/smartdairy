@@ -43,8 +43,6 @@ const CustPayment = () => {
     const yearStart = `${financialYearStartYear}-04-01`;
 
     setYearStart(yearStart);
-
-    // Now you can use yearStart with date as needed
   }, [date]);
 
   // ----------------------------------------------------------->
@@ -54,7 +52,7 @@ const CustPayment = () => {
     } else {
       dispatch(getMastersDates({ yearStart: fyearStart, yearEnd: date }));
     }
-  }, [fyearStart, date]);
+  }, [fyearStart]);
 
   const handleSelectChange = async (e) => {
     const selectedIndex = e.target.value;

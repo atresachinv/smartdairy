@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { getMasterReports } from "../../../../App/Features/Customers/Milk/milkMasterSlice";
+import {
+  getMasterReports,
+  getMastersReport,
+} from "../../../../App/Features/Customers/Milk/milkMasterSlice";
 import Spinner from "../../../Home/Spinner/Spinner";
 import { BsCalendar3 } from "react-icons/bs";
 import { useTranslation } from "react-i18next";
@@ -11,13 +14,13 @@ const CollectionReport = () => {
   const dispatch = useDispatch();
   const { t } = useTranslation("common");
   const date = useSelector((state) => state.date.toDate);
+  const dairyInfo = useSelector((state) => state.dairy.dairyData);
   const records = useSelector((state) => state.mMilk.mrecords);
   const summary = useSelector((state) => state.mMilk.msummary);
   const status = useSelector((state) => state.mMilk.status);
   const manualMaster = useSelector((state) => state.manualMasters.masterlist);
   const fDate = useSelector((state) => state.date.formDate);
   const tDate = useSelector((state) => state.date.toDate);
-
   const [selectedDate, setSelectedDate] = useState(null);
 
   // Generate master dates based on the initial date --------------------------->
@@ -29,20 +32,37 @@ const CollectionReport = () => {
   useEffect(() => {
     if (selectedDate) {
       // If a date is selected from manualMaster, use it
-      dispatch(
-        getMasterReports({
-          fromDate: selectedDate.start,
-          toDate: selectedDate.end,
-        })
-      );
+      if (dairyInfo.SocietyCode > 140) {
+        dispatch(
+          getMasterReports({
+            fromDate: selectedDate.start,
+            toDate: selectedDate.end,
+          })
+        );
+      } else {
+        dispatch(
+          getMastersReport({
+            fromDate: selectedDate.start,
+            toDate: selectedDate.end,
+          })
+        );
+      }
     } else if (fDate && tDate) {
-      // If no date is selected, use fDate and tDate from Redux store
-      dispatch(
-        getMasterReports({
-          fromDate: fDate,
-          toDate: tDate,
-        })
-      );
+      if (dairyInfo.SocietyCode > 140) {
+        dispatch(
+          getMasterReports({
+            fromDate: fDate,
+            toDate: tDate,
+          })
+        );
+      } else {
+        dispatch(
+          getMastersReport({
+            fromDate: fDate,
+            toDate: tDate,
+          })
+        );
+      }
     }
   }, [dispatch, selectedDate, fDate, tDate]);
 
@@ -115,7 +135,8 @@ const CollectionReport = () => {
         <select
           className="custom-select label-text w80 h1 p10"
           onChange={handleSelectChange}
-          aria-label={t("c-select-master")}>
+          aria-label={t("c-select-master")}
+        >
           <option className="label-text w100 d-flex" value="">
             --{t("c-select-master")}--
           </option>
@@ -124,7 +145,8 @@ const CollectionReport = () => {
               <option
                 className="label-text w100 d-flex sa"
                 key={`${dates.start}-${dates.end}-${index}`}
-                value={index}>
+                value={index}
+              >
                 {new Date(dates.start).toLocaleDateString("en-GB", {
                   day: "2-digit",
                   month: "short", // Abbreviated month format
@@ -167,7 +189,8 @@ const CollectionReport = () => {
               records.map((report, index) => (
                 <div
                   key={`${report.id}-${index}`} // Assuming each report has a unique 'id'
-                  className="content-values-div w100 h10 d-flex center t-center sa px10">
+                  className="content-values-div w100 h10 d-flex center t-center sa px10"
+                >
                   <span className="text w15">
                     {new Date(report.ReceiptDate).toLocaleDateString("en-GB", {
                       day: "2-digit",

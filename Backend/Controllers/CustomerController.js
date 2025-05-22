@@ -976,7 +976,7 @@ exports.customMilkReport = async (req, res) => {
             FROM ${dairy_table} 
             WHERE ReceiptDate BETWEEN ? AND ? AND AccCode = ?) AS totalAmount
         FROM ${dairy_table} 
-        WHERE ReceiptDate BETWEEN ? AND ? AND AccCode = ?
+        WHERE ReceiptDate BETWEEN ? AND ? AND AccCode = ? AND isDeleted = 0
         ORDER BY ReceiptDate ASC;
       `;
 
