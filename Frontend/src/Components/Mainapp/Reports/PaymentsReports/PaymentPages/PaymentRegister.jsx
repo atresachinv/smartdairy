@@ -415,6 +415,8 @@ const PaymentRegister = ({ showbtn, setCurrentPage }) => {
     }
   };
 
+  console.log("centerList", centerList);
+
   return (
     <div className="payment-register-container w100 h1 d-flex-col bg ">
       <span className="heading h10 ">Payment Register :</span>
