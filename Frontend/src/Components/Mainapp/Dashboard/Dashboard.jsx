@@ -365,7 +365,7 @@ const Dashboard = () => {
                   className="custom-select label-text w90 h1 d-flex"
                   onChange={handleSelectChange}
                 >
-                  <option className="label-text w100 d-flex" value={""}>
+                  <option className="text w100 d-flex" value={""}>
                     --{t("c-select-master")}--
                   </option>
                   {manualMaster.map((dates, index) => (

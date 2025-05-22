@@ -760,7 +760,7 @@ const Payments = ({ setCurrentPage }) => {
           <select
             className="data w40"
             name="center_id"
-            id=""
+            id="select-center"
             onChange={handleInput}
           >
             {centerList.map((center, index) => (
