@@ -637,4 +637,9 @@ body {
     padding: 5px;
     font-size: 16px;
   }
+
+  /* dashboard naigation icons hided for mobile view */
+  .home-nav-item .sub-navlinks .nav-icon {
+    display: none;
+  }
 }

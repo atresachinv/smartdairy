@@ -1634,7 +1634,7 @@ exports.allMilkCollReport = async (req, res) => {
       }
 
       if (user_role === "milkcollector") {
-        milkCollectionQuery += "AND userid = ?";
+        milkCollectionQuery += " AND userid = ?";
         values.push(user_id);
       }
 

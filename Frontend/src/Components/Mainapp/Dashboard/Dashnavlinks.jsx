@@ -33,7 +33,7 @@ const Dashnavlinks = ({ isselected, setIsSelected }) => {
             }}
             className="sub-navlinks f-label-text"
           >
-            {button.icon}
+            <span className="nav-icon">{button.icon}</span>
             <span>{button.name}</span>
           </NavLink>
         </li>

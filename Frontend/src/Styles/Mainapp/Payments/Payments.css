@@ -6,6 +6,22 @@
   .Bil-list-container {
     min-height: auto;
   }
+  .Bil-list-container .page-title-select-center-container {
+    min-height: fit-content;
+    flex-direction: row;
+    flex-wrap: wrap;
+    margin-bottom: 5px;
+  }
+
+  .page-title-select-center-container .heading {
+    width: 100%;
+  }
+  .page-title-select-center-container .label-text {
+    width: 30%;
+  }
+  .page-title-select-center-container #select-center {
+    width: 60%;
+  }
 
   .generate-bill-form-container {
     min-height: fit-content;
@@ -98,9 +114,13 @@
   }
   .payment-details-and-report-btn-div .bill-payments-container-div {
     width: 100%;
-    min-height: 40%;
+    min-height: fit-content;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
   }
   .bill-payments-container-div button {
     width: 45%;
+    margin-bottom: 10px;
   }
 }
