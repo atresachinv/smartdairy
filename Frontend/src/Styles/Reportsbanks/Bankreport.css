@@ -85,4 +85,23 @@
   .bank-first-container .bank-code-div .bank-regsiter-buttons-pdf-excel {
     width: 100%;
   }
+  .checkbox-side-div{
+    flex-direction: column;
+  }
+  .checkbox-side-div .amt-cust-ifsc-div{
+       width: 100%;
+  }
+  .checkbox-side-div .amt-cust-ifsc-div .amt-checkbox-div{
+       width: 50%;
+  }
+  .checkbox-side-div .amt-cust-ifsc-div .amt-checkbox-div{
+       width: 50%;
+  }
+  .checkbox-side-div .amt-cust-ifsc-div .amt-checkbox-div{
+       width: 50%;
+  }
+  .checkbox-side-div .excel-bank-report {
+   width: 100%;
+   margin-left: 20px;
+  }
 }

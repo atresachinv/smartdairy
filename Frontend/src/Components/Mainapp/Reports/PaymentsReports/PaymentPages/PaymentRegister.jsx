@@ -13,7 +13,7 @@ const PaymentRegister = ({ showbtn, setCurrentPage }) => {
   const [filteredData, setFilteredData] = useState([]);
   const [dnames, setDnames] = useState([]);
   const [processedDeductions, setProcessedDeductions] = useState([]);
-  const [mergedData, setMergedData] = useState([]);
+
   const tableRef = useRef(null);
   const allDeductions = useSelector(
     (state) => state.deduction.alldeductionInfo
@@ -31,8 +31,6 @@ const PaymentRegister = ({ showbtn, setCurrentPage }) => {
   );
   const dairyinfo = useSelector((state) => state.dairy.dairyData);
   const [selectedCenterId, setSelectedCenterId] = useState("");
-  const [codeFilter, setCodeFilter] = useState("");
-  const [customerNameFilter, setCustomerNameFilter] = useState("");
 
   //......   Dairy name And City name   for PDf heading
   const dairyname = useSelector(
@@ -634,5 +632,4 @@ const PaymentRegister = ({ showbtn, setCurrentPage }) => {
     </div>
   );
 };
-
 export default PaymentRegister;
