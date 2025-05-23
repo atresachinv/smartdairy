@@ -41,17 +41,17 @@ const Sanghsales = () => {
               </div>
               <div className="time-sangh-divv w30 d-flex a-center h1">
                 <span className="label-text  w35 px10">लिटर </span>
-                <select className="data w" name="select" id="001"></select>
+                <select className="data w50" name="select" id="001"></select>
               </div>
             </div>
             <div className="amount-kapat-per-liter-div w50 d-flex h1 a-center">
               <div className="amount-sangha-div w25 px10 d-flex a-center ">
                 <span className="label-text w70 ">रक्कम </span>
-                <input className="data" type="text" />
+                <input className="data w60" type="text" />
               </div>
               <div className="kapat-sangha-div w30 d-flex h1 a-center ">
                 <span className="label-text w50 px10">क.प्र.ली</span>
-                <input className="data" type="text" />
+                <input className="data w60" type="text" />
               </div>
               <div className="loss-sangha-div w25 d-flex a-center ">
                 <span className="label-text w90 px10">नाश ली </span>

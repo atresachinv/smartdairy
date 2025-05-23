@@ -284,7 +284,6 @@ const PaymentRegister = ({ showbtn, setCurrentPage }) => {
     // Add metadata
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, "CustomerReport");
-
     // Format filename with date range
     const formatDate = (date) => {
       if (!date) return "N/A";
@@ -527,7 +526,7 @@ const PaymentRegister = ({ showbtn, setCurrentPage }) => {
       </div>
       {/* Display filtered data */}
 
-      <div className="table-side-container-div w100 h80 d-flex-col">
+      <div className=" payment-register-table-side-container-div w100 h70 d-flex-col">
         <div
           className="table-container"
           style={{ overflowX: "auto", whiteSpace: "nowrap" }}
