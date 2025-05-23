@@ -24,7 +24,6 @@ const BankReportMaster = () => {
   const [amtCustFilter, setAmtCustFilter] = useState(false);
   const [loading, setLoading] = useState(false);
 
-
   const dairyname = useSelector(
     (state) =>
       state.dairy.dairyData.SocietyName || state.dairy.dairyData.center_name
@@ -300,11 +299,14 @@ const BankReportMaster = () => {
       return;
     }
 
-    // Calculate the Remark based on fromDate and toDate
+    if (!fromdate || !todate) {
+      alert("Please select a valid From Date and To Date.");
+      return;
+    }
+
     const from = new Date(fromdate);
     const to = new Date(todate);
 
-    // Extract month name and week/half
     const monthNames = [
       "Jan",
       "Feb",
@@ -320,23 +322,21 @@ const BankReportMaster = () => {
       "Dec",
     ];
     const monthName = monthNames[from.getMonth()];
-    const remark = from.getDate() <= 15 ? `${monthName}-I` : `${monthName}-II`; // First or second half of the month
+    const remark = from.getDate() <= 15 ? `${monthName}-I` : `${monthName}-II`;
 
-    // Prepare data for Excel
     const worksheetData = displayedBankDetails.map((item, index) => ({
       Code: item.srno || "N/A",
       "Customer Name": item.cname || "N/A",
       "Bank ACC No": item.accno || "N/A",
-      Mobile: item.mobile || "N/A", // Include mobile number
-      "Beneficiary Scheme": item.scheme || "Milk Pay", // Default to "Milk Pay"
+      Mobile: item.mobile || "N/A",
+      "Beneficiary Scheme": item.scheme || "Milk Pay",
       "All Payment": item.pamt || "N/A",
-      Remark: remark, // Add the Remark column
+      Remark: remark,
     }));
 
-    // Create a new worksheet
-    const worksheet = XLSX.utils.json_to_sheet(worksheetData);
+    const worksheet = XLSX.utils.json_to_sheet([]);
 
-    // Define headers (optional if you want to customize)
+    // Add custom headers
     XLSX.utils.sheet_add_aoa(
       worksheet,
       [
@@ -353,14 +353,24 @@ const BankReportMaster = () => {
       { origin: "A1" }
     );
 
-    // Create a new workbook and append the worksheet
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, " Sheet 1");
+    // Add data rows starting at row 2
+    XLSX.utils.sheet_add_json(worksheet, worksheetData, {
+      origin: "A2",
+      skipHeader: true,
+    });
 
-    // Generate and download the Excel file
-    const excelFileName = "ADCC_Bank_Report.xlsx";
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet 1");
+
+    // Sanitize the date strings for filenames
+    const sanitizedFromDate = fromdate.replace(/[/\\:?*[\]]/g, "-");
+    const sanitizedToDate = todate.replace(/[/\\:?*[\]]/g, "-");
+
+    const excelFileName = `ADDC_Bank_Report_${sanitizedFromDate}_to_${sanitizedToDate}.xlsx`;
+
     XLSX.writeFile(workbook, excelFileName);
   };
+  
 
   //.... AddCB BAnk Excel
   const exportADCCBToExcel = () => {
@@ -374,21 +384,24 @@ const BankReportMaster = () => {
       return;
     }
 
-    // Prepare data for Excel
+    if (!fromdate || !todate) {
+      alert("Please select a valid From Date and To Date.");
+      return;
+    }
+
     const worksheetData = displayedBankDetails.map((item, index) => ({
       "Sr.no": index + 1,
       "Customer Name": item.cname || "N/A",
       "Bank ACC No": item.accno || "N/A",
-      Mobile: item.mobile || "N/A", // Include mobile number
-      ID: index + 1, // Separate column for ID as a number
-      "ID Name": "ADCCB", // Separate column for ID Name
+      Mobile: item.mobile || "N/A",
+      ID: index + 1,
+      "ID Name": "ADCCB",
       "All Payment": item.pamt || "N/A",
     }));
 
-    // Create a new worksheet
-    const worksheet = XLSX.utils.json_to_sheet(worksheetData);
+    const worksheet = XLSX.utils.json_to_sheet([]);
 
-    // Define headers (optional if you want to customize)
+    // Add custom headers at row 1
     XLSX.utils.sheet_add_aoa(
       worksheet,
       [
@@ -405,14 +418,24 @@ const BankReportMaster = () => {
       { origin: "A1" }
     );
 
-    // Create a new workbook and append the worksheet
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, " Sheet 1");
+    // Add data starting at row 2
+    XLSX.utils.sheet_add_json(worksheet, worksheetData, {
+      origin: "A2",
+      skipHeader: true,
+    });
 
-    // Generate and download the Excel file
-    const excelFileName = "ADCCB_Bank_Report.xlsx";
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet 1");
+
+    // Sanitize the date strings for use in filenames
+    const sanitizedFromDate = fromdate.replace(/[/\\:?*[\]]/g, "-");
+    const sanitizedToDate = todate.replace(/[/\\:?*[\]]/g, "-");
+
+    const excelFileName = `ADCCB_Bank_Report_${sanitizedFromDate}_to_${sanitizedToDate}.xlsx`;
+
     XLSX.writeFile(workbook, excelFileName);
   };
+  
 
   //....  UNIONBANK BAnk Excel
   const exportUNIONBANKExcel = () => {
@@ -426,10 +449,13 @@ const BankReportMaster = () => {
       return;
     }
 
-    // Sanstha Name (replace with your desired name or dynamic variable)
-    const sansthaName = "Sanstha Name:  Hariom DSK Nimon ";
+    if (!fromdate || !todate) {
+      alert("Please select a valid From Date and To Date.");
+      return;
+    }
 
-    // Prepare data for Excel
+    const sansthaName = "Sanstha Name: Hariom DSK Nimon";
+
     const worksheetData = displayedBankDetails.map((item, index) => ({
       "Bank ACC No": item.accno || "N/A",
       Scheme: "C",
@@ -438,31 +464,36 @@ const BankReportMaster = () => {
       "All Payment": item.pamt || "N/A",
     }));
 
-    // Create a new worksheet
-    const worksheet = XLSX.utils.json_to_sheet(worksheetData);
+    const worksheet = XLSX.utils.json_to_sheet([]);
 
     // Add "Sanstha Name" at the top-left corner
-    XLSX.utils.sheet_add_aoa(
-      worksheet,
-      [[sansthaName]], // Add Sanstha Name
-      { origin: "A1" }
-    );
+    XLSX.utils.sheet_add_aoa(worksheet, [[sansthaName]], { origin: "A1" });
 
-    // Add headers below the Sanstha Name
+    // Add headers below the Sanstha Name (row 2)
     XLSX.utils.sheet_add_aoa(
       worksheet,
       [["Accound- No", "Scheme", "Remark", "Customer Name", "AMT"]],
-      { origin: "A2" } // Start the headers at row 2 (below the Sanstha Name)
+      { origin: "A2" }
     );
 
-    // Create a new workbook and append the worksheet
+    // Add data below the headers (starting from row 3)
+    XLSX.utils.sheet_add_json(worksheet, worksheetData, {
+      origin: "A3",
+      skipHeader: true,
+    });
+
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet 1");
 
-    // Generate and download the Excel file
-    const excelFileName = "Union_Bank_Report.xlsx";
+    // Sanitize date strings for file name
+    const sanitizedFromDate = fromdate.replace(/[/\\:?*[\]]/g, "-");
+    const sanitizedToDate = todate.replace(/[/\\:?*[\]]/g, "-");
+
+    const excelFileName = `Union_Bank_Report_${sanitizedFromDate}_to_${sanitizedToDate}.xlsx`;
+
     XLSX.writeFile(workbook, excelFileName);
   };
+  
   //.... SBI Bank
 
   const exportSBIBANKExcel = () => {
@@ -476,10 +507,13 @@ const BankReportMaster = () => {
       return;
     }
 
-    // Define the Sanstha Name
+    if (!fromdate || !todate) {
+      alert("Please select a valid From Date and To Date.");
+      return;
+    }
+
     const sansthaName = "Sanstha Name: Hariom DSK Nimon";
 
-    // Prepare data for Excel
     const worksheetData = displayedBankDetails.map((item, index) => ({
       "sr.no": index + 1,
       "IFSC Code": item.bankIFSC || "N/A",
@@ -489,13 +523,10 @@ const BankReportMaster = () => {
       "Bank Place": item.bankbranch || "N/A",
     }));
 
-    // Create a new worksheet
     const worksheet = XLSX.utils.json_to_sheet([]);
 
-    // Add "Sanstha Name" at the top-left corner (row 1)
     XLSX.utils.sheet_add_aoa(worksheet, [[sansthaName]], { origin: "A1" });
 
-    // Add headers below the Sanstha Name (row 2)
     XLSX.utils.sheet_add_aoa(
       worksheet,
       [
@@ -511,20 +542,23 @@ const BankReportMaster = () => {
       { origin: "A2" }
     );
 
-    // Add data below the headers (starting from row 3)
     XLSX.utils.sheet_add_json(worksheet, worksheetData, {
       origin: "A3",
       skipHeader: true,
     });
 
-    // Create a new workbook and append the worksheet
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet 1");
 
-    // Generate and download the Excel file
-    const excelFileName = "SBI_Bank_Report.xlsx";
+    // Sanitize date strings for filename
+    const sanitizedFromDate = fromdate.replace(/[/\\:?*[\]]/g, "-");
+    const sanitizedToDate = todate.replace(/[/\\:?*[\]]/g, "-");
+
+    const excelFileName = `SBI_Bank_Report_${sanitizedFromDate}_to_${sanitizedToDate}.xlsx`;
+
     XLSX.writeFile(workbook, excelFileName);
   };
+  
   //.......... Canara Bank
   const exportCANARABANKExcel = () => {
     if (loading) {
@@ -537,21 +571,24 @@ const BankReportMaster = () => {
       return;
     }
 
-    // Get the current date in DD-MM-YYYY format
+    if (!fromdate || !todate) {
+      alert("Please select a valid From Date and To Date.");
+      return;
+    }
+
     const currentDate = new Date()
       .toLocaleDateString("en-GB")
       .replace(/\//g, "-");
     const processDate = `Process Date: ${currentDate}`;
 
-    // Prepare data for Excel
-    const worksheetData = displayedBankDetails.map((item, index) => ({
+    const worksheetData = displayedBankDetails.map((item) => ({
       "Txn Type": "1",
       "Bank ACC No": item.accno || "N/A",
       "Branch Code": "125",
       "Txn Code": "1408",
-      "Txn Date": currentDate, // Replaced with current date
+      "Txn Date": currentDate,
       "DR/CR": "C",
-      "Value Dt": currentDate, // Replaced with current date
+      "Value Dt": currentDate,
       "Txn CCY": "104",
       "AMT LCY": item.pamt || "N/A",
       "AMT TCY": item.pamt || "N/A",
@@ -577,13 +614,9 @@ const BankReportMaster = () => {
       END: "END",
     }));
 
-    // Create a new worksheet
     const worksheet = XLSX.utils.json_to_sheet([]);
-
-    // Add "Process Date" at the top-left corner (row 1)
     XLSX.utils.sheet_add_aoa(worksheet, [[processDate]], { origin: "A1" });
 
-    // Add headers below the process date (row 2)
     XLSX.utils.sheet_add_aoa(
       worksheet,
       [
@@ -623,21 +656,24 @@ const BankReportMaster = () => {
       { origin: "A2" }
     );
 
-    // Add data below the headers (starting from row 3)
     XLSX.utils.sheet_add_json(worksheet, worksheetData, {
       origin: "A3",
       skipHeader: true,
     });
 
-    // Create a new workbook and append the worksheet
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet 1");
 
-    // Generate and download the Excel file
-    const excelFileName = "CANARA_Bank_Report.xlsx";
+    // Format and sanitize fromdate and todate
+    const sanitizedFromDate = fromdate.replace(/[/\\:?*[\]]/g, "-");
+    const sanitizedToDate = todate.replace(/[/\\:?*[\]]/g, "-");
+
+    // Updated file name with date range
+    const excelFileName = `CANARA_Bank_Report_${sanitizedFromDate}_to_${sanitizedToDate}.xlsx`;
+
     XLSX.writeFile(workbook, excelFileName);
   };
-
+  
   const exportIDBIBANKExcel = () => {
     if (loading) {
       alert("Data is still loading. Please wait.");
@@ -648,14 +684,18 @@ const BankReportMaster = () => {
       alert("No data available to export.");
       return;
     }
+
+    if (!fromdate || !todate) {
+      alert("Please select a valid From Date and To Date.");
+      return;
+    }
+
     const currentDate = new Date()
       .toLocaleDateString("en-GB")
       .replace(/\//g, "-");
     const processDate = `Process Date: ${currentDate}`;
 
-    // Prepare data for Excel
     const worksheetData = displayedBankDetails.map((item, index) => {
-      // Combine all column values into a single string for "Bulk Data" using tilde (~) as a separator
       const bulkData = [
         item.pamt || "N/A",
         "0",
@@ -666,7 +706,7 @@ const BankReportMaster = () => {
         item.bankname || "N/A",
         "Milk Payment",
         item.createdby || "N/A",
-      ].join(" ~ "); // Using " ~ " as a separator
+      ].join(" ~ ");
 
       return {
         AMT: item.pamt || "N/A",
@@ -678,17 +718,12 @@ const BankReportMaster = () => {
         "Bank Name": item.bankname || "N/A",
         info: "Milk Payment",
         "Originator Of Remittance": item.createdby || "N/A",
-        "Bulk Data": bulkData, // Updated separator in Bulk Data
+        "Bulk Data": bulkData,
       };
     });
 
-    // Create a new worksheet
     const worksheet = XLSX.utils.json_to_sheet([]);
-
-    // Add an **empty first row** (row 1)
     XLSX.utils.sheet_add_aoa(worksheet, [[]], { origin: "A1" });
-
-    // Add headers below the empty row (row 2)
     XLSX.utils.sheet_add_aoa(
       worksheet,
       [
@@ -708,20 +743,23 @@ const BankReportMaster = () => {
       { origin: "A2" }
     );
 
-    // Add data below the headers (starting from row 3)
     XLSX.utils.sheet_add_json(worksheet, worksheetData, {
       origin: "A3",
       skipHeader: true,
     });
 
-    // Create a new workbook and append the worksheet
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet 1");
 
-    // Generate and download the Excel file
-    const excelFileName = "IDBI_Bank_Report.xlsx";
+    // Format and sanitize fromdate and todate for the filename
+    const sanitizedFromDate = fromdate.replace(/[/\\:?*[\]]/g, "-");
+    const sanitizedToDate = todate.replace(/[/\\:?*[\]]/g, "-");
+
+    const excelFileName = `IDBI_Bank_Report_${sanitizedFromDate}_to_${sanitizedToDate}.xlsx`;
+
     XLSX.writeFile(workbook, excelFileName);
   };
+  
 
   const exportBadodaraToExcel = () => {
     if (loading) {
@@ -734,50 +772,40 @@ const BankReportMaster = () => {
       return;
     }
 
-    // Get the current date in DD-MM-YYYY format
-    const currentDate = new Date()
-      .toLocaleDateString("en-GB")
-      .replace(/\//g, "-");
-
-    // Ensure fromDate and toDate are not empty
     if (!fromdate || !todate) {
       alert("Please select a valid From Date and To Date.");
       return;
     }
 
-    // Convert fromDate and toDate to Date objects for formatting
+    const currentDate = new Date()
+      .toLocaleDateString("en-GB")
+      .replace(/\//g, "-");
+
     const fromDateObj = new Date(fromdate);
     const toDateObj = new Date(todate);
 
-    // Format dates as "1 TO 10 NOV 2024"
+    // Format for description inside Excel content
     const formattedFromDate = fromDateObj.getDate();
     const formattedToDate = toDateObj.getDate();
     const formattedMonthYear = toDateObj
-      .toLocaleDateString("en-GB", {
-        month: "short",
-        year: "numeric",
-      })
-      .toUpperCase(); // Converts "Nov 2024" to "NOV 2024"
+      .toLocaleDateString("en-GB", { month: "short", year: "numeric" })
+      .toUpperCase();
 
     const formattedDateRange = `${formattedFromDate} TO ${formattedToDate} ${formattedMonthYear}`;
-
-    console.log("Exporting Excel with date range:", formattedDateRange);
 
     // Prepare data for Excel
     const worksheetData = displayedBankDetails.map((item) => ({
       "Value Date": currentDate || "N/A",
       "Bank ACC No": item.accno || "N/A",
-      Description: `DUDH PAY ${formattedDateRange}`, // Correctly formatted date in Description
+      Description: `DUDH PAY ${formattedDateRange}`,
       Currency: "INR",
       "D/C": "C",
       "Transaction Amount": item.pamt || "N/A",
       "Account Name": item.cname || "N/A",
     }));
 
-    // Create a new worksheet
     const worksheet = XLSX.utils.json_to_sheet([]);
 
-    // Add headers at the top
     XLSX.utils.sheet_add_aoa(
       worksheet,
       [
@@ -794,21 +822,23 @@ const BankReportMaster = () => {
       { origin: "A1" }
     );
 
-    // Add data below the headers (starting from row 2)
     XLSX.utils.sheet_add_json(worksheet, worksheetData, {
       origin: "A2",
       skipHeader: true,
     });
 
-    // Create a new workbook and append the worksheet
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet 1");
 
-    // Generate and download the Excel file
-    const excelFileName = "Badodata-Bank_Report.xlsx";
+    // Sanitize and format full fromdate/todate for the filename
+    const sanitizedFromDate = fromdate.replace(/[/\\:?*[\]]/g, "-");
+    const sanitizedToDate = todate.replace(/[/\\:?*[\]]/g, "-");
+
+    const excelFileName = `Badodara_Bank_Report_${sanitizedFromDate}_to_${sanitizedToDate}.xlsx`;
+
     XLSX.writeFile(workbook, excelFileName);
   };
-
+  
   const exportAXISToExcel = () => {
     if (loading) {
       alert("Data is still loading. Please wait.");
@@ -868,7 +898,14 @@ const BankReportMaster = () => {
     XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet 1");
 
     // Generate and download the Excel file
-    const excelFileName = "AXIS-Bank_Report.xlsx";
+    const formattedFromDate = fromdate
+      ? fromdate.replace(/[/\\:?*[\]]/g, "-")
+      : "start";
+    const formattedToDate = todate
+      ? todate.replace(/[/\\:?*[\]]/g, "-")
+      : "end";
+    const excelFileName = `AXIS-Bank_Report.xlsx${formattedFromDate}_to_${formattedToDate}.xlsx`;
+
     XLSX.writeFile(workbook, excelFileName);
   };
 
@@ -883,15 +920,13 @@ const BankReportMaster = () => {
       return;
     }
 
-    const dairyName = dairyname; // Set the dairy name here
+    const dairyName = dairyname;
 
-    // Calculate total sum of the AMOUNT column
     const totalAmount = displayedBankDetails.reduce(
       (sum, item) => sum + (parseFloat(item.namt) || 0),
       0
     );
 
-    // Prepare data for Excel
     const worksheetData = displayedBankDetails.map((item, index) => ({
       "SEQ NO": index + 1,
       AMOUNT: item.pamt || "N/A",
@@ -907,10 +942,9 @@ const BankReportMaster = () => {
       "SENDER INFO2": "",
     }));
 
-    // Append total row at the end
     worksheetData.push({
-      "SEQ NO": "", // Leave empty
-      AMOUNT: `Total: ${totalAmount.toFixed(2)}`, // Total amount value
+      "SEQ NO": "",
+      AMOUNT: `Total: ${totalAmount.toFixed(2)}`,
       "AC Type": "",
       "SMS/EMAIl": "",
       Mobile: "",
@@ -923,16 +957,10 @@ const BankReportMaster = () => {
       "SENDER INFO2": "",
     });
 
-    // Create a new worksheet
     const worksheet = XLSX.utils.json_to_sheet([]);
 
-    // Insert the dairy name in the first row (A1)
     XLSX.utils.sheet_add_aoa(worksheet, [[dairyName]], { origin: "A1" });
-
-    // Add a blank line (A2) before the headers
     XLSX.utils.sheet_add_aoa(worksheet, [[""]], { origin: "A2" });
-
-    // Add headers in row 3 (A3)
     XLSX.utils.sheet_add_aoa(
       worksheet,
       [
@@ -954,23 +982,28 @@ const BankReportMaster = () => {
       { origin: "A3" }
     );
 
-    // Add data below the headers (starting from row 4)
     XLSX.utils.sheet_add_json(worksheet, worksheetData, {
       origin: "A4",
       skipHeader: true,
     });
 
-    // Create a new workbook and append the worksheet
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet 1");
 
-    // Generate and download the Excel file
-    const excelFileName = "Overseas_Bank_Report.xlsx";
+    // Format dates in file name
+    const formattedFromDate = fromdate
+      ? fromdate.replace(/[/\\:?*[\]]/g, "-")
+      : "start";
+    const formattedToDate = todate
+      ? todate.replace(/[/\\:?*[\]]/g, "-")
+      : "end";
+    const excelFileName = `Overseas_Bank_Report_${formattedFromDate}_to_${formattedToDate}.xlsx`;
+
     XLSX.writeFile(workbook, excelFileName);
   };
-  
+
   //
-  
+
   const BankExportFunctions = {
     "ADCC Report": exportADDCToExcel,
     "ADCCB Report": exportADCCBToExcel,
@@ -983,16 +1016,16 @@ const BankReportMaster = () => {
     "Canara Bank": exportCANARABANKExcel,
   };
 
-    const handleBankSelection = (event) => {
-      const selected = event.target.value;
-      setSelectedBank(selected);
-  
-      if (selected && BankExportFunctions[selected]) {
-        BankExportFunctions[selected](); // Call the corresponding export function
-      } else {
-        alert("Please select a valid bank report.");
-      }
+  const handleBankSelection = (event) => {
+    const selected = event.target.value;
+    setSelectedBank(selected);
+
+    if (selected && BankExportFunctions[selected]) {
+      BankExportFunctions[selected](); // Call the corresponding export function
+    } else {
+      alert("Please select a valid bank report.");
     }
+  };
 
   return (
     <div className="bank-register-container w100 h1 d-flex-col  bg ">
