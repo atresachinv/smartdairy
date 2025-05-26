@@ -19,7 +19,7 @@ const EmployeeList = () => {
   const [filteredEmpList, setFilteredEmpList] = useState([]);
   const [selectedCenter, setSelectedCenter] = useState("");
   const centerList = useSelector(
-    (state) => state.center.centersList.centersDetails || []
+    (state) => state.center.centersList || []
   );
 
   useEffect(() => {

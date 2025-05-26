@@ -29,7 +29,7 @@ const AdminSalesReports = () => {
   const salesStatus = useSelector((state) => state.sales.allstatus);
   // -------------------------------------------------------------------------------------------->
   const centerList = useSelector(
-    (state) => state.center.centersList.centersDetails || []
+    (state) => state.center.centersList || []
   );
 
   const Emplist = useSelector((state) => state.emp.emplist || []);
@@ -412,49 +412,6 @@ const AdminSalesReports = () => {
           </div>
         </div>
       </div>
-      {/* <div className="milkdata-container w100 h80 d-flex-col mh90 hidescrollbar bg">
-        <div className="milkdata-data-headings w100 h10 d-flex a-center t-center sa py10 bg1">
-          <span className="f-label-text w10">{t("c-date")}</span>
-          <span className="f-label-text w60">
-            {t("milkcollection:m-cust-name")}
-          </span>
-          <span className="f-label-text w10">{t("c-liters")}</span>
-          <span className="f-label-text w20">
-            {t("milkcollection:m-sample-no")}
-          </span>
-        </div>
-        <div className="milkdata-card-container w100 h90 d-flex-col hidescrollbar">
-          {status === "loading" ? (
-            <div className="w100 h1 d-flex center">
-              <Spinner />
-            </div>
-          ) : filteredMilkData.length > 0 ? (
-            filteredMilkData.map((milkdata, index) => (
-              <div
-                key={index}
-                className={`milkdata-card w100 d-flex a-center sa ${
-                  index % 2 === 0 ? "bg-light" : "bg-dark"
-                }`}
-                style={{
-                  backgroundColor: index % 2 === 0 ? "#faefe3" : "#fff",
-                }}>
-                <span className="label-text w10 t-center">{milkdata.rno}</span>
-                <span className="label-text w60">{milkdata.cname}</span>
-                <span className="label-text w10 t-center">
-                  {milkdata.Litres}
-                </span>
-                <span className="label-text w20 t-center">
-                  {milkdata.SampleNo}
-                </span>
-              </div>
-            ))
-          ) : (
-            <div className="w100 h1 d-flex center">
-              <span className="label-text">{t("c-no-data-avai")}</span>
-            </div>
-          )}
-        </div>
-      </div> */}
       <div className="milk-sales-data-div w100 d-flex-col h90 mh90 hidescrollbar bg">
         <div className="sales-info-heading w100 h10 d-flex a-center t-center sticky-top py10 sa bg7">
           <span className="f-label-text w10">Sr.no</span>

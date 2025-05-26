@@ -21,7 +21,7 @@ const TrnCheck = () => {
     type: 1,
   });`  `
   const centerList = useSelector(
-    (state) => state.center.centersList.centersDetails || []
+    (state) => state.center.centersList || []
   );
   const centerSetting = useSelector(
     (state) => state.dairySetting.centerSetting

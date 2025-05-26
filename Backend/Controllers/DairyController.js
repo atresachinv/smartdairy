@@ -1690,7 +1690,7 @@ exports.updateMilkSangha = (req, res) => {
     return res.status(401).json({ status: 401, message: "Unauthorized User!" });
   }
 
-  if ((!code, !sanghaname, !marathiname)) {
+  if ((!id, !sanghaname, !marathiname)) {
     return res
       .status(400)
       .json({ status: 400, message: "All fields data required!" });
@@ -1751,18 +1751,18 @@ exports.listMilkSangha = (req, res) => {
 
   if (center_id !== 0) {
     fetchQuery = `
-      SELECT code, sangh_name, marathi_name
-      FROM sangh_master
-      WHERE dairy_id = ?
-    `;
-    queryParams = [dairy_id];
-  } else {
-    fetchQuery = `
-      SELECT code, sangh_name, marathi_name
+      SELECT id, code, sangha_name, marathi_name
       FROM sangh_master
       WHERE dairy_id = ? AND center_id = ?
     `;
     queryParams = [dairy_id, center_id];
+  } else {
+    fetchQuery = `
+    SELECT id, code, sangha_name, marathi_name
+    FROM sangh_master
+    WHERE dairy_id = ?
+  `;
+    queryParams = [dairy_id];
   }
 
   pool.getConnection((err, connection) => {
@@ -1799,7 +1799,7 @@ exports.listMilkSangha = (req, res) => {
 
 exports.deleteMilkSangha = (req, res) => {
   const { dairy_id } = req.user;
-  const { id } = req.body;
+  const { id } = req.query;
 
   if (!dairy_id) {
     return res.status(401).json({ status: 401, message: "Unauthorized User!" });
@@ -1812,7 +1812,7 @@ exports.deleteMilkSangha = (req, res) => {
   }
 
   const deleteQuery = `
-        delete * FROM sangh_master 
+        delete FROM sangh_master 
         WHERE id = ?
       `;
 

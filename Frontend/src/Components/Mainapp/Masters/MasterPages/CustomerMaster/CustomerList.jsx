@@ -19,7 +19,7 @@ const CustomerList = () => {
   );
   const status = useSelector((state) => state.customers.cliststatus);
   const centerList = useSelector(
-    (state) => state.center.centersList.centersDetails || []
+    (state) => state.center.centersList || []
   );
 
   const center_id = useSelector(

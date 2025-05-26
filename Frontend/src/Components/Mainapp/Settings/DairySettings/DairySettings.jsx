@@ -13,9 +13,7 @@ import {
 
 const DairySettings = () => {
   const dispatch = useDispatch();
-  const centerList = useSelector(
-    (state) => state.center.centersList.centersDetails
-  );
+  const centerList = useSelector((state) => state.center.centersList || []);
   const DairySetting = useSelector((state) => state.dairySetting.dairySettings);
   const [model, setModel] = useState(false);
   const [center, setCenter] = useState({});

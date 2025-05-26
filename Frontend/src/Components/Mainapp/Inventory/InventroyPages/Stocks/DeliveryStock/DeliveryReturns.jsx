@@ -39,9 +39,7 @@ const DeliveryReturns = () => {
   const centerID = useSelector((state) => state.dairy.dairyData.center_id);
   const [filterEmpList, setFilterEmpList] = useState([]);
   const { emplist } = useSelector((state) => state.emp);
-  const centerList = useSelector(
-    (state) => state.center.centersList.centersDetails
-  );
+  const centerList = useSelector((state) => state.center.centersList || []);
 
   const centerSetting = useSelector(
     (state) => state.dairySetting.centerSetting

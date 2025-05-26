@@ -20,7 +20,7 @@ const CustomerReports = () => {
   const [selectedCenterId, setSelectedCenterId] = useState("");
 
   const centerList = useSelector(
-    (state) => state.center.centersList.centersDetails
+    (state) => state.center.centersList || []
   );
 
   // Function to handle selection change

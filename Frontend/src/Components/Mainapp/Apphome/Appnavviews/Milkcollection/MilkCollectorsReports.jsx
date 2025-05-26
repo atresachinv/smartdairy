@@ -25,7 +25,7 @@ const MilkCollectorsReports = () => {
     (state) => state.milkCollection.allMilkCollector || []
   );
   const centerList = useSelector(
-    (state) => state.center.centersList.centersDetails || []
+    (state) => state.center.centersList || []
   );
 
   const Emplist = useSelector((state) => state.emp.emplist || []);

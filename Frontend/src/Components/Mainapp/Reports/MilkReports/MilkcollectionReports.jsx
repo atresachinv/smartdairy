@@ -36,7 +36,7 @@ const MilkcollectionReports = () => {
   const [selectedCenterId, setSelectedCenterId] = useState("0");
   const [centerData, setCenterData] = useState([]); //..
   const centerList = useSelector(
-    (state) => state.center.centersList.centersDetails
+    (state) => state.center.centersList || []
   );
 
   useEffect(() => {

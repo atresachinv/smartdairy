@@ -30,9 +30,10 @@ export const addSangha = createAsyncThunk(
 );
 export const updateSangha = createAsyncThunk(
   "sangha/updateSangha",
-  async ({ sanghaname, marathiname }, { rejectWithValue }) => {
+  async ({ id, sanghaname, marathiname }, { rejectWithValue }) => {
     try {
       const response = await axiosInstance.post("/update/sangha", {
+        id,
         sanghaname,
         marathiname,
       });
@@ -61,9 +62,11 @@ export const fetchSanghaList = createAsyncThunk(
 );
 export const deleteSangha = createAsyncThunk(
   "sangha/deleteSangha",
-  async (_, { rejectWithValue }) => {
+  async ({ id }, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.post("/delete/sangha");
+      const response = await axiosInstance.delete("/delete/sangha", {
+        params: { id },
+      });
       return response.data;
     } catch (error) {
       const errorMessage = error.response

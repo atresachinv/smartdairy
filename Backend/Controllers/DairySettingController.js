@@ -12,7 +12,7 @@ exports.dairyList = async (req, res) => {
       });
     }
 
-    const query = `select SocietyCode,SocietyName,marathiName from societymaster`;
+    const query = `select id, SocietyCode, SocietyName, marathiName, PhoneNo, startdate, act_date, enddate, amc from societymaster`;
     connection.query(query, [], (err, rows) => {
       connection.release();
       if (err) {
@@ -42,6 +42,7 @@ exports.dairyList = async (req, res) => {
     });
   });
 };
+
 //center list
 exports.centerList = async (req, res) => {
   pool.getConnection((err, connection) => {

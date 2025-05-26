@@ -14,15 +14,13 @@ const DairySetup = () => {
   );
   const status = useSelector((state) => state.dairySetting.cupdateStatus);
 
-  const centerList = useSelector(
-    (state) => state.center.centersList.centersDetails || []
-  );
+  const centerList = useSelector((state) => state.center.centersList || []);
 
   const center_id = useSelector(
     (state) =>
       state.dairy.dairyData.center_id || state.dairy.dairyData.center_id
   );
-console.log(centerSetting);
+  console.log(centerSetting);
   // Printer type list ------------------------------------------------------------>
   const printerTypes = {
     LA4: "Laser Printer A4",

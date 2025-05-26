@@ -25,7 +25,7 @@ const CreateOthers = () => {
   const centerId = useSelector((state) => state.dairy.dairyData.center_id);
   const [filter, setFilter] = useState(0);
   const centerList = useSelector(
-    (state) => state.center.centersList.centersDetails || []
+    (state) => state.center.centersList || []
   );
   const dairyInfo = useSelector(
     (state) =>

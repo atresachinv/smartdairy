@@ -30,7 +30,7 @@ const Payments = ({ setCurrentPage }) => {
       state.dairy.dairyData.center_id || state.dairy.dairyData.center_id
   );
   const centerList = useSelector(
-    (state) => state.center.centersList.centersDetails || []
+    (state) => state.center.centersList || []
   );
   const customerlist = useSelector(
     (state) => state.customers.customerlist || []
@@ -84,6 +84,8 @@ const Payments = ({ setCurrentPage }) => {
   const submitbtn = useRef(null);
   const autoCenter = settings?.autoCenter;
 
+  // console.log("dedAmts", dedAmts);
+  // console.log("prevMamt", prevMamt);
   // ----------------------------------------------------------------------->
   // check if payment is lock or not ------------------------------------->
 
@@ -220,11 +222,18 @@ const Payments = ({ setCurrentPage }) => {
       }
     });
   };
+  // console.log(deductionDetails);
+  // useEffect(() => {
+  //   const otherDeductionGLCodes = deductionDetails
+  //     .filter((deduction) => deduction.LP !== 0)
+  //     .map((deduction) => deduction.GLCode);
+  //   setOtherDeduction(otherDeductionGLCodes);
+  // }, [deductionDetails]);
 
   useEffect(() => {
-    const otherDeductionGLCodes = deductionDetails
-      .filter((deduction) => deduction.LP !== 0)
-      .map((deduction) => deduction.GLCode);
+    const otherDeductionGLCodes = deductionDetails.map(
+      (deduction) => deduction.GLCode
+    );
     setOtherDeduction(otherDeductionGLCodes);
   }, [deductionDetails]);
 
@@ -238,7 +247,7 @@ const Payments = ({ setCurrentPage }) => {
       );
 
       const deductionEntries = [];
- 
+
       for (const user of payData) {
         const {
           rno,
@@ -253,12 +262,11 @@ const Payments = ({ setCurrentPage }) => {
         let totalDeduction = 0;
         let remainingAmt = totalamt;
 
+        const customer = customerlist.find(
+          (entry) => parseInt(entry.srno, 10) === parseInt(rno)
+        );
 
-         const customer = customerlist.find(
-           (entry) => parseInt(entry.srno, 10) === parseInt(rno)
-         );
-
-         const AccCode = customer.cid;
+        const AccCode = customer.cid;
 
         // FIXED DEDUCTIONS ----------------------------------------->
         for (const deduction of filteredDeductions) {
@@ -347,6 +355,194 @@ const Payments = ({ setCurrentPage }) => {
   //-------------------------------------------------------------------------------->
   // handle auto deduction --------------------------------------------------------->
 
+  // const handleAllDeductions = async () => {
+  //   try {
+  //     const filteredDeductions = deductionDetails.filter(
+  //       (deduction) => deduction.RatePerLitre !== 0
+  //     );
+
+  //     const deductionEntries = [];
+
+  //     for (const user of payData) {
+  //       const {
+  //         rno,
+  //         cname,
+  //         totalamt,
+  //         totalLitres,
+  //         avgSnf,
+  //         avgFat,
+  //         mrgMilk,
+  //         eveMilk,
+  //       } = user;
+  //       let totalDeduction = 0;
+  //       let remainingAmt = totalamt;
+
+  //       const customer = customerlist.find(
+  //         (entry) => parseInt(entry.srno, 10) === parseInt(rno)
+  //       );
+
+  //       const AccCode = customer.cid;
+
+  //       // FIXED DEDUCTIONS ----------------------------------------->
+  //       for (const deduction of filteredDeductions) {
+  //         const amt = +(totalLitres * deduction.RatePerLitre).toFixed(2);
+  //         totalDeduction += amt;
+  //         remainingAmt -= amt;
+
+  //         deductionEntries.push({
+  //           DeductionId: deduction.DeductionId,
+  //           GLCode: deduction.GLCode,
+  //           rno,
+  //           AccCode,
+  //           dname: deduction.dname,
+  //           amt: amt.toFixed(2),
+  //           cname: "",
+  //           totalamt: 0.0,
+  //           totalLitres: 0.0,
+  //           avgSnf: 0.0,
+  //           avgFat: 0.0,
+  //           avgRate: 0.0,
+  //           totalDeduction: 0.0,
+  //           dtype: 0,
+  //         });
+  //       }
+
+  //       // OTHER DEDUCTIONS ----------------------------------------->
+  //       const otherDeductions = deductionDetails.filter(
+  //         (deduction) => deduction.RatePerLitre === 0
+  //       );
+
+  //       const userDedAmts = dedAmts.filter((item) => item.AccCode === rno);
+  //       const userPrevMamt = prevMamt.filter((item) => item.AccCode === rno);
+  //       for (const deduction of otherDeductions) {
+  //         const matchDedAmt = userDedAmts.find(
+  //           (item) => item.GLCode === deduction.GLCode
+  //         );
+  //         const matchPrevAmt = userPrevMamt.find(
+  //           (item) => item.GLCode === deduction.GLCode
+  //         );
+
+  //         const currAmt = matchDedAmt ? Math.abs(matchDedAmt.totalamt) : 0;
+  //         const prevAmt = matchPrevAmt ? Math.abs(matchPrevAmt.totalamt) : 0;
+
+  //         let deduAmt = +(currAmt + prevAmt).toFixed(2);
+
+  //         if (remainingAmt - deduAmt < leastPayamt) {
+  //           deduAmt = +(remainingAmt - leastPayamt).toFixed(2);
+  //         }
+  //         if (deduAmt <= 0) continue;
+
+  //         totalDeduction += deduAmt;
+  //         remainingAmt -= deduAmt;
+
+  //         let BAmt = +(currAmt - deduAmt).toFixed(2);
+
+  //         deductionEntries.push({
+  //           DeductionId: deduction.DeductionId,
+  //           GLCode: deduction.GLCode,
+  //           rno,
+  //           AccCode,
+  //           dname: deduction.dname,
+  //           MAMT: prevAmt.toFixed(2),
+  //           BAMT: BAmt.toFixed(2),
+  //           amt: deduAmt.toFixed(2),
+  //           cname: "",
+  //           totalamt: currAmt.toFixed(2),
+  //           totalLitres: 0.0,
+  //           avgSnf: 0.0,
+  //           avgFat: 0.0,
+  //           avgRate: 0.0,
+  //           totalDeduction: 0.0,
+  //           dtype: 1,
+  //         });
+
+  //         if (remainingAmt <= leastPayamt) break;
+  //       }
+
+  //       // get customer total commission ------------------------------------------>
+  //       // total commission and total rebet --------------------------------------->
+
+  //       const comm = customer.commission;
+  //       const rebet = customer.rebet;
+  //       const mComm = mrgMilk * comm;
+  //       const eComm = eveMilk * comm;
+  //       const tComm = mComm + eComm;
+  //       const mRebet = mrgMilk * rebet;
+  //       const eRebet = eveMilk * rebet;
+  //       const tRebet = mRebet + eRebet;
+  //       const allComm = tComm + tRebet;
+  //       const transport = customer.transportation || 0;
+  //       const totalTransport = transport * totalLitres;
+  //       // Round OFF -------------------------------------------------->
+  //       const roundOffDedu = deductionDetails.find(
+  //         (deduction) => deduction.RatePerLitre === 0 && deduction.GLCode === 2
+  //       );
+  //       const totalPay = (remainingAmt + allComm - totalTransport).toFixed(2);
+  //       const flooredAmt = Math.floor(totalPay);
+  //       const roundAmt = Math.floor((totalPay - flooredAmt) * 100) / 100;
+
+  //       if (roundAmt > 0) {
+  //         totalDeduction += roundAmt;
+  //         remainingAmt = flooredAmt;
+
+  //         deductionEntries.push({
+  //           DeductionId: roundOffDedu.DeductionId,
+  //           GLCode: roundOffDedu.GLCode,
+  //           rno,
+  //           AccCode,
+  //           dname: roundOffDedu.dname,
+  //           MAMT: 0.0,
+  //           BAMT: 0.0,
+  //           amt: roundAmt.toFixed(2),
+  //           cname: "",
+  //           totalamt: 0.0,
+  //           totalLitres: 0.0,
+  //           avgSnf: 0.0,
+  //           avgFat: 0.0,
+  //           avgRate: 0.0,
+  //           totalDeduction: 0.0,
+  //           dtype: 1,
+  //         });
+  //       }
+
+  //       //  FINAL NET PAYMENT ---------------------------------------------------------->
+  //       const avgRate = totalLitres !== 0 ? totalamt / totalLitres : 0;
+  //       const netPayment = +remainingAmt.toFixed(2);
+
+  //       deductionEntries.push({
+  //         DeductionId: 0,
+  //         GLCode: 28,
+  //         rno,
+  //         AccCode,
+  //         dname: "",
+  //         amt: netPayment.toFixed(2),
+  //         cname,
+  //         totalamt: totalamt.toFixed(2),
+  //         totalLitres: totalLitres.toFixed(2),
+  //         mrgLitres: mrgMilk.toFixed(2),
+  //         eveLitres: eveMilk.toFixed(2),
+  //         mrgComm: mComm.toFixed(2),
+  //         eveComm: eComm.toFixed(2),
+  //         tComm: tComm.toFixed(2),
+  //         mrgRebet: mRebet.toFixed(2),
+  //         eveRebet: eRebet.toFixed(2),
+  //         tRebet: tRebet.toFixed(2),
+  //         allComm: allComm.toFixed(2),
+  //         transport: totalTransport.toFixed(2),
+  //         avgSnf: avgSnf.toFixed(1),
+  //         avgFat: avgFat.toFixed(1),
+  //         avgRate: avgRate.toFixed(1),
+  //         totalDeduction: totalDeduction.toFixed(2),
+  //         dtype: 2,
+  //       });
+  //     }
+
+  //     return deductionEntries;
+  //   } catch (error) {
+  //     console.error("Error in handle All Deductions:", error);
+  //     return [];
+  //   }
+  // };
 
   const handleAllDeductions = async () => {
     try {
@@ -367,6 +563,7 @@ const Payments = ({ setCurrentPage }) => {
           mrgMilk,
           eveMilk,
         } = user;
+        
         let totalDeduction = 0;
         let remainingAmt = totalamt;
 
@@ -376,8 +573,15 @@ const Payments = ({ setCurrentPage }) => {
 
         const AccCode = customer.cid;
 
-        // FIXED DEDUCTIONS ----------------------------------------->
+        const userPrevMamts = prevMamt.filter((item) => item.AccCode === rno);
+
+        // FIXED DEDUCTIONS
         for (const deduction of filteredDeductions) {
+          const matchPrevAmt = userPrevMamts.find(
+            (item) => item.GLCode === deduction.GLCode
+          );
+          const prevAmt = matchPrevAmt ? Math.abs(matchPrevAmt.totalamt) : 0;
+
           const amt = +(totalLitres * deduction.RatePerLitre).toFixed(2);
           totalDeduction += amt;
           remainingAmt -= amt;
@@ -388,9 +592,10 @@ const Payments = ({ setCurrentPage }) => {
             rno,
             AccCode,
             dname: deduction.dname,
+            MAMT: prevAmt.toFixed(2),
             amt: amt.toFixed(2),
             cname: "",
-            totalamt: 0.0,
+            totalamt: (prevAmt + amt).toFixed(2),
             totalLitres: 0.0,
             avgSnf: 0.0,
             avgFat: 0.0,
@@ -399,6 +604,7 @@ const Payments = ({ setCurrentPage }) => {
             dtype: 0,
           });
         }
+        
 
         // OTHER DEDUCTIONS ----------------------------------------->
         const otherDeductions = deductionDetails.filter(
@@ -417,18 +623,26 @@ const Payments = ({ setCurrentPage }) => {
 
           const currAmt = matchDedAmt ? Math.abs(matchDedAmt.totalamt) : 0;
           const prevAmt = matchPrevAmt ? Math.abs(matchPrevAmt.totalamt) : 0;
-          
+          // console.log("currAmt", currAmt);
+          // console.log("prevAmt", prevAmt);
+          // console.log("remainingAmt", remainingAmt);
+          let tDedAmt = +(currAmt + prevAmt).toFixed(2);
+          // console.log("tDedAmt", tDedAmt);
           let deduAmt = +(currAmt + prevAmt).toFixed(2);
 
           if (remainingAmt - deduAmt < leastPayamt) {
             deduAmt = +(remainingAmt - leastPayamt).toFixed(2);
           }
+
           if (deduAmt <= 0) continue;
+          // console.log("deduAmt", deduAmt);
+          // console.log("remainingAmt1", remainingAmt);
 
           totalDeduction += deduAmt;
           remainingAmt -= deduAmt;
 
-          let BAmt = +(currAmt - deduAmt).toFixed(2);
+          let BAmt = +(tDedAmt - deduAmt).toFixed(2);
+          // console.log("BAmt", BAmt);
 
           deductionEntries.push({
             DeductionId: deduction.DeductionId,
@@ -470,9 +684,7 @@ const Payments = ({ setCurrentPage }) => {
         const roundOffDedu = deductionDetails.find(
           (deduction) => deduction.RatePerLitre === 0 && deduction.GLCode === 2
         );
-
         const totalPay = (remainingAmt + allComm - totalTransport).toFixed(2);
-
         const flooredAmt = Math.floor(totalPay);
         const roundAmt = Math.floor((totalPay - flooredAmt) * 100) / 100;
 
@@ -499,6 +711,7 @@ const Payments = ({ setCurrentPage }) => {
             dtype: 1,
           });
         }
+
         //  FINAL NET PAYMENT ---------------------------------------------------------->
         const avgRate = totalLitres !== 0 ? totalamt / totalLitres : 0;
         const netPayment = +remainingAmt.toFixed(2);
@@ -533,7 +746,7 @@ const Payments = ({ setCurrentPage }) => {
 
       return deductionEntries;
     } catch (error) {
-      console.error("Error in handleAllDeductions:", error);
+      console.error("Error in handle All Deductions:", error);
       return [];
     }
   };

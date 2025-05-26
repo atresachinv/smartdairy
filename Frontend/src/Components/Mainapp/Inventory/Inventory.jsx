@@ -49,9 +49,7 @@ const Inventory = () => {
   const [modalData, setModalData] = useState(null);
   const [modalType, setModalType] = useState("");
   const centerId = useSelector((state) => state.dairy.dairyData.center_id);
-  const centerList = useSelector(
-    (state) => state.center.centersList.centersDetails || []
-  );
+  const centerList = useSelector((state) => state.center.centersList || []);
   const [filter, setFilter] = useState("");
   const formatDate = (dateString) => {
     const date = new Date(dateString);

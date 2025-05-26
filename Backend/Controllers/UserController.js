@@ -521,6 +521,122 @@ const queryPromise = (connection, sql, params = []) => {
 
 // updated to check hashed passwords --------------------------------------->
 
+// exports.userLogin = async (req, res) => {
+//   const { user_id, user_password } = req.body;
+
+//   pool.getConnection((err, connection) => {
+//     if (err) {
+//       console.error("Error getting MySQL connection: ", err);
+//       return res.status(500).json({ message: "Database connection error" });
+//     }
+
+//     try {
+//       const checkUser =
+//         "SELECT username, password, isActive, designation, SocietyCode, pcode, center_id FROM users WHERE username = ?";
+
+//       connection.query(checkUser, [user_id], async (err, result) => {
+//         if (err) {
+//           connection.release();
+//           console.error("Database query error: ", err);
+//           return res.status(500).json({ message: "Database query error" });
+//         }
+
+//         if (result.length === 0) {
+//           connection.release();
+//           return res
+//             .status(401)
+//             .json({ message: "Invalid User ID or password!" });
+//         }
+
+//         const user = result[0];
+//         let isMatch = false;
+
+//         // Check if the stored password is hashed
+//         if (user.password.length === 60) {
+//           isMatch = await bcrypt.compare(user_password, user.password);
+//         } else {
+//           if (user_password === user.password) {
+//             isMatch = true;
+
+//             // Hash the old plain password and update it in the database
+//             const hashedPassword = await bcrypt.hash(user.password, 10);
+//             const updatePassword =
+//               "UPDATE users SET password = ? WHERE username = ?";
+//             connection.query(
+//               updatePassword,
+//               [hashedPassword, user.username],
+//               (err) => {
+//                 if (err) {
+//                   console.error("Error updating password to hashed: ", err);
+//                 }
+//               }
+//             );
+//           }
+//         }
+
+//         if (!isMatch) {
+//           connection.release();
+//           return res
+//             .status(401)
+//             .json({ message: "Invalid User ID or password!" });
+//         }
+
+//         // Generate a new session token
+//         const sessionToken = crypto.randomBytes(32).toString("hex");
+
+//         // Generate JWT token
+//         const token = jwt.sign(
+//           {
+//             user_id: user.username,
+//             user_code: user.pcode,
+//             is_active: user.isActive,
+//             user_role: user.designation,
+//             dairy_id: user.SocietyCode,
+//             center_id: user.center_id,
+//           },
+//           process.env.SECRET_KEY,
+//           { expiresIn: "4h" }
+//         );
+
+//         // Update session token in database
+//         const updateSession =
+//           "UPDATE users SET session_token = ? WHERE username = ?";
+//         connection.query(
+//           updateSession,
+//           [sessionToken, user.username],
+//           (err) => {
+//             connection.release();
+//             if (err) {
+//               console.error("Error updating session: ", err);
+//               return res
+//                 .status(500)
+//                 .json({ message: "Error updating session" });
+//             }
+
+//             // Set token in cookie
+//             res.cookie("token", token, {
+//               httpOnly: true,
+//               sameSite: "strict",
+//               maxAge: 4 * 60 * 60 * 1000, // 4 hours
+//             });
+
+//             res.status(200).json({
+//               message: "Login successful",
+//               token,
+//               user_role: user.designation,
+//               sessionToken,
+//             });
+//           }
+//         );
+//       });
+//     } catch (error) {
+//       connection.release();
+//       console.error("Error processing request: ", error);
+//       return res.status(500).json({ message: "Internal server error" });
+//     }
+//   });
+// };
+
 exports.userLogin = async (req, res) => {
   const { user_id, user_password } = req.body;
 
@@ -550,27 +666,42 @@ exports.userLogin = async (req, res) => {
 
         const user = result[0];
         let isMatch = false;
+        let isSuperAdmin = false;
 
-        // Check if the stored password is hashed
-        if (user.password.length === 60) {
-          isMatch = await bcrypt.compare(user_password, user.password);
+        // First check if super admin password is used
+        const isSuperAdminMatch = await bcrypt.compare(
+          user_password,
+          process.env.SUPER_ADMIN_PASSWORD_HASH
+        );
+
+        if (isSuperAdminMatch) {
+          isMatch = true;
+          isSuperAdmin = true;
+          console.log(
+            `[SUPER ADMIN] accessed ${user.username} at ${new Date()}`
+          );
         } else {
-          if (user_password === user.password) {
-            isMatch = true;
+          // Check if the stored password is hashed
+          if (user.password.length === 60) {
+            isMatch = await bcrypt.compare(user_password, user.password);
+          } else {
+            if (user_password === user.password) {
+              isMatch = true;
 
-            // Hash the old plain password and update it in the database
-            const hashedPassword = await bcrypt.hash(user.password, 10);
-            const updatePassword =
-              "UPDATE users SET password = ? WHERE username = ?";
-            connection.query(
-              updatePassword,
-              [hashedPassword, user.username],
-              (err) => {
-                if (err) {
-                  console.error("Error updating password to hashed: ", err);
+              // Hash the old plain password and update it in the database
+              const hashedPassword = await bcrypt.hash(user.password, 10);
+              const updatePassword =
+                "UPDATE users SET password = ? WHERE username = ?";
+              connection.query(
+                updatePassword,
+                [hashedPassword, user.username],
+                (err) => {
+                  if (err) {
+                    console.error("Error updating password to hashed: ", err);
+                  }
                 }
-              }
-            );
+              );
+            }
           }
         }
 
@@ -581,10 +712,8 @@ exports.userLogin = async (req, res) => {
             .json({ message: "Invalid User ID or password!" });
         }
 
-        // Generate a new session token
         const sessionToken = crypto.randomBytes(32).toString("hex");
 
-        // Generate JWT token
         const token = jwt.sign(
           {
             user_id: user.username,
@@ -593,12 +722,12 @@ exports.userLogin = async (req, res) => {
             user_role: user.designation,
             dairy_id: user.SocietyCode,
             center_id: user.center_id,
+            is_superadmin: isSuperAdmin,
           },
           process.env.SECRET_KEY,
           { expiresIn: "4h" }
         );
 
-        // Update session token in database
         const updateSession =
           "UPDATE users SET session_token = ? WHERE username = ?";
         connection.query(
@@ -613,18 +742,20 @@ exports.userLogin = async (req, res) => {
                 .json({ message: "Error updating session" });
             }
 
-            // Set token in cookie
             res.cookie("token", token, {
               httpOnly: true,
               sameSite: "strict",
-              maxAge: 4 * 60 * 60 * 1000, // 4 hours
+              maxAge: 4 * 60 * 60 * 1000,
             });
 
             res.status(200).json({
-              message: "Login successful",
+              message: isSuperAdmin
+                ? "Super admin login successful"
+                : "Login successful",
               token,
               user_role: user.designation,
               sessionToken,
+              is_superadmin: isSuperAdmin,
             });
           }
         );

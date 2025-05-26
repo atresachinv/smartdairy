@@ -82,7 +82,10 @@ import CreateCustomer from "./Masters/MasterPages/CustomerMaster/CreateCustomer"
 import FatSnfCompromise from "./Payments/FatSnfCompromise/FatSnfCompromise";
 import GeneralLedger from "./Accounts/GeneralLedger/GeneralLedger";
 import AdvancesPosting from "./Accounts/AdvancesPosting/AdvancesPosting";
-
+import SanghReport from "./MilkSales/SanghsalesPages/SanghReport";
+import Sanghsales from "./MilkSales/SanghsalesPages/Sanghsales";
+import CenterCollection from "./MilkSales/CenterCollection";
+import CreateSangh from "./MilkSales/SanghsalesPages/CreateSangh";
 
 const Mainapp = () => {
   const dispatch = useDispatch();
@@ -219,8 +222,14 @@ const Mainapp = () => {
               element={<MilksalesReport />}
             />
             {/* milk sales routes */}
-            <Route path="milk/sangha/*" element={<SanghsalesMaster />} />
+            <Route path="create/sangha" element={<CreateSangh />} />
             <Route path="milk/retail/sales" element={<Milksales />} />
+            <Route path="sangha/sales" element={<Sanghsales />} />
+            <Route
+              path="center/milk/collection"
+              element={<CenterCollection />}
+            />
+            <Route path="sangha/sales/report" element={<SanghReport />} />
             {/* inventory routes */}
             <Route path="inventory" element={<Inventory />} />
             <Route path="inventory/dealer/*" element={<Dealers />} />
@@ -294,7 +303,6 @@ const Mainapp = () => {
             <Route path="reports/payment/*" element={<PaymentReports />} />
             <Route path="reports/bank/*" element={<BankReportMaster />} />
             <Route path="reports/deduction/*" element={<Deductionlist />} />
-           
             {/* payment routes */}
             <Route
               path="payment/milk-correction/*"

@@ -38,7 +38,7 @@ const ProductsList = () => {
   const autoCenter = settings?.autoCenter;
   const [filteredData, setFilteredData] = useState([]);
   const centerList = useSelector(
-    (state) => state.center.centersList.centersDetails || []
+    (state) => state.center.centersList || []
   );
   //set setting
   useEffect(() => {

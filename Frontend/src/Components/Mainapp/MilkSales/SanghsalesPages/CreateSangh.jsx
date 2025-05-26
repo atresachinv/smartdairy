@@ -2,11 +2,15 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import Spinner from "../../../Home/Spinner/Spinner";
+import { FaEdit } from "react-icons/fa";
 import { MdDeleteForever } from "react-icons/md";
+import Swal from "sweetalert2";
 import "../../../../Styles/Mainapp/MilkSales/MilkSales.css";
 import {
   addSangha,
   updateSangha,
+  fetchSanghaList,
+  deleteSangha,
 } from "../../../../App/Features/Mainapp/Sangha/sanghaSlice";
 const CreateSangh = () => {
   const dispatch = useDispatch();
@@ -15,7 +19,7 @@ const CreateSangh = () => {
   const updateStatus = useSelector((state) => state.sangha.upsanghastatus);
   const listStatus = useSelector((state) => state.sangha.sanghaliststatus);
   const deleteStatus = useSelector((state) => state.sangha.delsanghastatus);
-  const SanghaList = useSelector((state) => state.sangha.sanghaList);
+  const sanghaList = useSelector((state) => state.sangha.sanghaList);
   const sanghData = useSelector((state) => state.emp.employee);
   const [code, setCode] = useState(() => {
     const storedCode = localStorage.getItem("sanghacode");
@@ -23,17 +27,22 @@ const CreateSangh = () => {
   });
 
   // ---------------------------------------------------------------->
-  console.log("SanghaList", SanghaList);
+  console.log("SanghaList", sanghaList);
   const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState({});
 
   const [formData, setFormData] = useState({
+    id: "",
     date: toDate,
     scode: "",
     marathi_name: "",
     eng_name: "",
   });
+
+  useEffect(() => {
+    dispatch(fetchSanghaList());
+  }, []);
 
   useEffect(() => {
     setFormData((prevData) => ({
@@ -179,12 +188,21 @@ const CreateSangh = () => {
     if (isEditing) {
       const result = await dispatch(
         updateSangha({
+          id: formData.id,
           sanghaname: formData.eng_name,
           marathiname: formData.marathi_name,
         })
       ).unwrap();
       if (result.status === 200) {
         setIsEditing((prev) => !prev);
+        setFormData((prevData) => ({
+          ...prevData,
+          id: "",
+          date: toDate,
+          scode: code,
+          marathi_name: "",
+          eng_name: "",
+        }));
         toast.success(result.message);
       } else {
         toast.error(result.message);
@@ -201,6 +219,9 @@ const CreateSangh = () => {
         localStorage.setItem("sanghacode", code + 1);
         setFormData((prevData) => ({
           ...prevData,
+          id: "",
+          date: toDate,
+          scode: code,
           marathi_name: "",
           eng_name: "",
         }));
@@ -211,6 +232,44 @@ const CreateSangh = () => {
     }
 
     setIsLoading(false);
+  };
+
+  const handleEditSangha = (sangha) => {
+    setFormData({
+      id: sangha.id,
+      date: toDate,
+      scode: sangha.code,
+      marathi_name: sangha.marathi_name,
+      eng_name: sangha.sangha_name,
+    });
+    setIsEditing(true);
+  };
+
+  //its to delete  invoice based on id
+  const handleDeleteSangha = async (id) => {
+    const result = await Swal.fire({
+      title: "Confirm Deletion?",
+      text: "Are you sure you want to delete sangha?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+    });
+
+    if (result.isConfirmed) {
+      try {
+        const res = await dispatch(deleteSangha({ id })).unwrap();
+        if (res.status === 200) {
+          toast.success("Sangha deleted successfully!");
+          dispatch(fetchSanghaList());
+        } else {
+          toast.error("Failed to delete sangha!");
+        }
+      } catch (error) {
+        toast.error("Server failed to delete the sangha!");
+      }
+    }
   };
 
   return (
@@ -271,9 +330,7 @@ const CreateSangh = () => {
             />
           </div>
           <div className="button-container w25 h1 d-flex a-center j-end p10">
-            <button type="button" className="w-btn" onClick={handleEditClick}>
-              {isEditing ? "Cancel" : "Edit"}
-            </button>
+
             <button
               type="submit"
               className="btn mx10"
@@ -305,14 +362,40 @@ const CreateSangh = () => {
             <span className="f-label-text t-center w40">Marathi Name</span>
             <span className="f-label-text t-center w40">Action</span>
           </div>
-          <div className="sangha-data-heading-container w100 p10 d-flex sb">
-            <span className="label-text t-center w10">Code</span>
-            <span className="label-text t-center w40">English Name</span>
-            <span className="label-text t-center w40">Marathi Name</span>
-            <span className="label-text t-center w40">
-              <MdDeleteForever className="req icons" />
-            </span>
-          </div>
+
+          {listStatus === "loading" ? (
+            <Spinner />
+          ) : sanghaList.length > 0 ? (
+            sanghaList.map((sangha, index) => (
+              <div
+                key={index}
+                className="sangha-details-headings w100 p10 d-flex a-center sa"
+                style={{
+                  backgroundColor: index % 2 === 0 ? "#faefe3" : "#fff",
+                }}
+              >
+                <span className="label-text w10">{sangha.code}</span>
+                <span className="label-text w35 t-start">
+                  {sangha.sangha_name}
+                </span>
+                <span className="label-text w35">{sangha.marathi_name}</span>
+                <span className="label-text w15 d-flex sa t-center">
+                  <FaEdit
+                    type="button"
+                    onClick={() => handleEditSangha(sangha)}
+                  />
+                  <MdDeleteForever
+                    type="button" className="req"
+                    onClick={() => handleDeleteSangha(sangha.id)}
+                  />
+                </span>
+              </div>
+            ))
+          ) : (
+            <div className="box d-flex center">
+              <span className="label-text">No records Forund</span>
+            </div>
+          )}
         </div>
       </div>
     </div>

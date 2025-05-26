@@ -33,7 +33,7 @@ const DealersList = () => {
   );
   const [filteredData, setFilteredData] = useState([]);
   const centerList = useSelector(
-    (state) => state.center.centersList.centersDetails || []
+    (state) => state.center.centersList || []
   );
 
   const centerSetting = useSelector(

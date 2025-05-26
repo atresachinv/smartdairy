@@ -149,7 +149,7 @@ const Mainappnavlinks = ({ setselected, handleSidebar }) => {
         {
           name: `${t("msales:m-s-sales")}`,
           icon: <BsGridFill className="icon" />,
-          path: "milk/sangha",
+          path: "create/sangha",
           index: 2.1,
           role: ["admin", "manager", "salesman"],
         },
@@ -158,6 +158,27 @@ const Mainappnavlinks = ({ setselected, handleSidebar }) => {
           icon: <BsGridFill className="icon" />,
           path: "milk/retail/sales",
           index: 2.2,
+          role: ["admin", "manager", "salesman"],
+        },
+        {
+          name: `${t("संघ दुध विक्री पावती")}`,
+          icon: <BsGridFill className="icon" />,
+          path: "sangha/sales",
+          index: 2.3,
+          role: ["admin", "manager", "salesman"],
+        },
+        {
+          name: `${t("सेंटर दुध संकलन")}`,
+          icon: <BsGridFill className="icon" />,
+          path: "center/milk/collection",
+          index: 2.3,
+          role: ["admin", "manager", "salesman"],
+        },
+        {
+          name: `${t("संघ दुध विक्री रिपोर्ट ")}`,
+          icon: <BsGridFill className="icon" />,
+          path: "sangha/sales/report",
+          index: 2.4,
           role: ["admin", "manager", "salesman"],
         },
       ],
@@ -282,7 +303,7 @@ const Mainappnavlinks = ({ setselected, handleSidebar }) => {
           role: ["admin", "super_admin", "manager"],
         },
         {
-          name: `${t("येणे/देणे खतावणी यादी पाहणे")}`,
+          name: `${t("येणे/देणे यादी पाहणे")}`,
           icon: <FaFileInvoice className="icon" />,
           index: 4.5,
           path: "accounts/ledger-list",
@@ -296,14 +317,14 @@ const Mainappnavlinks = ({ setselected, handleSidebar }) => {
           role: ["admin", "super_admin", "manager"],
         },
         {
-          name: `${t("व्यवहार एक्सेल अपलोड")}`,
+          name: `${t("व्यवहार अपलोड")}`,
           icon: <FaFileInvoice className="icon" />,
           index: 4.7,
           path: "accounts/upload",
           role: ["admin", "super_admin", "manager"],
         },
         {
-          name: `${t("अँडव्हान्स व्याज पोस्टिंग")}`,
+          name: `${t("अँड. व्याज पोस्टिंग")}`,
           icon: <FaFileInvoice className="icon" />,
           index: 4.8,
           path: "accounts/advances",
@@ -441,7 +462,6 @@ const Mainappnavlinks = ({ setselected, handleSidebar }) => {
           path: "reports/deduction",
           role: ["admin", "super_admin", "manager"],
         },
-        
       ],
     },
     {

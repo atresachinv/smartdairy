@@ -51,26 +51,64 @@ const SidebarNavlinks = () => {
           name: "Milk Collection",
           icon: <BsGridFill className="color-icon" />,
           path: "milk/sangha",
-          index: 2.1,
+          index: 3.1,
         },
         {
           name: "WhatsApp message",
           icon: <BsGridFill className="color-icon" />,
           path: "whatsapp-sms",
-          index: 2.2,
+          index: 3.2,
         },
-          {
-            name: "Milk Filter Data",
-            icon: <BsGridFill className="color-icon" />,
-            path: "milk-filter-data",
-            index: 2.3,
-          },
-          {
-            name: "Upload Milk Entrys",
-            icon: <BsGridFill className="color-icon" />,
-            path: "upload-milk-entrys",
-            index: 2.4,
-          },
+        {
+          name: "Milk Filter Data",
+          icon: <BsGridFill className="color-icon" />,
+          path: "milk-filter-data",
+          index: 3.3,
+        },
+        {
+          name: "Upload Milk Entrys",
+          icon: <BsGridFill className="color-icon" />,
+          path: "upload-milk-entrys",
+          index: 3.4,
+        },
+      ],
+    },
+    {
+      name: "Dairy Activation",
+      icon: <BsGridFill className="color-icon" />,
+      index: 4,
+      submenus: [
+        {
+          name: "New Activation",
+          icon: <BsGridFill className="color-icon" />,
+          path: "new/activvation",
+          index: 4.1,
+        },
+        {
+          name: "Dairy Activations",
+          icon: <BsGridFill className="color-icon" />,
+          path: "dairy/activation",
+          index: 4.2,
+        },
+      ],
+    },
+    {
+      name: "AMC Settings",
+      icon: <BsGridFill className="color-icon" />,
+      index: 5,
+      submenus: [
+        {
+          name: "Update Dairy Amc",
+          icon: <BsGridFill className="color-icon" />,
+          path: "update/dairy/amc",
+          index: 5.1,
+        },
+        {
+          name: "Update All Amc",
+          icon: <BsGridFill className="color-icon" />,
+          path: "update/all/amc",
+          index: 5.2,
+        },
       ],
     },
   ];
