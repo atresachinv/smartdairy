@@ -13,7 +13,7 @@ const router = express.Router();
 
 // center Milk Routes
 router.route("/fetch/center/milkcoll").get(verifyToken, fetchCenterMilkColl);
-router.route("/center/milk/coll").post(addCenterMilkColl);
+router.route("/center/milk/coll").post(verifyToken, addCenterMilkColl);
 router
   .route("/fetch/center/coll/one/report")
   .get(verifyToken, getCenterMilkReport);

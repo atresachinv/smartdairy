@@ -61,6 +61,7 @@ const CreateCustomer = () => {
     milktype: 0,
     rctype: "",
     farmerid: "",
+    bankNo: "",
     bankName: "",
     bank_ac: "",
     bankIFSC: "",
@@ -337,6 +338,7 @@ const CreateCustomer = () => {
       const customer = customerList.find(
         (customer) => customer.srno.toString() === code
       );
+
       if (customer) {
         setFormData((prev) => ({
           ...prev,
@@ -355,6 +357,7 @@ const CreateCustomer = () => {
           milktype: customer.milktype,
           rctype: customer.rcName,
           farmerid: customer.cust_farmerid,
+          bankNo: customer.BankNo,
           bankName: customer.cust_bankname,
           bank_ac: customer.cust_accno,
           h_deposit: customer.h_deposit,
@@ -371,16 +374,28 @@ const CreateCustomer = () => {
   };
 
   // handle bank selection ------------------------------------------------------------>
-  const handleBankChange = (e) => {
-    const bid = e.target.value;
-    setSelectedBank(bid);
-    const bankdetails = bankList.filter((bank) => bank.id.toString() === bid);
+  // const handleBankChange = (e) => {
+  //   const bid = e.target.value;
+  //   setSelectedBank(bid);
+  //   const bankdetails = bankList.filter((bank) => bank.id.toString() === bid);
+  //   setFormData((prevData) => ({
+  //     ...prevData,
+  //     bankName: bankdetails[0].name,
+  //     bankIFSC: bankdetails[0].ifsc,
+  //   }));
+  // };
+
+  useEffect(() => {
+    const bankdetails = bankList.filter(
+      (bank) => bank.id.toString() === formData.bankNo
+    );
+    console.log("Bank details:", bankdetails);
     setFormData((prevData) => ({
       ...prevData,
-      bankName: bankdetails[0].name,
-      bankIFSC: bankdetails[0].ifsc,
+      bankName: bankdetails[0]?.name,
+      bankIFSC: bankdetails[0]?.ifsc,
     }));
-  };
+  }, [formData.bankNo, bankList]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -877,11 +892,11 @@ const CreateCustomer = () => {
               <span className="text error-message">{errors.bankIFSC}</span>
             )}
             <select
-              name="bank"
+              name="bankNo"
               id="bankname"
               className="data"
-              onChange={handleBankChange}
-              value={selectedBank}
+              onChange={handleInputChange}
+              value={formData.bankNo || ""}
             >
               <option value="">-- select bank --</option>
               {bankList.length > 0 ? (

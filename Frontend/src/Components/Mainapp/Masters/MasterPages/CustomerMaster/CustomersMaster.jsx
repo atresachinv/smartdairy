@@ -30,7 +30,7 @@ const CustomersMaster = () => {
           <Route path="list" element={<CustomerList />} />
           <Route path="add-new" element={<CreateCustomer />} />
           <Route path="add-new/:code" element={<CreateCustomer />} />
-          <Route path="*" element={<CustomerList />} />
+          {/* <Route path="*" element={<CustomerList />} /> */}
         </Routes>
       </div>
     </div>

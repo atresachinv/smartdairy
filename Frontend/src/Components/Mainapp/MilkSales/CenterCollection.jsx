@@ -2,18 +2,30 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import { BsGearFill } from "react-icons/bs";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
-import "../../../Styles/Mainapp/Apphome/Appnavview/Milkcollection.css";
 import { useTranslation } from "react-i18next";
 import { centersLists } from "../../../App/Features/Dairy/Center/centerSlice";
 import { listEmployee } from "../../../App/Features/Mainapp/Masters/empMasterSlice";
 import { getLatestRateChart } from "../../../App/Features/Mainapp/Masters/rateChartSlice";
-import { getCenterMSales } from "../../../App/Features/Mainapp/Milk/DairyMilkSalesSlice";
+import {
+  createCenterMColl,
+  getCenterMSales,
+} from "../../../App/Features/Mainapp/Milk/DairyMilkSalesSlice";
+import "../../../Styles/Mainapp/Apphome/Appnavview/Milkcollection.css";
+import "../../../Styles/Mainapp/MilkSales/CenterMilkColl.css";
+import { saveMessage } from "../../../App/Features/Mainapp/Dairyinfo/smsSlice";
+import axiosInstance from "../../../App/axiosInstance";
 const CenterCollection = () => {
   const dispatch = useDispatch();
   const { t } = useTranslation(["milkcollection", "common", "master"]);
   const tDate = useSelector((state) => state.date.toDate);
+  const dairyphone = useSelector(
+    (state) => state.dairy.dairyData.PhoneNo || state.dairy.dairyData.mobile
+  );
   const centerList = useSelector((state) => state.center.centersList);
   const Emplist = useSelector((state) => state.emp.emplist || []);
+  const centerMilk = useSelector(
+    (state) => state.dMilkSales.centerMilkData || []
+  );
   const milkcollRatechart = useSelector(
     (state) => state.ratechart.latestrChart
   ); // latest rate chart for center milk collection
@@ -30,36 +42,38 @@ const CenterCollection = () => {
 
   const initialValues = {
     date: changedDate || tDate,
-    centerid: "",
+    centerid: 0,
     collectedBy: "",
-    shift: "",
+    shift: 0,
     animal: 0,
     liters: "",
     fat: "",
     snf: "",
+    rate: "",
+    amt: "",
     degree: 0,
     mobile: "",
     allow: false,
+    cliters: "",
+    cfat: "",
+    csnf: "",
+    crate: "",
+    camt: "",
+    dliters: "",
+    dfat: "",
+    dsnf: "",
+    drate: "",
+    damt: "",
   };
 
   const [values, setValues] = useState(initialValues);
   //------------------------------------------------------------------------------------------------>
   //------------------------------------------------------------------------------------------------>
+
   useEffect(() => {
     dispatch(centersLists());
     dispatch(listEmployee());
     dispatch(getLatestRateChart());
-  }, []);
-
-  useEffect(() => {
-    dispatch(
-      getCenterMSales({
-        date: values.date,
-        centerid: values.centerid,
-        collectedBy: values.collectedBy,
-        shift: values.shift,
-      })
-    );
   }, []);
 
   const handleResetButton = (e) => {
@@ -207,6 +221,71 @@ const CenterCollection = () => {
     }
   };
 
+  const fetchCenterMilkData = async () => {
+    try {
+      const data = await dispatch(
+        getCenterMSales({
+          date: values.date,
+          centerid: values.centerid,
+          collectedBy: values.collectedBy,
+          shift: values.shift,
+        })
+      ).unwrap();
+
+      if (!data || data.length === 0) return;
+
+      const totalLitres = data.reduce((acc, item) => acc + item.Litres, 0);
+      const totalAmt = data.reduce((acc, item) => acc + item.Amt, 0);
+      const totalAmount = totalAmt.toFixed(2);
+      const avgRate = totalLitres > 0 ? (totalAmt / totalLitres).toFixed(2) : 0;
+
+      const totalFatValue = data.reduce(
+        (acc, item) => acc + item.Litres * item.fat,
+        0
+      );
+      const totalSNFValue = data.reduce(
+        (acc, item) => acc + item.Litres * item.snf,
+        0
+      );
+
+      const avgFat =
+        totalLitres > 0 ? (totalFatValue / totalLitres).toFixed(1) : 0;
+      const avgSNF =
+        totalLitres > 0 ? (totalSNFValue / totalLitres).toFixed(1) : 0;
+
+      setValues((prev) => ({
+        ...prev,
+        cliters: totalLitres,
+        cfat: avgFat,
+        csnf: avgSNF,
+        crate: avgRate,
+        camt: totalAmount,
+      }));
+
+      if (values.liters && values.fat && values.snf) {
+        setValues((prev) => ({
+          ...prev,
+          dliters: Math.abs(totalLitres - values.liters).toFixed(2),
+          dfat: Math.abs(avgFat - values.fat).toFixed(1),
+          dsnf: Math.abs(avgSNF - values.snf).toFixed(1),
+          drate: Math.abs(avgRate - values.rate).toFixed(2),
+          damt: Math.abs(totalAmount - values.amt).toFixed(2),
+        }));
+      } else {
+        setValues((prev) => ({
+          ...prev,
+          dliters: 0,
+          dfat: 0,
+          dsnf: 0,
+          drate: 0,
+          damt: 0,
+        }));
+      }
+    } catch (err) {
+      console.error("Error fetching and processing milk data", err);
+    }
+  };
+
   const calculateRateAndAmount = async () => {
     try {
       const { fat, snf, liters, rcName } = values;
@@ -250,25 +329,110 @@ const CenterCollection = () => {
     }
   }, [values.liters, values.fat, values.snf]);
 
+  const sendMessage = async () => {
+    let mobileNo;
+    let centerName;
+
+    if (!values.collectedBy || values.collectedBy === "") {
+      const centerdata = centerList.find(
+        (center) => center.center_id.toString() === values.centerid
+      );
+      mobileNo = centerdata?.mobile;
+      centerName = centerdata?.center_name;
+    } else {
+      const centerdata = centerList.find(
+        (center) => center.center_id.toString() === values.centerid.toString()
+      );
+      mobileNo = values.collectedBy;
+      centerName = centerdata?.center_name;
+    }
+
+    const requestBody = {
+      messaging_product: "whatsapp",
+      recipient_type: "individual",
+      to: `91${9730999296}`,
+      type: "template",
+      template: {
+        name: "center_milk_collections",
+        language: { code: "en" },
+        components: [
+          {
+            type: "body",
+            parameters: [
+              { type: "text", text: centerName },
+              {
+                type: "text",
+                text: `${tDate} ${
+                  values.shift === 0 ? "रोजी, सकाळी" : "रोजी, सायंकाळी"
+                }`,
+              },
+              {
+                type: "text",
+                text: `एकुण लिटर: ${values.cliters}, Fat: ${values.cfat}, Snf: ${values.csnf},`,
+              },
+              {
+                type: "text",
+                text: `दर: ${values.crate}, एकुण रक्कम: ${values.camt}`,
+              },
+              {
+                type: "text",
+                text: `एकुण लिटर: ${values.liters}, Fat: ${values.fat}, Snf: ${values.snf},`,
+              },
+              {
+                type: "text",
+                text: `दर: ${values.rate}, एकुण रक्कम: ${values.amt}`,
+              },
+              {
+                type: "text",
+                text: `एकुण लिटर: ${values.dliters}, Fat: ${values.dfat}, Snf: ${values.dsnf},`,
+              },
+              {
+                type: "text",
+                text: `दर: ${values.drate}, एकुण रक्कम: ${values.damt}`,
+              },
+              { type: "text", text: dairyphone },
+            ],
+          },
+        ],
+      },
+    };
+
+    try {
+      await axiosInstance.post("/send-message", requestBody);
+    } catch (error) {
+      toast.error("Error in whatsapp message sending...");
+      console.error("Error sending message:", error);
+    }
+  };
+
   const handleCollection = async (e) => {
     e.preventDefault();
+
     // Validate fields before submission
     const validationErrors = validateFields();
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
       return;
     }
+    sendMessage();
+    const res = await dispatch(createCenterMColl(values)).unwrap();
+    if (res.status === 200) {
+      toast.success("दुध संकलन यशस्वीरित्या सेव्ह झाले आहे.");
+      setValues(initialValues);
+      setChangedDate("");
+      setErrors({});
+    } else {
+      toast.error("दुध संकलन सेव्ह करण्यात अयशस्वी.");
+    }
   };
-  // console.log(milkCollectors);
 
   return (
     <div className="milk-collection-outer-main-container w100 h1 d-flex sb p10">
-      <form
-        onSubmit={handleCollection}
-        className="milk-col-form w60 h1 d-flex-col bg p10"
-      >
+      <form className="milk-col-form w60 h1 d-flex-col bg p10">
         <span className="heading w100 t-center py10">
-          {values.shift === 0 ? `${t("common:c-mrg")}` : `${t("common:c-eve")}`}{" "}
+          {values.shift === 0
+            ? `सेंटर ${t("common:c-mrg")}`
+            : `सेंटर ${t("common:c-eve")}`}{" "}
           {t("m-milkcoll")}
         </span>
         <div className="form-setting w100 h10 d-flex a-center sb ">
@@ -334,7 +498,7 @@ const CenterCollection = () => {
           </div>
           <div className="form-div w50 px10">
             <label htmlFor="collectedBy" className="info-text">
-              संकलक निवडा : <span className="req">*</span>{" "}
+              संकलक निवडा:
             </label>
             <select
               className="data"
@@ -370,7 +534,6 @@ const CenterCollection = () => {
                 id="liters"
                 step="any"
                 onChange={handleInputs}
-                // disabled={!values.collectedBy || !values.centerid}
                 value={values.liters}
                 onKeyDown={(e) => handleKeyDown(e, fatRef)}
                 ref={litersRef}
@@ -475,11 +638,12 @@ const CenterCollection = () => {
           </button>
           <button
             className="w-btn label-text mx10"
-            type="submit"
+            type="button"
             ref={submitbtn}
             disabled={loading}
+            onClick={fetchCenterMilkData}
           >
-            {loading ? "saving..." : `check`}
+            {loading ? "Checking..." : `Check`}
           </button>
         </div>
       </form>
@@ -487,71 +651,92 @@ const CenterCollection = () => {
       {/* ------------------------------------------------------------------------------------------------------------------ */}
       {/* ------------------------------------------------------------------------------------------------------------------ */}
 
-      <div className="milk-collection-list w38 h1 d-flex-col bg">
+      <div className="milk-collection-diff-div w38 h1 d-flex-col bg">
         <div className="title-container w100 h10 d-flex a-center sb p10">
-          <h2 className="heading">दुध संकलन तफावत:</h2>
+          <h2 className="heading">दुध संकलन तफावत :</h2>
         </div>
+        <div className="collection-diff-container w100 h90 d-flex-col hidescrollbar a-start p10">
+          <div className="coll-milk-info w100 h40 d-flex-col sb bg-light-green br9 my10">
+            <div className="info-title w100 p10 d-flex sa bg1 br-top">
+              <span className="f-label-text w15 d-flex center">
+                {t("common:c-liters")}
+              </span>
+              <span className="f-label-text w15 d-flex center">
+                {t("common:c-fat")}
+              </span>
+              <span className="f-label-text w15 d-flex center">{t("SNF")}</span>
+              <span className="f-label-text w20 d-flex center">
+                {t("common:c-rate")}
+              </span>
+              <span className="f-label-text w20 d-flex center">
+                {t("common:c-amt")}
+              </span>
+            </div>
 
-        <div className="collection-list-container w100 h90 d-flex-col hidescrollbar p10">
-          {/* {milkData.length > 0 ? ( */}
-          {/* milkData.map((entry, i) => ( */}
-          <div
-            // key={i}
-            className="collection-details w100 h50 d-flex-col bg-light-green br6"
-          >
-            <div className="coll-user-info w100 h20 d-flex a-center sa p10">
-              <span className="text w20">code</span>
-              <span className="text w70">cname</span>
-            </div>
-            <div className="line"></div>
-            <div className="coll-milk-info w100 h60 d-flex-col sb">
-              <div className="info-title w100 h25 d-flex sa bg1">
-                <span className="f-label-text w15 d-flex center">
-                  {t("common:c-liters")}
-                </span>
-                <span className="f-label-text w15 d-flex center">
-                  {t("common:c-fat")}
-                </span>
-                <span className="f-label-text w15 d-flex center">
-                  {t("common:c-snf")}
-                </span>
-                <span className="f-label-text w20 d-flex center">
-                  {t("common:c-rate")}
-                </span>
-                <span className="f-label-text w20 d-flex center">
-                  {t("common:c-amt")}
-                </span>
-              </div>
-              <div className="info-value w100 h25 d-flex sa">
-                <span className="text w15 d-flex center">liters</span>
-                <span className="text w15 d-flex center">fat</span>
-                <span className="text w15 d-flex center">snf</span>
-                <span className="text w20 d-flex center">rate</span>
-                <span className="text w20 d-flex center">amt</span>
-              </div>
-              <div className="info-value w100 h25 d-flex sa ">
-                <span className="text w15 d-flex center">liters</span>
-                <span className="text w15 d-flex center">fat</span>
-                <span className="text w15 d-flex center">snf</span>
-                <span className="text w20 d-flex center">rate</span>
-                <span className="text w20 d-flex center">amt</span>
-              </div>
-              <div className="line"></div>
-              <div className="info-value w100 h25 d-flex sa bg7">
-                <span className="f-label-text w15 d-flex center">liters</span>
-                <span className="f-label-text w15 d-flex center">fat</span>
-                <span className="f-label-text w15 d-flex center">snf</span>
-                <span className="f-label-text w20 d-flex center">rate</span>
-                <span className="f-label-text w20 d-flex center">amt</span>
-              </div>
-            </div>
+            {centerMilk.length > 0 ? (
+              <>
+                <div className="info-value w100 p10 d-flex sa">
+                  <span className="text w15 d-flex center">
+                    {values.cliters || 0.0}
+                  </span>
+                  <span className="text w15 d-flex center">
+                    {values.cfat || 0.0}
+                  </span>
+                  <span className="text w15 d-flex center">
+                    {values.csnf || 0.0}
+                  </span>
+                  <span className="text w20 d-flex center">
+                    {values.crate || 0.0}
+                  </span>
+                  <span className="text w20 d-flex center">
+                    {values.camt || 0.0}
+                  </span>
+                </div>
+                <div className="info-value w100 p10 d-flex sa">
+                  <span className="text w15 d-flex center">
+                    {values.liters || 0.0}
+                  </span>
+                  <span className="text w15 d-flex center">
+                    {values.fat || 0.0}
+                  </span>
+                  <span className="text w15 d-flex center">
+                    {values.snf || 0.0}
+                  </span>
+                  <span className="text w20 d-flex center">
+                    {values.rate || 0.0}
+                  </span>
+                  <span className="text w20 d-flex center">
+                    {values.amt || 0.0}
+                  </span>
+                </div>
+                <div className="line"></div>
+                <div className="info-value w100 p10 d-flex sa bg7 br-bottom">
+                  <span className="text w15 d-flex center">
+                    {values.dliters || 0.0}
+                  </span>
+                  <span className="text w15 d-flex center">
+                    {values.dfat || 0.0}
+                  </span>
+                  <span className="text w15 d-flex center">
+                    {values.dsnf || 0.0}
+                  </span>
+                  <span className="text w20 d-flex center">
+                    {values.drate || 0.0}
+                  </span>
+                  <span className="text w20 d-flex  center">
+                    {values.damt || 0.0}
+                  </span>
+                </div>
+              </>
+            ) : (
+              <></>
+            )}
           </div>
-          {/* )) */}
-          {/* ) : ( */}
-          <div className="no-records w100 h1 d-flex center">
-            <span className="label-text">{t("common:c-no-data-avai")}</span>
+          <div className="center-coll-btn-container w100 h10 d-flex j-end my10">
+            <button className="w-btn" type="button" onClick={handleCollection}>
+              Save
+            </button>
           </div>
-          {/* )} */}
         </div>
       </div>
     </div>

@@ -6,6 +6,7 @@ const initialState = {
   shiftMilkData: [],
   masterMilkData: [],
   status: "idle",
+  addstatus: "idle",
   error: null,
 };
 
@@ -13,13 +14,15 @@ export const getCenterMSales = createAsyncThunk(
   "milksales/getCenterMSales",
   async ({ date, centerid, collectedBy, shift }, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.post("/fetch/center/milkcoll", {
-        date,
-        centerid,
-        collectedBy,
-        shift,
+      const response = await axiosInstance.get("/fetch/center/milkcoll", {
+        params: {
+          date,
+          centerid,
+          collectedBy,
+          shift,
+        },
       });
-      return response.data;
+      return response.data.centerMilkColl;
     } catch (error) {
       const errorMessage = error.response
         ? error.response.data
@@ -32,11 +35,10 @@ export const getCenterMSales = createAsyncThunk(
 // Insert center milk collection --------------------------------->
 export const createCenterMColl = createAsyncThunk(
   "milksales/createCenterMColl",
-  async ({ fromDate, toDate }, { rejectWithValue }) => {
+  async (values, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.post("/fetch/center/milkcoll", {
-        fromDate,
-        toDate,
+      const response = await axiosInstance.post("/center/milk/coll", {
+        values,
       });
       return response.data;
     } catch (error) {
@@ -72,19 +74,25 @@ export const getMasterCenterMilkCOll = createAsyncThunk(
   "milksales/getMasterCenterMilkCOll",
   async ({ fromDate, toDate }, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.post("/fetch/center/milkcoll", {
-        fromDate,
-        toDate,
-      });
-      return response.data;
+      const response = await axiosInstance.get(
+        "/fetch/center/coll/master/report",
+        {
+          params: {
+            fromDate,
+            toDate,
+          },
+        }
+      );
+
+      return response.data.centerMReport;
     } catch (error) {
-      const errorMessage = error.response
-        ? error.response.data
-        : "Failed to fetch milk reports.";
+      const errorMessage =
+        error.response?.data?.message || "Failed to fetch milk reports.";
       return rejectWithValue(errorMessage);
     }
   }
 );
+
 
 // update center milk collection ------------------------------------>
 export const updateCenterMilkColl = createAsyncThunk(
@@ -108,7 +116,7 @@ export const deleteCenterMilkColl = createAsyncThunk(
   "milksales/deleteCenterMilkColl",
   async ({ id }, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.put("/fetch/center/milkcoll", {
+      const response = await axiosInstance.put("/delete/center/milkcoll", {
         id,
       });
       return response.data;
@@ -144,17 +152,18 @@ const DairyMilkSalesSlice = createSlice({
       })
       .addCase(getCenterMSales.rejected, (state, action) => {
         state.status = "failed";
+        state.centerMilkColl = [];
         state.error = action.payload;
       }) // save center milk collection
       .addCase(createCenterMColl.pending, (state) => {
-        state.status = "loading";
+        state.addstatus = "loading";
         state.error = null;
       })
       .addCase(createCenterMColl.fulfilled, (state) => {
-        state.status = "succeeded";
+        state.addstatus = "succeeded";
       })
       .addCase(createCenterMColl.rejected, (state, action) => {
-        state.status = "failed";
+        state.addstatus = "failed";
         state.error = action.payload;
       }) // get milk collection of perticular shift
       .addCase(getShiftCenterMilkcoll.pending, (state) => {
@@ -170,15 +179,15 @@ const DairyMilkSalesSlice = createSlice({
         state.error = action.payload;
       }) // get master milk collection
       .addCase(getMasterCenterMilkCOll.pending, (state) => {
-        state.status = "loading";
+        state.fetchstatus = "loading";
         state.error = null;
       })
-      .addCase(getMasterCenterMilkCOll.fulfilled, (state) => {
-        state.status = "succeeded";
+      .addCase(getMasterCenterMilkCOll.fulfilled, (state, action) => {
+        state.fetchstatus = "succeeded";
         state.masterMilkData = action.payload;
       })
       .addCase(getMasterCenterMilkCOll.rejected, (state, action) => {
-        state.status = "failed";
+        state.fetchstatus = "failed";
         state.error = action.payload;
       }) // update center milk collection
       .addCase(updateCenterMilkColl.pending, (state) => {
@@ -202,8 +211,7 @@ const DairyMilkSalesSlice = createSlice({
       .addCase(deleteCenterMilkColl.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.payload;
-      }); 
-     
+      });
   },
 });
 

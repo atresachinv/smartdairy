@@ -86,6 +86,7 @@ import SanghReport from "./MilkSales/SanghsalesPages/SanghReport";
 import Sanghsales from "./MilkSales/SanghsalesPages/Sanghsales";
 import CenterCollection from "./MilkSales/CenterCollection";
 import CreateSangh from "./MilkSales/SanghsalesPages/CreateSangh";
+import CenterReports from "./Reports/CenterReports/CenterReports";
 
 const Mainapp = () => {
   const dispatch = useDispatch();
@@ -294,7 +295,7 @@ const Mainapp = () => {
             <Route path="sales/medicines/*" element={<MedicinesMaster />} />
             <Route path="sales/other-items/*" element={<OthersMaster />} />
             {/* reports routes */}
-            <Route path="reports/center/*" element={<ComingSoon />} />
+            <Route path="reports/center/*" element={<CenterReports />} />
             <Route path="reports/milk/*" element={<MilkcollectionReports />} />
             <Route path="reports/customer/*" element={<CustomerReports />} />
             <Route path="reports/employee/*" element={<ComingSoon />} />

@@ -21,7 +21,6 @@ const CustomerList = () => {
   const centerList = useSelector(
     (state) => state.center.centersList || []
   );
-
   const center_id = useSelector(
     (state) =>
       state.dairy.dairyData.center_id || state.dairy.dairyData.center_id
