@@ -1,0 +1,15 @@
+@media screen and (max-width: 426px) {
+  .milk-collection-outer-main-container .milk-collection-diff-div {
+    width: 100%;
+    min-height: auto;
+    justify-content: space-between;
+  }
+  .milk-collection-diff-div .collection-diff-container {
+    min-height: fit-content;
+    margin-bottom: 10px;
+  }
+  .milk-collection-diff-div .collection-diff-container .coll-milk-info {
+    min-height: 60%;
+    margin-bottom: 20px;
+  }
+}

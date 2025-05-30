@@ -36,7 +36,7 @@ const MilkPurInfo = () => {
   const manualMaster = useSelector((state) => state.manualMasters.masterlist);
   const mastermilk = useSelector((state) => state.milkCollection.allMilkColl);
   const centerList = useSelector(
-    (state) => state.center.centersList.centersDetails // center list
+    (state) => state.center.centersList || [] // center list
   );
   const centerLiterAmt = useSelector(
     (state) => state.admindashboard.centerMilk // center wise liter and amount
@@ -206,7 +206,6 @@ const MilkPurInfo = () => {
         <h3 className="subtitle">{t("Milk Purchase")}</h3>
       </div>
       <div className="dashboard-scrll-container w100 h1 mh100 hidescrollbar ">
-        
         <div className="Milk-sale-details-container w100 h1 hidescrollbar">
           <div className="dashboard-cards w100 h15 d-flex j-start sa">
             <div className="card h1 sb">

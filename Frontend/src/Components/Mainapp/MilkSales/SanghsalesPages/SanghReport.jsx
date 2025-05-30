@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import "../../../../Styles/SanghReport/SanghReport.css";
 
 const SanghReport = () => {
-
   return (
     <>
       <div className="sanghsale-report-container w100 h1 d-flex-col sa">
@@ -23,27 +22,24 @@ const SanghReport = () => {
             <button className="w-btn">काडून टाका </button>
           </div>
         </div>
-        <div className="sangha-details-table-section w100 h70 d-flex-col bg">
-            <div className="sangha-sale-report-table-header w100 h15
-             d-flex sa  ">
-              <span className="label-text w10">बिल न</span>
-              <span className="label-text w20">बिल दिनांक </span>
-              <span className="label-text w20">संघाचे नाव</span>
-              <span className="label-text w10">एकूण लिटर </span>
-              <span className="label-text w10">एकूण रक्कम </span>
-              <span className="label-text w15">पासून</span>
-              <span className="label-text w15">पर्येंत</span>
-            </div>
-            <div className="sangha-report-tabledata-section-div w100 d-flex sa  mh90 hidescrollbar">
-                <span className="label-text w10">001</span>
-                <span className="label-text w20">03/02/2025 </span>
-                <span className="label-text w20 ">HariomDSk </span>
-                <span className="label-text w10">1230</span>
-                <span className="label-text w10">125063</span>
-                <span className="label-text w15">02/03/2025</span>
-                <span className="label-text w15">25/04/2025</span>
-      
-        
+        <div className="sangha-details-table-section w100 h70 d-flex-col bg mh70 hidescrollbar">
+          <div className="sangha-sale-report-table-header w100 h15 d-flex a-center t-start sb sticky-top">
+            <span className="f-label-text w5 t-center">बिल न.</span>
+            <span className="f-label-text w15">बिल दिनांक </span>
+            <span className="f-label-text w20">संघाचे नाव</span>
+            <span className="f-label-text w10">एकूण लिटर </span>
+            <span className="f-label-text w15">एकूण रक्कम </span>
+            <span className="f-label-text w15">पासून</span>
+            <span className="f-label-text w15">पर्येंत</span>
+          </div>
+          <div className="sangha-report-tabledata-section-div w100 p10 d-flex a-center t-start sb">
+            <span className="text w5">001</span>
+            <span className="text w15">03/02/2025 </span>
+            <span className="text w20 ">HariomDSk </span>
+            <span className="text w10">1230</span>
+            <span className="text w10">125063</span>
+            <span className="text w15">02/03/2025</span>
+            <span className="text w15">25/04/2025</span>
           </div>
         </div>
 

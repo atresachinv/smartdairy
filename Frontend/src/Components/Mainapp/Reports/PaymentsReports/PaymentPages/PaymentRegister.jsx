@@ -26,7 +26,7 @@ const PaymentRegister = ({ showbtn, setCurrentPage }) => {
   const [dataavailable, setDataAvailable] = useState("");
   const [customerName, setCustomerName] = useState("");
   const centerList = useSelector(
-    (state) => state.center.centersList.centersDetails
+    (state) => state.center.centersList || []
   );
   const dairyinfo = useSelector((state) => state.dairy.dairyData);
   const [selectedCenterId, setSelectedCenterId] = useState("");

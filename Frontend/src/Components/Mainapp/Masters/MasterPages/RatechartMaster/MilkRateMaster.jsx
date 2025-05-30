@@ -246,12 +246,12 @@ const MilkRateMaster = () => {
           )}
           <div className="rate-chart-container w100 h90 d-flex-col bg">
             <span className="heading p10">{t("rc-s-rc-excel")} : </span>
-            <div className="rate-chart-col-title w100 d-flex a-center t-center sa py10 bg1">
-              <span className="f-info-text w15">{t("rc-fat")}</span>
-              <span className="f-info-text w10">{t("rc-snf")}</span>
-              <span className="f-info-text w15">{t("rc-rate")}</span>
-            </div>
-            <div className="rate-chart-div w100 h90 mh90 d-flex-col hidescrollbar">
+            <div className="rate-chart-div w100 h1 mh100 d-flex-col hidescrollbar">
+              <div className="rate-chart-col-title w100 d-flex a-center t-center sa py10 sticky-top bg7"> 
+                <span className="f-info-text w15">{t("rc-fat")}</span>
+                <span className="f-info-text w10">{t("rc-snf")}</span>
+                <span className="f-info-text w15">{t("rc-rate")}</span>
+              </div>
               {rate.length > 0 ? (
                 rate.map((item, index) => (
                   <div
@@ -290,46 +290,42 @@ const MilkRateMaster = () => {
           </div>
         </div>
         <div className="save-ratechart-container w45 h1 d-flex-col p10">
-          <div className="previous-rate-chart-container w100 h40 d-flex-col bg my10">
-            <span className="heading p10">{t("rc-prev-rc")} : </span>
-            <div className="rate-chart-col-title w100 d-flex a-center t-center sa py10 bg1">
+          <span className="heading p10">{t("rc-prev-rc")} : </span>
+          <div className="previous-rate-chart-container w100 h40 d-flex-col bg my10 mh100 hidescrollbar">
+            <div className="rate-chart-col-title w100 d-flex a-center t-center sa py10 bg1 sticky-top">
               <span className="f-info-text w10">{t("rc-no")}</span>
               <span className="f-info-text w20">{t("rc-date")}</span>
               <span className="f-info-text w25">{t("rc-type")}</span>
             </div>
-            <div className="rate-chart-div w100 h90 mh90 d-flex-col hidescrollbar">
-              {ratechartlist
-                .slice() // Create a shallow copy to avoid mutating original state
-                .sort((a, b) => a.rccode - b.rccode) // Sort numerically
-                .map((ratechart, index) => (
-                  <div
-                    onClick={() => handleRowClick(ratechart)}
-                    key={index}
-                    className="rate-chart-row-value w100 d-flex a-center t-center py10 sa"
-                    style={{
-                      backgroundColor:
-                        selectedRateChart === ratechart
-                          ? "#d1e7dd"
-                          : index % 2 === 0
-                          ? "#faefe3"
-                          : "#fff",
-                      cursor: "pointer",
-                    }}
-                  >
-                    <span className="info-text w10">{ratechart.rccode}</span>
-                    <span className="info-text w20">
-                      {new Date(ratechart.rcdate).toLocaleDateString("en-GB", {
-                        year: "2-digit",
-                        month: "2-digit",
-                        day: "2-digit",
-                      })}
-                    </span>
-                    <span className="info-text w25">
-                      {ratechart.rctypename}
-                    </span>
-                  </div>
-                ))}
-            </div>
+            {ratechartlist
+              .slice() // Create a shallow copy to avoid mutating original state
+              .sort((a, b) => a.rccode - b.rccode) // Sort numerically
+              .map((ratechart, index) => (
+                <div
+                  onClick={() => handleRowClick(ratechart)}
+                  key={index}
+                  className="rate-chart-row-value w100 d-flex a-center t-center py10 sa"
+                  style={{
+                    backgroundColor:
+                      selectedRateChart === ratechart
+                        ? "#d1e7dd"
+                        : index % 2 === 0
+                        ? "#faefe3"
+                        : "#fff",
+                    cursor: "pointer",
+                  }}
+                >
+                  <span className="info-text w10">{ratechart.rccode}</span>
+                  <span className="info-text w20">
+                    {new Date(ratechart.rcdate).toLocaleDateString("en-GB", {
+                      year: "2-digit",
+                      month: "2-digit",
+                      day: "2-digit",
+                    })}
+                  </span>
+                  <span className="info-text w25">{ratechart.rctypename}</span>
+                </div>
+              ))}
           </div>
           <div className="button-div w100 h10 d-flex j-end">
             <button

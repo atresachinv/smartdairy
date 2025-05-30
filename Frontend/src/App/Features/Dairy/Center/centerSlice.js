@@ -82,7 +82,7 @@ export const centersLists = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const response = await axiosInstance.post("/all/centerdetails");
-      return response.data;
+      return response.data.centersDetails;
     } catch (error) {
       const errorMessage =
         error.response?.data?.message || "Failed to fetch all center lists.";

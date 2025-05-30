@@ -31,9 +31,7 @@ const StockReport = () => {
   const [sortKey, setSortKey] = useState("saledate");
   const dispatch = useDispatch();
   const { emplist } = useSelector((state) => state.emp);
-  const centerList = useSelector(
-    (state) => state.center.centersList.centersDetails
-  );
+  const centerList = useSelector((state) => state.center.centersList || []);
   const dairyInfo = useSelector(
     (state) =>
       state.dairy.dairyData.SocietyName || state.dairy.dairyData.center_name

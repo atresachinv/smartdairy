@@ -22,7 +22,7 @@ const MilkColleform = ({ switchToSettings, times }) => {
   const { t } = useTranslation(["milkcollection", "common", "master"]);
   const dairyname = useSelector(
     (state) =>
-      state.dairy.dairyData.SocietyName || state.dairy.dairyData.center_name
+      state.dairy.dairyData.marathiName || state.dairy.dairyData.center_name
   );
   const dairyphone = useSelector(
     (state) => state.dairy.dairyData.PhoneNo || state.dairy.dairyData.mobile

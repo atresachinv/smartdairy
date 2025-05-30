@@ -29,9 +29,7 @@ const ReturnListDeliveryStock = () => {
   const [updatelist, setUpdateList] = useState([]);
   const dispatch = useDispatch();
   const { emplist } = useSelector((state) => state.emp);
-  const centerList = useSelector(
-    (state) => state.center.centersList.centersDetails
-  );
+  const centerList = useSelector((state) => state.center.centersList || []);
   const dairyInfo = useSelector(
     (state) =>
       state.dairy.dairyData.marathi_name ||

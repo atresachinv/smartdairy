@@ -13,6 +13,7 @@ const {
   deleteSelectedRatechart,
   maxRCTypeNo,
   listAllRCTypes,
+  rateChartCenterMilkColl,
 } = require("../Controllers/RatechartController");
 
 const router = express.Router();
@@ -26,6 +27,7 @@ router.route("/ratechart/list").post(verifyToken, listRatecharts); // list of ra
 router.route("/delete/ratechart").post(verifyToken, deleteSelectedRatechart);
 router.route("/apply/ratechart").post(verifyToken, applyRateChart);
 router.route("/sankalan/ratechart").post(verifyToken, rateChartMilkColl);
+router.route("/center/sankalan/ratechart").get(verifyToken, rateChartCenterMilkColl); // ratechart for center milk collection
 router.route("/selected/ratechart").get(verifyToken, getSelectedRateChart);
 router.route("/update/ratechart").post(verifyToken, updateSelectedRateChart);
 router.route("/save/updated/ratechart").post(verifyToken, saveUpdatedRC);

@@ -40,7 +40,7 @@ const AddDeliveryStock = () => {
   const { emplist } = useSelector((state) => state.emp);
   const [filterEmpList, setFilterEmpList] = useState([]);
   const centerList = useSelector(
-    (state) => state.center.centersList.centersDetails
+    (state) => state.center.centersList||[]
   );
 
   const centerSetting = useSelector(

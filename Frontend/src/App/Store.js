@@ -25,6 +25,7 @@ import manualMasterReducer from "./Features/Customers/Date/masterdateSlice";
 //Milk Collection
 import custInfoReducer from "./Features/Mainapp/Dairyinfo/milkCollectionSlice";
 import milkcolleReducer from "./Features/Mainapp/Milk/MilkCollectionSlice";
+import dairyMilkSReducer from "./Features/Mainapp/Milk/DairyMilkSalesSlice";
 //ratechart
 import ratchartReducer from "./Features/Mainapp/Masters/rateChartSlice";
 import registerReducer from "./Features/Dairy/registerSlice";
@@ -66,6 +67,7 @@ export const store = configureStore({
     purchase: purchaseReducer,
     sales: salesReducer,
     milksales: milksalesReducer,
+    dMilkSales: dairyMilkSReducer, // center milk sales
     deduction: deductionReducer,
     payment: paymentReducer,
     dashboard: dashboardReducer,

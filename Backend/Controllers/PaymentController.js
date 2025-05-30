@@ -1561,8 +1561,6 @@ exports.getMilkPayAmt = async (req, res) => {
 // if autodeduction save all  deduction with total entry ----------------------------->
 //------------------------------------------------------------------------------------>
 
-
-
 exports.saveFixDeductions = async (req, res) => {
   const { dairy_id, center_id } = req.user;
   const { formData, PaymentFD } = req.body;
@@ -2219,13 +2217,11 @@ exports.fetchTrnDeductionData = async (req, res) => {
   if (!dairy_id) {
     return res.status(401).json({ status: 401, message: "Unauthorised User!" });
   }
-
   if (!fromDate || !toDate) {
     return res
       .status(400)
       .json({ status: 400, message: "fromDate and toDate are required!" });
   }
-
   if (!GlCodes || GlCodes.length === 0) {
     return res
       .status(400)

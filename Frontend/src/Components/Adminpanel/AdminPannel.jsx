@@ -10,6 +10,11 @@ import WhatsappSms from "./PannelPages/DairyAccesses/WhatsappSms";
 import WhRechargeHistory from "./PannelPages/DairyAccesses/WhRechargeHistory";
 import MilkFilterData from "./PannelPages/MilkFilterData/MilkFilterData";
 import UploadMilkEntrys from "./PannelPages/UploadMilkEntrys/UploadMilkEntrys";
+import AmcSettings from "./PannelPages/DairyActivations/AmcSettings";
+import DairyList from "./PannelPages/DairyActivations/DairyList";
+import NewActivation from "./PannelPages/DairyActivations/NewActivation";
+import UpdateDAmc from "./PannelPages/DairyActivations/UpdateDAmc";
+import UpdateAllAmc from "./PannelPages/DairyActivations/UpdateAllAmc";
 
 const AdminPannel = () => {
   return (
@@ -30,6 +35,11 @@ const AdminPannel = () => {
             <Route path="whatsapp-sms/add" element={<WhatsappSms />} />
             <Route path="milk-filter-data" element={<MilkFilterData />} />
             <Route path="upload-milk-entrys" element={<UploadMilkEntrys />} />
+            <Route path="new/activation" element={<NewActivation />} />
+            <Route path="dairy/activation" element={<DairyList />} />
+            <Route path="amc/settings" element={<AmcSettings />} />
+            <Route path="update/dairy/amc" element={<UpdateDAmc />} />
+            <Route path="update/all/amc" element={<UpdateAllAmc />} />
             <Route path="*" element={<Dashboard />} />
           </Routes>
         </div>

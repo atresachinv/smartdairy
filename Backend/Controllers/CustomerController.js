@@ -70,6 +70,7 @@ exports.createCustomer = async (req, res) => {
     milktype,
     rctype,
     farmerid,
+    bankNo,
     bankName,
     bank_ac,
     bankIFSC,
@@ -138,11 +139,11 @@ exports.createCustomer = async (req, res) => {
             INSERT INTO customer (
               cid, cname, Phone, fax, City, tal, dist, cust_accno, createdby, 
               createdon, mobile, isSabhasad, rno, orgid, engName, rcName, 
-              centerid, srno, cust_pincode, cust_addhar, cust_farmerid, cust_bankname, 
+              centerid, srno, cust_pincode, cust_addhar, cust_farmerid, BankNo, cust_bankname, 
               cust_ifsc, caste, gender, milktype, sabhasad_date, isActive, deposit, 
               commission, rebet, transportation, h_deposit, h_deduction, h_allrebet, 
               h_sanghrebet, h_dairyrebet, h_transportation , ctype , isdeleted
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
           `;
 
           connection.query(
@@ -169,6 +170,7 @@ exports.createCustomer = async (req, res) => {
               pincode,
               aadhaar_no || null,
               farmerid || null,
+              bankNo || null,
               bankName || null,
               bankIFSC || null,
               caste || null,
@@ -299,6 +301,7 @@ exports.updateCustomer = async (req, res) => {
     milktype,
     rctype,
     farmerid,
+    bankNo,
     bankName,
     bank_ac,
     bankIFSC,
@@ -327,7 +330,11 @@ exports.updateCustomer = async (req, res) => {
       const updateCustomerQuery = `
         UPDATE customer
         SET
-           cname = ?, isActive = ?, isSabhasad = ?, engName = ?, sabhasad_date = ?, Phone = ?, cust_addhar = ?, caste = ?, gender = ?, City = ?, tal = ?, dist = ?, cust_pincode = ?, milktype = ?, rcName = ?, cust_farmerid = ?, cust_bankname = ?, cust_accno = ?, cust_ifsc = ?, deposit = ?, commission = ?, rebet = ?, transportation = ?, h_deposit = ?, h_deduction = ?, h_allrebet = ?, h_sanghrebet = ?, h_dairyrebet = ?, h_transportation = ?
+           cname = ?, isActive = ?, isSabhasad = ?, engName = ?, sabhasad_date = ?, Phone = ?, cust_addhar = ?,
+           caste = ?, gender = ?, City = ?, tal = ?, dist = ?, cust_pincode = ?, milktype = ?, rcName = ?,
+           cust_farmerid = ?, BankNo = ?, cust_bankname = ?, cust_accno = ?, cust_ifsc = ?, deposit = ?, commission = ?,
+           rebet = ?, transportation = ?, h_deposit = ?, h_deduction = ?, h_allrebet = ?, h_sanghrebet = ?,
+           h_dairyrebet = ?, h_transportation = ?
         WHERE cid = ?
       `;
 
@@ -350,6 +357,7 @@ exports.updateCustomer = async (req, res) => {
           milktype,
           rctype,
           farmerid,
+          bankNo,
           bankName,
           bank_ac,
           bankIFSC,
@@ -427,13 +435,13 @@ exports.customerList = async (req, res) => {
     center_id === 0
       ? `SELECT cid, cname, Phone, fax, City, tal, dist, cust_accno, createdby, createdon, mobile,
               isSabhasad, rno, orgid, engName, rateChartNo, centerid, srno, cust_pincode,
-              cust_addhar, cust_farmerid, cust_bankname, cust_ifsc, caste, gender, milktype, isActive, rcName, commission, rebet, transportation
+              cust_addhar, cust_farmerid, BankNo, cust_bankname, cust_ifsc, caste, gender, milktype, isActive, rcName, commission, rebet, transportation
        FROM customer
        WHERE orgid = ? AND (ctype IS NULL OR ctype = 1) AND (isdeleted IS NULL OR isdeleted = 0)
        ORDER BY centerid ASC, srno ASC`
       : `SELECT cid, cname, Phone, fax, City, tal, dist, cust_accno, createdby, createdon, mobile,
               isSabhasad, rno, orgid, engName, rateChartNo, centerid, srno, cust_pincode,
-              cust_addhar, cust_farmerid, cust_bankname, cust_ifsc, caste, gender, milktype, isActive, rcName, commission, rebet, transportation
+              cust_addhar, cust_farmerid, BankNo, cust_bankname, cust_ifsc, caste, gender, milktype, isActive, rcName, commission, rebet, transportation
        FROM customer
        WHERE orgid = ? AND centerid = ? AND (ctype IS NULL OR ctype = 1) AND (isdeleted IS NULL OR isdeleted = 0) ORDER BY srno ASC`;
 

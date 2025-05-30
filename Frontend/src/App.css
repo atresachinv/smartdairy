@@ -414,10 +414,15 @@
   color: #ffffff;
 }
 
+.f-text {
+  font-size: clamp(16px, 2vw, 18px);
+  font-weight: 300;
+  cursor: pointer;
+  color: #ffffff;
+}
 .text {
   font-size: clamp(16px, 2vw, 18px);
   font-weight: 300;
-  margin-top: 5px;
   cursor: pointer;
 }
 /* .num-text {
@@ -524,6 +529,12 @@ body {
 }
 .br9 {
   border-radius: 9px;
+}
+.br-top {
+  border-radius: 9px 9px 0 0;
+}
+.br-bottom {
+  border-radius: 0 0 9px 9px;
 }
 
 /* Icons */

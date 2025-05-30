@@ -82,7 +82,11 @@ import CreateCustomer from "./Masters/MasterPages/CustomerMaster/CreateCustomer"
 import FatSnfCompromise from "./Payments/FatSnfCompromise/FatSnfCompromise";
 import GeneralLedger from "./Accounts/GeneralLedger/GeneralLedger";
 import AdvancesPosting from "./Accounts/AdvancesPosting/AdvancesPosting";
-import Milkbill from "./Reports/milkBill/Milkbill";
+import SanghReport from "./MilkSales/SanghsalesPages/SanghReport";
+import Sanghsales from "./MilkSales/SanghsalesPages/Sanghsales";
+import CenterCollection from "./MilkSales/CenterCollection";
+import CreateSangh from "./MilkSales/SanghsalesPages/CreateSangh";
+import CenterReports from "./Reports/CenterReports/CenterReports";import Milkbill from "./Reports/milkBill/Milkbill";
 
 
 const Mainapp = () => {
@@ -220,8 +224,14 @@ const Mainapp = () => {
               element={<MilksalesReport />}
             />
             {/* milk sales routes */}
-            <Route path="milk/sangha/*" element={<SanghsalesMaster />} />
+            <Route path="create/sangha" element={<CreateSangh />} />
             <Route path="milk/retail/sales" element={<Milksales />} />
+            <Route path="sangha/sales" element={<Sanghsales />} />
+            <Route
+              path="center/milk/collection"
+              element={<CenterCollection />}
+            />
+            <Route path="sangha/sales/report" element={<SanghReport />} />
             {/* inventory routes */}
             <Route path="inventory" element={<Inventory />} />
             <Route path="inventory/dealer/*" element={<Dealers />} />
@@ -286,7 +296,7 @@ const Mainapp = () => {
             <Route path="sales/medicines/*" element={<MedicinesMaster />} />
             <Route path="sales/other-items/*" element={<OthersMaster />} />
             {/* reports routes */}
-            <Route path="reports/center/*" element={<ComingSoon />} />
+            <Route path="reports/center/*" element={<CenterReports />} />
             <Route path="reports/milk/*" element={<MilkcollectionReports />} />
             <Route path="reports/customer/*" element={<CustomerReports />} />
             <Route path="reports/employee/*" element={<ComingSoon />} />

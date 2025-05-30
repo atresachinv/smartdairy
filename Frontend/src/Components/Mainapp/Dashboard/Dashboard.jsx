@@ -43,7 +43,7 @@ const Dashboard = () => {
   const master = useSelector((state) => state.masterdates.masterlist);
   const mastermilk = useSelector((state) => state.milkCollection.allMilkColl);
   const centerList = useSelector(
-    (state) => state.center.centersList.centersDetails // center list
+    (state) => state.center.centersList || [] // center list
   );
   const centerLiterAmt = useSelector(
     (state) => state.admindashboard.centerMilk || [] // center wise liter and amount
@@ -111,7 +111,7 @@ const Dashboard = () => {
     0
   );
 
-  // Calculate the average fat percentage -------------------------------------------------->
+  // Calculate the average fat  -------------------------------------------------->
   const avgFat = totalLitres > 0 ? totalFatValue / totalLitres : 0;
   const avgSNF = totalLitres > 0 ? totalSNFValue / totalLitres : 0;
 

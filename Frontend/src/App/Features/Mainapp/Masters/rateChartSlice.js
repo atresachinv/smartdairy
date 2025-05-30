@@ -9,6 +9,7 @@ const initialState = {
   maxRcCode: "",
   maxRcType: "",
   excelRatechart: [],
+  latestrChart: [], // center milk collection ratechart
   status: "idle",
   AddRCstatus: "idle",
   RCTliststatus: "idle",
@@ -170,6 +171,22 @@ export const getRateCharts = createAsyncThunk(
     try {
       const response = await axiosInstance.post("/sankalan/ratechart");
       return response.data.usedRateChart;
+    } catch (error) {
+      const errorMessage =
+        error.response?.data?.message ||
+        "Failed to fetch ratechart used by this dairy.";
+      return rejectWithValue(errorMessage);
+    }
+  }
+);
+
+//fetch used ratecharts   ------------------------------------------------------------->
+export const getLatestRateChart = createAsyncThunk(
+  "ratechart/getLatestRateChart",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.get("/center/sankalan/ratechart");
+      return response.data.latestRC;
     } catch (error) {
       const errorMessage =
         error.response?.data?.message ||
@@ -418,6 +435,17 @@ const rateChartSlice = createSlice({
         state.status = "succeeded";
       })
       .addCase(getRateCharts.rejected, (state, action) => {
+        state.error = action.payload;
+        state.status = "failed";
+      }) // ratechart for center milk collection --------------------------------->
+      .addCase(getLatestRateChart.pending, (state) => {
+        state.status = "loading";
+      })
+      .addCase(getLatestRateChart.fulfilled, (state, action) => {
+        state.latestrChart = action.payload;
+        state.status = "succeeded";
+      })
+      .addCase(getLatestRateChart.rejected, (state, action) => {
         state.error = action.payload;
         state.status = "failed";
       })

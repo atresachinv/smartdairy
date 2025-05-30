@@ -5,10 +5,7 @@ import { centersLists } from "../../../../App/Features/Dairy/Center/centerSlice"
 
 const CenterList = ({ onEdit }) => {
   const dispatch = useDispatch();
-  const centerList = useSelector(
-    (state) => state.center.centersList.centersDetails
-  );
-
+  const centerList = useSelector((state) => state.center.centersList || []);
   useEffect(() => {
     dispatch(centersLists());
   }, [dispatch]);
@@ -44,9 +41,12 @@ const CenterList = ({ onEdit }) => {
               }`}
               style={{
                 backgroundColor: index % 2 === 0 ? "#fff" : "#faefe3",
-              }}>
+              }}
+            >
               <span className="label-text w5">{center.center_id}</span>
-              <span className="label-text w30 t-start">{center.center_name}</span>
+              <span className="label-text w30 t-start">
+                {center.center_name}
+              </span>
               <span className="label-text w15">{center.mobile}</span>
               <span className="label-text w25">{center.email}</span>
               <span className="label-text w15">{center.city}</span>

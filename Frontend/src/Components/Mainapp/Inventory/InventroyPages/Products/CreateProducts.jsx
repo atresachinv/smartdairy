@@ -34,9 +34,7 @@ const CreateProducts = () => {
     vikriUtpannaNo: "",
   });
   const [selectedCenter, setSelectedCenter] = useState(0);
-  const centerList = useSelector(
-    (state) => state.center.centersList.centersDetails
-  );
+  const centerList = useSelector((state) => state.center.centersList || []);
   const dispatch = useDispatch();
   const SubLedgers = useSelector((state) => state.ledger.sledgerlist);
   const [GlData1, setGlData1] = useState([]);

@@ -545,22 +545,22 @@ exports.deleteEmployee = async (req, res) => {
 //.................................................................
 
 exports.employeeList = async (req, res) => {
-  const dairy_id = req.user.dairy_id;
-  const center_id = req.user.center_id;
+  const { dairy_id, center_id } = req.user;
+
   if (!dairy_id) {
     return res.status(401).json({ status: 401, message: "Unauthorised User!" });
   }
-  const cacheKey = `employeeList_${dairy_id}_${center_id}`;
+  // const cacheKey = `employeeList_${dairy_id}_${center_id}`;
 
   // Check if data exists in cache
-  const cachedData = cache.get(cacheKey);
-  if (cachedData) {
-    return res.status(200).json({
-      status: 200,
-      empList: cachedData,
-      message: "Employees found!",
-    });
-  }
+  // const cachedData = cache.get(cacheKey);
+  // if (cachedData) {
+  //   return res.status(200).json({
+  //     status: 200,
+  //     empList: cachedData,
+  //     message: "Employees found!",
+  //   });
+  // }
   pool.getConnection((err, connection) => {
     if (err) {
       return res
@@ -609,7 +609,7 @@ exports.employeeList = async (req, res) => {
         }
 
         // Store in cache before sending response
-        cache.set(cacheKey, result);
+        // cache.set(cacheKey, result);
 
         return res
           .status(200)

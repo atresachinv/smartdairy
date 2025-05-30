@@ -50,7 +50,7 @@ const CreateMedicines = () => {
   );
   const [filter, setFilter] = useState(0);
   const centerList = useSelector(
-    (state) => state.center.centersList.centersDetails || []
+    (state) => state.center.centersList || []
   );
 
   const [settings, setSettings] = useState({});

@@ -281,10 +281,10 @@ const PayDeductions = ({ showbtn, setCurrentPage }) => {
     if (deductionDetails && deductions && prevMamt) {
       const merged = deductions.map((deduction) => {
         const matchedDeduction = deductionDetails.find(
-          (sub) => sub.GLCode === deduction.GLCode
+          (sub) => sub.GLCode === deduction.GLCode 
         );
         const matchedPrevMamt = prevMamt.find(
-          (prev) => prev.GLCode === deduction.GLCode
+          (prev) => prev.GLCode === deduction.GLCode 
         );
         return {
           ...deduction,
@@ -352,6 +352,7 @@ const PayDeductions = ({ showbtn, setCurrentPage }) => {
     setCustTrnDedu(customerdeductions);
   }, [mergedDeductions, currentCode]);
 
+  console.log("mergedDeductions", mergedDeductions);
   //----------------------------------------------------------------------------->
   // auto deduction calculations ------------------------------------------------>
   //----------------------------------------------------------------------------->
@@ -506,7 +507,8 @@ const PayDeductions = ({ showbtn, setCurrentPage }) => {
       }
     }
   };
-
+  // console.log("otherDPayData", otherDPayData);
+  // console.log("allDeductions", allDeductions);
   // handle bill save function ----------------------------------------------->
   const handleBillSave = async (e) => {
     e.preventDefault();
@@ -549,7 +551,6 @@ const PayDeductions = ({ showbtn, setCurrentPage }) => {
       toast.error("Failed to save bill!");
     }
   };
-
   return (
     <>
       <div className="payment-bill-deduction-main-container w100 h1 d-flex-col p10 sb">
@@ -787,9 +788,9 @@ const PayDeductions = ({ showbtn, setCurrentPage }) => {
                 >
                   <span className="info-text w30">{item.dname}</span>
                   <span className="info-text w10">{item.MAMT}</span>
-                  <span className="info-text w10">चालू</span>
+                  <span className="info-text w10">{item.Amt}</span>
                   <span className="info-text w20">{item.Amt}</span>
-                  <span className="info-text w10">{item.MAMT + item.Amt}</span>
+                  <span className="info-text w10">{item.pamt}</span>
                 </div>
               ))
             ) : (
@@ -825,7 +826,9 @@ const PayDeductions = ({ showbtn, setCurrentPage }) => {
             ) : (
               <></>
             )}
-            {allDeductions && otherDPayData.length === 0 && allDeductions.length > 0 ? (
+            {allDeductions &&
+            otherDPayData.length === 0 &&
+            allDeductions.length > 0 ? (
               allDeductions.map((item, index) => (
                 <div
                   key={index}

@@ -31,7 +31,7 @@ const MilksalesReport = () => {
   const salesStatus = useSelector((state) => state.milksales.centersalestatus);
   // -------------------------------------------------------------------------------------------->
   const centerList = useSelector(
-    (state) => state.center.centersList.centersDetails || []
+    (state) => state.center.centersList || []
   );
 
   // const Emplist = useSelector((state) => state.emp.emplist || []);

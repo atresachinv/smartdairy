@@ -947,6 +947,74 @@ exports.rateChartMilkColl = async (req, res) => {
   });
 };
 
+// -------------------------------------------------------------------------->
+// Center Milk Collection Ratecharts ---------------------------------------->
+// -------------------------------------------------------------------------->
+
+
+exports.rateChartCenterMilkColl = async (req, res) => {
+  const {dairy_id, center_id } = req.user;
+
+  if (!dairy_id) {
+    return res.status(400).json({ status: 400, message: "Unauthorized User!" });
+  }
+  pool.getConnection((err, connection) => {
+    if (err) {
+      return res
+        .status(500)
+        .json({ status: 500, message: "Database connection error!" });
+    }
+
+    try {
+      const findRatecharts = `
+       SELECT fat, snf, rate, rcdate
+        FROM ratemaster
+        WHERE companyid = ?
+          AND center_id = ?
+          AND rcdate = (
+            SELECT MAX(rcdate)
+              FROM ratemaster
+              WHERE companyid = ? AND center_id = ?
+            )
+      `;
+
+      connection.query(
+        findRatecharts,
+        [dairy_id, center_id, dairy_id, center_id, dairy_id, center_id],
+        (err, result) => {
+          connection.release();
+
+          if (err) {
+            console.error("Error executing query: ", err);
+            return res
+              .status(500)
+              .json({ status: 500, message: "Query execution error!" });
+          }
+
+          if (result.length === 0) {
+            return res.status(204).json({
+              status: 204,
+              message: "No rate chart data found!",
+            });
+          }
+
+          res.status(200).json({
+            status: 200,
+            latestRC: result,
+            message: "Rate chart data retrieved successfully!",
+          });
+        }
+      );
+    } catch (error) {
+      connection.release();
+      console.error("Error processing request: ", error);
+      return res
+        .status(500)
+        .json({ status: 500, message: "Internal server error" });
+    }
+  });
+};
+
 // .................................................................
 // Retriving perfect Ratechart for milk Collection .................
 // .................................................................

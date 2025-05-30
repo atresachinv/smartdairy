@@ -1,0 +1,66 @@
+.center-master-selection-container .center-milk-collection-details {
+  overflow-x: auto;
+}
+.center-master-selection-container .center-milk-heading-container {
+  min-width: 1400px;
+}
+.center-master-selection-container .center-milk-data-container {
+  min-width: 1400px;
+}
+
+@media screen and (max-width: 426px) {
+  .center-milk-coll-report-container {
+    min-height: auto;
+  }
+  .center-milk-coll-report-container .center-master-selection-container {
+    min-height: auto;
+  }
+  .center-master-selection-container .master-dates-btn-outer-container {
+    min-height: fit-content;
+  }
+  .master-dates-btn-outer-container .master-dates-btn-container {
+    min-height: fit-content;
+    flex-direction: column;
+  }
+  .master-dates-btn-container .master-dates-container {
+    min-height: fit-content;
+    width: 100%;
+    text-align: center;
+    flex-wrap: wrap;
+  }
+  .master-dates-btn-container .master-dates-container .flabel {
+    width: 100%;
+    margin-left: 15px;
+  }
+  .master-dates-btn-container .master-dates-container .fd-txt {
+    width: 12%;
+  }
+  .master-dates-btn-container .master-dates-container .td-txt {
+    width: 7%;
+  }
+  .master-dates-btn-container .master-dates-container input {
+    width: 35%;
+    margin-bottom: 10px;
+  }
+  .master-dates-btn-container button {
+    width: 45%;
+    margin-bottom: 10px;
+  }
+  .center-milk-coll-details-div {
+    flex-direction: column;
+    width: 100%;
+  }
+  .center-milk-coll-details-div .select-center-div {
+    width: 100%;
+    margin-bottom: 10px;
+  }
+  .center-milk-collection-details {
+    min-height: 80%;
+  }
+  .center-master-selection-container .center-milk-heading-container {
+    min-width: 1250px;
+  }
+  .center-master-selection-container .center-milk-data-container {
+    min-width: 1250px;
+  }
+}
