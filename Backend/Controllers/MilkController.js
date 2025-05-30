@@ -534,7 +534,7 @@ exports.milkCollectionOneEntry = async (req, res) => {
         const checkMilkCollectionQuery = `
           SELECT COUNT(rno) AS count 
           FROM ${dairy_table} 
-          WHERE center_id = ? AND ReceiptDate = ? AND ME = ? AND CB = ? AND rno = ?
+          WHERE center_id = ? AND ReceiptDate = ? AND ME = ? AND CB = ? AND rno = ? AND isDeleted = 0
         `;
 
         const existingEntry = await query(checkMilkCollectionQuery, [

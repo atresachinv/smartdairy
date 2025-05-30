@@ -169,7 +169,7 @@ const CenterCollection = () => {
     }));
   };
 
-  // used for decimal input correction ---------------------------------------------------------->
+  // used for decimal input correction ----------------------------------------------------------->
   const handleInputChange = (e) => {
     const { name, value } = e.target;
 
@@ -213,7 +213,7 @@ const CenterCollection = () => {
     );
   }, [values.centerid, Emplist]);
 
-  // handle enter press move cursor to next refrence Input -------------------------------->
+  // handle enter press move cursor to next refrence Input -------------------------------------->
   const handleKeyDown = (e, nextRef) => {
     if (e.key === "Enter" && nextRef.current) {
       e.preventDefault();
