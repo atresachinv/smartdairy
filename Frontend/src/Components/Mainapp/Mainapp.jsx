@@ -86,7 +86,13 @@ import SanghReport from "./MilkSales/SanghsalesPages/SanghReport";
 import Sanghsales from "./MilkSales/SanghsalesPages/Sanghsales";
 import CenterCollection from "./MilkSales/CenterCollection";
 import CreateSangh from "./MilkSales/SanghsalesPages/CreateSangh";
-import CenterReports from "./Reports/CenterReports/CenterReports";import Milkbill from "./Reports/milkBill/Milkbill";
+import CenterReports from "./Reports/CenterReports/CenterReports";
+import SanghReport from "./MilkSales/SanghsalesPages/SanghReport";
+import Sanghsales from "./MilkSales/SanghsalesPages/Sanghsales";
+import CenterCollection from "./MilkSales/CenterCollection";
+import CreateSangh from "./MilkSales/SanghsalesPages/CreateSangh";
+import CenterReports from "./Reports/CenterReports/CenterReports";
+import Milkbill from "./Reports/milkBill/Milkbill";
 
 
 const Mainapp = () => {
