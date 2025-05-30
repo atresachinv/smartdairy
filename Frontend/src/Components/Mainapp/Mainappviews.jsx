@@ -52,7 +52,7 @@ import FatSnfCompromise from "./Payments/FatSnfCompromise/FatSnfCompromise";
 // import MilkReports from "./Reports/MilkReports/MilkReports";
 // import MilkcollectionReports from "./Reports/MilkReports/MilkcollectionReports";
 
-const Mainappviews = ({ index }) => {
+const Mainappviews = ({ index }) => {3
   switch (index) {
     case 0:
       return <Dashboard />;

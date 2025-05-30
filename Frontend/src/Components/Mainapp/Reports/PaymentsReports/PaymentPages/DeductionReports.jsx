@@ -14,7 +14,6 @@ const DeductionReports = () => {
   const { t } = useTranslation(["common", "milkcollection"]);
   const dispatch = useDispatch();
   const manualMaster = useSelector((state) => state.manualMasters.masterlist);
-
   const customerlist = useSelector((state) => state.customer.customerlist);
   const deduction = useSelector((state) => state.deduction.alldeductionInfo);
   const dairyname = useSelector(
@@ -29,6 +28,7 @@ const DeductionReports = () => {
   const [filteredDeduction, setFilteredDeduction] = useState([]);
   const [dnameOptions, setDnameOptions] = useState([]);
   const [selectedDname, setSelectedDname] = useState("");
+  
   console.log(selectedMaster);
  
 

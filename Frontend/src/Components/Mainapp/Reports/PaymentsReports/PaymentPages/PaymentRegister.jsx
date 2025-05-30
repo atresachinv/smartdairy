@@ -19,9 +19,8 @@ const PaymentRegister = ({ showbtn, setCurrentPage }) => {
     (state) => state.deduction.alldeductionInfo
   );
   const customerlist = useSelector((state) => state.customer.customerlist);
-  const [showCustomerwiseDateFilter, setShowCustomerwiseDateFilter] =
-    useState(true);
-  const [fromCode, setFromCode] = useState("");
+ 
+ 
   const [filterCode, setFilterCode] = useState("");
   const [isloading, setIsLoading] = useState("");
   const [dataavailable, setDataAvailable] = useState("");
