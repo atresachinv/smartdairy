@@ -321,32 +321,48 @@ const Milkbill = () => {
   }, [date, dispatch]);
   // console.log(summaryData);
   //filter for seprating
-  console.log(fromCode);
-  useEffect(() => {
-  
-    const deductions = payDetails.filter(
-      (entry) =>
-        entry.Code.toString() === fromCode.toString() &&
-        (entry.dtype === 0 || entry.dtype === 1)
-    );
-    const payments = payDetails.filter(
-      (entry) => entry.Code.toString() === fromCode && entry.dtype === 2
-    );
-    setDeduction(deductions);
-    setPayment(payments);
-  }, [data, payDetails, fromCode]);
 
   useEffect(() => {
-    const milkData = data.filter(
-      (d) => d.rno.toString() === fromCode.toString()
-    );
-    
+    if (Array.isArray(payDetails)) {
+      const deductions = payDetails.filter(
+        (entry) =>
+          entry.Code >= Number(fromCode) &&
+          entry.Code <= Number(toCode) &&
+          (entry.dtype === 0 || entry.dtype === 1)
+      );
 
-    setCmilkdata(milkData);
-  }, [data, fromCode]);
+      const payments = payDetails.filter(
+        (entry) =>
+          entry.Code >= Number(fromCode) &&
+          entry.Code <= Number(toCode) &&
+          entry.dtype === 2
+      );
+
+      setDeduction(deductions);
+      setPayment(payments);
+    } else {
+      setDeduction([]);
+      setPayment([]);
+    }
+  }, [payDetails, fromCode]);
+
+  useEffect(() => {
+    if (Array.isArray(data)) {
+      const milkData = data.filter(
+        (d) =>
+          d.rno.toString() >= fromCode.toString() &&
+          d.rno.toString() <= toCode.toString()
+      );
+      setCmilkdata(milkData);
+    } else {
+      console.warn("Expected 'data' to be an array but got 0000:", data);
+      setCmilkdata([]); // fallback to empty array
+    }
+  }, [data, fromCode, toCode]);
 
   // ---------------------------------------------------------->
   //... milk collection pdf
+
   const exportMilkCollectionPDF = (
     cmilkdata = [],
     cname = cmilkdata[0]?.cname || "",
@@ -458,7 +474,7 @@ const Milkbill = () => {
     const deductionRows = deduction.map((item) => [
       item.dname || "",
       parseFloat(item.MAMT || 0).toFixed(2),
-      parseFloat(item.Amt || item.damt|| 0).toFixed(2),
+      parseFloat(item.Amt || item.damt || 0).toFixed(2),
       parseFloat(item.BAMT || 0).toFixed(2),
     ]);
 
@@ -511,6 +527,404 @@ const Milkbill = () => {
     });
 
     doc.save("MilkCollectionBill.pdf");
+  };
+
+  // const printMilkCollection = (
+  //   cmilkdata = [],
+  //   cname = "",
+  //   billno = "",
+  //   payData = [],
+  //   deduction = [],
+  //   payment = []
+  // ) => {
+  //   if (!Array.isArray(cmilkdata)) {
+  //     console.error("Invalid milk data. Expected an array but got:", cmilkdata);
+  //     return;
+  //   }
+
+  //   if (!cname && cmilkdata.length > 0) {
+  //     cname = cmilkdata[0]?.cname || "";
+  //   }
+
+  //   if (!billno && payment.length > 0) {
+  //     billno = payment[0]?.BillNo || "";
+  //   }
+
+  //   const doc = new jsPDF("portrait");
+
+  //   // Header
+  //   doc.setFontSize(16);
+  //   doc.text(dairyname, 60, 15);
+  //   doc.setFontSize(10);
+  //   doc.text("Milk Payment Bill", 80, 22);
+  //   doc.setFontSize(11);
+  //   doc.text("Page No.: 1", 15, 30);
+  //   doc.text(`Date: ${new Date().toLocaleDateString("hi-IN")}`, 145, 30);
+  //   doc.text(
+  //     `Master Duration: From ${String(fromDate)} To ${String(toDate)}`,
+  //     15,
+  //     36
+  //   );
+  //   doc.text(`Bill No.: ${billno}`, 140, 42);
+  //   doc.text(`Customer Name: ${cname}`, 15, 48);
+
+  //   const morningData = cmilkdata.filter((d) => d.ME === 0);
+  //   const eveningData = cmilkdata.filter((d) => d.ME === 1);
+
+  //   const formatRow = (entry) => [
+  //     new Date(entry.ReceiptDate).toLocaleDateString("hi-IN"),
+  //     entry.Litres,
+  //     entry.fat,
+  //     entry.snf,
+  //     entry.rate.toFixed(2),
+  //     entry.Amt.toFixed(2),
+  //   ];
+
+  //   const totalSection = (data) => {
+  //     const litres = data.reduce(
+  //       (sum, e) => sum + parseFloat(e.Litres || 0),
+  //       0
+  //     );
+  //     const amount = data.reduce((sum, e) => sum + parseFloat(e.Amt || 0), 0);
+  //     return {
+  //       litres: litres.toFixed(2),
+  //       amount: amount.toFixed(2),
+  //     };
+  //   };
+
+  //   const morningTotals = totalSection(morningData);
+  //   const eveningTotals = totalSection(eveningData);
+
+  //   const columns = ["Date", "Liter", "Fat", "SNF", "Rate", "Amount"];
+
+  //   // Morning Table
+  //   doc.setFontSize(12);
+  //   doc.text("Morning", 15, 58);
+  //   doc.autoTable({
+  //     head: [columns],
+  //     body: [
+  //       ...morningData.map(formatRow),
+  //       ["Total", morningTotals.litres, "", "", "", morningTotals.amount],
+  //     ],
+  //     startY: 60,
+  //     theme: "grid",
+  //     styles: { fontSize: 9 },
+  //     headStyles: {
+  //       fontStyle: "bold",
+  //       fillColor: [255, 255, 255],
+  //       textColor: [0, 0, 0],
+  //     },
+  //     margin: { left: 15 },
+  //   });
+
+  //   let afterMorning = doc.lastAutoTable.finalY + 5;
+
+  //   // Evening Table
+  //   doc.setFontSize(12);
+  //   doc.text("Evening", 15, afterMorning);
+  //   doc.autoTable({
+  //     head: [columns],
+  //     body: [
+  //       ...eveningData.map(formatRow),
+  //       ["Total", eveningTotals.litres, "", "", "", eveningTotals.amount],
+  //     ],
+  //     startY: afterMorning + 2,
+  //     theme: "grid",
+  //     styles: { fontSize: 9 },
+  //     headStyles: {
+  //       fontStyle: "bold",
+  //       fillColor: [255, 255, 255],
+  //       textColor: [0, 0, 0],
+  //     },
+  //     margin: { left: 15 },
+  //   });
+
+  //   let currentY = doc.lastAutoTable.finalY + 8;
+
+  //   // Deduction Table
+  //   if (deduction.length > 0) {
+  //     doc.setFontSize(12);
+  //     doc.text("Deduction", 15, currentY);
+
+  //     const deductionColumns = [
+  //       "Deduction Name",
+  //       "Remaining Deduction(MAMT)",
+  //       "Deduction (DAMT)",
+  //       "Remaining Amt (BAMT)",
+  //     ];
+
+  //     const deductionRows = deduction.map((item) => [
+  //       item.dname || "",
+  //       parseFloat(item.MAMT || 0).toFixed(2),
+  //       parseFloat(item.Amt || item.damt || 0).toFixed(2),
+  //       parseFloat(item.BAMT || 0).toFixed(2),
+  //     ]);
+
+  //     doc.autoTable({
+  //       head: [deductionColumns],
+  //       body: deductionRows,
+  //       startY: currentY + 4,
+  //       theme: "grid",
+  //       styles: { fontSize: 9 },
+  //       headStyles: {
+  //         fontStyle: "bold",
+  //         fillColor: [255, 255, 255],
+  //         textColor: [0, 0, 0],
+  //       },
+  //       margin: { left: 15 },
+  //     });
+
+  //     currentY = doc.lastAutoTable.finalY + 8;
+  //   }
+
+  //   // Payment Summary Table
+  //   if (payment.length > 0) {
+  //     doc.setFontSize(12);
+  //     doc.text("Received Amount", 15, currentY);
+
+  //     const paySummaryHeaders = [
+  //       "Liter",
+  //       "AvgRate",
+  //       "Payment",
+  //       "Deduction",
+  //       "Net payment",
+  //     ];
+  //     const paySummaryRows = payment.map((item) => [
+  //       parseFloat(item.tliters || 0).toFixed(2),
+  //       parseFloat(item.arate || 0).toFixed(2),
+  //       parseFloat(item.pamt || 0).toFixed(2),
+  //       parseFloat(item.damt || 0).toFixed(2),
+  //       parseFloat(item.namt || 0).toFixed(2),
+  //     ]);
+
+  //     doc.autoTable({
+  //       head: [paySummaryHeaders],
+  //       body: paySummaryRows,
+  //       startY: currentY + 4,
+  //       theme: "grid",
+  //       styles: { fontSize: 9 },
+  //       headStyles: {
+  //         fontStyle: "bold",
+  //         fillColor: [255, 255, 255],
+  //         textColor: [0, 0, 0],
+  //       },
+  //       margin: { left: 15 },
+  //     });
+  //   }
+
+  //   // ✅ Print the PDF
+  //   const pdfBlob = doc.output("blob");
+  //   const pdfUrl = URL.createObjectURL(pdfBlob);
+  //   const printWindow = window.open(pdfUrl);
+  //   if (printWindow) {
+  //     printWindow.onload = () => {
+  //       printWindow.focus();
+  //       printWindow.print();
+  //     };
+  //   } else {
+  //     console.warn(
+  //       "Unable to open print window. Please check popup blocker settings."
+  //     );
+  //   }
+  // };
+  console.log("payData", payDetails);
+  const printMilkCollection = (
+    cmilkdata = [],
+    cname = "",
+    billno = "",
+    payData = [],
+    deduction = [],
+    payment = []
+  ) => {
+    if (!Array.isArray(cmilkdata)) {
+      console.error("Invalid milk data. Expected an array but got:", cmilkdata);
+      return;
+    }
+
+    if (!cname && cmilkdata.length > 0) {
+      cname = cmilkdata[0]?.cname || "";
+    }
+
+    if (!billno && payment.length > 0) {
+      billno = payment[0]?.BillNo || "";
+    }
+
+    const doc = new jsPDF("portrait");
+
+    // Header
+    doc.setFontSize(14);
+    doc.text(dairyname, 60, 12);
+    doc.setFontSize(9);
+    doc.text("Milk Payment Bill", 80, 18);
+    doc.text("Page No.: 1", 15, 24);
+    doc.text(`Date: ${new Date().toLocaleDateString("hi-IN")}`, 145, 24);
+    doc.text(
+      `Master Duration: From ${String(fromDate)} To ${String(toDate)}`,
+      15,
+      30
+    );
+    doc.text(`Bill No.: ${billno}`, 140, 36);
+    doc.text(`Customer Name: ${cname}`, 15, 42);
+
+    const morningData = cmilkdata.filter((d) => d.ME === 0);
+    const eveningData = cmilkdata.filter((d) => d.ME === 1);
+
+    const formatRow = (entry) => [
+      new Date(entry.ReceiptDate).toLocaleDateString("hi-IN"),
+      entry.Litres,
+      entry.fat,
+      entry.snf,
+      entry.rate.toFixed(2),
+      entry.Amt.toFixed(2),
+    ];
+
+    const totalSection = (data) => {
+      const litres = data.reduce(
+        (sum, e) => sum + parseFloat(e.Litres || 0),
+        0
+      );
+      const amount = data.reduce((sum, e) => sum + parseFloat(e.Amt || 0), 0);
+      return {
+        litres: litres.toFixed(2),
+        amount: amount.toFixed(2),
+      };
+    };
+
+    const morningTotals = totalSection(morningData);
+    const eveningTotals = totalSection(eveningData);
+    const columns = ["Date", "Liter", "Fat", "SNF", "Rate", "Amount"];
+
+    // Morning Table (Left)
+    doc.setFontSize(10);
+    doc.text("Morning", 15, 50);
+    doc.autoTable({
+      head: [columns],
+      body: [
+        ...morningData.map(formatRow),
+        ["Total", morningTotals.litres, "", "", "", morningTotals.amount],
+      ],
+      startY: 52,
+      theme: "grid",
+      styles: { fontSize: 7 },
+      headStyles: {
+        fontStyle: "bold",
+        fillColor: [240, 240, 240],
+        textColor: [0, 0, 0],
+      },
+      margin: { left: 10 },
+      tableWidth: 85,
+    });
+
+    // Evening Table (Right)
+    doc.setFontSize(10);
+    doc.text("Evening", 110, 50);
+    doc.autoTable({
+      head: [columns],
+      body: [
+        ...eveningData.map(formatRow),
+        ["Total", eveningTotals.litres, "", "", "", eveningTotals.amount],
+      ],
+      startY: 52,
+      theme: "grid",
+      styles: { fontSize: 7 },
+      headStyles: {
+        fontStyle: "bold",
+        fillColor: [240, 240, 240],
+        textColor: [0, 0, 0],
+      },
+      margin: { left: 105 },
+      tableWidth: 85,
+    });
+
+    // Deduction Table (Left Bottom)
+    let bottomStartY = Math.max(doc.lastAutoTable.finalY, 110) + 4;
+
+    if (deduction.length > 0) {
+      doc.setFontSize(10);
+      doc.text("Deduction", 15, bottomStartY);
+
+      const deductionColumns = [
+        "Deduction Name",
+        "Remaining (MAMT)",
+        "Deduction (DAMT)",
+        "Balance (BAMT)",
+      ];
+
+      const deductionRows = deduction.map((item) => [
+        item.dname || "",
+        parseFloat(item.MAMT || 0).toFixed(2),
+        parseFloat(item.Amt || item.damt || 0).toFixed(2),
+        parseFloat(item.BAMT || 0).toFixed(2),
+      ]);
+
+      doc.autoTable({
+        head: [deductionColumns],
+        body: deductionRows,
+        startY: bottomStartY + 2,
+        theme: "grid",
+        styles: { fontSize: 7 },
+        headStyles: {
+          fontStyle: "bold",
+          fillColor: [240, 240, 240],
+          textColor: [0, 0, 0],
+        },
+        margin: { left: 10 },
+        tableWidth: 95,
+      });
+    }
+
+    // Payment Summary Table (Right Bottom)
+    if (payment.length > 0) {
+      const pay = payment[0];
+
+      const summaryX = 110;
+      const summaryY = bottomStartY + 2;
+
+      const summaryBody = [
+        ["Liter", parseFloat(pay.tliters || 0).toFixed(2)],
+        ["Avg Rate", parseFloat(pay.arate || 0).toFixed(2)],
+        ["Total Payment", parseFloat(pay.pamt || 0).toFixed(2)],
+        ["Total Deduction", parseFloat(pay.damt || 0).toFixed(2)],
+        ["Net Payment", parseFloat(pay.namt || 0).toFixed(2)],
+      ];
+
+      doc.autoTable({
+        head: [["Payment Summary", ""]],
+        body: summaryBody,
+        startY: summaryY,
+        margin: { left: summaryX },
+        theme: "grid",
+        styles: {
+          fontSize: 9,
+          cellPadding: 2,
+          halign: "left",
+        },
+        headStyles: {
+          fillColor: [240, 240, 240],
+          textColor: [0, 0, 0],
+          fontStyle: "bold",
+        },
+        columnStyles: {
+          0: { cellWidth: 40 },
+          1: { cellWidth: 35, halign: "right" },
+        },
+      });
+    }
+
+    // Print PDF
+    const pdfBlob = doc.output("blob");
+    const pdfUrl = URL.createObjectURL(pdfBlob);
+    const printWindow = window.open(pdfUrl);
+    if (printWindow) {
+      printWindow.onload = () => {
+        printWindow.focus();
+        printWindow.print();
+      };
+    } else {
+      console.warn(
+        "Unable to open print window. Please check popup blocker settings."
+      );
+    }
   };
 
   console.log("deduction", deduction);
@@ -575,7 +989,21 @@ const Milkbill = () => {
                 </button>
               </div>
               <div className="report-buttons-div w70 d-flex px10">
-                <button className="btn">दुध बिले प्रकार 2</button>
+                <button
+                  className="btn"
+                  onClick={() =>
+                    printMilkCollection(
+                      cmilkdata,
+                      "",
+                      "",
+                      [],
+                      deduction,
+                      payment
+                    )
+                  }
+                >
+                  दुध बिले प्रकार 2
+                </button>
               </div>
             </div>
           </div>
