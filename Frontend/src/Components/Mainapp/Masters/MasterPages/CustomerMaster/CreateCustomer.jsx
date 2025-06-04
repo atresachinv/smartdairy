@@ -389,7 +389,6 @@ const CreateCustomer = () => {
     const bankdetails = bankList.filter(
       (bank) => bank.id.toString() === formData.bankNo
     );
-    console.log("Bank details:", bankdetails);
     setFormData((prevData) => ({
       ...prevData,
       bankName: bankdetails[0]?.name,

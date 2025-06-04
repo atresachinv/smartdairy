@@ -1228,8 +1228,8 @@ exports.PreviousMilkCollectionList = async (req, res) => {
 //   });
 // };
 
-//.........................................................
-// Save Mobile Milk Collection (single entry) .............
+//---------------------------------------------------------------------------------------->
+// Save Mobile Milk Collection (single entry) -------------------------------------------->
 
 //v3 function ---------------------
 exports.mobileMilkCollection = async (req, res) => {
@@ -2590,53 +2590,241 @@ exports.centerReMilkReports = async (req, res) => {
   });
 };
 
-// dairy dashboard summary report ------------------------------------------------------------------>
-//-------------------------------------------------------------------------------------------------->
-
-// exports.dairyDashboardSummary = async (req, res) => {
-//   const { dairy_id, center_id } = req.user;
-//   if (!dairy_id) {
-//     return res.status(401).json({ staus: 401, message: "Unauthorized User!" });
-//   }
-//   const dairy_table = `dailymilkentry_${dairy_id}`;
-//   pool.getConnection((err, connection) => {
-//     if (err) {
-//       console.error("Error getting MySQL connection: ", err);
-//       return res.status(500).json({ message: "Database connection error" });
-//     }
-//     try {
-//       const dairyMilkSummary = `
-//         SELECT * from ${dairy_table} WHERE ReceiptDate = ? `;
-//     } catch (error) {
-//       connection.release();
-//       console.error("Error processing request: ", error);
-//       return res.status(500).json({ message: "Internal server error" });
-//     }
-//   });
-// };
-
 // ----------------------------------------------------------------------------------------------->
 // Upload milk collection from excel or csv file ------------------------------------------------->
 // ----------------------------------------------------------------------------------------------->
+
+exports.uploadMilkCollection = async (req, res) => {
+  const { dairy_id, center_id, user_role } = req.user;
+  const { milkData } = req.body;
+  if (!dairy_id || !user_role) {
+    return res.status(401).json({ status: 401, message: "Unauthorised User!" });
+  }
+
+  if (!Array.isArray(milkData) || milkData.length === 0) {
+    return res
+      .status(400)
+      .json({ status: 400, message: "No milk data received" });
+  }
+
+  pool.getConnection((err, connection) => {
+    if (err) {
+      console.error("DB connection error:", err);
+      return res
+        .status(500)
+        .json({ status: 500, message: "Database connection error" });
+    }
+
+    try {
+      const dairy_table = `dailymilkentry_${dairy_id}`;
+
+      // Prepare insert data
+      const values = milkData.map((row) => [
+        dairy_id,
+        user_role,
+        row["दिनांक"],
+        parseInt(row["सत्र"]),
+        parseInt(row["पशु"]),
+        parseFloat(row["लिटर"]),
+        parseFloat(row["फॅट"]),
+        parseFloat(row["एस एन एफ"]),
+        "28",
+        parseFloat(row["दर"]),
+        parseFloat(row["रक्कम"]),
+        row["नाव"],
+        parseInt(row["कोड"]),
+        "Cow",
+        center_id,
+      ]);
+
+      const insertQuery = `
+        INSERT INTO ${dairy_table}
+        (companyid, userid, ReceiptDate, ME, CB, Litres, fat, snf, GLCode, rate, Amt, cname, rno,rctype, center_id)
+        VALUES ?
+      `;
+      connection.query(insertQuery, [values], (err, result) => {
+        connection.release();
+
+        if (err) {
+          console.error("Query execution error:", err);
+          return res
+            .status(500)
+            .json({ status: 500, message: "Error inserting milk data" });
+        }
+        return res.status(201).json({
+          status: 201,
+          message: "Milk data uploaded successfully!",
+        });
+      });
+    } catch (error) {
+      connection.release();
+      console.error("Server error:", error);
+      return res
+        .status(500)
+        .json({ status: 500, message: "Internal server error" });
+    }
+  });
+};
+
 // exports.uploadMilkCollection = async (req, res) => {
-//   const { dairy_id, center_id } = req.user;
-//   const { exceldata } = req.body;
-//   if (!dairy_id) {
-//     return res.status(401).json({ staus: 401, message: "Unauthorized User!" });
+//   const { dairy_id, center_id, user_role } = req.user;
+//   const { milkData } = req.body;
+
+//   if (!dairy_id || !user_role) {
+//     return res.status(401).json({ status: 401, message: "Unauthorised User!" });
 //   }
-//   const dairy_table = `dailymilkentry_${dairy_id}`;
+
+//   if (!Array.isArray(milkData) || milkData.length === 0) {
+//     return res
+//       .status(400)
+//       .json({ status: 400, message: "No milk data received" });
+//   }
+
 //   pool.getConnection((err, connection) => {
 //     if (err) {
-//       console.error("Error getting MySQL connection: ", err);
-//       return res.status(500).json({ message: "Database connection error" });
+//       console.error("DB connection error:", err);
+//       return res
+//         .status(500)
+//         .json({ status: 500, message: "Database connection error" });
 //     }
-//     try {
-//       const dairyMilkSummary = `
-//         INSERT INTO ${dairy_table} () VALUES () `;
-//     } catch (error) {
-//       connection.release();
-//       console.error("Error processing request: ", error);
-//       return res.status(500).json({ message: "Internal server error" });
-//     }
+
+//     const dairy_table = `dailymilkentry_${dairy_id}`;
+//     let index = 0;
+
+//     const processNext = () => {
+//       if (index >= milkData.length) {
+//         connection.release();
+//         return res.status(201).json({
+//           status: 201,
+//           rows: results.affectedRows,
+//           message: "Milk data uploaded or updated successfully!",
+//         });
+//       }
+
+//       const row = milkData[index++];
+//       const rno = parseInt(row["कोड"]);
+//       const ME = parseInt(row["सत्र"]);
+//       const ReceiptDate = row["दिनांक"];
+
+//       const checkQuery = `
+//         SELECT id FROM ${dairy_table}
+//         WHERE companyid = ? AND center_id = ? AND ReceiptDate = ? AND rno = ? AND ME = ?
+//       `;
+
+//       connection.query(
+//         checkQuery,
+//         [dairy_id, center_id, ReceiptDate, rno, ME],
+//         (err, results) => {
+//           if (err) {
+//             connection.release();
+//             console.error("Check query error:", err);
+//             return res
+//               .status(500)
+
+//               .json({
+//                 status: 500,
+
+//                 message: "Database check error",
+//               });
+//           }
+
+//           const values = {
+//             companyid: dairy_id,
+//             userid: user_role,
+//             ReceiptDate,
+//             ME,
+//             CB: parseInt(row["पशु"]),
+//             Litres: parseFloat(row["लिटर"]),
+//             fat: parseFloat(row["फॅट"]),
+//             snf: parseFloat(row["एस एन एफ"]),
+//             GLCode: "28",
+//             rate: parseFloat(row["दर"]),
+//             Amt: parseFloat(row["रक्कम"]),
+//             cname: row["नाव"],
+//             rno,
+//             rctype: "Cow",
+//             center_id,
+//           };
+
+//           if (results.length > 0) {
+//             // Update
+//             const updateQuery = `
+//             UPDATE ${dairy_table}
+//             SET CB = ?, Litres = ?, fat = ?, snf = ?, rate = ?, Amt = ?, cname = ?, userid = ?
+//             WHERE companyid = ? AND center_id = ? AND ReceiptDate = ? AND rno = ? AND ME = ?
+//           `;
+//             connection.query(
+//               updateQuery,
+//               [
+//                 values.CB,
+//                 values.Litres,
+//                 values.fat,
+//                 values.snf,
+//                 values.rate,
+//                 values.Amt,
+//                 values.cname,
+//                 values.userid,
+//                 values.companyid,
+//                 values.center_id,
+//                 values.ReceiptDate,
+//                 values.rno,
+//                 values.ME,
+//               ],
+//               (err, results) => {
+//                 if (err) {
+//                   connection.release();
+//                   console.error("Update query error:", err);
+//                   return res.status(500).json({
+//                     status: 500,
+//                     message: "Error in milk collection insertion.!",
+//                   });
+//                 }
+//                 processNext(); // continue
+//               }
+//             );
+//           } else {
+//             // Insert
+//             const insertQuery = `
+//             INSERT INTO ${dairy_table}
+//             (companyid, userid, ReceiptDate, ME, CB, Litres, fat, snf, GLCode, rate, Amt, cname, rno, rctype, center_id)
+//             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+//           `;
+//             connection.query(
+//               insertQuery,
+//               [
+//                 values.companyid,
+//                 values.userid,
+//                 values.ReceiptDate,
+//                 values.ME,
+//                 values.CB,
+//                 values.Litres,
+//                 values.fat,
+//                 values.snf,
+//                 values.GLCode,
+//                 values.rate,
+//                 values.Amt,
+//                 values.cname,
+//                 values.rno,
+//                 values.rctype,
+//                 values.center_id,
+//               ],
+//               (err, results) => {
+//                 if (err) {
+//                   connection.release();
+//                   console.error("Insert query error:", err);
+//                   return res.status(500).json({
+//                     status: 500,
+//                     message: "Error in milk collection insertion!",
+//                   });
+//                 }
+//                 processNext(); // continue
+//               }
+//             );
+//           }
+//         }
+//       );
+//     };
+
+//     processNext(); // start the loop
 //   });
 // };

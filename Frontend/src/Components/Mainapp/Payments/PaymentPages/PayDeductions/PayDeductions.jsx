@@ -87,11 +87,6 @@ const PayDeductions = ({ showbtn, setCurrentPage }) => {
     minPayAmount: 0.0,
   }); // form data for the payment deduction
 
-  // console.log("allDeductions", allDeductions);
-  // console.log("filteredPayData", filteredPayData);
-  // console.log("otherDPayData", otherDPayData);
-  // console.log("mergedDeductions", mergedDeductions);
-
   useEffect(() => {
     dispatch(getCenterSetting());
   }, []);
@@ -281,10 +276,10 @@ const PayDeductions = ({ showbtn, setCurrentPage }) => {
     if (deductionDetails && deductions && prevMamt) {
       const merged = deductions.map((deduction) => {
         const matchedDeduction = deductionDetails.find(
-          (sub) => sub.GLCode === deduction.GLCode 
+          (sub) => sub.GLCode === deduction.GLCode
         );
         const matchedPrevMamt = prevMamt.find(
-          (prev) => prev.GLCode === deduction.GLCode 
+          (prev) => prev.GLCode === deduction.GLCode
         );
         return {
           ...deduction,
@@ -352,7 +347,7 @@ const PayDeductions = ({ showbtn, setCurrentPage }) => {
     setCustTrnDedu(customerdeductions);
   }, [mergedDeductions, currentCode]);
 
-  console.log("mergedDeductions", mergedDeductions);
+
   //----------------------------------------------------------------------------->
   // auto deduction calculations ------------------------------------------------>
   //----------------------------------------------------------------------------->
@@ -473,6 +468,8 @@ const PayDeductions = ({ showbtn, setCurrentPage }) => {
   }, [currentCode, data, customerlist]);
 
   // Handle amount change for each deduction ------------------------------------>
+  // Used For other deduction calculation
+
   const handleAmtChanges = (index, newAmt) => {
     const updatedData = [...otherDPayData];
     const oldAmt = Math.abs(parseFloat(updatedData[index].Amt)) || 0;
@@ -488,11 +485,34 @@ const PayDeductions = ({ showbtn, setCurrentPage }) => {
 
     setOtherDPayData(updatedData);
 
-    setFormData((prev) => ({
-      ...prev,
-      netDeduction: parseFloat((prev.netDeduction + diff).toFixed(2)),
-      netPayment: parseFloat((prev.netPayment - diff).toFixed(2)),
-    }));
+    const newNetDeduction = parseFloat(
+      (formData.netDeduction + diff).toFixed(2)
+    );
+    const newNetPayment = parseFloat((formData.netPayment - diff).toFixed(2));
+
+    const flooredAmt1 = Math.floor(newNetPayment);
+    const roundAmt1 = Math.floor((newNetPayment - flooredAmt1) * 100) / 100;
+    const newRoundAmt = formData.roundAmount + roundAmt1;
+    if (newRoundAmt >= "1") {
+      const flooredAmt2 = Math.floor(newRoundAmt);
+      const roundAmt2 = Math.floor((newRoundAmt - flooredAmt2) * 100) / 100;
+
+      const netPay = flooredAmt1 + flooredAmt2;
+
+      setFormData((prev) => ({
+        ...prev,
+        netDeduction: parseFloat(newNetDeduction.toFixed(2)),
+        roundAmount: parseFloat(roundAmt2.toFixed(2)),
+        netPayment: parseFloat(netPay.toFixed(2)),
+      }));
+    } else {
+      setFormData((prev) => ({
+        ...prev,
+        netDeduction: parseFloat(newNetDeduction.toFixed(2)),
+        roundAmount: parseFloat(newRoundAmt.toFixed(2)),
+        netPayment: parseFloat(newNetPayment.toFixed(2)),
+      }));
+    }
   };
 
   //handle focus on next input field ----------------------------------------->
@@ -507,8 +527,7 @@ const PayDeductions = ({ showbtn, setCurrentPage }) => {
       }
     }
   };
-  // console.log("otherDPayData", otherDPayData);
-  // console.log("allDeductions", allDeductions);
+
   // handle bill save function ----------------------------------------------->
   const handleBillSave = async (e) => {
     e.preventDefault();

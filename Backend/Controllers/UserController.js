@@ -199,6 +199,7 @@ exports.userRegister = async (req, res) => {
           `
           CREATE TABLE IF NOT EXISTS ${tableName} (
             id INT AUTO_INCREMENT PRIMARY KEY,
+            companyid INT DEFAULT 0,
             center_id INT DEFAULT 0,
             userid VARCHAR(120),
             ReceiptDate DATE,

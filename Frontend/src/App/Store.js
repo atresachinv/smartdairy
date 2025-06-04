@@ -25,6 +25,7 @@ import manualMasterReducer from "./Features/Customers/Date/masterdateSlice";
 //Milk Collection
 import custInfoReducer from "./Features/Mainapp/Dairyinfo/milkCollectionSlice";
 import milkcolleReducer from "./Features/Mainapp/Milk/MilkCollectionSlice";
+import milkUploadReducer from "./Features/Mainapp/Milk/UploadMilkSlice";
 import dairyMilkSReducer from "./Features/Mainapp/Milk/DairyMilkSalesSlice";
 //ratechart
 import ratchartReducer from "./Features/Mainapp/Masters/rateChartSlice";
@@ -48,6 +49,7 @@ export const store = configureStore({
     userinfo: userDataReducer, //user profile info
     date: dateReducer,
     milk: milkReducer,
+    milkUpload: milkUploadReducer, // milk collection upload
     notify: notificationReducer,
     mMilk: milkMasterReducer,
     dairy: dairyReducer,
