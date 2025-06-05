@@ -6,7 +6,8 @@ import "jspdf-autotable";
 import { generateMaster } from "../../../../App/Features/Customers/Date/masterdateSlice";
 import { getAllMilkCollReport } from "../../../../App/Features/Mainapp/Milk/MilkCollectionSlice";
 import { fetchPaymentDetails } from "../../../../App/Features/Payments/paymentSlice";
-
+import "../../../../Styles/Milkbillreport/Milkbill.css";
+import { centersLists } from "../../../../App/Features/Dairy/Center/centerSlice";
 const Milkbill = () => {
   const dispatch = useDispatch();
   const [fromDate, setFromDate] = useState("");
@@ -25,25 +26,33 @@ const Milkbill = () => {
   const allDeductions = useSelector(
     (state) => state.deduction.alldeductionInfo
   );
+
   const customerlist = useSelector((state) => state.customer.customerlist);
   const [filterCode, setFilterCode] = useState("");
   const [isloading, setIsLoading] = useState("");
   const [dataavailable, setDataAvailable] = useState("");
   const [customerName, setCustomerName] = useState("");
-  const centerList = useSelector(
-    (state) => state.center.centersList.centersDetails
-  );
+  const centerList = useSelector((state) => state.center.centersList || []);
+
   const dairyinfo = useSelector((state) => state.dairy.dairyData);
   const [selectedCenterId, setSelectedCenterId] = useState("");
   const [fromCode, setFromCode] = React.useState("");
   const [toCode, setToCode] = React.useState("");
+  const [centerdata, setCenterData] = React.useState("");
+  const profile = useSelector((state) => state.userinfo.profile);
 
+ 
+   useEffect(() => {
+     dispatch(centersLists());
+   }, [dispatch]);
+console.log(centerList);
   //......   Dairy name And City name   for PDf heading
   const dairyname = useSelector(
     (state) =>
       state.dairy.dairyData.SocietyName || state.dairy.dairyData.center_name
   );
   const CityName = useSelector((state) => state.dairy.dairyData.city);
+
   //.. Pdf
   const handlePDF = () => {
     if (!filteredDeductions || filteredDeductions.length === 0) {
@@ -62,8 +71,8 @@ const Milkbill = () => {
 
     const doc = new jsPDF("p", "mm", "a4");
     const dairyName = dairyname || "Dairy Name";
-    const cityName = CityName || "City";
-    const reportTitle = "पेमेंट Register";
+
+    const reportTitle = "Payment Register";
 
     // Header banner
     doc.setFillColor(300, 300, 3000);
@@ -75,10 +84,9 @@ const Milkbill = () => {
     doc.text(dairyName, 105, 18, { align: "center" });
 
     doc.setFontSize(12);
-    doc.setFont("NotoSansDevanagari");
-    doc.text(`शहर: ${cityName}`, 105, 24, { align: "center" });
+
     doc.text(reportTitle, 105, 30, { align: "center" });
-    doc.text(`शहर: ${formattedFromDate} to ${formattedToDate}`, 105, 36, {
+    doc.text(`Date: ${formattedFromDate} to ${formattedToDate}`, 105, 36, {
       align: "center",
     });
 
@@ -319,9 +327,8 @@ const Milkbill = () => {
   useEffect(() => {
     dispatch(generateMaster(date));
   }, [date, dispatch]);
-  // console.log(summaryData);
-  //filter for seprating
 
+  //filter for seprating   and set data ---------------------------->
   useEffect(() => {
     if (Array.isArray(payDetails)) {
       const deductions = payDetails.filter(
@@ -362,6 +369,10 @@ const Milkbill = () => {
 
   // ---------------------------------------------------------->
   //... milk collection pdf
+  const handleCenterChange = (e) => {
+    setSelectedCenterId(e.target.value);
+    console.log("Selected Center ID:", e.target.value);
+  };
 
   const exportMilkCollectionPDF = (
     cmilkdata = [],
@@ -528,207 +539,10 @@ const Milkbill = () => {
 
     doc.save("MilkCollectionBill.pdf");
   };
+  //.. Milk Collection Print Function
 
-  // const printMilkCollection = (
-  //   cmilkdata = [],
-  //   cname = "",
-  //   billno = "",
-  //   payData = [],
-  //   deduction = [],
-  //   payment = []
-  // ) => {
-  //   if (!Array.isArray(cmilkdata)) {
-  //     console.error("Invalid milk data. Expected an array but got:", cmilkdata);
-  //     return;
-  //   }
-
-  //   if (!cname && cmilkdata.length > 0) {
-  //     cname = cmilkdata[0]?.cname || "";
-  //   }
-
-  //   if (!billno && payment.length > 0) {
-  //     billno = payment[0]?.BillNo || "";
-  //   }
-
-  //   const doc = new jsPDF("portrait");
-
-  //   // Header
-  //   doc.setFontSize(16);
-  //   doc.text(dairyname, 60, 15);
-  //   doc.setFontSize(10);
-  //   doc.text("Milk Payment Bill", 80, 22);
-  //   doc.setFontSize(11);
-  //   doc.text("Page No.: 1", 15, 30);
-  //   doc.text(`Date: ${new Date().toLocaleDateString("hi-IN")}`, 145, 30);
-  //   doc.text(
-  //     `Master Duration: From ${String(fromDate)} To ${String(toDate)}`,
-  //     15,
-  //     36
-  //   );
-  //   doc.text(`Bill No.: ${billno}`, 140, 42);
-  //   doc.text(`Customer Name: ${cname}`, 15, 48);
-
-  //   const morningData = cmilkdata.filter((d) => d.ME === 0);
-  //   const eveningData = cmilkdata.filter((d) => d.ME === 1);
-
-  //   const formatRow = (entry) => [
-  //     new Date(entry.ReceiptDate).toLocaleDateString("hi-IN"),
-  //     entry.Litres,
-  //     entry.fat,
-  //     entry.snf,
-  //     entry.rate.toFixed(2),
-  //     entry.Amt.toFixed(2),
-  //   ];
-
-  //   const totalSection = (data) => {
-  //     const litres = data.reduce(
-  //       (sum, e) => sum + parseFloat(e.Litres || 0),
-  //       0
-  //     );
-  //     const amount = data.reduce((sum, e) => sum + parseFloat(e.Amt || 0), 0);
-  //     return {
-  //       litres: litres.toFixed(2),
-  //       amount: amount.toFixed(2),
-  //     };
-  //   };
-
-  //   const morningTotals = totalSection(morningData);
-  //   const eveningTotals = totalSection(eveningData);
-
-  //   const columns = ["Date", "Liter", "Fat", "SNF", "Rate", "Amount"];
-
-  //   // Morning Table
-  //   doc.setFontSize(12);
-  //   doc.text("Morning", 15, 58);
-  //   doc.autoTable({
-  //     head: [columns],
-  //     body: [
-  //       ...morningData.map(formatRow),
-  //       ["Total", morningTotals.litres, "", "", "", morningTotals.amount],
-  //     ],
-  //     startY: 60,
-  //     theme: "grid",
-  //     styles: { fontSize: 9 },
-  //     headStyles: {
-  //       fontStyle: "bold",
-  //       fillColor: [255, 255, 255],
-  //       textColor: [0, 0, 0],
-  //     },
-  //     margin: { left: 15 },
-  //   });
-
-  //   let afterMorning = doc.lastAutoTable.finalY + 5;
-
-  //   // Evening Table
-  //   doc.setFontSize(12);
-  //   doc.text("Evening", 15, afterMorning);
-  //   doc.autoTable({
-  //     head: [columns],
-  //     body: [
-  //       ...eveningData.map(formatRow),
-  //       ["Total", eveningTotals.litres, "", "", "", eveningTotals.amount],
-  //     ],
-  //     startY: afterMorning + 2,
-  //     theme: "grid",
-  //     styles: { fontSize: 9 },
-  //     headStyles: {
-  //       fontStyle: "bold",
-  //       fillColor: [255, 255, 255],
-  //       textColor: [0, 0, 0],
-  //     },
-  //     margin: { left: 15 },
-  //   });
-
-  //   let currentY = doc.lastAutoTable.finalY + 8;
-
-  //   // Deduction Table
-  //   if (deduction.length > 0) {
-  //     doc.setFontSize(12);
-  //     doc.text("Deduction", 15, currentY);
-
-  //     const deductionColumns = [
-  //       "Deduction Name",
-  //       "Remaining Deduction(MAMT)",
-  //       "Deduction (DAMT)",
-  //       "Remaining Amt (BAMT)",
-  //     ];
-
-  //     const deductionRows = deduction.map((item) => [
-  //       item.dname || "",
-  //       parseFloat(item.MAMT || 0).toFixed(2),
-  //       parseFloat(item.Amt || item.damt || 0).toFixed(2),
-  //       parseFloat(item.BAMT || 0).toFixed(2),
-  //     ]);
-
-  //     doc.autoTable({
-  //       head: [deductionColumns],
-  //       body: deductionRows,
-  //       startY: currentY + 4,
-  //       theme: "grid",
-  //       styles: { fontSize: 9 },
-  //       headStyles: {
-  //         fontStyle: "bold",
-  //         fillColor: [255, 255, 255],
-  //         textColor: [0, 0, 0],
-  //       },
-  //       margin: { left: 15 },
-  //     });
-
-  //     currentY = doc.lastAutoTable.finalY + 8;
-  //   }
-
-  //   // Payment Summary Table
-  //   if (payment.length > 0) {
-  //     doc.setFontSize(12);
-  //     doc.text("Received Amount", 15, currentY);
-
-  //     const paySummaryHeaders = [
-  //       "Liter",
-  //       "AvgRate",
-  //       "Payment",
-  //       "Deduction",
-  //       "Net payment",
-  //     ];
-  //     const paySummaryRows = payment.map((item) => [
-  //       parseFloat(item.tliters || 0).toFixed(2),
-  //       parseFloat(item.arate || 0).toFixed(2),
-  //       parseFloat(item.pamt || 0).toFixed(2),
-  //       parseFloat(item.damt || 0).toFixed(2),
-  //       parseFloat(item.namt || 0).toFixed(2),
-  //     ]);
-
-  //     doc.autoTable({
-  //       head: [paySummaryHeaders],
-  //       body: paySummaryRows,
-  //       startY: currentY + 4,
-  //       theme: "grid",
-  //       styles: { fontSize: 9 },
-  //       headStyles: {
-  //         fontStyle: "bold",
-  //         fillColor: [255, 255, 255],
-  //         textColor: [0, 0, 0],
-  //       },
-  //       margin: { left: 15 },
-  //     });
-  //   }
-
-  //   // ✅ Print the PDF
-  //   const pdfBlob = doc.output("blob");
-  //   const pdfUrl = URL.createObjectURL(pdfBlob);
-  //   const printWindow = window.open(pdfUrl);
-  //   if (printWindow) {
-  //     printWindow.onload = () => {
-  //       printWindow.focus();
-  //       printWindow.print();
-  //     };
-  //   } else {
-  //     console.warn(
-  //       "Unable to open print window. Please check popup blocker settings."
-  //     );
-  //   }
-  // };
-  console.log("payData", payDetails);
-  const printMilkCollection = (
+  //first formatt
+  const printMilkCollectiond = (
     cmilkdata = [],
     cname = "",
     billno = "",
@@ -745,26 +559,39 @@ const Milkbill = () => {
       cname = cmilkdata[0]?.cname || "";
     }
 
+    const ccode = cmilkdata[0]?.ccode || "";
+
     if (!billno && payment.length > 0) {
       billno = payment[0]?.BillNo || "";
     }
 
     const doc = new jsPDF("portrait");
 
+    // Outer border
+    doc.setDrawColor(0);
+    doc.setLineWidth(0.5);
+    doc.rect(5, 5, 200, 287); // x, y, width, height
+
     // Header
-    doc.setFontSize(14);
-    doc.text(dairyname, 60, 12);
+    doc.setFontSize(16);
+    doc.setFont("helvetica", "bold");
+    doc.text(dairyname, 105, 15, { align: "center" });
+
+    doc.setFontSize(10);
+    doc.setFont("helvetica", "normal");
+    doc.text("Milk Payment Bill", 105, 22, { align: "center" });
+
     doc.setFontSize(9);
-    doc.text("Milk Payment Bill", 80, 18);
-    doc.text("Page No.: 1", 15, 24);
-    doc.text(`Date: ${new Date().toLocaleDateString("hi-IN")}`, 145, 24);
+    doc.text("Page No.: 1", 15, 28);
+    doc.text(`Date: ${new Date().toLocaleDateString("hi-IN")}`, 145, 28);
     doc.text(
       `Master Duration: From ${String(fromDate)} To ${String(toDate)}`,
       15,
-      30
+      34
     );
-    doc.text(`Bill No.: ${billno}`, 140, 36);
-    doc.text(`Customer Name: ${cname}`, 15, 42);
+    doc.text(`Bill No.: ${billno}`, 145, 34);
+    doc.text(`Customer Code: ${ccode}`, 15, 40);
+    doc.text(`Customer Name: ${cname}`, 15, 46);
 
     const morningData = cmilkdata.filter((d) => d.ME === 0);
     const eveningData = cmilkdata.filter((d) => d.ME === 1);
@@ -794,16 +621,16 @@ const Milkbill = () => {
     const eveningTotals = totalSection(eveningData);
     const columns = ["Date", "Liter", "Fat", "SNF", "Rate", "Amount"];
 
-    // Morning Table (Left)
+    // Morning Table
     doc.setFontSize(10);
-    doc.text("Morning", 15, 50);
+    doc.text("Morning", 15, 54);
     doc.autoTable({
       head: [columns],
       body: [
         ...morningData.map(formatRow),
         ["Total", morningTotals.litres, "", "", "", morningTotals.amount],
       ],
-      startY: 52,
+      startY: 56,
       theme: "grid",
       styles: { fontSize: 7 },
       headStyles: {
@@ -815,16 +642,16 @@ const Milkbill = () => {
       tableWidth: 85,
     });
 
-    // Evening Table (Right)
+    // Evening Table
     doc.setFontSize(10);
-    doc.text("Evening", 110, 50);
+    doc.text("Evening", 110, 54);
     doc.autoTable({
       head: [columns],
       body: [
         ...eveningData.map(formatRow),
         ["Total", eveningTotals.litres, "", "", "", eveningTotals.amount],
       ],
-      startY: 52,
+      startY: 56,
       theme: "grid",
       styles: { fontSize: 7 },
       headStyles: {
@@ -836,9 +663,10 @@ const Milkbill = () => {
       tableWidth: 85,
     });
 
-    // Deduction Table (Left Bottom)
-    let bottomStartY = Math.max(doc.lastAutoTable.finalY, 110) + 4;
+    // Calculate bottom Y for both tables
+    let bottomStartY = Math.max(doc.lastAutoTable.finalY, 115) + 4;
 
+    // Deduction Table
     if (deduction.length > 0) {
       doc.setFontSize(10);
       doc.text("Deduction", 15, bottomStartY);
@@ -869,15 +697,14 @@ const Milkbill = () => {
           textColor: [0, 0, 0],
         },
         margin: { left: 10 },
-        tableWidth: 95,
+        tableWidth: 95, // SAME width as payment
       });
     }
 
-    // Payment Summary Table (Right Bottom)
+    // Payment Summary
     if (payment.length > 0) {
       const pay = payment[0];
-
-      const summaryX = 110;
+      const summaryX = 105; // aligned with deduction
       const summaryY = bottomStartY + 2;
 
       const summaryBody = [
@@ -926,6 +753,329 @@ const Milkbill = () => {
       );
     }
   };
+  //  second formatt
+  const printMilkCollection = (
+    cmilkdata = [],
+    cname = "",
+    billno = "",
+    payData = [],
+    deduction = [],
+    payment = [],
+    customerCode = "",
+    accountDetails = {}
+  ) => {
+    if (!Array.isArray(cmilkdata)) {
+      console.error("Invalid milk data. Expected an array.");
+      return;
+    }
+
+    if (!cname && cmilkdata.length > 0) {
+      cname = cmilkdata[0]?.cname || "";
+    }
+
+    if (!billno && payment.length > 0) {
+      billno = payment[0]?.BillNo || "";
+    }
+
+    const doc = new jsPDF("portrait");
+
+    // Draw border
+    doc.setDrawColor(0);
+    doc.rect(5, 5, 200, 287);
+
+    // Header
+    doc.setFontSize(14);
+    doc.text(dairyname, 105, 12, { align: "center" });
+
+    doc.setFontSize(9);
+    doc.text("Milk Payment Summary", 105, 18, { align: "center" });
+    doc.text(`Page No.: 1`, 15, 24);
+    doc.text(`Date: ${new Date().toLocaleDateString("hi-IN")}`, 150, 24);
+    doc.text(
+      `Master Duration: From ${String(fromDate)} To ${String(toDate)}`,
+      15,
+      30
+    );
+    doc.text(`Bill No.: ${billno}`, 150, 36);
+    doc.text(`Customer Name: ${cname}`, 15, 42);
+    doc.text(`Customer Code: ${customerCode}`, 100, 42);
+
+    // Calculate Morning & Evening Summary
+    const morningData = cmilkdata.filter((d) => d.ME === 0);
+    const eveningData = cmilkdata.filter((d) => d.ME === 1);
+
+    const calcSummary = (data) => {
+      return {
+        liters: data.reduce((sum, e) => sum + parseFloat(e.Litres || 0), 0),
+        amount: data.reduce((sum, e) => sum + parseFloat(e.Amt || 0), 0),
+      };
+    };
+
+    const morningSummary = calcSummary(morningData);
+    const eveningSummary = calcSummary(eveningData);
+    const totalLiters = (morningSummary.liters + eveningSummary.liters).toFixed(
+      2
+    );
+    const totalPayment = (
+      morningSummary.amount + eveningSummary.amount
+    ).toFixed(2);
+
+    // ===================== Customer Summary Table =====================
+    doc.setFontSize(10);
+    doc.text("Customer Summary", 15, 50);
+
+    doc.autoTable({
+      startY: 52,
+      head: [
+        ["Customer Code", "Customer Name", "Total Liter", "Total Payment"],
+      ],
+      body: [[customerCode, cname, totalLiters, totalPayment]],
+      theme: "grid",
+      styles: { fontSize: 9 },
+      headStyles: {
+        fontStyle: "bold",
+        fillColor: [220, 220, 220],
+        textColor: [0, 0, 0],
+      },
+      margin: { left: 10 },
+      tableWidth: 190,
+    });
+
+    let nextY = doc.lastAutoTable.finalY + 5;
+
+    // ===================== Deduction Table =====================
+    if (deduction.length > 0) {
+      doc.setFontSize(10);
+      doc.text("Deduction Details", 15, nextY);
+
+      const deductionColumns = [
+        "Deduction Name",
+        "Remaining (MAMT)",
+        "Deduction (DAMT)",
+        "Balance (BAMT)",
+      ];
+
+      const deductionRows = deduction.map((item) => [
+        item.dname || "",
+        parseFloat(item.MAMT || 0).toFixed(2),
+        parseFloat(item.Amt || item.damt || 0).toFixed(2),
+        parseFloat(item.BAMT || 0).toFixed(2),
+      ]);
+
+      doc.autoTable({
+        head: [deductionColumns],
+        body: deductionRows,
+        startY: nextY + 2,
+        theme: "grid",
+        styles: { fontSize: 8 },
+        headStyles: {
+          fontStyle: "bold",
+          fillColor: [240, 240, 240],
+          textColor: [0, 0, 0],
+        },
+        margin: { left: 10 },
+        tableWidth: 190,
+      });
+
+      nextY = doc.lastAutoTable.finalY + 5;
+    }
+
+    // ===================== Account Summary Table =====================
+    const anamat = payment[0]?.anamat || 0;
+    const amt = payment[0]?.namt || 0;
+    const accNo = accountDetails?.accno || payment[0]?.accno || "";
+
+    doc.setFontSize(10);
+    doc.text("Account Summary", 15, nextY);
+
+    doc.autoTable({
+      startY: nextY + 2,
+      head: [["Anamat", "Amount", "Account Number"]],
+      body: [
+        [parseFloat(anamat).toFixed(2), parseFloat(amt).toFixed(2), accNo],
+      ],
+      theme: "grid",
+      styles: { fontSize: 9 },
+      headStyles: {
+        fontStyle: "bold",
+        fillColor: [240, 240, 240],
+        textColor: [0, 0, 0],
+      },
+      margin: { left: 10 },
+      tableWidth: 190,
+    });
+
+    // ===================== Print PDF =====================
+    const pdfBlob = doc.output("blob");
+    const pdfUrl = URL.createObjectURL(pdfBlob);
+    const printWindow = window.open(pdfUrl);
+    if (printWindow) {
+      printWindow.onload = () => {
+        printWindow.focus();
+        printWindow.print();
+      };
+    } else {
+      console.warn("Unable to open print window. Please check popup blocker.");
+    }
+  };
+  //.. third Formatt
+  const printFilteredDeductionsReport = (
+    filteredDeductions = [],
+    deduction = [],
+    payment = []
+  ) => {
+    const doc = new jsPDF("portrait");
+
+    // Draw page border
+    doc.setDrawColor(0);
+    doc.rect(5, 5, 200, 287);
+
+    // Header
+    doc.setFontSize(14);
+    doc.text(dairyname, 105, 12, { align: "center" });
+
+    doc.setFontSize(10);
+    doc.text("Milk Payment Summary", 105, 18, { align: "center" });
+    doc.setFontSize(9);
+    doc.text(`Date: ${new Date().toLocaleDateString("hi-IN")}`, 15, 24);
+    doc.text(`Bill Duration: From ${fromDate} To ${toDate}`, 15, 30);
+
+    // ===================== Main Table =====================
+    doc.setFontSize(10);
+    doc.text("Customer Payment Details", 15, 38);
+
+    const headers = [
+      "Code",
+      "CustName",
+      "Liters",
+      "AVGRate",
+      "Commission",
+      "Transport",
+      "Payment",
+      "Deduction",
+      "NAMT",
+    ];
+
+    const rows = filteredDeductions.map((item) => {
+      const avgRate =
+        item.tliters > 0 ? (item.pamt / item.tliters).toFixed(2) : "N/A";
+      return [
+        item.Code ?? "",
+        item.customerName ?? "",
+        item.tliters?.toFixed(2) ?? "0.00",
+        avgRate,
+        item.Commission?.toFixed(2) ?? "0.00",
+        item.transport?.toFixed(2) ?? "0.00",
+        item.pamt?.toFixed(2) ?? "0.00",
+        item.damt?.toFixed(2) ?? "0.00",
+        ((item.pamt ?? 0) - (item.damt ?? 0)).toFixed(2),
+      ];
+    });
+
+    doc.autoTable({
+      head: [headers],
+      body: rows,
+      startY: 40,
+      theme: "grid",
+      styles: { fontSize: 8 },
+      headStyles: {
+        fontStyle: "bold",
+        fillColor: [220, 220, 220],
+        textColor: [0, 0, 0],
+      },
+      margin: { left: 10 },
+      tableWidth: 190,
+    });
+
+    // Calculate next Y
+    let finalY = doc.lastAutoTable.finalY + 5;
+
+    // ===================== Deduction Table =====================
+    if (deduction.length > 0) {
+      doc.setFontSize(10);
+      doc.text("Deduction Details", 15, finalY);
+
+      const deductionColumns = [
+        "Deduction Name",
+        "Remaining (MAMT)",
+        "Deduction (DAMT)",
+        "Balance (BAMT)",
+      ];
+
+      const deductionRows = deduction.map((item) => [
+        item.dname || "",
+        parseFloat(item.MAMT || 0).toFixed(2),
+        parseFloat(item.Amt || item.damt || 0).toFixed(2),
+        parseFloat(item.BAMT || 0).toFixed(2),
+      ]);
+
+      doc.autoTable({
+        head: [deductionColumns],
+        body: deductionRows,
+        startY: finalY + 2,
+        theme: "grid",
+        styles: { fontSize: 8 },
+        headStyles: {
+          fontStyle: "bold",
+          fillColor: [240, 240, 240],
+          textColor: [0, 0, 0],
+        },
+        margin: { left: 10 },
+        tableWidth: 190,
+      });
+
+      finalY = doc.lastAutoTable.finalY + 5;
+    }
+
+    // ===================== Payment Summary Table =====================
+    if (payment.length > 0) {
+      const pay = payment[0];
+
+      doc.setFontSize(10);
+      doc.text("Payment Summary", 15, finalY);
+
+      const summaryRows = [
+        ["Total Liters", parseFloat(pay.tliters || 0).toFixed(2)],
+        ["Avg Rate", parseFloat(pay.arate || 0).toFixed(2)],
+        ["Transport", parseFloat(pay.transport || 0).toFixed(2)],
+        ["Total Payment", parseFloat(pay.pamt || 0).toFixed(2)],
+        ["Total Deduction", parseFloat(pay.damt || 0).toFixed(2)],
+        ["Net Payment", parseFloat(pay.namt || 0).toFixed(2)],
+      ];
+
+      doc.autoTable({
+        head: [["Title", "Amount"]],
+        body: summaryRows,
+        startY: finalY + 2,
+        theme: "grid",
+        styles: { fontSize: 9 },
+        headStyles: {
+          fontStyle: "bold",
+          fillColor: [220, 220, 220],
+          textColor: [0, 0, 0],
+        },
+        margin: { left: 110 }, // Align right side
+        tableWidth: 85,
+      });
+
+      finalY = doc.lastAutoTable.finalY + 5;
+    }
+
+    // ===================== Print PDF =====================
+    const pdfBlob = doc.output("blob");
+    const pdfUrl = URL.createObjectURL(pdfBlob);
+    const printWindow = window.open(pdfUrl);
+    if (printWindow) {
+      printWindow.onload = () => {
+        printWindow.focus();
+        printWindow.print();
+      };
+    } else {
+      console.warn("Unable to open print window. Please check popup blocker.");
+    }
+  };
+
+  //Centerselection
 
   console.log("deduction", deduction);
   return (
@@ -933,25 +1083,54 @@ const Milkbill = () => {
       <div className="milk-bill-container w100 h1 d-flex-col">
         <span className="px10 heading">Milk Bill Report</span>
         <div className="date-checkbox-code-bill-payment-div w100 h40 d-flex bg">
-          <div className="date-code-bill-payment w70 h1 d-flex-col sa ">
+          <div className="date-code-bill-payment w100 h1 d-flex-col sa ">
             <div className="from-to-date-bill-report w100  d-flex  ">
-              <div className="from-date-bill-div w50 d-flex a-center  ">
-                <span className="px10 lable-text w30">दिनांक पासून</span>
-                <input
-                  className="data w40"
-                  type="date"
-                  value={fromDate}
-                  onChange={(e) => setFromDate(e.target.value)}
-                />
+              <div className="from-to-date-milk-bill d-flex w70 ">
+                <div className="from-date-bill-div w50 d-flex a-center  ">
+                  <span className="px10 lable-text w30">दिनांक पासून</span>
+                  <input
+                    className="data w40"
+                    type="date"
+                    value={fromDate}
+                    onChange={(e) => setFromDate(e.target.value)}
+                  />
+                </div>
+                <div className="from-date-bill-div w50 d-flex a-center  ">
+                  <span className="px10 lable-text w20">पर्येंत:</span>
+                  <input
+                    className="data w50"
+                    type="date"
+                    value={toDate}
+                    onChange={(e) => setToDate(e.target.value)}
+                  />
+                </div>
               </div>
-              <div className="from-date-bill-div w50 d-flex a-center  ">
-                <span className="px10 lable-text w20">पर्येंत:</span>
-                <input
-                  className="data w40"
-                  type="date"
-                  value={toDate}
-                  onChange={(e) => setToDate(e.target.value)}
-                />
+
+              <div className="select-center-milk-payment-div w30 d-flex ">
+                <div className="payment-register-centerwisee-data-show w100 h1 d-flex a-center">
+                  <span className="info-text w30">Center:</span>
+
+                  <select
+                    className="data w60 my10"
+                    name="selection"
+                    id="001"
+                    onChange={handleCenterChange}
+                    value={selectedCenterId}
+                  >
+                    <option value="">Select Center</option>
+                    {centerList && centerList.length > 0 ? (
+                      centerList.map((center, index) => (
+                        <option key={index} value={center.center_id}>
+                          {center.name ||
+                            center.center_name ||
+                            `Center ${index + 1}`}
+                        </option>
+                      ))
+                    ) : (
+                      <option disabled>No Centers Available</option>
+                    )}
+                  </select>
+                </div>
               </div>
             </div>
             <div className="code-to-date-bill-report w100 d-flex">
@@ -977,50 +1156,80 @@ const Milkbill = () => {
               </div>
             </div>
 
-            <div className="bill-payments-reports w70 d-flex">
-              <div className="report-buttons-div w70 d-flex px10">
-                <button className="btn" onClick={fetchData}>
-                  Calculate
-                </button>
+            <div className="bill-payments-reports w100 d-flex  ">
+              <div className="milk-bill-report-buttons-first-half d-flex w50">
+                <div className="report-buttons-div w50 d-flex px10">
+                  <button className="btn" onClick={fetchData}>
+                    Calculate
+                  </button>
+                </div>
+                <div className="paymnet-register-report-div w50 d-flex">
+                  <button className="w-btn " onClick={handlePDF}>
+                    रजिस्टर प्रकार
+                  </button>
+                </div>
               </div>
-              <div className="report-buttons-div w70 d-flex px10">
+
+              {/* <div className="report-buttons-div w70 d-flex px10">
                 <button onClick={() => exportMilkCollectionPDF(cmilkdata)}>
                   Milk Collection PDF
                 </button>
+              </div> */}
+              <div className="milk-bil-report-second-half d-flex w50">
+                <div className="report-buttons-div w70 d-flex px10">
+                  <button
+                    className="btn"
+                    onClick={() =>
+                      printMilkCollection(
+                        cmilkdata,
+                        "",
+                        "",
+                        [],
+                        deduction,
+                        payment
+                      )
+                    }
+                  >
+                    दुध बिले प्रकार 1
+                  </button>
+                </div>
+                <div className="report-buttons-div w70 d-flex px10">
+                  <button
+                    className="btn"
+                    onClick={() =>
+                      printMilkCollectiond(
+                        cmilkdata,
+                        "",
+                        "",
+                        [],
+                        deduction,
+                        payment
+                      )
+                    }
+                  >
+                    दुध बिले प्रकार 2
+                  </button>
+                </div>
+                <div className="report-buttons-div w70 d-flex px10">
+                  <button
+                    className="btn"
+                    onClick={() =>
+                      printFilteredDeductionsReport(
+                        filteredDeductions,
+                        deduction,
+                        payment,
+                        "",
+                        "",
+                        [],
+                        deduction,
+                        payment
+                      )
+                    }
+                  >
+                    दुध बिले प्रकार 3
+                  </button>
+                </div>
               </div>
-              <div className="report-buttons-div w70 d-flex px10">
-                <button
-                  className="btn"
-                  onClick={() =>
-                    printMilkCollection(
-                      cmilkdata,
-                      "",
-                      "",
-                      [],
-                      deduction,
-                      payment
-                    )
-                  }
-                >
-                  दुध बिले प्रकार 2
-                </button>
-              </div>
-            </div>
-          </div>
-
-          <div className="checkbox-transport-center-div w30 d-flex-col sa">
-            <div className="trasport-code-div d-flex w100 ">
-              <input className="w10" type="checkbox" />
-              <span className="">वाहतूक असलेले कोड</span>
-            </div>
-            <div className="trasport-code-div d-flex w100 ">
-              <input className="w10" type="checkbox" />
-              <span>Center/Route</span>
-            </div>
-            <div className="paymnet-register-report-div w100">
-              <button className="w-btn " onClick={handlePDF}>
-                रजिस्टर प्रकार
-              </button>
             </div>
           </div>
         </div>

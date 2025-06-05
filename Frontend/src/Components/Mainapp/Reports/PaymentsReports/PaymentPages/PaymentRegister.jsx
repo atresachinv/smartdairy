@@ -38,7 +38,7 @@ const PaymentRegister = ({ showbtn, setCurrentPage }) => {
   );
   const CityName = useSelector((state) => state.dairy.dairyData.city);
 
-  console.log(processedDeductions);
+ 
 
   // Export data to Excel
 
@@ -411,7 +411,7 @@ const PaymentRegister = ({ showbtn, setCurrentPage }) => {
     }
   };
 
-  console.log("centerList", centerList);
+ 
 
   return (
     <div className="payment-register-container w100 h1 d-flex-col bg ">
