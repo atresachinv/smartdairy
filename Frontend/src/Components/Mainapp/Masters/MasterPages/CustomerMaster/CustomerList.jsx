@@ -196,8 +196,8 @@ const CustomerList = () => {
             </button>
           </div>
           <div className="customer-list-table w100 h1 d-flex-col bg">
-            <div className="customer-heading-title-scroller w100 h1 mh100 hidescrollbar d-flex-col">
-              <div className="customer-data-headings-div p10 d-flex center t-center sb">
+            <div className="customer-heading-title-scroller w100 h1 mh100  d-flex-col">
+              <div className="customer-data-headings-div p10 d-flex center t-center hidescrollbar sb">
                 <span className="f-info-text w5">{t("Edit")}</span>
                 <span className="f-info-text w5">{t("master:m-ccode")}</span>
                 <span className="f-info-text w25">{t("master:m-cname")}</span>
@@ -224,7 +224,7 @@ const CustomerList = () => {
                 filteredData.map((customer, index) => (
                   <div
                     key={index}
-                    className={`customer-data-values-div w100 p10 d-flex center t-center sa`}
+                    className={`customer-data-values-div w100 p10 d-flex center t-center hidescrollbar sa`}
                     style={{
                       backgroundColor: index % 2 === 0 ? "#faefe3" : "#fff",
                     }}

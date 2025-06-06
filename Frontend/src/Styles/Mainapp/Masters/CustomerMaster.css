@@ -102,6 +102,10 @@
     min-height: 75%;
   }
 
+  .customer-details-container .toggle-inputs-div {
+    width: 50%;
+  }
+
   .customer-details-container .title-container .sub-heading,
   .cust-data-settings .sub-heading {
     margin-bottom: 5px;
@@ -111,6 +115,10 @@
   .toggle-button {
     padding: 5px 8px;
     font-size: 8px;
+  }
+
+  .customer-list-table {
+    min-height: 100%;
   }
   .customer-data-headings-div {
     min-width: 900px;
@@ -209,8 +217,9 @@
   }
   /* <<<<<<<<<<<<<<<<<------------------ customer list css -------------------->>>>>>>>>>>>>>>> */
   .download-print-pdf-excel-container input,
+  .download-print-pdf-excel-container select,
   .download-print-pdf-excel-container button {
     width: 100%;
-    margin-bottom: 5px;
+    margin-bottom: 10px;
   }
 }

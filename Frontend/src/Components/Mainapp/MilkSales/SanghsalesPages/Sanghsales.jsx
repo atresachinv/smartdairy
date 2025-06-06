@@ -1,256 +1,680 @@
-/* eslint-disable no-unused-vars */
-import React from "react";
+// import React, { useEffect, useState } from "react";
 import "../../../../Styles/Sanghsales/Sanghsales.css";
-const Sanghsales = () => {
-  return (
-    <>
-      <div className="sangha-sale-container w100 h1 d-flex-col ">
-        <div className="first-halfsangha-sale-container w100 h40 d-flex-col   sb ">
-          <div className="bill-information-container w100 h30 d-flex a-center">
-            <div className="bill-info-from-to-date-div w60 h1 d-flex ">
-              <div className="sangh-phoch-from-date-div w35 h1 d-flex a-center">
-                <span className="label-text  w40">दिनांक</span>
-                <input className="w70 data" type="date" />
-              </div>
-              <div className="sangh-phoch-to-date-div w35 h1 d-flex a-center">
-                <span className="label-text w40 ">पासून</span>
-                <input className="w70 data" type="date" />
-              </div>
-              <div className="sangh-phoch-paryent-date-div w35 h1 d-flex a-center">
-                <span className="label-text w40 ">पर्येंत</span>
-                <input className="w70 data" type="date" />
-              </div>
-            </div>
-            <div className="dudh-sangh-code-container-div w40 h1 d-flex">
-              <div className="select-input-divdudh-sang a-center w100 h1 sa d-flex ">
-                <span className="label-text  w20 px10">संघ कोड</span>
-                <input className="data w20" type="text" />
-                <select className="data w50" name="" id=""></select>
-              </div>
-            </div>
-          </div>
-          <div className="collection-phohach-container h30 w100 a-center d-flex">
-            <div className="time-date-liter-container w50 h1 d-flex">
-              <div className="time-sangh-div w30 d-flex a-center h1">
-                <span className="label-text  w30 px10">वेळ</span>
-                <select className="data w70" name="select" id="001"></select>
-              </div>
-              <div className="time-sangh-div w40 d-flex a-center h1">
-                <span className="label-text px10 w30">तारीख </span>
-                <input className="data w70 " type="date" />
-              </div>
-              <div className="time-sangh-divv w30 d-flex a-center h1">
-                <span className="label-text  w35 px10">लिटर </span>
-                <select className="data w" name="select" id="001"></select>
-              </div>
-            </div>
-            <div className="amount-kapat-per-liter-div w50 d-flex h1 a-center">
-              <div className="amount-sangha-div w25 px10 d-flex a-center ">
-                <span className="label-text w70 ">रक्कम </span>
-                <input className="data" type="text" />
-              </div>
-              <div className="kapat-sangha-div w30 d-flex h1 a-center ">
-                <span className="label-text w50 px10">क.प्र.ली</span>
-                <input className="data" type="text" />
-              </div>
-              <div className="loss-sangha-div w25 d-flex a-center ">
-                <span className="label-text w90 px10">नाश ली </span>
-                <input className="data w50 " type="text" />
-              </div>
-              <div className="button-sangha-div w15 d-flex a-center px10 ">
-                <button className="label-text px10 w-btn">जमा </button>
-              </div>
-            </div>
-          </div>
-          <div className="sangh-table-section-div w100 h60 a-center d-flex ">
-            <div className="first-table-div-sangha w45 h1 d-flex-col ">
-              <div className="table-heading-container-div w100 h30  sa d-flex">
-                <span>Date</span>
-                <span>सकाळ </span>
-                <span>ली</span>
-                <span>FAT</span>
-                <span>SNF</span>
-                <span>दर</span>
-                <span>रक्कम </span>
-                <span>क.प्र.ली</span>
-              </div>
-              <div className="sangha-table-data w100 mx90 hidescrollbar d-flex sa ">
-                <span>Date</span>
-                <span>संद्याकाळ </span>
-                <span>100</span>
-                <span>FAT</span>
-                <span>SNF</span>
-                <span>दर</span>
-                <span>रक्कम </span>
-                <span>क.प्र.ली</span>
-              </div>
-            </div>
-            <div className="second-table-div-sangha w45 h1 d-flex-col ">
-              <div className="table-heading-container-div w100 h30  sa d-flex">
-                <span>Date</span>
-                <span>सकाळ </span>
-                <span>ली</span>
-                <span>FAT</span>
-                <span>SNF</span>
-                <span>दर</span>
-                <span>रक्कम </span>
-                <span>क.प्र.ली</span>
-              </div>
-              <div className="sangha-table-data w100 mx90 hidescrollbar d-flex sa ">
-                <span>03/04/2025</span>
-                <span>सकाळ </span>
-                <span>100</span>
-                <span>4.3</span>
-                <span>29.0</span>
-                <span>35</span>
-                <span>10500 </span>
-                <span>1203</span>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div className="second-half-table-span-input-div w100 h60   d-flex-col">
-          <div className="changle-dudh-kami-container w100 h40 d-flex">
-            <div className="changle-dudh-contianer w40 h1  bg3 d-flex-col ">
-              <fieldset className="w100 h1 sa d-flex-col sb">
-                <legend className="heading ">चांगले दूध </legend>
-                <div className="changle-dudh w100 h50 d-flex a-center">
-                  <div className="all-liter-changle-dudh d-flex w50 a-center ">
-                    <span className="label-text w40">ए.लिटर </span>
-                    <input className="data w50" type="text" />
-                  </div>
-                  <div className="changle-dudh w50 h50 d-flex a-center">
-                    <span className="label-text w40">रक्कम </span>
-                    <input className="data w50" type="text" />
-                  </div>
-                </div>
-                <div className="changle-dudh w100 h50 d-flex a-center">
-                  <div className="all-liter-changle-dudh d-flex w50  a-center ">
-                    <span className="label-text w40">एकूण </span>
-                    <input className="data w50" type="text" />
-                  </div>
-                  <div className="changle-dudh-ekun w50 h50 d-flex a-center">
-                    <span className="label-text w40">एकूण </span>
-                    <input className="data w50" type="text" />
-                  </div>
-                </div>
-              </fieldset>
-            </div>
-            <div className="other-expence-rebbit-nashli w40 d-flex h1  ">
-              <div className="prashashikya-and-other-experaince w35 h20 px10 d-flex-col  ">
-                <div className="prashashikya-div w100 d-flex-col a-center  ">
-                  <span className="label-text w100 px10">इतरखर्च </span>
-                  <input className="data w60" type="text" />
-                </div>
-                <div className="prashashikya-div w100 d-flex-col a-center  ">
-                  <span className="label-text w100 px10">एकूण</span>
-                  <input className="data w60" type="text" />
-                </div>
-              </div>
-              <div className="rebbit-and-other-experaince w35 h20 px10 d-flex-col  ">
-                <div className="prashashikya-rebbit-div w100 d-flex-col a-center">
-                  <span className="label-text w100 px10">रॆबिट</span>
-                  <input className="data w60" type="text" />
-                </div>
-                <div className="prashashikya-shitkaran-div w100 d-flex-col a-center ">
-                  <span className="label-text w100 px10">शीतकरण </span>
-                  <input className="data w60" type="text" />
-                </div>
-              </div>
-              <div className="rebbit-and-other-experaince w35 h20  d-flex-col ">
-                <div className="prashashikynash-div w100   d-flex-col a-center ">
-                  <span className="label-text w100 px10">नाश.ली</span>
-                  <input className="data w60" type="text" />
-                </div>
-                <div className="prashashikya-div-all w100 d-flex-col a-center ">
-                  <span className="label-text w100 px10">एकूण</span>
-                  <input className="data w60" type="text" />
-                </div>
-              </div>
-            </div>
+import { useDispatch, useSelector } from "react-redux";
+import { fetchSanghaList } from "../../../../App/Features/Mainapp/Sangha/sanghaSlice";
 
-            <div className="changle-dudh-contianer w40 h1 bg3  d-flex-col ">
-              <fieldset className="w90 h1 sa d-flex-col sb">
-                <legend className="heading ">कमी प्रतीचे दूध </legend>
-                <div className="changle-dudh w100 h50 d-flex a-center">
-                  <div className="all-liter-changle-dudh d-flex w50 a-center ">
-                    <span className="label-text w40">ए.लिटर </span>
-                    <input className="data w50" type="text" />
-                  </div>
-                  <div className="changle-dudh w50 h50 d-flex a-center">
-                    <span className="label-text w40">रक्कम </span>
-                    <input className="data w50" type="text" />
-                  </div>
-                </div>
-                <div className="changle-dudh w100 h50 d-flex a-center">
-                  <div className="all-liter-changle-dudh d-flex w50  a-center ">
-                    <span className="label-text w40">एकूण </span>
-                    <input className="data w50" type="text" />
-                  </div>
-                  <div className="changle-dudh-ekun w50 h50 d-flex a-center">
-                    <span className="label-text w40">एकूण </span>
-                    <input className="data w50" type="text" />
-                  </div>
-                </div>
-              </fieldset>
-            </div>
+//-------------------------------------------------------->
+//-------------------------------------------------------->
+//-------------------------------------------------------->
+//-------------------------------------------------------->
+
+import React, { useEffect, useMemo, useRef, useState } from "react";
+import { toast } from "react-toastify";
+import { useTranslation } from "react-i18next";
+import "../../../../Styles/Mainapp/Apphome/Appnavview/Milkcollection.css";
+import "../../../../Styles/Mainapp/MilkSales/CenterMilkColl.css";
+// import { saveMessage } from "../../../App/Features/Mainapp/Dairyinfo/smsSlice";
+import axiosInstance from "../../../../App/axiosInstance";
+import { centersLists } from "../../../../App/Features/Dairy/Center/centerSlice";
+import { listEmployee } from "../../../../App/Features/Mainapp/Masters/empMasterSlice";
+import { getLatestRateChart } from "../../../../App/Features/Mainapp/Masters/rateChartSlice";
+import {
+  getCenterMSales,
+  createCenterMColl,
+} from "../../../../App/Features/Mainapp/Milk/DairyMilkSalesSlice";
+
+const Sanghsales = () => {
+  const dispatch = useDispatch();
+  const today = useSelector((state) => state.date.toDate);
+  const sanghaList = useSelector((state) => state.sangha.sanghaList);
+
+  const [formData, setFormData] = useState({
+    sanghaid: "",
+    time: 0,
+    date: today || "",
+    todate: today || "",
+    liters: "",
+    fat: "",
+    snf: "",
+    rate: "",
+    amt: "",
+    kpltr: "",
+    nashltr: "",
+    gmliters: "",
+    geliters: "",
+    gTotalltr: "",
+    gmAmt: "",
+    geAmt: "",
+    gTotalAmt: "",
+    kpMrgMilk: "",
+    kpEveMilk: "",
+    kpTotalMilk: "",
+    nashMrgltr: "",
+    nashEveltr: "",
+    nashTotalltr: "",
+    rebet_amt: "",
+    chilling_cost: "",
+    rebet: "",
+    totalPayment: "",
+    totalDeduction: "",
+    netPayment: "",
+  });
+
+  useEffect(() => {
+    dispatch(fetchSanghaList());
+  }, []);
+
+  // ---------------------------------------------------------------->
+  // ---------------------------------------------------------------->
+  // ---------------------------------------------------------------->
+  // ---------------------------------------------------------------->
+
+  const { t } = useTranslation(["milkcollection", "common", "master"]);
+  const tDate = useSelector((state) => state.date.toDate);
+  const dairyphone = useSelector(
+    (state) => state.dairy.dairyData.PhoneNo || state.dairy.dairyData.mobile
+  );
+  const centerList = useSelector((state) => state.center.centersList);
+  const Emplist = useSelector((state) => state.emp.emplist || []);
+  const centerMilk = useSelector(
+    (state) => state.dMilkSales.centerMilkData || []
+  );
+  const milkcollRatechart = useSelector(
+    (state) => state.ratechart.latestrChart
+  ); // latest rate chart for center milk collection
+  const sanghaRef = useRef(null);
+  const timeRef = useRef(null);
+  const fdateRef = useRef(null);
+  const tdateRef = useRef(null);
+  const collRef = useRef(null);
+  const litersRef = useRef(null);
+  const kplitersRef = useRef(null);
+  const nashlitersRef = useRef(null);
+  const fatRef = useRef(null);
+  const snfRef = useRef(null);
+  const rateRef = useRef(null);
+  const submitbtn = useRef(null);
+
+  const [errors, setErrors] = useState({});
+  const [loading, setLoading] = useState(false);
+  const [changedDate, setChangedDate] = useState("");
+  const [tchangedDate, setTChangedDate] = useState("");
+
+  const initialValues = {
+    date: changedDate || tDate,
+    todate: changedDate || tDate,
+    sanghaid: 0,
+    shift: 0,
+    animal: 0,
+    liters: "",
+    kpliters: "",
+    nashliters: "",
+    fat: "",
+    snf: "",
+    rate: "",
+    amt: "",
+    degree: 0,
+    mobile: "",
+    allow: false,
+    cliters: "",
+    cfat: "",
+    csnf: "",
+    crate: "",
+    camt: "",
+    dliters: "",
+    dfat: "",
+    dsnf: "",
+    drate: "",
+    damt: "",
+  };
+
+  const [values, setValues] = useState(initialValues);
+  //------------------------------------------------------------------------------------------------>
+  //------------------------------------------------------------------------------------------------>
+  console.log("time", values.shift);
+  useEffect(() => {
+    dispatch(centersLists());
+    dispatch(listEmployee());
+    dispatch(getLatestRateChart());
+  }, []);
+
+  const handleResetButton = (e) => {
+    e.preventDefault();
+    setValues(initialValues);
+  };
+
+  const validateField = (name, value) => {
+    let error = {};
+    switch (name) {
+      case "liters":
+        if (!/^\d+(\.\d{1,2})?$/.test(value.toString())) {
+          error[name] = "Invalid liters.";
+        } else {
+          delete errors[name];
+        }
+        break;
+
+      case "fat":
+      case "snf":
+        if (!/^\d+(\.\d{1,1})?$/.test(value.toString())) {
+          error[name] = `Invalid ${[name]}.`;
+        } else {
+          delete errors[name];
+        }
+        break;
+
+      default:
+        break;
+    }
+
+    return error;
+  };
+
+  const validateFields = () => {
+    const fieldsToValidate = [
+      "code",
+      "cname",
+      "liters",
+      "fat",
+      "snf",
+      "rate",
+      "amt",
+    ];
+
+    const validationErrors = {};
+    fieldsToValidate.forEach((field) => {
+      const fieldError = validateField(field, values[field]);
+      if (Object.keys(fieldError).length > 0) {
+        validationErrors[field] = fieldError[field];
+      }
+    });
+
+    setErrors(validationErrors);
+    return validationErrors;
+  };
+
+  //  handle input fields ------------------------------------------------------------------------>
+  const handleInputs = (e) => {
+    const { name, value } = e.target;
+
+    // Special case: handle date field validation
+    if (name === "date") {
+      setChangedDate(value);
+
+      // Check if selected date is greater than today's date (tDate)
+      if (value > tDate) {
+        setErrors((prevErrors) => ({
+          ...prevErrors,
+          date: "Future dates are not allowed", // You can customize this message
+        }));
+        return; // Stop here if invalid date
+      } else {
+        // Clear the date error if it's valid
+        setErrors((prevErrors) => {
+          const { date, ...rest } = prevErrors;
+          return rest;
+        });
+      }
+    } else if (name === "todate") {
+      setTChangedDate(value);
+    }
+
+    // Update values state
+    setValues((prevValues) => ({
+      ...prevValues,
+      [name]: value,
+    }));
+
+    // Validate the field and update error state
+    const fieldError = validateField(name, value);
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      ...fieldError,
+    }));
+  };
+
+  // used for decimal input correction ----------------------------------------------------------->
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+
+    // Validate and allow only numeric input with an optional single decimal point
+    if (value === "" || /^[0-9]*\.?[0-9]*$/.test(value)) {
+      setValues((prev) => ({
+        ...prev,
+        [name]: value,
+      }));
+
+      // Clear previous errors if the input is valid
+      setErrors((prevErrors) => {
+        const { [name]: removedError, ...rest } = prevErrors;
+        return rest; // Remove the specific error for this field
+      });
+    } else {
+      // Set an error for invalid input
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        [name]:
+          "Invalid input. Only numbers and one decimal point are allowed.",
+      }));
+      return; // Stop further processing if input is invalid
+    }
+
+    // Normalize the value only when it's a valid integer and greater than 9
+    if (/^\d+$/.test(value) && value.length > 1) {
+      const normalizedValue = (parseInt(value, 10) / 10).toFixed(1);
+      setValues((prev) => ({
+        ...prev,
+        [name]: normalizedValue,
+      }));
+    }
+  };
+
+  const milkCollectors = useMemo(() => {
+    return Emplist.filter(
+      (emp) =>
+        emp.center_id.toString() === values.centerid &&
+        emp.designation === "milkcollector"
+    );
+  }, [values.centerid, Emplist]);
+
+  // handle enter press move cursor to next refrence Input -------------------------------------->
+  const handleKeyDown = (e, nextRef) => {
+    if (e.key === "Enter" && nextRef.current) {
+      e.preventDefault();
+      nextRef.current.focus();
+    }
+  };
+
+  const fetchCenterMilkData = async () => {
+    try {
+      const data = await dispatch(
+        getCenterMSales({
+          date: values.date,
+          centerid: values.centerid,
+          collectedBy: values.collectedBy,
+          shift: values.shift,
+        })
+      ).unwrap();
+
+      if (!data || data.length === 0) return;
+
+      const totalLitres = data.reduce((acc, item) => acc + item.Litres, 0);
+      const totalAmt = data.reduce((acc, item) => acc + item.Amt, 0);
+      const totalAmount = totalAmt.toFixed(2);
+      const avgRate = totalLitres > 0 ? (totalAmt / totalLitres).toFixed(2) : 0;
+
+      const totalFatValue = data.reduce(
+        (acc, item) => acc + item.Litres * item.fat,
+        0
+      );
+      const totalSNFValue = data.reduce(
+        (acc, item) => acc + item.Litres * item.snf,
+        0
+      );
+
+      const avgFat =
+        totalLitres > 0 ? (totalFatValue / totalLitres).toFixed(1) : 0;
+      const avgSNF =
+        totalLitres > 0 ? (totalSNFValue / totalLitres).toFixed(1) : 0;
+
+      setValues((prev) => ({
+        ...prev,
+        cliters: totalLitres,
+        cfat: avgFat,
+        csnf: avgSNF,
+        crate: avgRate,
+        camt: totalAmount,
+      }));
+
+      if (values.liters && values.fat && values.snf) {
+        setValues((prev) => ({
+          ...prev,
+          dliters: Math.abs(totalLitres - values.liters).toFixed(2),
+          dfat: Math.abs(avgFat - values.fat).toFixed(1),
+          dsnf: Math.abs(avgSNF - values.snf).toFixed(1),
+          drate: Math.abs(avgRate - values.rate).toFixed(2),
+          damt: Math.abs(totalAmount - values.amt).toFixed(2),
+        }));
+      } else {
+        setValues((prev) => ({
+          ...prev,
+          dliters: 0,
+          dfat: 0,
+          dsnf: 0,
+          drate: 0,
+          damt: 0,
+        }));
+      }
+    } catch (err) {
+      console.error("Error fetching and processing milk data", err);
+    }
+  };
+
+  // const calculateRateAndAmount = async () => {
+  //   try {
+  //     const { fat, snf, liters, rcName } = values;
+
+  //     const parsedFat = parseFloat(fat);
+  //     const parsedSnf = parseFloat(snf);
+  //     const parsedLiters = parseFloat(liters);
+  //     const degree = (parsedFat * parsedSnf).toFixed(2);
+  //     const rateEntry = milkcollRatechart.find(
+  //       (entry) => entry.fat === parsedFat && entry.snf === parsedSnf
+  //       // entry.rctypename === rcName
+  //     );
+
+  //     if (rateEntry) {
+  //       const rate = parseFloat(rateEntry.rate);
+  //       const amount = rate * parsedLiters;
+
+  //       setValues((prev) => ({
+  //         ...prev,
+  //         rate: rate.toFixed(2),
+  //         amt: amount.toFixed(2),
+  //         degree: 0,
+  //       }));
+  //     } else {
+  //       setValues((prev) => ({
+  //         ...prev,
+  //         rate: 0,
+  //         amt: 0,
+  //         degree: 0,
+  //       }));
+  //     }
+  //   } catch (error) {
+  //     console.error("Error calculating rate and amount:", error);
+  //   }
+  // };
+  const calculateRateAndAmount = async () => {
+    try {
+      const { liters, rate } = values;
+
+      const parsedRate = parseFloat(rate);
+      const parsedLiters = parseFloat(liters);
+      const Amount = (parsedLiters * parsedRate).toFixed(2);
+
+      setValues((prev) => ({
+        ...prev,
+        amt: Amount,
+      }));
+    } catch (error) {
+      console.error("Error calculating rate and amount:", error);
+    }
+  };
+
+  // Trigger calculation whenever liters, fat, or snf change
+  useEffect(() => {
+    if (values.liters && values.rate) {
+      calculateRateAndAmount();
+    }
+  }, [values.liters, values.rate]);
+
+  const handleSanghaSales = async (e) => {
+    e.preventDefault();
+
+    // Validate fields before submission
+    const validationErrors = validateFields();
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      return;
+    }
+    const res = await dispatch(createCenterMColl(values)).unwrap();
+    if (res.status === 200) {
+      toast.success("दुध संकलन यशस्वीरित्या सेव्ह झाले आहे.");
+      setValues(initialValues);
+      setChangedDate("");
+      setErrors({});
+    } else {
+      toast.error("दुध संकलन सेव्ह करण्यात अयशस्वी.");
+    }
+  };
+
+  return (
+    <div
+      id="sanghasles"
+      className="sangh-milk-sales-container w100 h1 d-flex-col a-center p10"
+    >
+      <form className="milk-col-form w65 h1 d-flex-col bg p10">
+        <span className="heading w100 t-center py10">
+          संघ दुध विक्री पावती :
+        </span>
+        <div className="form-setting w100 h10 d-flex a-center sb ">
+          <div className="w70 d-flex a-center px10">
+            <label htmlFor="sanghaid" className="info-text w30">
+              संघ निवडा : <span className="req">*</span>{" "}
+            </label>
+            <select
+              className="data w70"
+              name="sanghaid"
+              id="sanghaid"
+              value={values.sanghaid}
+              onChange={handleInputs}
+              onKeyDown={(e) => handleKeyDown(e, timeRef)}
+              ref={sanghaRef}
+            >
+              {sanghaList.length > 0 ? (
+                sanghaList.map((sangha, i) => (
+                  <option key={i} value={sangha.code}>
+                    {sangha.sangha_name}
+                  </option>
+                ))
+              ) : (
+                <></>
+              )}
+            </select>
           </div>
-          <div className="sanghasales-table-and-gl-setup-div h60 w100 d-flex  bg ">
-            <div className="sanghasales-table w60 h1 d-flex-col ">
-              <div className="sanghasales-table-table-heading w100 sa h20 d-flex">
-                <span className="label-text">खतावणी न</span>
-                <span className="label-text">खतावणी नाव</span>
-                <span className="label-text">वजावट</span>
-                <span className="label-text">रक्कम</span>
-              </div>
-              <div className="sanghasales-table-data w100 d-flex sa  mx90 hidescrollbar">
-                <span className="label-text">001</span>
-                <span className="label-text">राऊंड ऑफ </span>
-                <span className="label-text">2500</span>
-                <span className="label-text">12500</span>
-              </div>
-            </div>
-            <div className="khatavni-setup-span-input w40 h1 d-flex-col">
-              <div className="span-input-alls-amount w100 d-flex h40">
-                <div className="all-amount-div h25 d-flex-col w30  px10 a-center ">
-                  <input
-                    className="data"
-                    type="text"
-                    placeholder="एकूण रक्कम"
-                  />
-                </div>
-                <div className="all-amount-div h25 d-flex-col w30 px10 a-center ">
-                  <input
-                    className="data"
-                    type="text"
-                    placeholder="वजावट रक्कम"
-                  />
-                </div>
-                <div className="all-amount-div h25 d-flex-col w30 px10 a-center ">
-                  <input
-                    className="data"
-                    type="text"
-                    placeholder="निव्वळ रक्कम "
-                  />
-                </div>
-              </div>
-              <div className="center-wisesangha-sales-data h25 d-flex w100 a-center  ">
-                <span className="label-text w30">Select Center</span>
-                <select
-                  className="data w60"
-                  name="center data"
-                  id="001"
-                ></select>
-              </div>
-              <div className="gl-setup-register-butoon w100 sa d-flex h35 a-center">
-                <button className="w-btn">खटावणी सेटअप</button>
-                <button className="w-btn">नोंद </button>
-              </div>
-            </div>
+          <div className="selection-div w30 h1 d-flex a-center sa mx10">
+            <label htmlFor="shift" className="info-text w30">
+              वेळ : <span className="req">*</span>{" "}
+            </label>
+            <select
+              name="time"
+              id="shift"
+              className="data w65"
+              onKeyDown={(e) => handleKeyDown(e, fdateRef)}
+              ref={timeRef}
+            >
+              <option value="0">सकाळ</option>
+              <option value="1">सायंकाळ</option>
+              <option value="2">एकत्रित</option>
+            </select>
           </div>
         </div>
-      </div>
-    </>
+        <div className="user-details w100 h20 d-flex">
+          <div className="form-div w50 px10">
+            <label htmlFor="date" className="info-text w100">
+              {t("common:c-date")} पासून <span className="req">*</span>{" "}
+            </label>
+            <input
+              className={`data w60 ${errors.date ? "input-error" : ""}`}
+              type="date"
+              required
+              placeholder="0000"
+              name="date"
+              id="date"
+              onChange={handleInputs}
+              value={values.date || ""}
+              max={tDate}
+              onKeyDown={(e) => handleKeyDown(e, tdateRef)}
+              ref={fdateRef}
+            />
+          </div>
+
+          <div className="form-div w50 px10">
+            <label htmlFor="todate" className="info-text w100">
+              {t("common:c-date")} पर्यंत
+            </label>
+            <input
+              className={`data w60 ${errors.date ? "input-error" : ""}`}
+              type="date"
+              required
+              placeholder="0000"
+              name="date"
+              id="todate"
+              onChange={handleInputs}
+              value={values.todate || ""}
+              max={tDate}
+              onKeyDown={(e) => handleKeyDown(e, litersRef)}
+              ref={tdateRef}
+            />
+          </div>
+        </div>
+        <div className="milk-details-div w100 h70 d-flex">
+          <div className="milk-info w50 h1 d-flex-col">
+            <div className="form-div px10">
+              <label htmlFor="liters" className="info-text">
+                {t("common:c-liters")} <span className="req">*</span>{" "}
+              </label>
+              <input
+                className={`data ${errors.liters ? "input-error" : ""}`}
+                type="number"
+                required
+                placeholder="00.0"
+                name="liters"
+                id="liters"
+                step="any"
+                onChange={handleInputs}
+                value={values.liters}
+                disabled={!values.date}
+                onKeyDown={(e) => handleKeyDown(e, kplitersRef)}
+                ref={litersRef}
+              />
+            </div>
+            <div className="form-div px10">
+              <label htmlFor="nashliters" className="info-text">
+                नाश लिटर
+              </label>
+              <input
+                className={`data ${errors.nashliters ? "input-error" : ""}`}
+                type="number"
+                required
+                placeholder="00.0"
+                name="nashliters"
+                id="nashliters"
+                step="any"
+                value={values.nashliters}
+                onChange={handleInputs}
+                disabled={!values.liters}
+                onKeyDown={(e) => handleKeyDown(e, rateRef)}
+                ref={nashlitersRef}
+              />
+            </div>
+            <div className="form-div  px10">
+              <label htmlFor="fat" className="info-text">
+                {t("common:c-fat")} <span className="req">*</span>{" "}
+              </label>
+              <input
+                className={`data ${errors.fat ? "input-error" : ""}`}
+                type="number"
+                required
+                placeholder="0.0"
+                name="fat"
+                id="fat"
+                step="any"
+                onChange={handleInputChange}
+                value={values.fat}
+                disabled={!values.rate || !values.liters}
+                onKeyDown={(e) => handleKeyDown(e, snfRef)}
+                ref={fatRef}
+              />
+            </div>
+            <div className="form-div px10">
+              <label htmlFor="snf" className="info-text">
+                {t("common:c-snf")} <span className="req">*</span>{" "}
+              </label>
+              <input
+                className={`data ${errors.snf ? "input-error" : ""}`}
+                type="number"
+                required
+                placeholder="00.0"
+                name="snf"
+                id="snf"
+                step="any"
+                onChange={handleInputChange}
+                value={values.snf}
+                disabled={!values.fat || !values.liters}
+                onKeyDown={(e) => handleKeyDown(e, submitbtn)}
+                ref={snfRef}
+              />
+            </div>
+          </div>
+          <div className="milk-info w50 h1 d-flex-col">
+            <div className="form-div px10">
+              <label htmlFor="kpliters" className="info-text">
+                कमिप्रत लिटर
+              </label>
+              <input
+                className={`data ${errors.degree ? "input-error" : ""}`}
+                type="number"
+                required
+                placeholder="00.0"
+                name="kpliters"
+                id="kpliters"
+                step="any"
+                value={values.kpliters}
+                onChange={handleInputs}
+                disabled={!values.date || !values.liters}
+                onKeyDown={(e) => handleKeyDown(e, nashlitersRef)}
+                ref={kplitersRef}
+              />
+            </div>
+            <div className="form-div px10">
+              <label htmlFor="rate" className="info-text">
+                {t("common:c-rate")} <span className="req">*</span>{" "}
+              </label>
+              <input
+                className={`data ${errors.rate ? "input-error" : ""}`}
+                type="number"
+                required
+                placeholder="00.0"
+                name="rate"
+                id="rate"
+                step="any"
+                value={values.rate}
+                onChange={handleInputs}
+                // disabled={!values.liters}
+                onKeyDown={(e) => handleKeyDown(e, fatRef)}
+                ref={rateRef}
+              />
+            </div>
+            <div className="form-div px10">
+              <label htmlFor="amt" className="info-text">
+                {t("common:c-amt")} <span className="req">*</span>{" "}
+              </label>
+              <input
+                className={`data ${errors.amt ? "input-error" : ""}`}
+                type="number"
+                required
+                readOnly
+                placeholder="00.0"
+                name="amt"
+                id="amt"
+                value={values.amt}
+              />
+            </div>
+            <div className="button-container w100 h20 d-flex center my10">
+              <button
+                className="w-btn label-text"
+                type="reset"
+                onClick={handleResetButton}
+              >
+                {t("m-btn-cancel")}
+              </button>
+              <button
+                className="w-btn label-text mx10"
+                type="button"
+                ref={submitbtn}
+                disabled={loading}
+                onClick={fetchCenterMilkData}
+              >
+                {loading ? "Saving..." : `Save`}
+              </button>
+            </div>
+          </div>
+          {/* </div> */}
+        </div>
+      </form>
+    </div>
   );
 };
 

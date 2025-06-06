@@ -1,4 +1,3 @@
-const jwt = require("jsonwebtoken");
 const dotenv = require("dotenv");
 const pool = require("../Configs/Database");
 const evpool = require("../Configs/EverleapDB");
@@ -7,9 +6,10 @@ const NodeCache = require("node-cache");
 const cache = new NodeCache({});
 const util = require("util");
 
-//..................................................
-// Create New Customer (Admin Route)................
-//..................................................
+//----------------------------------------------------------------------->
+// Create New Customer (Admin Route)------------------------------------->
+//----------------------------------------------------------------------->
+
 // get max customer No -------------------------------------------------->
 exports.getMaxCustNo = async (req, res) => {
   const dairy_id = req.user.dairy_id;
@@ -638,9 +638,8 @@ exports.custDashboardInfo = async (req, res) => {
 
 exports.uploadExcelCustomer = async (req, res) => {
   const { excelData, prefix } = req.body;
-  const dairy_id = req.user.dairy_id;
-  const centerid = req.user.center_id;
-  const user_role = req.user.user_role;
+  const { dairy_id, centerid, user_role } = req.user;
+
   const designation = "Customer";
   const isAdmin = "0";
 
@@ -804,7 +803,7 @@ exports.uploadExcelCustomer = async (req, res) => {
             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
             [
               fax,
-              Mobile,
+              Mobile || 123456,
               isAdmin,
               createdOn,
               user_role,
