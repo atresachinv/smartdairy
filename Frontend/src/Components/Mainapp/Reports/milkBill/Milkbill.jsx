@@ -538,308 +538,153 @@ const Milkbill = () => {
   };
   //.. Milk Collection Print Function
   //first formatt
-  // const printMilkCollectiond = (
-  //   cmilkdata = [],
-  //   cname = "",
-  //   billno = "",
-  //   payData = [],
-  //   deduction = [],
-  //   payment = []
-  // ) => {
-  //   if (!Array.isArray(cmilkdata)) {
-  //     console.error("Invalid milk data. Expected an array but got:", cmilkdata);
-  //     return;
-  //   }
-
-  //   if (!cname && cmilkdata.length > 0) {
-  //     cname = cmilkdata[0]?.cname || "";
-  //   }
-
-  //   const ccode = cmilkdata[0]?.ccode || "";
-
-  //   if (!billno && payment.length > 0) {
-  //     billno = payment[0]?.BillNo || "";
-  //   }
-
-  //   const doc = new jsPDF("portrait");
-
-  //   // Outer border
-  //   doc.setDrawColor(0);
-  //   doc.setLineWidth(0.5);
-  //   doc.rect(5, 5, 200, 287); // x, y, width, height
-
-  //   // Header
-  //   doc.setFontSize(16);
-  //   doc.setFont("helvetica", "bold");
-  //   doc.text(dairyname, 105, 15, { align: "center" });
-
-  //   doc.setFontSize(10);
-  //   doc.setFont("helvetica", "normal");
-  //   doc.text("Milk Payment Bill", 105, 22, { align: "center" });
-
-  //   doc.setFontSize(9);
-  //   doc.text("Page No.: 1", 15, 28);
-  //   doc.text(`Date: ${new Date().toLocaleDateString("hi-IN")}`, 145, 28);
-  //   doc.text(
-  //     `Master Duration: From ${String(fromDate)} To ${String(toDate)}`,
-  //     15,
-  //     34
-  //   );
-  //   doc.text(`Bill No.: ${billno}`, 145, 34);
-  //   doc.text(`Customer Code: ${ccode}`, 15, 40);
-  //   doc.text(`Customer Name: ${cname}`, 15, 46);
-
-  //   const morningData = cmilkdata.filter((d) => d.ME === 0);
-  //   const eveningData = cmilkdata.filter((d) => d.ME === 1);
-
-  //   const formatRow = (entry) => [
-  //     new Date(entry.ReceiptDate).toLocaleDateString("hi-IN"),
-  //     entry.Litres,
-  //     entry.fat,
-  //     entry.snf,
-  //     entry.rate.toFixed(2),
-  //     entry.Amt.toFixed(2),
-  //   ];
-
-  //   const totalSection = (data) => {
-  //     const litres = data.reduce(
-  //       (sum, e) => sum + parseFloat(e.Litres || 0),
-  //       0
-  //     );
-  //     const amount = data.reduce((sum, e) => sum + parseFloat(e.Amt || 0), 0);
-  //     return {
-  //       litres: litres.toFixed(2),
-  //       amount: amount.toFixed(2),
-  //     };
-  //   };
-
-  //   const morningTotals = totalSection(morningData);
-  //   const eveningTotals = totalSection(eveningData);
-  //   const columns = ["Date", "Liter", "Fat", "SNF", "Rate", "Amount"];
-
-  //   // Morning Table
-  //   doc.setFontSize(10);
-  //   doc.text("Morning", 15, 54);
-  //   doc.autoTable({
-  //     head: [columns],
-  //     body: [
-  //       ...morningData.map(formatRow),
-  //       ["Total", morningTotals.litres, "", "", "", morningTotals.amount],
-  //     ],
-  //     startY: 56,
-  //     theme: "grid",
-  //     styles: { fontSize: 7 },
-  //     headStyles: {
-  //       fontStyle: "bold",
-  //       fillColor: [240, 240, 240],
-  //       textColor: [0, 0, 0],
-  //     },
-  //     margin: { left: 10 },
-  //     tableWidth: 85,
-  //   });
-
-  //   // Evening Table
-  //   doc.setFontSize(10);
-  //   doc.text("Evening", 110, 54);
-  //   doc.autoTable({
-  //     head: [columns],
-  //     body: [
-  //       ...eveningData.map(formatRow),
-  //       ["Total", eveningTotals.litres, "", "", "", eveningTotals.amount],
-  //     ],
-  //     startY: 56,
-  //     theme: "grid",
-  //     styles: { fontSize: 7 },
-  //     headStyles: {
-  //       fontStyle: "bold",
-  //       fillColor: [240, 240, 240],
-  //       textColor: [0, 0, 0],
-  //     },
-  //     margin: { left: 105 },
-  //     tableWidth: 85,
-  //   });
-
-  //   // Calculate bottom Y for both tables
-  //   let bottomStartY = Math.max(doc.lastAutoTable.finalY, 115) + 4;
-
-  //   // Deduction Table
-  //   if (deduction.length > 0) {
-  //     doc.setFontSize(10);
-  //     doc.text("Deduction", 15, bottomStartY);
-
-  //     const deductionColumns = [
-  //       "Deduction Name",
-  //       "Remaining (MAMT)",
-  //       "Deduction (DAMT)",
-  //       "Balance (BAMT)",
-  //     ];
-
-  //     const deductionRows = deduction.map((item) => [
-  //       item.dname || "",
-  //       parseFloat(item.MAMT || 0).toFixed(2),
-  //       parseFloat(item.Amt || item.damt || 0).toFixed(2),
-  //       parseFloat(item.BAMT || 0).toFixed(2),
-  //     ]);
-
-  //     doc.autoTable({
-  //       head: [deductionColumns],
-  //       body: deductionRows,
-  //       startY: bottomStartY + 2,
-  //       theme: "grid",
-  //       styles: { fontSize: 7 },
-  //       headStyles: {
-  //         fontStyle: "bold",
-  //         fillColor: [240, 240, 240],
-  //         textColor: [0, 0, 0],
-  //       },
-  //       margin: { left: 10 },
-  //       tableWidth: 95, // SAME width as payment
-  //     });
-  //   }
-
-  //   // Payment Summary
-  //   if (payment.length > 0) {
-  //     const pay = payment[0];
-  //     const summaryX = 105; // aligned with deduction
-  //     const summaryY = bottomStartY + 2;
-
-  //     const summaryBody = [
-  //       ["Liter", parseFloat(pay.tliters || 0).toFixed(2)],
-  //       ["Avg Rate", parseFloat(pay.arate || 0).toFixed(2)],
-  //       ["Total Payment", parseFloat(pay.pamt || 0).toFixed(2)],
-  //       ["Total Deduction", parseFloat(pay.damt || 0).toFixed(2)],
-  //       ["Net Payment", parseFloat(pay.namt || 0).toFixed(2)],
-  //     ];
-
-  //     doc.autoTable({
-  //       head: [["Payment Summary", ""]],
-  //       body: summaryBody,
-  //       startY: summaryY,
-  //       margin: { left: summaryX },
-  //       theme: "grid",
-  //       styles: {
-  //         fontSize: 9,
-  //         cellPadding: 2,
-  //         halign: "left",
-  //       },
-  //       headStyles: {
-  //         fillColor: [240, 240, 240],
-  //         textColor: [0, 0, 0],
-  //         fontStyle: "bold",
-  //       },
-  //       columnStyles: {
-  //         0: { cellWidth: 40 },
-  //         1: { cellWidth: 35, halign: "right" },
-  //       },
-  //     });
-  //   }
-
-  //   // Print PDF
-  //   const pdfBlob = doc.output("blob");
-  //   const pdfUrl = URL.createObjectURL(pdfBlob);
-  //   const printWindow = window.open(pdfUrl);
-  //   if (printWindow) {
-  //     printWindow.onload = () => {
-  //       printWindow.focus();
-  //       printWindow.print();
-  //     };
-  //   } else {
-  //     console.warn(
-  //       "Unable to open print window. Please check popup blocker settings."
-  //     );
-  //   }
-  // };
-
   const printMilkCollectiond = (
-    allCustomers = "",
-    allCustomerMilkData = "",
+    cmilkdata = [],
+    cname = "",
+    billno = "",
     payData = [],
     deduction = [],
-    payment = [],
-    fromDate,
-    toDate
+    payment = []
   ) => {
-    const allCustomersArray = Array.isArray(allCustomers)
-      ? allCustomers
-      : Object.values(allCustomers || {});
-    const allCustomerMilkDataArray = Array.isArray(allCustomerMilkData)
-      ? allCustomerMilkData
-      : Object.values(allCustomerMilkData || {});
+    if (!Array.isArray(cmilkdata)) {
+      console.error("Invalid milk data. Expected an array but got:", cmilkdata);
+      return;
+    }
+
+    if (!cname && cmilkdata.length > 0) {
+      cname = cmilkdata[0]?.cname || "";
+    }
+
+    const ccode = cmilkdata[0]?.ccode || "";
+
+    if (!billno && payment.length > 0) {
+      billno = payment[0]?.BillNo || "";
+    }
 
     const doc = new jsPDF("portrait");
 
-    allCustomers.forEach((customer, index) => {
-      const cmilkdata = allCustomerMilkData
-        .filter((d) => d.ccode === customer.ccode)
-        .filter((entry) => {
-          const entryDate = new Date(entry.ReceiptDate);
-          return (
-            entryDate >= new Date(fromDate) && entryDate <= new Date(toDate)
-          );
-        })
-        .slice(0, 10); // only 10 records
+    // Outer border
+    doc.setDrawColor(0);
+    doc.setLineWidth(0.5);
+    doc.rect(5, 5, 200, 287); // x, y, width, height
 
-      const cname = customer.cname || "";
-      const ccode = customer.ccode || "";
-      const billno = payment?.find((p) => p.ccode === ccode)?.BillNo || "";
+    // Header
+    doc.setFontSize(16);
+    doc.setFont("helvetica", "bold");
+    doc.text(dairyname, 105, 15, { align: "center" });
 
-      const morningData = cmilkdata.filter((d) => d.ME === 0);
-      const eveningData = cmilkdata.filter((d) => d.ME === 1);
+    doc.setFontSize(10);
+    doc.setFont("helvetica", "normal");
+    doc.text("Milk Payment Bill", 105, 22, { align: "center" });
 
-      const formatRow = (entry) => [
-        new Date(entry.ReceiptDate).toLocaleDateString("hi-IN"),
-        entry.Litres,
-        entry.fat,
-        entry.snf,
-        entry.rate.toFixed(2),
-        entry.Amt.toFixed(2),
+    doc.setFontSize(9);
+    doc.text("Page No.: 1", 15, 28);
+    doc.text(`Date: ${new Date().toLocaleDateString("hi-IN")}`, 145, 28);
+    doc.text(
+      `Master Duration: From ${String(fromDate)} To ${String(toDate)}`,
+      15,
+      34
+    );
+    doc.text(`Bill No.: ${billno}`, 145, 34);
+    doc.text(`Customer Code: ${ccode}`, 15, 40);
+    doc.text(`Customer Name: ${cname}`, 15, 46);
+
+    const morningData = cmilkdata.filter((d) => d.ME === 0);
+    const eveningData = cmilkdata.filter((d) => d.ME === 1);
+
+    const formatRow = (entry) => [
+      new Date(entry.ReceiptDate).toLocaleDateString("hi-IN"),
+      entry.Litres,
+      entry.fat,
+      entry.snf,
+      entry.rate.toFixed(2),
+      entry.Amt.toFixed(2),
+    ];
+
+    const totalSection = (data) => {
+      const litres = data.reduce(
+        (sum, e) => sum + parseFloat(e.Litres || 0),
+        0
+      );
+      const amount = data.reduce((sum, e) => sum + parseFloat(e.Amt || 0), 0);
+      return {
+        litres: litres.toFixed(2),
+        amount: amount.toFixed(2),
+      };
+    };
+
+    const morningTotals = totalSection(morningData);
+    const eveningTotals = totalSection(eveningData);
+    const columns = ["Date", "Liter", "Fat", "SNF", "Rate", "Amount"];
+
+    // Morning Table
+    doc.setFontSize(10);
+    doc.text("Morning", 15, 54);
+    doc.autoTable({
+      head: [columns],
+      body: [
+        ...morningData.map(formatRow),
+        ["Total", morningTotals.litres, "", "", "", morningTotals.amount],
+      ],
+      startY: 56,
+      theme: "grid",
+      styles: { fontSize: 7 },
+      headStyles: {
+        fontStyle: "bold",
+        fillColor: [240, 240, 240],
+        textColor: [0, 0, 0],
+      },
+      margin: { left: 10 },
+      tableWidth: 85,
+    });
+
+    // Evening Table
+    doc.setFontSize(10);
+    doc.text("Evening", 110, 54);
+    doc.autoTable({
+      head: [columns],
+      body: [
+        ...eveningData.map(formatRow),
+        ["Total", eveningTotals.litres, "", "", "", eveningTotals.amount],
+      ],
+      startY: 56,
+      theme: "grid",
+      styles: { fontSize: 7 },
+      headStyles: {
+        fontStyle: "bold",
+        fillColor: [240, 240, 240],
+        textColor: [0, 0, 0],
+      },
+      margin: { left: 105 },
+      tableWidth: 85,
+    });
+
+    // Calculate bottom Y for both tables
+    let bottomStartY = Math.max(doc.lastAutoTable.finalY, 115) + 4;
+
+    // Deduction Table
+    if (deduction.length > 0) {
+      doc.setFontSize(10);
+      doc.text("Deduction", 15, bottomStartY);
+
+      const deductionColumns = [
+        "Deduction Name",
+        "Remaining (MAMT)",
+        "Deduction (DAMT)",
+        "Balance (BAMT)",
       ];
 
-      const totalSection = (data) => {
-        const litres = data.reduce(
-          (sum, e) => sum + parseFloat(e.Litres || 0),
-          0
-        );
-        const amount = data.reduce((sum, e) => sum + parseFloat(e.Amt || 0), 0);
-        return {
-          litres: litres.toFixed(2),
-          amount: amount.toFixed(2),
-        };
-      };
+      const deductionRows = deduction.map((item) => [
+        item.dname || "",
+        parseFloat(item.MAMT || 0).toFixed(2),
+        parseFloat(item.Amt || item.damt || 0).toFixed(2),
+        parseFloat(item.BAMT || 0).toFixed(2),
+      ]);
 
-      const morningTotals = totalSection(morningData);
-      const eveningTotals = totalSection(eveningData);
-      const columns = ["Date", "Liter", "Fat", "SNF", "Rate", "Amount"];
-
-      // === Page content ===
-      doc.setFontSize(16);
-      doc.setFont("helvetica", "bold");
-      doc.text("Your Dairy Name", 105, 15, { align: "center" });
-
-      doc.setFontSize(10);
-      doc.setFont("helvetica", "normal");
-      doc.text("Milk Payment Bill", 105, 22, { align: "center" });
-
-      doc.setFontSize(9);
-      doc.text(`Page No.: ${index + 1}`, 15, 28);
-      doc.text(`Date: ${new Date().toLocaleDateString("hi-IN")}`, 145, 28);
-      doc.text(
-        `Master Duration: From ${String(fromDate)} To ${String(toDate)}`,
-        15,
-        34
-      );
-      doc.text(`Bill No.: ${billno}`, 145, 34);
-      doc.text(`Customer Code: ${ccode}`, 15, 40);
-      doc.text(`Customer Name: ${cname}`, 15, 46);
-
-      doc.text("Morning", 15, 54);
       doc.autoTable({
-        head: [columns],
-        body: [
-          ...morningData.map(formatRow),
-          ["Total", morningTotals.litres, "", "", "", morningTotals.amount],
-        ],
-        startY: 56,
+        head: [deductionColumns],
+        body: deductionRows,
+        startY: bottomStartY + 2,
         theme: "grid",
         styles: { fontSize: 7 },
         headStyles: {
@@ -848,103 +693,63 @@ const Milkbill = () => {
           textColor: [0, 0, 0],
         },
         margin: { left: 10 },
-        tableWidth: 85,
+        tableWidth: 95, // SAME width as payment
       });
+    }
 
-      doc.text("Evening", 110, 54);
+    // Payment Summary
+    if (payment.length > 0) {
+      const pay = payment[0];
+      const summaryX = 105; // aligned with deduction
+      const summaryY = bottomStartY + 2;
+
+      const summaryBody = [
+        ["Liter", parseFloat(pay.tliters || 0).toFixed(2)],
+        ["Avg Rate", parseFloat(pay.arate || 0).toFixed(2)],
+        ["Total Payment", parseFloat(pay.pamt || 0).toFixed(2)],
+        ["Total Deduction", parseFloat(pay.damt || 0).toFixed(2)],
+        ["Net Payment", parseFloat(pay.namt || 0).toFixed(2)],
+      ];
+
       doc.autoTable({
-        head: [columns],
-        body: [
-          ...eveningData.map(formatRow),
-          ["Total", eveningTotals.litres, "", "", "", eveningTotals.amount],
-        ],
-        startY: 56,
+        head: [["Payment Summary", ""]],
+        body: summaryBody,
+        startY: summaryY,
+        margin: { left: summaryX },
         theme: "grid",
-        styles: { fontSize: 7 },
+        styles: {
+          fontSize: 9,
+          cellPadding: 2,
+          halign: "left",
+        },
         headStyles: {
-          fontStyle: "bold",
           fillColor: [240, 240, 240],
           textColor: [0, 0, 0],
+          fontStyle: "bold",
         },
-        margin: { left: 105 },
-        tableWidth: 85,
+        columnStyles: {
+          0: { cellWidth: 40 },
+          1: { cellWidth: 35, halign: "right" },
+        },
       });
+    }
 
-      let bottomStartY = Math.max(doc.lastAutoTable.finalY, 115) + 4;
-
-      // Deduction
-      const customerDeductions = deduction.filter((d) => d.ccode === ccode);
-      if (customerDeductions.length > 0) {
-        doc.setFontSize(10);
-        doc.text("Deduction", 15, bottomStartY);
-        const deductionColumns = [
-          "Deduction Name",
-          "Remaining (MAMT)",
-          "Deduction (DAMT)",
-          "Balance (BAMT)",
-        ];
-        const deductionRows = customerDeductions.map((item) => [
-          item.dname || "",
-          parseFloat(item.MAMT || 0).toFixed(2),
-          parseFloat(item.Amt || item.damt || 0).toFixed(2),
-          parseFloat(item.BAMT || 0).toFixed(2),
-        ]);
-        doc.autoTable({
-          head: [deductionColumns],
-          body: deductionRows,
-          startY: bottomStartY + 2,
-          theme: "grid",
-          styles: { fontSize: 7 },
-          headStyles: {
-            fontStyle: "bold",
-            fillColor: [240, 240, 240],
-            textColor: [0, 0, 0],
-          },
-          margin: { left: 10 },
-          tableWidth: 95,
-        });
-      }
-
-      // Payment Summary
-      const customerPay = payment.find((p) => p.ccode === ccode);
-      if (customerPay) {
-        const summaryX = 105;
-        const summaryY = bottomStartY + 2;
-        const summaryBody = [
-          ["Liter", parseFloat(customerPay.tliters || 0).toFixed(2)],
-          ["Avg Rate", parseFloat(customerPay.arate || 0).toFixed(2)],
-          ["Total Payment", parseFloat(customerPay.pamt || 0).toFixed(2)],
-          ["Total Deduction", parseFloat(customerPay.damt || 0).toFixed(2)],
-          ["Net Payment", parseFloat(customerPay.namt || 0).toFixed(2)],
-        ];
-        doc.autoTable({
-          head: [["Payment Summary", ""]],
-          body: summaryBody,
-          startY: summaryY,
-          margin: { left: summaryX },
-          theme: "grid",
-          styles: {
-            fontSize: 9,
-            cellPadding: 2,
-            halign: "left",
-          },
-          headStyles: {
-            fillColor: [240, 240, 240],
-            textColor: [0, 0, 0],
-            fontStyle: "bold",
-          },
-          columnStyles: {
-            0: { cellWidth: 40 },
-            1: { cellWidth: 35, halign: "right" },
-          },
-        });
-      }
-
-      if (index < allCustomers.length - 1) doc.addPage();
-    });
-
-    doc.save("MilkCollection_Bill_All_Customers.pdf");
+    // Print PDF
+    const pdfBlob = doc.output("blob");
+    const pdfUrl = URL.createObjectURL(pdfBlob);
+    const printWindow = window.open(pdfUrl);
+    if (printWindow) {
+      printWindow.onload = () => {
+        printWindow.focus();
+        printWindow.print();
+      };
+    } else {
+      console.warn(
+        "Unable to open print window. Please check popup blocker settings."
+      );
+    }
   };
+
   //  second formatt
   const printMilkCollection = (
     cmilkdata = [],
