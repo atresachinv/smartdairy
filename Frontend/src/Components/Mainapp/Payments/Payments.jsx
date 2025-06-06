@@ -17,7 +17,7 @@ import {
   getPayMasters,
   saveMilkPaydata,
 } from "../../../App/Features/Payments/paymentSlice";
-import { fetchMaxApplyDeductions } from "../../../App/Features/Deduction/deductionSlice";
+import { fetchMaxApplyDeductions, getDeductionDetails } from "../../../App/Features/Deduction/deductionSlice";
 import { selectPaymasters } from "../../../App/Features/Payments/paymentSelectors";
 import { getCenterSetting } from "../../../App/Features/Mainapp/Settings/dairySettingSlice";
 
@@ -34,7 +34,7 @@ const Payments = ({ setCurrentPage }) => {
     (state) => state.customers.customerlist || []
   );
   const leastPayamt = useSelector(
-    (state) => state.dairySetting.centerSetting[0].minPayment
+    (state) => state.dairySetting.centerSetting[0].minPayment 
   );
   const master = useSelector(
     (state) => state.dairySetting.centerSetting[0].billDays
@@ -87,8 +87,10 @@ const Payments = ({ setCurrentPage }) => {
   // ----------------------------------------------------------------------->
   // check if payment is lock or not ------------------------------------->
 
+
   useEffect(() => {
     dispatch(getCenterSetting());
+    dispatch(getDeductionDetails(autoCenter));
   }, []);
 
   useEffect(() => {
@@ -220,13 +222,6 @@ const Payments = ({ setCurrentPage }) => {
       }
     });
   };
-  // console.log(deductionDetails);
-  // useEffect(() => {
-  //   const otherDeductionGLCodes = deductionDetails
-  //     .filter((deduction) => deduction.LP !== 0)
-  //     .map((deduction) => deduction.GLCode);
-  //   setOtherDeduction(otherDeductionGLCodes);
-  // }, [deductionDetails]);
 
   useEffect(() => {
     const otherDeductionGLCodes = deductionDetails.map(
@@ -540,6 +535,7 @@ const Payments = ({ setCurrentPage }) => {
   //     return [];
   //   }
   // };
+  console.log(deductionDetails);
 
   const handleAllDeductions = async () => {
     try {
@@ -564,7 +560,6 @@ const Payments = ({ setCurrentPage }) => {
         let totalDeduction = 0;
         let tPayment = 0;
         let remainingAmt = totalamt;
-        console.log("totalamt", totalamt);
         const customer = customerlist.find(
           (entry) => parseInt(entry.srno, 10) === parseInt(rno)
         );
@@ -587,7 +582,6 @@ const Payments = ({ setCurrentPage }) => {
         tPayment = (remainingAmt + allComm - totalTransport).toFixed(1);
         remainingAmt = (remainingAmt + allComm - totalTransport).toFixed(2);
         const userPrevMamts = prevMamt.filter((item) => item.AccCode === rno);
-        console.log("totalamt", remainingAmt);
         // FIXED DEDUCTIONS
         for (const deduction of filteredDeductions) {
           const matchPrevAmt = userPrevMamts.find(
@@ -636,11 +630,7 @@ const Payments = ({ setCurrentPage }) => {
 
           const currAmt = matchDedAmt ? Math.abs(matchDedAmt.totalamt) : 0;
           const prevAmt = matchPrevAmt ? Math.abs(matchPrevAmt.totalamt) : 0;
-          console.log("currAmt", currAmt);
-          console.log("prevAmt", prevAmt);
-          console.log("remainingAmt", remainingAmt);
           let tDedAmt = +(currAmt + prevAmt).toFixed(2);
-          console.log("tDedAmt", tDedAmt);
           let deduAmt = +(currAmt + prevAmt).toFixed(2);
 
           if (remainingAmt - deduAmt < leastPayamt) {
@@ -648,13 +638,10 @@ const Payments = ({ setCurrentPage }) => {
           }
 
           if (deduAmt <= 0) continue;
-          console.log("deduAmt", deduAmt);
           totalDeduction += deduAmt;
           remainingAmt -= deduAmt.toFixed(2);
 
           let BAmt = +(tDedAmt - deduAmt).toFixed(2);
-          console.log("BAmt", BAmt);
-          console.log("dname", deduction.dname);
           deductionEntries.push({
             DeductionId: deduction.DeductionId,
             GLCode: deduction.GLCode,
@@ -682,13 +669,9 @@ const Payments = ({ setCurrentPage }) => {
         const roundOffDedu = deductionDetails.find(
           (deduction) => deduction.RatePerLitre === 0 && deduction.GLCode === 2
         );
-        console.log("remamt", remainingAmt);
 
-        // const totalPay = (remainingAmt + allComm - totalTransport).toFixed(2);
         const flooredAmt = Math.floor(remainingAmt);
         const roundAmt = Math.floor((remainingAmt - flooredAmt) * 100) / 100;
-        console.log("flooredAmt", flooredAmt);
-        console.log("roundAmt", roundAmt);
         if (roundAmt > 0) {
           totalDeduction += roundAmt;
           remainingAmt = flooredAmt;
@@ -717,9 +700,6 @@ const Payments = ({ setCurrentPage }) => {
         //  FINAL NET PAYMENT ---------------------------------------------------------->
         const avgRate = totalLitres !== 0 ? totalamt / totalLitres : 0;
         const netPayment = +remainingAmt.toFixed(2);
-        console.log("avgRate", avgRate);
-        console.log("netPayment", netPayment);
-        console.log("netPayment", tPayment);
         deductionEntries.push({
           DeductionId: 0,
           GLCode: 28,

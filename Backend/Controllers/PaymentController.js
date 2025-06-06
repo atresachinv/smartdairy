@@ -2308,8 +2308,8 @@ exports.fetchTrnDeductionData = async (req, res) => {
   }
   if (!GlCodes || GlCodes.length === 0) {
     return res
-      .status(400)
-      .json({ status: 400, message: "GlCodes are required!" });
+      .status(200)
+      .json({ status: 200, message: "GlCodes are required!" });
   }
 
   // Ensure GlCodes is an array of integers

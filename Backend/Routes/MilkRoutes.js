@@ -23,10 +23,12 @@ const {
   centerReMilkReports,
   getRetailCustomer,
   fetchRegCustomers,
+  uploadMilkCollection,
 } = require("../Controllers/MilkController");
 const verifyToken = require("../Middlewares/VerifyToken");
 
 const router = express.Router();
+
 // Milk Routes
 
 router.route("/milk/report").post(todaysReport);
@@ -57,6 +59,7 @@ router.route("/milk/coll/report").get(verifyToken, allMilkCollReport); // All mi
 router
   .route("/completed/collection/report")
   .get(verifyToken, completedMilkReport);
+router.route("/upload/milk/collection").post(verifyToken, uploadMilkCollection);
 //Retail milk sales-------------------------------------------------------------------------------------------------------->
 router.route("/create/retail-customer").post(verifyToken, createRetailCustomer);
 router.route("/get/retail-customer").get(verifyToken, getRetailCustomer);

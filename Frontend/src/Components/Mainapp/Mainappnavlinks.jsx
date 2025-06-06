@@ -138,6 +138,13 @@ const Mainappnavlinks = ({ setselected, handleSidebar }) => {
           index: 1.8,
           role: ["admin", "manager", "salesman"],
         },
+        {
+          name: `${t("उपलोड संकलन")}`,
+          icon: <BsGridFill className="icon" />,
+          path: "upload/milk/collection",
+          index: 1.9,
+          role: ["admin", "manager", "salesman"],
+        },
       ],
     },
     {

@@ -86,6 +86,7 @@ import Sanghsales from "./MilkSales/SanghsalesPages/Sanghsales";
 import CenterCollection from "./MilkSales/CenterCollection";
 import CreateSangh from "./MilkSales/SanghsalesPages/CreateSangh";
 import CenterReports from "./Reports/CenterReports/CenterReports";
+import UploadMilkColl from "./Apphome/Appnavviews/Milkcollection/UploadMilkColl";
 import Milkbill from "./Reports/milkBill/Milkbill";
 
 
@@ -223,6 +224,7 @@ const Mainapp = () => {
               path="milk/retail/sales-report"
               element={<MilksalesReport />}
             />
+            <Route path="upload/milk/collection" element={<UploadMilkColl />} />
             {/* milk sales routes */}
             <Route path="create/sangha" element={<CreateSangh />} />
             <Route path="milk/retail/sales" element={<Milksales />} />
