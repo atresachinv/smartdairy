@@ -129,6 +129,12 @@
 .prashashikya-and-other-experaince {
   margin-bottom: px;
 }
+.sangh-phoch-to-date-div span{
+  margin-left: 10px;
+}
+.sangh-phoch-paryent-date-div span{
+  margin-left: 10px;
+}
 @media screen and (max-width: 426px) {
 
   /* Scrollable data */

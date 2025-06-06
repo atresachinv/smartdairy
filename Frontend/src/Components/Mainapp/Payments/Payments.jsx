@@ -17,7 +17,7 @@ import {
   getPayMasters,
   saveMilkPaydata,
 } from "../../../App/Features/Payments/paymentSlice";
-import { fetchMaxApplyDeductions } from "../../../App/Features/Deduction/deductionSlice";
+import { fetchMaxApplyDeductions, getDeductionDetails } from "../../../App/Features/Deduction/deductionSlice";
 import { selectPaymasters } from "../../../App/Features/Payments/paymentSelectors";
 import { getCenterSetting } from "../../../App/Features/Mainapp/Settings/dairySettingSlice";
 
@@ -34,7 +34,7 @@ const Payments = ({ setCurrentPage }) => {
     (state) => state.customers.customerlist || []
   );
   const leastPayamt = useSelector(
-    (state) => state.dairySetting.centerSetting[0].minPayment
+    (state) => state.dairySetting.centerSetting[0].minPayment 
   );
   const master = useSelector(
     (state) => state.dairySetting.centerSetting[0].billDays
@@ -87,8 +87,10 @@ const Payments = ({ setCurrentPage }) => {
   // ----------------------------------------------------------------------->
   // check if payment is lock or not ------------------------------------->
 
+
   useEffect(() => {
     dispatch(getCenterSetting());
+    dispatch(getDeductionDetails(autoCenter));
   }, []);
 
   useEffect(() => {
@@ -533,6 +535,7 @@ const Payments = ({ setCurrentPage }) => {
   //     return [];
   //   }
   // };
+  console.log(deductionDetails);
 
   const handleAllDeductions = async () => {
     try {

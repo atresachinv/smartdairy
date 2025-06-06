@@ -19,9 +19,8 @@ const PaymentRegister = ({ showbtn, setCurrentPage }) => {
     (state) => state.deduction.alldeductionInfo
   );
   const customerlist = useSelector((state) => state.customer.customerlist);
-  const [showCustomerwiseDateFilter, setShowCustomerwiseDateFilter] =
-    useState(true);
-  const [fromCode, setFromCode] = useState("");
+ 
+ 
   const [filterCode, setFilterCode] = useState("");
   const [isloading, setIsLoading] = useState("");
   const [dataavailable, setDataAvailable] = useState("");
@@ -39,7 +38,7 @@ const PaymentRegister = ({ showbtn, setCurrentPage }) => {
   );
   const CityName = useSelector((state) => state.dairy.dairyData.city);
 
-  console.log(processedDeductions);
+ 
 
   // Export data to Excel
 
@@ -284,7 +283,6 @@ const PaymentRegister = ({ showbtn, setCurrentPage }) => {
     // Add metadata
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, "CustomerReport");
-
     // Format filename with date range
     const formatDate = (date) => {
       if (!date) return "N/A";
@@ -413,7 +411,7 @@ const PaymentRegister = ({ showbtn, setCurrentPage }) => {
     }
   };
 
-  console.log("centerList", centerList);
+ 
 
   return (
     <div className="payment-register-container w100 h1 d-flex-col bg ">
@@ -527,7 +525,7 @@ const PaymentRegister = ({ showbtn, setCurrentPage }) => {
       </div>
       {/* Display filtered data */}
 
-      <div className="table-side-container-div w100 h80 d-flex-col">
+      <div className=" payment-register-table-side-container-div w100 h70 d-flex-col">
         <div
           className="table-container"
           style={{ overflowX: "auto", whiteSpace: "nowrap" }}

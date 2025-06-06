@@ -47,7 +47,6 @@ import { toast } from "react-toastify";
 import "../../Styles/Mainapp/Mainapphome.css";
 import InventoryRports from "./Reports/InventoryReports/InventoryRports";
 import Returns from "./Inventory/InventroyPages/Returns/DealerReturns/Returns";
-import SanghsalesMaster from "./MilkSales/SanghsalesPages/SanghsalesMaster";
 import SalesMaster from "./Sales/SalesMaster";
 import Milksales from "./Apphome/Appnavviews/MilksalesPages/Milksales";
 import MilksalesReport from "./Apphome/Appnavviews/MilksalesPages/MilksalesReport";
@@ -88,6 +87,8 @@ import CenterCollection from "./MilkSales/CenterCollection";
 import CreateSangh from "./MilkSales/SanghsalesPages/CreateSangh";
 import CenterReports from "./Reports/CenterReports/CenterReports";
 import UploadMilkColl from "./Apphome/Appnavviews/Milkcollection/UploadMilkColl";
+import Milkbill from "./Reports/milkBill/Milkbill";
+
 
 const Mainapp = () => {
   const dispatch = useDispatch();
@@ -306,6 +307,7 @@ const Mainapp = () => {
             <Route path="reports/payment/*" element={<PaymentReports />} />
             <Route path="reports/bank/*" element={<BankReportMaster />} />
             <Route path="reports/deduction/*" element={<Deductionlist />} />
+            <Route path="reports/Milkbill/*" element={<Milkbill />} />
             {/* payment routes */}
             <Route
               path="payment/milk-correction/*"
