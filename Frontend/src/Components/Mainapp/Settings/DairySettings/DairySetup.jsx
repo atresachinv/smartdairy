@@ -4,13 +4,14 @@ import Swal from "sweetalert2";
 import "../../../../Styles/Mainapp/Setting/DairySetup.css";
 import {
   getCenterSetting,
+  getDairySettings,
   updateDairySetup,
 } from "../../../../App/Features/Mainapp/Settings/dairySettingSlice";
 
 const DairySetup = () => {
   const dispatch = useDispatch();
   const centerSetting = useSelector(
-    (state) => state.dairySetting.centerSetting[0]
+    (state) => state.dairySetting.dairySettings
   );
   const status = useSelector((state) => state.dairySetting.cupdateStatus);
 
@@ -20,7 +21,9 @@ const DairySetup = () => {
     (state) =>
       state.dairy.dairyData.center_id || state.dairy.dairyData.center_id
   );
-  console.log(centerSetting);
+  const [centerid, setCenterid] = useState("0");
+  const [cSettings, setCSettings] = useState({});
+
   // Printer type list ------------------------------------------------------------>
   const printerTypes = {
     LA4: "Laser Printer A4",
@@ -32,7 +35,6 @@ const DairySetup = () => {
 
   const initialFormState = {
     id: "",
-    center_id: "",
     billDays: 0,
     minPayment: 0,
     milkRate: 0,
@@ -48,27 +50,45 @@ const DairySetup = () => {
   };
 
   const [formData, setFormData] = useState(initialFormState);
+  useEffect(() => {
+    dispatch(getDairySettings());
+  }, []);
+
+  // filter center settings ------------------------------------------------------->
+
+  useEffect(() => {
+    if (centerSetting) {
+      const settings = centerSetting.filter(
+        (setting) => setting.center_id.toString() === centerid
+      );
+      if (settings.length !== 0) {
+        setCSettings(settings[0]);
+      } else {
+        setCSettings({});
+      }
+    }
+  }, [centerSetting, centerid]);
 
   // set form data ---------------------------------------------------------------->
   useEffect(() => {
-    if (centerSetting) {
+    if (cSettings) {
       setFormData({
-        id: centerSetting.id,
-        billDays: centerSetting.billDays,
-        minPayment: parseFloat(centerSetting.minPayment) || 0,
-        milkRate: parseFloat(centerSetting.milkRate) || 0,
-        pType: centerSetting.pType,
-        salesms: centerSetting.salesms,
-        vSalesms: centerSetting.vSalesms,
-        millcoll: centerSetting.millcoll,
-        vMillcoll: centerSetting.vMillcoll,
-        cmillcoll: centerSetting.cmillcoll,
-        noRatesms: centerSetting.noRatesms,
-        printmilKcoll: centerSetting.printmilKcoll,
-        printSales: centerSetting.printSales,
+        id: cSettings.id,
+        billDays: cSettings.billDays,
+        minPayment: parseFloat(cSettings.minPayment) || 0,
+        milkRate: parseFloat(cSettings.milkRate) || 0,
+        pType: cSettings.pType,
+        salesms: cSettings.salesms,
+        vSalesms: cSettings.vSalesms,
+        millcoll: cSettings.millcoll,
+        vMillcoll: cSettings.vMillcoll,
+        cmillcoll: cSettings.cmillcoll,
+        noRatesms: cSettings.noRatesms,
+        printmilKcoll: cSettings.printmilKcoll,
+        printSales: cSettings.printSales,
       });
     }
-  }, [centerSetting]);
+  }, [cSettings]);
 
   // handle form input change ---------------------------------------------------->
   const handleInputChange = (e) => {
@@ -103,7 +123,7 @@ const DairySetup = () => {
     });
 
     if (result.isConfirmed) {
-      await dispatch(updateDairySetup(formData));
+      await dispatch(updateDairySetup({ formData, centerid }));
       dispatch(getCenterSetting());
     }
   };
@@ -111,13 +131,14 @@ const DairySetup = () => {
   return (
     <div className="sanstha-setup-container w100 h1 d-flex-col sb p10">
       <div className="page-title-container w100 h10 d-flex j-start a-center">
-        <label className="heading mx10">Dairy Setup :</label>
+        <label className="heading mx10">डेअरी सेटिंग :</label>
         {center_id === 0 ? (
           <select
             className="data w40"
             name="center_id"
             id=""
-            onChange={handleInputChange}
+            value={formData.center_id}
+            onChange={(e) => setCenterid(e.target.value)}
             onKeyDown={(e) =>
               handleKeyPress(e, document.getElementById("billDays"))
             }

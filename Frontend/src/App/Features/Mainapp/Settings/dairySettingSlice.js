@@ -4,7 +4,7 @@ import { toast } from "react-toastify";
 
 const initialState = {
   dairySettings: null,
-  centerSetting: {},
+  centerSetting: [],
   status: "idle",
   updateStatus: "idle",
   centerStatus: "idle",
@@ -50,12 +50,12 @@ export const updateDairySettings = createAsyncThunk(
 // Update dairy center settings
 export const updateDairySetup = createAsyncThunk(
   "dairySettings/updateDairySetup",
-  async (formData, { rejectWithValue }) => {
+  async ({ formData, centerid }, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.post(
-        "/center/update/setting",
-        formData
-      );
+      const response = await axiosInstance.post("/center/update/setting", {
+        ...formData,
+        centerid,
+      });
       if (response.data.success) {
         toast.success("Dairy setting update SuccessFully");
       }
@@ -72,9 +72,12 @@ export const updateDairySetup = createAsyncThunk(
 // get a center setting
 export const getCenterSetting = createAsyncThunk(
   "dairySettings/getCenterSetting",
-  async (_, { rejectWithValue }) => {
+  async (centerid, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.post("/center/setting/one");
+      const response = await axiosInstance.post(
+        "/center/setting/one",
+        centerid
+      );
       return response.data.data;
     } catch (error) {
       const errorMessage = error.response

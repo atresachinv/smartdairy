@@ -3,9 +3,12 @@
 /* --------------------------------------------------------- */
 
 @media screen and (max-width: 769px) {
+  .dairy-main-container {
+    padding: 10px;
+  }
   .dairy-main-container .dairy-information-div {
-    width: 80%;
-    height: 85%;
+    width: 100%;
+    height: 100%;
   }
   .dairy-information-div {
     width: 70%;

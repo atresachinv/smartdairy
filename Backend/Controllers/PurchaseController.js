@@ -84,7 +84,6 @@ exports.purchaseInfo = async (req, res) => {
   });
 };
 
-
 //............................................
 //Deduction Customer Route....................
 //............................................
@@ -326,7 +325,7 @@ exports.paymentDeductionInfo = async (req, res) => {
   }
 
   const query = `
-    SELECT id , ToDate, BillNo, AccCode, Code, dname, DeductionId, AMT, arate, pamt, namt, damt, tliters
+    SELECT id , ToDate, BillNo, AccCode, Code, dname, DeductionId, AMT, transport, arate, pamt, namt, damt, tliters
     FROM custbilldetails
     WHERE companyid = ? AND center_id = ? AND FromDate = ? AND ToDate = ? 
     ORDER BY Code ASC

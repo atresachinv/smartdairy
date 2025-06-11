@@ -1284,7 +1284,7 @@ exports.getCenterCustomerCount = (req, res) => {
 //-------------------------------------------------------------------------------------------------------->
 
 exports.getCenterSetting = (req, res) => {
-  const dairy_id = req.user.dairy_id;
+  const { dairy_id, center_id } = req.user;
 
   pool.getConnection((err, connection) => {
     if (err) {
@@ -1294,13 +1294,21 @@ exports.getCenterSetting = (req, res) => {
         .json({ success: false, message: "Database connection error" });
     }
 
-    const query = `
-      SELECT * 
-      FROM setting_Master 
-      WHERE dairy_id = ?  
-    `;
+    const query =
+      center_id === 0
+        ? `
+          SELECT * 
+          FROM setting_Master 
+          WHERE dairy_id = ?  
+        `
+        : `
+          SELECT *
+          FROM setting_Master 
+          WHERE dairy_id = ? AND center_id = ?
+        `;
+    const params = center_id === 0 ? [dairy_id] : [dairy_id, center_id];
 
-    connection.query(query, [dairy_id], (err, results) => {
+    connection.query(query, params, (err, results) => {
       connection.release(); // Release the connection back to the pool
 
       if (err) {
@@ -1342,11 +1350,11 @@ exports.getOneCenterSetting = (req, res) => {
     const query = `
       SELECT * 
       FROM setting_Master 
-      WHERE dairy_id = ?  and center_id=?
+      WHERE dairy_id = ? and center_id = ?
     `;
 
     connection.query(query, [dairy_id, center_id], (err, results) => {
-      connection.release(); // Release the connection back to the pool
+      connection.release();
 
       if (err) {
         console.error("Error executing query: ", err);
@@ -1365,9 +1373,7 @@ exports.getOneCenterSetting = (req, res) => {
           message: "Settings not found",
         });
       }
-      return res
-        .status(200)
-        .json({ status: 200, success: true, data: results });
+      res.status(200).json({ status: 200, success: true, data: results });
     });
   });
 };
@@ -1488,12 +1494,11 @@ exports.updateCenterSetting = (req, res) => {
 
 exports.updateCenterSetup = (req, res) => {
   const { dairy_id, user_id } = req.user;
-  const formData = req.body;
+  const { centerid, ...formData } = req.body;
   const currentDate = new Date().toISOString().slice(0, 10);
-
+  console.log(formData);
   const {
     id,
-    center_id,
     billDays,
     minPayment,
     milkRate,
@@ -1521,11 +1526,11 @@ exports.updateCenterSetup = (req, res) => {
       });
     }
 
-    if (id) {
+    if (id !== undefined) {
       const updateQuery = `
         UPDATE setting_Master 
         SET  pType = ?, salesms = ?, printSales = ?, vSalesms = ?, millcoll = ?, printmilKcoll = ?, vMillcoll = ?,
-         cmillcoll = ?, noRatesms = ?, billDays =?, minPayment =?, milkRate = ? , updatedBy = ?, updatedDate = ?
+         cmillcoll = ?, noRatesms = ?, billDays = ?, minPayment =?, milkRate = ? , updatedBy = ?, updatedDate = ?
         WHERE id = ?
       `;
 
@@ -1533,17 +1538,17 @@ exports.updateCenterSetup = (req, res) => {
         updateQuery,
         [
           pType,
-          salesms,
-          printSales,
-          vSalesms,
-          millcoll,
-          printmilKcoll,
-          vMillcoll,
-          cmillcoll,
-          noRatesms,
-          billDays,
-          parsedMinPayment,
-          parsedMilkRate,
+          salesms || 0,
+          printSales || 0,
+          vSalesms || 0,
+          millcoll || 0,
+          printmilKcoll || 0,
+          vMillcoll || 0,
+          cmillcoll || 0,
+          noRatesms || 0,
+          billDays || 0,
+          parsedMinPayment || 0,
+          parsedMilkRate || 0,
           user_id,
           currentDate,
           id,
@@ -1579,20 +1584,20 @@ exports.updateCenterSetup = (req, res) => {
   `;
 
       const insertValues = [
-        center_id,
+        centerid,
         dairy_id,
-        millcoll,
-        printmilKcoll,
-        vMillcoll,
-        pType,
-        salesms,
-        printSales,
-        vSalesms,
-        cmillcoll,
-        noRatesms,
-        billDays,
-        parsedMinPayment,
-        parsedMilkRate,
+        millcoll || 0,
+        printmilKcoll || 0,
+        vMillcoll || 0,
+        pType || 0,
+        salesms || 0,
+        printSales || 0,
+        vSalesms || 0,
+        cmillcoll || 0,
+        noRatesms || 0,
+        billDays || 0,
+        parsedMinPayment || 0,
+        parsedMilkRate || 0,
         user_id,
         currentDate,
       ];

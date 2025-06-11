@@ -326,12 +326,13 @@ export const transferToShift = createAsyncThunk(
 //get total milk payment amt------------------------------------------------------->
 export const checkPayExists = createAsyncThunk(
   "payment/checkPayExists",
-  async ({ fromDate, toDate }, { rejectWithValue }) => {
+  async ({ fromDate, toDate, center_id }, { rejectWithValue }) => {
     try {
       const response = await axiosInstance.get("/check/payment/exists", {
         params: {
           fromDate,
           toDate,
+          center_id,
         },
       });
       return response.data;
@@ -346,12 +347,13 @@ export const checkPayExists = createAsyncThunk(
 //get total milk payment amt------------------------------------------------------->
 export const checkAmtZero = createAsyncThunk(
   "payment/checkAmtZero",
-  async ({ fromDate, toDate }, { rejectWithValue }) => {
+  async ({ fromDate, toDate, center_id }, { rejectWithValue }) => {
     try {
       const response = await axiosInstance.get("/check/amt-zero", {
         params: {
           fromDate,
           toDate,
+          center_id,
         },
       });
       if (response.status === 204) {
@@ -370,12 +372,13 @@ export const checkAmtZero = createAsyncThunk(
 
 export const fetchMilkPaydata = createAsyncThunk(
   "payment/fetchMilkPaydata",
-  async ({ fromDate, toDate }, { rejectWithValue }) => {
+  async ({ fromDate, toDate, center_id }, { rejectWithValue }) => {
     try {
       const response = await axiosInstance.get("/get/total/payment-amt", {
         params: {
           fromDate,
           toDate,
+          center_id,
         },
       });
       return response.data.paymentData;
@@ -391,13 +394,13 @@ export const fetchMilkPaydata = createAsyncThunk(
 
 export const fetchTrnDeductions = createAsyncThunk(
   "payment/fetchTrnDeductions",
-  async ({ fromDate, toDate, GlCodes }, { rejectWithValue }) => {
+  async ({ fromDate, toDate, GlCodes, center_id }, { rejectWithValue }) => {
     try {
       const response = await axiosInstance.get("/fetch/trn/deductions", {
         params: {
           fromDate,
           toDate,
-          GlCodes,
+          GlCodes,center_id
         },
       });
       return response.data.trnDeductions;
@@ -509,12 +512,12 @@ export const lockMilkPaydata = createAsyncThunk(
 
 export const fetchPaymentDetails = createAsyncThunk(
   "payment/fetchPaymentDetails",
-  async ({ fromdate, todate }, { rejectWithValue }) => {
+  async ({ fromdate, todate, center_id }, { rejectWithValue }) => {
     try {
       const response = await axiosInstance.get("/fetch/payment", {
         params: {
           fromdate,
-          todate,
+          todate, center_id
         },
       });
       return response.data.paymentDetails;

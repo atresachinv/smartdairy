@@ -12,6 +12,7 @@ import centerReducer from "./Features/Dairy/Center/centerSlice";
 import empReducer from "./Features/Mainapp/Masters/empMasterSlice";
 import bankReducer from "./Features/Mainapp/Masters/bankSlice";
 import doctorReducer from "./Features/Mainapp/Masters/doctorSlice";
+import animalReducer from "./Features/Mainapp/Masters/animalSlice";
 import profileReducer from "./Features/Customers/Profile/profileSlice";
 import mastersReducer from "./Features/Customers/Date/masterSlice";
 import purchaseReducer from "./Features/Purchase/purchaseSlice";
@@ -60,6 +61,7 @@ export const store = configureStore({
     emp: empReducer, //mainapp
     bank: bankReducer, //mainapp
     doctor: doctorReducer, //mainapp
+    animal: animalReducer, //mainapp
     sangha: sanghaReducer, //mainapp
     // register new dairy
     register: registerReducer,

@@ -1,0 +1,132 @@
+@media screen and (max-width: 769px) {
+  .animal-master-container {
+    min-height: auto;
+  }
+  .animal-master-container .animal-master-form-container {
+    min-height: fit-content;
+  }
+  .animal-master-form-container .animal-details-code {
+    width: 100%;
+    min-height: fit-content;
+  }
+  .animal-details-code .ccode {
+    width: 15%;
+  }
+  .animal-details-code .codetxt {
+    width: 15%;
+    margin-right: 5px;
+  }
+  .animal-details-code .cnametxt {
+    width: 55%;
+  }
+  .animal-details-code .w-btn {
+    width: 20%;
+  }
+  .animal-master-form-container .animal-info-details-code {
+    width: 100%;
+    min-height: fit-content;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+  }
+  .animal-info-details-code .animal-details {
+    width: 10%;
+  }
+  .animal-info-details-code .animal-details-aname {
+    width: 55%;
+  }
+  .animal-info-details-code .animal-details-tagno {
+    width: 30%;
+  }
+  .animal-info-details-code .animal-details-type {
+    width: 35%;
+  }
+  .animal-info-details-code .animal-details-ismilk {
+    width: 25%;
+  }
+  .animal-info-details-code .animal-details-ltr {
+    width: 30%;
+  }
+  .animal-master-form-container .animal-info-btns {
+    width: 100%;
+    min-height: fit-content;
+    justify-content: space-between;
+  }
+  .animal-info-btns .w-btn {
+    width: 20%;
+    margin-bottom: 10px;
+  }
+  .animal-master-container .animal-details-info-container {
+    overflow-x: auto;
+    min-height: 70%;
+    width: 100%;
+  }
+}
+
+@media screen and (max-width: 426px) {
+  .animal-master-container {
+    min-height: auto;
+  }
+  .animal-master-container .animal-master-form-container {
+    min-height: fit-content;
+  }
+  .animal-master-form-container .animal-details-code {
+    width: 100%;
+    min-height: fit-content;
+    flex-wrap: wrap;
+  }
+  .animal-details-code .ccode {
+    width: 20%;
+  }
+  .animal-details-code .codetxt {
+    width: 15%;
+  }
+  .animal-details-code .cnametxt {
+    width: 60%;
+  }
+  .animal-details-code .w-btn {
+    width: 100%;
+    margin: 10px 0;
+  }
+  .animal-master-form-container .animal-info-details-code {
+    width: 100%;
+    min-height: fit-content;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+  }
+  .animal-info-details-code .animal-details {
+    width: 15%;
+  }
+  .animal-info-details-code .animal-details-aname {
+    width: 75%;
+  }
+  .animal-info-details-code .animal-details-tagno {
+    width: 50%;
+  }
+  .animal-info-details-code .animal-details-type {
+    width: 45%;
+  }
+  .animal-info-details-code .animal-details-ismilk {
+    width: 50%;
+  }
+  .animal-info-details-code .animal-details-ltr {
+    width: 45%;
+  }
+  .animal-master-form-container .animal-info-btns {
+    width: 100%;
+    min-height: fit-content;
+    flex-wrap: wrap;
+    justify-content: space-between;
+  }
+  .animal-info-btns .w-btn {
+    width: 45%;
+    margin: 10px;
+  }
+  .animal-master-container .animal-details-info-container {
+    overflow-x: auto;
+    min-height: 70%;
+    width: 100%;
+  }
+  .animal-details-info-container .animal-details-headings {
+    min-width: 700px;
+  }
+}

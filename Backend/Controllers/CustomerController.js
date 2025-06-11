@@ -86,9 +86,7 @@ exports.createCustomer = async (req, res) => {
     h_transportation,
   } = req.body;
 
-  const dairy_id = req.user.dairy_id;
-  const centerid = req.user.center_id;
-  const user_role = req.user.user_role;
+  const { dairy_id, centerid, user_role } = req.user;
   const designation = "Customer";
   const isAdmin = "0";
   const formattedCode = String(cust_no).padStart(3, "0");
@@ -214,7 +212,7 @@ exports.createCustomer = async (req, res) => {
                 createUserQuery,
                 [
                   fax,
-                  mobile,
+                  mobile || 123456,
                   isAdmin,
                   date,
                   user_role,

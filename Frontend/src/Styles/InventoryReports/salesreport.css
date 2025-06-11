@@ -30,14 +30,7 @@
 }
 
 /* Alternating row colors */
-.report-table tr:nth-child(even) {
-  background: #f2f2f2;
-}
 
-/* Hover effect */
-.report-table tr:hover {
-  background: #e0e0e0;
-}
 
 /* Heading */
 .sub-heading {

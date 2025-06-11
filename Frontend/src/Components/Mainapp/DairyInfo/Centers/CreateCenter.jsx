@@ -231,7 +231,7 @@ const CreateCenter = () => {
         className="center-information-div w50 h1 d-flex-col sa bg p10"
         onSubmit={handleSubmit}
       >
-        <span className="heading h10">Create New Dairy Center</span>
+        {/* <span className="heading">Create New Dairy Center</span> */}
         <div className="center-name-div w100 h15 d-flex-col sa">
           <label htmlFor="marathi_name" className="info-text w100">
             Marathi Name
@@ -262,7 +262,7 @@ const CreateCenter = () => {
             required
           />
         </div>
-        <div className="center-add-data-div w100 h10 d-flex a-center sb">
+        <div className="center-add-data-div w100 h15 d-flex a-center sb">
           <div className="center-details-div center-data w20 d-flex-col sa">
             <label htmlFor="center_id" className="info-text w100">
               Center No.
@@ -346,7 +346,7 @@ const CreateCenter = () => {
             />
           </div>
         </div>
-        <div className="center-add-data-div w100 h10 d-flex a-center sb">
+        <div className="center-add-data-div w100 h15 d-flex a-center sb">
           <div className="center-details-div center-data w20 d-flex-col sa">
             <label htmlFor="city" className="info-text w100">
               City

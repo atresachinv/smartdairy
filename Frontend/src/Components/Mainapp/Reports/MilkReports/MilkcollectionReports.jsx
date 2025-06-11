@@ -20,7 +20,7 @@ const MilkcollectionReports = () => {
   const data = useSelector((state) => state.milkCollection.allMilkColl);
   const status = useSelector((state) => state.milkCollection.allmilkstatus);
   const manualMaster = useSelector((state) => state.manualMasters.masterlist);
-  const profile = useSelector((state) => state.userinfo.profile)
+  const profile = useSelector((state) => state.userinfo.profile);
   const [filteredData, setFilteredData] = useState([]); // data to be displayed in ui
   const [collectionData, setCollectionData] = useState([]);
   const [summaryData, setSummaryData] = useState([]); // data to be displayed in ui for daswada report
@@ -35,9 +35,7 @@ const MilkcollectionReports = () => {
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedCenterId, setSelectedCenterId] = useState("0");
   const [centerData, setCenterData] = useState([]); //..
-  const centerList = useSelector(
-    (state) => state.center.centersList || []
-  );
+  const centerList = useSelector((state) => state.center.centersList || []);
 
   useEffect(() => {
     setCollectionData(data);
@@ -582,154 +580,6 @@ const MilkcollectionReports = () => {
     };
   }
 
-  // const handlePrint = () => {
-  //   // Ensure dairyinfo and filteredData are properly populated
-  //   const dairyName = dairyinfo?.SocietyName?.toUpperCase() || "";
-  //   const reportName = "Milk Collection Report";
-
-  //   const formatDate = selectedDate;
-  //   const fromDate = formatDate.start;
-  //   const toDate = formatDate.end.slice(0, 10);
-
-  //   const detailsText = `From: ${fromDate}  To: ${toDate}`;
-
-  //   // Create a new window for printing
-  //   const printWindow = window.open("", "_blank");
-
-  //   // Define table headers and rows based on sumreport
-  //   const isSummaryReport = sumreport; // Assuming sumreport is available in your context
-  //   const headers = isSummaryReport
-  //     ? `
-  //     <th>Code</th>
-  //     <th>Name</th>
-  //     <th>AVG Fat</th>
-  //     <th>AVG SNF</th>
-  //     <th>Liters</th>
-  //     <th>AVG Rate</th>
-  //     <th>Total Amount</th>
-  //     <th>C/B</th>
-  //   `
-  //     : `
-  //     <th>Date</th>
-  //     <th>Shift</th>
-  //     <th>Code</th>
-  //     <th>Name</th>
-  //     <th>Liters</th>
-  //     <th>Fat</th>
-  //     <th>SNF</th>
-  //     <th>Rate</th>
-  //     <th>Amount</th>
-  //     <th>C/B</th>
-  //   `;
-
-  //   const rows = filteredData
-  //     .map((row) => {
-  //       if (isSummaryReport) {
-  //         return `
-  //         <tr>
-  //           <td>${row.code}</td>
-  //           <td class="left-align">${row.cname}</td>
-  //           <td class="right-align">${row.avgFat || row.fat}</td>
-  //           <td class="right-align">${row.avgSNF || row.snf}</td>
-  //           <td class="right-align">${row.Liters}</td>
-  //           <td class="right-align">${row.avgRate || row.rate}</td>
-  //           <td class="right-align">${row.totalAmt || row.Amt}</td>
-  //           <td class="left-align">${row.CB === 0 ? "C" : "B"}</td>
-  //         </tr>
-  //       `;
-  //       } else {
-  //         return `
-  //         <tr>
-  //           <td>${row.ReceiptDate.slice(2, 10)}</td>
-  //           <td class="center-text">${row.ME === 0 ? "M" : "E"}</td>
-  //           <td>${row.rno}</td>
-  //           <td class="left-align">${row.cname}</td>
-  //           <td class="right-align">${row.Litres}</td>
-  //           <td class="right-align">${row.fat}</td>
-  //           <td class="right-align">${row.snf}</td>
-  //           <td class="right-align">${row.rate}</td>
-  //           <td class="right-align">${row.Amt.toFixed(2)}</td>
-  //           <td class="center-text">${row.CB === 0 ? "C" : "B"}</td>
-  //         </tr>
-  //       `;
-  //       }
-  //     })
-  //     .join("");
-
-  //   // Ensure content is loaded before printing
-  //   printWindow.document.write(`
-  //   <html>
-  //     <head>
-  //       <title>Print</title>
-  //       <style>
-  //         body {
-  //           font-family: Arial, sans-serif;
-  //         }
-  //         h1 {
-  //           text-align: center;
-  //           font-size: 18px;
-  //           color: black;
-  //         }
-  //         h2 {
-  //           text-align: center;
-  //           font-size: 14px;
-  //         }
-  //         p {
-  //           text-align: center;
-  //           font-size: 12px;
-  //           color: black;
-  //         }
-  //         table {
-  //           width: 100%;
-  //           border-collapse: collapse;
-  //           margin-top: 20px;
-  //         }
-  //         th, td {
-  //           border: 1px solid #ddd;
-  //           padding: 8px;
-  //           text-align: left;
-  //         }
-  //         th {
-  //           background-color: #f2f2f2;
-  //         }
-  //         .left-align {
-  //           text-align: left;
-  //         }
-  //         .right-align {
-  //           text-align: right;
-  //         }
-  //         .center-text {
-  //           text-align: center;
-  //         }
-  //       </style>
-  //     </head>
-  //     <body>
-  //       <h1>${dairyName}</h1>
-  //       <h2>${reportName}</h2>
-  //       <p>${detailsText}</p>
-  //       <table>
-  //         <thead>
-  //           <tr>
-  //             ${headers}
-  //           </tr>
-  //         </thead>
-  //         <tbody>
-  //           ${rows}
-  //         </tbody>
-  //       </table>
-  //     </body>
-  //   </html>
-  // `);
-
-  //   // Close document, wait for rendering to finish, then print
-  //   printWindow.document.close();
-  //   printWindow.onload = function () {
-  //     printWindow.print();
-  //     printWindow.close();
-  //   };
-  // };
-
-  // ------------------------------------------------------------->
   // Generating Daswada Reports ---------------------------------->
 
   const handleSumAvgChange = () => {
@@ -880,15 +730,14 @@ const MilkcollectionReports = () => {
       milkData: filteredMilkData,
     });
   }, [selectedCenterId, summaryData, filteredData]); // Re-run when selectedCenterId or data changes
-  //  console.log(centerData);
   return (
     <>
       <div className="Milkcollection-container w100 h1 d-flex-col sb">
         <span className="heading px10 "> Milk Collection Report</span>
         <div className="fillter-data-container w100 h30 d-flex-col ">
-          <div className="master-and-buttons-div w100 h30  d-flex sb">
-            <div className="master-hide-show-chackbox-div w70 d-flex sb">
-              <div className="custmize-report-div w50 h1 px10 d-flex a-center sb">
+          <div className="master-and-buttons-div w100 h30 d-flex sb px10">
+            <div className="master-hide-show-chackbox-div w65 d-flex sb">
+              <div className="custmize-report-div w60 h1 px10 d-flex a-center sb">
                 <span className="cl-icon w20 h1 d-flex center info-text">
                   <BsCalendar3 />
                 </span>
@@ -918,7 +767,7 @@ const MilkcollectionReports = () => {
                   ))}
                 </select>
               </div>
-              <div className="daswada-filter-container d-flex w40 a-center sa  ">
+              <div className="daswada-filter-container d-flex w35 a-center sa  ">
                 <div className="milk-type-div w60 h1 d-flex a-center sb ">
                   <input
                     type="checkbox"
@@ -938,11 +787,11 @@ const MilkcollectionReports = () => {
                 </div>
               </div>
             </div>
-            <div className="download-option-btn-div w30 h1 d-flex j-center sa">
+            <div className="download-option-btn-div w35 h1 d-flex j-center sa">
               <button className="w-btn text" onClick={printReport}>
                 Print
               </button>
-              <button className="w-btn text" onClick={exportToPDF}>
+              <button className="w-btn text mx10" onClick={exportToPDF}>
                 PDF
               </button>
               <button className="w-btn text" onClick={exportToExcel}>

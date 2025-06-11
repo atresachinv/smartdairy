@@ -30,22 +30,33 @@
 
 @media screen and (max-width: 769px) {
   .center-main-container {
+    min-height: auto;
     padding: 10px;
+    margin-top: 10%;
   }
   .center-main-container .center-information-div {
-    width: 70%;
+    width: 100%;
+    min-height: fit-content;
   }
+  .center-information-div .center-name-div {
+    margin-bottom: 10px;
+  }
+
   .center-information-div .center-add-data-div {
-    height: auto;
+    min-height: fit-content;
     flex-wrap: wrap;
     gap: 5px;
   }
   .center-add-data-div .center-details-div {
-    flex: 4 1 110px;
+    flex: 4 1 130px;
   }
-  .add-data-div {
+  .center-information-div .add-data-div {
     flex-wrap: wrap;
     gap: 5px;
+    margin-bottom: 10px;
+  }
+  .center-information-div button {
+    margin-top: 20px;
   }
   .add-data-div .center-pass-details-div {
     flex: 2 1 150px;
@@ -54,23 +65,40 @@
 
 @media screen and (max-width: 426px) {
   .center-main-container {
+    min-height: auto;
     padding: 10px;
+    margin-top: 60%;
   }
-  .center-main-container .center-information-div {
+  /* .center-main-container .center-information-div {
     width: 100%;
+    min-height: fit-content;
   }
-  .center-add-data-div .center-data {
-    flex-direction: column;
+  .center-information-div .center-name-div {
+    margin-bottom: 10px;
   }
 
-  /* .center-details-div {
-    flex: 2 1 150px;
-  }
-  .add-data-div {
+  .center-information-div .center-add-data-div {
+    min-height: fit-content;
     flex-wrap: wrap;
     gap: 5px;
   }
-  .add-data-div .center-pass-details-div{
-    flex: 2 1 100px;
+  .center-add-data-div .center-details-div {
+    flex: 4 1 130px;
+  }
+  .center-information-div .add-data-div {
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-bottom: 10px;
+  }
+  .center-information-div button {
+    margin-top: 20px;
+  }
+  .add-data-div .center-pass-details-div {
+    flex: 2 1 150px;
   } */
+}
+@media screen and (max-width: 376px) {
+  .center-main-container {
+    margin-top: 70%;
+  }
 }

@@ -1,0 +1,81 @@
+@media screen and (max-width: 426px) {
+  .date-checkbox-code-bill-payment-div {
+    height: 320px;
+  }
+  .date-code-bill-payment .from-to-date-bill-report {
+    flex-direction: column;
+  }
+  .date-code-bill-payment .from-to-date-bill-report {
+    flex-direction: column;
+  }
+  .date-code-bill-payment .from-to-date-bill-report .from-to-date-milk-bill {
+    width: 100%;
+  }
+  .from-to-date-bill-report .from-to-date-milk-bill .from-date-bill-div {
+    flex-direction: column;
+  }
+  .from-to-date-bill-report .from-to-date-milk-bill .from-date-bill-div span {
+    width: 120px;
+  }
+  .from-to-date-bill-report .from-to-date-milk-bill .from-date-bill-div input {
+    width: 140px;
+  }
+  .date-code-bill-payment
+    .from-to-date-bill-report
+    .select-center-milk-payment-div {
+    width: 100%;
+  }
+  .date-code-bill-payment .code-to-date-bill-report .from-date-bill-div {
+    flex-direction: column;
+  }
+
+  .date-code-bill-payment .code-to-date-bill-report .from-date-bill-div span {
+    width: 130px;
+  }
+  .date-code-bill-payment .code-to-date-bill-report .from-date-bill-div input {
+    width: 130px;
+  }
+  .date-code-bill-payment .code-to-date-bill-report .to-code-bill-div {
+    flex-direction: column;
+  }
+  .date-code-bill-payment .code-to-date-bill-report .to-code-bill-div span {
+    width: 130px;
+  }
+  .date-code-bill-payment .code-to-date-bill-report .to-code-bill-div input {
+    width: 130px;
+  }
+  .date-code-bill-payment .bill-payments-reports {
+    flex-direction: column;
+  }
+  .date-code-bill-payment .bill-payments-reports {
+    flex-direction: column;
+  }
+  .date-code-bill-payment
+    .bill-payments-reports
+    .milk-bill-report-buttons-first-half {
+    width: 100%;
+    height: 60px;
+  }
+  .bill-payments-reports
+    .milk-bill-report-buttons-first-half
+    .report-buttons-div
+    button {
+    width: 100px;
+    height: 35px;
+    margin-left: 40px;
+  }
+  .bill-payments-reports
+    .milk-bill-report-buttons-first-half
+    .paymnet-register-report-div
+    button {
+    width: 100px;
+    height: 35px;
+    margin-left: 40px;
+  }
+  .bill-payments-reports .milk-bil-report-second-half {
+    width: 100%;
+  }
+  .date-checkbox-code-bill-payment-div .code-to-date-bill-report {
+    margin-bottom: 10px;
+  }
+}
