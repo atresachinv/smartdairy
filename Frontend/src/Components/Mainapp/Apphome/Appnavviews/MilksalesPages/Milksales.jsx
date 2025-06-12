@@ -16,7 +16,7 @@ const Milksales = ({ switchToSettings }) => {
   const dispatch = useDispatch();
   const { t } = useTranslation(["milkcollection", "msales", "common"]);
   const milkRate = useSelector(
-    (state) => state.dairySetting.centerSetting[0].milkRate
+    (state) => state.dairySetting.centerSetting[0]?.milkRate || 0
   );
   const tDate = useSelector((state) => state.date.toDate);
   const retailCustomers = useSelector((state) => state.milksales.customers);

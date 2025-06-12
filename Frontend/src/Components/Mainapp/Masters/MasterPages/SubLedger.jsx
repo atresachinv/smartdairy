@@ -265,19 +265,19 @@ const SubLedger = () => {
 
   return (
     <div
-      className={`sub-ledger-container w100 h1 d-flex-col p10  ${
+      className={`sub-ledger-container w100 h1 d-flex-col p10 sb ${
         isEditing ? "edit-bg" : ""
       }`}
     >
-      <h2 className="heading py10">Ledger Master :</h2>
+      <span className="heading">Ledger Master :</span>
       <form
         onSubmit={handleFrom}
-        className={`ledger-master-form-container w100 h30 d-flex`}
+        className={`ledger-master-form-container w100 h35 d-flex sb`}
       >
-        <div className="ledger-info-contsiner w60 h1 d-flex-col sa">
-          <div className="ledger-no-group-container w100 h20 d-flex sb">
+        <div className="ledger-info-contsiner w65 h1 d-flex-col sb">
+          <div className="ledger-no-group-container w100 h20 d-flex a-center sb">
             <div className="ledger-no-div w15 d-flex a-center sb">
-              <label htmlFor="ledger-no" className="label-text w20">
+              <label htmlFor="ledger-no" className="label-text w30">
                 No.
               </label>
               <input
@@ -324,9 +324,9 @@ const SubLedger = () => {
               </datalist>
             </div>
           </div>
-          <div className="ledger-names-div w100 h40 d-flex sb">
-            <div className="le-name-div w45 h1 d-flex-col sb">
-              <label htmlFor="slename" className="label-text w100">
+          <div className="ledger-names-div w100 h40 d-flex a-center sb">
+            <div className="le-name-div w45 h1 d-flex-col sa">
+              <label htmlFor="slename" className="label-text w100 h40">
                 Enter English Name :
               </label>
               <input
@@ -339,7 +339,7 @@ const SubLedger = () => {
               />
             </div>
             <div className="le-name-div w45 d-flex-col sb">
-              <label htmlFor="slmname" className="label-text w100">
+              <label htmlFor="slmname" className="label-text w100 h40">
                 Enter Marathi Name :
               </label>
               <input
@@ -353,11 +353,11 @@ const SubLedger = () => {
             </div>
           </div>
           <div className="ledger-head-div w100 h40 d-flex-col sb">
-            <span className="label-text w100">
+            <span className="label-text w100 h50">
               Sangha Milk Sales Deduction and Dairy Bank Cheque Head :
             </span>
-            <div className="sangha-sale-settings-div w100 h80 d-flex sb">
-              <div className="ss-div w15 d-flex a-center sb">
+            <div className="sangha-sale-settings-div w100 h50 d-flex sb">
+              <div className="ss-div w10 d-flex a-center sb">
                 <input
                   type="radio"
                   name="sanghahead"
@@ -365,9 +365,9 @@ const SubLedger = () => {
                   value="0"
                   checked={formData.sanghahead === 0}
                   onChange={handleInputChange}
-                  className="w25 h50"
+                  className="w35 h50"
                 />
-                <label htmlFor="nayes" className="info-text t-center w70">
+                <label htmlFor="nayes" className="info-text t-center w60">
                   N/A
                 </label>
               </div>
@@ -393,9 +393,9 @@ const SubLedger = () => {
                   value="2"
                   checked={formData.sanghahead === 2}
                   onChange={handleInputChange}
-                  className="w25 h50"
+                  className="w20 h50"
                 />
-                <label htmlFor="salescheque" className="info-text t-center w75">
+                <label htmlFor="salescheque" className="info-text t-center w80">
                   Sales Cheque
                 </label>
               </div>
@@ -419,7 +419,7 @@ const SubLedger = () => {
             </div>
           </div>
         </div>
-        <div className="ledger-settings-contsiner w40 h1 d-flex-col px10 sb">
+        <div className="ledger-settings-contsiner w35 h1 d-flex-col px10 sb">
           {/* <div className="ledger-other-settings-div w100 h30 d-flex-col sb">
             <span className="label-text w100 py10">General Ledger Side :</span>
             <div className="sangha-sale-settings-div w100 h50 d-flex sb">
@@ -615,7 +615,7 @@ const SubLedger = () => {
           </div>
         </div>
       </form>
-      <div className="ledgers-list-container w100 h65 d-flex-col">
+      <div className="ledgers-list-container w100 h60 d-flex-col">
         <label htmlFor="listtitle" className="heading">
           Ledger List :
         </label>

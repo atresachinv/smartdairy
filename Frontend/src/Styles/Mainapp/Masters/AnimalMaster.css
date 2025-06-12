@@ -118,7 +118,11 @@
     justify-content: space-between;
   }
   .animal-info-btns .w-btn {
+<<<<<<< HEAD
     width: 45%;
+=======
+    width: 40%;
+>>>>>>> 15d2ec3cced1b3b7db770c061ba7382082441362
     margin: 10px;
   }
   .animal-master-container .animal-details-info-container {

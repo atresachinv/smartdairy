@@ -8,11 +8,19 @@
 @media screen and (max-width: 426px) {
   .rate-chart-master-container {
     flex-direction: column;
-    height: auto;
+    min-height: auto;
   }
   .rate-chart-master-container .select-ratechart-container {
     width: 100%;
-    min-height: 70%;
+    min-height: 80%;
+    padding: 0;
+    margin-bottom: 10px;
+  }
+  .select-ratechart-container .select-excel-container {
+    margin-bottom: 10px;
+  }
+  .select-ratechart-container .select-excel-container .label-text {
+    width: 50%;
   }
   .rate-chart-master-container .save-ratechart-container {
     width: 100%;
@@ -20,8 +28,12 @@
   }
   .save-ratechart-container .previous-rate-chart-container {
     min-height: 50%;
+    margin-bottom: 10px;
   }
-  .apphome-nav-views .rate-chart-setting-div {
+  .save-ratechart-container .button-div .btn{
+    width: 30%;
+  }
+  .save-ratechart-container .rate-chart-options-container {
     min-height: 65%;
   }
   .rate-chart-div .rate-chart-row-value {

@@ -380,7 +380,7 @@ const MilksalesReport = () => {
       </div>
       <div className="milk-sales-data-div w100 d-flex-col h90 mh90 hidescrollbar bg">
         <div className="sales-info-heading w100 h10 d-flex a-center t-center sticky-top py10 sa bg7">
-          <span className="f-label-text w10">{t("Bill Date")}</span>
+          <span className="f-label-text w10">{t("बिल दि.")}</span>
           <span className="f-label-text w10">
             {t("milkcollection:m-cust-code")}
           </span>

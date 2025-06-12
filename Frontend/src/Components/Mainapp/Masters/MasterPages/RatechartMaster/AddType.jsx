@@ -132,11 +132,11 @@ const AddType = () => {
             />
           </div>
           <div className="select-animal-type w70 h1 a-center d-flex">
-            <label htmlFor="rctype" className="info-text w35">
+            <label htmlFor="rctype" className="info-text w40">
               {t("rc-type")} :
             </label>
             <input
-              className={`data w55 ${errors.rctype ? "input-error" : ""}`}
+              className={`data w70 ${errors.rctype ? "input-error" : ""}`}
               type="text"
               name="rctype"
               id="rctype"

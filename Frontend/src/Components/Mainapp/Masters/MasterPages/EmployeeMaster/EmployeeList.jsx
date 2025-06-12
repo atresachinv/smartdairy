@@ -18,9 +18,7 @@ const EmployeeList = () => {
   const deleteStatus = useSelector((state) => state.emp.deleteStatus);
   const [filteredEmpList, setFilteredEmpList] = useState([]);
   const [selectedCenter, setSelectedCenter] = useState("");
-  const centerList = useSelector(
-    (state) => state.center.centersList || []
-  );
+  const centerList = useSelector((state) => state.center.centersList || []);
 
   useEffect(() => {
     dispatch(centersLists());
@@ -75,7 +73,7 @@ const EmployeeList = () => {
 
   return (
     <div className="emp-list-container w70 h90 d-flex-col">
-      <div className="title-div w100 h10 d-flex a-center sb px10">
+      <div className="title-div w100 h10 d-flex a-center sb px10 my10">
         <span className="heading w30 t-center">Employee List</span>
         <div className="filter-emp-by-center w60 d-flex a-center">
           <span className="label-text w40 p10">{t("center List")}</span>
@@ -94,8 +92,8 @@ const EmployeeList = () => {
           </select>
         </div>
       </div>
-      <div className="emp-data-list-container w100 h1 d-flex-col bg">
-        <div className="emp-data-heading-div w100 h10 d-flex a-center sb br9 bg7">
+      <div className="emp-data-list-container w100 h90 d-flex-col bg">
+        <div className="emp-data-heading-div w100 py10 d-flex a-center sb br-top bg7">
           <span className="f-label-text w10  t-center">Id</span>
           <span className="f-label-text w30  t-center">Employee Name</span>
           <span className="f-label-text w20  t-center">Designation</span>
@@ -107,7 +105,7 @@ const EmployeeList = () => {
           {filteredEmpList.map((emp, i) => (
             <div
               key={i + 3}
-              className={`emp-data-div w100 h10 d-flex a-center t-center sb ${
+              className={`emp-data-div w100 py10 d-flex a-center t-center sb ${
                 i % 2 === 0 ? "bg-light" : "bg-dark"
               }`}
               style={{ backgroundColor: i % 2 === 0 ? "#faefe3" : "#fff" }}

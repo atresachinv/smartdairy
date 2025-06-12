@@ -40,6 +40,7 @@ const MilkRateMaster = () => {
     animalType: 0,
     rcdate: "",
   });
+
   useEffect(() => {
     dispatch(fetchMaxRcCode());
     dispatch(fetchMaxRctype());
@@ -217,9 +218,9 @@ const MilkRateMaster = () => {
 
   return (
     <>
-      <div className="rate-chart-master-container w100 h1 d-flex sb">
+      <div className="rate-chart-master-container w100 h1 d-flex p10 sb">
         <div className="select-ratechart-container w40 h1 d-flex-col sa p10">
-          <div className="select-excel-container w100 h10 d-flex a-center my10 sb">
+          <div className="select-excel-container w100 h10 d-flex a-center py10 sb">
             <span className="label-text w40">
               {!fileName ? `${t("rc-s-excel")}` : `${fileName}`}
             </span>
@@ -289,9 +290,9 @@ const MilkRateMaster = () => {
             </div>
           </div>
         </div>
-        <div className="save-ratechart-container w45 h1 d-flex-col p10">
-          <span className="heading p10">{t("rc-prev-rc")} : </span>
-          <div className="previous-rate-chart-container w100 h40 d-flex-col bg my10 mh100 hidescrollbar">
+        <div className="save-ratechart-container w45 h1 d-flex-col">
+          <span className="heading">{t("rc-prev-rc")} : </span>
+          <div className="previous-rate-chart-container w100 h40 d-flex-col bg mh100 hidescrollbar">
             <div className="rate-chart-col-title w100 d-flex a-center t-center sa py10 bg1 sticky-top">
               <span className="f-info-text w10">{t("rc-no")}</span>
               <span className="f-info-text w20">{t("rc-date")}</span>
@@ -327,7 +328,7 @@ const MilkRateMaster = () => {
                 </div>
               ))}
           </div>
-          <div className="button-div w100 h10 d-flex j-end">
+          <div className="button-div w100 h10 d-flex a-center j-end">
             <button
               type="button"
               className="btn mx10"

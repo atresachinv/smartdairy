@@ -613,21 +613,17 @@ const Milkbill = () => {
 
     return words + " Only";
   }
-
   const printMilkBillPages = ({
     fromCode,
     toCode,
     data,
     allDeductions,
     payDetails,
-    dairyname,
-    fromDate,
-    toDate,
+   
   }) => {
     const start = fromCode;
     const end = toCode;
     const customerCodes = [];
-
     for (let code = start; code <= end; code++) {
       customerCodes.push(code.toString());
     }
@@ -635,68 +631,56 @@ const Milkbill = () => {
     const formatDate = (dateStr) =>
       new Date(dateStr).toLocaleDateString("hi-IN");
 
-    const numberToWords = (num) => {
-      return `₹${num.toFixed(2)} only`;
-    };
-
     const buildCombinedRows = (records, total) =>
       records
         .map((rec) => {
           total.liters +=
             parseFloat(rec.litres || 0) + parseFloat(rec.litres1 || 0);
           total.amount += parseFloat(rec.Amt || 0) + parseFloat(rec.Amt1 || 0);
-
           return `
-            <tr>
-              <td>${formatDate(rec.date)}</td>
-              <td style="text-align:right;">${rec.litres}</td>
-              <td style="text-align:right;">${rec.fat}</td>
-              <td style="text-align:right;">${rec.snf}</td>
-              <td style="text-align:right;">${rec.rate}</td>
-              <td style="text-align:right;">${rec.Amt}</td>
-              <td style="text-align:right;">${rec.litres1}</td>
-              <td style="text-align:right;">${rec.fat1}</td>
-              <td style="text-align:right;">${rec.snf1}</td>
-              <td style="text-align:right;">${rec.rate1}</td>
-              <td style="text-align:right;">${rec.Amt1}</td>
-            </tr>
-          `;
+          <tr>
+            <td>${formatDate(rec.date)}</td>
+            <td>${rec.litres}</td><td>${rec.fat}</td><td>${rec.snf}</td><td>${
+            rec.rate
+          }</td><td>${rec.Amt}</td>
+            <td>${rec.litres1}</td><td>${rec.fat1}</td><td>${
+            rec.snf1
+          }</td><td>${rec.rate1}</td><td>${rec.Amt1}</td>
+          </tr>`;
         })
         .join("");
 
     const deductionRows = (records) =>
       records
-        .filter((d) => d.AMT && parseFloat(d.AMT) !== 0)
+        .filter(
+          (d) => d.AMT && parseFloat(d.AMT) !== 0 && d.dname?.trim() !== ""
+        )
         .map(
           (d) => `
-          <tr>
-            <td>${d.dname}</td>
-            <td style="text-align:right;">${parseFloat(d.AMT).toFixed(2)}</td>
-          </tr>
-        `
+        <tr><td>${d.dname}</td><td style="text-align:right;">${parseFloat(
+            d.AMT
+          ).toFixed(2)}</td></tr>
+      `
         )
         .join("");
 
     const buildPaymentSummary = (payment) => {
       if (payment.length === 0)
         return "<tr><td colspan='2'>No payment data</td></tr>";
-
       const pay = payment[0];
       const rows = [
-        ["Liter", parseFloat(pay.tliters || 0).toFixed(2)],
-        ["Avg Rate", parseFloat(pay.arate || 0).toFixed(2)],
-        ["Total Payment", parseFloat(pay.pamt || 0).toFixed(2)],
-        ["Total Deduction", parseFloat(pay.damt || 0).toFixed(2)],
-        ["Net Payment", parseFloat(pay.namt || 0).toFixed(2)],
+        ["Liter", pay.tliters],
+        ["Avg Rate", pay.arate],
+        ["Total Payment", pay.pamt],
+        ["Total Deduction", pay.damt],
+        ["Net Payment", pay.namt],
       ];
-
       return rows
         .map(
-          ([label, value]) => `
-          <tr>
-            <td>${label}</td>
-            <td style="text-align:right;">${value}</td>
-          </tr>
+          ([label, val]) => `
+          <tr><td>${label}</td><td style="text-align:right;">${parseFloat(
+            val || 0
+          ).toFixed(2)}</td></tr>
         `
         )
         .join("");
@@ -712,7 +696,7 @@ const Milkbill = () => {
         );
 
         const custMilkData = morningData.map((mData) => {
-          const matchingEvening = eveningData.find(
+          const evening = eveningData.find(
             (e) => e.ReceiptDate === mData.ReceiptDate
           );
           return {
@@ -722,21 +706,21 @@ const Milkbill = () => {
             snf: mData.snf,
             rate: mData.rate,
             Amt: mData.Amt,
-            litres1: matchingEvening?.Litres || 0,
-            fat1: matchingEvening?.fat || 0,
-            snf1: matchingEvening?.snf || 0,
-            rate1: matchingEvening?.rate || 0,
-            Amt1: matchingEvening?.Amt || 0,
+            litres1: evening?.Litres || 0,
+            fat1: evening?.fat || 0,
+            snf1: evening?.snf || 0,
+            rate1: evening?.rate || 0,
+            Amt1: evening?.Amt || 0,
           };
         });
 
-        if (morningData.length === 0 && eveningData.length === 0) return "";
+        if (custMilkData.length === 0) return "";
 
         const customerName =
           morningData[0]?.cname || eveningData[0]?.cname || "";
 
         const deductions = allDeductions.filter(
-          (d) => d.Code.toString() === code
+          (d) => d.Code.toString() === code && parseFloat(d.AMT || 0) !== 0
         );
         const payments = payDetails.filter(
           (p) => p.Code.toString() === code && p.dtype.toString() === "2"
@@ -747,61 +731,58 @@ const Milkbill = () => {
           payments.length > 0 ? parseFloat(payments[0].namt || 0) : 0;
 
         return `
-        <div style="page-break-after: always; border: 2px solid black; padding: 10px;">
-          <h2 style="text-align: center;">${dairyname}</h2>
-          <p style="text-align: center;"><strong>Period:</strong> ${formatDate(
-            fromDate
-          )} to ${formatDate(toDate)}</p>
+        <div class="page">
+          <h2>${dairyname}</h2>
+          <p><strong>Period:</strong> ${formatDate(fromDate)} to ${formatDate(
+          toDate
+        )}</p>
+          <p><strong>Code:</strong> ${code} | <strong>Name:</strong> ${customerName}</p>
   
-          <p><strong>कोड:</strong> ${code} | <strong>नाव:</strong> ${customerName}</p>
-  
-          <h4 style="text-align:center;">सकाळ व सायंकाळ</h4>
-          <table border="1" width="100%" style="border-collapse: collapse;">
-            <tr>
-              <th rowspan="2">तारीख</th>
-              <th colspan="5">सकाळ</th>
-              <th colspan="5">सायंकाळ</th>
-            </tr>
-            <tr>
-              <th>लिटर</th><th>फॅट</th><th>SNF</th><th>दर</th><th>रक्कम</th>
-              <th>लिटर</th><th>फॅट</th><th>SNF</th><th>दर</th><th>रक्कम</th>
-            </tr>
-            ${buildCombinedRows(custMilkData, total)}
-            <tr style="font-weight: bold;">
-              <td>Total</td>
-              <td colspan="5" style="text-align:right;">लिटर: ${total.liters.toFixed(
-                2
-              )}</td>
-              <td colspan="5" style="text-align:right;">रक्कम: ₹${total.amount.toFixed(
-                2
-              )}</td>
-            </tr>
+          <table class="milk-table">
+            <thead>
+              <tr>
+                <th rowspan="2">Date</th>
+                <th colspan="5">Morning</th>
+                <th colspan="5">Evening</th>
+              </tr>
+              <tr>
+                <th>Lit</th><th>Fat</th><th>SNF</th><th>Rate</th><th>Amt</th>
+                <th>Lit</th><th>Fat</th><th>SNF</th><th>Rate</th><th>Amt</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${buildCombinedRows(custMilkData, total)}
+              <tr style="font-weight:bold;">
+                <td>Total</td>
+                <td colspan="5" style="text-align:right;">Litres: ${total.liters.toFixed(
+                  2
+                )}</td>
+                <td colspan="5" style="text-align:right;">Amount: ₹${total.amount.toFixed(
+                  2
+                )}</td>
+              </tr>
+            </tbody>
           </table>
   
-          <h4>कपात व पेमेंट सारांश:</h4>
-          <table border="1" width="100%" style="border-collapse: collapse;">
-            <tr>
-              <td width="50%" valign="top">
-                <table border="1" width="100%" style="border-collapse: collapse;">
-                  <tr><th>कपातीचे नाव</th><th>कपात</th></tr>
-                  ${deductionRows(deductions)}
-                </table>
-              </td>
-              <td width="50%" valign="top">
-                <table border="1" width="100%" style="border-collapse: collapse;">
-                  <tr><th colspan="2" style="text-align: center;">Payment Summary</th></tr>
-                  ${buildPaymentSummary(payments)}
-                </table>
-              </td>
-            </tr>
-          </table>
+          <div class="summary-row">
+            <div class="summary-box">
+              <table>
+                <thead><tr><th>Deduction Name</th><th>Amount</th></tr></thead>
+                <tbody>${deductionRows(deductions)}</tbody>
+              </table>
+            </div>
+            <div class="summary-box">
+              <table>
+                <thead><tr><th colspan="2" style="text-align:center;">Payment Summary</th></tr></thead>
+                <tbody>${buildPaymentSummary(payments)}</tbody>
+              </table>
+            </div>
+          </div>
   
-          <h3>एकूण रक्कम: ₹${netPaymentAmt.toFixed(2)}</h3>
-          <p><strong>Amount in Words:</strong> ${numberToWords(
-            netPaymentAmt
-          )}</p>
+          <p><strong>Total Payable:</strong> ₹${netPaymentAmt.toFixed(2)}</p>
+          <p><strong>In Words:</strong> ${numberToWords(netPaymentAmt)}</p>
         </div>
-        `;
+      `;
       })
       .join("");
 
@@ -811,23 +792,47 @@ const Milkbill = () => {
         <head>
           <title>Milk Bills</title>
           <style>
+            @media print {
+              .page {
+                page-break-after: always;
+                padding: 10mm;
+                width: 210mm;
+                height: 297mm;
+                box-sizing: border-box;
+              }
+            }
             body {
-              font-family: "Noto Sans Devanagari", Arial, sans-serif;
-              padding: 20px;
+              margin: 0;
+              font-family: "Noto Sans Devanagari", sans-serif;
+              font-size: 11px;
+              line-height: 1.3;
+            }
+            h2 {
+              text-align: center;
+              margin: 0 0 5px;
+            }
+            p {
+              margin: 2px 0;
             }
             table {
-              font-size: 12px;
-              margin-top: 10px;
+              width: 100%;
+              border-collapse: collapse;
+              font-size: 10px;
+              margin-top: 5px;
             }
-            th {
+            th, td {
+              border: 1px solid #333;
+              padding: 2px 4px;
               text-align: center;
             }
-            td {
-              text-align: right;
-              padding-right: 6px;
+            .summary-row {
+              display: flex;
+              justify-content: space-between;
+              gap: 10px;
+              margin-top: 10px;
             }
-            h2, h3, h4 {
-              margin-bottom: 5px;
+            .summary-box {
+              flex: 1;
             }
           </style>
         </head>
@@ -1059,9 +1064,7 @@ const Milkbill = () => {
     data,
     allDeductions,
     payDetails,
-    dairyname,
-    fromDate,
-    toDate,
+  
   }) => {
     const start = fromCode;
     const end = toCode;
@@ -1070,18 +1073,10 @@ const Milkbill = () => {
     for (let code = start; code <= end; code++) {
       customerCodes.push(code.toString());
     }
-
     const formatDate = (dateStr) =>
       new Date(dateStr).toLocaleDateString("hi-IN");
-
-    const numberToWords = (num) => {
-      // Simplified number to words function
-      return `₹${num.toFixed(2)} only`;
-    };
-
     const buildMergedMilkRows = (records, total) => {
       const groupedByDate = {};
-
       records.forEach((rec) => {
         const date = rec.ReceiptDate;
         if (!groupedByDate[date]) {
@@ -1148,11 +1143,11 @@ const Milkbill = () => {
         )
         .map(
           (d) => `
-          <tr>
-            <td>${d.dname}</td>
-            <td>${parseFloat(d.AMT).toFixed(2)}</td>
-          </tr>
-        `
+        <tr>
+          <td>${d.dname}</td>
+          <td>${parseFloat(d.AMT).toFixed(2)}</td>
+        </tr>
+      `
         )
         .join("");
 
@@ -1161,7 +1156,6 @@ const Milkbill = () => {
         return "<tr><td colspan='2'>No payment data</td></tr>";
 
       const pay = payment[0];
-
       const rows = [
         ["Liter", parseFloat(pay.tliters || 0).toFixed(2)],
         ["Avg Rate", parseFloat(pay.arate || 0).toFixed(2)],
@@ -1188,69 +1182,66 @@ const Milkbill = () => {
         if (custData.length === 0) return "";
 
         const customerName = custData[0]?.cname || "";
-
         const deductions = allDeductions.filter(
           (d) => d.Code.toString() === code
         );
         const payments = payDetails.filter(
           (p) => p.Code.toString() === code && p.dtype.toString() === "2"
         );
-
         const total = { liters: 0, amount: 0 };
         const netPaymentAmt =
           payments.length > 0 ? parseFloat(payments[0].namt || 0) : 0;
 
         return `
-          <div style="page-break-after: always; border: 2px solid black; padding: 10px;">
-            <h2 style="text-align: center;">${dairyname}</h2>
-            <p style="text-align: center;"><strong>Period:</strong> ${formatDate(
+          <div class="page">
+            <h3 class="center">${dairyname}</h3>
+            <div class="small center">Period: ${formatDate(
               fromDate
-            )} to ${formatDate(toDate)}</p>
-            <p><strong>कोड:</strong> ${code} | <strong>नाव:</strong> ${customerName}</p>
+            )} to ${formatDate(toDate)}</div>
+            <div class="info"><strong>Code:</strong> ${code} | <strong>Name:</strong> ${customerName}</div>
   
-            <h4 style="text-align:center;">Milk Collection</h4>
-            <table border="1" width="100%">
-              <tr>
-                <th>तारीख</th>
-                <th>एकूण लिटर</th>
-                <th>सरासरी दर</th>
-                <th>सरासरी FAT</th>
-                <th>सरासरी SNF</th>
-                <th>एकूण रक्कम</th>
-              </tr>
-              ${buildMergedMilkRows(custData, total)}
-              <tr style="font-weight: bold;">
-                <td>Total</td>
-                <td>${total.liters.toFixed(2)}</td>
-                <td>-</td>
-                <td>-</td>
-                <td>-</td>
-                <td>${total.amount.toFixed(2)}</td>
-              </tr>
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>तारीख</th>
+                  <th>लिटर</th>
+                  <th>दर</th>
+                  <th>FAT</th>
+                  <th>SNF</th>
+                  <th>रक्कम</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${buildMergedMilkRows(custData, total)}
+                <tr class="bold">
+                  <td>Total</td>
+                  <td>${total.liters.toFixed(2)}</td>
+                  <td colspan="3"></td>
+                  <td>${total.amount.toFixed(2)}</td>
+                </tr>
+              </tbody>
             </table>
   
-            <h4>कपात व पेमेंट सारांश:</h4>
-            <div style="display: flex; flex-direction: column; gap: 10px;">
-              <table border="1" width="100%">
-                <tr>
-                  <th>कपातीचे नाव</th>
-                  <th>कपात</th>
-                </tr>
-                ${deductionRows(deductions)}
+            <div class="row">
+              <table class="table small left-align">
+                <thead>
+                  <tr><th>कपातीचे नाव</th><th>रक्कम</th></tr>
+                </thead>
+                <tbody>${deductionRows(deductions)}</tbody>
               </table>
   
-              <table border="1" width="100%">
-                <tr>
-                  <th colspan="2" style="text-align: center;">Payment Summary</th>
-                </tr>
-                ${buildPaymentSummary(payments)}
+              <table class="table small left-align">
+                <thead>
+                  <tr><th colspan="2" class="center">Payment Summary</th></tr>
+                </thead>
+                <tbody>${buildPaymentSummary(payments)}</tbody>
               </table>
             </div>
   
-            <h3>एकूण रक्कम: ₹${netPaymentAmt.toFixed(2)}</h3>
-            <p><strong>Amount in Words:</strong> ${numberToWords(
-              netPaymentAmt
-            )}</p>
+            <div class="summary">
+              <strong>एकूण रक्कम: ₹${netPaymentAmt.toFixed(2)}</strong><br />
+              <em>Amount in Words: ${numberToWords(netPaymentAmt)}</em>
+            </div>
           </div>
         `;
       })
@@ -1263,23 +1254,54 @@ const Milkbill = () => {
           <title>Milk Bills</title>
           <style>
             body {
-              font-family: "Noto Sans Devanagari", Arial, sans-serif;
-              padding: 20px;
+              font-family: Arial, sans-serif;
+              margin: 0;
+              padding: 8px;
             }
-            table {
-              font-size: 12px;
-              margin-top: 10px;
-              border-collapse: collapse;
+            .page {
+              width: 100%;
+              page-break-after: always;
+              border: 1px solid #000;
+              padding: 6px;
+              box-sizing: border-box;
             }
-            th {
+            .center {
               text-align: center;
             }
-            td {
-              text-align: right;
-              padding-right: 6px;
+            .small {
+              font-size: 11px;
             }
-            h2, h3, h4 {
-              margin-bottom: 5px;
+            .info {
+              font-size: 11px;
+              margin-bottom: 4px;
+            }
+            .table {
+              width: 100%;
+              border-collapse: collapse;
+              font-size: 10px;
+              margin-top: 4px;
+            }
+            .table th, .table td {
+              border: 1px solid #000;
+              padding: 2px 4px;
+            }
+            .left-align td, .left-align th {
+              text-align: left;
+            }
+            .row {
+              display: flex;
+              gap: 10px;
+              margin-top: 6px;
+            }
+            .row table {
+              width: 50%;
+            }
+            .summary {
+              margin-top: 6px;
+              font-size: 11px;
+            }
+            .bold td {
+              font-weight: bold;
             }
           </style>
         </head>
