@@ -38,11 +38,11 @@ const Milkbill = () => {
   const [toCode, setToCode] = React.useState("");
   const [centerdata, setCenterData] = React.useState("");
   const profile = useSelector((state) => state.userinfo.profile);
+  console.log("payDetails", payDetails);
 
   useEffect(() => {
     dispatch(centersLists());
   }, [dispatch]);
-  console.log(allDeductions);
   //......   Dairy name And City name   for PDf heading
   const dairyname = useSelector(
     (state) =>
@@ -213,10 +213,10 @@ const Milkbill = () => {
         fetchPaymentDetails({
           fromdate: fromDate,
           todate: toDate,
+          center_id: selectedCenterId,
         })
       ).unwrap();
     }
-    console.log("payDetails", payDetails);
     try {
       if (fromDate && toDate) {
         const result = await dispatch(
@@ -370,7 +370,7 @@ const Milkbill = () => {
     setSelectedCenterId(e.target.value);
     console.log("Selected Center ID:", e.target.value);
   };
-  // Pdf
+  // Pdf ----------------->
   const exportMilkCollectionPDF = (
     cmilkdata = [],
     cname = cmilkdata[0]?.cname || "",
@@ -536,8 +536,83 @@ const Milkbill = () => {
 
     doc.save("MilkCollectionBill.pdf");
   };
-  //.. Milk Collection Print Function
-  //first formatt
+
+  //First Formatt
+  function numberToWords(num) {
+    const a = [
+      "",
+      "One",
+      "Two",
+      "Three",
+      "Four",
+      "Five",
+      "Six",
+      "Seven",
+      "Eight",
+      "Nine",
+      "Ten",
+      "Eleven",
+      "Twelve",
+      "Thirteen",
+      "Fourteen",
+      "Fifteen",
+      "Sixteen",
+      "Seventeen",
+      "Eighteen",
+      "Nineteen",
+    ];
+    const b = [
+      "",
+      "",
+      "Twenty",
+      "Thirty",
+      "Forty",
+      "Fifty",
+      "Sixty",
+      "Seventy",
+      "Eighty",
+      "Ninety",
+    ];
+
+    const inWords = (n) => {
+      if (n < 20) return a[n];
+      if (n < 100)
+        return b[Math.floor(n / 10)] + (n % 10 ? " " + a[n % 10] : "");
+      if (n < 1000)
+        return (
+          a[Math.floor(n / 100)] +
+          " Hundred" +
+          (n % 100 ? " " + inWords(n % 100) : "")
+        );
+      if (n < 100000)
+        return (
+          inWords(Math.floor(n / 1000)) +
+          " Thousand" +
+          (n % 1000 ? " " + inWords(n % 1000) : "")
+        );
+      if (n < 10000000)
+        return (
+          inWords(Math.floor(n / 100000)) +
+          " Lakh" +
+          (n % 100000 ? " " + inWords(n % 100000) : "")
+        );
+      return (
+        inWords(Math.floor(n / 10000000)) +
+        " Crore" +
+        (n % 10000000 ? " " + inWords(n % 10000000) : "")
+      );
+    };
+
+    if (num === 0) return "Zero Rupees Only";
+
+    const rupees = Math.floor(num);
+    const paise = Math.round((num - rupees) * 100);
+
+    let words = inWords(rupees) + " Rupees";
+    if (paise > 0) words += " and " + inWords(paise) + " Paise";
+
+    return words + " Only";
+  }
   const printMilkBillPages = ({
     fromCode,
     toCode,
@@ -545,51 +620,70 @@ const Milkbill = () => {
     allDeductions,
     payDetails,
   }) => {
-    // Generate list of customer codes in range
     const start = fromCode;
     const end = toCode;
     const customerCodes = [];
-    let code = start;
-
-    for (code; code <= end; code++) {
+    for (let code = start; code <= end; code++) {
       customerCodes.push(code.toString());
     }
 
     const formatDate = (dateStr) =>
       new Date(dateStr).toLocaleDateString("hi-IN");
 
-    const buildRows = (records) =>
+    const buildCombinedRows = (records, total) =>
       records
-        .map(
-          (rec) => `
-        <tr>
-          <td>${formatDate(rec.date)}</td>
-          <td>${rec.litres}</td>
-          <td>${rec.fat}</td>
-          <td>${rec.snf}</td>
-          <td>${rec.rate}</td>
-          <td>${rec.Amt}</td>
-          <td>${rec.litres1}</td>
-          <td>${rec.fat1}</td>
-          <td>${rec.snf1}</td>
-          <td>${rec.rate1}</td>
-          <td>${rec.Amt1}</td>
-        </tr>
-      `
-        )
+        .map((rec) => {
+          total.liters +=
+            parseFloat(rec.litres || 0) + parseFloat(rec.litres1 || 0);
+          total.amount += parseFloat(rec.Amt || 0) + parseFloat(rec.Amt1 || 0);
+          return `
+          <tr>
+            <td>${formatDate(rec.date)}</td>
+            <td>${rec.litres}</td><td>${rec.fat}</td><td>${rec.snf}</td><td>${
+            rec.rate
+          }</td><td>${rec.Amt}</td>
+            <td>${rec.litres1}</td><td>${rec.fat1}</td><td>${
+            rec.snf1
+          }</td><td>${rec.rate1}</td><td>${rec.Amt1}</td>
+          </tr>`;
+        })
         .join("");
 
     const deductionRows = (records) =>
       records
+        .filter(
+          (d) => d.AMT && parseFloat(d.AMT) !== 0 && d.dname?.trim() !== ""
+        )
         .map(
           (d) => `
-        <tr>
-          <td>${d.dname}</td>
-          <td>${d.AMT}</td>
-        </tr>
+        <tr><td>${d.dname}</td><td style="text-align:right;">${parseFloat(
+            d.AMT
+          ).toFixed(2)}</td></tr>
       `
         )
         .join("");
+
+    const buildPaymentSummary = (payment) => {
+      if (payment.length === 0)
+        return "<tr><td colspan='2'>No payment data</td></tr>";
+      const pay = payment[0];
+      const rows = [
+        ["Liter", pay.tliters],
+        ["Avg Rate", pay.arate],
+        ["Total Payment", pay.pamt],
+        ["Total Deduction", pay.damt],
+        ["Net Payment", pay.namt],
+      ];
+      return rows
+        .map(
+          ([label, val]) => `
+          <tr><td>${label}</td><td style="text-align:right;">${parseFloat(
+            val || 0
+          ).toFixed(2)}</td></tr>
+        `
+        )
+        .join("");
+    };
 
     const allPagesHTML = customerCodes
       .map((code) => {
@@ -601,7 +695,7 @@ const Milkbill = () => {
         );
 
         const custMilkData = morningData.map((mData) => {
-          const matchingEvening = eveningData.find(
+          const evening = eveningData.find(
             (e) => e.ReceiptDate === mData.ReceiptDate
           );
           return {
@@ -611,69 +705,83 @@ const Milkbill = () => {
             snf: mData.snf,
             rate: mData.rate,
             Amt: mData.Amt,
-            litres1: matchingEvening?.Litres || 0,
-            fat1: matchingEvening?.fat || 0,
-            snf1: matchingEvening?.snf || 0,
-            rate1: matchingEvening?.rate || 0,
-            Amt1: matchingEvening?.Amt || 0,
+            litres1: evening?.Litres || 0,
+            fat1: evening?.fat || 0,
+            snf1: evening?.snf || 0,
+            rate1: evening?.rate || 0,
+            Amt1: evening?.Amt || 0,
           };
         });
 
-        // Skip customers with no milk data
-        if (morningData.length === 0 && eveningData.length === 0) return "";
+        if (custMilkData.length === 0) return "";
 
         const customerName =
           morningData[0]?.cname || eveningData[0]?.cname || "";
 
         const deductions = allDeductions.filter(
-          (d) => d.Code.toString() === code
+          (d) => d.Code.toString() === code && parseFloat(d.AMT || 0) !== 0
         );
         const payments = payDetails.filter(
-          (p) => p.Code.toString() === code && p.dtype.toString() === 2
+          (p) => p.Code.toString() === code && p.dtype.toString() === "2"
         );
 
-        const totalMorningAmt = morningData.reduce(
-          (sum, d) => sum + parseFloat(d.Amt || 0),
-          0
-        );
-        const totalEveningAmt = eveningData.reduce(
-          (sum, d) => sum + parseFloat(d.Amt || 0),
-          0
-        );
-
-        const totalAmt = totalMorningAmt + totalEveningAmt;
+        const total = { liters: 0, amount: 0 };
+        const netPaymentAmt =
+          payments.length > 0 ? parseFloat(payments[0].namt || 0) : 0;
 
         return `
-        <div style="page-break-after: always;">
-          <h2>दूध संकलन बिल</h2>
-          <p><strong>कोड:</strong> ${code} | <strong>नाव:</strong> ${customerName}</p>
+        <div class="page">
+          <h2>${dairyname}</h2>
+          <p><strong>Period:</strong> ${formatDate(fromDate)} to ${formatDate(
+          toDate
+        )}</p>
+          <p><strong>Code:</strong> ${code} | <strong>Name:</strong> ${customerName}</p>
   
-          <h4>सकाळ:</h4>
-          <table border="1" width="100%" style="border-collapse: collapse;">
-            <tr><th colspan="6" style="text-align: center;">सकाळ</th><th colspan="5" style="text-align: center;">सायंकाळ:</th></tr>
-            <tr><th class="date-center">तारीख</th><th class="data-text">लिटर</th><th>फॅट</th><th>SNF</th><th>दर</th><th>रक्कम</th><th>लिटर</th><th>फॅट</th><th>SNF</th><th>दर</th><th>रक्कम</th></tr>
-            ${buildRows(custMilkData)}
+          <table class="milk-table">
+            <thead>
+              <tr>
+                <th rowspan="2">Date</th>
+                <th colspan="5">Morning</th>
+                <th colspan="5">Evening</th>
+              </tr>
+              <tr>
+                <th>Lit</th><th>Fat</th><th>SNF</th><th>Rate</th><th>Amt</th>
+                <th>Lit</th><th>Fat</th><th>SNF</th><th>Rate</th><th>Amt</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${buildCombinedRows(custMilkData, total)}
+              <tr style="font-weight:bold;">
+                <td>Total</td>
+                <td colspan="5" style="text-align:right;">Litres: ${total.liters.toFixed(
+                  2
+                )}</td>
+                <td colspan="5" style="text-align:right;">Amount: ₹${total.amount.toFixed(
+                  2
+                )}</td>
+              </tr>
+            </tbody>
           </table>
-
-          <h4>कपात:</h4>
-          <table border="1" width="100%" style="border-collapse: collapse;">
-          <tr><th colspan="1" style="text-align: center;">कपातीचे नाव :</th><th colspan="1" style="text-align: center;">कपात:</th></tr>
-           ${deductionRows(deductions)}
-          </table>
-          
   
-          <h4>पेमेंट:</h4>
-          <ul>
-            ${payments
-              .map(
-                (p) => `<li>${p.pname || "पेमेंट"}: ₹${parseFloat(p.Amt)}</li>`
-              )
-              .join("")}
-          </ul>
+          <div class="summary-row">
+            <div class="summary-box">
+              <table>
+                <thead><tr><th>Deduction Name</th><th>Amount</th></tr></thead>
+                <tbody>${deductionRows(deductions)}</tbody>
+              </table>
+            </div>
+            <div class="summary-box">
+              <table>
+                <thead><tr><th colspan="2" style="text-align:center;">Payment Summary</th></tr></thead>
+                <tbody>${buildPaymentSummary(payments)}</tbody>
+              </table>
+            </div>
+          </div>
   
-          <h3>एकूण रक्कम: ₹${totalAmt.toFixed(2)}</h3>
+          <p><strong>Total Payable:</strong> ₹${netPaymentAmt.toFixed(2)}</p>
+          <p><strong>In Words:</strong> ${numberToWords(netPaymentAmt)}</p>
         </div>
-        `;
+      `;
       })
       .join("");
 
@@ -683,14 +791,47 @@ const Milkbill = () => {
         <head>
           <title>Milk Bills</title>
           <style>
-            body { font-family: "Noto Sans Devanagari", Arial, sans-serif; padding: 20px; }
-            table { font-size: 12px; margin-top: 10px; }
-            h2, h3, h4 { margin-bottom: 5px; }
-            th.data-text {
-              text-align: left;
+            @media print {
+              .page {
+                page-break-after: always;
+                padding: 10mm;
+                width: 210mm;
+                height: 297mm;
+                box-sizing: border-box;
+              }
             }
-            th.date-center {
+            body {
+              margin: 0;
+              font-family: "Noto Sans Devanagari", sans-serif;
+              font-size: 11px;
+              line-height: 1.3;
+            }
+            h2 {
               text-align: center;
+              margin: 0 0 5px;
+            }
+            p {
+              margin: 2px 0;
+            }
+            table {
+              width: 100%;
+              border-collapse: collapse;
+              font-size: 10px;
+              margin-top: 5px;
+            }
+            th, td {
+              border: 1px solid #333;
+              padding: 2px 4px;
+              text-align: center;
+            }
+            .summary-row {
+              display: flex;
+              justify-content: space-between;
+              gap: 10px;
+              margin-top: 10px;
+            }
+            .summary-box {
+              flex: 1;
             }
           </style>
         </head>
@@ -704,7 +845,7 @@ const Milkbill = () => {
     win.print();
   };
 
-  //  second formatt
+  //. Second Formatt
   const printMilkCollection = (
     cmilkdata = [],
     cname = "",
@@ -735,43 +876,21 @@ const Milkbill = () => {
       cname = cmilkdata[0]?.cname || "";
     }
 
+    if (!customerCode && cmilkdata.length > 0) {
+      customerCode = cmilkdata[0]?.ccode || "";
+    }
+
     if (!billno && payment.length > 0) {
       billno = payment[0]?.BillNo || "";
     }
 
-    const doc = new jsPDF("portrait");
-
-    // Draw border
-    doc.setDrawColor(0);
-    doc.rect(5, 5, 200, 287);
-
-    // Header
-    doc.setFontSize(14);
-    doc.text(dairyname, 105, 12, { align: "center" });
-
-    doc.setFontSize(9);
-    doc.text("Milk Payment Summary", 105, 18, { align: "center" });
-    doc.text("Page No.: 1", 15, 24);
-    doc.text(`Date: ${new Date().toLocaleDateString("hi-IN")}`, 150, 24);
-    doc.text(
-      `Master Duration: From ${String(fromDate)} To ${String(toDate)}`,
-      15,
-      30
-    );
-    doc.text(`Bill No.: ${billno}`, 150, 36);
-    doc.text(`Customer Name: ${cname}`, 15, 42);
-    doc.text(`Customer Code: ${customerCode}`, 100, 42);
-
-    // Calculate Morning & Evening Summary
     const morningData = cmilkdata.filter((d) => d.ME === 0);
     const eveningData = cmilkdata.filter((d) => d.ME === 1);
 
-    const calcSummary = (data) => {
-      return {
-        liters: data.reduce((sum, e) => sum + parseFloat(e.Litres || 0), 0),
-        amount: data.reduce((sum, e) => sum + parseFloat(e.Amt || 0), 0),
-      };
-    };
+    const calcSummary = (data) => ({
+      liters: data.reduce((sum, e) => sum + parseFloat(e.Litres || 0), 0),
+      amount: data.reduce((sum, e) => sum + parseFloat(e.Amt || 0), 0),
+    });
 
     const morningSummary = calcSummary(morningData);
     const eveningSummary = calcSummary(eveningData);
@@ -782,282 +901,458 @@ const Milkbill = () => {
       morningSummary.amount + eveningSummary.amount
     ).toFixed(2);
 
-    // ===================== Customer Summary Table =====================
-    doc.setFontSize(10);
-    doc.text("Customer Summary", 15, 50);
-
-    doc.autoTable({
-      startY: 52,
-      head: [
-        ["Customer Code", "Customer Name", "Total Liter", "Total Payment"],
-      ],
-      body: [[customerCode, cname, totalLiters, totalPayment]],
-      theme: "grid",
-      styles: { fontSize: 9 },
-      headStyles: {
-        fontStyle: "bold",
-        fillColor: [220, 220, 220],
-        textColor: [0, 0, 0],
-      },
-      margin: { left: 10 },
-      tableWidth: 190,
-    });
-
-    let nextY = doc.lastAutoTable.finalY + 5;
-
-    // ===================== Deduction Table =====================
-    if (allDeductions.length > 0) {
-      doc.setFontSize(10);
-      doc.text("Deduction Details", 15, nextY);
-
-      const deductionColumns = [
-        "Deduction Name",
-        "Remaining (MAMT)",
-        "Deduction (DAMT)",
-        "Balance (BAMT)",
-      ];
-
-      const deductionRows = allDeductions.map((item) => [
-        item.dname || "",
-        parseFloat(item.MAMT || 0).toFixed(2),
-        parseFloat(item.Amt || item.damt || 0).toFixed(2),
-        parseFloat(item.BAMT || 0).toFixed(2),
-      ]);
-
-      doc.autoTable({
-        head: [deductionColumns],
-        body: deductionRows,
-        startY: nextY + 2,
-        theme: "grid",
-        styles: { fontSize: 8 },
-        headStyles: {
-          fontStyle: "bold",
-          fillColor: [240, 240, 240],
-          textColor: [0, 0, 0],
-        },
-        margin: { left: 10 },
-        tableWidth: 190,
-      });
-
-      nextY = doc.lastAutoTable.finalY + 5;
-    }
-
-    // ===================== Account Summary Table =====================
     const anamat = payment[0]?.anamat || 0;
     const amt = payment[0]?.namt || 0;
     const accNo = accountDetails?.accno || payment[0]?.accno || "";
 
-    doc.setFontSize(10);
-    doc.text("Account Summary", 15, nextY);
+    const dateStr = new Date().toLocaleDateString("hi-IN");
 
-    doc.autoTable({
-      startY: nextY + 2,
-      head: [["Anamat", "Amount", "Account Number"]],
-      body: [
-        [parseFloat(anamat).toFixed(2), parseFloat(amt).toFixed(2), accNo],
-      ],
-      theme: "grid",
-      styles: { fontSize: 9 },
-      headStyles: {
-        fontStyle: "bold",
-        fillColor: [240, 240, 240],
-        textColor: [0, 0, 0],
-      },
-      margin: { left: 10 },
-      tableWidth: 190,
-    });
+    let bodyRows = "";
 
-    // ===================== Print PDF =====================
-    const pdfBlob = doc.output("blob");
-    const pdfUrl = URL.createObjectURL(pdfBlob);
-    const printWindow = window.open(pdfUrl);
+    if (deduction.length > 0) {
+      deduction.forEach((item, index) => {
+        bodyRows += `
+          <tr>
+            ${
+              index === 0
+                ? `<td rowspan="${deduction.length}">${customerCode}</td>`
+                : ""
+            }
+            ${
+              index === 0
+                ? `<td rowspan="${deduction.length}">${cname}</td>`
+                : ""
+            }
+            ${
+              index === 0
+                ? `<td rowspan="${deduction.length}">${totalLiters}</td>`
+                : ""
+            }
+            ${
+              index === 0
+                ? `<td rowspan="${deduction.length}">${totalPayment}</td>`
+                : ""
+            }
+            <td>${item.dname || ""}</td>
+            <td>${parseFloat(item.MAMT || 0).toFixed(2)}</td>
+            <td>${parseFloat(item.Amt || item.damt || 0).toFixed(2)}</td>
+            <td>${parseFloat(item.BAMT || 0).toFixed(2)}</td>
+            ${
+              index === 0
+                ? `<td rowspan="${deduction.length}">${parseFloat(
+                    anamat
+                  ).toFixed(2)}</td>`
+                : ""
+            }
+            ${
+              index === 0
+                ? `<td rowspan="${deduction.length}">${parseFloat(amt).toFixed(
+                    2
+                  )}</td>`
+                : ""
+            }
+            ${
+              index === 0
+                ? `<td rowspan="${deduction.length}">${accNo}</td>`
+                : ""
+            }
+          </tr>
+        `;
+      });
+    } else {
+      bodyRows += `
+        <tr>
+          <td>${customerCode}</td>
+          <td>${cname}</td>
+          <td>${totalLiters}</td>
+          <td>${totalPayment}</td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td>${parseFloat(anamat).toFixed(2)}</td>
+          <td>${parseFloat(amt).toFixed(2)}</td>
+          <td>${accNo}</td>
+        </tr>
+      `;
+    }
+
+    const htmlContent = `
+      <html>
+        <head>
+          <title>Milk Payment Summary</title>
+          <style>
+            body { font-family: Arial, sans-serif; margin: 20px; }
+            .container { border: 1px solid #000; padding: 20px; width: 95%; margin: auto; }
+            .header { text-align: center; }
+            .header h1 { margin: 0; font-size: 20px; }
+            .header p { margin: 4px 0; font-size: 12px; }
+            .info-table, .summary-table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 12px; }
+            .info-table td { padding: 4px; }
+            .summary-table th, .summary-table td { border: 1px solid #000; padding: 6px; text-align: center; }
+            .summary-table th { background-color: #ddd; }
+            @media print { button { display: none; } }
+          </style>
+        </head>
+        <body>
+          <div class="container">
+            <div class="header">
+              <h1>${dairyname}</h1>
+              <p>Milk Payment Summary</p>
+              <p>Period: From ${fromDate} To ${toDate}</p>
+            </div>
+
+            <table class="info-table">
+              <tr>
+                <td>Page No.: 1</td>
+                <td style="text-align:right;">Date: ${dateStr}</td>
+              </tr>
+              <tr>
+                <td>Bill No.: ${billno}</td>
+                <td style="text-align:right;">Customer Name: ${cname}</td>
+              </tr>
+              <tr>
+                <td>Customer Code: ${customerCode}</td>
+              </tr>
+            </table>
+
+            <h3>Combined Summary</h3>
+            <table class="summary-table">
+              <thead>
+                <tr>
+                  <th>Customer Code</th>
+                  <th>Customer Name</th>
+                  <th>Total Liter</th>
+                  <th>Total Payment</th>
+                  <th>Deduction Name</th>
+                  <th>Remaining</th>
+                  <th>Deduction</th>
+                  <th>Balance</th>
+                  <th>Anamat</th>
+                  <th>Amount</th>
+                  <th>Account Number</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${bodyRows}
+              </tbody>
+            </table>
+          </div>
+          <script>
+            window.onload = function () {
+              window.print();
+            };
+          </script>
+        </body>
+      </html>
+    `;
+
+    const printWindow = window.open("", "_blank");
     if (printWindow) {
-      printWindow.onload = () => {
-        printWindow.focus();
-        printWindow.print();
-      };
+      printWindow.document.write(htmlContent);
+      printWindow.document.close();
     } else {
       console.warn("Unable to open print window. Please check popup blocker.");
     }
   };
+  // ---------------------------------------------------------------------------------------------->
+  // 3rd Formatt
+  const printMilkBillpage3rd = ({
+    fromCode,
+    toCode,
+    data,
+    allDeductions,
+    payDetails,
+  }) => {
+    const start = fromCode;
+    const end = toCode;
+    const customerCodes = [];
 
-  //.. third Formatt
-  const printFilteredDeductionsReport = (
-    filteredDeductions = [],
-    allDeductions = [],
-    payment = []
-  ) => {
-    const doc = new jsPDF("portrait");
-
-    // Draw page border
-    doc.setDrawColor(0);
-    doc.rect(5, 5, 200, 287);
-
-    // Header
-    doc.setFontSize(14);
-    doc.text(dairyname, 105, 12, { align: "center" });
-
-    doc.setFontSize(10);
-    doc.text("Milk Payment Summary", 105, 18, { align: "center" });
-    doc.setFontSize(9);
-    doc.text(`Date: ${new Date().toLocaleDateString("hi-IN")}`, 15, 24);
-    doc.text(`Bill Duration: From ${fromDate} To ${toDate}`, 15, 30);
-
-    // ===================== Main Table =====================
-    doc.setFontSize(10);
-    doc.text("Customer Payment Details", 15, 38);
-
-    const headers = [
-      "Code",
-      "CustName",
-      "Liters",
-      "AVGRate",
-      "Commission",
-      "Transport",
-      "Payment",
-      "Deduction",
-      "NAMT",
-    ];
-
-    const rows = filteredDeductions.map((item) => {
-      const avgRate =
-        item.tliters > 0 ? (item.pamt / item.tliters).toFixed(2) : "N/A";
-      return [
-        item.Code ?? "",
-        item.customerName ?? "",
-        item.tliters?.toFixed(2) ?? "0.00",
-        avgRate,
-        item.Commission?.toFixed(2) ?? "0.00",
-        item.transport?.toFixed(2) ?? "0.00",
-        item.pamt?.toFixed(2) ?? "0.00",
-        item.damt?.toFixed(2) ?? "0.00",
-        ((item.pamt ?? 0) - (item.damt ?? 0)).toFixed(2),
-      ];
-    });
-
-    doc.autoTable({
-      head: [headers],
-      body: rows,
-      startY: 40,
-      theme: "grid",
-      styles: { fontSize: 8 },
-      headStyles: {
-        fontStyle: "bold",
-        fillColor: [220, 220, 220],
-        textColor: [0, 0, 0],
-      },
-      margin: { left: 10 },
-      tableWidth: 190,
-    });
-
-    // Calculate next Y
-    let finalY = doc.lastAutoTable.finalY + 5;
-
-    // ===================== Deduction Table =====================
-    if (allDeductions.length > 0) {
-      doc.setFontSize(10);
-      doc.text("Deduction Details", 15, finalY);
-
-      const deductionColumns = [
-        "Deduction Name",
-        "Remaining (MAMT)",
-        "Deduction (DAMT)",
-        "Balance (BAMT)",
-      ];
-
-      const deductionRows = allDeductions.map((item) => [
-        item.dname || "",
-        parseFloat(item.MAMT || 0).toFixed(2),
-        parseFloat(item.Amt || item.damt || 0).toFixed(2),
-        parseFloat(item.BAMT || 0).toFixed(2),
-      ]);
-
-      doc.autoTable({
-        head: [deductionColumns],
-        body: deductionRows,
-        startY: finalY + 2,
-        theme: "grid",
-        styles: { fontSize: 8 },
-        headStyles: {
-          fontStyle: "bold",
-          fillColor: [240, 240, 240],
-          textColor: [0, 0, 0],
-        },
-        margin: { left: 10 },
-        tableWidth: 190,
+    for (let code = start; code <= end; code++) {
+      customerCodes.push(code.toString());
+    }
+    const formatDate = (dateStr) =>
+      new Date(dateStr).toLocaleDateString("hi-IN");
+    const buildMergedMilkRows = (records, total) => {
+      const groupedByDate = {};
+      records.forEach((rec) => {
+        const date = rec.ReceiptDate;
+        if (!groupedByDate[date]) {
+          groupedByDate[date] = { morning: null, evening: null };
+        }
+        if (rec.ME === 0) groupedByDate[date].morning = rec;
+        else if (rec.ME === 1) groupedByDate[date].evening = rec;
       });
 
-      finalY = doc.lastAutoTable.finalY + 5;
-    }
+      return Object.entries(groupedByDate)
+        .map(([date, { morning, evening }]) => {
+          const litresM = parseFloat(morning?.Litres || 0);
+          const litresE = parseFloat(evening?.Litres || 0);
+          const totalLitres = litresM + litresE;
 
-    // ===================== Payment Summary Table =====================
-    if (payment.length > 0) {
+          const amtM = parseFloat(morning?.Amt || 0);
+          const amtE = parseFloat(evening?.Amt || 0);
+          const totalAmt = amtM + amtE;
+
+          const rateM = parseFloat(morning?.rate || 0);
+          const rateE = parseFloat(evening?.rate || 0);
+          const fatM = parseFloat(morning?.fat || 0);
+          const fatE = parseFloat(evening?.fat || 0);
+          const snfM = parseFloat(morning?.snf || 0);
+          const snfE = parseFloat(evening?.snf || 0);
+
+          const weightedRate = totalLitres
+            ? ((rateM * litresM + rateE * litresE) / totalLitres).toFixed(2)
+            : "0.00";
+
+          const weightedFat = totalLitres
+            ? ((fatM * litresM + fatE * litresE) / totalLitres).toFixed(2)
+            : "0.00";
+
+          const weightedSnf = totalLitres
+            ? ((snfM * litresM + snfE * litresE) / totalLitres).toFixed(2)
+            : "0.00";
+
+          total.liters += totalLitres;
+          total.amount += totalAmt;
+
+          return `
+            <tr>
+              <td>${formatDate(date)}</td>
+              <td>${totalLitres.toFixed(2)}</td>
+              <td>${weightedRate}</td>
+              <td>${weightedFat}</td>
+              <td>${weightedSnf}</td>
+              <td>${totalAmt.toFixed(2)}</td>
+            </tr>
+          `;
+        })
+        .join("");
+    };
+
+    const deductionRows = (records) =>
+      records
+        .filter(
+          (d) =>
+            d.dname?.trim() &&
+            d.AMT &&
+            !isNaN(parseFloat(d.AMT)) &&
+            parseFloat(d.AMT) !== 0
+        )
+        .map(
+          (d) => `
+        <tr>
+          <td>${d.dname}</td>
+          <td>${parseFloat(d.AMT).toFixed(2)}</td>
+        </tr>
+      `
+        )
+        .join("");
+
+    const buildPaymentSummary = (payment) => {
+      if (payment.length === 0)
+        return "<tr><td colspan='2'>No payment data</td></tr>";
+
       const pay = payment[0];
-
-      doc.setFontSize(10);
-      doc.text("Payment Summary", 15, finalY);
-
-      const summaryRows = [
-        ["Total Liters", parseFloat(pay.tliters || 0).toFixed(2)],
+      const rows = [
+        ["Liter", parseFloat(pay.tliters || 0).toFixed(2)],
         ["Avg Rate", parseFloat(pay.arate || 0).toFixed(2)],
-        ["Transport", parseFloat(pay.transport || 0).toFixed(2)],
         ["Total Payment", parseFloat(pay.pamt || 0).toFixed(2)],
         ["Total Deduction", parseFloat(pay.damt || 0).toFixed(2)],
         ["Net Payment", parseFloat(pay.namt || 0).toFixed(2)],
       ];
 
-      doc.autoTable({
-        head: [["Title", "Amount"]],
-        body: summaryRows,
-        startY: finalY + 2,
-        theme: "grid",
-        styles: { fontSize: 9 },
-        headStyles: {
-          fontStyle: "bold",
-          fillColor: [220, 220, 220],
-          textColor: [0, 0, 0],
-        },
-        margin: { left: 110 }, // Align right side
-        tableWidth: 85,
-      });
+      return rows
+        .map(
+          ([label, value]) => `
+          <tr>
+            <td>${label}</td>
+            <td>${value}</td>
+          </tr>
+        `
+        )
+        .join("");
+    };
 
-      finalY = doc.lastAutoTable.finalY + 5;
-    }
+    const allPagesHTML = customerCodes
+      .map((code) => {
+        const custData = data.filter((d) => d.rno.toString() === code);
+        if (custData.length === 0) return "";
 
-    // ===================== Print PDF =====================
-    const pdfBlob = doc.output("blob");
-    const pdfUrl = URL.createObjectURL(pdfBlob);
-    const printWindow = window.open(pdfUrl);
-    if (printWindow) {
-      printWindow.onload = () => {
-        printWindow.focus();
-        printWindow.print();
-      };
-    } else {
-      console.warn("Unable to open print window. Please check popup blocker.");
+        const customerName = custData[0]?.cname || "";
+        const deductions = allDeductions.filter(
+          (d) => d.Code.toString() === code
+        );
+        const payments = payDetails.filter(
+          (p) => p.Code.toString() === code && p.dtype.toString() === "2"
+        );
+        const total = { liters: 0, amount: 0 };
+        const netPaymentAmt =
+          payments.length > 0 ? parseFloat(payments[0].namt || 0) : 0;
+
+        return `
+          <div class="page">
+            <h3 class="center">${dairyname}</h3>
+            <div class="small center">Period: ${formatDate(
+              fromDate
+            )} to ${formatDate(toDate)}</div>
+            <div class="info"><strong>Code:</strong> ${code} | <strong>Name:</strong> ${customerName}</div>
+  
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>तारीख</th>
+                  <th>लिटर</th>
+                  <th>दर</th>
+                  <th>FAT</th>
+                  <th>SNF</th>
+                  <th>रक्कम</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${buildMergedMilkRows(custData, total)}
+                <tr class="bold">
+                  <td>Total</td>
+                  <td>${total.liters.toFixed(2)}</td>
+                  <td colspan="3"></td>
+                  <td>${total.amount.toFixed(2)}</td>
+                </tr>
+              </tbody>
+            </table>
+  
+            <div class="row">
+              <table class="table small left-align">
+                <thead>
+                  <tr><th>कपातीचे नाव</th><th>रक्कम</th></tr>
+                </thead>
+                <tbody>${deductionRows(deductions)}</tbody>
+              </table>
+  
+              <table class="table small left-align">
+                <thead>
+                  <tr><th colspan="2" class="center">Payment Summary</th></tr>
+                </thead>
+                <tbody>${buildPaymentSummary(payments)}</tbody>
+              </table>
+            </div>
+  
+            <div class="summary">
+              <strong>एकूण रक्कम: ₹${netPaymentAmt.toFixed(2)}</strong><br />
+              <em>Amount in Words: ${numberToWords(netPaymentAmt)}</em>
+            </div>
+          </div>
+        `;
+      })
+      .join("");
+
+    const win = window.open("", "_blank");
+    win.document.write(`
+      <html>
+        <head>
+          <title>Milk Bills</title>
+          <style>
+            body {
+              font-family: Arial, sans-serif;
+              margin: 0;
+              padding: 8px;
+            }
+            .page {
+              width: 100%;
+              page-break-after: always;
+              border: 1px solid #000;
+              padding: 6px;
+              box-sizing: border-box;
+            }
+            .center {
+              text-align: center;
+            }
+            .small {
+              font-size: 11px;
+            }
+            .info {
+              font-size: 11px;
+              margin-bottom: 4px;
+            }
+            .table {
+              width: 100%;
+              border-collapse: collapse;
+              font-size: 10px;
+              margin-top: 4px;
+            }
+            .table th, .table td {
+              border: 1px solid #000;
+              padding: 2px 4px;
+            }
+            .left-align td, .left-align th {
+              text-align: left;
+            }
+            .row {
+              display: flex;
+              gap: 10px;
+              margin-top: 6px;
+            }
+            .row table {
+              width: 50%;
+            }
+            .summary {
+              margin-top: 6px;
+              font-size: 11px;
+            }
+            .bold td {
+              font-weight: bold;
+            }
+          </style>
+        </head>
+        <body>
+          ${allPagesHTML}
+        </body>
+      </html>
+    `);
+    win.document.close();
+    win.focus();
+    win.print();
+  };
+
+  //Centerselection
+
+  const handleClick = async () => {
+    setLoading(true);
+    try {
+      await fetchData(); // assuming fetchData is a promise-based function
+    } catch (error) {
+      console.error("Error in fetchData:", error);
+    } finally {
+      setLoading(false);
     }
   };
-  //Centerselection
-  // console.log("allDeductions", allDeductions);
+  const fetchDataa = async () => {
+    setIsLoading(true);
+    try {
+      // your fetch logic here
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <>
-      <div className="milk-bill-container w100 h1 d-flex-col">
-        <span className="px10 heading">Milk Bill Report</span>
-        <div className="date-checkbox-code-bill-payment-div w100 h40 d-flex bg">
+      <div className="milk-bill-container w100 h1 d-flex-col center">
+        <div className="date-checkbox-code-bill-payment-div w80 h50 d-flex-col bg p10">
+          <span className="w100 heading t-center">Milk Bill Report</span>
           <div className="date-code-bill-payment w100 h1 d-flex-col sa ">
             <div className="from-to-date-bill-report w100  d-flex  ">
               <div className="from-to-date-milk-bill d-flex w70 ">
                 <div className="from-date-bill-div w50 d-flex a-center  ">
-                  <span className="px10 lable-text w30">दिनांक पासून</span>
+                  <span className="px10 lable-text w50">दिनांक पासून :</span>
                   <input
-                    className="data w40"
+                    className="data w50"
                     type="date"
                     value={fromDate}
                     onChange={(e) => setFromDate(e.target.value)}
                   />
                 </div>
                 <div className="from-date-bill-div w50 d-flex a-center  ">
-                  <span className="px10 lable-text w20">पर्येंत:</span>
+                  <span className="px10 lable-text w30">पर्येंत :</span>
                   <input
                     className="data w50"
                     type="date"
@@ -1066,8 +1361,9 @@ const Milkbill = () => {
                   />
                 </div>
               </div>
-
-              <div className="select-center-milk-payment-div w30 d-flex ">
+            </div>
+            <div className="code-to-date-bill-report w100 d-flex sb">
+              <div className="select-center-milk-payment-div w60 d-flex ">
                 <div className="payment-register-centerwisee-data-show w100 h1 d-flex a-center">
                   <span className="info-text w30 px10">Center:</span>
 
@@ -1093,35 +1389,50 @@ const Milkbill = () => {
                   </select>
                 </div>
               </div>
-            </div>
-            <div className="code-to-date-bill-report w100 d-flex">
-              <div className="from-date-bill-div w50 d-flex a-center">
-                <span className="px10 lable-text w30">कोड न पासून</span>
-                <input
-                  className="data w40"
-                  type="text"
-                  value={fromCode}
-                  onChange={(e) => setFromCode(e.target.value)}
-                  placeholder="From Code"
-                />
-              </div>
-              <div className="to-code-bill-div w50 d-flex a-center">
-                <span className="px10 lable-text w20">पर्येंत:</span>
-                <input
-                  className="data w40"
-                  type="text"
-                  value={toCode}
-                  onChange={(e) => setToCode(e.target.value)}
-                  placeholder="To Code"
-                />
+              <div className="from-to-code-milk-payment w50 d-flex">
+                <div className="from-date-bill-div w50 d-flex a-center">
+                  <span className="px10 lable-text w50">कोड :</span>
+                  <input
+                    className="data w50"
+                    type="text"
+                    value={fromCode}
+                    onChange={(e) => setFromCode(e.target.value)}
+                    placeholder="From Code"
+                  />
+                </div>
+                <div className="to-code-bill-div w50 d-flex a-center">
+                  <span className="px10 lable-text w50">ते :</span>
+                  <input
+                    className="data w50"
+                    type="text"
+                    value={toCode}
+                    onChange={(e) => setToCode(e.target.value)}
+                    placeholder="To Code"
+                  />
+                </div>
               </div>
             </div>
 
             <div className="bill-payments-reports w100 d-flex  ">
               <div className="milk-bill-report-buttons-first-half d-flex w50">
                 <div className="report-buttons-div w50 d-flex px10">
-                  <button className="btn" onClick={fetchData}>
-                    Calculate
+                  <button
+                    className="btn"
+                    onClick={fetchData}
+                    disabled={isloading}
+                  >
+                    {isloading ? (
+                      <>
+                        <span
+                          className="spinner-border spinner-border-sm"
+                          role="status"
+                          aria-hidden="true"
+                        ></span>
+                        <span className="visually-hidden">Calculating...</span>
+                      </>
+                    ) : (
+                      "Calculate"
+                    )}
                   </button>
                 </div>
                 <div className="paymnet-register-report-div w50 d-flex">
@@ -1136,59 +1447,50 @@ const Milkbill = () => {
                   Milk Collection PDF
                 </button>
               </div> */}
-              <div className="milk-bil-report-second-half d-flex w50">
-                <div className="report-buttons-div w70 d-flex px10">
-                  <button
-                    className="btn"
-                    onClick={() =>
-                      printMilkBillPages({
-                        fromCode,
-                        toCode,
-                        data,
-                        allDeductions,
-                        payDetails,
-                      })
-                    }
-                  >
-                    दुध बिले प्रकार 1
-                  </button>
-                </div>
-                <div className="report-buttons-div w70 d-flex px10">
-                  <button
-                    className="btn"
-                    onClick={() =>
-                      printMilkCollection(
-                        cmilkdata,
-                        "",
-                        "",
-                        [],
-                        allDeductions,
-                        payment
-                      )
-                    }
-                  >
-                    दुध बिले प्रकार 2
-                  </button>
-                </div>
-                <div className="report-buttons-div w70 d-flex px10">
-                  <button
-                    className="btn"
-                    onClick={() =>
-                      printFilteredDeductionsReport(
-                        filteredDeductions,
-                        allDeductions,
-                        payment,
-                        "",
-                        "",
-                        [],
-                        allDeductions,
-                        payment
-                      )
-                    }
-                  >
-                    दुध बिले प्रकार 3
-                  </button>
-                </div>
+              <div className="milk-bil-report-second-half d-flex w100 j-end">
+                <button
+                  className="btn mx10"
+                  onClick={() =>
+                    printMilkBillPages({
+                      fromCode,
+                      toCode,
+                      data,
+                      allDeductions,
+                      payDetails,
+                    })
+                  }
+                >
+                  दुध बिले प्रकार 1
+                </button>
+                <button
+                  className="btn mx10"
+                  onClick={() =>
+                    printMilkCollection(
+                      cmilkdata,
+                      "",
+                      "",
+                      [],
+                      allDeductions,
+                      payment
+                    )
+                  }
+                >
+                  दुध बिले प्रकार 2
+                </button>
+                <button
+                  className="btn mx10"
+                  onClick={() =>
+                    printMilkBillpage3rd({
+                      fromCode,
+                      toCode,
+                      data,
+                      allDeductions,
+                      payDetails,
+                    })
+                  }
+                >
+                  दुध बिले प्रकार 3
+                </button>
               </div>
             </div>
           </div>

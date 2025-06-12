@@ -303,9 +303,15 @@ const AnimalMaster = () => {
         className="animal-master-form-container w100 h40 d-flex-col se"
       >
         <div className="animal-info-details-code w100 h10 d-flex a-center sb">
+<<<<<<< HEAD
+          <div className="animal-details-code w70 d-flex a-center sb">
+            <label htmlFor="ccode" className="ccode label-text w15">
+              उत्पा. कोड :
+=======
           <div className="animal-details-code w70 h1 d-flex a-center sb">
             <label htmlFor="ccode" className="ccode label-text w10">
               कोड :
+>>>>>>> 15d2ec3cced1b3b7db770c061ba7382082441362
             </label>
 
             <input
@@ -321,7 +327,11 @@ const AnimalMaster = () => {
             />
             <Select
               options={custOptions1}
+<<<<<<< HEAD
+              className="cnametxt w40"
+=======
               className="cnametxt w45"
+>>>>>>> 15d2ec3cced1b3b7db770c061ba7382082441362
               placeholder="उत्पादकाचे नावं टाका"
               isSearchable
               styles={{
