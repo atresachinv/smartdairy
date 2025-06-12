@@ -370,7 +370,7 @@ const Milkbill = () => {
     setSelectedCenterId(e.target.value);
     console.log("Selected Center ID:", e.target.value);
   };
-  // Pdf
+  // Pdf ----------------->
   const exportMilkCollectionPDF = (
     cmilkdata = [],
     cname = cmilkdata[0]?.cname || "",
@@ -619,7 +619,6 @@ const Milkbill = () => {
     data,
     allDeductions,
     payDetails,
-   
   }) => {
     const start = fromCode;
     const end = toCode;
@@ -845,7 +844,7 @@ const Milkbill = () => {
     win.focus();
     win.print();
   };
-  
+
   //. Second Formatt
   const printMilkCollection = (
     cmilkdata = [],
@@ -1064,7 +1063,6 @@ const Milkbill = () => {
     data,
     allDeductions,
     payDetails,
-  
   }) => {
     const start = fromCode;
     const end = toCode;
@@ -1314,7 +1312,6 @@ const Milkbill = () => {
     win.focus();
     win.print();
   };
-  
 
   //Centerselection
 
