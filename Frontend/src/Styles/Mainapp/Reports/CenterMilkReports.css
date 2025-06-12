@@ -1,10 +1,10 @@
-.center-master-selection-container .center-milk-collection-details {
+.center-milk-collection-details {
   overflow-x: auto;
 }
-.center-master-selection-container .center-milk-heading-container {
+.center-milk-heading-container {
   min-width: 1400px;
 }
-.center-master-selection-container .center-milk-data-container {
+.center-milk-data-container {
   min-width: 1400px;
 }
 
@@ -12,10 +12,7 @@
   .center-milk-coll-report-container {
     min-height: auto;
   }
-  .center-milk-coll-report-container .center-master-selection-container {
-    min-height: auto;
-  }
-  .center-master-selection-container .master-dates-btn-outer-container {
+  .master-dates-btn-outer-container {
     min-height: fit-content;
   }
   .master-dates-btn-outer-container .master-dates-btn-container {

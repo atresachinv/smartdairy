@@ -35,9 +35,7 @@ const MilkcollectionReports = () => {
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedCenterId, setSelectedCenterId] = useState("0");
   const [centerData, setCenterData] = useState([]); //..
-  const centerList = useSelector(
-    (state) => state.center.centersList || []
-  );
+  const centerList = useSelector((state) => state.center.centersList || []);
 
   useEffect(() => {
     setCollectionData(data);
@@ -732,15 +730,14 @@ const MilkcollectionReports = () => {
       milkData: filteredMilkData,
     });
   }, [selectedCenterId, summaryData, filteredData]); // Re-run when selectedCenterId or data changes
-   console.log("summaryData",  );
   return (
     <>
       <div className="Milkcollection-container w100 h1 d-flex-col sb">
         <span className="heading px10 "> Milk Collection Report</span>
         <div className="fillter-data-container w100 h30 d-flex-col ">
-          <div className="master-and-buttons-div w100 h30  d-flex sb">
-            <div className="master-hide-show-chackbox-div w70 d-flex sb">
-              <div className="custmize-report-div w50 h1 px10 d-flex a-center sb">
+          <div className="master-and-buttons-div w100 h30 d-flex sb px10">
+            <div className="master-hide-show-chackbox-div w65 d-flex sb">
+              <div className="custmize-report-div w60 h1 px10 d-flex a-center sb">
                 <span className="cl-icon w20 h1 d-flex center info-text">
                   <BsCalendar3 />
                 </span>
@@ -770,7 +767,7 @@ const MilkcollectionReports = () => {
                   ))}
                 </select>
               </div>
-              <div className="daswada-filter-container d-flex w40 a-center sa  ">
+              <div className="daswada-filter-container d-flex w35 a-center sa  ">
                 <div className="milk-type-div w60 h1 d-flex a-center sb ">
                   <input
                     type="checkbox"
@@ -790,11 +787,11 @@ const MilkcollectionReports = () => {
                 </div>
               </div>
             </div>
-            <div className="download-option-btn-div w30 h1 d-flex j-center sa">
+            <div className="download-option-btn-div w35 h1 d-flex j-center sa">
               <button className="w-btn text" onClick={printReport}>
                 Print
               </button>
-              <button className="w-btn text" onClick={exportToPDF}>
+              <button className="w-btn text mx10" onClick={exportToPDF}>
                 PDF
               </button>
               <button className="w-btn text" onClick={exportToExcel}>

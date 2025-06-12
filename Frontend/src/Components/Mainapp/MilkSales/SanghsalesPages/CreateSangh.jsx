@@ -27,7 +27,6 @@ const CreateSangh = () => {
   });
 
   // ---------------------------------------------------------------->
-  console.log("SanghaList", sanghaList);
   const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState({});
@@ -104,18 +103,6 @@ const CreateSangh = () => {
       Object.assign(validationErrors, fieldError);
     });
     return validationErrors;
-  };
-
-  const handleEditClick = () => {
-    setIsEditing((prev) => !prev);
-    if (!isEditing) {
-      setFormData((prevData) => ({
-        ...prevData,
-        scode: "",
-      }));
-    } else {
-      resetForm();
-    }
   };
 
   const resetForm = () => {

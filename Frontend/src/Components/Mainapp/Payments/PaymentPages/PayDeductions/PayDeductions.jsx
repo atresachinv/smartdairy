@@ -119,7 +119,6 @@ const PayDeductions = ({ showbtn, setCurrentPage }) => {
     }
   }, [payData, payMasters]);
 
-  // console.log("payData", payData);
 
   // Effect to load customer list from local storage ------------------------------------------>
   useEffect(() => {
@@ -347,7 +346,6 @@ const PayDeductions = ({ showbtn, setCurrentPage }) => {
     setCustTrnDedu(customerdeductions);
   }, [mergedDeductions, currentCode]);
 
-
   //----------------------------------------------------------------------------->
   // auto deduction calculations ------------------------------------------------>
   //----------------------------------------------------------------------------->
@@ -360,7 +358,10 @@ const PayDeductions = ({ showbtn, setCurrentPage }) => {
       );
       const otherDeduData = payData.filter(
         (item) =>
-          item.Code === currentCode && item.dtype === 1 && item.GLCode !== 2
+          item.Code === currentCode &&
+          item.dtype === 1 &&
+          item.GLCode !== 2 &&
+          item.BAMT !== 0
       );
 
       const mDeduData = payData.filter(

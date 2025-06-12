@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchAllDairyInfo } from "../../../../App/Features/Admin/Dairyinfo/dairySlice";
 import "../../../../Styles/AdminPannel/AccessControls/MilkAccess.css";
@@ -54,10 +54,14 @@ const MilkCollAccess = () => {
     dairy_id: 0,
     vehicle_milk: 0, // Store 0 for false, 1 for true
     retail_sales: 0,
+    wp_sms: 0,
+    gen_pdf: 0,
+    create_center: 0,
+    add_sledger: 0,
   };
 
   const [values, setValues] = useState(initialValues);
-  // console.log("values", values);
+  console.log("values", values);
   useEffect(() => {
     dispatch(fetchAllDairyInfo());
     setDairyList(dairyList);
@@ -65,15 +69,20 @@ const MilkCollAccess = () => {
 
   // console.log(accessRights);
 
-  const handleToggle = (value) => {
+  const handleToggle = (key) => {
     setAccessRights((prevAccessRights) => {
-      if (prevAccessRights.includes(value)) {
-        // If already present, remove it
-        return prevAccessRights.filter((item) => item !== value);
-      } else {
-        // Otherwise, add it
-        return [...prevAccessRights, value];
-      }
+      const isActive = prevAccessRights.includes(key);
+      const updatedAccess = isActive
+        ? prevAccessRights.filter((item) => item !== key)
+        : [...prevAccessRights, key];
+
+      // Also update values state
+      setValues((prevValues) => ({
+        ...prevValues,
+        [key]: isActive ? 0 : 1, // 1 if turned ON, 0 if OFF
+      }));
+
+      return updatedAccess;
     });
   };
 
@@ -134,7 +143,7 @@ const MilkCollAccess = () => {
               Vehicle Milk Collection
             </label>
             <div className="toggle-container w100 h50 d-flex center">
-              <span>{values.vehicle_milk === 1 ? "ON" : "OFF"}</span>
+              <span>{values.vehicle_milk === 0 ? "OFF" : "ON"}</span>
               <label className="switch">
                 <input
                   type="checkbox"
@@ -152,7 +161,7 @@ const MilkCollAccess = () => {
               Retail Milk Sales
             </label>
             <div className="toggle-container w100 h50 d-flex center">
-              <span>{values.retail_sales === 1 ? "ON" : "OFF"}</span>
+              <span>{values.retail_sales === 0 ? "OFF" : "ON"}</span>
               <label className="switch">
                 <input
                   type="checkbox"
@@ -169,12 +178,12 @@ const MilkCollAccess = () => {
               Whatsapp Message
             </label>
             <div className="toggle-container w100 h50 d-flex center">
-              <span>{values.retail_sales === 1 ? "ON" : "OFF"}</span>
+              <span>{values.wp_sms === 0 ? "OFF" : "ON"}</span>
               <label className="switch">
                 <input
                   type="checkbox"
-                  checked={accessRights.includes("whatsapp_message")}
-                  onChange={() => handleToggle("whatsapp_message")}
+                  checked={accessRights.includes("wp_sms")}
+                  onChange={() => handleToggle("wp_sms")}
                 />
                 <span className="slider"></span>
               </label>
@@ -186,12 +195,13 @@ const MilkCollAccess = () => {
               Generate PDF
             </label>
             <div className="toggle-container w100 h50 d-flex center">
-              <span>{values.retail_sales === 1 ? "ON" : "OFF"}</span>
+              <span>{values.gen_pdf === 0 ? "OFF" : "ON"}</span>
               <label className="switch">
                 <input
+                  name="gen_pdf"
                   type="checkbox"
-                  checked={accessRights.includes("generate_pdf")}
-                  onChange={() => handleToggle("generate_pdf")}
+                  checked={accessRights.includes("gen_pdf")}
+                  onChange={() => handleToggle("gen_pdf")}
                 />
                 <span className="slider"></span>
               </label>
@@ -203,9 +213,10 @@ const MilkCollAccess = () => {
               Create Center
             </label>
             <div className="toggle-container w100 h50 d-flex center">
-              <span>{values.retail_sales === 1 ? "ON" : "OFF"}</span>
+              <span>{values.create_center === 0 ? "OFF" : "ON"}</span>
               <label className="switch">
                 <input
+                  name="create_center"
                   type="checkbox"
                   checked={accessRights.includes("create_center")}
                   onChange={() => handleToggle("create_center")}
@@ -214,7 +225,7 @@ const MilkCollAccess = () => {
               </label>
             </div>
           </div>
-          {/* Generate Center Payment */}
+          {/* Generate Center Payment
           <div className="access-controller-div h20 d-flex-col bg p10">
             <label htmlFor="milk-access" className="label-text t-center">
               Generate Center Payment
@@ -230,19 +241,19 @@ const MilkCollAccess = () => {
                 <span className="slider"></span>
               </label>
             </div>
-          </div>
+          </div> */}
           {/* Create Sub Ladger */}
           <div className="access-controller-div h20 d-flex-col bg p10">
             <label htmlFor="milk-access" className="label-text t-center">
               Create Sub Ladger
             </label>
             <div className="toggle-container w100 h50 d-flex center">
-              <span>{values.retail_sales === 1 ? "ON" : "OFF"}</span>
+              <span>{values.add_sledger === 0 ? "OFF" : "ON"}</span>
               <label className="switch">
                 <input
                   type="checkbox"
-                  checked={accessRights.includes("add_subledger")}
-                  onChange={() => handleToggle("add_subledger")}
+                  checked={accessRights.includes("add_sledger")}
+                  onChange={() => handleToggle("add_sledger")}
                 />
                 <span className="slider"></span>
               </label>

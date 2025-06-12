@@ -19,7 +19,7 @@ const CenterList = ({ onEdit }) => {
 
   return (
     <div className="center-list-container w100 h1 d-flex-col p10">
-      <div className="center-list-div w100 h1 d-flex-col bg">
+      <div className="center-list-div w100 h1 mh100  d-flex-col bg">
         <div className="table-titles w100 p10 d-flex a-center t-center hidescrollbar sb">
           <span className="label-text w5">No.</span>
           <span className="label-text w30">Center Name</span>

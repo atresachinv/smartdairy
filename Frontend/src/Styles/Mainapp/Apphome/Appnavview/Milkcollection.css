@@ -313,3 +313,10 @@
     display: none;
   }
 }
+
+/* Upload Milk Collection */
+@media screen and (max-width: 426px) {
+  .upload-milk-collection-form .excel-format-container {
+    width: 90%;
+  }
+}

@@ -1145,14 +1145,14 @@ exports.deleteMilkCollection = async (req, res) => {
   const today = new Date();
   const formattedDate = today.toISOString().slice(0, 19).replace("T", " ");
   const dairy_table = `dailymilkentry_${dairy_id}`;
-  
+
   pool.getConnection((err, connection) => {
     if (err) {
       console.error("MySQL connection error:", err);
       return res.status(500).json({ message: "Database connection error" });
     }
     const { currentdate, updatedate, fromCode, toCode, time } = values;
-    
+
     let deleteQuery;
     let queryParams;
 
@@ -1440,8 +1440,8 @@ exports.transferMilkCollToDate = async (req, res) => {
 // ----------------------------------------------------------------------------------->
 
 exports.checkPaymentExists = async (req, res) => {
-  const { dairy_id, center_id } = req.user;
-  const { fromDate, toDate } = req.query;
+  const dairy_id = req.user.dairy_id;
+  const { fromDate, toDate, center_id } = req.query;
 
   // Basic validation
   if (!dairy_id) {
@@ -1508,8 +1508,8 @@ exports.checkPaymentExists = async (req, res) => {
 // ----------------------------------------------------------------------------------->
 
 exports.checkZeroAmt = async (req, res) => {
-  const { dairy_id, center_id } = req.user;
-  const { fromDate, toDate } = req.query;
+  const dairy_id = req.user.dairy_id;
+  const { fromDate, toDate, center_id } = req.query;
 
   if (!dairy_id) {
     return res
@@ -1570,8 +1570,8 @@ exports.checkZeroAmt = async (req, res) => {
 // ----------------------------------------------------------------------------------->
 // updated isDeleted --> 23/4/25
 exports.getMilkPayAmt = async (req, res) => {
-  const { dairy_id, center_id } = req.user;
-  const { fromDate, toDate } = req.query;
+  const dairy_id = req.user.dairy_id;
+  const { fromDate, toDate, center_id } = req.query;
 
   if (!dairy_id) {
     return res
@@ -1596,7 +1596,6 @@ exports.getMilkPayAmt = async (req, res) => {
       SELECT 
             rno, 
             cname,
-            AccCode,
             SUM(Litres) AS totalLitres,
             SUM(Litres * rate) AS totalamt,
             MIN(ReceiptDate) AS min_receipt_date,
@@ -1610,7 +1609,7 @@ exports.getMilkPayAmt = async (req, res) => {
             ReceiptDate BETWEEN ? AND ? 
             AND center_id = ? AND isDeleted = 0
         GROUP BY 
-            rno, cname, AccCode
+            rno, cname
         ORDER BY 
             CAST(rno AS UNSIGNED) ASC;
       `;
@@ -1646,9 +1645,9 @@ exports.getMilkPayAmt = async (req, res) => {
 //------------------------------------------------------------------------------------>
 
 exports.saveFixDeductions = async (req, res) => {
-  const { dairy_id, center_id } = req.user;
+  const dairy_id = req.user.dairy_id;
   const { formData, PaymentFD } = req.body;
-  const { billDate, vcDate, fromDate, toDate } = formData;
+  const { billDate, vcDate, fromDate, toDate, center_id } = formData;
 
   if (!dairy_id) {
     return res.status(401).json({ status: 401, message: "Unauthorised User!" });
@@ -2296,8 +2295,8 @@ exports.lockMilkPayment = async (req, res) => {
 // ----------------------------------------------------------------------------------->
 
 exports.fetchTrnDeductionData = async (req, res) => {
-  const { dairy_id, center_id } = req.user;
-  const { fromDate, toDate, GlCodes } = req.query;
+  const dairy_id = req.user.dairy_id;
+  const { fromDate, toDate, center_id, GlCodes } = req.query;
   if (!dairy_id) {
     return res.status(401).json({ status: 401, message: "Unauthorised User!" });
   }
@@ -2361,6 +2360,7 @@ exports.fetchTrnDeductionData = async (req, res) => {
     });
   });
 };
+
 // ----------------------------------------------------------------------------------->
 // View Selected Payment ------------------------------------------------------------->
 // ----------------------------------------------------------------------------------->
@@ -2484,8 +2484,8 @@ exports.fetchPaymentMasters = async (req, res) => {
 // ----------------------------------------------------------------------------------->
 
 exports.fetchSelectedPayAmt = async (req, res) => {
-  const { dairy_id, center_id } = req.user;
-  const { fromdate, todate } = req.query;
+  const dairy_id = req.user.dairy_id;
+  const { fromdate, todate, center_id } = req.query;
 
   if (!dairy_id) {
     return res.status(401).json({ status: 401, message: "Unauthorised User!" });
@@ -2528,14 +2528,14 @@ exports.fetchSelectedPayAmt = async (req, res) => {
         }
 
         if (results.length === 0) {
-          return res.status(204).json({
-            status: 204,
+          return res.status(200).json({
+            status: 200,
             paymentDetails: [],
             message: "No record found!",
           });
         }
-        const paymentDetails = results;
-        res.status(200).json({ status: 200, paymentDetails });
+
+        res.status(200).json({ status: 200, paymentDetails: results });
       }
     );
   });

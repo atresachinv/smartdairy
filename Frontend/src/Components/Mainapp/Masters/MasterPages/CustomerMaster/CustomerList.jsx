@@ -196,42 +196,33 @@ const CustomerList = () => {
             </button>
           </div>
           <div className="customer-list-table w100 h1 d-flex-col bg">
-            <div className="customer-heading-title-scroller w100 h1 mh100 hidescrollbar d-flex-col">
-              <div className="customer-data-headings-div p10 d-flex center t-center sb">
+            <div className="customer-heading-title-scroller w100 h1 mh100  d-flex-col">
+              <div className="customer-data-headings-div p10 d-flex center t-center hidescrollbar sb">
                 <span className="f-info-text w5">{t("Edit")}</span>
                 <span className="f-info-text w5">{t("master:m-ccode")}</span>
                 <span className="f-info-text w25">{t("master:m-cname")}</span>
                 <span className="f-info-text w10">{t("master:m-mobile")}</span>
                 <span className="f-info-text w15">{t("master:m-addhar")}</span>
-                {/* <span className="f-info-text w15">{t("master:m-city")}</span>
-                <span className="f-info-text w15">{t("master:m-tel")}</span>
-                <span className="f-info-text w15">{t("master:m-dist")}</span> */}
                 <span className="f-info-text w15">{t("master:m-accno")}</span>
                 <span className="f-info-text w15">{t("master:m-ifsc")}</span>
-                {/*<span className="f-info-text w15">{t("master:m-caste")}</span>
-                 <span className="f-info-text w10">{t("master:m-gender")}</span>
-                <span className="f-info-text w5">{t("master:m-age")}</span> 
-                <span className="f-info-text w10">{t("master:m-mno")}</span>
-                <span className="f-info-text w15">{t("master:m-mdate")}</span> */}
                 <span className="f-info-text w15">{t("master:m-rtype")}</span>
                 <span className="f-info-text w10">{t("master:m-mtype")}</span>
                 <span className="f-info-text w5">{t("Id")}</span>
               </div>
-              {/* Show Spinner if loading, otherwise show the customer list */}
               {status === "loading" ? (
                 <Spinner />
               ) : filteredData.length > 0 ? (
                 filteredData.map((customer, index) => (
                   <div
                     key={index}
-                    className={`customer-data-values-div w100 p10 d-flex center t-center sa`}
+                    className={`customer-data-values-div w100 p10 d-flex center t-center hidescrollbar sa`}
                     style={{
                       backgroundColor: index % 2 === 0 ? "#faefe3" : "#fff",
                     }}
                   >
                     <span
                       className="text w5"
-                      onClick={() => handleEdit(customer.srno)} // pass code
+                      onClick={() => handleEdit(customer.srno)} 
                     >
                       <MdEdit className="color-icon" />
                     </span>
@@ -241,29 +232,10 @@ const CustomerList = () => {
                       {customer.Phone || customer.mobile}
                     </span>
                     <span className="text w15">{customer.cust_addhar}</span>
-                    {/* <span className="text w15 t-start">{customer.City}</span>
-                    <span className="text w15 t-start">{customer.tal}</span>
-                    <span className="text w15 t-start">{customer.dist}</span> */}
                     <span className="text w15  t-end">
                       {customer.cust_accno}
                     </span>
                     <span className="text w15  ">{customer.cust_ifsc}</span>
-                    {/* <span className="text w15 t-start">{customer.caste}</span>
-                    <span className="text w10 t-start">
-                      {customer.gender === 1 ? "Female" : "Male"}
-                    </span>
-                    <span className="text w5">-</span>{" "} */}
-                    {/*<span className="text w10 t-start">{customer.rno}</span>
-                     <span className="text w15 t-end">
-                      {new Date(customer.createdon).toLocaleDateString(
-                        "en-GB",
-                        {
-                          day: "2-digit",
-                          month: "2-digit",
-                          year: "numeric",
-                        }
-                      )}
-                    </span> */}
                     <span className="text w15">{customer.rcName}</span>
                     <span className="text w10 t-start">
                       {customer.milktype === 0 ? "Cow" : "Buffalo"}

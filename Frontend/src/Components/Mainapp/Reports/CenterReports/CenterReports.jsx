@@ -186,201 +186,199 @@ const CenterReports = () => {
 
   return (
     <div className="center-milk-coll-report-container w100 h1 d-flex-col p10 sb">
-      <span className="heading">Center Milk Collection Report :</span>
-      <div className="center-master-selection-container w100 h90 d-flex-col">
-        <div className="master-dates-btn-outer-container w100 h25 d-flex-col a-center sb bg-light-green br9 py10 my10">
-          <div className="master-dates-btn-container w100 h50 d-flex a-center sa bg-light-green br9">
-            <div className="master-dates-container w70 h10 d-flex a-center sa">
-              <label className="flabel label-text w20" htmlFor="fromdate">
-                Select Master Date:
-              </label>
-              <label className="fd-txt label-text w20" htmlFor="fromdate">
-                From :
-              </label>
-              <input
-                className="data w25"
-                type="date"
-                name="fromDate"
-                id="fromdate"
-                value={values.fromDate || ""}
-                onChange={handleInputs}
-              />
-              <label className="td-txt label-text w5" htmlFor="todate">
-                To :
-              </label>
-              <input
-                className="data w25"
-                type="date"
-                name="toDate"
-                id="toDate"
-                value={values.toDate || ""}
-                onChange={handleInputs}
-              />
-            </div>
-            <button className="w-btn" type="button" onClick={handleCenterColl}>
-              Report
-            </button>
+      <span className="heading">सेंटर दुध संकलन रिपोर्ट :</span>
+      <div className="master-dates-btn-outer-container w100 h30 d-flex-col a-center sb bg-light-green br9 py10 my10">
+        <div className="master-dates-btn-container w100 h50 d-flex a-center sa bg-light-green br9">
+          <div className="master-dates-container w70 h10 d-flex a-center sa">
+            <label className="flabel label-text w25" htmlFor="fromdate">
+              मस्टर निवडा
+            </label>
+            <label className="fd-txt label-text w15" htmlFor="fromdate">
+              पासुन :
+            </label>
+            <input
+              className="data w25"
+              type="date"
+              name="fromDate"
+              id="fromdate"
+              value={values.fromDate || ""}
+              onChange={handleInputs}
+            />
+            <label className="td-txt label-text w5" htmlFor="todate">
+              ते :
+            </label>
+            <input
+              className="data w25"
+              type="date"
+              name="toDate"
+              id="toDate"
+              value={values.toDate || ""}
+              onChange={handleInputs}
+            />
           </div>
-          <div className="center-milk-coll-details-div w100 h50 d-flex a-center">
-            <div className="select-center-div w50 d-flex a-center sb px10">
-              <label htmlFor="centerid" className="info-text w30">
-                सेंटर निवडा : <span className="req">*</span>{" "}
-              </label>
-              <select
-                className="data w70"
-                name="centerid"
-                id="centerid"
-                value={values.centerid}
-                onChange={handleInputs}
-                ref={centerRef}
-                onKeyDown={(e) => handleKeyDown(e, collRef)}
-              >
-                <option value="">-- select center --</option>
-                {centerList.length > 0 ? (
-                  centerList.map((center, i) => (
-                    <option key={i} value={center.center_id}>
-                      {center.center_name}
-                    </option>
-                  ))
-                ) : (
-                  <></>
-                )}
-              </select>
-            </div>
-            <div className="select-center-div w50 d-flex a-center sb px10">
-              <label htmlFor="collectedBy" className="info-text w35">
-                संकलक निवडा :
-              </label>
-              <select
-                className="data w65"
-                name="collectedBy"
-                id="collectedBy"
-                value={values.collectedBy}
-                onChange={handleInputs}
-                disabled={!values.centerid}
-                ref={collRef}
-                onKeyDown={(e) => handleKeyDown(e, litersRef)}
-              >
-                <option value="">-- select collector--</option>
-                {milkCollectors.map((emp, i) => (
-                  <option key={i} value={emp.emp_mobile}>
-                    {emp.emp_name}
+          <button className="w-btn" type="button" onClick={handleCenterColl}>
+            रिपोर्ट
+          </button>
+        </div>
+        <div className="center-milk-coll-details-div w100 h50 d-flex a-center">
+          <div className="select-center-div w50 d-flex a-center sb px10">
+            <label htmlFor="centerid" className="info-text w30">
+              सेंटर निवडा : <span className="req">*</span>{" "}
+            </label>
+            <select
+              className="data w70"
+              name="centerid"
+              id="centerid"
+              value={values.centerid}
+              onChange={handleInputs}
+              ref={centerRef}
+              onKeyDown={(e) => handleKeyDown(e, collRef)}
+            >
+              <option value="">-- सेंटर निवडा --</option>
+              {centerList.length > 0 ? (
+                centerList.map((center, i) => (
+                  <option key={i} value={center.center_id}>
+                    {center.center_name}
                   </option>
-                ))}
-              </select>
-            </div>
+                ))
+              ) : (
+                <></>
+              )}
+            </select>
+          </div>
+          <div className="select-center-div w50 d-flex a-center sb px10">
+            <label htmlFor="collectedBy" className="info-text w35">
+              संकलक निवडा :
+            </label>
+            <select
+              className="data w65"
+              name="collectedBy"
+              id="collectedBy"
+              value={values.collectedBy}
+              onChange={handleInputs}
+              disabled={!values.centerid}
+              ref={collRef}
+              onKeyDown={(e) => handleKeyDown(e, litersRef)}
+            >
+              <option value="">-- संकलक निवडा --</option>
+              {milkCollectors.map((emp, i) => (
+                <option key={i} value={emp.emp_mobile}>
+                  {emp.emp_name}
+                </option>
+              ))}
+            </select>
           </div>
         </div>
-        <div className="center-milk-collection-details w100 h80 d-flex-col mh80 bg">
-          <div className="center-milk-heading-container w100 h20 p10 d-flex t-center sticky-top sb bg7 br-top">
-            <div className="m-date w10 h1 d-flex a-center f-label-text">
-              Date
+      </div>
+      <div className="center-milk-collection-details w100 h80 d-flex-col mh80 bg">
+        <div className="center-milk-heading-container w100 h20 p10 d-flex t-center sticky-top sb bg7 br-top">
+          <div className="m-date w10 h1 d-flex a-center f-label-text">
+            दिनांक
+          </div>
+          <div className="m-date w5 h1 d-flex a-center f-label-text">सत्र</div>
+          <div className="center-milk-container w25 h1 d-flex-col">
+            <div className="center-milk-container w100 h50 d-flex a-center sb">
+              <span className="w100 f-label-text t-center">
+                सेंटर दुध संकलन
+              </span>
             </div>
-            <div className="m-date w5 h1 d-flex a-center f-label-text">
-              Shift
+            <div className="center-milk-container w100 h50 d-flex a-center sa">
+              <span className="f-label-text w20">लिटर</span>
+              <span className="f-label-text w15">Fat</span>
+              <span className="f-label-text w15">Snf</span>
+              <span className="f-label-text w20">दर</span>
+              <span className="f-label-text w20">रक्कम</span>
             </div>
-            <div className="center-milk-container w25 h1 d-flex-col">
-              <div className="center-milk-container w100 h50 d-flex a-center sb">
-                <span className="f-label-text t-center">
-                  Center Milk Collection
+          </div>
+          <div className="center-milk-container w25 h1 d-flex-col">
+            <div className="center-milk-container w100 h50 d-flex a-center sb">
+              <span className="w100 f-label-text t-center">
+                मिळालेले दुध संकलन
+              </span>
+            </div>
+            <div className="center-milk-container w100 h50 d-flex a-center sa">
+              <span className="f-label-text w20">लिटर</span>
+              <span className="f-label-text w15">Fat</span>
+              <span className="f-label-text w15">Snf</span>
+              <span className="f-label-text w20">दर</span>
+              <span className="f-label-text w20">रक्कम</span>
+            </div>
+          </div>
+          <div className="center-milk-container w25 h1 d-flex-col">
+            <div className="center-milk-container w100 h50 d-flex a-center sb">
+              <span className="w100 f-label-text t-center">दुध संकलन फरक</span>
+            </div>
+            <div className="center-milk-container w100 h50 d-flex a-center sa">
+              <span className="f-label-text w20">लिटर</span>
+              <span className="f-label-text w15">Fat</span>
+              <span className="f-label-text w15">Snf</span>
+              <span className="f-label-text w20">दर</span>
+              <span className="f-label-text w20">रक्कम</span>
+            </div>
+          </div>
+          <div className="m-date w5 h1 d-flex a-center f-label-text t-centerw">
+            <span className="w100 t-center">Action</span>
+          </div>
+        </div>
+        {fetchStatus === "loading" ? (
+          <div className="box d-flex center">
+            <Spinner />
+          </div>
+        ) : cMReport && cMReport.length > 0 ? (
+          cMReport.map((data, i) => (
+            <div
+              className="center-milk-data-container w100 p10 d-flex a-center t-center sticky-top sb"
+              key={i}
+              style={{
+                backgroundColor: i % 2 === 0 ? "#faefe3" : "#fff",
+              }}
+            >
+              <div className="m-date w10 h1 d-flex a-center text">
+                {data.coll_date.slice(0, 10)}
+              </div>
+              <div className="m-date w5 h1 d-flex a-center text">
+                {data.coll_shift === 0 ? "M" : "E"}
+              </div>
+              <div className="center-milk-container w25 h1 d-flex-col">
+                <div className="center-milk-container w100 h1 d-flex a-center sa">
+                  <span className="text w20">{data.R_tliter}</span>
+                  <span className="text w15">{data.R_afat}</span>
+                  <span className="text w15">{data.R_asnf}</span>
+                  <span className="text w20">{data.R_arate}</span>
+                  <span className="text w20">{data.R_tamt}</span>
+                </div>
+              </div>
+              <div className="center-milk-container w25 h1 d-flex-col">
+                <div className="center-milk-container w100 h1 d-flex a-center sa">
+                  <span className="text w20">{data.tliter}</span>
+                  <span className="text w15">{data.afat}</span>
+                  <span className="text w15">{data.asnf}</span>
+                  <span className="text w20">{data.arate}</span>
+                  <span className="text w20">{data.tamt}</span>
+                </div>
+              </div>
+              <div className="center-milk-container w25 h1 d-flex-col">
+                <div className="center-milk-container w100 h1 d-flex a-center sa">
+                  <span className="text w20">{data.D_tliter}</span>
+                  <span className="text w15">{data.D_afat}</span>
+                  <span className="text w15">{data.D_asnf}</span>
+                  <span className="text w20">{data.D_arate}</span>
+                  <span className="text w20">{data.D_tamt}</span>
+                </div>
+              </div>
+              <div className="m-date w5 h1 d-flex a-center">
+                <span
+                  className="w100 label-text t-center req"
+                  onClick={() => handleDeleteCenterColl(data.id)}
+                >
+                  <MdDeleteForever />
                 </span>
               </div>
-              <div className="center-milk-container w100 h50 d-flex a-center sa">
-                <span className="f-label-text w20">Liters</span>
-                <span className="f-label-text w15">Fat</span>
-                <span className="f-label-text w15">Snf</span>
-                <span className="f-label-text w20">Rate</span>
-                <span className="f-label-text w20">Amount</span>
-              </div>
             </div>
-            <div className="center-milk-container w25 h1 d-flex-col">
-              <div className="center-milk-container w100 h50 d-flex a-center sb">
-                <span className="f-label-text">Recived Milk Collection</span>
-              </div>
-              <div className="center-milk-container w100 h50 d-flex a-center sa">
-                <span className="f-label-text w20">Liters</span>
-                <span className="f-label-text w15">Fat</span>
-                <span className="f-label-text w15">Snf</span>
-                <span className="f-label-text w20">Rate</span>
-                <span className="f-label-text w20">Amount</span>
-              </div>
-            </div>
-            <div className="center-milk-container w25 h1 d-flex-col">
-              <div className="center-milk-container w100 h50 d-flex a-center sb">
-                <span className="f-label-text">Milk Collection Difference</span>
-              </div>
-              <div className="center-milk-container w100 h50 d-flex a-center sa">
-                <span className="f-label-text w20">Liters</span>
-                <span className="f-label-text w15">Fat</span>
-                <span className="f-label-text w15">Snf</span>
-                <span className="f-label-text w20">Rate</span>
-                <span className="f-label-text w20">Amount</span>
-              </div>
-            </div>
-            <div className="m-date w5 h1 d-flex a-center f-label-text t-centerw">
-              <span className="w100 t-center">Action</span>
-            </div>
-          </div>
-          {fetchStatus === "loading" ? (
-            <div className="box d-flex center">
-              <Spinner />
-            </div>
-          ) : cMReport && cMReport.length > 0 ? (
-            cMReport.map((data, i) => (
-              <div
-                className="center-milk-data-container w100 p10 d-flex a-center t-center sticky-top sb"
-                key={i}
-                style={{
-                  backgroundColor: i % 2 === 0 ? "#faefe3" : "#fff",
-                }}
-              >
-                <div className="m-date w10 h1 d-flex a-center text">
-                  {data.coll_date.slice(0, 10)}
-                </div>
-                <div className="m-date w5 h1 d-flex a-center text">
-                  {data.coll_shift === 0 ? "M" : "E"}
-                </div>
-                <div className="center-milk-container w25 h1 d-flex-col">
-                  <div className="center-milk-container w100 h1 d-flex a-center sa">
-                    <span className="text w20">{data.R_tliter}</span>
-                    <span className="text w15">{data.R_afat}</span>
-                    <span className="text w15">{data.R_asnf}</span>
-                    <span className="text w20">{data.R_arate}</span>
-                    <span className="text w20">{data.R_tamt}</span>
-                  </div>
-                </div>
-                <div className="center-milk-container w25 h1 d-flex-col">
-                  <div className="center-milk-container w100 h1 d-flex a-center sa">
-                    <span className="text w20">{data.tliter}</span>
-                    <span className="text w15">{data.afat}</span>
-                    <span className="text w15">{data.asnf}</span>
-                    <span className="text w20">{data.arate}</span>
-                    <span className="text w20">{data.tamt}</span>
-                  </div>
-                </div>
-                <div className="center-milk-container w25 h1 d-flex-col">
-                  <div className="center-milk-container w100 h1 d-flex a-center sa">
-                    <span className="text w20">{data.D_tliter}</span>
-                    <span className="text w15">{data.D_afat}</span>
-                    <span className="text w15">{data.D_asnf}</span>
-                    <span className="text w20">{data.D_arate}</span>
-                    <span className="text w20">{data.D_tamt}</span>
-                  </div>
-                </div>
-                <div className="m-date w5 h1 d-flex a-center">
-                  <span
-                    className="w100 label-text t-center req"
-                    onClick={() => handleDeleteCenterColl(data.id)}
-                  >
-                    <MdDeleteForever />
-                  </span>
-                </div>
-              </div>
-            ))
-          ) : (
-            <div className="box d-flex center">No record found!</div>
-          )}
-        </div>
+          ))
+        ) : (
+          <div className="box d-flex center">No record found!</div>
+        )}
       </div>
     </div>
   );

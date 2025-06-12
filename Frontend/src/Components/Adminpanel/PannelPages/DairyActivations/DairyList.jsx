@@ -1,10 +1,13 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { FaEdit } from "react-icons/fa";
 import { getDairyList } from "../../../../App/Features/Admin/SuperAdmin/accessSlice";
+import DairyDetails from "./DairyDetails";
 
 const DairyList = () => {
   const dispatch = useDispatch();
   const { dairyList } = useSelector((state) => state.access);
+  const [isModalOpen, setModalOpen] = useState(false);
   useEffect(() => {
     dispatch(getDairyList());
   }, [dispatch]);
@@ -20,7 +23,8 @@ const DairyList = () => {
           <span className="f-label-text w10">Created On</span>
           <span className="f-label-text w10">Last Act.</span>
           <span className="f-label-text w10">AMC</span>
-          <span className="f-label-text w10">Activate</span>
+          <span className="f-label-text w10">Action</span>
+          {/* <span className="f-label-text w10">Activate</span> */}
         </div>
 
         {dairyList.length > 0 ? (
@@ -43,8 +47,14 @@ const DairyList = () => {
               </span>
               <span className="text w10">{item.amc || "00"}</span>
               <span className="text w10 t-center">
-                <input type="checkbox" name="" id="" />
+                <FaEdit
+                  className="color-icon"
+                  onClick={() => setModalOpen(true)}
+                />
               </span>
+              {/* <span className="text w10 t-center">
+                <input type="checkbox" name="" id="" />
+              </span> */}
             </div>
           ))
         ) : (
@@ -53,6 +63,12 @@ const DairyList = () => {
           </div>
         )}
       </div>
+
+      {isModalOpen && (
+        <div className="model-container w100 d-flex center">
+          <DairyDetails clsebtn={setModalOpen} />
+        </div>
+      )}
     </div>
   );
 };

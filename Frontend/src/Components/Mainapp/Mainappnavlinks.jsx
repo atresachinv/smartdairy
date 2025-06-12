@@ -38,6 +38,7 @@ import {
   MdOutlineAddTask,
 } from "react-icons/md";
 import { GrNotes, GrOrganization } from "react-icons/gr";
+import { PiCowFill } from "react-icons/pi";
 import { NavLink } from "react-router-dom";
 import "../../Styles/Mainapp/Mainapphome.css";
 import { useSelector } from "react-redux";
@@ -174,18 +175,22 @@ const Mainappnavlinks = ({ setselected, handleSidebar }) => {
           index: 2.3,
           role: ["admin", "manager", "salesman"],
         },
-        {
-          name: `${t("सेंटर दुध संकलन")}`,
-          icon: <BsGridFill className="icon" />,
-          path: "center/milk/collection",
-          index: 2.3,
-          role: ["admin", "manager", "salesman"],
-        },
+        ...(center_id === 0
+          ? [
+              {
+                name: `${t("सेंटर दुध संकलन")}`,
+                icon: <BsGridFill className="icon" />,
+                path: "center/milk/collection",
+                index: 2.4,
+                role: ["admin", "manager", "salesman"],
+              },
+            ]
+          : []),
         {
           name: `${t("संघ दुध विक्री रिपोर्ट ")}`,
           icon: <BsGridFill className="icon" />,
           path: "sangha/sales/report",
-          index: 2.4,
+          index: 2.5,
           role: ["admin", "manager", "salesman"],
         },
       ],
@@ -380,18 +385,26 @@ const Mainappnavlinks = ({ setselected, handleSidebar }) => {
           path: "master/bank",
           role: ["admin", "super_admin", "manager"],
         },
+
+        {
+          name: `${t("master:m-nv-dedumaster")}`,
+          icon: <FaFileCircleMinus className="icon" />,
+          index: 5.6,
+          path: "master/deductions",
+          role: ["admin", "super_admin", "manager"],
+        },
         {
           name: `${t("master:m-nv-drmaster")}`,
           icon: <FaUserDoctor className="icon" />,
-          index: 5.6,
+          index: 5.7,
           path: "master/doctor",
           role: ["admin", "super_admin", "manager"],
         },
         {
-          name: `${t("master:m-nv-dedumaster")}`,
-          icon: <FaFileCircleMinus className="icon" />,
-          index: 5.7,
-          path: "master/deductions",
+          name: `${t("पशु मास्टर")}`,
+          icon: <PiCowFill className="icon" />,
+          index: 5.8,
+          path: "master/animal",
           role: ["admin", "super_admin", "manager"],
         },
       ],
@@ -456,21 +469,21 @@ const Mainappnavlinks = ({ setselected, handleSidebar }) => {
           role: ["admin", "super_admin", "manager"],
         },
         {
-          name: `${t("Bank Report")}`,
+          name: `${t("बँक रिपोर्ट")}`,
           icon: <FaFileInvoiceDollar className="icon" />,
           index: 6.8,
           path: "reports/bank",
           role: ["admin", "super_admin", "manager"],
         },
         {
-          name: `${t("Deductionlist")}`,
+          name: `${t("कपात रिपोर्ट")}`,
           icon: <FaFileInvoiceDollar className="icon" />,
           index: 6.9,
           path: "reports/deduction",
           role: ["admin", "super_admin", "manager"],
         },
         {
-          name: `${t("Milk Bill")}`,
+          name: `${t("दुध बिल रिपोर्ट")}`,
           icon: <FaFileInvoiceDollar className="icon" />,
           index: 6.1,
           path: "reports/Milkbill",
@@ -548,13 +561,13 @@ const Mainappnavlinks = ({ setselected, handleSidebar }) => {
           path: "dairy/initial-info",
           role: ["admin", "super_admin", "manager"],
         },
-        {
-          name: `${t("Dairy Setup")}`,
-          icon: <BsGridFill className="icon" />,
-          index: 8.3,
-          path: "dairy/setup",
-          role: ["admin", "super_admin", "manager"],
-        },
+        // {
+        //   name: `${t("Dairy Setup")}`,
+        //   icon: <BsGridFill className="icon" />,
+        //   index: 8.3,
+        //   path: "dairy/setup",
+        //   role: ["admin", "super_admin", "manager"],
+        // },
         ...(center_id === 0
           ? [
               {
@@ -600,13 +613,13 @@ const Mainappnavlinks = ({ setselected, handleSidebar }) => {
           path: "settings/inventory",
           role: ["super_admin", "admin"],
         },
-        {
-          name: `${t("machine-settings")}`,
-          icon: <FaGears className="icon" />,
-          index: 9.3,
-          path: "settings/machine",
-          role: ["super_admin", "admin"],
-        },
+        // {
+        //   name: `${t("तक्रार नोंदवा")}`,
+        //   icon: <FaGears className="icon" />,
+        //   index: 9.3,
+        //   path: "report/problem",
+        //   role: ["super_admin", "admin"],
+        // },
       ],
     },
     {

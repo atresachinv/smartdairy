@@ -38,11 +38,11 @@ const Milkbill = () => {
   const [toCode, setToCode] = React.useState("");
   const [centerdata, setCenterData] = React.useState("");
   const profile = useSelector((state) => state.userinfo.profile);
+  console.log("payDetails", payDetails);
 
   useEffect(() => {
     dispatch(centersLists());
   }, [dispatch]);
-  console.log(centerList);
   //......   Dairy name And City name   for PDf heading
   const dairyname = useSelector(
     (state) =>
@@ -213,10 +213,10 @@ const Milkbill = () => {
         fetchPaymentDetails({
           fromdate: fromDate,
           todate: toDate,
+          center_id: selectedCenterId,
         })
       ).unwrap();
     }
-    console.log("payDetails", payDetails);
     try {
       if (fromDate && toDate) {
         const result = await dispatch(
@@ -620,6 +620,9 @@ const Milkbill = () => {
     data,
     allDeductions,
     payDetails,
+    dairyname,
+    fromDate,
+    toDate,
   }) => {
     const start = fromCode;
     const end = toCode;
@@ -632,6 +635,10 @@ const Milkbill = () => {
     const formatDate = (dateStr) =>
       new Date(dateStr).toLocaleDateString("hi-IN");
 
+    const numberToWords = (num) => {
+      return `₹${num.toFixed(2)} only`;
+    };
+
     const buildCombinedRows = (records, total) =>
       records
         .map((rec) => {
@@ -642,16 +649,16 @@ const Milkbill = () => {
           return `
             <tr>
               <td>${formatDate(rec.date)}</td>
-              <td>${rec.litres}</td>
-              <td>${rec.fat}</td>
-              <td>${rec.snf}</td>
-              <td>${rec.rate}</td>
-              <td>${rec.Amt}</td>
-              <td>${rec.litres1}</td>
-              <td>${rec.fat1}</td>
-              <td>${rec.snf1}</td>
-              <td>${rec.rate1}</td>
-              <td>${rec.Amt1}</td>
+              <td style="text-align:right;">${rec.litres}</td>
+              <td style="text-align:right;">${rec.fat}</td>
+              <td style="text-align:right;">${rec.snf}</td>
+              <td style="text-align:right;">${rec.rate}</td>
+              <td style="text-align:right;">${rec.Amt}</td>
+              <td style="text-align:right;">${rec.litres1}</td>
+              <td style="text-align:right;">${rec.fat1}</td>
+              <td style="text-align:right;">${rec.snf1}</td>
+              <td style="text-align:right;">${rec.rate1}</td>
+              <td style="text-align:right;">${rec.Amt1}</td>
             </tr>
           `;
         })
@@ -664,7 +671,7 @@ const Milkbill = () => {
           (d) => `
           <tr>
             <td>${d.dname}</td>
-            <td>${d.AMT}</td>
+            <td style="text-align:right;">${parseFloat(d.AMT).toFixed(2)}</td>
           </tr>
         `
         )
@@ -675,7 +682,6 @@ const Milkbill = () => {
         return "<tr><td colspan='2'>No payment data</td></tr>";
 
       const pay = payment[0];
-
       const rows = [
         ["Liter", parseFloat(pay.tliters || 0).toFixed(2)],
         ["Avg Rate", parseFloat(pay.arate || 0).toFixed(2)],
@@ -689,7 +695,7 @@ const Milkbill = () => {
           ([label, value]) => `
           <tr>
             <td>${label}</td>
-            <td>${value}</td>
+            <td style="text-align:right;">${value}</td>
           </tr>
         `
         )
@@ -737,75 +743,63 @@ const Milkbill = () => {
         );
 
         const total = { liters: 0, amount: 0 };
-
         const netPaymentAmt =
           payments.length > 0 ? parseFloat(payments[0].namt || 0) : 0;
 
         return `
         <div style="page-break-after: always; border: 2px solid black; padding: 10px;">
           <h2 style="text-align: center;">${dairyname}</h2>
-        
           <p style="text-align: center;"><strong>Period:</strong> ${formatDate(
             fromDate
           )} to ${formatDate(toDate)}</p>
   
           <p><strong>कोड:</strong> ${code} | <strong>नाव:</strong> ${customerName}</p>
   
-          <!-- Combined सकाळ + सायंकाळ table -->
           <h4 style="text-align:center;">सकाळ व सायंकाळ</h4>
           <table border="1" width="100%" style="border-collapse: collapse;">
             <tr>
               <th rowspan="2">तारीख</th>
-              <th colspan="5" style="text-align:center;">सकाळ</th>
-              <th colspan="5" style="text-align:center;">सायंकाळ</th>
+              <th colspan="5">सकाळ</th>
+              <th colspan="5">सायंकाळ</th>
             </tr>
             <tr>
-              <th>लिटर</th>
-              <th>फॅट</th>
-              <th>SNF</th>
-              <th>दर</th>
-              <th>रक्कम</th>
-              <th>लिटर</th>
-              <th>फॅट</th>
-              <th>SNF</th>
-              <th>दर</th>
-              <th>रक्कम</th>
+              <th>लिटर</th><th>फॅट</th><th>SNF</th><th>दर</th><th>रक्कम</th>
+              <th>लिटर</th><th>फॅट</th><th>SNF</th><th>दर</th><th>रक्कम</th>
             </tr>
             ${buildCombinedRows(custMilkData, total)}
             <tr style="font-weight: bold;">
               <td>Total</td>
-              <td colspan="5">लिटर: ${total.liters.toFixed(2)}</td>
-              <td colspan="5">रक्कम: ₹${total.amount.toFixed(2)}</td>
+              <td colspan="5" style="text-align:right;">लिटर: ${total.liters.toFixed(
+                2
+              )}</td>
+              <td colspan="5" style="text-align:right;">रक्कम: ₹${total.amount.toFixed(
+                2
+              )}</td>
             </tr>
           </table>
   
-          <!-- Deductions and Payment Summary -->
           <h4>कपात व पेमेंट सारांश:</h4>
           <table border="1" width="100%" style="border-collapse: collapse;">
             <tr>
               <td width="50%" valign="top">
                 <table border="1" width="100%" style="border-collapse: collapse;">
-                  <tr>
-                    <th>कपातीचे नाव</th>
-                    <th>कपात</th>
-                  </tr>
+                  <tr><th>कपातीचे नाव</th><th>कपात</th></tr>
                   ${deductionRows(deductions)}
                 </table>
               </td>
               <td width="50%" valign="top">
                 <table border="1" width="100%" style="border-collapse: collapse;">
-                  <tr>
-                    <th colspan="2" style="text-align: center;">Payment Summary</th>
-                  </tr>
+                  <tr><th colspan="2" style="text-align: center;">Payment Summary</th></tr>
                   ${buildPaymentSummary(payments)}
                 </table>
               </td>
             </tr>
           </table>
   
-       <h3>एकूण रक्कम: ₹${netPaymentAmt.toFixed(2)}</h3>
-<p><strong>Amount in Words:</strong> ${numberToWords(netPaymentAmt)}</p>
-
+          <h3>एकूण रक्कम: ₹${netPaymentAmt.toFixed(2)}</h3>
+          <p><strong>Amount in Words:</strong> ${numberToWords(
+            netPaymentAmt
+          )}</p>
         </div>
         `;
       })
@@ -817,14 +811,23 @@ const Milkbill = () => {
         <head>
           <title>Milk Bills</title>
           <style>
-            body { font-family: "Noto Sans Devanagari", Arial, sans-serif; padding: 20px; }
-            table { font-size: 12px; margin-top: 10px; }
-            h2, h3, h4 { margin-bottom: 5px; }
-            th.data-text {
-              text-align: left;
+            body {
+              font-family: "Noto Sans Devanagari", Arial, sans-serif;
+              padding: 20px;
             }
-            th.date-center {
+            table {
+              font-size: 12px;
+              margin-top: 10px;
+            }
+            th {
               text-align: center;
+            }
+            td {
+              text-align: right;
+              padding-right: 6px;
+            }
+            h2, h3, h4 {
+              margin-bottom: 5px;
             }
           </style>
         </head>
@@ -837,13 +840,14 @@ const Milkbill = () => {
     win.focus();
     win.print();
   };
+  
   //. Second Formatt
   const printMilkCollection = (
     cmilkdata = [],
     cname = "",
     billno = "",
     payData = [],
-    deduction = [],
+    allDeductions = [],
     payment = [],
     customerCode = "",
     accountDetails = {},
@@ -852,8 +856,16 @@ const Milkbill = () => {
     toDate = ""
   ) => {
     if (!Array.isArray(cmilkdata)) {
-      console.error("Invalid milk data. Expected an array.");
+      console.error("Invalid cmilkdata");
       return;
+    }
+    if (!Array.isArray(allDeductions)) {
+      console.error("Invalid deduction data");
+      allDeductions = [];
+    }
+    if (!Array.isArray(payment)) {
+      console.error("Invalid payment data");
+      payment = [];
     }
 
     if (!cname && cmilkdata.length > 0) {
@@ -1047,6 +1059,9 @@ const Milkbill = () => {
     data,
     allDeductions,
     payDetails,
+    dairyname,
+    fromDate,
+    toDate,
   }) => {
     const start = fromCode;
     const end = toCode;
@@ -1059,8 +1074,12 @@ const Milkbill = () => {
     const formatDate = (dateStr) =>
       new Date(dateStr).toLocaleDateString("hi-IN");
 
+    const numberToWords = (num) => {
+      // Simplified number to words function
+      return `₹${num.toFixed(2)} only`;
+    };
+
     const buildMergedMilkRows = (records, total) => {
-      // Group by date
       const groupedByDate = {};
 
       records.forEach((rec) => {
@@ -1068,11 +1087,8 @@ const Milkbill = () => {
         if (!groupedByDate[date]) {
           groupedByDate[date] = { morning: null, evening: null };
         }
-        if (rec.ME === 0) {
-          groupedByDate[date].morning = rec;
-        } else if (rec.ME === 1) {
-          groupedByDate[date].evening = rec;
-        }
+        if (rec.ME === 0) groupedByDate[date].morning = rec;
+        else if (rec.ME === 1) groupedByDate[date].evening = rec;
       });
 
       return Object.entries(groupedByDate)
@@ -1087,35 +1103,23 @@ const Milkbill = () => {
 
           const rateM = parseFloat(morning?.rate || 0);
           const rateE = parseFloat(evening?.rate || 0);
-          let weightedRate = 0;
-          if (totalLitres > 0) {
-            weightedRate = (
-              (rateM * litresM + rateE * litresE) /
-              totalLitres
-            ).toFixed(2);
-          }
-
           const fatM = parseFloat(morning?.fat || 0);
           const fatE = parseFloat(evening?.fat || 0);
-          let weightedFat = 0;
-          if (totalLitres > 0) {
-            weightedFat = (
-              (fatM * litresM + fatE * litresE) /
-              totalLitres
-            ).toFixed(2);
-          }
-
           const snfM = parseFloat(morning?.snf || 0);
           const snfE = parseFloat(evening?.snf || 0);
-          let weightedSnf = 0;
-          if (totalLitres > 0) {
-            weightedSnf = (
-              (snfM * litresM + snfE * litresE) /
-              totalLitres
-            ).toFixed(2);
-          }
 
-          // Add to grand totals
+          const weightedRate = totalLitres
+            ? ((rateM * litresM + rateE * litresE) / totalLitres).toFixed(2)
+            : "0.00";
+
+          const weightedFat = totalLitres
+            ? ((fatM * litresM + fatE * litresE) / totalLitres).toFixed(2)
+            : "0.00";
+
+          const weightedSnf = totalLitres
+            ? ((snfM * litresM + snfE * litresE) / totalLitres).toFixed(2)
+            : "0.00";
+
           total.liters += totalLitres;
           total.amount += totalAmt;
 
@@ -1133,7 +1137,6 @@ const Milkbill = () => {
         .join("");
     };
 
-    // Updated deductionRows — remove null name or null/empty amount
     const deductionRows = (records) =>
       records
         .filter(
@@ -1145,11 +1148,11 @@ const Milkbill = () => {
         )
         .map(
           (d) => `
-        <tr>
-          <td>${d.dname}</td>
-          <td>${parseFloat(d.AMT).toFixed(2)}</td>
-        </tr>
-      `
+          <tr>
+            <td>${d.dname}</td>
+            <td>${parseFloat(d.AMT).toFixed(2)}</td>
+          </tr>
+        `
         )
         .join("");
 
@@ -1170,11 +1173,11 @@ const Milkbill = () => {
       return rows
         .map(
           ([label, value]) => `
-        <tr>
-          <td>${label}</td>
-          <td>${value}</td>
-        </tr>
-      `
+          <tr>
+            <td>${label}</td>
+            <td>${value}</td>
+          </tr>
+        `
         )
         .join("");
     };
@@ -1182,7 +1185,6 @@ const Milkbill = () => {
     const allPagesHTML = customerCodes
       .map((code) => {
         const custData = data.filter((d) => d.rno.toString() === code);
-
         if (custData.length === 0) return "";
 
         const customerName = custData[0]?.cname || "";
@@ -1195,68 +1197,61 @@ const Milkbill = () => {
         );
 
         const total = { liters: 0, amount: 0 };
-
         const netPaymentAmt =
           payments.length > 0 ? parseFloat(payments[0].namt || 0) : 0;
 
         return `
-        <div style="page-break-after: always; border: 2px solid black; padding: 10px;">
-          <h2 style="text-align: center;">${dairyname}</h2>
-
-          <p style="text-align: center;"><strong>Period:</strong> ${formatDate(
-            fromDate
-          )} to ${formatDate(toDate)}</p>
-
-          <p><strong>कोड:</strong> ${code} | <strong>नाव:</strong> ${customerName}</p>
-
-          <!-- Merged Milk Collection Table -->
-          <h4 style="text-align:center;">Milk Collection</h4>
-          <table border="1" width="100%" style="border-collapse: collapse;">
-            <tr>
-              <th>तारीख</th>
-              <th>एकूण लिटर</th>
-              <th>सरासरी दर</th>
-              <th>सरासरी FAT</th>
-              <th>सरासरी SNF</th>
-              <th>एकूण रक्कम</th>
-            </tr>
-            ${buildMergedMilkRows(custData, total)}
-            <tr style="font-weight: bold;">
-              <td>Total</td>
-              <td>${total.liters.toFixed(2)}</td>
-              <td>-</td>
-              <td>-</td>
-              <td>-</td>
-              <td>${total.amount.toFixed(2)}</td>
-            </tr>
-          </table>
-
-          <!-- Deductions and Payment Summary displayed vertically -->
-          <h4>कपात व पेमेंट सारांश:</h4>
-          <div style="display: flex; flex-direction: column; gap: 10px;">
-            <!-- Deductions Table -->
-            <table border="1" width="100%" style="border-collapse: collapse;">
+          <div style="page-break-after: always; border: 2px solid black; padding: 10px;">
+            <h2 style="text-align: center;">${dairyname}</h2>
+            <p style="text-align: center;"><strong>Period:</strong> ${formatDate(
+              fromDate
+            )} to ${formatDate(toDate)}</p>
+            <p><strong>कोड:</strong> ${code} | <strong>नाव:</strong> ${customerName}</p>
+  
+            <h4 style="text-align:center;">Milk Collection</h4>
+            <table border="1" width="100%">
               <tr>
-                <th>कपातीचे नाव</th>
-                <th>कपात</th>
+                <th>तारीख</th>
+                <th>एकूण लिटर</th>
+                <th>सरासरी दर</th>
+                <th>सरासरी FAT</th>
+                <th>सरासरी SNF</th>
+                <th>एकूण रक्कम</th>
               </tr>
-              ${deductionRows(deductions)}
-            </table>
-
-            <!-- Payment Summary Table -->
-            <table border="1" width="100%" style="border-collapse: collapse;">
-              <tr>
-                <th colspan="2" style="text-align: center;">Payment Summary</th>
+              ${buildMergedMilkRows(custData, total)}
+              <tr style="font-weight: bold;">
+                <td>Total</td>
+                <td>${total.liters.toFixed(2)}</td>
+                <td>-</td>
+                <td>-</td>
+                <td>-</td>
+                <td>${total.amount.toFixed(2)}</td>
               </tr>
-              ${buildPaymentSummary(payments)}
             </table>
+  
+            <h4>कपात व पेमेंट सारांश:</h4>
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+              <table border="1" width="100%">
+                <tr>
+                  <th>कपातीचे नाव</th>
+                  <th>कपात</th>
+                </tr>
+                ${deductionRows(deductions)}
+              </table>
+  
+              <table border="1" width="100%">
+                <tr>
+                  <th colspan="2" style="text-align: center;">Payment Summary</th>
+                </tr>
+                ${buildPaymentSummary(payments)}
+              </table>
+            </div>
+  
+            <h3>एकूण रक्कम: ₹${netPaymentAmt.toFixed(2)}</h3>
+            <p><strong>Amount in Words:</strong> ${numberToWords(
+              netPaymentAmt
+            )}</p>
           </div>
-
-        
-       <h3>एकूण रक्कम: ₹${netPaymentAmt.toFixed(2)}</h3>
-<p><strong>Amount in Words:</strong> ${numberToWords(netPaymentAmt)}</p>
-
-        </div>
         `;
       })
       .join("");
@@ -1267,14 +1262,24 @@ const Milkbill = () => {
         <head>
           <title>Milk Bills</title>
           <style>
-            body { font-family: "Noto Sans Devanagari", Arial, sans-serif; padding: 20px; }
-            table { font-size: 12px; margin-top: 10px; }
-            h2, h3, h4 { margin-bottom: 5px; }
-            th.data-text {
-              text-align: left;
+            body {
+              font-family: "Noto Sans Devanagari", Arial, sans-serif;
+              padding: 20px;
             }
-            th.date-center {
+            table {
+              font-size: 12px;
+              margin-top: 10px;
+              border-collapse: collapse;
+            }
+            th {
               text-align: center;
+            }
+            td {
+              text-align: right;
+              padding-right: 6px;
+            }
+            h2, h3, h4 {
+              margin-bottom: 5px;
             }
           </style>
         </head>
@@ -1287,9 +1292,9 @@ const Milkbill = () => {
     win.focus();
     win.print();
   };
+  
 
   //Centerselection
-  console.log("deduction", deduction);
 
   const handleClick = async () => {
     setLoading(true);
@@ -1312,23 +1317,23 @@ const Milkbill = () => {
 
   return (
     <>
-      <div className="milk-bill-container w100 h1 d-flex-col">
-        <span className="px10 heading">Milk Bill Report</span>
-        <div className="date-checkbox-code-bill-payment-div w100 h40 d-flex bg">
+      <div className="milk-bill-container w100 h1 d-flex-col center">
+        <div className="date-checkbox-code-bill-payment-div w80 h50 d-flex-col bg p10">
+          <span className="w100 heading t-center">Milk Bill Report</span>
           <div className="date-code-bill-payment w100 h1 d-flex-col sa ">
             <div className="from-to-date-bill-report w100  d-flex  ">
               <div className="from-to-date-milk-bill d-flex w70 ">
                 <div className="from-date-bill-div w50 d-flex a-center  ">
-                  <span className="px10 lable-text w30">दिनांक पासून</span>
+                  <span className="px10 lable-text w50">दिनांक पासून :</span>
                   <input
-                    className="data w40"
+                    className="data w50"
                     type="date"
                     value={fromDate}
                     onChange={(e) => setFromDate(e.target.value)}
                   />
                 </div>
                 <div className="from-date-bill-div w50 d-flex a-center  ">
-                  <span className="px10 lable-text w20">पर्येंत:</span>
+                  <span className="px10 lable-text w30">पर्येंत :</span>
                   <input
                     className="data w50"
                     type="date"
@@ -1337,8 +1342,9 @@ const Milkbill = () => {
                   />
                 </div>
               </div>
-
-              <div className="select-center-milk-payment-div w30 d-flex ">
+            </div>
+            <div className="code-to-date-bill-report w100 d-flex sb">
+              <div className="select-center-milk-payment-div w60 d-flex ">
                 <div className="payment-register-centerwisee-data-show w100 h1 d-flex a-center">
                   <span className="info-text w30 px10">Center:</span>
 
@@ -1364,27 +1370,27 @@ const Milkbill = () => {
                   </select>
                 </div>
               </div>
-            </div>
-            <div className="code-to-date-bill-report w100 d-flex">
-              <div className="from-date-bill-div w50 d-flex a-center">
-                <span className="px10 lable-text w30">कोड न पासून</span>
-                <input
-                  className="data w40"
-                  type="text"
-                  value={fromCode}
-                  onChange={(e) => setFromCode(e.target.value)}
-                  placeholder="From Code"
-                />
-              </div>
-              <div className="to-code-bill-div w50 d-flex a-center">
-                <span className="px10 lable-text w20">पर्येंत:</span>
-                <input
-                  className="data w40"
-                  type="text"
-                  value={toCode}
-                  onChange={(e) => setToCode(e.target.value)}
-                  placeholder="To Code"
-                />
+              <div className="from-to-code-milk-payment w50 d-flex">
+                <div className="from-date-bill-div w50 d-flex a-center">
+                  <span className="px10 lable-text w50">कोड :</span>
+                  <input
+                    className="data w50"
+                    type="text"
+                    value={fromCode}
+                    onChange={(e) => setFromCode(e.target.value)}
+                    placeholder="From Code"
+                  />
+                </div>
+                <div className="to-code-bill-div w50 d-flex a-center">
+                  <span className="px10 lable-text w50">ते :</span>
+                  <input
+                    className="data w50"
+                    type="text"
+                    value={toCode}
+                    onChange={(e) => setToCode(e.target.value)}
+                    placeholder="To Code"
+                  />
+                </div>
               </div>
             </div>
 
@@ -1422,56 +1428,50 @@ const Milkbill = () => {
                   Milk Collection PDF
                 </button>
               </div> */}
-              <div className="milk-bil-report-second-half d-flex w50">
-                <div className="report-buttons-div w70 d-flex px10">
-                  <button
-                    className="btn"
-                    onClick={() =>
-                      printMilkBillPages({
-                        fromCode,
-                        toCode,
-                        data,
-                        allDeductions,
-                        payDetails,
-                      })
-                    }
-                  >
-                    दुध बिले प्रकार 1
-                  </button>
-                </div>
-                <div className="report-buttons-div w70 d-flex px10">
-                  <button
-                    className="btn"
-                    onClick={() =>
-                      printMilkCollection(
-                        cmilkdata,
-                        "",
-                        "",
-                        [],
-                        deduction,
-                        payment
-                      )
-                    }
-                  >
-                    दुध बिले प्रकार 2
-                  </button>
-                </div>
-                <div className="report-buttons-div w70 d-flex px10">
-                  <button
-                    className="btn"
-                    onClick={() =>
-                      printMilkBillpage3rd({
-                        fromCode,
-                        toCode,
-                        data,
-                        allDeductions,
-                        payDetails,
-                      })
-                    }
-                  >
-                    दुध बिले प्रकार 3
-                  </button>
-                </div>
+              <div className="milk-bil-report-second-half d-flex w100 j-end">
+                <button
+                  className="btn mx10"
+                  onClick={() =>
+                    printMilkBillPages({
+                      fromCode,
+                      toCode,
+                      data,
+                      allDeductions,
+                      payDetails,
+                    })
+                  }
+                >
+                  दुध बिले प्रकार 1
+                </button>
+                <button
+                  className="btn mx10"
+                  onClick={() =>
+                    printMilkCollection(
+                      cmilkdata,
+                      "",
+                      "",
+                      [],
+                      allDeductions,
+                      payment
+                    )
+                  }
+                >
+                  दुध बिले प्रकार 2
+                </button>
+                <button
+                  className="btn mx10"
+                  onClick={() =>
+                    printMilkBillpage3rd({
+                      fromCode,
+                      toCode,
+                      data,
+                      allDeductions,
+                      payDetails,
+                    })
+                  }
+                >
+                  दुध बिले प्रकार 3
+                </button>
               </div>
             </div>
           </div>

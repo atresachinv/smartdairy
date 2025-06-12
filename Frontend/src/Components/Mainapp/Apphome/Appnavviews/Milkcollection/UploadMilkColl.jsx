@@ -5,6 +5,7 @@ import { toast } from "react-toastify";
 import { FaFileExcel } from "react-icons/fa";
 import { uploadMilkCollection } from "../../../../../App/Features/Mainapp/Milk/UploadMilkSlice";
 import { useDispatch, useSelector } from "react-redux";
+import "../../../../../Styles/Mainapp/Apphome/Appnavview/Milkcollection.css";
 
 const UploadMilkColl = () => {
   const dispatch = useDispatch();
@@ -41,8 +42,6 @@ const UploadMilkColl = () => {
 
     return "";
   }
-  
-  
 
   const handleExcelChange = (e) => {
     const file = e.target.files[0];
@@ -66,7 +65,6 @@ const UploadMilkColl = () => {
       reader.readAsArrayBuffer(file);
     }
   };
-  
 
   const handleClear = () => {
     setFileName("");
@@ -91,7 +89,7 @@ const UploadMilkColl = () => {
   };
 
   return (
-    <div className="upload milk collection form w100 h1 d-flex-col a-center">
+    <div className="upload-milk-collection-form w100 h1 d-flex-col a-center">
       <span className="heading my10">उपलोड दुध संकलन : </span>
       <form
         onSubmit={handleMilkUpload}
@@ -117,7 +115,7 @@ const UploadMilkColl = () => {
               className="file-icon"
               style={{ color: "green", fontSize: "20px" }}
             />
-            <span className="file-name px10">{fileName.slice(0,25)}...</span>
+            <span className="file-name px10">{fileName.slice(0, 25)}...</span>
             <span onClick={handleClear} className="btn">
               X
             </span>

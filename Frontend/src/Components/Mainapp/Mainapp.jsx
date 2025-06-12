@@ -88,6 +88,8 @@ import CreateSangh from "./MilkSales/SanghsalesPages/CreateSangh";
 import CenterReports from "./Reports/CenterReports/CenterReports";
 import UploadMilkColl from "./Apphome/Appnavviews/Milkcollection/UploadMilkColl";
 import Milkbill from "./Reports/milkBill/Milkbill";
+import AnimalMaster from "./Masters/MasterPages/AnimalMaster";
+import ReportProblem from "./DairyInfo/Centers/ReportProblem";
 
 
 const Mainapp = () => {
@@ -278,8 +280,9 @@ const Mainapp = () => {
             {/* <Route path="master/customer/*" element={<CustomersMaster />} /> */}
             <Route path="master/employee/*" element={<EmployeeMaster />} />
             <Route path="master/bank/*" element={<BankMaster />} />
-            <Route path="master/doctor/*" element={<DoctorMaster />} />
             <Route path="master/deductions/*" element={<DeductionMaster />} />
+            <Route path="master/doctor/*" element={<DoctorMaster />} />
+            <Route path="master/Animal" element={<AnimalMaster />} />
             {/* <Route path="master/ratechart/*" element={<MilkRateMaster />} /> */}
             {/* purchase routes */}
             <Route path="purchase/cattlefeed/*" element={<PurchaseMaster />} />
@@ -328,9 +331,9 @@ const Mainapp = () => {
             <Route path="dairy/create/center" element={<Centers />} />
             <Route path="dairy/whatsapp-sms" element={<WhatsappSms />} />
             {/* settings routes */}
-            <Route path="settings/dairy/*" element={<DairySettings />} />
+            <Route path="settings/dairy/*" element={<DairySetup />} />
             <Route path="settings/inventory" element={<InventorySettings />} />
-            <Route path="settings/machine" element={<MachineSettings />} />
+            <Route path="report/problem" element={<ReportProblem />} />
             {/* Profile route */}
             <Route path="profile-info" element={<Profile />} />
           </Routes>

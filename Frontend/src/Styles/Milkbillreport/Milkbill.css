@@ -1,4 +1,8 @@
 @media screen and (max-width: 426px) {
+  .milk-bill-container .date-checkbox-code-bill-payment-div {
+    width: 100%;
+    height: 65%;
+  }
   .date-checkbox-code-bill-payment-div {
     height: 320px;
   }
@@ -10,12 +14,30 @@
   }
   .date-code-bill-payment .from-to-date-bill-report .from-to-date-milk-bill {
     width: 100%;
+    margin-bottom: 10px;
   }
   .from-to-date-bill-report .from-to-date-milk-bill .from-date-bill-div {
     flex-direction: column;
   }
+  .date-code-bill-payment .code-to-date-bill-report {
+    flex-direction: column;
+  }
+  .date-code-bill-payment
+    .code-to-date-bill-report
+    .select-center-milk-payment-div {
+    width: 100%;
+  }
+  .date-code-bill-payment
+    .code-to-date-bill-report
+    .select-center-milk-payment-div
+    select {
+    width: 250px;
+  }
+  .date-code-bill-payment .code-to-date-bill-report .from-to-code-milk-payment {
+    width: 100%;
+  }
   .from-to-date-bill-report .from-to-date-milk-bill .from-date-bill-div span {
-    width: 120px;
+    width: 130px;
   }
   .from-to-date-bill-report .from-to-date-milk-bill .from-date-bill-div input {
     width: 140px;
@@ -28,12 +50,11 @@
   .date-code-bill-payment .code-to-date-bill-report .from-date-bill-div {
     flex-direction: column;
   }
-
   .date-code-bill-payment .code-to-date-bill-report .from-date-bill-div span {
     width: 130px;
   }
   .date-code-bill-payment .code-to-date-bill-report .from-date-bill-div input {
-    width: 130px;
+    width: 120px;
   }
   .date-code-bill-payment .code-to-date-bill-report .to-code-bill-div {
     flex-direction: column;
@@ -79,3 +100,4 @@
     margin-bottom: 10px;
   }
 }
+
