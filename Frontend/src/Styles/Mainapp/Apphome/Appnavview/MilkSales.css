@@ -20,8 +20,19 @@
 
 @media screen and (max-width: 426px) {
   .retail-milk-sales-form-container {
-    margin-top: 20%;
+    margin-top: 15%;
     min-height: auto;
+  }
+  .milk-details-div {
+    max-height: fit-content;
+  }
+  .milk-col-form .user-details {
+    flex-direction: column;
+    height: auto;
+  }
+  .milk-details-div .milk-info {
+    width: 100%;
+    height: auto;
   }
   .retail-milk-sales-form-container .milk-col-form {
     width: 95%;

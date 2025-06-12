@@ -7,6 +7,10 @@
     min-height: fit-content;
     padding: 0;
   }
+  .page-title-container select {
+    width: 65%;
+    margin-bottom: 10px;
+  }
   .dairy-setup-inner-container .dairy-setup-form {
     width: 100%;
     flex-direction: row;
