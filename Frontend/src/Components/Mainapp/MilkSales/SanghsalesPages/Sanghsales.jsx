@@ -1,7 +1,10 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import "../../../../Styles/Sanghsales/Sanghsales.css";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchSanghaList } from "../../../../App/Features/Mainapp/Sangha/sanghaSlice";
+import {
+  addsanghaMilkColl,
+  fetchSanghaList,
+} from "../../../../App/Features/Mainapp/Sangha/sanghaSlice";
 import { toast } from "react-toastify";
 import { useTranslation } from "react-i18next";
 import "../../../../Styles/Mainapp/Apphome/Appnavview/Milkcollection.css";
@@ -14,7 +17,7 @@ import {
   createCenterMColl,
 } from "../../../../App/Features/Mainapp/Milk/DairyMilkSalesSlice";
 
-const Sanghsales = () => {
+const Sanghsales = ({ clsebtn, isModalOpen }) => {
   const dispatch = useDispatch();
   const today = useSelector((state) => state.date.toDate);
   const sanghaList = useSelector((state) => state.sangha.sanghaList);
@@ -51,6 +54,8 @@ const Sanghsales = () => {
   const fatRef = useRef(null);
   const snfRef = useRef(null);
   const rateRef = useRef(null);
+  const amtRef = useRef(null);
+  const otherChargesRef = useRef(null);
   const submitbtn = useRef(null);
 
   const [errors, setErrors] = useState({});
@@ -62,11 +67,13 @@ const Sanghsales = () => {
     id: "",
     date: changedDate || tDate,
     todate: changedDate || tDate,
-    sanghaid: 0,
+    sanghname: "",
     shift: 0,
     liters: "",
     kpliters: "",
     nashliters: "",
+    otherCharges: "",
+    chilling: "",
     fat: "",
     snf: "",
     rate: "",
@@ -74,6 +81,7 @@ const Sanghsales = () => {
   };
 
   const [values, setValues] = useState(initialValues);
+  // console.log(values);
   //------------------------------------------------------------------------------------------------>
   //------------------------------------------------------------------------------------------------>
   useEffect(() => {
@@ -340,21 +348,21 @@ const Sanghsales = () => {
 
   const handleSanghaSales = async (e) => {
     e.preventDefault();
-    // // Validate fields before submission
-    // const validationErrors = validateFields();
-    // if (Object.keys(validationErrors).length > 0) {
-    //   setErrors(validationErrors);
-    //   return;
-    // }
-    // const res = await dispatch(createCenterMColl(values)).unwrap();
-    // if (res.status === 200) {
-    //   toast.success("दुध संकलन यशस्वीरित्या सेव्ह झाले आहे.");
-    //   setValues(initialValues);
-    //   setChangedDate("");
-    //   setErrors({});
-    // } else {
-    //   toast.error("दुध संकलन सेव्ह करण्यात अयशस्वी.");
-    // }
+    // Validate fields before submission
+    const validationErrors = validateFields();
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      return;
+    }
+    const res = await dispatch(addsanghaMilkColl(values)).unwrap();
+    if (res.status === 200) {
+      toast.success("संघ दुध संकलन यशस्वीरित्या सेव्ह झाले आहे.");
+      setValues(initialValues);
+      setChangedDate("");
+      setErrors({});
+    } else {
+      toast.error("संघ दुध संकलन सेव्ह करण्यात अयशस्वी.");
+    }
   };
 
   return (
@@ -366,26 +374,37 @@ const Sanghsales = () => {
         onSubmit={handleSanghaSales}
         className="milk-col-form w65 h1 d-flex-col bg p10"
       >
-        <span className="heading w100 t-center py10">
-          संघ दुध विक्री पावती :
-        </span>
+        {isModalOpen ? (
+          <div className="heading-and-close-btn-container w100 d-flex sb p10">
+            <span className="heading w100 t-center">संघ दुध विक्री पावती</span>
+            <span
+              type="button"
+              className="heading span-btn"
+              onClick={() => clsebtn(false)}
+            >
+              X
+            </span>
+          </div>
+        ) : (
+          <span className="heading w100 t-center">संघ दुध विक्री पावती</span>
+        )}
         <div className="form-setting w100 h10 d-flex a-center sb ">
           <div className="w70 d-flex a-center px10">
-            <label htmlFor="sanghaid" className="info-text w30">
+            <label htmlFor="sanghname" className="info-text w30">
               संघ निवडा : <span className="req">*</span>
             </label>
             <select
               className="data w70"
-              name="sanghaid"
-              id="sanghaid"
-              value={values.sanghaid}
+              name="sanghname"
+              id="sanghname"
+              value={values.sanghname}
               onChange={handleInputs}
               onKeyDown={(e) => handleKeyDown(e, timeRef)}
               ref={sanghaRef}
             >
               {sanghaList.length > 0 ? (
                 sanghaList.map((sangha, i) => (
-                  <option key={i} value={sangha.code}>
+                  <option key={i} value={sangha.sangha_name}>
                     {sangha.sangha_name}
                   </option>
                 ))
@@ -412,7 +431,7 @@ const Sanghsales = () => {
             </select>
           </div>
         </div>
-        <div className="user-details w100 h20 d-flex">
+        <div className="date-details w100 h20 d-flex">
           <div className="form-div w50 px10">
             <label htmlFor="date" className="info-text w100">
               {t("common:c-date")} {values.shift === "2" ? "पासून" : ""}{" "}
@@ -471,7 +490,7 @@ const Sanghsales = () => {
                 step="any"
                 onChange={handleInputs}
                 value={values.liters}
-                disabled={!values.date}
+                // disabled={!values.date}
                 onKeyDown={(e) => handleKeyDown(e, kplitersRef)}
                 ref={litersRef}
               />
@@ -490,7 +509,7 @@ const Sanghsales = () => {
                 step="any"
                 value={values.nashliters}
                 onChange={handleInputs}
-                disabled={!values.liters}
+                // disabled={!values.liters}
                 onKeyDown={(e) => handleKeyDown(e, rateRef)}
                 ref={nashlitersRef}
               />
@@ -511,7 +530,7 @@ const Sanghsales = () => {
                     step="any"
                     onChange={handleInputChange}
                     value={values.fat}
-                    disabled={!values.rate || !values.liters}
+                    // disabled={!values.rate || !values.liters}
                     onKeyDown={(e) => handleKeyDown(e, snfRef)}
                     ref={fatRef}
                   />
@@ -530,14 +549,32 @@ const Sanghsales = () => {
                     step="any"
                     onChange={handleInputChange}
                     value={values.snf}
-                    disabled={!values.fat || !values.liters}
+                    // disabled={!values.fat || !values.liters}
                     onKeyDown={(e) => handleKeyDown(e, submitbtn)}
                     ref={snfRef}
                   />
                 </div>
               </>
             ) : (
-              <></>
+              <div className="form-div  px10">
+                <label htmlFor="fat" className="info-text">
+                  प्रशासकीय व इतर अनुदान :
+                </label>
+                <input
+                  className={`data ${errors.fat ? "input-error" : ""}`}
+                  type="number"
+                  required
+                  placeholder="0.0"
+                  name="otherCharges"
+                  id="otherCharges"
+                  step="any"
+                  onChange={handleInputs}
+                  value={values.otherCharges}
+                  // disabled={!values.rate || !values.liters}
+                  onKeyDown={(e) => handleKeyDown(e, snfRef)}
+                  ref={otherChargesRef}
+                />
+              </div>
             )}
           </div>
           <div className="milk-info w50 h1 d-flex-col">
@@ -555,7 +592,7 @@ const Sanghsales = () => {
                 step="any"
                 value={values.kpliters}
                 onChange={handleInputs}
-                disabled={!values.date || !values.liters}
+                // disabled={!values.date || !values.liters}
                 onKeyDown={(e) => handleKeyDown(e, nashlitersRef)}
                 ref={kplitersRef}
               />
@@ -580,7 +617,25 @@ const Sanghsales = () => {
                 />
               </div>
             ) : (
-              <></>
+              <div className="form-div px10">
+                <label htmlFor="snf" className="info-text">
+                  शीतकरण :
+                </label>
+                <input
+                  className={`data ${errors.snf ? "input-error" : ""}`}
+                  type="number"
+                  required
+                  placeholder="00.0"
+                  name="chilling"
+                  id="chilling"
+                  step="any"
+                  onChange={handleInputs}
+                  value={values.chilling}
+                  // disabled={!values.fat || !values.liters}
+                  onKeyDown={(e) => handleKeyDown(e, otherChargesRef)}
+                  ref={rateRef}
+                />
+              </div>
             )}
 
             <div className="form-div px10">
@@ -594,6 +649,7 @@ const Sanghsales = () => {
                 placeholder="00.0"
                 name="amt"
                 id="amt"
+                ref={amtRef}
                 value={values.amt}
               />
             </div>

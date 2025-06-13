@@ -87,7 +87,7 @@ export const deleteSangha = createAsyncThunk(
 // add milk collection to sangha
 export const addsanghaMilkColl = createAsyncThunk(
   "sangha/addsanghaMilkColl",
-  async ({ values }, { rejectWithValue }) => {
+  async (values, { rejectWithValue }) => {
     try {
       const response = await axiosInstance.post(
         "/add/sangha/milk-coll",
@@ -106,13 +106,12 @@ export const addsanghaMilkColl = createAsyncThunk(
 // fetch sangh milk collection
 export const fetchsanghaMilkColl = createAsyncThunk(
   "sangha/fetchsanghaMilkColl",
-  async ({ values }, { rejectWithValue }) => {
+  async ({ fromDate, toDate }, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.get(
-        "/fetch/sangha/milk-coll",
-        values
-      );
-      return response.data;
+      const response = await axiosInstance.get("/fetch/sangha/milk-coll", {
+        params: { fromDate, toDate },
+      });
+      return response.data.sanghaMilkSales;
     } catch (error) {
       const errorMessage = error.response
         ? error.response.data

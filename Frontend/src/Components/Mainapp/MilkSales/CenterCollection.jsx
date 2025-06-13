@@ -424,7 +424,7 @@ const CenterCollection = () => {
   };
 
   return (
-    <div className="milk-collection-outer-main-container w100 h1 d-flex sb p10">
+    <div className="center-milk-collection-outer-main-container w100 h1 d-flex sb p10">
       <form className="milk-col-form w60 h1 d-flex-col bg p10">
         <span className="heading w100 t-center py10">
           {values.shift === 0

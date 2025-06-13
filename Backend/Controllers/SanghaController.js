@@ -7,35 +7,26 @@ const util = require("util");
 // add sangha milk collection --------------------------------------------------------------------------------------->
 //------------------------------------------------------------------------------------------------------------------->
 exports.createSanghaMColl = async (req, res) => {
+  const { ...values } = req.body;
+  const { dairy_id, center_id, user_role } = req.user;
   const {
-    sanghaid,
-    shift,
     date,
+    sanghname,
+    shift,
     liters,
     kpliters,
     nashliters,
+    otherCharges,
+    chilling,
     fat,
     snf,
     rate,
     amt,
-  } = req.body.values;
-
-  const { dairy_id, center_id, user_role } = req.user;
-  if (
-    !date ||
-    !sanghaid ||
-    !shift ||
-    !liters ||
-    !kpliters ||
-    !nashliters ||
-    !fat ||
-    !snf ||
-    !rate ||
-    !amt
-  ) {
+  } = values;
+  if (!date || !liters || !rate || !amt) {
     return res
       .status(400)
-      .json({ status: 400, message: "User code Required!" });
+      .json({ status: 400, message: "All info is Required!" });
   }
   if (!dairy_id) {
     return res.status(401).json({ status: 401, message: "Unauthorized User!" });
@@ -51,19 +42,21 @@ exports.createSanghaMColl = async (req, res) => {
 
     try {
       const insertQuery = `INSERT INTO sanghmilkentry (
-      dairy_id, center_id, sanghcode, shift, colldate DATE, liter, kamiprat_ltr, nash_ltr,
-      fat, snf, rate, amt, createdOn, createdBy) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)`;
+      dairy_id, center_id, sanghname, shift, colldate, liter, kamiprat_ltr, otherCharges,
+      chilling, nash_ltr, fat, snf, rate, amt, createdOn, createdBy) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
       connection.query(
         insertQuery,
         [
           dairy_id,
           center_id,
-          sanghaid,
+          sanghname,
           shift,
           date,
           liters,
           kpliters,
+          otherCharges,
+          chilling,
           nashliters,
           fat,
           snf,
@@ -99,11 +92,12 @@ exports.createSanghaMColl = async (req, res) => {
 //------------------------------------------------------------------------------------------------------------------->
 // fetch sangha milk collection ------------------------------------------------------------------------------------->
 //------------------------------------------------------------------------------------------------------------------->
+
 exports.fetchSanghaMColl = async (req, res) => {
-  const { date, todate, sanghaid } = req.body.values;
+  const { fromDate, toDate } = req.query;
   const { dairy_id, center_id } = req.user;
 
-  if (!date || !sanghaid || !todate) {
+  if (!fromDate || !toDate) {
     return res
       .status(400)
       .json({ status: 400, message: "User code Required!" });
@@ -122,12 +116,12 @@ exports.fetchSanghaMColl = async (req, res) => {
     try {
       const fetchQuery = `
         SELECT * FROM sanghmilkentry 
-            WHERE dairy_id = ? AND center_id = ? AND sanghid = ? AND colldate BETWEEN ? AND ?
+            WHERE dairy_id = ? AND center_id = ? AND colldate BETWEEN ? AND ?
         `;
 
       connection.query(
         fetchQuery,
-        [dairy_id, center_id, sanghaid, date, todate],
+        [dairy_id, center_id, fromDate, toDate],
         (err, result) => {
           connection.release();
           if (err) {
