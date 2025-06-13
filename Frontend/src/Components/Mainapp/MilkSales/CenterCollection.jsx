@@ -1,5 +1,4 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { BsGearFill } from "react-icons/bs";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import { useTranslation } from "react-i18next";
@@ -12,7 +11,6 @@ import {
 } from "../../../App/Features/Mainapp/Milk/DairyMilkSalesSlice";
 import "../../../Styles/Mainapp/Apphome/Appnavview/Milkcollection.css";
 import "../../../Styles/Mainapp/MilkSales/CenterMilkColl.css";
-import { saveMessage } from "../../../App/Features/Mainapp/Dairyinfo/smsSlice";
 import axiosInstance from "../../../App/axiosInstance";
 const CenterCollection = () => {
   const dispatch = useDispatch();
@@ -28,14 +26,13 @@ const CenterCollection = () => {
   );
   const milkcollRatechart = useSelector(
     (state) => state.ratechart.latestrChart
-  ); // latest rate chart for center milk collection
+  );
   const centerRef = useRef(null);
   const collRef = useRef(null);
   const litersRef = useRef(null);
   const fatRef = useRef(null);
   const snfRef = useRef(null);
   const submitbtn = useRef(null);
-
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
   const [changedDate, setChangedDate] = useState("");
@@ -470,7 +467,7 @@ const CenterCollection = () => {
             </button>
           </div>
         </div>
-        <div className="user-details w100 h20 d-flex">
+        <div className="user-details-div w100 h20 d-flex">
           <div className="form-div w50 px10">
             <label htmlFor="centerid" className="info-text">
               सेंटर निवडा : <span className="req">*</span>{" "}
@@ -498,7 +495,7 @@ const CenterCollection = () => {
           </div>
           <div className="form-div w50 px10">
             <label htmlFor="collectedBy" className="info-text">
-              संकलक निवडा:
+              संकलक निवडा :
             </label>
             <select
               className="data"
