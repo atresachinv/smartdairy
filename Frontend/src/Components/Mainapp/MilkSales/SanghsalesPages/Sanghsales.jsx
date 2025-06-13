@@ -1,20 +1,11 @@
-// import React, { useEffect, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import "../../../../Styles/Sanghsales/Sanghsales.css";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchSanghaList } from "../../../../App/Features/Mainapp/Sangha/sanghaSlice";
-
-//-------------------------------------------------------->
-//-------------------------------------------------------->
-//-------------------------------------------------------->
-//-------------------------------------------------------->
-
-import React, { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "react-toastify";
 import { useTranslation } from "react-i18next";
 import "../../../../Styles/Mainapp/Apphome/Appnavview/Milkcollection.css";
 import "../../../../Styles/Mainapp/MilkSales/CenterMilkColl.css";
-// import { saveMessage } from "../../../App/Features/Mainapp/Dairyinfo/smsSlice";
-import axiosInstance from "../../../../App/axiosInstance";
 import { centersLists } from "../../../../App/Features/Dairy/Center/centerSlice";
 import { listEmployee } from "../../../../App/Features/Mainapp/Masters/empMasterSlice";
 import { getLatestRateChart } from "../../../../App/Features/Mainapp/Masters/rateChartSlice";
@@ -27,39 +18,6 @@ const Sanghsales = () => {
   const dispatch = useDispatch();
   const today = useSelector((state) => state.date.toDate);
   const sanghaList = useSelector((state) => state.sangha.sanghaList);
-
-  const [formData, setFormData] = useState({
-    sanghaid: "",
-    time: 0,
-    date: today || "",
-    todate: today || "",
-    liters: "",
-    fat: "",
-    snf: "",
-    rate: "",
-    amt: "",
-    kpltr: "",
-    nashltr: "",
-    gmliters: "",
-    geliters: "",
-    gTotalltr: "",
-    gmAmt: "",
-    geAmt: "",
-    gTotalAmt: "",
-    kpMrgMilk: "",
-    kpEveMilk: "",
-    kpTotalMilk: "",
-    nashMrgltr: "",
-    nashEveltr: "",
-    nashTotalltr: "",
-    rebet_amt: "",
-    chilling_cost: "",
-    rebet: "",
-    totalPayment: "",
-    totalDeduction: "",
-    netPayment: "",
-  });
-
   useEffect(() => {
     dispatch(fetchSanghaList());
   }, []);
@@ -101,11 +59,11 @@ const Sanghsales = () => {
   const [tchangedDate, setTChangedDate] = useState("");
 
   const initialValues = {
+    id: "",
     date: changedDate || tDate,
     todate: changedDate || tDate,
     sanghaid: 0,
     shift: 0,
-    animal: 0,
     liters: "",
     kpliters: "",
     nashliters: "",
@@ -113,28 +71,13 @@ const Sanghsales = () => {
     snf: "",
     rate: "",
     amt: "",
-    degree: 0,
-    mobile: "",
-    allow: false,
-    cliters: "",
-    cfat: "",
-    csnf: "",
-    crate: "",
-    camt: "",
-    dliters: "",
-    dfat: "",
-    dsnf: "",
-    drate: "",
-    damt: "",
   };
 
   const [values, setValues] = useState(initialValues);
   //------------------------------------------------------------------------------------------------>
   //------------------------------------------------------------------------------------------------>
-  console.log("time", values.shift);
   useEffect(() => {
     dispatch(centersLists());
-    dispatch(listEmployee());
     dispatch(getLatestRateChart());
   }, []);
 
@@ -200,21 +143,6 @@ const Sanghsales = () => {
     // Special case: handle date field validation
     if (name === "date") {
       setChangedDate(value);
-
-      // Check if selected date is greater than today's date (tDate)
-      if (value > tDate) {
-        setErrors((prevErrors) => ({
-          ...prevErrors,
-          date: "Future dates are not allowed", // You can customize this message
-        }));
-        return; // Stop here if invalid date
-      } else {
-        // Clear the date error if it's valid
-        setErrors((prevErrors) => {
-          const { date, ...rest } = prevErrors;
-          return rest;
-        });
-      }
     } else if (name === "todate") {
       setTChangedDate(value);
     }
@@ -227,10 +155,11 @@ const Sanghsales = () => {
 
     // Validate the field and update error state
     const fieldError = validateField(name, value);
-    setErrors((prevErrors) => ({
-      ...prevErrors,
-      ...fieldError,
-    }));
+    setErrors((prevErrors) => {
+      const updatedErrors = { ...prevErrors, ...fieldError };
+      if (!value) delete updatedErrors[name];
+      return updatedErrors;
+    });
   };
 
   // used for decimal input correction ----------------------------------------------------------->
@@ -411,22 +340,21 @@ const Sanghsales = () => {
 
   const handleSanghaSales = async (e) => {
     e.preventDefault();
-
-    // Validate fields before submission
-    const validationErrors = validateFields();
-    if (Object.keys(validationErrors).length > 0) {
-      setErrors(validationErrors);
-      return;
-    }
-    const res = await dispatch(createCenterMColl(values)).unwrap();
-    if (res.status === 200) {
-      toast.success("दुध संकलन यशस्वीरित्या सेव्ह झाले आहे.");
-      setValues(initialValues);
-      setChangedDate("");
-      setErrors({});
-    } else {
-      toast.error("दुध संकलन सेव्ह करण्यात अयशस्वी.");
-    }
+    // // Validate fields before submission
+    // const validationErrors = validateFields();
+    // if (Object.keys(validationErrors).length > 0) {
+    //   setErrors(validationErrors);
+    //   return;
+    // }
+    // const res = await dispatch(createCenterMColl(values)).unwrap();
+    // if (res.status === 200) {
+    //   toast.success("दुध संकलन यशस्वीरित्या सेव्ह झाले आहे.");
+    //   setValues(initialValues);
+    //   setChangedDate("");
+    //   setErrors({});
+    // } else {
+    //   toast.error("दुध संकलन सेव्ह करण्यात अयशस्वी.");
+    // }
   };
 
   return (
@@ -434,14 +362,17 @@ const Sanghsales = () => {
       id="sanghasles"
       className="sangh-milk-sales-container w100 h1 d-flex-col a-center p10"
     >
-      <form className="milk-col-form w65 h1 d-flex-col bg p10">
+      <form
+        onSubmit={handleSanghaSales}
+        className="milk-col-form w65 h1 d-flex-col bg p10"
+      >
         <span className="heading w100 t-center py10">
           संघ दुध विक्री पावती :
         </span>
         <div className="form-setting w100 h10 d-flex a-center sb ">
           <div className="w70 d-flex a-center px10">
             <label htmlFor="sanghaid" className="info-text w30">
-              संघ निवडा : <span className="req">*</span>{" "}
+              संघ निवडा : <span className="req">*</span>
             </label>
             <select
               className="data w70"
@@ -468,9 +399,10 @@ const Sanghsales = () => {
               वेळ : <span className="req">*</span>{" "}
             </label>
             <select
-              name="time"
+              name="shift"
               id="shift"
               className="data w65"
+              onChange={handleInputs}
               onKeyDown={(e) => handleKeyDown(e, fdateRef)}
               ref={timeRef}
             >
@@ -483,7 +415,8 @@ const Sanghsales = () => {
         <div className="user-details w100 h20 d-flex">
           <div className="form-div w50 px10">
             <label htmlFor="date" className="info-text w100">
-              {t("common:c-date")} पासून <span className="req">*</span>{" "}
+              {t("common:c-date")} {values.shift === "2" ? "पासून" : ""}{" "}
+              <span className="req">*</span>{" "}
             </label>
             <input
               className={`data w60 ${errors.date ? "input-error" : ""}`}
@@ -499,25 +432,28 @@ const Sanghsales = () => {
               ref={fdateRef}
             />
           </div>
-
-          <div className="form-div w50 px10">
-            <label htmlFor="todate" className="info-text w100">
-              {t("common:c-date")} पर्यंत
-            </label>
-            <input
-              className={`data w60 ${errors.date ? "input-error" : ""}`}
-              type="date"
-              required
-              placeholder="0000"
-              name="date"
-              id="todate"
-              onChange={handleInputs}
-              value={values.todate || ""}
-              max={tDate}
-              onKeyDown={(e) => handleKeyDown(e, litersRef)}
-              ref={tdateRef}
-            />
-          </div>
+          {values.shift === "2" ? (
+            <div className="form-div w50 px10">
+              <label htmlFor="todate" className="info-text w100">
+                {t("common:c-date")} पर्यंत
+              </label>
+              <input
+                className={`data w60 ${errors.date ? "input-error" : ""}`}
+                type="date"
+                required
+                placeholder="0000"
+                name="date"
+                id="todate"
+                onChange={handleInputs}
+                value={values.todate || ""}
+                max={tDate}
+                onKeyDown={(e) => handleKeyDown(e, litersRef)}
+                ref={tdateRef}
+              />
+            </div>
+          ) : (
+            <></>
+          )}
         </div>
         <div className="milk-details-div w100 h70 d-flex">
           <div className="milk-info w50 h1 d-flex-col">
@@ -559,44 +495,50 @@ const Sanghsales = () => {
                 ref={nashlitersRef}
               />
             </div>
-            <div className="form-div  px10">
-              <label htmlFor="fat" className="info-text">
-                {t("common:c-fat")} <span className="req">*</span>{" "}
-              </label>
-              <input
-                className={`data ${errors.fat ? "input-error" : ""}`}
-                type="number"
-                required
-                placeholder="0.0"
-                name="fat"
-                id="fat"
-                step="any"
-                onChange={handleInputChange}
-                value={values.fat}
-                disabled={!values.rate || !values.liters}
-                onKeyDown={(e) => handleKeyDown(e, snfRef)}
-                ref={fatRef}
-              />
-            </div>
-            <div className="form-div px10">
-              <label htmlFor="snf" className="info-text">
-                {t("common:c-snf")} <span className="req">*</span>{" "}
-              </label>
-              <input
-                className={`data ${errors.snf ? "input-error" : ""}`}
-                type="number"
-                required
-                placeholder="00.0"
-                name="snf"
-                id="snf"
-                step="any"
-                onChange={handleInputChange}
-                value={values.snf}
-                disabled={!values.fat || !values.liters}
-                onKeyDown={(e) => handleKeyDown(e, submitbtn)}
-                ref={snfRef}
-              />
-            </div>
+            {values.shift !== "2" ? (
+              <>
+                <div className="form-div  px10">
+                  <label htmlFor="fat" className="info-text">
+                    {t("common:c-fat")}
+                  </label>
+                  <input
+                    className={`data ${errors.fat ? "input-error" : ""}`}
+                    type="number"
+                    required
+                    placeholder="0.0"
+                    name="fat"
+                    id="fat"
+                    step="any"
+                    onChange={handleInputChange}
+                    value={values.fat}
+                    disabled={!values.rate || !values.liters}
+                    onKeyDown={(e) => handleKeyDown(e, snfRef)}
+                    ref={fatRef}
+                  />
+                </div>
+                <div className="form-div px10">
+                  <label htmlFor="snf" className="info-text">
+                    {t("common:c-snf")}
+                  </label>
+                  <input
+                    className={`data ${errors.snf ? "input-error" : ""}`}
+                    type="number"
+                    required
+                    placeholder="00.0"
+                    name="snf"
+                    id="snf"
+                    step="any"
+                    onChange={handleInputChange}
+                    value={values.snf}
+                    disabled={!values.fat || !values.liters}
+                    onKeyDown={(e) => handleKeyDown(e, submitbtn)}
+                    ref={snfRef}
+                  />
+                </div>
+              </>
+            ) : (
+              <></>
+            )}
           </div>
           <div className="milk-info w50 h1 d-flex-col">
             <div className="form-div px10">
@@ -618,25 +560,29 @@ const Sanghsales = () => {
                 ref={kplitersRef}
               />
             </div>
-            <div className="form-div px10">
-              <label htmlFor="rate" className="info-text">
-                {t("common:c-rate")} <span className="req">*</span>{" "}
-              </label>
-              <input
-                className={`data ${errors.rate ? "input-error" : ""}`}
-                type="number"
-                required
-                placeholder="00.0"
-                name="rate"
-                id="rate"
-                step="any"
-                value={values.rate}
-                onChange={handleInputs}
-                // disabled={!values.liters}
-                onKeyDown={(e) => handleKeyDown(e, fatRef)}
-                ref={rateRef}
-              />
-            </div>
+            {values.shift !== "2" ? (
+              <div className="form-div px10">
+                <label htmlFor="rate" className="info-text">
+                  {t("common:c-rate")}
+                </label>
+                <input
+                  className={`data ${errors.rate ? "input-error" : ""}`}
+                  type="number"
+                  required
+                  placeholder="00.0"
+                  name="rate"
+                  id="rate"
+                  step="any"
+                  value={values.rate}
+                  onChange={handleInputs}
+                  onKeyDown={(e) => handleKeyDown(e, fatRef)}
+                  ref={rateRef}
+                />
+              </div>
+            ) : (
+              <></>
+            )}
+
             <div className="form-div px10">
               <label htmlFor="amt" className="info-text">
                 {t("common:c-amt")} <span className="req">*</span>{" "}
@@ -645,7 +591,6 @@ const Sanghsales = () => {
                 className={`data ${errors.amt ? "input-error" : ""}`}
                 type="number"
                 required
-                readOnly
                 placeholder="00.0"
                 name="amt"
                 id="amt"
@@ -662,7 +607,7 @@ const Sanghsales = () => {
               </button>
               <button
                 className="w-btn label-text mx10"
-                type="button"
+                type="submit"
                 ref={submitbtn}
                 disabled={loading}
                 onClick={fetchCenterMilkData}
@@ -671,7 +616,6 @@ const Sanghsales = () => {
               </button>
             </div>
           </div>
-          {/* </div> */}
         </div>
       </form>
     </div>

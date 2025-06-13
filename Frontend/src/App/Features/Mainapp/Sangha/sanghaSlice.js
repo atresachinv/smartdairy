@@ -3,10 +3,15 @@ import axiosInstance from "../../../axiosInstance";
 
 const initialState = {
   sanghaList: [],
+  sanghamilkColl: [],
   cresanghastatus: "idle",
   upsanghastatus: "idle",
   sanghaliststatus: "idle",
   delsanghastatus: "idle",
+  addsmstatus: "idle",
+  fetchsmstatus: "idle",
+  updatesmstatus: "idle",
+  delsmstatus: "idle",
   error: null,
 };
 
@@ -28,6 +33,7 @@ export const addSangha = createAsyncThunk(
     }
   }
 );
+
 export const updateSangha = createAsyncThunk(
   "sangha/updateSangha",
   async ({ id, sanghaname, marathiname }, { rejectWithValue }) => {
@@ -60,11 +66,87 @@ export const fetchSanghaList = createAsyncThunk(
     }
   }
 );
+
 export const deleteSangha = createAsyncThunk(
   "sangha/deleteSangha",
   async ({ id }, { rejectWithValue }) => {
     try {
       const response = await axiosInstance.delete("/delete/sangha", {
+        params: { id },
+      });
+      return response.data;
+    } catch (error) {
+      const errorMessage = error.response
+        ? error.response.data
+        : "Failed to delete sangha.";
+      return rejectWithValue(errorMessage);
+    }
+  }
+);
+
+// add milk collection to sangha
+export const addsanghaMilkColl = createAsyncThunk(
+  "sangha/addsanghaMilkColl",
+  async ({ values }, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.post(
+        "/add/sangha/milk-coll",
+        values
+      );
+      return response.data;
+    } catch (error) {
+      const errorMessage = error.response
+        ? error.response.data
+        : "Failed to delete sangha.";
+      return rejectWithValue(errorMessage);
+    }
+  }
+);
+
+// fetch sangh milk collection
+export const fetchsanghaMilkColl = createAsyncThunk(
+  "sangha/fetchsanghaMilkColl",
+  async ({ values }, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.get(
+        "/fetch/sangha/milk-coll",
+        values
+      );
+      return response.data;
+    } catch (error) {
+      const errorMessage = error.response
+        ? error.response.data
+        : "Failed to delete sangha.";
+      return rejectWithValue(errorMessage);
+    }
+  }
+);
+
+// update sangha milk collection
+export const updatesanghaMilkColl = createAsyncThunk(
+  "sangha/updatesanghaMilkColl",
+  async ({ values }, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.put(
+        "/update/sangha/milk-coll",
+        values
+      );
+      return response.data;
+    } catch (error) {
+      const errorMessage = error.response
+        ? error.response.data
+        : "Failed to delete sangha.";
+      return rejectWithValue(errorMessage);
+    }
+  }
+);
+
+// delete sangha milk collection
+export const deletesanghaMilkColl = createAsyncThunk(
+  "sangha/deletesanghaMilkColl",
+  async ({ id }, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.delete("/delete/sangha/milk-coll", {
         params: { id },
       });
       return response.data;
@@ -127,7 +209,52 @@ const sanghaSlice = createSlice({
       .addCase(deleteSangha.rejected, (state, action) => {
         state.delsanghastatus = "failed";
         state.error = action.payload;
-      });
+      }) // add sangha milk sales
+      .addCase(addsanghaMilkColl.pending, (state) => {
+        state.addsmstatus = "loading";
+        state.error = null;
+      })
+      .addCase(addsanghaMilkColl.fulfilled, (state, action) => {
+        state.addsmstatus = "succeeded";
+      })
+      .addCase(addsanghaMilkColl.rejected, (state, action) => {
+        state.addsmstatus = "failed";
+        state.error = action.payload;
+      }) // fetch sangha milk sales
+      .addCase(fetchsanghaMilkColl.pending, (state) => {
+        state.fetchsmstatus = "loading";
+        state.error = null;
+      })
+      .addCase(fetchsanghaMilkColl.fulfilled, (state, action) => {
+        state.fetchsmstatus = "succeeded";
+        state.sanghamilkColl = action.payload;
+      })
+      .addCase(fetchsanghaMilkColl.rejected, (state, action) => {
+        state.fetchsmstatus = "failed";
+        state.error = action.payload;
+      }) // update sangha milk collection
+      .addCase(updatesanghaMilkColl.pending, (state) => {
+        state.updatesmstatus = "loading";
+        state.error = null;
+      })
+      .addCase(updatesanghaMilkColl.fulfilled, (state, action) => {
+        state.updatesmstatus = "succeeded";
+      })
+      .addCase(updatesanghaMilkColl.rejected, (state, action) => {
+        state.updatesmstatus = "failed";
+        state.error = action.payload;
+      }) // delete sangha milk collection
+      .addCase(deletesanghaMilkColl.pending, (state) => {
+        state.delsmstatus = "loading";
+        state.error = null;
+      })
+      .addCase(deletesanghaMilkColl.fulfilled, (state, action) => {
+        state.delsmstatus = "succeeded";
+      })
+      .addCase(deletesanghaMilkColl.rejected, (state, action) => {
+        state.delsmstatus = "failed";
+        state.error = action.payload;
+      }); //
   },
 });
 

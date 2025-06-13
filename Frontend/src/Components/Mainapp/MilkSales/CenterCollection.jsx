@@ -350,7 +350,7 @@ const CenterCollection = () => {
     const requestBody = {
       messaging_product: "whatsapp",
       recipient_type: "individual",
-      to: `91${9730999296}`,
+      to: `91${mobileNo}`,
       type: "template",
       template: {
         name: "center_milk_collections",
