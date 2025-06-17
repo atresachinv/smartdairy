@@ -1,12 +1,31 @@
 @media screen and (max-width: 426px) {
-  .milk-collection-outer-main-container .milk-collection-diff-div {
+  .center-milk-collection-outer-main-container .milk-collection-diff-div {
     width: 100%;
     min-height: auto;
     justify-content: space-between;
   }
+
   .milk-collection-diff-div .collection-diff-container {
     min-height: fit-content;
     margin-bottom: 10px;
+  }
+  .center-milk-collection-outer-main-container .milk-col-form {
+    min-height: fit-content;
+  }
+  .center-milk-collection-outer-main-container .milk-col-form .user-details-div {
+    flex-direction: column;
+  }
+  .user-details-div .form-div {
+    width: 100%;
+    flex-direction: row;
+    padding: 0;
+    margin-bottom: 10px;
+  }
+  .center-milk-collection-outer-main-container .milk-col-form .user-details-div .form-div label {
+    width: 40%;
+  }
+  .center-milk-collection-outer-main-container .milk-col-form .user-details-div .form-div select {
+    width: 60%;
   }
   .milk-collection-diff-div .collection-diff-container .coll-milk-info {
     min-height: 60%;

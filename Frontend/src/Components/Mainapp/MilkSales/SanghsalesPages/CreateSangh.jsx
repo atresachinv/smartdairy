@@ -73,7 +73,7 @@ const CreateSangh = () => {
         break;
 
       case "marathi_name":
-        if (!/^[\u0900-\u097F\sA-Za-z]+$/.test(value)) {
+        if (!/^[\u0900-\u097F\sA-Za-z,]+$/.test(value)) {
           error[name] = "Invalid Marathi name.";
         } else {
           delete errors[name];
@@ -81,7 +81,7 @@ const CreateSangh = () => {
         break;
 
       case "eng_name":
-        if (!/^[a-zA-Z\s]+$/.test(value)) {
+        if (!/^[a-zA-Z\s,]+$/.test(value)) {
           error[name] = "Invalid English name.";
         } else {
           delete errors[name];

@@ -50,9 +50,7 @@ const CreateCattleFeed = () => {
   );
   const centerId = useSelector((state) => state.dairy.dairyData.center_id);
   const [filter, setFilter] = useState(0);
-  const centerList = useSelector(
-    (state) => state.center.centersList || []
-  );
+  const centerList = useSelector((state) => state.center.centersList || []);
   const [settings, setSettings] = useState({});
   const autoCenter = settings?.autoCenter;
   const [submitDis, setSubmitDis] = useState(true);
@@ -69,15 +67,18 @@ const CreateCattleFeed = () => {
     setUserRole(myrole);
   }, []);
 
+  useEffect(() => {
+    dispatch(getAllProducts(autoCenter));
+  }, [autoCenter]);
+  
   //get all products and sale rate
   useEffect(() => {
     if (settings?.autoCenter !== undefined) {
-      dispatch(getAllProducts(autoCenter));
       dispatch(
         getProductSaleRates({ groupCode: 1, autoCenter: settings.autoCenter })
       );
     }
-  }, [settings, autoCenter, dispatch]);
+  }, [settings]);
 
   // set today date
   useEffect(() => {
