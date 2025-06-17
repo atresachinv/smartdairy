@@ -571,6 +571,7 @@ const PayDeductions = ({ showbtn, setCurrentPage }) => {
       toast.error("Failed to save bill!");
     }
   };
+  
   return (
     <>
       <div className="payment-bill-deduction-main-container w100 h1 d-flex-col p10 sb">

@@ -83,13 +83,6 @@ const CreateCustomer = () => {
     dispatch(getMaxCustNo());
   }, [dispatch]);
 
-  // useEffect(() => {
-  //   setFormData((prevData) => ({
-  //     ...prevData,
-  //     cust_no: custno,
-  //   }));
-  // }, [dispatch, custno]);
-
   useEffect(() => {
     if (isedit) {
       setIsEditing(true); // Set editing mode explicitly
@@ -104,18 +97,6 @@ const CreateCustomer = () => {
       setIsEditing(false); // Optional: reset if not in edit mode
     }
   }, [isedit, cust_code]);
-
-  const handleEditClick = () => {
-    setIsEditing((prev) => !prev);
-    if (!isEditing) {
-      setFormData((prevData) => ({
-        ...prevData,
-        cust_no: "",
-      }));
-    } else {
-      resetForm();
-    }
-  };
 
   const resetForm = () => {
     setFormData({

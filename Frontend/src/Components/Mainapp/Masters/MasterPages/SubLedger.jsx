@@ -100,7 +100,7 @@ const SubLedger = () => {
         break;
 
       case "marathi_name":
-        if (!/^[\u0900-\u097F\sA-Za-z]+$/.test(value)) {
+        if (!/^[\u0900-\u097F\sA-Za-z.]+$/.test(value)) {
           error[name] = "Invalid marathi name.";
         } else {
           delete errors[name];
@@ -108,7 +108,7 @@ const SubLedger = () => {
         break;
 
       case "eng_name":
-        if (!/^[a-zA-Z\s]+$/.test(value)) {
+        if (!/^[a-zA-Z.\s]+$/.test(value)) {
           error[name] = "Invalid english name.";
         } else {
           delete errors[name];
@@ -235,7 +235,6 @@ const SubLedger = () => {
       toast.error("Please refresh your page!");
       return;
     }
-
     try {
       if (isEditing) {
         const result = await dispatch(updateSubLedger(formData)).unwrap();
@@ -330,7 +329,7 @@ const SubLedger = () => {
                 Enter English Name :
               </label>
               <input
-                className="data w100"
+                className={`data w100 ${errors.eng_name ? "input-error" : ""}`}
                 type="text"
                 name="eng_name"
                 id="slename"
@@ -343,7 +342,9 @@ const SubLedger = () => {
                 Enter Marathi Name :
               </label>
               <input
-                className="data w100"
+                className={`data w100 ${
+                  errors.marathi_name ? "input-error" : ""
+                }`}
                 type="text"
                 name="marathi_name"
                 value={formData.marathi_name}
@@ -420,106 +421,8 @@ const SubLedger = () => {
           </div>
         </div>
         <div className="ledger-settings-contsiner w35 h1 d-flex-col px10 sb">
-          {/* <div className="ledger-other-settings-div w100 h30 d-flex-col sb">
-            <span className="label-text w100 py10">General Ledger Side :</span>
-            <div className="sangha-sale-settings-div w100 h50 d-flex sb">
-              <div className="le-name-div w20 d-flex a-center sb">
-                <input
-                  type="radio"
-                  name="glside"
-                  id="assets"
-                  className="w25 h70"
-                />
-                <label htmlFor="assets" className="info-text t-center w70">
-                  Assets
-                </label>
-              </div>
-              <div className="le-name-div w25 d-flex a-center sb">
-                <input
-                  type="radio"
-                  name="glside"
-                  id="liabilities"
-                  className="w25 h70"
-                />
-                <label htmlFor="liabilities" className="info-text t-center w75">
-                  Liabilities
-                </label>
-              </div>
-              <div className="le-name-div w20 d-flex a-center sb">
-                <input
-                  type="radio"
-                  name="glside"
-                  id="income"
-                  className="w25 h70"
-                />
-                <label htmlFor="income" className="info-text t-center w70">
-                  Income
-                </label>
-              </div>
-              <div className="le-name-div w25 d-flex a-center sb">
-                <input
-                  type="radio"
-                  name="glside"
-                  id="expenses"
-                  className="w25 h70"
-                />
-                <label htmlFor="expenses" className="info-text t-center w70">
-                  Expenses
-                </label>
-              </div>
-            </div>
-          </div>
-          <div className="ledger-other-settings-div w100 h30 d-flex-col sb">
-            <span className="label-text w100 py10">Account Id :</span>
-            <div className="sangha-sale-settings-div w100 h50 d-flex sb">
-              <div className="le-name-div w20 d-flex a-center sb">
-                <input
-                  type="radio"
-                  name="accid"
-                  id="others"
-                  className="w25 h70"
-                />
-                <label htmlFor="others" className="info-text t-center w70">
-                  Others
-                </label>
-              </div>
-              <div className="le-name-div w25 d-flex a-center sb">
-                <input
-                  type="radio"
-                  name="accid"
-                  id="purchase"
-                  className="w25 h70"
-                />
-                <label htmlFor="purchase" className="info-text t-center w70">
-                  Purchase
-                </label>
-              </div>
-              <div className="le-name-div w20 h1 d-flex a-center sb">
-                <input
-                  type="radio"
-                  name="accid"
-                  id="sales"
-                  className="w25 h70"
-                />
-                <label htmlFor="sales" className="info-text t-center w75">
-                  Sales
-                </label>
-              </div>
-              <div className="le-name-div w20 h1 d-flex a-center sb">
-                <input
-                  type="radio"
-                  name="accid"
-                  id="shares"
-                  className="w25 h70"
-                />
-                <label htmlFor="shares" className="info-text t-center w70">
-                  Shares
-                </label>
-              </div>
-            </div>
-          </div> */}
           <div className="ledger-subacc-div w100 h20 d-flex a-center sb">
-            <label htmlFor="" className="label-text w50 ">
+            <label htmlFor="subAcc" className="label-text w50 ">
               Sub Accounts ?
             </label>
             <div className="subacc-setting-div w40 h1 d-flex sb">
@@ -637,6 +540,7 @@ const SubLedger = () => {
             <>
               {SubLedgers.map((ledger, index) => (
                 <div
+                  key={index}
                   className="ledger-list-data-div w100 t-center p10 d-flex sb"
                   style={{
                     backgroundColor: index % 2 === 0 ? "#faefe3" : "#fff",

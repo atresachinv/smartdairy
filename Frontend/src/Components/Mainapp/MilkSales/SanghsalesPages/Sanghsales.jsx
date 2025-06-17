@@ -10,44 +10,19 @@ import { useTranslation } from "react-i18next";
 import "../../../../Styles/Mainapp/Apphome/Appnavview/Milkcollection.css";
 import "../../../../Styles/Mainapp/MilkSales/CenterMilkColl.css";
 import { centersLists } from "../../../../App/Features/Dairy/Center/centerSlice";
-import { listEmployee } from "../../../../App/Features/Mainapp/Masters/empMasterSlice";
 import { getLatestRateChart } from "../../../../App/Features/Mainapp/Masters/rateChartSlice";
-import {
-  getCenterMSales,
-  createCenterMColl,
-} from "../../../../App/Features/Mainapp/Milk/DairyMilkSalesSlice";
+import { getCenterMSales } from "../../../../App/Features/Mainapp/Milk/DairyMilkSalesSlice";
 
-const Sanghsales = ({ clsebtn, isModalOpen }) => {
-  const dispatch = useDispatch();
-  const today = useSelector((state) => state.date.toDate);
-  const sanghaList = useSelector((state) => state.sangha.sanghaList);
-  useEffect(() => {
-    dispatch(fetchSanghaList());
-  }, []);
-
-  // ---------------------------------------------------------------->
-  // ---------------------------------------------------------------->
-  // ---------------------------------------------------------------->
-  // ---------------------------------------------------------------->
-
+const Sanghsales = ({ clsebtn, isModalOpen, editData }) => {
   const { t } = useTranslation(["milkcollection", "common", "master"]);
+  const dispatch = useDispatch();
+  const sanghaList = useSelector((state) => state.sangha.sanghaList);
+  const status = useSelector((state) => state.sangha.addsmstatus);
   const tDate = useSelector((state) => state.date.toDate);
-  const dairyphone = useSelector(
-    (state) => state.dairy.dairyData.PhoneNo || state.dairy.dairyData.mobile
-  );
-  const centerList = useSelector((state) => state.center.centersList);
-  const Emplist = useSelector((state) => state.emp.emplist || []);
-  const centerMilk = useSelector(
-    (state) => state.dMilkSales.centerMilkData || []
-  );
-  const milkcollRatechart = useSelector(
-    (state) => state.ratechart.latestrChart
-  ); // latest rate chart for center milk collection
   const sanghaRef = useRef(null);
   const timeRef = useRef(null);
   const fdateRef = useRef(null);
   const tdateRef = useRef(null);
-  const collRef = useRef(null);
   const litersRef = useRef(null);
   const kplitersRef = useRef(null);
   const nashlitersRef = useRef(null);
@@ -62,12 +37,13 @@ const Sanghsales = ({ clsebtn, isModalOpen }) => {
   const [loading, setLoading] = useState(false);
   const [changedDate, setChangedDate] = useState("");
   const [tchangedDate, setTChangedDate] = useState("");
+  const [sanghaid, setSanghaid] = useState("");
 
   const initialValues = {
     id: "",
     date: changedDate || tDate,
-    todate: changedDate || tDate,
-    sanghname: "",
+    todate: tchangedDate || tDate,
+    sanghid: "",
     shift: 0,
     liters: "",
     kpliters: "",
@@ -84,10 +60,43 @@ const Sanghsales = ({ clsebtn, isModalOpen }) => {
   // console.log(values);
   //------------------------------------------------------------------------------------------------>
   //------------------------------------------------------------------------------------------------>
+
+  useEffect(() => {
+    setValues((prev) => ({
+      ...prev,
+      sanghid: sanghaid,
+    }));
+  }, [sanghaid]);
+
+  useEffect(() => {
+    dispatch(fetchSanghaList());
+  }, []);
+
   useEffect(() => {
     dispatch(centersLists());
     dispatch(getLatestRateChart());
   }, []);
+
+  //  set data to edit information ------------------------->
+  useEffect(() => {
+    if (editData) {
+      setValues({
+        shift: editData.shift,
+        date: editData.colldate?.slice(0, 10) || "",
+        todate: editData.tocolldate?.slice(0, 10) || "",
+        sanghid: editData.sanghid,
+        liters: editData.liter,
+        kpliters: editData.kamiprat_ltr,
+        nashliters: editData.nash_ltr,
+        otherCharges: editData.otherCharges,
+        chilling: editData.chilling,
+        fat: editData.fat,
+        snf: editData.snf,
+        rate: editData.rate,
+        amt: editData.amt,
+      });
+    }
+  }, [editData]);
 
   const handleResetButton = (e) => {
     e.preventDefault();
@@ -205,14 +214,6 @@ const Sanghsales = ({ clsebtn, isModalOpen }) => {
       }));
     }
   };
-
-  const milkCollectors = useMemo(() => {
-    return Emplist.filter(
-      (emp) =>
-        emp.center_id.toString() === values.centerid &&
-        emp.designation === "milkcollector"
-    );
-  }, [values.centerid, Emplist]);
 
   // handle enter press move cursor to next refrence Input -------------------------------------->
   const handleKeyDown = (e, nextRef) => {
@@ -348,20 +349,49 @@ const Sanghsales = ({ clsebtn, isModalOpen }) => {
 
   const handleSanghaSales = async (e) => {
     e.preventDefault();
-    // Validate fields before submission
+
     const validationErrors = validateFields();
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
       return;
     }
-    const res = await dispatch(addsanghaMilkColl(values)).unwrap();
-    if (res.status === 200) {
-      toast.success("संघ दुध संकलन यशस्वीरित्या सेव्ह झाले आहे.");
-      setValues(initialValues);
-      setChangedDate("");
-      setErrors({});
-    } else {
-      toast.error("संघ दुध संकलन सेव्ह करण्यात अयशस्वी.");
+
+    try {
+      const res = await dispatch(addsanghaMilkColl(values)).unwrap();
+
+      if (res.status === 200) {
+        toast.success("संघ दुध संकलन यशस्वीरित्या सेव्ह झाले आहे.");
+
+        setValues({
+          id: "",
+          date: changedDate,
+          todate: tchangedDate,
+          sanghid: sanghaid,
+          shift: 0,
+          liters: "",
+          kpliters: "",
+          nashliters: "",
+          otherCharges: "",
+          chilling: "",
+          fat: "",
+          snf: "",
+          rate: "",
+          amt: "",
+        });
+
+        setChangedDate("");
+        setErrors({});
+      } else {
+        toast.error("संघ दुध संकलन सेव्ह करण्यात अयशस्वी.");
+      }
+    } catch (err) {
+      if (err?.status === 400) {
+        toast.error(
+          "डुप्लिकेट संघ दुध संकलन मिळाले, संकलन सेव्ह करण्यात अयशस्वी."
+        );
+      } else {
+        toast.error("संघ दुध संकलन सेव्ह करण्यात अयशस्वी.");
+      }
     }
   };
 
@@ -390,26 +420,27 @@ const Sanghsales = ({ clsebtn, isModalOpen }) => {
         )}
         <div className="form-setting w100 h10 d-flex a-center sb ">
           <div className="w70 d-flex a-center px10">
-            <label htmlFor="sanghname" className="info-text w30">
+            <label htmlFor="sanghid" className="info-text w30">
               संघ निवडा : <span className="req">*</span>
             </label>
             <select
               className="data w70"
-              name="sanghname"
-              id="sanghname"
-              value={values.sanghname}
-              onChange={handleInputs}
+              name="sanghid"
+              id="sanghid"
+              value={values.sanghid}
+              onChange={(e) => setSanghaid(e.target.value)}
               onKeyDown={(e) => handleKeyDown(e, timeRef)}
               ref={sanghaRef}
             >
+              <option value="">-- संघ निवडा --</option>
               {sanghaList.length > 0 ? (
                 sanghaList.map((sangha, i) => (
-                  <option key={i} value={sangha.sangha_name}>
+                  <option key={i} value={sangha.id}>
                     {sangha.sangha_name}
                   </option>
                 ))
               ) : (
-                <></>
+                <option value="">-- संघ निवडा --</option>
               )}
             </select>
           </div>
@@ -502,7 +533,6 @@ const Sanghsales = ({ clsebtn, isModalOpen }) => {
               <input
                 className={`data ${errors.nashliters ? "input-error" : ""}`}
                 type="number"
-                required
                 placeholder="00.0"
                 name="nashliters"
                 id="nashliters"
@@ -563,7 +593,6 @@ const Sanghsales = ({ clsebtn, isModalOpen }) => {
                 <input
                   className={`data ${errors.fat ? "input-error" : ""}`}
                   type="number"
-                  required
                   placeholder="0.0"
                   name="otherCharges"
                   id="otherCharges"
@@ -585,7 +614,6 @@ const Sanghsales = ({ clsebtn, isModalOpen }) => {
               <input
                 className={`data ${errors.degree ? "input-error" : ""}`}
                 type="number"
-                required
                 placeholder="00.0"
                 name="kpliters"
                 id="kpliters"
@@ -624,7 +652,6 @@ const Sanghsales = ({ clsebtn, isModalOpen }) => {
                 <input
                   className={`data ${errors.snf ? "input-error" : ""}`}
                   type="number"
-                  required
                   placeholder="00.0"
                   name="chilling"
                   id="chilling"
@@ -665,10 +692,10 @@ const Sanghsales = ({ clsebtn, isModalOpen }) => {
                 className="w-btn label-text mx10"
                 type="submit"
                 ref={submitbtn}
-                disabled={loading}
+                disabled={status === "loading"}
                 onClick={fetchCenterMilkData}
               >
-                {loading ? "Saving..." : `Save`}
+                {status === "loading" ? "Saving..." : `Save`}
               </button>
             </div>
           </div>

@@ -90,6 +90,7 @@ import UploadMilkColl from "./Apphome/Appnavviews/Milkcollection/UploadMilkColl"
 import Milkbill from "./Reports/milkBill/Milkbill";
 import AnimalMaster from "./Masters/MasterPages/AnimalMaster";
 import ReportProblem from "./DairyInfo/Centers/ReportProblem";
+import SanghPayReport from "./MilkSales/SanghsalesPages/SanghPayReport";
 
 
 const Mainapp = () => {
@@ -235,7 +236,8 @@ const Mainapp = () => {
               path="center/milk/collection"
               element={<CenterCollection />}
             />
-            <Route path="sangha/sales/report" element={<SanghReport />} />
+            <Route path="sangha/milk/payment" element={<SanghReport />} />
+            <Route path="sangha/payment/report" element={<SanghPayReport />} />
             {/* inventory routes */}
             <Route path="inventory" element={<Inventory />} />
             <Route path="inventory/dealer/*" element={<Dealers />} />

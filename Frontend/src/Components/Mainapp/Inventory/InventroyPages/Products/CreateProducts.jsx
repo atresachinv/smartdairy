@@ -293,7 +293,7 @@ const CreateProducts = () => {
                 onKeyDown={(e) => handleKeyDown(e, "ItemCode")}
                 placeholder="Item Code"
                 required
-                disabled
+                // disabled
               />
             </div>
             <div className="col">

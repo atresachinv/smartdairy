@@ -187,10 +187,17 @@ const Mainappnavlinks = ({ setselected, handleSidebar }) => {
             ]
           : []),
         {
-          name: `${t("संघ दुध विक्री रिपोर्ट ")}`,
+          name: `${t("संघ दुध पेमेंट")}`,
           icon: <BsGridFill className="icon" />,
-          path: "sangha/sales/report",
+          path: "sangha/milk/payment",
           index: 2.5,
+          role: ["admin", "manager", "salesman"],
+        },
+        {
+          name: `${t("संघ दुध पेमेंट रिपोर्ट")}`,
+          icon: <BsGridFill className="icon" />,
+          path: "sangha/payment/report",
+          index: 2.6,
           role: ["admin", "manager", "salesman"],
         },
       ],

@@ -4,14 +4,21 @@ import axiosInstance from "../../../axiosInstance";
 const initialState = {
   sanghaList: [],
   sanghamilkColl: [],
+  sanghaSales: [],
+  sanghaLedger: [],
+  sanghaPayment: [],
   cresanghastatus: "idle",
   upsanghastatus: "idle",
   sanghaliststatus: "idle",
   delsanghastatus: "idle",
   addsmstatus: "idle",
   fetchsmstatus: "idle",
+  getsmstatus: "idle",
+  fledgertatus: "idle",
   updatesmstatus: "idle",
   delsmstatus: "idle",
+  savespstatus: "idle",
+  getPaystatus: "idle",
   error: null,
 };
 
@@ -97,7 +104,7 @@ export const addsanghaMilkColl = createAsyncThunk(
     } catch (error) {
       const errorMessage = error.response
         ? error.response.data
-        : "Failed to delete sangha.";
+        : "Failed to add sangha milk collection.";
       return rejectWithValue(errorMessage);
     }
   }
@@ -115,7 +122,41 @@ export const fetchsanghaMilkColl = createAsyncThunk(
     } catch (error) {
       const errorMessage = error.response
         ? error.response.data
-        : "Failed to delete sangha.";
+        : "Failed to fetch sangha milk collection.";
+      return rejectWithValue(errorMessage);
+    }
+  }
+);
+
+// fetch sangh milk collection details --------------------------------->
+export const fetchsanghaMilkDetails = createAsyncThunk(
+  "sangha/fetchsanghaMilkDetails",
+  async ({ fromDate, toDate }, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.get("/fetch/sangha/milkdetails", {
+        params: { fromDate, toDate },
+      });
+      return response.data.sanghaSaleDetails;
+    } catch (error) {
+      const errorMessage = error.response
+        ? error.response.data
+        : "Failed to fetch sangha milk details.";
+      return rejectWithValue(errorMessage);
+    }
+  }
+);
+
+// fetch sangh milk ledger ----------------------------------------------->
+export const fetchsanghaLedger = createAsyncThunk(
+  "sangha/fetchsanghaLedger",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.get("/fetch/sangha/ledger");
+      return response.data.sanghaLedger;
+    } catch (error) {
+      const errorMessage = error.response
+        ? error.response.data
+        : "Failed to fetch sangha ledger.";
       return rejectWithValue(errorMessage);
     }
   }
@@ -134,7 +175,7 @@ export const updatesanghaMilkColl = createAsyncThunk(
     } catch (error) {
       const errorMessage = error.response
         ? error.response.data
-        : "Failed to delete sangha.";
+        : "Failed to update sangha milk collection.";
       return rejectWithValue(errorMessage);
     }
   }
@@ -152,7 +193,47 @@ export const deletesanghaMilkColl = createAsyncThunk(
     } catch (error) {
       const errorMessage = error.response
         ? error.response.data
-        : "Failed to delete sangha.";
+        : "Failed to delete sangha milk collection.";
+      return rejectWithValue(errorMessage);
+    }
+  }
+);
+
+// save sangha milk payment
+export const saveSangahPayment = createAsyncThunk(
+  "sangha/saveSangahPayment",
+  async ({ formData, paymentDetails }, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.post("/save/sangha-milk/payment", {
+        formData,
+        paymentDetails,
+      });
+      return response.data;
+    } catch (error) {
+      const errorMessage = error.response
+        ? error.response.data
+        : "Failed to save sangha milk payment!";
+      return rejectWithValue(errorMessage);
+    }
+  }
+);
+
+// get sangha milk payment
+export const getSangahPayment = createAsyncThunk(
+  "sangha/getSangahPayment",
+  async ({ fromDate, toDate }, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.get("/fetch/sangha-milk/payment", {
+        params: {
+          fromDate,
+          toDate,
+        },
+      });
+      return response.data.sanghaMilkPay;
+    } catch (error) {
+      const errorMessage = error.response
+        ? error.response.data
+        : "Failed to get sangha milk payment!";
       return rejectWithValue(errorMessage);
     }
   }
@@ -219,7 +300,7 @@ const sanghaSlice = createSlice({
       .addCase(addsanghaMilkColl.rejected, (state, action) => {
         state.addsmstatus = "failed";
         state.error = action.payload;
-      }) // fetch sangha milk sales
+      }) // fetch sangha milk sales -------------------------------------->
       .addCase(fetchsanghaMilkColl.pending, (state) => {
         state.fetchsmstatus = "loading";
         state.error = null;
@@ -231,7 +312,31 @@ const sanghaSlice = createSlice({
       .addCase(fetchsanghaMilkColl.rejected, (state, action) => {
         state.fetchsmstatus = "failed";
         state.error = action.payload;
-      }) // update sangha milk collection
+      }) // fetch sangha milk collection details ------------------------>
+      .addCase(fetchsanghaMilkDetails.pending, (state) => {
+        state.getsmstatus = "loading";
+        state.error = null;
+      })
+      .addCase(fetchsanghaMilkDetails.fulfilled, (state, action) => {
+        state.getsmstatus = "succeeded";
+        state.sanghaSales = action.payload;
+      })
+      .addCase(fetchsanghaMilkDetails.rejected, (state, action) => {
+        state.getsmstatus = "failed";
+        state.error = action.payload;
+      }) // fetch sangha milk ledger ------------------------------->
+      .addCase(fetchsanghaLedger.pending, (state) => {
+        state.fledgertatus = "loading";
+        state.error = null;
+      })
+      .addCase(fetchsanghaLedger.fulfilled, (state, action) => {
+        state.fledgertatus = "succeeded";
+        state.sanghaLedger = action.payload;
+      })
+      .addCase(fetchsanghaLedger.rejected, (state, action) => {
+        state.fledgertatus = "failed";
+        state.error = action.payload;
+      }) // update sangha milk collection ------------------------------->
       .addCase(updatesanghaMilkColl.pending, (state) => {
         state.updatesmstatus = "loading";
         state.error = null;
@@ -242,7 +347,7 @@ const sanghaSlice = createSlice({
       .addCase(updatesanghaMilkColl.rejected, (state, action) => {
         state.updatesmstatus = "failed";
         state.error = action.payload;
-      }) // delete sangha milk collection
+      }) // delete sangha milk collection ------------------------------->
       .addCase(deletesanghaMilkColl.pending, (state) => {
         state.delsmstatus = "loading";
         state.error = null;
@@ -253,7 +358,30 @@ const sanghaSlice = createSlice({
       .addCase(deletesanghaMilkColl.rejected, (state, action) => {
         state.delsmstatus = "failed";
         state.error = action.payload;
-      }); //
+      }) // save sangha milk payment --------------------------------------->
+      .addCase(saveSangahPayment.pending, (state) => {
+        state.savespstatus = "loading";
+        state.error = null;
+      })
+      .addCase(saveSangahPayment.fulfilled, (state) => {
+        state.savespstatus = "succeeded";
+      })
+      .addCase(saveSangahPayment.rejected, (state, action) => {
+        state.savespstatus = "failed";
+        state.error = action.payload;
+      }) // fetch sangha milk payment --------------------------------------->
+      .addCase(getSangahPayment.pending, (state) => {
+        state.getPaystatus = "loading";
+        state.error = null;
+      })
+      .addCase(getSangahPayment.fulfilled, (state, action) => {
+        state.getPaystatus = "succeeded";
+        state.sanghaPayment = action.payload;
+      })
+      .addCase(getSangahPayment.rejected, (state, action) => {
+        state.getPaystatus = "failed";
+        state.error = action.payload;
+      });
   },
 });
 
