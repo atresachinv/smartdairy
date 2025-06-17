@@ -96,7 +96,7 @@ const CustPurchase = () => {
             </div>
           ) : (
             <div className="purchase-detailsitable w100 h80 mh80 d-flex-col hidescrollbar p10">
-              {purchaseBill.length > 0 ? (
+              {purchaseBill?.length > 0 ? (
                 purchaseBill.map((bill, index) => (
                   <div
                     key={index}
@@ -127,9 +127,9 @@ const CustPurchase = () => {
             <span className="text w15">{t("c-total")} :</span>
             <span className="text w15"></span>
             <span className="text w20"></span>
-            <span className="text w15">{psummary.totalQty}</span>
+            <span className="text w15">{psummary?.totalQty}</span>
             <span className="text w15"></span>
-            <span className="text w15">{psummary.totalAmount}</span>
+            <span className="text w15">{psummary?.totalAmount}</span>
           </div>
         </div>
       </div>

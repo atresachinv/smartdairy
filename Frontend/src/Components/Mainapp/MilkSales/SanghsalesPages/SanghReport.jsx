@@ -46,7 +46,7 @@ const SanghReport = () => {
             />
           </div>
           <div className="sanghaa-to-date-divv w50 h1 d-flex a-center ">
-            <span className="label-text w30 px10">पर्येंत</span>
+            <span className="label-text w30 px10">पर्यत</span>
             <input
               className="data w80"
               value={toDate}

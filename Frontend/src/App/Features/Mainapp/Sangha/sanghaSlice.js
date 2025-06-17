@@ -218,15 +218,36 @@ export const saveSangahPayment = createAsyncThunk(
   }
 );
 
+// edit sangha milk payment
+
+export const editSangahPayment = createAsyncThunk(
+  "sangha/editSangahPayment",
+  async ({ formData, paymentDetails }, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.post("/save/sangha-milk/payment", {
+        formData,
+        paymentDetails,
+      });
+      return response.data;
+    } catch (error) {
+      const errorMessage = error.response
+        ? error.response.data
+        : "Failed to save sangha milk payment!";
+      return rejectWithValue(errorMessage);
+    }
+  }
+);
+
 // get sangha milk payment
 export const getSangahPayment = createAsyncThunk(
   "sangha/getSangahPayment",
-  async ({ fromDate, toDate }, { rejectWithValue }) => {
+  async ({ fromDate, toDate, sanghaid }, { rejectWithValue }) => {
     try {
       const response = await axiosInstance.get("/fetch/sangha-milk/payment", {
         params: {
           fromDate,
           toDate,
+          sanghaid,
         },
       });
       return response.data.sanghaMilkPay;

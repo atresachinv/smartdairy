@@ -18,16 +18,24 @@ const SanghPayReport = () => {
   const sanghaSales = useSelector((state) => state.sangha.sanghaSales); // sangha Sales
   const payStatus = useSelector((state) => state.sangha.getPaystatus); // fetch sangha milk collection status
   const sanghaRef = useRef(null);
-  const [sanghaid, setSanghaid] = useState("");
   const [isModalOpen, setModalOpen] = useState(false);
   const [isModalsOpen, setModalsOpen] = useState(false);
   const [selectedMilk, setSelectedMilk] = useState(null);
   const [fromDate, setFromDate] = useState(tDate);
   const [toDate, setToDate] = useState(tDate);
+  const [sanghaid, setSanghaid] = useState("");
+  const [sanghaBill, setSanghaBill] = useState([]);
   // console.log("sanghaPayment", sanghaPayment);
   useEffect(() => {
     dispatch(fetchSanghaList());
   }, []);
+
+  useEffect(() => {
+    const sanghaPay = sanghaPayment.filter(
+      (payment) => payment.ledgerCode === 0
+    );
+    setSanghaBill(sanghaPay);
+  }, [sanghaPayment]);
 
   // handle enter press move cursor to next refrence Input -------------------------------------->
   const handleKeyDown = (e, nextRef) => {
@@ -39,7 +47,7 @@ const SanghPayReport = () => {
 
   const handleShowbtn = (e) => {
     e.preventDefault();
-    dispatch(getSangahPayment({ fromDate, toDate }));
+    dispatch(getSangahPayment({ fromDate, toDate, sanghaid }));
   };
   // console.log("sanghaSales", sanghaSales);
   return (
@@ -58,7 +66,7 @@ const SanghPayReport = () => {
               />
             </div>
             <div className="sanghaa-to-date-divv w50 h1 d-flex a-center ">
-              <span className="label-text w30 px10">पर्येंत</span>
+              <span className="label-text w30 px10">पर्यत</span>
               <input
                 className="data w80"
                 value={toDate}
@@ -126,8 +134,8 @@ const SanghPayReport = () => {
 
         {payStatus === "loading" ? (
           <Spinner />
-        ) : sanghaPayment.length > 0 ? (
-          sanghaPayment.map((milk, index) => (
+        ) : sanghaBill.length > 0 ? (
+          sanghaBill.map((milk, index) => (
             <div
               key={index}
               className="sangha-report-tabledata-section-div w100 p10 d-flex a-center sb"
@@ -135,16 +143,16 @@ const SanghPayReport = () => {
                 backgroundColor: index % 2 === 0 ? "#faefe3" : "#fff",
               }}
             >
-              <span className="text w15">{milk.colldate.slice(0, 10)}</span>
-              <span className="text w10 t-end">{milk.liter}</span>
-              <span className="text w10 t-end">{milk.kamiprat_ltr}</span>
-              <span className="text w10 t-end">{milk.nash_ltr}</span>
-              <span className="text w10 t-end">{milk.amt}</span>
+              <span className="text w15">{milk.billdate?.slice(0, 10)}</span>
+              <span className="text w10 t-end">{milk.totalAmount}</span>
+              <span className="text w10 t-end">{milk.totalComm}</span>
+              <span className="text w10 t-end">{milk.totalDeduction}</span>
+              <span className="text w10 t-end">{milk.netPayment}</span>
               <span className="text w10 t-center">
                 <FaEdit
                   className="color-icon"
                   onClick={() => {
-                    setSelectedMilk(milk);
+                    setSelectedMilk(milk.billno);
                     setModalOpen(true);
                   }}
                 />
@@ -166,7 +174,7 @@ const SanghPayReport = () => {
 
       {isModalOpen && (
         <div className="model-container w100 d-flex center">
-          <Sanghsales
+          <SanghaMilkPayment
             clsebtn={setModalOpen}
             isModalOpen={isModalOpen}
             editData={selectedMilk}

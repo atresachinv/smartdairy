@@ -485,7 +485,7 @@ const Sanghsales = ({ clsebtn, isModalOpen, editData }) => {
           {values.shift === "2" ? (
             <div className="form-div w50 px10">
               <label htmlFor="todate" className="info-text w100">
-                {t("common:c-date")} पर्यंत
+                {t("common:c-date")} पर्यत
               </label>
               <input
                 className={`data w60 ${errors.date ? "input-error" : ""}`}

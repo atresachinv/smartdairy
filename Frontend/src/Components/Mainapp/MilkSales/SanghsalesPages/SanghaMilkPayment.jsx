@@ -18,11 +18,12 @@ import {
   saveSangahPayment,
 } from "../../../../App/Features/Mainapp/Sangha/sanghaSlice";
 
-const SanghaMilkPayment = ({ clsebtn, todate }) => {
+const SanghaMilkPayment = ({ clsebtn, todate, editData }) => {
   const dispatch = useDispatch();
   const sanghaList = useSelector((state) => state.sangha.sanghaList);
   const sanghaLedger = useSelector((state) => state.sangha.sanghaLedger); // sangha Ledger
   const sanghaSales = useSelector((state) => state.sangha.sanghaSales); // sangha Sales
+  const sanghaPayment = useSelector((state) => state.sangha.sanghaPayment); // sangha milk payment
   const saveStatus = useSelector((state) => state.sangha.savespstatus); // save sangha payment Status
   const otherCommRefs = useRef([]);
   const chillingRefs = useRef([]);
@@ -33,6 +34,8 @@ const SanghaMilkPayment = ({ clsebtn, todate }) => {
   const [sanghid, setSanghId] = useState("1");
   const [smData, setSMData] = useState([]);
   const [sanghLedger, setSanghLedger] = useState(sanghaLedger || []);
+  const [sanghaBill, setSanghaBill] = useState([]);
+  const [sanghaBillDed, setSanghaBillDed] = useState([]);
 
   let initialValues = {
     id: 0,
@@ -138,6 +141,48 @@ const SanghaMilkPayment = ({ clsebtn, todate }) => {
   };
 
   //----------------------------------------------------------------------------------->
+  // filter sangha payment data based on editData
+  useEffect(() => {
+    if (sanghaPayment.length > 0 && editData) {
+      const sanghaPay = sanghaPayment.filter(
+        (payment) => payment.billno === editData && payment.ledgerCode !== 0
+      );
+      setSanghaBillDed(sanghaPay);
+    }
+  }, [sanghaPayment, editData]);
+
+  useEffect(() => {
+    if (sanghaPayment.length > 0 && editData) {
+      const sanghaPay = sanghaPayment.filter(
+        (payment) => payment.billno === editData && payment.ledgerCode === 0
+      );
+      setSanghaBill(sanghaPay);
+    }
+  }, [sanghaPayment, editData]);
+
+  //  set sangha milk payment in formData --------------------------------------------->
+
+  useEffect(() => {
+    if (sanghaBill) {
+      setFormData((prev) => ({
+        ...prev,
+        id: sanghaBill[0]?.id,
+        billdate: sanghaBill[0]?.billdate,
+        sanghacode: sanghaBill[0]?.sangh_id,
+        morningliters: sanghaBill[0]?.mrgltr,
+        eveningliters: sanghaBill[0]?.eveltr,
+        totalcollection: sanghaBill[0]?.totalltr,
+        othercommission: sanghaBill[0]?.otherCommission,
+        chilling: sanghaBill[0]?.chilling,
+        overrate: sanghaBill[0]?.overrate,
+        Amount: 0,
+        totalPayment: sanghaBill[0]?.totalAmount,
+        totalcommission: sanghaBill[0]?.totalComm,
+        totalDeduction: sanghaBill[0]?.totalDeduction,
+        netPayment: sanghaBill[0]?.netPayment,
+      }));
+    }
+  }, [sanghaBill]);
 
   //handle focus on next input field ----------------------------------------->
   const handleKeyDown = (e, nextRef) => {
@@ -168,13 +213,16 @@ const SanghaMilkPayment = ({ clsebtn, todate }) => {
       toast.error("Failed to save sangha milk payment!");
     }
   };
-
   return (
     <div className="sangha-milk-payment-container w90 h90 d-flex-col">
       <div className="payment-bill-deduction-main-container w100 h1 d-flex-col p10 sb bg5 br9">
         <div className="payment-deduction-info-outer-container w100 h30 d-flex sb bg-light-green br6">
           <div className="payment-deduction-info-container w40 h1 d-flex-col sa px10">
-            <span className="heading">संघ पगार कपाती :</span>
+            {editData ? (
+              <span className="heading">संघ पगार कपातीत बदल करा :</span>
+            ) : (
+              <span className="heading">संघ पगार कपाती :</span>
+            )}
             <div className="paymebt-bill-customer-details-div w100 h30 d-flex a-center sb">
               <div className="bill-date-comopent w60 d-flex a-center sb px10">
                 <label htmlFor="billdatetxt" className="label-text w35">
@@ -186,7 +234,7 @@ const SanghaMilkPayment = ({ clsebtn, todate }) => {
                   type="date"
                   readOnly
                   name="billdate"
-                  value={formData.billdate}
+                  value={formData.billdate?.slice(0, 10)}
                 />
               </div>
             </div>
@@ -311,63 +359,126 @@ const SanghaMilkPayment = ({ clsebtn, todate }) => {
           </div>
         </div>
         <div className="payment-deduction-details-table-container  w100 h65 d-flex sb">
-          <div className="payment-deduction-table-container  w50 h1 mh100 hidescrollbar d-flex-col bg">
-            <div className="deduction-heading-container w100 p10 sa d-flex a-center t-center sticky-top bg7 br-top">
-              <span className="f-label-text w20">खता. नं.</span>
-              <span className="f-label-text w60">कपातीचे नाव</span>
-              <span className="f-label-text w20">कपात</span>
-            </div>
-            {sanghLedger && sanghLedger.length > 0 ? (
-              sanghLedger.map((item, index) => (
-                <div
-                  key={index}
-                  className="deduction-heading-container w100 p10 sa d-flex t-center a-center"
-                  style={{
-                    backgroundColor: index % 2 === 0 ? "#faefe3" : "#fff",
-                  }}
-                >
-                  <span className="info-text w20">{item.lno}</span>
-                  <span className="info-text w60 t-start">
-                    {item.marathi_name || ""}
-                  </span>
-                  <span className="info-text w20">
-                    <input
-                      type="number"
-                      name="Amount"
-                      className="data"
-                      step="any"
-                      ref={(el) => (inputRefs.current[index] = el)}
-                      value={item.Amount}
-                      onChange={(e) =>
-                        handleAmountChange(index, e.target.value)
-                      }
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter") {
-                          e.preventDefault();
-                          const isLastInput = index === sanghLedger.length - 1;
+          {editData ? (
+            <div className="payment-deduction-table-container  w50 h1 mh100 hidescrollbar d-flex-col bg">
+              <div className="deduction-heading-container w100 p10 sa d-flex a-center t-center sticky-top bg7 br-top">
+                <span className="f-label-text w20">खता. नं.</span>
+                <span className="f-label-text w60">कपातीचे नाव</span>
+                <span className="f-label-text w20">कपात</span>
+              </div>
+              {sanghaBillDed && sanghaBillDed.length > 0 ? (
+                sanghaBillDed.map((item, index) => (
+                  <div
+                    key={index}
+                    className="deduction-heading-container w100 p10 sa d-flex t-center a-center"
+                    style={{
+                      backgroundColor: index % 2 === 0 ? "#faefe3" : "#fff",
+                    }}
+                  >
+                    <span className="info-text w20">{item.ledgerCode}</span>
+                    <span className="info-text w60 t-start">
+                      {item.ledgerName || ""}
+                    </span>
+                    <span className="info-text w20">
+                      <input
+                        type="number"
+                        name="Amount"
+                        className="data"
+                        step="any"
+                        ref={(el) => (inputRefs.current[index] = el)}
+                        value={item.Amount}
+                        onChange={(e) =>
+                          handleAmountChange(index, e.target.value)
+                        }
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") {
+                            e.preventDefault();
+                            const isLastInput =
+                              index === sanghLedger.length - 1;
 
-                          if (isLastInput) {
-                            // Move focus to submit button
-                            if (submitBtnRef.current) {
-                              submitBtnRef.current.focus();
-                            }
-                          } else {
-                            // Move to next input
-                            const nextInput = inputRefs.current[index + 1];
-                            if (nextInput) {
-                              nextInput.focus();
+                            if (isLastInput) {
+                              // Move focus to submit button
+                              if (submitBtnRef.current) {
+                                submitBtnRef.current.focus();
+                              }
+                            } else {
+                              // Move to next input
+                              const nextInput = inputRefs.current[index + 1];
+                              if (nextInput) {
+                                nextInput.focus();
+                              }
                             }
                           }
+                        }}
+                      />
+                    </span>
+                  </div>
+                ))
+              ) : (
+                <></>
+              )}
+            </div>
+          ) : (
+            <div className="payment-deduction-table-container  w50 h1 mh100 hidescrollbar d-flex-col bg">
+              <div className="deduction-heading-container w100 p10 sa d-flex a-center t-center sticky-top bg7 br-top">
+                <span className="f-label-text w20">खता. नं.</span>
+                <span className="f-label-text w60">कपातीचे नाव</span>
+                <span className="f-label-text w20">कपात</span>
+              </div>
+              {sanghLedger && sanghLedger.length > 0 ? (
+                sanghLedger.map((item, index) => (
+                  <div
+                    key={index}
+                    className="deduction-heading-container w100 p10 sa d-flex t-center a-center"
+                    style={{
+                      backgroundColor: index % 2 === 0 ? "#faefe3" : "#fff",
+                    }}
+                  >
+                    <span className="info-text w20">{item.lno}</span>
+                    <span className="info-text w60 t-start">
+                      {item.marathi_name || ""}
+                    </span>
+                    <span className="info-text w20">
+                      <input
+                        type="number"
+                        name="Amount"
+                        className="data"
+                        step="any"
+                        ref={(el) => (inputRefs.current[index] = el)}
+                        value={item.Amount}
+                        onChange={(e) =>
+                          handleAmountChange(index, e.target.value)
                         }
-                      }}
-                    />
-                  </span>
-                </div>
-              ))
-            ) : (
-              <></>
-            )}
-          </div>
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") {
+                            e.preventDefault();
+                            const isLastInput =
+                              index === sanghLedger.length - 1;
+
+                            if (isLastInput) {
+                              // Move focus to submit button
+                              if (submitBtnRef.current) {
+                                submitBtnRef.current.focus();
+                              }
+                            } else {
+                              // Move to next input
+                              const nextInput = inputRefs.current[index + 1];
+                              if (nextInput) {
+                                nextInput.focus();
+                              }
+                            }
+                          }
+                        }}
+                      />
+                    </span>
+                  </div>
+                ))
+              ) : (
+                <></>
+              )}
+            </div>
+          )}
+
           <div className="payment-amt-details-container w40 h1 d-flex-col bg-light-skyblue br9 p10">
             <div className="deduction-amount-container w100 h65 d-flex-col a-center sb">
               <div className="deduction-details w100 h1 d-flex a-center sb">
@@ -421,15 +532,30 @@ const SanghaMilkPayment = ({ clsebtn, todate }) => {
               </div>
             </div>
             <div className="deduction-amount-container w100 h30 d-flex a-center j-end sb">
-              <button
-                type="submit"
-                className="w-btn"
-                ref={submitBtnRef}
-                onClick={handleBillSave}
-                disabled={saveStatus === "loading"}
-              >
-                {saveStatus === "loading" ? "saving..." : "बिल सेव्ह करा"}
-              </button>
+              {editData ? (
+                <button
+                  type="submit"
+                  className="w-btn"
+                  ref={submitBtnRef}
+                  onClick={handleBillSave}
+                  disabled={saveStatus === "loading"}
+                >
+                  {saveStatus === "loading" ? "बदल करत आहोत..." : "बदल करा"}
+                </button>
+              ) : (
+                <button
+                  type="submit"
+                  className="w-btn"
+                  ref={submitBtnRef}
+                  onClick={handleBillSave}
+                  disabled={saveStatus === "loading"}
+                >
+                  {saveStatus === "loading"
+                    ? "सेव्ह करत आहोत..."
+                    : "बिल सेव्ह करा"}
+                </button>
+              )}
+
               <button
                 type="submit"
                 className="btn-danger mx10"
