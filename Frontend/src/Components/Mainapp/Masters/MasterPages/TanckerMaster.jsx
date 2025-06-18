@@ -11,17 +11,17 @@ import {
   fetchMaxCode,
   getDoctorList,
   updateDoctorDetails,
-} from "../../../../App/Features/Mainapp/Masters/tankerSlice";
+} from "../../../../App/Features/Mainapp/Masters/doctorSlice";
 
 const TanckerMaster = () => {
   const dispatch = useDispatch();
   const { t } = useTranslation(["milkcollection", "common"]);
   const tDate = useSelector((state) => state.date.toDate);
-  const maxCode = useSelector((state) => state.tanker.maxDrCode);
-  const tankerList = useSelector((state) => state.tanker.drList || []);
-  const createStatus = useSelector((state) => state.tanker.creStatus);
-  const updateStatus = useSelector((state) => state.tanker.upStatus);
-  const listStatus = useSelector((state) => state.tanker.listStatus);
+  const maxCode = useSelector((state) => state.doctor.maxDrCode);
+  const doctorList = useSelector((state) => state.doctor.drList || []);
+  const createStatus = useSelector((state) => state.doctor.creStatus);
+  const updateStatus = useSelector((state) => state.doctor.upStatus);
+  const listStatus = useSelector((state) => state.doctor.listStatus);
   const [errors, setErrors] = useState({});
   const [isEditMode, setIsEditMode] = useState(false);
 
@@ -300,8 +300,8 @@ const TanckerMaster = () => {
         </div>
         {listStatus === "loading" ? (
           <Spinner />
-        ) : tankerList.length > 0 ? (
-          tankerList.map((tanker, index) => (
+        ) : doctorList.length > 0 ? (
+          doctorList.map((tanker, index) => (
             <div
               key={index}
               className="tanker-details-headings w100 p10 d-flex a-center sa"
