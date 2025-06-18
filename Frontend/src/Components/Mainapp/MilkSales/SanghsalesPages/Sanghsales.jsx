@@ -4,13 +4,12 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   addsanghaMilkColl,
   fetchSanghaList,
+  updatesanghaMilkColl,
 } from "../../../../App/Features/Mainapp/Sangha/sanghaSlice";
 import { toast } from "react-toastify";
 import { useTranslation } from "react-i18next";
 import "../../../../Styles/Mainapp/Apphome/Appnavview/Milkcollection.css";
-import "../../../../Styles/Mainapp/MilkSales/CenterMilkColl.css";
-import { centersLists } from "../../../../App/Features/Dairy/Center/centerSlice";
-import { getLatestRateChart } from "../../../../App/Features/Mainapp/Masters/rateChartSlice";
+import "../../../../Styles/Mainapp/MilkSales/SanghMilkColl.css";
 import { getCenterMSales } from "../../../../App/Features/Mainapp/Milk/DairyMilkSalesSlice";
 
 const Sanghsales = ({ clsebtn, isModalOpen, editData }) => {
@@ -18,6 +17,7 @@ const Sanghsales = ({ clsebtn, isModalOpen, editData }) => {
   const dispatch = useDispatch();
   const sanghaList = useSelector((state) => state.sangha.sanghaList);
   const status = useSelector((state) => state.sangha.addsmstatus);
+  const updateStatus = useSelector((state) => state.sangha.updatesmstatus);
   const tDate = useSelector((state) => state.date.toDate);
   const sanghaRef = useRef(null);
   const timeRef = useRef(null);
@@ -32,9 +32,7 @@ const Sanghsales = ({ clsebtn, isModalOpen, editData }) => {
   const amtRef = useRef(null);
   const otherChargesRef = useRef(null);
   const submitbtn = useRef(null);
-
   const [errors, setErrors] = useState({});
-  const [loading, setLoading] = useState(false);
   const [changedDate, setChangedDate] = useState("");
   const [tchangedDate, setTChangedDate] = useState("");
   const [sanghaid, setSanghaid] = useState("");
@@ -57,7 +55,7 @@ const Sanghsales = ({ clsebtn, isModalOpen, editData }) => {
   };
 
   const [values, setValues] = useState(initialValues);
-  // console.log(values);
+
   //------------------------------------------------------------------------------------------------>
   //------------------------------------------------------------------------------------------------>
 
@@ -72,15 +70,11 @@ const Sanghsales = ({ clsebtn, isModalOpen, editData }) => {
     dispatch(fetchSanghaList());
   }, []);
 
-  useEffect(() => {
-    dispatch(centersLists());
-    dispatch(getLatestRateChart());
-  }, []);
-
-  //  set data to edit information ------------------------->
+  // set data to edit information ------------------------->
   useEffect(() => {
     if (editData) {
       setValues({
+        id: editData.id,
         shift: editData.shift,
         date: editData.colldate?.slice(0, 10) || "",
         todate: editData.tocolldate?.slice(0, 10) || "",
@@ -223,6 +217,7 @@ const Sanghsales = ({ clsebtn, isModalOpen, editData }) => {
     }
   };
 
+  // Fetch and process center milk data --------------------------------------------------------->
   const fetchCenterMilkData = async () => {
     try {
       const data = await dispatch(
@@ -395,6 +390,49 @@ const Sanghsales = ({ clsebtn, isModalOpen, editData }) => {
     }
   };
 
+  // handle milk collection edit ---------------------------------------------------------------->
+  const handleSanghaMilkEdit = async (e) => {
+    e.preventDefault();
+
+    const validationErrors = validateFields();
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      return;
+    }
+
+    try {
+      const res = await dispatch(updatesanghaMilkColl(values)).unwrap();
+
+      if (res.status === 200) {
+        toast.success("संघ दुध संकलनातील बदल सेव्ह केले आहेत.");
+
+        setValues({
+          id: "",
+          date: changedDate,
+          todate: tchangedDate,
+          sanghid: sanghaid,
+          shift: 0,
+          liters: "",
+          kpliters: "",
+          nashliters: "",
+          otherCharges: "",
+          chilling: "",
+          fat: "",
+          snf: "",
+          rate: "",
+          amt: "",
+        });
+
+        setChangedDate("");
+        setErrors({});
+      } else {
+        toast.error("संघ दुध संकलन बदल करण्यात अयशस्वी.");
+      }
+    } catch (err) {
+      toast.error("संघ दुध संकलन बदल करण्यात अयशस्वी.");
+    }
+  };
+
   return (
     <div
       id="sanghasles"
@@ -406,7 +444,16 @@ const Sanghsales = ({ clsebtn, isModalOpen, editData }) => {
       >
         {isModalOpen ? (
           <div className="heading-and-close-btn-container w100 d-flex sb p10">
-            <span className="heading w100 t-center">संघ दुध विक्री पावती</span>
+            {editData ? (
+              <span className="heading w100 t-center">
+                संघ दुध विक्री पावतीत बदल करा
+              </span>
+            ) : (
+              <span className="heading w100 t-center">
+                संघ दुध विक्री पावती
+              </span>
+            )}
+
             <span
               type="button"
               className="heading span-btn"
@@ -419,7 +466,7 @@ const Sanghsales = ({ clsebtn, isModalOpen, editData }) => {
           <span className="heading w100 t-center">संघ दुध विक्री पावती</span>
         )}
         <div className="form-setting w100 h10 d-flex a-center sb ">
-          <div className="w70 d-flex a-center px10">
+          <div className="select-sangh-div w70 d-flex a-center px10">
             <label htmlFor="sanghid" className="info-text w30">
               संघ निवडा : <span className="req">*</span>
             </label>
@@ -435,7 +482,7 @@ const Sanghsales = ({ clsebtn, isModalOpen, editData }) => {
               <option value="">-- संघ निवडा --</option>
               {sanghaList.length > 0 ? (
                 sanghaList.map((sangha, i) => (
-                  <option key={i} value={sangha.id}>
+                  <option key={i} value={sangha.code}>
                     {sangha.sangha_name}
                   </option>
                 ))
@@ -444,7 +491,7 @@ const Sanghsales = ({ clsebtn, isModalOpen, editData }) => {
               )}
             </select>
           </div>
-          <div className="selection-div w30 h1 d-flex a-center sa mx10">
+          <div className="shift-selection-div w30 h1 d-flex a-center sa mx10">
             <label htmlFor="shift" className="info-text w30">
               वेळ : <span className="req">*</span>{" "}
             </label>
@@ -453,6 +500,7 @@ const Sanghsales = ({ clsebtn, isModalOpen, editData }) => {
               id="shift"
               className="data w65"
               onChange={handleInputs}
+              value={values.shift}
               onKeyDown={(e) => handleKeyDown(e, fdateRef)}
               ref={timeRef}
             >
@@ -483,7 +531,7 @@ const Sanghsales = ({ clsebtn, isModalOpen, editData }) => {
             />
           </div>
           {values.shift === "2" ? (
-            <div className="form-div w50 px10">
+            <div className="form-div2 w50 px10">
               <label htmlFor="todate" className="info-text w100">
                 {t("common:c-date")} पर्यत
               </label>
@@ -521,7 +569,6 @@ const Sanghsales = ({ clsebtn, isModalOpen, editData }) => {
                 step="any"
                 onChange={handleInputs}
                 value={values.liters}
-                // disabled={!values.date}
                 onKeyDown={(e) => handleKeyDown(e, kplitersRef)}
                 ref={litersRef}
               />
@@ -539,8 +586,7 @@ const Sanghsales = ({ clsebtn, isModalOpen, editData }) => {
                 step="any"
                 value={values.nashliters}
                 onChange={handleInputs}
-                // disabled={!values.liters}
-                onKeyDown={(e) => handleKeyDown(e, rateRef)}
+                onKeyDown={(e) => handleKeyDown(e, fatRef)}
                 ref={nashlitersRef}
               />
             </div>
@@ -560,7 +606,6 @@ const Sanghsales = ({ clsebtn, isModalOpen, editData }) => {
                     step="any"
                     onChange={handleInputChange}
                     value={values.fat}
-                    // disabled={!values.rate || !values.liters}
                     onKeyDown={(e) => handleKeyDown(e, snfRef)}
                     ref={fatRef}
                   />
@@ -579,8 +624,7 @@ const Sanghsales = ({ clsebtn, isModalOpen, editData }) => {
                     step="any"
                     onChange={handleInputChange}
                     value={values.snf}
-                    // disabled={!values.fat || !values.liters}
-                    onKeyDown={(e) => handleKeyDown(e, submitbtn)}
+                    onKeyDown={(e) => handleKeyDown(e, rateRef)}
                     ref={snfRef}
                   />
                 </div>
@@ -599,7 +643,6 @@ const Sanghsales = ({ clsebtn, isModalOpen, editData }) => {
                   step="any"
                   onChange={handleInputs}
                   value={values.otherCharges}
-                  // disabled={!values.rate || !values.liters}
                   onKeyDown={(e) => handleKeyDown(e, snfRef)}
                   ref={otherChargesRef}
                 />
@@ -620,7 +663,6 @@ const Sanghsales = ({ clsebtn, isModalOpen, editData }) => {
                 step="any"
                 value={values.kpliters}
                 onChange={handleInputs}
-                // disabled={!values.date || !values.liters}
                 onKeyDown={(e) => handleKeyDown(e, nashlitersRef)}
                 ref={kplitersRef}
               />
@@ -640,7 +682,7 @@ const Sanghsales = ({ clsebtn, isModalOpen, editData }) => {
                   step="any"
                   value={values.rate}
                   onChange={handleInputs}
-                  onKeyDown={(e) => handleKeyDown(e, fatRef)}
+                  onKeyDown={(e) => handleKeyDown(e, submitbtn)}
                   ref={rateRef}
                 />
               </div>
@@ -658,7 +700,6 @@ const Sanghsales = ({ clsebtn, isModalOpen, editData }) => {
                   step="any"
                   onChange={handleInputs}
                   value={values.chilling}
-                  // disabled={!values.fat || !values.liters}
                   onKeyDown={(e) => handleKeyDown(e, otherChargesRef)}
                   ref={rateRef}
                 />
@@ -680,7 +721,7 @@ const Sanghsales = ({ clsebtn, isModalOpen, editData }) => {
                 value={values.amt}
               />
             </div>
-            <div className="button-container w100 h20 d-flex center my10">
+            <div className="button-container w100 h20 d-flex j-center my10">
               <button
                 className="w-btn label-text"
                 type="reset"
@@ -688,15 +729,27 @@ const Sanghsales = ({ clsebtn, isModalOpen, editData }) => {
               >
                 {t("m-btn-cancel")}
               </button>
-              <button
-                className="w-btn label-text mx10"
-                type="submit"
-                ref={submitbtn}
-                disabled={status === "loading"}
-                onClick={fetchCenterMilkData}
-              >
-                {status === "loading" ? "Saving..." : `Save`}
-              </button>
+              {editData ? (
+                <button
+                  className="btn label-text mx10"
+                  type="submit"
+                  ref={submitbtn}
+                  disabled={updateStatus === "loading"}
+                  onClick={handleSanghaMilkEdit}
+                >
+                  {updateStatus === "loading" ? "बदल करत आहोत..." : `बदल करा`}
+                </button>
+              ) : (
+                <button
+                  className="btn label-text mx10"
+                  type="submit"
+                  ref={submitbtn}
+                  disabled={status === "loading"}
+                  onClick={fetchCenterMilkData}
+                >
+                  {status === "loading" ? "सेव्ह करत आहोत..." : `सेव्ह करा`}
+                </button>
+              )}
             </div>
           </div>
         </div>

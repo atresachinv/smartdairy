@@ -337,13 +337,13 @@ const MilkColleform = ({ switchToSettings, times }) => {
         }
         break;
 
-      case "cname":
-        if (!/^[a-zA-Z\s]+$/.test(value)) {
-          error[name] = "Invalid Customer Name.";
-        } else {
-          delete errors[name];
-        }
-        break;
+      // case "cname":
+      //   if (!/^[\u0900-\u097Fa-zA-Z0-9\s.,_-()]+$/.test(value)) {
+      //     errors[name] = "Invalid Customer Name.";
+      //   } else {
+      //     delete errors[name];
+      //   }
+      //   break;
 
       case "liters":
         if (!/^\d+(\.\d{1,2})?$/.test(value.toString())) {

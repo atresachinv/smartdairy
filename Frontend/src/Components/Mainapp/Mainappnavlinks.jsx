@@ -414,6 +414,13 @@ const Mainappnavlinks = ({ setselected, handleSidebar }) => {
           path: "master/animal",
           role: ["admin", "super_admin", "manager"],
         },
+        {
+          name: `${t("टँकर मास्टर")}`,
+          icon: <PiCowFill className="icon" />,
+          index: 5.9,
+          path: "master/tancker",
+          role: ["admin", "super_admin", "manager"],
+        },
       ],
     },
     {

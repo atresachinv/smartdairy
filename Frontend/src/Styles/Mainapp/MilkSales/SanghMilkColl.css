@@ -1,0 +1,265 @@
+/* -------------------- sangha milk collection form ------------------------ */
+@media screen and (min-width: 426px) and (max-width: 769px) {
+  .sangh-milk-sales-container .milk-col-form {
+    width: 80%;
+    min-height: fit-content;
+  }
+  .milk-info .button-container button {
+    width: 42%;
+  }
+}
+
+@media screen and (max-width: 426px) {
+  .sangh-milk-sales-container {
+    min-height: auto;
+  }
+
+  .sangh-milk-sales-container .milk-col-form {
+    width: 100%;
+    min-height: fit-content;
+  }
+
+  .milk-col-form .form-setting {
+    min-height: fit-content;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+    padding: 0;
+  }
+
+  .form-setting .select-sangh-div,
+  .form-setting .shift-selection-div {
+    width: 100%;
+    justify-content: space-between;
+    padding: 0;
+    margin: 0;
+  }
+
+  .form-setting .select-sangh-div label,
+  .form-setting .shift-selection-div label {
+    width: 30%;
+  }
+
+  .form-setting .select-sangh-div select,
+  .form-setting .shift-selection-div select {
+    width: 60%;
+  }
+
+  .milk-col-form .date-details {
+    min-height: fit-content;
+    flex-wrap: wrap;
+    margin: 20px 0 10px 0;
+    padding: 0;
+  }
+
+  .date-details .form-div,
+  .date-details .form-div2 {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    margin-bottom: 5px;
+    padding: 0;
+  }
+  .milk-col-form .date-details .form-div label,
+  .milk-col-form .date-details .form-div2 label {
+    width: 40%;
+  }
+  .milk-col-form .date-details .form-div input,
+  .milk-col-form .date-details .form-div2 input {
+    width: 60%;
+  }
+}
+
+/* -------------------- sangha milk payment ------------------------ */
+.sanghsale-report-container .sangha-details-table-section {
+  overflow-x: auto;
+}
+
+@media screen and (min-width: 426px) and (max-width: 769px) {
+  .sangha-from-to-datediv-container {
+    width: 65%;
+  }
+  .sangha-sales-buttons-div button {
+    width: 45%;
+  }
+  .Daybook-button-div button {
+    width: 25%;
+  }
+}
+
+@media screen and (max-width: 426px) {
+  .sanghsale-report-container {
+    min-height: auto;
+  }
+  .sanghsale-report-container .sangha-sales-date-buttons-div {
+    min-height: fit-content;
+    flex-direction: column;
+    margin-bottom: 10px;
+  }
+  .sangha-from-to-datediv-container {
+    width: 100%;
+    min-height: fit-content;
+    flex-direction: column;
+    padding: 10px;
+  }
+  .sangha-from-to-datediv-container .sangha-from-date-div {
+    width: 100%;
+    margin-bottom: 10px;
+  }
+  .sangha-sales-date-buttons-div .sangha-sales-buttons-div {
+    min-height: fit-content;
+    flex-direction: row-reverse;
+    margin-bottom: 10px;
+  }
+  .sangha-sales-date-buttons-div .sangha-sales-buttons-div button {
+    width: 45%;
+  }
+
+  .sangha-details-table-section {
+    overflow-x: auto;
+    min-height: 80%;
+    width: 100%;
+    margin-bottom: 10px;
+  }
+  .sangha-sale-report-table-header-div,
+  .sangha-report-table-data {
+    min-width: 750px;
+  }
+  .sanghsale-report-container .Daybook-button-div {
+    min-height: fit-content;
+  }
+  .sanghsale-report-container .Daybook-button-div button {
+    margin-top: 10px;
+    width: 45%;
+  }
+}
+
+/* --------------------------- sangha milk deduction -----------------------------------*/
+@media screen and (max-width: 426px) {
+  .sangha-milk-payment-container {
+    width: 100%;
+    min-height: auto;
+  }
+  .sangha-milk-payment-container .payment-bill-deduction-main-container {
+    min-height: fit-content;
+  }
+  .sangha-milk-payment-container .payment-deduction-details-table-container {
+    min-height: 60%;
+  }
+  .payment-deduction-details-table-container
+    .payment-deduction-table-container {
+    min-height: 60%;
+  }
+  .payment-deduction-details-table-container .payment-amt-details-container {
+    min-height: fit-content;
+  }
+  .payment-amt-details-container .pay-deduction-btn-container button {
+    width: 30%;
+  }
+}
+
+/* --------------------------- sangha milk Payment report -----------------------------------*/
+@media screen and (min-width: 426px) and (max-width: 769px) {
+  .sanghsale-report-container {
+    width: 100%;
+    min-height: auto;
+  }
+  .sanghsale-report-container .sangha-sales-date-buttons-div {
+    min-height: fit-content;
+    margin-bottom: 10px;
+  }
+  .sangha-sales-date-buttons-div span {
+    margin-top: 10px;
+  }
+  .sangha-sales-date-buttons-div .sangha-from-to-datediv-container {
+    width: 100%;
+    min-height: fit-content;
+  }
+  .sangha-from-to-datediv-div .sanghaa-from-date-div {
+    flex-direction: column;
+    margin-bottom: 10px;
+  }
+  .sanghaa-from-date-div span {
+    margin: 0;
+    width: 100%;
+  }
+  .sanghaa-from-date-div input {
+    width: 90%;
+  }
+  .sangha-from-to-datediv-container .select-sangh-div {
+    width: 50%;
+    min-height: fit-content;
+    align-items: center;
+    flex-direction: column;
+    padding: 0;
+  }
+  .select-sangh-div label {
+    width: 100%;
+    margin-left: 10%;
+  }
+  .select-sangh-div select {
+    width: 90%;
+  }
+  .sangha-sales-buttons-div {
+    margin-bottom: 10px;
+  }
+  .sanghsale-report-container .sangha-details-table-container {
+    overflow-x: auto;
+    min-height: 50%;
+    width: 100%;
+    margin-bottom: 10px;
+  }
+  .sangha-sale-report-table-header,
+  .sangha-report-tabledata-section-div {
+    min-width: 740px;
+  }
+}
+
+@media screen and (max-width: 426px) {
+  .sanghsale-report-container {
+    width: 100%;
+    min-height: auto;
+  }
+  .sanghsale-report-container .sangha-sales-date-buttons-div {
+    min-height: fit-content;
+  }
+  .sangha-sales-date-buttons-div span {
+    margin-top: 10px;
+  }
+  .sangha-from-to-datediv-container .sangha-from-to-datediv-div {
+    width: 100%;
+    min-height: fit-content;
+    flex-direction: column;
+  }
+  .sangha-from-to-datediv-div .sanghaa-from-date-div {
+    width: 100%;
+    min-height: fit-content;
+    justify-content: space-between;
+    margin-bottom: 5px;
+  }
+  .sanghaa-from-date-div span {
+    width: 55%;
+  }
+  .sanghaa-from-date-div input {
+    width: 45%;
+  }
+  .sangha-from-to-datediv-container .select-sangh-div {
+    width: 100%;
+    min-height: fit-content;
+    justify-content: space-between;
+    padding: 0;
+    margin-bottom: 5px;
+  }
+  .sanghsale-report-container .sangha-sales-buttons-div button {
+    width: 100%;
+  }
+  .sanghsale-report-container .sangha-details-table-container {
+    overflow-x: auto;
+    min-height: 80%;
+    width: 100%;
+    margin-bottom: 10px;
+  }
+  .sangha-sale-report-table-header,
+  .sangha-report-tabledata-section-div {
+    min-width: 750px;
+  }
+}

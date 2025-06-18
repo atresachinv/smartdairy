@@ -91,6 +91,7 @@ import Milkbill from "./Reports/milkBill/Milkbill";
 import AnimalMaster from "./Masters/MasterPages/AnimalMaster";
 import ReportProblem from "./DairyInfo/Centers/ReportProblem";
 import SanghPayReport from "./MilkSales/SanghsalesPages/SanghPayReport";
+import TanckerMaster from "./Masters/MasterPages/TanckerMaster";
 
 
 const Mainapp = () => {
@@ -284,7 +285,8 @@ const Mainapp = () => {
             <Route path="master/bank/*" element={<BankMaster />} />
             <Route path="master/deductions/*" element={<DeductionMaster />} />
             <Route path="master/doctor/*" element={<DoctorMaster />} />
-            <Route path="master/Animal" element={<AnimalMaster />} />
+            <Route path="master/animal" element={<AnimalMaster />} />
+            <Route path="master/tancker" element={<TanckerMaster />} />
             {/* <Route path="master/ratechart/*" element={<MilkRateMaster />} /> */}
             {/* purchase routes */}
             <Route path="purchase/cattlefeed/*" element={<PurchaseMaster />} />

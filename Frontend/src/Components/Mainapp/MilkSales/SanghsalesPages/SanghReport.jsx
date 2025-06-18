@@ -1,11 +1,20 @@
 import React, { useEffect, useState } from "react";
 import "../../../../Styles/SanghReport/SanghReport.css";
 import { FaEdit } from "react-icons/fa";
+import { MdDeleteForever } from "react-icons/md";
 import Spinner from "../../../Home/Spinner/Spinner";
 import { useDispatch, useSelector } from "react-redux";
 import Sanghsales from "./Sanghsales";
-import { fetchsanghaLedger, fetchSanghaList, fetchsanghaMilkColl, fetchsanghaMilkDetails } from "../../../../App/Features/Mainapp/Sangha/sanghaSlice";
+import {
+  deletesanghaMilkColl,
+  fetchsanghaLedger,
+  fetchSanghaList,
+  fetchsanghaMilkColl,
+  fetchsanghaMilkDetails,
+} from "../../../../App/Features/Mainapp/Sangha/sanghaSlice";
 import SanghaMilkPayment from "./SanghaMilkPayment";
+import Swal from "sweetalert2";
+import "../../../../Styles/Mainapp/MilkSales/SanghMilkColl.css";
 
 const SanghReport = () => {
   const dispatch = useDispatch();
@@ -30,13 +39,40 @@ const SanghReport = () => {
     dispatch(fetchsanghaMilkDetails({ fromDate, toDate }));
     dispatch(fetchsanghaLedger());
   };
-  // console.log("sanghaSales", sanghaSales);
+
+  // handle bill delete function ----------------------------------------------->
+  const handleBillDelete = async (id) => {
+    const result = await Swal.fire({
+      title: "Confirm Deletion?",
+      text: "Are you sure you want to delete this collection entry?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+    });
+
+    if (result.isConfirmed) {
+      if (id) {
+        const res = await dispatch(deletesanghaMilkColl({ id })).unwrap();
+
+        if (res?.status === 200) {
+          dispatch(fetchsanghaMilkColl({ fromDate, toDate }));
+          toast.success("Sangha milk collection deleted successfully!");
+        } else {
+          toast.error("Failed to delete sangha milk collection!");
+        }
+      } else {
+        return toast.error("सर्व माहिती असणे गरजेचे आहे!");
+      }
+    }
+  };
   return (
     <div className="sanghsale-report-container w100 h1 d-flex-col p10 sb">
       <span className="heading mx10">संघ दुध पेमेंट :</span>
       <div className="sangha-sales-date-buttons-div w100 h15 d-flex bg-light-green br9">
         <div className="sangha-from-to-datediv-container w50 h1  d-flex ">
-          <div className="sanghaa-from-date-divv w50 h1 d-flex a-center ">
+          <div className="sangha-from-date-div w50 h1 d-flex a-center ">
             <span className="label-text w30 px10">पासून</span>
             <input
               className="data w80"
@@ -45,7 +81,7 @@ const SanghReport = () => {
               onChange={(e) => setFromDate(e.target.value)}
             />
           </div>
-          <div className="sanghaa-to-date-divv w50 h1 d-flex a-center ">
+          <div className="sangha-from-date-div w50 h1 d-flex a-center ">
             <span className="label-text w30 px10">पर्यत</span>
             <input
               className="data w80"
@@ -71,14 +107,14 @@ const SanghReport = () => {
           </button>
         </div>
       </div>
-      <div className="sangha-details-table-section w100 h60 d-flex-col bg mh70 hidescrollbar">
-        <div className="sangha-sale-report-table-header w100 p10 d-flex a-center t-center sb sticky-top">
+      <div className="sangha-details-table-container w100 h60 d-flex-col bg mh60 hidescrollbar">
+        <div className="sangha-sale-report-table-header-div w100 p10 d-flex a-center t-center sb sticky-top bg7">
           <span className="f-label-text w15 t-center">दिनांक </span>
           <span className="f-label-text w30">संघाचे नाव</span>
           <span className="f-label-text w10">चां. लिटर </span>
           <span className="f-label-text w10">क.प्र.लिटर</span>
-          <span className="f-label-text w10">नाश लिटर</span>
-          <span className="f-label-text w10">एकूण रक्कम </span>
+          <span className="f-label-text w15">नाश लिटर</span>
+          <span className="f-label-text w15">एकूण रक्कम </span>
           <span className="f-label-text w10">Action</span>
         </div>
 
@@ -88,7 +124,7 @@ const SanghReport = () => {
           sanghaMilkColl.map((milk, index) => (
             <div
               key={index}
-              className="sangha-report-tabledata-section-div w100 p10 d-flex a-center sb"
+              className="sangha-report-table-data w100 p10 d-flex a-center sb"
               style={{
                 backgroundColor: index % 2 === 0 ? "#faefe3" : "#fff",
               }}
@@ -97,14 +133,20 @@ const SanghReport = () => {
               <span className="text w30">{milk.sanghid}</span>
               <span className="text w10 t-end">{milk.liter}</span>
               <span className="text w10 t-end">{milk.kamiprat_ltr}</span>
-              <span className="text w10 t-end">{milk.nash_ltr}</span>
-              <span className="text w10 t-end">{milk.amt}</span>
-              <span className="text w10 t-center">
+              <span className="text w15 t-end">{milk.nash_ltr}</span>
+              <span className="text w15 t-end">{milk.amt}</span>
+              <span className="text w10 t-center d-flex se a-center">
                 <FaEdit
                   className="color-icon"
                   onClick={() => {
                     setSelectedMilk(milk);
                     setModalOpen(true);
+                  }}
+                />
+                <MdDeleteForever
+                  className="req"
+                  onClick={() => {
+                    handleBillDelete(milk.id);
                   }}
                 />
               </span>
@@ -117,10 +159,8 @@ const SanghReport = () => {
         )}
       </div>
 
-      <div className="daybook-progress-div w100 h10 d-flex">
-        <div className="Daybook-button-div w30 h1 d-flex a-center">
-          <button className="w-btn">Day Book</button>
-        </div>
+      <div className="Daybook-button-div w100 h10 d-flex a-center j-end">
+        <button className="btn">Day Book</button>
       </div>
 
       {isModalOpen && (

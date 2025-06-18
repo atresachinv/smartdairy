@@ -28,6 +28,7 @@ const CreateMedicines = () => {
   const [mobile, setMobile] = useState("");
   const [cartItem, setCartItem] = useState([]);
   const [cname, setCname] = useState("");
+  const [cuserid, setCUserId] = useState("");
   const [fcode, setFcode] = useState("");
   const [date, setDate] = useState("");
   const [qty, setQty] = useState(1);
@@ -49,9 +50,7 @@ const CreateMedicines = () => {
     (state) => state.dairySetting.centerSetting
   );
   const [filter, setFilter] = useState(0);
-  const centerList = useSelector(
-    (state) => state.center.centersList || []
-  );
+  const centerList = useSelector((state) => state.center.centersList || []);
 
   const [settings, setSettings] = useState({});
   const autoCenter = settings?.autoCenter;
@@ -92,9 +91,11 @@ const CreateMedicines = () => {
         (customer) => customer.srno === parseInt(fcode)
       );
       setCname(customer?.cname || "");
+      setCUserId(customer?.rno || "");
       setMobile(customer?.Phone || customer?.mobile || "");
     } else {
       setCname("");
+      setCUserId("");
       setMobile("");
     }
   }, [fcode, customerslist]);
@@ -152,6 +153,7 @@ const CreateMedicines = () => {
         Qty: Number(qty),
         CustCode: fcode,
         cust_name: cname,
+        userid: cuserid,
         ItemGroupCode: 2,
         Rate: Number(rate),
         Amount: Number(qty) * Number(rate),

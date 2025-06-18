@@ -12,13 +12,15 @@ const initialState = {
   sanghaliststatus: "idle",
   delsanghastatus: "idle",
   addsmstatus: "idle",
+  updatesmstatus: "idle",
   fetchsmstatus: "idle",
   getsmstatus: "idle",
   fledgertatus: "idle",
-  updatesmstatus: "idle",
   delsmstatus: "idle",
   savespstatus: "idle",
+  editspstatus: "idle",
   getPaystatus: "idle",
+  delPaystatus: "idle",
   error: null,
 };
 
@@ -109,6 +111,24 @@ export const addsanghaMilkColl = createAsyncThunk(
     }
   }
 );
+// update sangha milk collection -------------------------------------------->
+export const updatesanghaMilkColl = createAsyncThunk(
+  "sangha/updatesanghaMilkColl",
+  async (values, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.put(
+        "/update/sangha/milk-coll",
+        values
+      );
+      return response.data;
+    } catch (error) {
+      const errorMessage = error.response
+        ? error.response.data
+        : "Failed to update sangha milk collection.";
+      return rejectWithValue(errorMessage);
+    }
+  }
+);
 
 // fetch sangh milk collection
 export const fetchsanghaMilkColl = createAsyncThunk(
@@ -162,25 +182,6 @@ export const fetchsanghaLedger = createAsyncThunk(
   }
 );
 
-// update sangha milk collection
-export const updatesanghaMilkColl = createAsyncThunk(
-  "sangha/updatesanghaMilkColl",
-  async ({ values }, { rejectWithValue }) => {
-    try {
-      const response = await axiosInstance.put(
-        "/update/sangha/milk-coll",
-        values
-      );
-      return response.data;
-    } catch (error) {
-      const errorMessage = error.response
-        ? error.response.data
-        : "Failed to update sangha milk collection.";
-      return rejectWithValue(errorMessage);
-    }
-  }
-);
-
 // delete sangha milk collection
 export const deletesanghaMilkColl = createAsyncThunk(
   "sangha/deletesanghaMilkColl",
@@ -219,12 +220,11 @@ export const saveSangahPayment = createAsyncThunk(
 );
 
 // edit sangha milk payment
-
 export const editSangahPayment = createAsyncThunk(
   "sangha/editSangahPayment",
   async ({ formData, paymentDetails }, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.post("/save/sangha-milk/payment", {
+      const response = await axiosInstance.post("/update/sangha-milk/payment", {
         formData,
         paymentDetails,
       });
@@ -232,7 +232,7 @@ export const editSangahPayment = createAsyncThunk(
     } catch (error) {
       const errorMessage = error.response
         ? error.response.data
-        : "Failed to save sangha milk payment!";
+        : "Failed to update sangha milk payment!";
       return rejectWithValue(errorMessage);
     }
   }
@@ -255,6 +255,29 @@ export const getSangahPayment = createAsyncThunk(
       const errorMessage = error.response
         ? error.response.data
         : "Failed to get sangha milk payment!";
+      return rejectWithValue(errorMessage);
+    }
+  }
+);
+
+// delete sangha milk payment
+export const deleteSangahPayment = createAsyncThunk(
+  "sangha/deleteSangahPayment",
+  async ({ billno }, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.delete(
+        "/delete/sangha-milk/payment",
+        {
+          params: {
+            billno,
+          },
+        }
+      );
+      return response.data;
+    } catch (error) {
+      const errorMessage = error.response
+        ? error.response.data
+        : "Failed to delete sangha milk payment!";
       return rejectWithValue(errorMessage);
     }
   }
@@ -304,7 +327,7 @@ const sanghaSlice = createSlice({
         state.delsanghastatus = "loading";
         state.error = null;
       })
-      .addCase(deleteSangha.fulfilled, (state, action) => {
+      .addCase(deleteSangha.fulfilled, (state) => {
         state.delsanghastatus = "succeeded";
       })
       .addCase(deleteSangha.rejected, (state, action) => {
@@ -315,11 +338,22 @@ const sanghaSlice = createSlice({
         state.addsmstatus = "loading";
         state.error = null;
       })
-      .addCase(addsanghaMilkColl.fulfilled, (state, action) => {
+      .addCase(addsanghaMilkColl.fulfilled, (state) => {
         state.addsmstatus = "succeeded";
       })
       .addCase(addsanghaMilkColl.rejected, (state, action) => {
         state.addsmstatus = "failed";
+        state.error = action.payload;
+      }) // update sangha milk collection ------------------------------->
+      .addCase(updatesanghaMilkColl.pending, (state) => {
+        state.updatesmstatus = "loading";
+        state.error = null;
+      })
+      .addCase(updatesanghaMilkColl.fulfilled, (state) => {
+        state.updatesmstatus = "succeeded";
+      })
+      .addCase(updatesanghaMilkColl.rejected, (state, action) => {
+        state.updatesmstatus = "failed";
         state.error = action.payload;
       }) // fetch sangha milk sales -------------------------------------->
       .addCase(fetchsanghaMilkColl.pending, (state) => {
@@ -357,17 +391,6 @@ const sanghaSlice = createSlice({
       .addCase(fetchsanghaLedger.rejected, (state, action) => {
         state.fledgertatus = "failed";
         state.error = action.payload;
-      }) // update sangha milk collection ------------------------------->
-      .addCase(updatesanghaMilkColl.pending, (state) => {
-        state.updatesmstatus = "loading";
-        state.error = null;
-      })
-      .addCase(updatesanghaMilkColl.fulfilled, (state, action) => {
-        state.updatesmstatus = "succeeded";
-      })
-      .addCase(updatesanghaMilkColl.rejected, (state, action) => {
-        state.updatesmstatus = "failed";
-        state.error = action.payload;
       }) // delete sangha milk collection ------------------------------->
       .addCase(deletesanghaMilkColl.pending, (state) => {
         state.delsmstatus = "loading";
@@ -390,6 +413,17 @@ const sanghaSlice = createSlice({
       .addCase(saveSangahPayment.rejected, (state, action) => {
         state.savespstatus = "failed";
         state.error = action.payload;
+      }) // edit sangha milk payment --------------------------------------->
+      .addCase(editSangahPayment.pending, (state) => {
+        state.editspstatus = "loading";
+        state.error = null;
+      })
+      .addCase(editSangahPayment.fulfilled, (state) => {
+        state.editspstatus = "succeeded";
+      })
+      .addCase(editSangahPayment.rejected, (state, action) => {
+        state.editspstatus = "failed";
+        state.error = action.payload;
       }) // fetch sangha milk payment --------------------------------------->
       .addCase(getSangahPayment.pending, (state) => {
         state.getPaystatus = "loading";
@@ -401,6 +435,17 @@ const sanghaSlice = createSlice({
       })
       .addCase(getSangahPayment.rejected, (state, action) => {
         state.getPaystatus = "failed";
+        state.error = action.payload;
+      }) // delete sangha milk payment --------------------------------------->
+      .addCase(deleteSangahPayment.pending, (state) => {
+        state.delPaystatus = "loading";
+        state.error = null;
+      })
+      .addCase(deleteSangahPayment.fulfilled, (state) => {
+        state.delPaystatus = "succeeded";
+      })
+      .addCase(deleteSangahPayment.rejected, (state, action) => {
+        state.delPaystatus = "failed";
         state.error = action.payload;
       });
   },

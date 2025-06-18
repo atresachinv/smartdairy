@@ -1,22 +1,15 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { BsChevronDoubleLeft, BsChevronDoubleRight } from "react-icons/bs";
-
-import { getDeductionDetails } from "../../../../App/Features/Deduction/deductionSlice";
-import {
-  fetchPaymentDetails,
-  getPayMasters,
-  saveOtherDeductions,
-  updatePayInfo,
-} from "../../../../App/Features/Payments/paymentSlice";
 import { toast } from "react-toastify";
 import { getCenterSetting } from "../../../../App/Features/Mainapp/Settings/dairySettingSlice";
-import { listSubLedger } from "../../../../App/Features/Mainapp/Masters/ledgerSlice";
 import {
+  deleteSangahPayment,
+  editSangahPayment,
   fetchsanghaLedger,
   fetchSanghaList,
   saveSangahPayment,
 } from "../../../../App/Features/Mainapp/Sangha/sanghaSlice";
+import Swal from "sweetalert2";
 
 const SanghaMilkPayment = ({ clsebtn, todate, editData }) => {
   const dispatch = useDispatch();
@@ -25,6 +18,8 @@ const SanghaMilkPayment = ({ clsebtn, todate, editData }) => {
   const sanghaSales = useSelector((state) => state.sangha.sanghaSales); // sangha Sales
   const sanghaPayment = useSelector((state) => state.sangha.sanghaPayment); // sangha milk payment
   const saveStatus = useSelector((state) => state.sangha.savespstatus); // save sangha payment Status
+  const editStatus = useSelector((state) => state.sangha.editspstatus); // edit sangha payment Status
+  const delStatus = useSelector((state) => state.sangha.delPaystatus); // delete sangha payment Status
   const otherCommRefs = useRef([]);
   const chillingRefs = useRef([]);
   const overrateRefs = useRef([]);
@@ -39,6 +34,7 @@ const SanghaMilkPayment = ({ clsebtn, todate, editData }) => {
 
   let initialValues = {
     id: 0,
+    billno: "",
     billdate: todate,
     sanghacode: sanghid,
     morningliters: "",
@@ -67,6 +63,8 @@ const SanghaMilkPayment = ({ clsebtn, todate, editData }) => {
     setFormData((prev) => ({
       ...prev,
       billdate: todate,
+      billno: smData[0]?.billno || "",
+      sanghacode: smData[0]?.sanghaId || sanghid,
       morningliters: parseFloat(smData[0]?.mrgLiters || 0).toFixed(2),
       eveningliters: parseFloat(smData[0]?.eveLiters || 0).toFixed(2),
       totalcollection: parseFloat(smData[0]?.totalLiters || 0).toFixed(2),
@@ -99,24 +97,39 @@ const SanghaMilkPayment = ({ clsebtn, todate, editData }) => {
   }, [sanghaSales, sanghid]);
 
   const handleAmountChange = (index, value) => {
-    // Deep copy each object to ensure it's not frozen
-    const updatedLedger = sanghLedger.map((item, i) => {
-      return i === index
-        ? { ...item, Amount: parseFloat(value) || "" } // assign new value
-        : { ...item }; // shallow copy to break reference to frozen object
-    });
+    const amount = parseFloat(value) || "";
 
-    setSanghLedger(updatedLedger);
+    if (editData) {
+      // Deep copy and update for editData case
+      const updatedLedgers = sanghaBillDed.map((item, i) =>
+        i === index ? { ...item, Amount: amount } : { ...item }
+      );
+      setSanghaBillDed(updatedLedgers);
+    } else {
+      // Deep copy and update for normal case
+      const updatedLedger = sanghLedger.map((item, i) =>
+        i === index ? { ...item, Amount: amount } : { ...item }
+      );
+      setSanghLedger(updatedLedger);
+    }
   };
 
   // Calculate total amount only when sanghaLedger changes
   const totalAmount = useMemo(() => {
-    if (!Array.isArray(sanghLedger)) return 0;
-    return sanghLedger.reduce(
-      (acc, item) => acc + (parseFloat(item.Amount) || ""),
-      0
-    );
-  }, [sanghLedger]);
+    if (editData) {
+      if (!Array.isArray(sanghaBillDed)) return 0;
+      return sanghaBillDed.reduce(
+        (acc, item) => acc + (parseFloat(item.Amount) || ""),
+        0
+      );
+    } else {
+      if (!Array.isArray(sanghLedger)) return 0;
+      return sanghLedger.reduce(
+        (acc, item) => acc + (parseFloat(item.Amount) || ""),
+        0
+      );
+    }
+  }, [sanghLedger, sanghaBillDed]);
 
   useEffect(() => {
     const totalPayment = parseFloat(formData.totalPayment) || 0;
@@ -128,7 +141,12 @@ const SanghaMilkPayment = ({ clsebtn, todate, editData }) => {
       totalDeduction: totalDeduction.toFixed(2),
       netPayment: (totalPayment + totalCommission - totalDeduction).toFixed(2),
     }));
-  }, [totalAmount, formData.totalPayment, formData.totalcommission]);
+  }, [
+    totalAmount,
+    formData.totalPayment,
+    formData.totalcommission,
+    sanghaBillDed,
+  ]);
 
   // Handling form data change -------------------------------------------------->
   const handleFormDataChange = (e) => {
@@ -167,6 +185,7 @@ const SanghaMilkPayment = ({ clsebtn, todate, editData }) => {
       setFormData((prev) => ({
         ...prev,
         id: sanghaBill[0]?.id,
+        billno: sanghaBill[0]?.billno,
         billdate: sanghaBill[0]?.billdate,
         sanghacode: sanghaBill[0]?.sangh_id,
         morningliters: sanghaBill[0]?.mrgltr,
@@ -208,11 +227,66 @@ const SanghaMilkPayment = ({ clsebtn, todate, editData }) => {
 
     if (saveres?.status === 200) {
       setFormData(initialValues); // Reset form data
+      setSanghaBillDed([]);
       toast.success("Sangha milk payment saved successfully!");
     } else {
       toast.error("Failed to save sangha milk payment!");
     }
   };
+
+  // handle bill save function ----------------------------------------------->
+  const handleBillEdit = async (e) => {
+    e.preventDefault();
+    if (sanghaBillDed.length > 0 && editData) {
+      const saveres = await dispatch(
+        editSangahPayment({ formData, paymentDetails: sanghaBillDed })
+      ).unwrap();
+      otherCommRefs.focus();
+
+      if (saveres?.status === 200) {
+        setFormData(initialValues); // Reset form data
+        toast.success("Sangha milk payment saved successfully!");
+      } else {
+        toast.error("Failed to save sangha milk payment!");
+      }
+    } else {
+      return toast.error("सर्व माहिती भरणे गरजेचे आहे!");
+    }
+  };
+
+  // handle bill save function ----------------------------------------------->
+
+  const handleBillDelete = async (ItemCode) => {
+    const result = await Swal.fire({
+      title: "Confirm Deletion?",
+      text: "Are you sure you want to delete this bill?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+    });
+
+    if (result.isConfirmed) {
+      if (formData.billno) {
+        const saveres = await dispatch(
+          deleteSangahPayment({
+            billno: formData.billno,
+          })
+        ).unwrap();
+
+        if (saveres?.status === 200) {
+          setFormData(initialValues); // Reset form data
+          toast.success("Sangha milk payment deleted successfully!");
+        } else {
+          toast.error("Failed to delete sangha milk payment!");
+        }
+      } else {
+        return toast.error("सर्व माहिती असणे गरजेचे आहे!");
+      }
+    }
+  };
+
   return (
     <div className="sangha-milk-payment-container w90 h90 d-flex-col">
       <div className="payment-bill-deduction-main-container w100 h1 d-flex-col p10 sb bg5 br9">
@@ -531,17 +605,30 @@ const SanghaMilkPayment = ({ clsebtn, todate, editData }) => {
                 </span>
               </div>
             </div>
-            <div className="deduction-amount-container w100 h30 d-flex a-center j-end sb">
+            <div className="pay-deduction-btn-container w100 h30 d-flex a-center j-end sb">
               {editData ? (
-                <button
-                  type="submit"
-                  className="w-btn"
-                  ref={submitBtnRef}
-                  onClick={handleBillSave}
-                  disabled={saveStatus === "loading"}
-                >
-                  {saveStatus === "loading" ? "बदल करत आहोत..." : "बदल करा"}
-                </button>
+                <>
+                  <button
+                    type="submit"
+                    className="w-btn"
+                    ref={submitBtnRef}
+                    onClick={handleBillEdit}
+                    disabled={editStatus === "loading"}
+                  >
+                    {editStatus === "loading" ? "बदल करत आहोत..." : "बदल करा"}
+                  </button>
+                  <button
+                    type="submit"
+                    className="btn-danger"
+                    ref={submitBtnRef}
+                    onClick={handleBillDelete}
+                    disabled={delStatus === "loading"}
+                  >
+                    {delStatus === "loading"
+                      ? "काढून टाकत आहोत..."
+                      : "काढून टाका"}
+                  </button>
+                </>
               ) : (
                 <button
                   type="submit"
