@@ -14,6 +14,7 @@ exports.createSanghaMColl = (req, res) => {
     const {
       date,
       sanghid,
+      tankerno,
       shift,
       liters,
       kpliters,
@@ -77,9 +78,9 @@ exports.createSanghaMColl = (req, res) => {
 
           const insertQuery = `
           INSERT INTO sanghmilkentry (
-            dairy_id, center_id, sanghid, shift, colldate, liter, kamiprat_ltr,
+            dairy_id, center_id, sanghid, tankerno, shift, colldate, liter, kamiprat_ltr,
             otherCharges, chilling, nash_ltr, fat, snf, rate, amt, createdOn, createdBy
-          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         `;
 
           connection.query(
@@ -88,6 +89,7 @@ exports.createSanghaMColl = (req, res) => {
               dairy_id,
               center_id,
               sanghid,
+              tankerno || null,
               shift,
               date,
               liters || 0.0,
@@ -139,6 +141,7 @@ exports.updateSanghaMColl = async (req, res) => {
     date,
     todate,
     sanghid,
+    tankerno,
     shift,
     liters,
     kpliters,
@@ -153,16 +156,7 @@ exports.updateSanghaMColl = async (req, res) => {
 
   const { dairy_id, user_role } = req.user;
 
-  if (
-    !id ||
-    !date ||
-    !sanghid ||
-    !liters ||
-    !fat ||
-    !snf ||
-    !rate ||
-    !amt
-  ) {
+  if (!id || !date || !sanghid || !liters || !fat || !snf || !rate || !amt) {
     return res
       .status(400)
       .json({ status: 400, message: "All data is required!" });
@@ -185,13 +179,14 @@ exports.updateSanghaMColl = async (req, res) => {
     try {
       const updateQuery = `
         UPDATE sanghmilkentry
-        SET sanghid = ?, shift = ?, colldate = ?, tocolldate = ?, liter = ?, kamiprat_ltr = ?, otherCharges = ?, chilling = ?,
+        SET sanghid = ?, tankerno = ?, shift = ?, colldate = ?, tocolldate = ?, liter = ?, kamiprat_ltr = ?, otherCharges = ?, chilling = ?,
             nash_ltr = ?, fat = ?, snf = ?, rate = ?, amt = ?, updatedOn = ?, updatedBy = ?
         WHERE id = ?
       `;
 
       const queryParams = [
         sanghid,
+        tankerno || null,
         shift,
         date,
         todate || null,
@@ -301,7 +296,7 @@ exports.fetchSanghaMColl = async (req, res) => {
 // delete sangha milk collection ------------------------------------------------------------------------------------>
 //------------------------------------------------------------------------------------------------------------------->
 exports.delteSanghaMColl = async (req, res) => {
-  const {id}  = req.query;
+  const { id } = req.query;
   const { dairy_id } = req.user;
   if (!id) {
     return res.status(400).json({
@@ -323,24 +318,20 @@ exports.delteSanghaMColl = async (req, res) => {
     try {
       const getCustname = `DELETE FROM sanghmilkentry WHERE id = ?`;
 
-      connection.query(
-        getCustname,
-        [id],
-        (err, result) => {
-          connection.release();
-          if (err) {
-            console.error("Error executing query: ", err);
-            return res
-              .status(500)
-              .json({ status: 500, message: "Query execution error!" });
-          }
-
-          res.status(200).json({
-            status: 200,
-            message: "Sangha milk collection deleted successfully!",
-          });
+      connection.query(getCustname, [id], (err, result) => {
+        connection.release();
+        if (err) {
+          console.error("Error executing query: ", err);
+          return res
+            .status(500)
+            .json({ status: 500, message: "Query execution error!" });
         }
-      );
+
+        res.status(200).json({
+          status: 200,
+          message: "Sangha milk collection deleted successfully!",
+        });
+      });
     } catch (error) {
       console.error("Error processing request: ", error);
       return res

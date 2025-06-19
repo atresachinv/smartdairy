@@ -2,6 +2,60 @@
   width: 100%;
 }
 
+@media screen and (min-width: 426px) and (max-width: 769px) {
+  .Bil-list-container {
+    min-height: auto;
+  }
+  .Bil-list-container .generate-bill-form-container {
+    min-height: fit-content;
+    flex-wrap: wrap;
+    padding: 0;
+    margin-bottom: 10px;
+  }
+  .generate-bill-form-container .bill-voucher-date-container {
+    width: 40%;
+    padding: 10px;
+  }
+  .bill-voucher-date-container .bil-date-div {
+    margin-bottom: 10px;
+  }
+  .generate-bill-form-container .payment-dates-container {
+    width: 55%;
+    padding: 10px;
+  }
+  .payment-dates-container .pay-fromdate-div {
+    margin-bottom: 10px;
+  }
+  .generate-bill-form-container .checkbox-container {
+    width: 40%;
+    flex-direction: row;
+    max-height: max-content;
+    margin-top: 10px;
+  }
+  .generate-bill-form-container .checkbox-container .check-acc-div {
+    height: auto;
+  }
+  .generate-bill-form-container .form-button-div {
+    width: 50%;
+    flex-direction: row;
+    max-height: max-content;
+    margin-top: 10px;
+  }
+  .generate-bill-form-container .form-button-div button {
+    width: 45%;
+  }
+  .payment-details-and-report-btn-div {
+    min-height: 80%;
+  }
+  .payment-details-and-report-btn-div .bill-payments-container-div {
+    width: 20%;
+  }
+  .bill-payments-container-div button {
+    width: 100%;
+    margin-bottom: 10px;
+  }
+}
+
 @media screen and (max-width: 426px) {
   .Bil-list-container {
     min-height: auto;

@@ -5,6 +5,7 @@ const {
   addCenterMilkColl,
   getCenterMilkReport,
   getMasterCenterMilkReport,
+  getDairyMilkReport,
   updateCenterMilkColl,
   deleteCenterMilkColl,
 } = require("../Controllers/MilkSalesController");
@@ -20,8 +21,8 @@ router
 router
   .route("/fetch/center/coll/master/report")
   .get(verifyToken, getMasterCenterMilkReport);
+router.route("/fetch/dairy/master/coll").get(verifyToken, getDairyMilkReport);
 router.route("/update/center/milkcoll").put(verifyToken, updateCenterMilkColl);
 router.route("/delete/center/milkcoll").put(verifyToken, deleteCenterMilkColl);
-
 
 module.exports = router;

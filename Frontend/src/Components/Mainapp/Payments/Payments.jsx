@@ -879,11 +879,11 @@ const Payments = ({ setCurrentPage }) => {
       >
         <div className="bill-voucher-date-container w30 px10 d-flex-col bg-light-skyblue br6 sa px10">
           <div className="bil-date-div d-flex w100 h1 a-center sb">
-            <label htmlFor="billdate" className="label-text w40">
+            <label htmlFor="billdate" className="label-text w50">
               बिल दिनांक :
             </label>
             <input
-              className="data w60"
+              className="data w50"
               type="date"
               id="billdate"
               name="billDate"
@@ -895,12 +895,12 @@ const Payments = ({ setCurrentPage }) => {
             />
           </div>
           <div className="Voucher-date-div d-flex w100 h1 a-center sb">
-            <label htmlFor="vcdate" className="label-text w40">
+            <label htmlFor="vcdate" className="label-text w50">
               व्हाऊचर दिनांक :
             </label>
             <input
               id="vcdate"
-              className="data w60"
+              className="data w50"
               type="date"
               name="vcDate"
               value={formData.vcDate}
@@ -912,12 +912,12 @@ const Payments = ({ setCurrentPage }) => {
         </div>
         <div className="payment-dates-container w40 d-flex-col  bg-light-skyblue br6 sa px10">
           <div className="pay-fromdate-div d-flex w100 h1 a-center sb">
-            <label htmlFor="fdate" className="label-text w40">
+            <label htmlFor="fdate" className="label-text w60">
               पंधरवडा दिनांक पासून :
             </label>
             <input
               id="fdate"
-              className="data w50"
+              className="data w40"
               type="date"
               name="fromDate"
               onChange={handleInput}
@@ -927,12 +927,12 @@ const Payments = ({ setCurrentPage }) => {
             />
           </div>
           <div className="pay-todate-div d-flex w100 h1 a-center sb">
-            <label htmlFor="tdate" className="label-text w40">
+            <label htmlFor="tdate" className="label-text w60">
               पंधरवडा दिनांक पर्येंत :
             </label>
             <input
               id="tdate"
-              className="data w50"
+              className="data w40"
               type="date"
               name="toDate"
               value={formData.toDate}
@@ -987,7 +987,7 @@ const Payments = ({ setCurrentPage }) => {
           <div className="customer-code-div w100 h10 d-flex a-center sb px10">
             <span className="label-text">Payment Details : </span>
             <div className="cust-code-div d-flex w50 h1 sb a-center">
-              <label htmlFor="cform" className="w30">
+              <label htmlFor="cform" className="w50">
                 कोड नं पासून :
               </label>
               <input
@@ -1015,7 +1015,7 @@ const Payments = ({ setCurrentPage }) => {
             </div>
           </div>
           <div className="bill-payments-details-container w100 h70 d-flex-col mh70 hidescrollbar bg">
-            <div className="bill-heading-div w100 p10 d-flex a-center t-center sb sticky-top bg7 br6">
+            <div className="bill-heading-div w100 p10 d-flex a-center t-center sb sticky-top bg7 br-top">
               <span className="f-label-text w10">उत्पा.क्र</span>
               <span className="f-label-text w40">उत्पादकाचे नाव</span>
               <span className="f-label-text w15">लिटर</span>

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import "../../../../Styles/SanghReport/SanghReport.css";
 import { FaEdit } from "react-icons/fa";
 import { MdDeleteForever } from "react-icons/md";
@@ -21,7 +21,7 @@ const SanghReport = () => {
   const tDate = useSelector((state) => state.date.toDate);
   const sanghaMilkColl = useSelector((state) => state.sangha.sanghamilkColl); // sangha milk collection
   const sanghaSales = useSelector((state) => state.sangha.sanghaSales); // sangha Sales
-
+  const sanghaList = useSelector((state) => state.sangha?.sanghaList || []); // sangha list
   const getstatus = useSelector((state) => state.sangha.fetchsmstatus); // fetch sangha milk collection status
   const [isModalOpen, setModalOpen] = useState(false);
   const [isModalsOpen, setModalsOpen] = useState(false);
@@ -39,7 +39,7 @@ const SanghReport = () => {
     dispatch(fetchsanghaMilkDetails({ fromDate, toDate }));
     dispatch(fetchsanghaLedger());
   };
-
+  
   // handle bill delete function ----------------------------------------------->
   const handleBillDelete = async (id) => {
     const result = await Swal.fire({
@@ -109,12 +109,13 @@ const SanghReport = () => {
       </div>
       <div className="sangha-details-table-container w100 h60 d-flex-col bg mh60 hidescrollbar">
         <div className="sangha-sale-report-table-header-div w100 p10 d-flex a-center t-center sb sticky-top bg7">
-          <span className="f-label-text w15 t-center">दिनांक </span>
-          <span className="f-label-text w30">संघाचे नाव</span>
+          <span className="f-label-text w15 t-start">दिनांक </span>
+          <span className="f-label-text w25">संघाचे नाव</span>
           <span className="f-label-text w10">चां. लिटर </span>
-          <span className="f-label-text w10">क.प्र.लिटर</span>
-          <span className="f-label-text w15">नाश लिटर</span>
-          <span className="f-label-text w15">एकूण रक्कम </span>
+          <span className="f-label-text w10">क.प्र.लि</span>
+          <span className="f-label-text w10">ना. लिटर</span>
+          <span className="f-label-text w10">ए. रक्कम </span>
+          <span className="f-label-text w5">टँ.नं.</span>
           <span className="f-label-text w10">Action</span>
         </div>
 
@@ -130,11 +131,16 @@ const SanghReport = () => {
               }}
             >
               <span className="text w15">{milk.colldate.slice(0, 10)}</span>
-              <span className="text w30">{milk.sanghid}</span>
+              {/* <span className="text w30">{milk.sanghid}</span> */}
+              <span className="text w25">
+                {sanghaList.find((sangha) => sangha.code === milk.sanghid)
+                  ?.marathi_name || "-"}
+              </span>
               <span className="text w10 t-end">{milk.liter}</span>
               <span className="text w10 t-end">{milk.kamiprat_ltr}</span>
-              <span className="text w15 t-end">{milk.nash_ltr}</span>
+              <span className="text w10 t-end">{milk.nash_ltr}</span>
               <span className="text w15 t-end">{milk.amt}</span>
+              <span className="text w5 t-center">{milk.tankerno}</span>
               <span className="text w10 t-center d-flex se a-center">
                 <FaEdit
                   className="color-icon"

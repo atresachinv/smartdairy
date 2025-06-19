@@ -3,47 +3,52 @@ import { toast } from "react-toastify";
 import { useDispatch, useSelector } from "react-redux";
 import { useTranslation } from "react-i18next";
 import { FaEdit } from "react-icons/fa";
+import Spinner from "../../../Home/Spinner/Spinner";
 import { MdDeleteForever } from "react-icons/md";
 import Swal from "sweetalert2";
 import "../../../../Styles/Mainapp/Masters/DoctorMaster.css";
 import {
-  addDoctor,
+  createTanker,
   fetchMaxCode,
-  getDoctorList,
-  updateDoctorDetails,
-} from "../../../../App/Features/Mainapp/Masters/doctorSlice";
+  getTankerList,
+  updateTankerDetails,
+} from "../../../../App/Features/Mainapp/Masters/tankerMasterSlice";
 
 const TanckerMaster = () => {
   const dispatch = useDispatch();
   const { t } = useTranslation(["milkcollection", "common"]);
   const tDate = useSelector((state) => state.date.toDate);
-  const maxCode = useSelector((state) => state.doctor.maxDrCode);
-  const doctorList = useSelector((state) => state.doctor.drList || []);
-  const createStatus = useSelector((state) => state.doctor.creStatus);
-  const updateStatus = useSelector((state) => state.doctor.upStatus);
-  const listStatus = useSelector((state) => state.doctor.listStatus);
+  const maxCode = useSelector((state) => state.tanker.maxCode);
+  const tankerList = useSelector((state) => state.tanker.tankersList || []);
+  const createStatus = useSelector((state) => state.tanker.crestatus);
+  const updateStatus = useSelector((state) => state.tanker.upstatus);
+  const listStatus = useSelector((state) => state.tanker.liststatus);
   const [errors, setErrors] = useState({});
   const [isEditMode, setIsEditMode] = useState(false);
 
-  const codeRef = useRef(null);
-  const nameRef = useRef(null);
-  const snameRef = useRef(null);
-  const addbuttonRef = useRef(null);
+  const tnoRef = useRef(null);
+  const onameRef = useRef(null);
+  const contnoRef = useRef(null);
+  const tanknoRef = useRef(null);
+  const rltrRef = useRef(null);
+  const submitbtnRef = useRef(null);
 
   const initialValues = {
     id: "",
-    no: "",
+    tno: "",
     ownername: "",
-    tancker_no: "",
-    contact_no: "",
-    rate_ltr: "",
+    tankerno: "",
+    contactno: "",
+    rateltr: "",
   };
 
   const [values, setValues] = useState(initialValues);
 
   useEffect(() => {
     dispatch(fetchMaxCode());
-    dispatch(getDoctorList());
+    if (tankerList.length === 0) {
+      dispatch(getTankerList());
+    }
   }, [dispatch]);
 
   useEffect(() => {
@@ -51,7 +56,7 @@ const TanckerMaster = () => {
       setValues((prevData) => ({
         ...prevData,
         date: tDate,
-        code: maxCode,
+        tno: maxCode,
       }));
     }
   }, [maxCode, isEditMode]);
@@ -59,12 +64,17 @@ const TanckerMaster = () => {
   // Handle input changes
   const handleInputs = (e) => {
     const { name, value } = e.target;
-    setValues({ ...values, [name]: value });
+    setValues((prev) => ({ ...prev, [name]: value }));
 
     const fieldError = validateField(name, value);
+
     setErrors((prevErrors) => {
-      const updatedErrors = { ...prevErrors, ...fieldError };
-      if (!value) delete updatedErrors[name];
+      const updatedErrors = { ...prevErrors };
+      if (fieldError[name]) {
+        updatedErrors[name] = fieldError[name];
+      } else {
+        delete updatedErrors[name];
+      }
       return updatedErrors;
     });
   };
@@ -72,18 +82,19 @@ const TanckerMaster = () => {
   const validateField = (name, value) => {
     let error = {};
     switch (name) {
-      case "no":
+      case "tno":
         if (!/^\d+$/.test(value.toString())) {
           error[name] = "Invalid Bank Code.";
-        } else {
-          delete errors[name];
+        }
+        break;
+      case "contactno":
+        if (!/^\d{10}$/.test(value.toString())) {
+          error[name] = "Invalid Contact Number.";
         }
         break;
       case "ownername":
         if (!/^[a-zA-Z\s]+$/.test(value)) {
           error[name] = `Invalid Doctor Name.`;
-        } else {
-          delete errors[name];
         }
         break;
       default:
@@ -93,7 +104,7 @@ const TanckerMaster = () => {
   };
 
   const validateFields = () => {
-    const fieldsToValidate = ["code", "bankname", "branch", "ifsc"];
+    const fieldsToValidate = ["tno", "ownername", "contactno"];
     const validationErrors = {};
     fieldsToValidate.forEach((field) => {
       const fieldError = validateField(field, values[field]);
@@ -101,6 +112,7 @@ const TanckerMaster = () => {
         validationErrors[field] = fieldError[field];
       }
     });
+
     setErrors(validationErrors);
     return validationErrors;
   };
@@ -114,7 +126,7 @@ const TanckerMaster = () => {
     }
   };
 
-  const handleAddorUpdateDr = async (e) => {
+  const handleAddorUpdateTanker = async (e) => {
     e.preventDefault();
 
     const validationErrors = validateFields();
@@ -123,72 +135,72 @@ const TanckerMaster = () => {
       return;
     }
 
-    if (!values.code || !values.drname) {
+    if (!values.tno) {
       toast.info("Please add tanker details!");
       return;
     }
 
     if (isEditMode) {
-      // UPDATE Bank
-      const res = await dispatch(updateDoctorDetails({ values })).unwrap();
+      // UPDATE Tanker
+      const res = await dispatch(updateTankerDetails({ values })).unwrap();
       if (res.status === 200) {
-        toast.success("Doctor updated successfully!");
+        toast.success("Tanker details updated successfully!");
       } else {
         toast.error("Failed to update tanker!");
       }
     } else {
-      // ADD Bank
-      const res = await dispatch(addDoctor({ values })).unwrap();
+      // ADD Tanker
+      const res = await dispatch(createTanker({ values })).unwrap();
       if (res.status === 200) {
-        toast.success("New Doctor Added Successfully!");
+        toast.success("New Tanker Added Successfully!");
       } else {
         toast.error("Failed to add new tanker!");
       }
     }
 
     dispatch(fetchMaxCode());
-    dispatch(getDoctorList());
+    dispatch(getTankerList());
     setValues(initialValues);
     setIsEditMode(false);
   };
 
-  const handleEditDoctor = (tanker) => {
+  const handleEditTanker = (tanker) => {
     setValues({
-      id: tanker.id,
-      date: tDate,
-      code: tanker.drcode,
-      drname: tanker.drname,
-      short_name: tanker.short_name,
+      id: tanker?.id,
+      tno: tanker?.tno,
+      ownername: tanker?.ownername,
+      tankerno: tanker?.tankerno,
+      conatctno: tanker?.contactno,
+      rateltr: tanker?.rateltr,
     });
     setIsEditMode(true);
   };
 
-  //its to delete  invoice based on id
-  // const handleDeleteDoctor = async (id) => {
-  //   const result = await Swal.fire({
-  //     title: "Confirm Deletion?",
-  //     text: "Are you sure you want to delete bank?",
-  //     icon: "warning",
-  //     showCancelButton: true,
-  //     confirmButtonColor: "#3085d6",
-  //     cancelButtonColor: "#d33",
-  //     confirmButtonText: "Yes, delete it!",
-  //   });
+  const handleDeleteTanker = async (id) => {
+    const result = await Swal.fire({
+      title: "Confirm Deletion?",
+      text: "Are you sure you want to delete tanker details?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+    });
 
-  //   if (result.isConfirmed) {
-  //     try {
-  //       const res = await dispatch(deleteBank({ id })).unwrap();
-  //       if (res.status === 200) {
-  //         toast.success("Bank deleted successfully!");
-  //         dispatch(getDoctorList());
-  //       } else {
-  //         toast.error("Failed to delete bank!");
-  //       }
-  //     } catch (error) {
-  //       toast.error("Server failed to delete the bank!");
-  //     }
-  //   }
-  // };
+    if (result.isConfirmed) {
+      try {
+        const res = await dispatch(deleteTanker({ id })).unwrap();
+        if (res.status === 200) {
+          toast.success("Tanker details deleted successfully!");
+          dispatch(getTankerList());
+        } else {
+          toast.error("Failed to delete tanker details!");
+        }
+      } catch (error) {
+        toast.error("Server failed to delete the tanker details!");
+      }
+    }
+  };
 
   const handleReset = () => {
     setValues({
@@ -204,104 +216,132 @@ const TanckerMaster = () => {
 
   return (
     <div className="tanker-master-container w100 h1 d-flex-col sb p10">
-      <span className="heading p10">
-        {isEditMode ? "Edit Doctor" : "Add New Doctor"}
-      </span>
       <form
-        onSubmit={handleAddorUpdateDr}
-        className="tanker-master-form-container w100 h15 d-flex a-center sb"
+        onSubmit={handleAddorUpdateTanker}
+        className="tanker-master-form-container w100 h30 d-flex-col a-center sb bg-light-green br9 p10"
       >
-        <div className="tanker-info-details-code w100 h1 d-flex a-center sb">
-          <div className="tanker-details-code w10 d-flex-col sb">
-            <label htmlFor="code" className="label-text w100">
+        <span className="w100 heading">
+          {isEditMode ? "Edit Tanker" : "Add New Tanker"}
+        </span>
+        <div className="tanker-info-details-code w100 h30 d-flex a-center sb">
+          <div className="tanker-details-code w15 d-flex a-center sb">
+            <label htmlFor="tno" className="label-text w100">
               No<span className="req">*</span> :
             </label>
             <input
               type="text"
-              className={`data ${errors.code ? "input-error" : ""}`}
-              id="code"
-              name="code"
-              value={values.code}
-              ref={codeRef}
-              onKeyDown={(e) => handleKeyDown(e, nameRef)}
+              className={`data ${errors.tno ? "input-error" : ""}`}
+              id="tno"
+              name="tno"
+              value={values.tno}
+              ref={tnoRef}
+              readOnly
+              onKeyDown={(e) => handleKeyDown(e, onameRef)}
               onChange={handleInputs}
             />
           </div>
-          <div className="tanker-details-drname w20 d-flex-col sb">
-            <label htmlFor="drname" className="w100 label-text">
-              Tancker No.:
+          <div className="tanker-details-drname w50 d-flex a-center sa">
+            <label htmlFor="ownername" className="w35 label-text">
+              Owner/Driver Name:
             </label>
             <input
               type="text"
-              className={`data ${errors.drname ? "input-error" : ""}`}
-              id="drname"
-              name="drname"
-              value={values.drname}
-              ref={nameRef}
-              disabled={!values.code}
-              onKeyDown={(e) => handleKeyDown(e, snameRef)}
+              className={`data w60 ${errors.ownername ? "input-error" : ""}`}
+              id="ownername"
+              name="ownername"
+              value={values.ownername}
+              ref={onameRef}
+              disabled={!values.tno}
+              onKeyDown={(e) => handleKeyDown(e, contnoRef)}
               onChange={handleInputs}
             />
           </div>
-          <div className="tanker-details-drname w20 d-flex-col sb">
-            <label htmlFor="drname" className="w100 label-text">
-              Contact No.<span className="req">*</span> :
+          <div className="tanker-details-drname w30 d-flex a-center sb">
+            <label htmlFor="contactno" className="w50 label-text">
+              Contact No. :
             </label>
             <input
-              type="text"
-              className={`data ${errors.drname ? "input-error" : ""}`}
-              id="drname"
-              name="drname"
-              value={values.drname}
-              ref={nameRef}
-              disabled={!values.code}
-              onKeyDown={(e) => handleKeyDown(e, snameRef)}
+              type="number"
+              className={`data w50 ${errors.contactno ? "input-error" : ""}`}
+              id="contactno"
+              name="contactno"
+              value={values.contactno}
+              ref={contnoRef}
+              disabled={!values.tno}
+              placeholder="99XXXXXXXXX"
+              onKeyDown={(e) => handleKeyDown(e, tanknoRef)}
               onChange={handleInputs}
             />
           </div>
-          <div className="tanker-details-drname w15 d-flex-col sb">
-            <label htmlFor="rltr" className="label-text w">
-              Rate/Ltr :
-            </label>
-            <input
-              type="text"
-              className={`data ${errors.short_name ? "input-error" : ""}`}
-              id="rltr"
-              name="short_name"
-              value={values.short_name}
-              ref={snameRef}
-              disabled={!values.code}
-              onKeyDown={(e) => handleKeyDown(e, addbuttonRef)}
-              onChange={handleInputs}
-            />
+        </div>
+        <div className="tanker-info-details-code w100 h30 d-flex a-center sb">
+          <div className="tanker-details-code w50 d-flex a-center sb">
+            <div className="tanker-details-code w50 d-flex a-center sb">
+              <label htmlFor="tankerno" className="label-text w100">
+                Tanker No. :
+              </label>
+              <input
+                type="text"
+                className={`data ${errors.tankerno ? "input-error" : ""}`}
+                id="tankerno"
+                name="tankerno"
+                value={values.tankerno}
+                ref={tanknoRef}
+                placeholder="MH00MH0000"
+                disabled={!values.tno}
+                onKeyDown={(e) => handleKeyDown(e, rltrRef)}
+                onChange={handleInputs}
+              />
+            </div>
+
+            <div className="tanker-details-drname w35 d-flex a-center sb">
+              <label htmlFor="rltr" className="label-text w50">
+                Rate/Ltr :
+              </label>
+              <input
+                type="text"
+                className={`data w50 ${errors.rateltr ? "input-error" : ""}`}
+                id="rltr"
+                name="rateltr"
+                step="any"
+                value={values.rateltr}
+                ref={rltrRef}
+                disabled={!values.tno}
+                placeholder="0.00"
+                onKeyDown={(e) => handleKeyDown(e, submitbtnRef)}
+                onChange={handleInputs}
+              />
+            </div>
           </div>
           <div className="form-btn-container w20 h1 d-flex a-center sb">
             <button type="reset" className="w-btn mx10" onClick={handleReset}>
               reset
             </button>
             {isEditMode ? (
-              <button type="submit" className="w-btn" ref={addbuttonRef}>
+              <button type="submit" className="w-btn" ref={submitbtnRef}>
                 {updateStatus === "loading" ? "Updating..." : "Update"}
               </button>
             ) : (
-              <button type="submit" className="w-btn" ref={addbuttonRef}>
-                {createStatus === "loading" ? "Adding..." : "Add"}
+              <button type="submit" className="w-btn" ref={submitbtnRef}>
+                {createStatus === "loading" ? "Creating..." : "Create"}
               </button>
             )}
           </div>
         </div>
       </form>
-      <div className="tanker-details-container w100 h80 mh80 hidescrollbar d-flex-col bg">
+      <div className="tanker-details-container w100 h70 mh70 hidescrollbar d-flex-col bg">
         <div className="tanker-details-headings w100 p10 d-flex a-center t-center sticky-top bg7 sa">
-          <span className="f-label-text w10">No.</span>
-          <span className="f-label-text w40">Doctor Name</span>
-          <span className="f-label-text w20">Short Name</span>
+          <span className="f-label-text w5">No.</span>
+          <span className="f-label-text w30">Owener Name</span>
+          <span className="f-label-text w15">Conatct No.</span>
+          <span className="f-label-text w15">Tanker No.</span>
+          <span className="f-label-text w10">Rate/Ltr</span>
           <span className="f-label-text w15">Action</span>
         </div>
         {listStatus === "loading" ? (
           <Spinner />
-        ) : doctorList.length > 0 ? (
-          doctorList.map((tanker, index) => (
+        ) : tankerList.length > 0 ? (
+          tankerList.map((tanker, index) => (
             <div
               key={index}
               className="tanker-details-headings w100 p10 d-flex a-center sa"
@@ -309,18 +349,26 @@ const TanckerMaster = () => {
                 backgroundColor: index % 2 === 0 ? "#faefe3" : "#fff",
               }}
             >
-              <span className="label-text w10">{tanker.drcode}</span>
-              <span className="label-text w40 t-start">{tanker.drname}</span>
-              <span className="label-text w20">{tanker.short_name}</span>
+              <span className="label-text w5">{tanker?.tno}</span>
+              <span className="label-text w30 t-start">
+                {tanker?.ownername}
+              </span>
+              <span className="label-text w15">{tanker?.contactno}</span>
+              <span className="label-text w15 t-center">
+                {tanker?.tankerno}
+              </span>
+              <span className="label-text w10 t-end">{tanker?.rateltr}</span>
               <span className="label-text w15 d-flex sa t-center">
                 <FaEdit
                   type="button"
-                  onClick={() => handleEditDoctor(tanker)}
+                  className="color-icon"
+                  onClick={() => handleEditTanker(tanker)}
                 />
-                {/* <MdDeleteForever
+                <MdDeleteForever
                   type="button"
-                  onClick={() => handleDeleteDoctor(bank.id)}
-                /> */}
+                  className="req"
+                  onClick={() => handleDeleteTanker(tanker?.id)}
+                />
               </span>
             </div>
           ))
