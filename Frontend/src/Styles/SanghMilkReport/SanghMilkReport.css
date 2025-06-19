@@ -1,0 +1,36 @@
+@media screen and (max-width: 426px) {
+  .sangh-milk-report-dates .fromdate-sangh-milk input {
+    width: 133px;
+  }
+  .sangh-milk-report-dates .todate-sangh-milk input{
+    width: 130px;
+  }
+  .sangh-milk-report-dates-button .sangh-milk-report-button{
+    width: 100%;
+  }
+}
+.milksangh-report-contianer {
+    width: 100%;
+    height: 70vh;
+    display: flex;
+    flex-direction: column;
+    overflow: auto; /* Enables both X and Y scrollbars */
+  }
+  
+  .milk-sangh-report-table-heading,
+  .milk-sangh-report-table-data {
+    display: flex;
+    justify-content: space-around;
+    min-width: 1000px; /* Ensure horizontal scrollbar if content is wide */
+  }
+  
+  .label-textt {
+    display: inline-block;
+    padding: 8px;
+    border: 1px solid #ccc;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  

@@ -57,7 +57,7 @@ const Sanghsales = ({ clsebtn, isModalOpen, editData }) => {
   };
 
   const [values, setValues] = useState(initialValues);
-  // console.log(values);
+  console.log(values);
   //------------------------------------------------------------------------------------------------>
   //------------------------------------------------------------------------------------------------>
 
@@ -435,7 +435,7 @@ const Sanghsales = ({ clsebtn, isModalOpen, editData }) => {
               <option value="">-- संघ निवडा --</option>
               {sanghaList.length > 0 ? (
                 sanghaList.map((sangha, i) => (
-                  <option key={i} value={sangha.id}>
+                  <option key={i} value={sangha.code}>
                     {sangha.sangha_name}
                   </option>
                 ))
