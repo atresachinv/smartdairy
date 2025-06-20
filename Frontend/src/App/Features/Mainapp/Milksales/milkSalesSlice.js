@@ -103,9 +103,11 @@ export const getretailCustomer = createAsyncThunk(
 // fetch dairy collection  -------------------->
 export const getDairyCollection = createAsyncThunk(
   "milkSales/getDairyCollection",
-  async (_, { rejectWithValue }) => {
+  async ({ fromDate, toDate }, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.get("/fetch/dairy/master/coll");
+      const response = await axiosInstance.get("/fetch/dairy/master/coll", {
+        params: { fromDate, toDate },
+      });
       return response.data.dairyMilk;
     } catch (error) {
       const errorMessage = error.response
@@ -179,7 +181,7 @@ const milkSalesSlice = createSlice({
       .addCase(getretailCustomer.rejected, (state, action) => {
         state.custstatus = "failed";
         state.error = action.payload;
-      })// get dairy collection ---------------------------------------------------------------------------------------->
+      }) // get dairy collection ---------------------------------------------------------------------------------------->
       .addCase(getDairyCollection.pending, (state) => {
         state.dairyMilkstatus = "loading";
         state.error = null;

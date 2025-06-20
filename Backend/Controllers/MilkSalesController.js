@@ -407,6 +407,7 @@ exports.deleteCenterMilkColl = async (req, res) => {
 //-------------------------------------------------------------------------------->
 // Get dairy daily milk collection Report of master ------------------------------>
 //-------------------------------------------------------------------------------->
+
 exports.getDairyMilkReport = async (req, res) => {
   const { fromDate, toDate } = req.query;
   const { dairy_id, center_id } = req.user;
@@ -435,11 +436,11 @@ exports.getDairyMilkReport = async (req, res) => {
         SUM(CASE WHEN ME = 0 THEN Litres ELSE 0 END) AS mrgTotalLitres,
         ROUND(SUM(CASE WHEN ME = 0 THEN fat * Litres ELSE 0 END) / NULLIF(SUM(CASE WHEN ME = 0 THEN Litres ELSE 0 END), 0), 2) AS mrgAvgFat,
         ROUND(SUM(CASE WHEN ME = 0 THEN snf * Litres ELSE 0 END) / NULLIF(SUM(CASE WHEN ME = 0 THEN Litres ELSE 0 END), 0), 2) AS mrgAvgSnf,
-        SUM(CASE WHEN ME = 0 THEN Amt ELSE 0 END) AS mrgTotalAm
+        SUM(CASE WHEN ME = 0 THEN Amt ELSE 0 END) AS mrgTotalAmt,
         SUM(CASE WHEN ME = 1 THEN Litres ELSE 0 END) AS eveTotalLitres,
         ROUND(SUM(CASE WHEN ME = 1 THEN fat * Litres ELSE 0 END) / NULLIF(SUM(CASE WHEN ME = 1 THEN Litres ELSE 0 END), 0), 2) AS eveAvgFat,
         ROUND(SUM(CASE WHEN ME = 1 THEN snf * Litres ELSE 0 END) / NULLIF(SUM(CASE WHEN ME = 1 THEN Litres ELSE 0 END), 0), 2) AS eveAvgSnf,
-        SUM(CASE WHEN ME = 1 THEN Amt ELSE 0 END) AS eveTotalA
+        SUM(CASE WHEN ME = 1 THEN Amt ELSE 0 END) AS eveTotalAmt
       FROM 
       ${dairy_table}
       WHERE center_id = ? AND ReceiptDate BETWEEN ? AND ?

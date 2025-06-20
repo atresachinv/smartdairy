@@ -127,6 +127,13 @@
   .milk-col-form .user-details {
     flex-direction: column;
   }
+  .milk-col-form .form-btns {
+    width: 100%;
+    justify-content: space-between;
+  }
+  .milk-collection-outer-main-container .milk-col-form .form-btns button {
+    width: 45%;
+  }
   .user-details .form-div {
     width: 100%;
     flex-direction: row;
@@ -170,7 +177,7 @@
     width: 100%;
   }
   .milk-form-list-container .milk-coll-list-div {
-    margin: 10px 0 0 0;
+    margin-top: 10px;
   }
 
   /* milk collection list */
@@ -269,12 +276,14 @@
 
 /* complete mobile milk collection form */
 @media screen and (max-width: 426px) {
-  .apphome-nav-views .complete-mobile-milk-container {
-    min-height: max-content;
+  .complete-mobile-milk-container {
+    min-height: auto;
     width: 100%;
+    margin-top: 180px;
     align-items: flex-start;
     justify-content: flex-start;
   }
+
   .apphome-nav-views .complete-mobile-milk-coll {
     min-height: fit-content;
     width: 100%;
@@ -293,6 +302,13 @@
   .complete-mobile-milk-coll .user-details .form-div {
     width: 100%;
     flex-direction: row;
+  }
+  .complete-mobile-milk-coll .form-btns {
+    width: 100%;
+    justify-content: space-between;
+  }
+  .complete-mobile-milk-coll .form-btns button {
+    width: 30%;
   }
 }
 
