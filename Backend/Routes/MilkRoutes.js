@@ -28,6 +28,7 @@ const {
   updateFatDifference,
   updateSnfGeneral,
   updateSnfDifference,
+  updateKGLiters,
 } = require("../Controllers/MilkController");
 const verifyToken = require("../Middlewares/VerifyToken");
 const { applyRateChart } = require("../Controllers/RatechartController");
@@ -82,6 +83,7 @@ router.route("/update/snf").put(verifyToken, updateSnfGeneral, applyRateChart);
 router
   .route("/update/snf-diff")
   .put(verifyToken, updateSnfDifference, applyRateChart);
-  
+router.route("/convert/kg-ltr/ltr-kg").put(verifyToken, updateKGLiters);
+
 // Customer Routes
 module.exports = router;

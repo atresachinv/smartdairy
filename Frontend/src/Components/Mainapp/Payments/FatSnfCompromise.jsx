@@ -1,6 +1,13 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "../../../Styles/Mainapp/Payments//FatSnfCompromise.css";
+import { useDispatch, useSelector } from "react-redux";
+import { updateGeneralFat } from "../../../App/Features/Mainapp/Milk/FatSnfSlice";
+import { getMaxCustNo } from "../../../App/Features/Mainapp/Masters/custMasterSlice";
 const FatSnfCompromise = () => {
+  const dispatch = useDispatch();
+  const tDate = useSelector((state) => state.date?.toDate);
+  const custno = useSelector((state) => state.customer?.maxCustNo);
+
   const initialValues = {
     fromDate: "",
     toDate: "",
@@ -26,8 +33,34 @@ const FatSnfCompromise = () => {
     }));
   };
 
+  useEffect(() => {
+    if (!custno) {
+      dispatch(getMaxCustNo());
+    }
+  }, []);
+
+  useEffect(() => {
+    setValues((prevFormData) => ({
+      ...prevFormData,
+      custFrom: 1,
+      custTo: `${Math.abs(custno - 1)}`,
+      fromDate: tDate,
+      toDate: tDate,
+    }));
+  }, [custno, tDate]);
+
   const handleFatUpdates = () => {
-    console.log("values", values);
+    // console.log("values", values);
+    if (values.fatOption === "0") {
+      console.log("values 0", values);
+    } else if (values.fatOption === "1") {
+      console.log("values 1", values);
+    } else {
+      console.log("values 2", values);
+    }
+    // dispatch(
+    //   updateGeneralFat({ fromDate, toDate, custFrom, custTo, fat: fatAmt })
+    // );
   };
   return (
     <div className="fatsnf-container w100 h1 d-flex-col sb p10">
@@ -43,6 +76,7 @@ const FatSnfCompromise = () => {
               className="data w60"
               type="date"
               name="fromDate"
+              max={values.toDate}
               value={values.fromDate}
               onChange={handleInputs}
             />
@@ -56,6 +90,7 @@ const FatSnfCompromise = () => {
               className="data w60"
               type="date"
               name="toDate"
+              max={tDate}
               value={values.toDate}
               onChange={handleInputs}
             />
@@ -138,41 +173,44 @@ const FatSnfCompromise = () => {
           <label className="f-label-text w10">FAT :</label>
           <div className="radio-button1-div w60 d-flex">
             <div className="jounral-radio-button w25 d-flex px10 a-center sb">
-              <input id="fgen" className="w15 h1" type="radio" />
-              <label
-                htmlFor="fgen"
-                className="f-label-text w80"
+              <input
+                id="fgen"
+                className="w15 h1"
+                type="radio"
                 name="fatOption"
                 value={0}
                 checked={values.fatOption === 0}
                 onChange={handleInputs}
-              >
+              />
+              <label htmlFor="fgen" className="f-label-text w80">
                 जरनल
               </label>
             </div>
             <div className="Back-day-radio-button w40 d-flex px10 a-center sb">
-              <input id="flast" className="w15 h80" type="radio" />
-              <label
-                htmlFor="flast"
-                className="f-label-text w80"
+              <input
+                id="flast"
+                className="w15 h80"
+                type="radio"
                 name="fatOption"
                 value={1}
                 checked={values.fatOption === 1}
                 onChange={handleInputs}
-              >
+              />
+              <label htmlFor="flast" className="f-label-text w80">
                 मागील दिवसाची FAT
               </label>
             </div>
             <div className="differance-radio-button w25 d-flex px10 a-center sb">
-              <input id="fdiff" className="w15 h1" type="radio" />
-              <label
-                htmlFor="fdiff"
-                className="f-label-text w80"
+              <input
+                id="fdiff"
+                className="w15 h1"
+                type="radio"
                 name="fatOption"
                 value={2}
                 checked={values.fatOption === 2}
                 onChange={handleInputs}
-              >
+              />
+              <label htmlFor="fdiff" className="f-label-text w80">
                 फरक{" "}
               </label>
             </div>
@@ -186,38 +224,44 @@ const FatSnfCompromise = () => {
           <label className="f-label-text w10">SNF :</label>
           <div className="radio-button1-div w60 d-flex ">
             <div className="jounral-radio-button w25 d-flex px10 a-center sb">
-              <input id="sgen" className="w15 h1" type="radio" />
-              <label
-                htmlFor="sgen"
-                className="f-label-text w80"
+              <input
+                id="sgen"
+                className="w15 h1"
+                type="radio"
                 name="snfOption"
-                checked={values.snfOption === "0"}
+                value={0}
+                checked={values.snfOption === 0}
                 onChange={handleInputs}
-              >
+              />
+              <label htmlFor="sgen" className="f-label-text w80">
                 जरनल
               </label>
             </div>
             <div className="Back-day-radio-button w40 d-flex px10 a-center sb">
-              <input id="slast" className="w15 h80" type="radio" />
-              <label
-                htmlFor="slast"
-                className="f-label-text w80"
+              <input
+                id="slast"
+                className="w15 h80"
+                type="radio"
                 name="snfOption"
-                checked={values.snfOption === "1"}
+                value={1}
+                checked={values.snfOption === 1}
                 onChange={handleInputs}
-              >
+              />
+              <label htmlFor="slast" className="f-label-text w80">
                 मागील दिवसाची SNF
               </label>
             </div>
             <div className="differance-radio-button w25 d-flex px10 a-center sb">
-              <input id="sdiff" className="w15 h1" type="radio" />
-              <label
-                htmlFor="sdiff"
-                className="f-label-text w80"
+              <input
+                id="sdiff"
+                className="w15 h1"
+                type="radio"
                 name="snfOption"
-                checked={values.snfOption === "2"}
+                value={2}
+                checked={values.snfOption === 2}
                 onChange={handleInputs}
-              >
+              />
+              <label htmlFor="sdiff" className="f-label-text w80">
                 फरक
               </label>
             </div>
@@ -232,38 +276,44 @@ const FatSnfCompromise = () => {
           <label className="f-label-text w10">लिटर :</label>
           <div className="radio-button1-div w60 d-flex">
             <div className="jounral-radio-button w25 d-flex px10 a-center sb">
-              <input id="lperltr" className="w15 h1" type="radio" />
-              <label
-                htmlFor="lperltr"
-                className="f-label-text w80"
+              <input
+                id="lperltr"
+                className="w15 h1"
+                type="radio"
                 name="literOption"
-                checked={values.literOption}
+                value={0}
+                checked={values.literOption === 0}
                 onChange={handleInputs}
-              >
+              />
+              <label htmlFor="lperltr" className="f-label-text w80">
                 प्रती लिटर
               </label>
             </div>
             <div className="Back-day-radio-button w40 d-flex px10 a-center sb">
-              <input id="lsame" className="w15 h80" type="radio" />
-              <label
-                htmlFor="lsame"
-                className="f-label-text w80"
+              <input
+                id="lsame"
+                className="w15 h80"
+                type="radio"
                 name="literOption"
-                checked={values.literOption}
+                value={1}
+                checked={values.literOption === 1}
                 onChange={handleInputs}
-              >
+              />
+              <label htmlFor="lsame" className="f-label-text w80">
                 एकसारखे
               </label>
             </div>
             <div className="differance-radio-button w25 d-flex px10 a-center sb">
-              <input id="lrate" className="w15 h1" type="radio" />
-              <label
-                htmlFor="lrate"
-                className="f-label-text w80"
+              <input
+                id="lrate"
+                className="w15 h1"
+                type="radio"
                 name="literOption"
-                checked={values.literOption}
+                value={2}
+                checked={values.literOption === 2}
                 onChange={handleInputs}
-              >
+              />
+              <label htmlFor="lrate" className="f-label-text w80">
                 दर
               </label>
             </div>
@@ -277,26 +327,30 @@ const FatSnfCompromise = () => {
           <label className="f-label-text w10">बदला :</label>
           <div className="radio-button1-div w60 d-flex ">
             <div className="jounral-radio-button w25 d-flex px10 a-center sb">
-              <input id="ckg" className="w15 h1" type="radio" />
-              <label
-                htmlFor="ckg"
-                className="f-label-text w80"
+              <input
+                id="ckg"
+                className="w15 h1"
+                type="radio"
                 name="milkIn"
-                checked={values.milkIn === "kg"}
+                value={0}
+                checked={values.milkIn === 0}
                 onChange={handleInputs}
-              >
+              />
+              <label htmlFor="ckg" className="f-label-text w80">
                 किलो - लिटर
               </label>
             </div>
             <div className="Back-day-radio-button w40 d-flex px10 a-center sb">
-              <input id="cliters" className="w15 h80" type="radio" />
-              <label
-                htmlFor="cliters"
-                className="f-label-text w80"
+              <input
+                id="cliters"
+                className="w15 h80"
+                type="radio"
                 name="milkIn"
-                checked={values.milkIn === "ltr"}
+                value={1}
+                checked={values.milkIn === 1}
                 onChange={handleInputs}
-              >
+              />
+              <label htmlFor="cliters" className="f-label-text w80">
                 लिटर - किलो
               </label>
             </div>

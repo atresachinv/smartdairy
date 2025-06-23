@@ -12,12 +12,14 @@ const initialState = {
   error: null,
 };
 
-// create new doctor
+// updating general fat ------------------------------------------>
 export const updateGeneralFat = createAsyncThunk(
   "fatsnf/updateGeneralFat",
-  async (_, { rejectWithValue }) => {
+  async ({ fromDate, toDate, custFrom, custTo, fat }, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.get("/doctor/maxcode");
+      const response = await axiosInstance.put("/update/fat", {
+        params: { fromDate, toDate, custFrom, custTo, fat },
+      });
       return response.data.maxDrCode;
     } catch (error) {
       return rejectWithValue(error.response?.data || error.message);
@@ -25,12 +27,17 @@ export const updateGeneralFat = createAsyncThunk(
   }
 );
 
-// create new doctor
+// updating difference fat ---------------------------------------->
 export const updateDiffFat = createAsyncThunk(
   "fatsnf/updateDiffFat",
-  async ({ values }, { rejectWithValue }) => {
+  async (
+    { fromDate, toDate, custFrom, custTo, fatDiff },
+    { rejectWithValue }
+  ) => {
     try {
-      const response = await axiosInstance.post("/doctor/create", { values });
+      const response = await axiosInstance.post("/update/fat-diff", {
+        params: { fromDate, toDate, custFrom, custTo, fatDiff },
+      });
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || error.message);
@@ -38,12 +45,20 @@ export const updateDiffFat = createAsyncThunk(
   }
 );
 
-// update doctor details
+// updating general snf ------------------------------------------->
 export const updateGeneralSnf = createAsyncThunk(
   "fatsnf/updateGeneralSnf",
-  async ({ values }, { rejectWithValue }) => {
+  async ({ fromDate, toDate, custFrom, custTo, snf }, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.put("/doctor/update", { values });
+      const response = await axiosInstance.put("/update/snf", {
+        params: {
+          fromDate,
+          toDate,
+          custFrom,
+          custTo,
+          snf,
+        },
+      });
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || error.message);
@@ -51,12 +66,17 @@ export const updateGeneralSnf = createAsyncThunk(
   }
 );
 
-// Fetch doctor list
+// updating difference snf ---------------------------------------->
 export const updateDiffSnf = createAsyncThunk(
   "fatsnf/updateDiffSnf",
-  async (_, { rejectWithValue }) => {
+  async (
+    { fromDate, toDate, custFrom, custTo, snfDiff },
+    { rejectWithValue }
+  ) => {
     try {
-      const response = await axiosInstance.get("/doctor/list");
+      const response = await axiosInstance.get("/update/snf-diff", {
+        param: { fromDate, toDate, custFrom, custTo, snfDiff },
+      });
       return response.data.drList;
     } catch (error) {
       return rejectWithValue(error.response?.data || error.message);
@@ -64,27 +84,27 @@ export const updateDiffSnf = createAsyncThunk(
   }
 );
 
-// Delete bank
-// export const deleteDr = createAsyncThunk(
-//   "doctor/deleteDr",
-//   async ({ id }, { rejectWithValue }) => {
-//     try {
-//       const response = await axiosInstance.delete("/doctor/delete", {
-//         params: { id },
-//       });
-//       return response.data;
-//     } catch (error) {
-//       return rejectWithValue(error.response?.data || error.message);
-//     }
-//   }
-// );
+// convert kg to liters of liters to kg -------------------------->
+export const convertKgLiters = createAsyncThunk(
+  "fatsnf/convertKgLiters",
+  async ({ fromDate, toDate, milkIn, amount }, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.put("/convert/kg-ltr/ltr-kg", {
+        params: { fromDate, toDate, milkIn, amount },
+      });
+      return response.data.drList;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || error.message);
+    }
+  }
+);
 
 const FatSnfSlice = createSlice({
   name: "fatsnf",
   initialState,
   reducers: {},
   extraReducers: (builder) => {
-    builder // Max doctor code ------------------------------------------->
+    builder // updating general fat ------------------------------------------->
       .addCase(updateGeneralFat.pending, (state) => {
         state.status = "loading";
       })
@@ -95,7 +115,7 @@ const FatSnfSlice = createSlice({
       .addCase(updateGeneralFat.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.payload;
-      }) //  create new doctor  ----------------------------------------->
+      }) //  updating diff fat  ----------------------------------------->
       .addCase(updateDiffFat.pending, (state) => {
         state.crestatus = "loading";
       })
@@ -105,7 +125,7 @@ const FatSnfSlice = createSlice({
       .addCase(updateDiffFat.rejected, (state, action) => {
         state.crestatus = "failed";
         state.error = action.payload;
-      }) // update doctor details ----------------------------------------->
+      }) // updating general snf ----------------------------------------->
       .addCase(updateGeneralSnf.pending, (state) => {
         state.upstatus = "loading";
       })
@@ -115,7 +135,7 @@ const FatSnfSlice = createSlice({
       .addCase(updateGeneralSnf.rejected, (state, action) => {
         state.upstatus = "failed";
         state.error = action.payload;
-      }) // get doctor List-------------------------------------------------->
+      }) // updating snf diff -------------------------------------------------->
       .addCase(updateDiffSnf.pending, (state) => {
         state.liststatus = "loading";
       })
@@ -126,15 +146,15 @@ const FatSnfSlice = createSlice({
       .addCase(updateDiffSnf.rejected, (state, action) => {
         state.liststatus = "failed";
         state.error = action.payload;
-      }) // get doctor List-------------------------------------------------->
-      .addCase(updateDiffSnf.pending, (state) => {
+      }) // convert kg to liters or liters to kg -------------------------------------------------->
+      .addCase(convertKgLiters.pending, (state) => {
         state.liststatus = "loading";
       })
-      .addCase(updateDiffSnf.fulfilled, (state, action) => {
+      .addCase(convertKgLiters.fulfilled, (state, action) => {
         state.liststatus = "succeeded";
         state.drList = action.payload;
       })
-      .addCase(updateDiffSnf.rejected, (state, action) => {
+      .addCase(convertKgLiters.rejected, (state, action) => {
         state.liststatus = "failed";
         state.error = action.payload;
       });

@@ -11,15 +11,16 @@ import { useTranslation } from "react-i18next";
 import "../../../../Styles/Mainapp/Apphome/Appnavview/Milkcollection.css";
 import "../../../../Styles/Mainapp/MilkSales/SanghMilkColl.css";
 import { getCenterMSales } from "../../../../App/Features/Mainapp/Milk/DairyMilkSalesSlice";
+import { getTankerList } from "../../../../App/Features/Mainapp/Masters/tankerMasterSlice";
 
 const Sanghsales = ({ clsebtn, isModalOpen, editData }) => {
   const { t } = useTranslation(["milkcollection", "common", "master"]);
   const dispatch = useDispatch();
-  const tDate = useSelector((state) => state.date.toDate);
+  const tDate = useSelector((state) => state.date?.toDate);
   const sanghaList = useSelector((state) => state.sangha?.sanghaList || []);
   const tankerList = useSelector((state) => state.tanker?.tankersList || []);
-  const status = useSelector((state) => state.sangha.addsmstatus);
-  const updateStatus = useSelector((state) => state.sangha.updatesmstatus);
+  const status = useSelector((state) => state.sangha?.addsmstatus);
+  const updateStatus = useSelector((state) => state.sangha?.updatesmstatus);
   const sanghaRef = useRef(null);
   const timeRef = useRef(null);
   const fdateRef = useRef(null);
