@@ -9,6 +9,8 @@ import {
   fetchsanghaMilkDetails,
 } from "../../../../App/Features/Mainapp/Sangha/sanghaSlice";
 import { getAllMilkCollReport } from "../../../../App/Features/Mainapp/Milk/milkCollectionSlice";
+import { getDairyCollection } from "../../../../App/Features/Mainapp/Milksales/milkSalesSlice";
+import autoTable from "jspdf-autotable";
 const SanghMilkReport = () => {
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
@@ -18,6 +20,8 @@ const SanghMilkReport = () => {
   const data = useSelector((state) => state.milkCollection.allMilkColl);
   const tDate = useSelector((state) => state.date.toDate);
   const sanghaSales = useSelector((state) => state.sangha.sanghaSales); // sangha Sales
+
+  const dairymilk = useSelector((state) => state.milksales.dairyMilk); // sangha Sales
   const sanghaLedger = useSelector((state) => state.sangha.sanghaLedger); // sangha Ledger
   const dairyname = useSelector(
     (state) =>
@@ -25,19 +29,23 @@ const SanghMilkReport = () => {
   );
   const CityName = useSelector((state) => state.dairy.dairyData.city);
 
+  const [isMasterwise, setIsMasterwise] = useState(false);
+  const [isParticularDay, setIsParticularDay] = useState(false);
+
   const handleShowbtn = async (e) => {
     e.preventDefault();
     setShowTable(false);
     dispatch(fetchsanghaMilkColl({ fromDate, toDate }));
     dispatch(fetchsanghaMilkDetails({ fromDate, toDate }));
     dispatch(getAllMilkCollReport({ fromDate, toDate }));
+    dispatch(getDairyCollection({ fromDate, toDate }));
     dispatch(fetchsanghaLedger({ fromDate, toDate }));
     setShowTable(true);
   };
   console.log("sanghaMilkColl", sanghaMilkColl);
-  console.log("sanghaSales", sanghaSales);
-  console.log("sanghaLedger", sanghaLedger);
-  console.log("milkcilectiondata", data);
+  // console.log("sanghaSales", sanghaSales);
+  console.log("Dairymilk", dairymilk);
+  // console.log("milkcilectiondata", data);
   // Calculate values
   const totalDairyMilk = data?.reduce(
     (sum, item) => sum + Number(item.Litres || 0),
@@ -59,7 +67,7 @@ const SanghMilkReport = () => {
   const vaadh = vaadhRaw < 0 ? "0.00" : vaadhRaw.toFixed(2);
 
   //....PDF
-  const generateSanghMilkReportPDF = ({}) => {
+  const generateSanghMilkReportPDF = () => {
     const doc = new jsPDF();
 
     // Heading
@@ -113,7 +121,7 @@ const SanghMilkReport = () => {
     doc.save(`Sangh_Milk_Report_${fromDate}_to_${toDate}.pdf`);
   };
 
-  const printSanghMilkReport = ({}) => {
+  const printSanghMilkReport = () => {
     const printWindow = window.open("", "_blank");
     if (!printWindow) return;
 
@@ -150,7 +158,7 @@ const SanghMilkReport = () => {
           <h2>${dairyname || ""}, ${CityName || ""}</h2>
           <h4>दूध संकलन विवरण अहवाल</h4>
           <h4>दिनांक: ${fromDate} ते ${toDate}</h4>
-
+  
           <table>
             <thead>
               <tr>
@@ -177,6 +185,7 @@ const SanghMilkReport = () => {
               </tr>
             </tbody>
           </table>
+  
           <script>
             window.onload = function () {
               window.print();
@@ -190,6 +199,231 @@ const SanghMilkReport = () => {
     printWindow.document.open();
     printWindow.document.write(htmlContent);
     printWindow.document.close();
+  };
+  
+
+  const printDairyMilkData = (dairymilk, sanghaMilkColl) => {
+    const format = (val, digits = 2) =>
+      val === null || val === undefined || isNaN(val)
+        ? "-"
+        : Number(val).toFixed(digits);
+
+    const formatDate = (date) => new Date(date).toISOString().split("T")[0];
+    const formatDisplayDate = (date) =>
+      new Date(date).toLocaleDateString("en-GB");
+
+    const getSanghData = (date, shift) => {
+      const targetDate = formatDate(date);
+      return sanghaMilkColl.find(
+        (s) =>
+          formatDate(s.colldate) === targetDate &&
+          Number(s.shift) === Number(shift)
+      );
+    };
+
+    let totalDairyLtr = 0;
+    let totalDairyAmt = 0;
+    let totalSanghLtr = 0;
+    let totalVadh = 0;
+    let totalGhat = 0;
+
+    const printWindow = window.open("", "_blank");
+
+    let content = `
+      <html>
+        <head>
+          <title>Dairy & Sangh Milk Report</title>
+          <style>
+            body { font-family: Arial; padding: 20px; }
+            h2, h3, h4 { text-align: center; margin: 4px 0; }
+            table { width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 15px; }
+            th, td { border: 1px solid #000; padding: 6px; text-align: center; vertical-align: middle; }
+            th { background-color: #f0f0f0; }
+            tfoot tr { font-weight: bold; background: #f9f9f9; }
+          </style>
+        </head>
+        <body>
+          <h2>${dairyname || ""}</h2>
+          <h3>${CityName || ""}</h3>
+          <h4>Sangh Milk Report (${formatDisplayDate(
+            fromDate
+          )} to ${formatDisplayDate(toDate)})</h4>
+  
+          <table>
+            <thead>
+              <tr>
+                <th>तारीख </th>
+                <th>FAT</th>
+                <th>SNF</th>
+                <th>डेअरी लिटर/रक्कम</th>
+                <th>संघ लिटर</th>
+                <th>संघ Fat</th>
+                <th>संघ SNF</th>
+                <th>नाश लिटर</th>
+                <th>किरकोळ विक्री</th>
+                <th>वाढ</th>
+                <th>घट</th>
+              </tr>
+            </thead>
+            <tbody>
+    `;
+
+    dairymilk.forEach((entry) => {
+      const {
+        ReceiptDate,
+        mrgTotalLitres = 0,
+        mrgAvgFat = 0,
+        mrgAvgSnf = 0,
+        mrgTotalAmt = 0,
+        eveTotalLitres = 0,
+        eveAvgFat = 0,
+        eveAvgSnf = 0,
+        eveTotalAmt = 0,
+      } = entry;
+
+      const dateStr = formatDisplayDate(ReceiptDate);
+
+      [
+        {
+          shiftName: "सकाळ ",
+          shift: 0,
+          litres: mrgTotalLitres,
+          fat: mrgAvgFat,
+          snf: mrgAvgSnf,
+          amt: mrgTotalAmt,
+        },
+        {
+          shiftName: "सायंकाळ",
+          shift: 1,
+          litres: eveTotalLitres,
+          fat: eveAvgFat,
+          snf: eveAvgSnf,
+          amt: eveTotalAmt,
+        },
+      ].forEach(({ shiftName, shift, litres, fat, snf, amt }) => {
+        const sangh = getSanghData(ReceiptDate, shift);
+        const sanghLtr = sangh?.liter || 0;
+        const sanghFat = sangh?.fat || 0;
+        const sanghSnf = sangh?.snf || 0;
+        const nashLtr = sangh?.nash_ltr || 0;
+        const kirkolSale = sangh?.kirkol_sale || 0;
+
+        const vadh = sanghLtr > litres ? sanghLtr - litres : 0;
+        const ghat = litres > sanghLtr ? litres - sanghLtr : 0;
+
+        totalDairyLtr += litres;
+        totalDairyAmt += amt;
+        totalSanghLtr += sanghLtr;
+        totalVadh += vadh;
+        totalGhat += ghat;
+
+        content += `
+          <tr>
+            <td>
+              <div style="display: flex; flex-direction: column;">
+                <div>${dateStr}</div>
+                <div style="font-size: 11px; font-weight: normal;">${shiftName}</div>
+              </div>
+            </td>
+            <td>${format(fat, 1)}</td>
+            <td>${format(snf, 1)}</td>
+            <td>
+              <div style="display: flex; flex-direction: column;">
+                <div>${format(litres, 0)}</div>
+                <div style="border-top: 1px solid #000; margin: 2px 0;"></div>
+                <div>${format(amt, 0)}</div>
+              </div>
+            </td>
+            <td>${format(sanghLtr)}</td>
+            <td>${format(sanghFat, 1)}</td>
+            <td>${format(sanghSnf, 1)}</td>
+            <td>${format(nashLtr)}</td>
+            <td>${format(kirkolSale)}</td>
+            <td>${format(vadh)}</td>
+            <td>${format(ghat)}</td>
+          </tr>
+        `;
+      });
+    });
+
+    content += `
+            </tbody>
+            <tfoot>
+              <tr>
+                <td colspan="3">Total</td>
+                <td>
+                  <div style="display: flex; flex-direction: column;">
+                    <div>${format(totalDairyLtr, 0)}</div>
+                    <div style="border-top: 1px solid #000; margin: 2px 0;"></div>
+                    <div>${format(totalDairyAmt, 0)}</div>
+                  </div>
+                </td>
+                <td>${format(totalSanghLtr)}</td>
+                <td colspan="4"></td>
+                <td>${format(totalVadh)}</td>
+                <td>${format(totalGhat)}</td>
+              </tr>
+            </tfoot>
+          </table>
+          <script>
+            window.onload = function () {
+              window.print();
+            };
+          </script>
+        </body>
+      </html>
+    `;
+
+    printWindow.document.write(content);
+    printWindow.document.close();
+  };
+
+  const handleMasterwiseChange = (e) => {
+    const checked = e.target.checked;
+    setIsMasterwise(checked);
+    if (checked) setIsParticularDay(false);
+  };
+
+  const handleParticularDayChange = (e) => {
+    const checked = e.target.checked;
+    setIsParticularDay(checked);
+    if (checked) setIsMasterwise(false);
+  };
+
+  // Print handler
+  const handlePrint = () => {
+    if (isMasterwise) {
+      printSanghMilkReport(); // ✅ Masterwise Print
+    } else if (isParticularDay) {
+      printDairyMilkData(
+        dairymilk,
+        sanghaMilkColl,
+        dairyname,
+        CityName,
+        fromDate,
+        toDate
+      ); // ✅ Particular Day Print
+    } else {
+      alert("Please select Masterwise or Particular day");
+    }
+  };
+
+  // PDF handler
+  const handlePDF = () => {
+    if (isMasterwise) {
+      generateSanghMilkReportPDF(); // ✅ Masterwise PDF
+    } else if (isParticularDay) {
+      generateDairyMilkPDF(
+        dairymilk,
+        sanghaMilkColl,
+        dairyname,
+        CityName,
+        fromDate,
+        toDate
+      ); // ✅ Particular Day PDF
+    } else {
+      alert("Please select Masterwise or Particular day");
+    }
   };
 
   return (
@@ -217,27 +451,50 @@ const SanghMilkReport = () => {
             />
           </div>
         </div>
-         <div className="select-15days-and-single-day-report w50 h20 d-flex px10 a-center">
-            <span className="label-text w30">Select Report</span>
-            <select className="w60 data" name="" id="">
-              <option value=""> As Per Master</option>
-              <option value="">Perticuler Customer</option>
-            </select>
-         </div>
+        <div className="select-15days-and-single-day-report w100 h20 d-flex px10 a-center">
+          <div className="select-15days-and-single-day-report w50 h20 d-flex px10 a-center">
+            <div className="as-per-master w50 h20 d-flex px10 a-center">
+              <input
+                className="w30"
+                type="checkbox"
+                checked={isMasterwise}
+                onChange={handleMasterwiseChange}
+              />
+              <span className="label-text w30">Masterwise</span>
+            </div>
+            <div className="as-per-master w50 h20 d-flex px10 a-center">
+              <input
+                className="w30"
+                type="checkbox"
+                checked={isParticularDay}
+                onChange={handleParticularDayChange}
+              />
+              <span className="label-text w80">Particular day</span>
+            </div>
+          </div>
+
+          {/* Conditionally render masterwise table only */}
+          {isMasterwise && (
+            <div className="milksangh-report-contianer">
+              {/* Render masterwise table here */}
+            </div>
+          )}
+        </div>
         <div className="sangh-milk-report-button w50 d-flex a-center sa">
           <button className="w-btn" onClick={handleShowbtn}>
             Show
           </button>
-          <button className="w-btn" onClick={generateSanghMilkReportPDF}>
-            Pdf
-          </button>
-          <button className="w-btn" onClick={printSanghMilkReport}>
+
+          <button className="w-btn" onClick={handlePrint}>
             Print
+          </button>
+
+          <button className="w-btn" onClick={handlePDF}>
+            PDF
           </button>
         </div>
       </div>
-
-      {showTable && (
+      {showTable && !isParticularDay && (
         <div className="milksangh-report-contianer w100 h70 d-flex-col ">
           <div className="milk-sangh-report-table-heading w100 h10 d-flex sa bg7">
             <span className="label-text w20">Date</span>

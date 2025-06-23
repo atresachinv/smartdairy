@@ -25,6 +25,7 @@ const CreateCattleFeed = () => {
   const productlist = useSelector((state) => state.inventory.allProducts);
   const [cartItem, setCartItem] = useState([]);
   const [cname, setCname] = useState("");
+  const [cuserid, setCUserId] = useState("");
   const [mobile, setMobile] = useState("");
   const [fcode, setFcode] = useState("");
   const [date, setDate] = useState("");
@@ -70,7 +71,7 @@ const CreateCattleFeed = () => {
   useEffect(() => {
     dispatch(getAllProducts(autoCenter));
   }, [autoCenter]);
-  
+
   //get all products and sale rate
   useEffect(() => {
     if (settings?.autoCenter !== undefined) {
@@ -92,9 +93,11 @@ const CreateCattleFeed = () => {
         (customer) => customer.srno === parseInt(fcode)
       );
       setCname(customer?.cname || "");
+      setCUserId(customer?.rno || "");
       setMobile(customer?.Phone || customer?.mobile || "");
     } else {
       setCname("");
+      setCUserId("");
       setMobile("");
     }
   }, [fcode, customerslist]);
@@ -103,7 +106,7 @@ const CreateCattleFeed = () => {
     value: item.srno,
     label: item.cname,
   }));
-
+  // console.log("customerslist", customerslist);
   // ----------------------------------------------------------------------------->
   // find rate and amount for perticular item ----------------------------------->
   useEffect(() => {
@@ -152,6 +155,7 @@ const CreateCattleFeed = () => {
         Qty: Number(qty),
         CustCode: fcode,
         cust_name: cname,
+        userid: cuserid,
         ItemGroupCode:
           userRole !== "mobilecollector" ? 1 : selectedItem.ItemGroupCode,
         Rate: Number(rate),

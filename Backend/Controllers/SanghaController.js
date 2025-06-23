@@ -14,6 +14,7 @@ exports.createSanghaMColl = (req, res) => {
     const {
       date,
       sanghid,
+      tankerno,
       shift,
       liters,
       kpliters,
@@ -77,9 +78,9 @@ exports.createSanghaMColl = (req, res) => {
 
           const insertQuery = `
           INSERT INTO sanghmilkentry (
-            dairy_id, center_id, sanghid, shift, colldate, liter, kamiprat_ltr,
+            dairy_id, center_id, sanghid, tankerno, shift, colldate, liter, kamiprat_ltr,
             otherCharges, chilling, nash_ltr, fat, snf, rate, amt, createdOn, createdBy
-          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         `;
 
           connection.query(
@@ -88,6 +89,7 @@ exports.createSanghaMColl = (req, res) => {
               dairy_id,
               center_id,
               sanghid,
+              tankerno || null,
               shift,
               date,
               liters || 0.0,
@@ -126,6 +128,103 @@ exports.createSanghaMColl = (req, res) => {
       .status(500)
       .json({ status: 500, message: "Internal server error!" });
   }
+};
+
+//------------------------------------------------------------------------------------------------------------------->
+// update sangha milk collection ------------------------------------------------------------------------------------>
+//------------------------------------------------------------------------------------------------------------------->
+exports.updateSanghaMColl = async (req, res) => {
+  const values = req.body;
+
+  const {
+    id,
+    date,
+    todate,
+    sanghid,
+    tankerno,
+    shift,
+    liters,
+    kpliters,
+    nashliters,
+    otherCharges,
+    chilling,
+    fat,
+    snf,
+    rate,
+    amt,
+  } = values;
+
+  const { dairy_id, user_role } = req.user;
+
+  if (!id || !date || !sanghid || !liters || !fat || !snf || !rate || !amt) {
+    return res
+      .status(400)
+      .json({ status: 400, message: "All data is required!" });
+  }
+
+  if (!dairy_id || !user_role) {
+    return res.status(401).json({ status: 401, message: "Unauthorized User!" });
+  }
+
+  const today = new Date().toISOString().split("T")[0];
+
+  pool.getConnection((err, connection) => {
+    if (err) {
+      console.error("Error getting MySQL connection: ", err);
+      return res
+        .status(500)
+        .json({ status: 500, message: "Database connection error!" });
+    }
+
+    try {
+      const updateQuery = `
+        UPDATE sanghmilkentry
+        SET sanghid = ?, tankerno = ?, shift = ?, colldate = ?, tocolldate = ?, liter = ?, kamiprat_ltr = ?, otherCharges = ?, chilling = ?,
+            nash_ltr = ?, fat = ?, snf = ?, rate = ?, amt = ?, updatedOn = ?, updatedBy = ?
+        WHERE id = ?
+      `;
+
+      const queryParams = [
+        sanghid,
+        tankerno || null,
+        shift,
+        date,
+        todate || null,
+        liters || 0.0,
+        kpliters || 0.0,
+        otherCharges || 0.0,
+        chilling || 0.0,
+        nashliters || 0.0,
+        fat || 0.0,
+        snf || 0.0,
+        rate || 0.0,
+        amt || 0.0,
+        today,
+        user_role,
+        id,
+      ];
+
+      connection.query(updateQuery, queryParams, (err, result) => {
+        connection.release();
+        if (err) {
+          console.error("Error executing query: ", err);
+          return res
+            .status(500)
+            .json({ status: 500, message: "Query execution error!" });
+        }
+
+        res.status(200).json({
+          status: 200,
+          message: "Sangha milk collection updated successfully!",
+        });
+      });
+    } catch (error) {
+      console.error("Error processing request: ", error);
+      return res
+        .status(500)
+        .json({ status: 500, message: "Internal server error!" });
+    }
+  });
 };
 
 //------------------------------------------------------------------------------------------------------------------->
@@ -194,104 +293,11 @@ exports.fetchSanghaMColl = async (req, res) => {
 };
 
 //------------------------------------------------------------------------------------------------------------------->
-// update sangha milk collection ------------------------------------------------------------------------------------>
-//------------------------------------------------------------------------------------------------------------------->
-exports.updateSanghaMColl = async (req, res) => {
-  const {
-    sanghaid,
-    shift,
-    date,
-    liters,
-    kpliters,
-    nashliters,
-    fat,
-    snf,
-    rate,
-    amt,
-  } = req.body.values;
-
-  const { dairy_id, center_id, user_role } = req.user;
-  if (
-    !date ||
-    !sanghaid ||
-    !shift ||
-    !liters ||
-    !kpliters ||
-    !nashliters ||
-    !fat ||
-    !snf ||
-    !rate ||
-    !amt
-  ) {
-    return res
-      .status(400)
-      .json({ status: 400, message: "All data is required!" });
-  }
-  if (!dairy_id) {
-    return res.status(401).json({ status: 401, message: "Unauthorized User!" });
-  }
-  const today = new Date().toISOString().split("T")[0];
-  pool.getConnection((err, connection) => {
-    if (err) {
-      console.error("Error getting MySQL connection: ", err);
-      return res
-        .status(500)
-        .json({ status: 500, message: "Database connection error!" });
-    }
-
-    try {
-      const updateQuery = `UPDATE sanghmilkentry SET
-          sanghcode = ? shift = ? colldate = ? liter = ? kamiprat_ltr = ? nash_ltr = ?
-          fat = ? snf = ? rate = ? amt = ? updatedOn = ? updatedBy = ?) WHERE id = ?`;
-
-      connection.query(
-        updateQuery,
-        [
-          dairy_id,
-          center_id,
-          sanghaid,
-          shift,
-          date,
-          liters,
-          kpliters,
-          nashliters,
-          fat,
-          snf,
-          rate,
-          amt,
-          today,
-          user_role,
-        ],
-        (err, result) => {
-          connection.release();
-          if (err) {
-            console.error("Error executing query: ", err);
-            return res
-              .status(500)
-              .json({ status: 500, message: "Query execution error!" });
-          }
-
-          res.status(200).json({
-            status: 200,
-            message: "Sangha milk collection updated successfully!",
-          });
-        }
-      );
-    } catch (error) {
-      console.error("Error processing request: ", error);
-      return res
-        .status(500)
-        .json({ status: 500, message: "Internal server error!" });
-    }
-  });
-};
-
-//------------------------------------------------------------------------------------------------------------------->
 // delete sangha milk collection ------------------------------------------------------------------------------------>
 //------------------------------------------------------------------------------------------------------------------->
 exports.delteSanghaMColl = async (req, res) => {
-  const { id } = req.body;
-  const { dairy_id, center_id } = req.user;
+  const { id } = req.query;
+  const { dairy_id } = req.user;
   if (!id) {
     return res.status(400).json({
       status: 400,
@@ -312,24 +318,20 @@ exports.delteSanghaMColl = async (req, res) => {
     try {
       const getCustname = `DELETE FROM sanghmilkentry WHERE id = ?`;
 
-      connection.query(
-        getCustname,
-        [user_code, dairy_id, center_id],
-        (err, result) => {
-          connection.release();
-          if (err) {
-            console.error("Error executing query: ", err);
-            return res
-              .status(500)
-              .json({ status: 500, message: "Query execution error!" });
-          }
-
-          res.status(200).json({
-            status: 200,
-            message: "Sangha milk collection deleted successfully!",
-          });
+      connection.query(getCustname, [id], (err, result) => {
+        connection.release();
+        if (err) {
+          console.error("Error executing query: ", err);
+          return res
+            .status(500)
+            .json({ status: 500, message: "Query execution error!" });
         }
-      );
+
+        res.status(200).json({
+          status: 200,
+          message: "Sangha milk collection deleted successfully!",
+        });
+      });
     } catch (error) {
       console.error("Error processing request: ", error);
       return res
@@ -601,6 +603,115 @@ exports.saveSanghaPayment = async (req, res) => {
 };
 
 //------------------------------------------------------------------------------------------------------------------->
+// Update sangha milk Payment ----------------------------------------------------------------------------------------->
+//------------------------------------------------------------------------------------------------------------------->
+
+exports.updateSanghaPayment = async (req, res) => {
+  const { dairy_id, center_id, user_role } = req.user;
+  const { formData, paymentDetails } = req.body;
+
+  const {
+    id,
+    billno,
+    sanghacode,
+    othercommission,
+    chilling,
+    overrate,
+    totalcommission,
+    totalDeduction,
+    netPayment,
+  } = formData;
+
+  if (!dairy_id) {
+    return res.status(401).json({ status: 401, message: "Unauthorised User!" });
+  }
+
+  if (!Array.isArray(paymentDetails) || paymentDetails.length === 0) {
+    return res
+      .status(400)
+      .json({ status: 400, message: "No payment data provided!" });
+  }
+
+  pool.getConnection(async (err, connection) => {
+    if (err) {
+      console.error("Connection error:", err);
+      return res
+        .status(500)
+        .json({ status: 500, message: "Database connection failed!" });
+    }
+
+    const query = util.promisify(connection.query).bind(connection);
+    const beginTransaction = util
+      .promisify(connection.beginTransaction)
+      .bind(connection);
+    const commit = util.promisify(connection.commit).bind(connection);
+    const rollback = util.promisify(connection.rollback).bind(connection);
+    const release = connection.release.bind(connection);
+
+    try {
+      await beginTransaction();
+
+      const currentTime = new Date();
+
+      // Update summary in sanghMilkBillDetails
+      await query(
+        `UPDATE sanghMilkBillDetails 
+         SET sangh_id = ?, otherCommission = ?, chilling = ?, overrate = ?, 
+             totalComm = ?, totalDeduction = ?, netPayment = ?, updatedOn = ?, updatedBy = ?
+         WHERE id = ?`,
+        [
+          sanghacode,
+          othercommission || 0.0,
+          chilling || 0.0,
+          overrate || 0.0,
+          totalcommission || 0.0,
+          totalDeduction || 0.0,
+          netPayment,
+          currentTime,
+          user_role,
+          id,
+        ]
+      );
+
+      // Update individual ledger rows
+      for (const { ledgerCode, Amount } of paymentDetails) {
+        await query(
+          `UPDATE sanghMilkBillDetails
+           SET sangh_id = ?, Amount = ?, updatedOn = ?, updatedBy = ?
+           WHERE dairy_id = ? AND center_id = ? AND billno = ? AND ledgerCode = ?`,
+          [
+            sanghacode,
+            Amount || 0,
+            currentTime,
+            user_role,
+            dairy_id,
+            center_id,
+            billno,
+            ledgerCode,
+          ]
+        );
+      }
+
+      await commit();
+      release();
+      return res.status(200).json({
+        status: 200,
+        message: "Sangha payment updated successfully.",
+      });
+    } catch (error) {
+      await rollback();
+      release();
+      console.error("Transaction error:", error.sqlMessage || error.message);
+      return res.status(500).json({
+        status: 500,
+        message: "Transaction failed!",
+        error: error.sqlMessage || error.message,
+      });
+    }
+  });
+};
+
+//------------------------------------------------------------------------------------------------------------------->
 // fetch sangha milk Payment ----------------------------------------------------------------------------------------->
 //------------------------------------------------------------------------------------------------------------------->
 
@@ -615,7 +726,7 @@ exports.fetchSanghaMilkPay = async (req, res) => {
     return res
       .status(400)
       .json({ status: 400, message: "All data is required!" });
-  }  
+  }
   pool.getConnection((err, connection) => {
     if (err) {
       console.error("Error getting MySQL connection: ", err);
@@ -658,6 +769,67 @@ exports.fetchSanghaMilkPay = async (req, res) => {
         }
       );
     } catch (error) {
+      console.error("Error processing request: ", error);
+      return res
+        .status(500)
+        .json({ status: 500, message: "Internal server error!" });
+    }
+  });
+};
+
+//------------------------------------------------------------------------------------------------------------------->
+// delete sangha milk Payment ----------------------------------------------------------------------------------------->
+//------------------------------------------------------------------------------------------------------------------->
+
+exports.deleteSanghaMilkPay = async (req, res) => {
+  const { dairy_id, center_id } = req.user;
+  const { billno } = req.query;
+
+  if (!dairy_id) {
+    return res.status(401).json({ status: 401, message: "Unauthorised User!" });
+  }
+
+  if (!billno) {
+    return res
+      .status(400)
+      .json({ status: 400, message: "Bill number is required!" });
+  }
+
+  pool.getConnection(async (err, connection) => {
+    if (err) {
+      console.error("Error getting MySQL connection: ", err);
+      return res
+        .status(500)
+        .json({ status: 500, message: "Database connection error!" });
+    }
+
+    const query = util.promisify(connection.query).bind(connection);
+    const release = connection.release.bind(connection);
+
+    try {
+      const deleteQuery = `
+        DELETE FROM sanghMilkBillDetails
+        WHERE dairy_id = ? AND center_id = ? AND billno = ?
+      `;
+
+      const result = await query(deleteQuery, [dairy_id, center_id, billno]);
+
+      release();
+
+      if (result.affectedRows === 0) {
+        return res.status(200).json({
+          status: 200,
+          message: "Sangha milk payment not found!",
+        });
+      }
+
+      return res.status(200).json({
+        status: 200,
+        message: "Sangha milk payment deleted successfully!",
+        deletedRows: result.affectedRows,
+      });
+    } catch (error) {
+      release();
       console.error("Error processing request: ", error);
       return res
         .status(500)

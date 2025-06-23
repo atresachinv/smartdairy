@@ -414,6 +414,13 @@ const Mainappnavlinks = ({ setselected, handleSidebar }) => {
           path: "master/animal",
           role: ["admin", "super_admin", "manager"],
         },
+        {
+          name: `${t("टँकर मास्टर")}`,
+          icon: <PiCowFill className="icon" />,
+          index: 5.9,
+          path: "master/tancker",
+          role: ["admin", "super_admin", "manager"],
+        },
       ],
     },
     {
@@ -501,6 +508,13 @@ const Mainappnavlinks = ({ setselected, handleSidebar }) => {
           icon: <FaFileInvoiceDollar className="icon" />,
           index: 6.11,
           path: "reports/SanghMilkReport",
+          role: ["admin", "super_admin", "manager"],
+        },
+        {
+          name: `${t("Tankar रिपोर्ट")}`,
+          icon: <FaFileInvoiceDollar className="icon" />,
+          index: 6.12,
+          path: "reports/tankarReport",
           role: ["admin", "super_admin", "manager"],
         },
       ],

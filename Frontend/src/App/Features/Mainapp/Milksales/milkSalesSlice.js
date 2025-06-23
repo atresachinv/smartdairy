@@ -5,11 +5,13 @@ const initialState = {
   records: [],
   centerrecords: [],
   customers: [],
+  dairyMilk: [],
   createCuststatus: "idle",
   savestatus: "idle",
   custstatus: "idle",
   getsalestatus: "idle",
   centersalestatus: "idle",
+  dairyMilkstatus: "idle",
   error: null,
 };
 
@@ -98,6 +100,24 @@ export const getretailCustomer = createAsyncThunk(
   }
 );
 
+// fetch dairy collection  -------------------->
+export const getDairyCollection = createAsyncThunk(
+  "milkSales/getDairyCollection",
+  async ({ fromDate, toDate }, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.get("/fetch/dairy/master/coll", {
+        params: { fromDate, toDate },
+      });
+      return response.data.dairyMilk;
+    } catch (error) {
+      const errorMessage = error.response
+        ? error.response.data
+        : "Failed to get retail customers.";
+      return rejectWithValue(errorMessage);
+    }
+  }
+);
+
 const milkSalesSlice = createSlice({
   name: "milkSales",
   initialState,
@@ -160,6 +180,18 @@ const milkSalesSlice = createSlice({
       })
       .addCase(getretailCustomer.rejected, (state, action) => {
         state.custstatus = "failed";
+        state.error = action.payload;
+      }) // get dairy collection ---------------------------------------------------------------------------------------->
+      .addCase(getDairyCollection.pending, (state) => {
+        state.dairyMilkstatus = "loading";
+        state.error = null;
+      })
+      .addCase(getDairyCollection.fulfilled, (state, action) => {
+        state.dairyMilkstatus = "succeeded";
+        state.dairyMilk = action.payload;
+      })
+      .addCase(getDairyCollection.rejected, (state, action) => {
+        state.dairyMilkstatus = "failed";
         state.error = action.payload;
       });
   },

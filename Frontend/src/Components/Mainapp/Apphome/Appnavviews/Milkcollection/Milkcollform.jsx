@@ -144,23 +144,17 @@ const MilkColleform = ({ switchToSettings, times }) => {
         [name]: value,
       }));
 
-      // Validate the field for other errors
-      const fieldError = validateField(name, value);
-      setErrors((prevErrors) => {
-        const updatedErrors = { ...prevErrors, ...fieldError };
-        if (!value) delete updatedErrors[name]; // Clear error if field is empty
-        return updatedErrors;
-      });
     }
 
     setValues({ ...values, [name]: value });
-
+    
     // Validate field and update errors state
     const fieldError = validateField(name, value);
-    setErrors((prevErrors) => ({
-      ...prevErrors,
-      ...fieldError,
-    }));
+    setErrors((prevErrors) => {
+      const updatedErrors = { ...prevErrors, ...fieldError };
+      if (!value) delete updatedErrors[name];
+      return updatedErrors;
+    });
   };
 
   // used for decimal input correction ---------------------------------------------------------->
@@ -197,6 +191,12 @@ const MilkColleform = ({ switchToSettings, times }) => {
         [name]: normalizedValue,
       }));
     }
+    const fieldError = validateField(name, value);
+    setErrors((prevErrors) => {
+      const updatedErrors = { ...prevErrors, ...fieldError };
+      if (!value) delete updatedErrors[name];
+      return updatedErrors;
+    });
   };
   // // Effect to load customer list from local storage ------------------------------------------>
   useEffect(() => {
@@ -337,13 +337,13 @@ const MilkColleform = ({ switchToSettings, times }) => {
         }
         break;
 
-      case "cname":
-        if (!/^[a-zA-Z\s]+$/.test(value)) {
-          error[name] = "Invalid Customer Name.";
-        } else {
-          delete errors[name];
-        }
-        break;
+      // case "cname":
+      //   if (!/^[\u0900-\u097Fa-zA-Z0-9\s.,_-()]+$/.test(value)) {
+      //     errors[name] = "Invalid Customer Name.";
+      //   } else {
+      //     delete errors[name];
+      //   }
+      //   break;
 
       case "liters":
         if (!/^\d+(\.\d{1,2})?$/.test(value.toString())) {
@@ -758,7 +758,7 @@ const MilkColleform = ({ switchToSettings, times }) => {
 
   const handleCollection = async (e) => {
     e.preventDefault();
-    setLoading(true);
+
     // Validate fields before submission
     const validationErrors = validateFields();
     if (Object.keys(validationErrors).length > 0) {
@@ -766,6 +766,11 @@ const MilkColleform = ({ switchToSettings, times }) => {
       return;
     }
 
+    if (values.cname === "") {
+      return toast.error("तुम्ही टाकलेल्या कोडसाठी उत्पादक बनवलेला नाही!");
+    }
+
+    setLoading(true);
     setValues((prevData) => ({
       ...prevData,
       shift: times === "morning" ? 0 : time === "morning" ? 0 : 1,

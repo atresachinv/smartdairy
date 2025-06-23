@@ -4,13 +4,6 @@ const pool = require("../Configs/Database");
 dotenv.config({ path: "Backend/.env" });
 const util = require("util");
 
-//------------------------------------------------------------------------------------------------------------------->
-// Sangha milk Sales ------------------------------------------------------------------------------------------------>
-//------------------------------------------------------------------------------------------------------------------->
-
-//------------------------------------------------------------------------------------------------------------------->
-// Center milk collection  ------------------------------------------------------------------------------------------>
-//------------------------------------------------------------------------------------------------------------------->
 //----------------------------------------------------------------------------------->
 // Fetch Center milk Coll of milkCollector or Center  ------------------------------->
 //----------------------------------------------------------------------------------->
@@ -365,6 +358,7 @@ exports.updateCenterMilkColl = async (req, res) => {
     }
   });
 };
+
 //-------------------------------------------------------------------------------->
 // Set center milk collection Record is deleted ---------------------------------->
 //-------------------------------------------------------------------------------->
@@ -401,6 +395,85 @@ exports.deleteCenterMilkColl = async (req, res) => {
           message: "Center milk collection deleted successfully!",
         });
       });
+    } catch (error) {
+      console.error("Error processing request: ", error);
+      return res
+        .status(500)
+        .json({ status: 500, message: "Internal server error!" });
+    }
+  });
+};
+
+//-------------------------------------------------------------------------------->
+// Get dairy daily milk collection Report of master ------------------------------>
+//-------------------------------------------------------------------------------->
+exports.getDairyMilkReport = async (req, res) => {
+  const { fromDate, toDate } = req.query;
+  const { dairy_id, center_id } = req.user;
+
+  if (!dairy_id) {
+    return res.status(401).json({ status: 401, message: "Unauthorized User!" });
+  }
+  if (!fromDate || !toDate) {
+    return res
+      .status(400)
+      .json({ status: 400, message: "formDate and toDate is required!" });
+  }
+  const dairy_table = `dailymilkentry_${dairy_id}`;
+  pool.getConnection((err, connection) => {
+    if (err) {
+      console.error("Error getting MySQL connection: ", err);
+      return res
+        .status(500)
+        .json({ status: 500, message: "Database connection error!" });
+    }
+
+    try {
+      const getquery = `
+      SELECT 
+        ReceiptDate,
+        SUM(CASE WHEN ME = 0 THEN Litres ELSE 0 END) AS mrgTotalLitres,
+        ROUND(SUM(CASE WHEN ME = 0 THEN fat * Litres ELSE 0 END) / NULLIF(SUM(CASE WHEN ME = 0 THEN Litres ELSE 0 END), 0), 2) AS mrgAvgFat,
+        ROUND(SUM(CASE WHEN ME = 0 THEN snf * Litres ELSE 0 END) / NULLIF(SUM(CASE WHEN ME = 0 THEN Litres ELSE 0 END), 0), 2) AS mrgAvgSnf,
+        SUM(CASE WHEN ME = 0 THEN Amt ELSE 0 END) AS mrgTotalAmt,
+        SUM(CASE WHEN ME = 1 THEN Litres ELSE 0 END) AS eveTotalLitres,
+        ROUND(SUM(CASE WHEN ME = 1 THEN fat * Litres ELSE 0 END) / NULLIF(SUM(CASE WHEN ME = 1 THEN Litres ELSE 0 END), 0), 2) AS eveAvgFat,
+        ROUND(SUM(CASE WHEN ME = 1 THEN snf * Litres ELSE 0 END) / NULLIF(SUM(CASE WHEN ME = 1 THEN Litres ELSE 0 END), 0), 2) AS eveAvgSnf,
+        SUM(CASE WHEN ME = 1 THEN Amt ELSE 0 END) AS eveTotalAmt
+      FROM 
+      ${dairy_table}
+      WHERE center_id = ? AND ReceiptDate BETWEEN ? AND ?
+      GROUP BY ReceiptDate
+      ORDER BY ReceiptDate ASC;
+      `;
+
+      connection.query(
+        getquery,
+        [center_id, fromDate, toDate],
+        (err, result) => {
+          connection.release();
+          if (err) {
+            console.error("Error executing query: ", err);
+            return res
+              .status(500)
+              .json({ status: 500, message: "Query execution error!" });
+          }
+
+          if (!result || result.length === 0) {
+            return res.status(200).json({
+              status: 200,
+              dairyMilk: [],
+              message: "Center milk collection details not found!",
+            });
+          }
+
+          res.status(200).json({
+            status: 200,
+            dairyMilk: result,
+            message: "Center milk collection details found!",
+          });
+        }
+      );
     } catch (error) {
       console.error("Error processing request: ", error);
       return res

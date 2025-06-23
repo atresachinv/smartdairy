@@ -10,6 +10,7 @@ dotenv.config({ path: "Backend/.env" });
 
 exports.purchaseInfo = async (req, res) => {
   const { formDate, toDate } = req.body;
+  const { dairy_id, user_id } = req.user;
 
   pool.getConnection((err, connection) => {
     if (err) {
@@ -19,8 +20,6 @@ exports.purchaseInfo = async (req, res) => {
 
     try {
       // Get dairy_id and user_code from the verified token (already decoded in middleware)
-      const dairy_id = req.user.dairy_id;
-      const user_id = req.user.user_id;
 
       if (!dairy_id) {
         return res.status(400).json({ message: "Dairy ID not found!" });
@@ -62,7 +61,9 @@ exports.purchaseInfo = async (req, res) => {
           }
 
           if (result.length === 0) {
-            return res.status(404).json({
+            return res.status(200).json({
+              purchaseBill: [],
+              psummary: { totalQty: 0, totalAmount: 0 },
               message: "No purchase bills found for the given criteria.",
             });
           }

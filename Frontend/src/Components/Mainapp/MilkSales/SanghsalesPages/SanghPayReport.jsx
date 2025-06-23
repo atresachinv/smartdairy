@@ -1,14 +1,13 @@
 import { useEffect, useRef, useState } from "react";
-import "../../../../Styles/SanghReport/SanghReport.css";
 import { FaEdit } from "react-icons/fa";
 import Spinner from "../../../Home/Spinner/Spinner";
 import { useDispatch, useSelector } from "react-redux";
-import Sanghsales from "./Sanghsales";
 import {
   fetchSanghaList,
   getSangahPayment,
 } from "../../../../App/Features/Mainapp/Sangha/sanghaSlice";
 import SanghaMilkPayment from "./SanghaMilkPayment";
+import "../../../../Styles/Mainapp/MilkSales/SanghMilkColl.css";
 
 const SanghPayReport = () => {
   const dispatch = useDispatch();
@@ -18,16 +17,23 @@ const SanghPayReport = () => {
   const sanghaSales = useSelector((state) => state.sangha.sanghaSales); // sangha Sales
   const payStatus = useSelector((state) => state.sangha.getPaystatus); // fetch sangha milk collection status
   const sanghaRef = useRef(null);
-  const [sanghaid, setSanghaid] = useState("");
   const [isModalOpen, setModalOpen] = useState(false);
   const [isModalsOpen, setModalsOpen] = useState(false);
   const [selectedMilk, setSelectedMilk] = useState(null);
   const [fromDate, setFromDate] = useState(tDate);
   const [toDate, setToDate] = useState(tDate);
-  // console.log("sanghaPayment", sanghaPayment);
+  const [sanghaid, setSanghaid] = useState("");
+  const [sanghaBill, setSanghaBill] = useState([]);
   useEffect(() => {
     dispatch(fetchSanghaList());
   }, []);
+
+  useEffect(() => {
+    const sanghaPay = sanghaPayment.filter(
+      (payment) => payment.ledgerCode === 0
+    );
+    setSanghaBill(sanghaPay);
+  }, [sanghaPayment]);
 
   // handle enter press move cursor to next refrence Input -------------------------------------->
   const handleKeyDown = (e, nextRef) => {
@@ -39,28 +45,31 @@ const SanghPayReport = () => {
 
   const handleShowbtn = (e) => {
     e.preventDefault();
-    dispatch(getSangahPayment({ fromDate, toDate }));
+    dispatch(getSangahPayment({ fromDate, toDate, sanghaid }));
   };
-  // console.log("sanghaSales", sanghaSales);
   return (
     <div className="sanghsale-report-container w100 h1 d-flex-col p10 sb">
       <div className="sangha-sales-date-buttons-div w100 h30 d-flex-col bg-light-green sa br9">
         <span className="heading mx10">संघ दुध पेमेंट रिपोर्ट :</span>
         <div className="sangha-from-to-datediv-container w100 h30 d-flex sa a-center">
           <div className="sangha-from-to-datediv-div w50 h1 d-flex sb">
-            <div className="sanghaa-from-date-divv w50 h1 d-flex a-center ">
-              <span className="label-text w30 px10">पासून</span>
+            <div className="sanghaa-from-date-div w50 h1 d-flex a-center sb">
+              <span className="label-text w30 px10">
+                पासून : <span className="req w40">*</span>
+              </span>
               <input
-                className="data w80"
+                className="data w60"
                 value={fromDate}
                 type="date"
                 onChange={(e) => setFromDate(e.target.value)}
               />
             </div>
-            <div className="sanghaa-to-date-divv w50 h1 d-flex a-center ">
-              <span className="label-text w30 px10">पर्येंत</span>
+            <div className="sanghaa-from-date-div w50 h1 d-flex a-center sb">
+              <span className="label-text w30 px10">
+                पर्यत : <span className="req w40">*</span>
+              </span>
               <input
-                className="data w80"
+                className="data w60"
                 value={toDate}
                 type="date"
                 onChange={(e) => setToDate(e.target.value)}
@@ -68,8 +77,8 @@ const SanghPayReport = () => {
             </div>
           </div>
           <div className="select-sangh-div w50 h30 d-flex a-center px10">
-            <label htmlFor="sanghid" className="info-text w30">
-              संघ निवडा : <span className="req">*</span>
+            <label htmlFor="sanghid" className="label-text w30">
+              संघ निवडा : <span className="req w30">*</span>
             </label>
             <select
               className="data w70"
@@ -93,7 +102,7 @@ const SanghPayReport = () => {
             </select>
           </div>
         </div>
-        <div className="sangha-sales-buttons-div w100 h30  d-flex j-end a-center px10">
+        <div className="sangha-sales-buttons-div w100 h30 d-flex j-end a-center px10">
           <button
             className="w-btn"
             type="button"
@@ -102,32 +111,22 @@ const SanghPayReport = () => {
           >
             {payStatus === "loading" ? "दाखवा..." : "दाखवा"}
           </button>
-          {/* <button
-            className="w-btn"
-            type="button"
-            onClick={() => {
-              setSelectedMilk(null);
-              setModalsOpen(true);
-            }}
-          >
-            बिल निर्माण
-          </button> */}
         </div>
       </div>
-      <div className="sangha-details-table-section w100 h60 d-flex-col bg mh70 hidescrollbar">
+      <div className="sangha-details-table-container w100 h60 d-flex-col bg mh70 hidescrollbar">
         <div className="sangha-sale-report-table-header w100 p10 d-flex a-center t-center sb sticky-top">
           <span className="f-label-text w15 t-center">दिनांक </span>
-          <span className="f-label-text w10">एकूण पेमेंट </span>
+          <span className="f-label-text w15">एकूण पेमेंट </span>
           <span className="f-label-text w10">ए.कमिशन</span>
           <span className="f-label-text w10">ए.कपात</span>
-          <span className="f-label-text w10">निव्वळ पेमेंट</span>
+          <span className="f-label-text w15">निव्वळ पेमेंट</span>
           <span className="f-label-text w10">Action</span>
         </div>
 
         {payStatus === "loading" ? (
           <Spinner />
-        ) : sanghaPayment.length > 0 ? (
-          sanghaPayment.map((milk, index) => (
+        ) : sanghaBill.length > 0 ? (
+          sanghaBill.map((milk, index) => (
             <div
               key={index}
               className="sangha-report-tabledata-section-div w100 p10 d-flex a-center sb"
@@ -135,16 +134,16 @@ const SanghPayReport = () => {
                 backgroundColor: index % 2 === 0 ? "#faefe3" : "#fff",
               }}
             >
-              <span className="text w15">{milk.colldate.slice(0, 10)}</span>
-              <span className="text w10 t-end">{milk.liter}</span>
-              <span className="text w10 t-end">{milk.kamiprat_ltr}</span>
-              <span className="text w10 t-end">{milk.nash_ltr}</span>
-              <span className="text w10 t-end">{milk.amt}</span>
+              <span className="text w15">{milk.billdate?.slice(0, 10)}</span>
+              <span className="text w15 t-end">{milk.totalAmount}</span>
+              <span className="text w10 t-end">{milk.totalComm}</span>
+              <span className="text w10 t-end">{milk.totalDeduction}</span>
+              <span className="text w15 t-end">{milk.netPayment}</span>
               <span className="text w10 t-center">
                 <FaEdit
                   className="color-icon"
                   onClick={() => {
-                    setSelectedMilk(milk);
+                    setSelectedMilk(milk.billno);
                     setModalOpen(true);
                   }}
                 />
@@ -158,15 +157,13 @@ const SanghPayReport = () => {
         )}
       </div>
 
-      <div className="daybook-progress-div w100 h10 d-flex">
-        <div className="Daybook-button-div w30 h1 d-flex a-center">
-          <button className="w-btn">Day Book</button>
-        </div>
+      <div className="Daybook-button-div w100 h10 d-flex a-center j-end">
+        <button className="btn">Day Book</button>
       </div>
 
       {isModalOpen && (
         <div className="model-container w100 d-flex center">
-          <Sanghsales
+          <SanghaMilkPayment
             clsebtn={setModalOpen}
             isModalOpen={isModalOpen}
             editData={selectedMilk}

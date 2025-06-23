@@ -9,7 +9,9 @@ const {
   fetchSanghaMilkDetails,
   fetchSanghaledger,
   saveSanghaPayment,
+  updateSanghaPayment,
   fetchSanghaMilkPay,
+  deleteSanghaMilkPay,
 } = require("../Controllers/SanghaController");
 
 const router = express.Router();
@@ -24,6 +26,12 @@ router.route("/fetch/sangha/ledger").get(verifyToken, fetchSanghaledger);
 router.route("/update/sangha/milk-coll").put(verifyToken, updateSanghaMColl);
 router.route("/delete/sangha/milk-coll").delete(verifyToken, delteSanghaMColl);
 router.route("/save/sangha-milk/payment").post(verifyToken, saveSanghaPayment);
+router
+  .route("/update/sangha-milk/payment")
+  .post(verifyToken, updateSanghaPayment);
 router.route("/fetch/sangha-milk/payment").get(verifyToken, fetchSanghaMilkPay);
+router
+  .route("/delete/sangha-milk/payment")
+  .delete(verifyToken, deleteSanghaMilkPay);
 
 module.exports = router;

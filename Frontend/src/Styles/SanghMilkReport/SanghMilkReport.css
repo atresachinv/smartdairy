@@ -7,6 +7,19 @@
   }
   .sangh-milk-report-dates-button .sangh-milk-report-button{
     width: 100%;
+
+  }
+  .sangh-milk-report-dates-button .select-15days-and-single-day-report {
+     width: 100%;
+  }
+  .sangh-milk-report-dates-button .select-15days-and-single-day-report .as-per-master {
+    height: 60px;
+  }
+  .sangh-milk-report-dates-button .select-15days-and-single-day-report .as-per-master span {
+     width: 150px;
+  }
+  .sangh-milk-report-dates-button .select-15days-and-single-day-report .as-per-master input {
+     width: 40px;
   }
 }
 .milksangh-report-contianer {

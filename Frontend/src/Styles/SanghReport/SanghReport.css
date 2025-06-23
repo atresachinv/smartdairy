@@ -62,19 +62,6 @@
   overflow-x: auto;
 }
 
-/* ad.
-
-/* Alternate row coloring */
-
-/* Hover effect for rows */
-
-/* Cell styling */
-.label-text {
-  text-align: left;
-
-  overflow: hidden;
-}
-
 /* Fixed header implementation */
 .sangha-tabledata-section-div {
   position: relative;
@@ -100,39 +87,6 @@
   background: #555;
 }
 
-/* Flex utility classes */
-.d-flex {
-  display: flex;
-}
-
-.d-flex-col {
-  display: flex;
-  flex-direction: column;
-}
-
-.w100 {
-  width: 100%;
-}
-
-.h10 {
-  height: 10%;
-}
-
-.h70 {
-  height: 70vh; /* Adjust based on your needs */
-}
-
-.mh90 {
-  min-height: 90%;
-}
-
-.sa {
-  align-items: stretch;
-}
-
-.bg {
-  background-color: white;
-}
 
 @media screen and (max-width: 426px) {
   .sangha-sales-date-buttons-div {
