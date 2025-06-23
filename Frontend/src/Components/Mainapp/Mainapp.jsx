@@ -78,7 +78,7 @@ import TrnCheck from "./Inventory/InventroyPages/TrnCheck/TrnCheck";
 import PaymentPages from "./Payments/PaymentPages";
 import CustomerList from "./Masters/MasterPages/CustomerMaster/CustomerList";
 import CreateCustomer from "./Masters/MasterPages/CustomerMaster/CreateCustomer";
-import FatSnfCompromise from "./Payments/FatSnfCompromise/FatSnfCompromise";
+import FatSnfCompromise from "./Payments/FatSnfCompromise";
 import GeneralLedger from "./Accounts/GeneralLedger/GeneralLedger";
 import AdvancesPosting from "./Accounts/AdvancesPosting/AdvancesPosting";
 import SanghReport from "./MilkSales/SanghsalesPages/SanghReport";
@@ -94,7 +94,6 @@ import SanghPayReport from "./MilkSales/SanghsalesPages/SanghPayReport";
 import SanghMilkReport from "./Reports/MilkSanghReport/SanghMilkReport";
 import TanckerMaster from "./Masters/MasterPages/TanckerMaster";
 import TankarReport from "./Reports/TankarReport/TankarReport";
-
 
 const Mainapp = () => {
   const dispatch = useDispatch();
@@ -334,7 +333,7 @@ const Mainapp = () => {
               element={<PayDeductions />}
             /> */}
             <Route path="payment/generate/*" element={<PaymentPages />} />
-            <Route path="payment/fatsnf/*" element={<FatSnfCompromise />} />
+            <Route path="payment/fatsnf" element={<FatSnfCompromise />} />
             {/* dairy routes */}
             <Route path="dairy/information" element={<DairyInfo />} />
             <Route path="dairy/initial-info" element={<DairyInitialInfo />} />

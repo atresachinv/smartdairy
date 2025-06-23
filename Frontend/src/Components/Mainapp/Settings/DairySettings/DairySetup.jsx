@@ -21,6 +21,7 @@ const DairySetup = () => {
     (state) =>
       state.dairy.dairyData.center_id || state.dairy.dairyData.center_id
   );
+  
   const [centerid, setCenterid] = useState("0");
   const [cSettings, setCSettings] = useState({});
 
@@ -50,6 +51,7 @@ const DairySetup = () => {
   };
 
   const [formData, setFormData] = useState(initialFormState);
+
   useEffect(() => {
     dispatch(getDairySettings());
   }, []);

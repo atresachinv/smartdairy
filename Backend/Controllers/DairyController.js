@@ -1223,7 +1223,7 @@ exports.getCenterWiseMilkData = (req, res) => {
       }
       if (result.length === 0) {
         return res.status(404).json({
-          status: 404,
+          status: 200,
           message: "Rate not found for the provided parameters.",
         });
       }

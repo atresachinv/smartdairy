@@ -496,6 +496,10 @@
 .bg7 {
   background-color: #17acc0;
 }
+.bg8 {
+  background-color: #43beae;
+  border-radius: 8px;
+}
 .bg-light-green {
   background-color: #c2f3cf;
 }

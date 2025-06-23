@@ -6,13 +6,13 @@ import { FaEdit } from "react-icons/fa";
 import Spinner from "../../../Home/Spinner/Spinner";
 import { MdDeleteForever } from "react-icons/md";
 import Swal from "sweetalert2";
-import "../../../../Styles/Mainapp/Masters/DoctorMaster.css";
 import {
   createTanker,
   fetchMaxCode,
   getTankerList,
   updateTankerDetails,
 } from "../../../../App/Features/Mainapp/Masters/tankerMasterSlice";
+import "../../../../Styles/Mainapp/Masters/TankerMaster.css";
 
 const TanckerMaster = () => {
   const dispatch = useDispatch();
@@ -223,7 +223,7 @@ const TanckerMaster = () => {
         <span className="w100 heading">
           {isEditMode ? "Edit Tanker" : "Add New Tanker"}
         </span>
-        <div className="tanker-info-details-code w100 h30 d-flex a-center sb">
+        <div className="tanker-info-details w100 h30 d-flex a-center sb">
           <div className="tanker-details-code w15 d-flex a-center sb">
             <label htmlFor="tno" className="label-text w100">
               No<span className="req">*</span> :
@@ -240,7 +240,7 @@ const TanckerMaster = () => {
               onChange={handleInputs}
             />
           </div>
-          <div className="tanker-details-drname w50 d-flex a-center sa">
+          <div className="tanker-details-ownername w50 d-flex a-center sa">
             <label htmlFor="ownername" className="w35 label-text">
               Owner/Driver Name:
             </label>
@@ -256,7 +256,7 @@ const TanckerMaster = () => {
               onChange={handleInputs}
             />
           </div>
-          <div className="tanker-details-drname w30 d-flex a-center sb">
+          <div className="tanker-details-contact w30 d-flex a-center sb">
             <label htmlFor="contactno" className="w50 label-text">
               Contact No. :
             </label>
@@ -274,9 +274,9 @@ const TanckerMaster = () => {
             />
           </div>
         </div>
-        <div className="tanker-info-details-code w100 h30 d-flex a-center sb">
-          <div className="tanker-details-code w50 d-flex a-center sb">
-            <div className="tanker-details-code w50 d-flex a-center sb">
+        <div className="tanker-info-details2 w100 h30 d-flex a-center sb">
+          <div className="tanker-details w50 d-flex a-center sb">
+            <div className="tanker-details-tno w50 d-flex a-center sb">
               <label htmlFor="tankerno" className="label-text w100">
                 Tanker No. :
               </label>
@@ -294,7 +294,7 @@ const TanckerMaster = () => {
               />
             </div>
 
-            <div className="tanker-details-drname w35 d-flex a-center sb">
+            <div className="tanker-details-rltr w35 d-flex a-center sb">
               <label htmlFor="rltr" className="label-text w50">
                 Rate/Ltr :
               </label>

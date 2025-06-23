@@ -407,6 +407,7 @@ exports.deleteCenterMilkColl = async (req, res) => {
 //-------------------------------------------------------------------------------->
 // Get dairy daily milk collection Report of master ------------------------------>
 //-------------------------------------------------------------------------------->
+
 exports.getDairyMilkReport = async (req, res) => {
   const { fromDate, toDate } = req.query;
   const { dairy_id, center_id } = req.user;

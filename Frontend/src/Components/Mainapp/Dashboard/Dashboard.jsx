@@ -37,24 +37,23 @@ const Dashboard = () => {
   const { t } = useTranslation("common");
   const dispatch = useDispatch();
   const date = useSelector((state) => state.date.toDate);
-  const Emplist = useSelector((state) => state.emp.emplist);
-  const center_id = useSelector((state) => state.dairy.dairyData.center_id);
-  const manualMaster = useSelector((state) => state.manualMasters.masterlist);
-  const master = useSelector((state) => state.masterdates.masterlist);
-  const mastermilk = useSelector((state) => state.milkCollection.allMilkColl);
+  const Emplist = useSelector((state) => state.emp?.emplist);
+  const center_id = useSelector((state) => state.dairy.dairyData?.center_id);
+  const manualMaster = useSelector((state) => state.manualMasters?.masterlist);
+  const mastermilk = useSelector((state) => state.milkCollection?.allMilkColl);
   const centerList = useSelector(
-    (state) => state.center.centersList || [] // center list
+    (state) => state.center?.centersList || [] // center list
   );
   const centerLiterAmt = useSelector(
-    (state) => state.admindashboard.centerMilk || [] // center wise liter and amount
+    (state) => state.admindashboard?.centerMilk || [] // center wise liter and amount
   );
   const customerCounts = useSelector(
-    (state) => state.admindashboard.custCount // center wise liter and amount
+    (state) => state.admindashboard?.custCount // center wise liter and amount
   );
-  const status = useSelector((state) => state.milkCollection.allmilkstatus);
-  const customerslist = useSelector((state) => state.customer.customerlist); //save customer list
-  const fDate = useSelector((state) => state.date.formDate); // to fetch default date data
-  const tDate = useSelector((state) => state.date.toDate); // to fetch default date data
+  const status = useSelector((state) => state.milkCollection?.allmilkstatus);
+  const customerslist = useSelector((state) => state.customer?.customerlist); //save customer list
+  const fDate = useSelector((state) => state.date?.formDate); // to fetch default date data
+  const tDate = useSelector((state) => state.date?.toDate); // to fetch default date data
   const [selectedDate, setSelectedDate] = useState(null);
   const [summaryData, setSummaryData] = useState([]); //for summary data
   const [showSummary, setShowSummary] = useState(false); //for summary data
@@ -83,17 +82,6 @@ const Dashboard = () => {
     dispatch(listEmployee());
   }, []);
 
-  // const totalLitres = mastermilk.reduce((acc, item) => acc + item.Litres, 0);
-  // const totalAmt = mastermilk.reduce((acc, item) => acc + item.Amt, 0);
-  // const aggregatedData = mastermilk.reduce((acc, curr) => {
-  //   const date = new Date(curr.ReceiptDate).toISOString().split("T")[0];
-  //   if (!acc[date]) {
-  //     acc[date] = { totalLitres: 0, totalAmt: 0 };
-  //   }
-  //   acc[date].totalLitres += curr.Litres;
-  //   acc[date].totalAmt += curr.Amt;
-  //   return acc;
-  // }, {});
 
   // -------------------------------------------------------------------------------------->
   // Round data total customers, Liters , AMount And Average Fat -------------------------->
@@ -206,11 +194,8 @@ const Dashboard = () => {
     if (selectedIndex !== "") {
       const selectedDates = manualMaster[selectedIndex];
       setSelectedDate(selectedDates);
-      // Store selected master in localStorage
       localStorage.setItem("selectedMaster", JSON.stringify(selectedDates));
-      // The dispatch is now handled by useEffect
     } else {
-      // If the user selects the default option, reset selectedDate to null
       setSelectedDate(null);
     }
   };
@@ -390,7 +375,7 @@ const Dashboard = () => {
                 </select>
               </div>
             </div>
-            <span className="w100 t-center">
+            <span className="w40 t-center">
               {selectedDate !== null ? (
                 <h2 className="heading px10">
                   <span className="heading">

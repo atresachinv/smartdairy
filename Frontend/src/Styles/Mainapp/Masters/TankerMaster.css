@@ -1,0 +1,141 @@
+@media screen and (min-width: 426px) and (max-width: 769px) {
+  .tanker-master-container {
+    min-height: auto;
+  }
+  .tanker-master-container .tanker-master-form-container {
+    width: 100%;
+    min-height: fit-content;
+    margin-bottom: 10px;
+  }
+  .tanker-master-form-container .tanker-info-details {
+    min-height: fit-content;
+  }
+  .tanker-info-details .tanker-details-code {
+    width: 15%;
+    flex-direction: column;
+  }
+  .tanker-info-details label {
+    width: 100%;
+  }
+  .tanker-info-details input {
+    width: 100%;
+  }
+
+  .tanker-info-details .tanker-details-ownername {
+    width: 50%;
+    flex-direction: column;
+  }
+
+  .tanker-info-details .tanker-details-contact {
+    width: 30%;
+    flex-direction: column;
+  }
+  .tanker-master-form-container .tanker-info-details2 {
+    margin-top: 10px;
+  }
+  .tanker-info-details2 .tanker-details {
+    width: 65%;
+  }
+  .tanker-info-details2 .tanker-details .tanker-details-rltr {
+    width: 45%;
+  }
+  .tanker-info-details2 .form-btn-container {
+    width: 30%;
+  }
+  .tanker-info-details2 .form-btn-container button {
+    width: 45%;
+    margin: 0;
+  }
+}
+
+@media screen and (max-width: 426px) {
+  .tanker-master-container {
+    min-height: auto;
+  }
+  .tanker-master-container .tanker-master-form-container {
+    width: 100%;
+    min-height: fit-content;
+    margin-bottom: 10px;
+  }
+  .tanker-master-form-container .tanker-info-details {
+    min-height: fit-content;
+    flex-wrap: wrap;
+  }
+  .tanker-master-form-container .tanker-info-details .tanker-details-code {
+    min-height: fit-content;
+    flex-wrap: wrap;
+  }
+
+  .tanker-info-details .tanker-details-code label {
+    width: 60%;
+  }
+  .tanker-info-details .tanker-details-code input {
+    width: 30%;
+  }
+
+  .tanker-info-details .tanker-details-code,
+  .tanker-info-details .tanker-details-contact {
+    width: 100%;
+    margin-bottom: 5px;
+  }
+  .tanker-info-details .tanker-details-ownername {
+    width: 100%;
+    flex-direction: column;
+    margin-bottom: 5px;
+  }
+  .tanker-info-details .tanker-details-ownername label {
+    width: 100%;
+  }
+  .tanker-info-details .tanker-details-ownername input {
+    width: 100%;
+  }
+  .tanker-master-form-container .tanker-info-details2 {
+    min-height: fit-content;
+    flex-wrap: wrap;
+  }
+
+  .tanker-info-details2 .tanker-details {
+    width: 100%;
+    min-height: fit-content;
+    flex-direction: column;
+    flex-wrap: wrap;
+  }
+
+  .tanker-info-details2 .tanker-details .tanker-details-tno,
+  .tanker-info-details2 .tanker-details .tanker-details-rltr {
+    width: 100%;
+    margin-bottom: 5px;
+  }
+
+  .tanker-details-contact label,
+  .tanker-details .tanker-details-tno label,
+  .tanker-details .tanker-details-rltr label {
+    width: 40%;
+  }
+
+  .tanker-info-details .tanker-details-contact input,
+  .tanker-details .tanker-details-tno input,
+  .tanker-details .tanker-details-rltr input {
+    width: 60%;
+  }
+  .tanker-master-form-container .tanker-info-details2 .form-btn-container {
+    width: 100%;
+    max-height: fit-content;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 10px;
+  }
+  .tanker-info-details2 .form-btn-container button {
+    width: 45%;
+    margin: 0;
+  }
+  .tanker-details-container {
+    overflow-x: auto;
+    min-height: 80%;
+    width: 100%;
+    margin-bottom: 10px;
+  }
+  .tanker-details-headings {
+    min-width: 750px;
+  }
+}

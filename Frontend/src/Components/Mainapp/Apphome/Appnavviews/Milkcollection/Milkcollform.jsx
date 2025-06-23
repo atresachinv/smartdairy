@@ -78,7 +78,7 @@ const MilkColleform = ({ switchToSettings, times }) => {
   };
 
   const [values, setValues] = useState(initialValues);
-
+  console.log("settings", settings);
   //---------------------------------------------------------------------------------------->
   // Milk Collection list ---------------------------------------------------------------------------------------->
   const milkColl = useSelector((state) => state.milkCollection.entries || [])
@@ -143,11 +143,10 @@ const MilkColleform = ({ switchToSettings, times }) => {
         ...prevValues,
         [name]: value,
       }));
-
     }
 
     setValues({ ...values, [name]: value });
-    
+
     // Validate field and update errors state
     const fieldError = validateField(name, value);
     setErrors((prevErrors) => {
@@ -790,7 +789,9 @@ const MilkColleform = ({ switchToSettings, times }) => {
         fetchEntries();
         setErrors({});
         toast.success(result.message || "Milk Collection saved successfully!");
-
+        // if (settings.printmilKcoll === 1) {
+        //   printMilkReceipt(values);
+        // }
         dispatch(getRegCustomers({ collDate: values.date, ME: values.shift }));
 
         if (
@@ -852,6 +853,99 @@ const MilkColleform = ({ switchToSettings, times }) => {
     e.preventDefault();
     setIsRCust(!isRCust);
   };
+
+  // ---------------------------------------------------------------------------->
+  // print milk collection ------------------------------------------------------>
+  // function printMilkReceipt(data) {
+  //   const html = `
+  //     <div class="receipt thermal-58">
+  //       <div class="center bold">${dairyname}</div>
+  //       <div class="flex-row space-between">
+  //         <span>${data.date}</span>
+  //         <span>${data.shift === 0 ? "सकाळ" : "सायंकाळ"}</span>
+  //       </div>
+  //       <div class="flex-row space-between">
+  //         <span>${data.code}</span><span> ${data.cname}</span>
+  //       </div>
+  //       <hr>
+  //       <table class="receipt-table">
+  //         <tr><td class="flex"><span>लिटर :</span><span> ${
+  //           data.liters
+  //         }</span></td></tr>
+  //         <tr><td class="flex"><span>फॅट :</span><span>${
+  //           data.fat
+  //         }</span></td><td class="center">एकूण दुध</td></tr>
+  //         <tr><td class="flex"><span>डिग्री :</span><span>${
+  //           data.degree
+  //         }</span> </td><td class="center">${data.amt}</td></tr>
+  //         <tr><td class="flex"><span>SNF :</span><span>${
+  //           data.snf
+  //         }</span></td><td class="center">एकूण रक्कम</td></tr>
+  //         <tr><td class="flex"><span>दर :</span><span> ${
+  //           data.rate
+  //         }</span></td><td class="center">${data.amt}</td></tr>
+  //         <tr><td class="bold flex"><span>रक्कम :</span><span> ${
+  //           data.amt
+  //         }</span></td></tr>
+  //       </table>
+  //       <div class="text center"><p>स्मार्ट डेअरी - ${dairyphone}</p></div>
+  //     </div>
+  //   `;
+
+  //   const printWindow = window.open("", "", "width=300,height=600");
+  //   printWindow.document.write("<html><head><title>Print</title>");
+  //   printWindow.document.write(`<style>
+  //     body { font-family: 'Devanagari', sans-serif; font-size: 12px; margin: 0; }
+
+  //     .receipt.thermal-58 {
+  //       width: 58mm;
+  //       padding: 5px;
+  //       border: 1px solid #000;
+  //       border-radius: 5px;
+  //     }
+
+  //     .center { text-align: center; }
+  //     .text { font-size: 8px; }
+  //     .bold { font-weight: bold; }
+
+  //     .flex-row { display: flex; justify-content: space-between; }
+  //     .flex { width: auto; display: flex; justify-content: space-between;}
+  //     .space-between { margin: 2px 0; }
+
+  //     table.receipt-table {
+  //       width: 100%;
+  //       border-collapse: collapse;
+  //       margin-top: 5px;
+  //       border: 1px solid #000;
+  //       overflow: hidden;
+  //     }
+
+  //     table.receipt-table td {
+  //       padding: 2px 4px;
+  //       font-size: 12px;
+  //       border-right: 1px solid #000;
+  //     }
+
+  //     table.receipt-table tr {
+  //       padding: 2px 4px;
+  //       font-size: 12px;
+  //       border-bottom: 1px solid #000;
+  //     }
+
+  //     hr {
+  //       border: none;
+  //       border-top: 1px dashed #000;
+  //       margin: 5px 0;
+  //     }
+  //   </style>`);
+  //   printWindow.document.write("</head><body>");
+  //   printWindow.document.write(html);
+  //   printWindow.document.write("</body></html>");
+  //   printWindow.document.close();
+  //   printWindow.focus();
+  //   printWindow.print();
+  //   printWindow.close();
+  // }
 
   return (
     <div className="milk-collection-outer-main-container w100 h1 d-flex sb p10">
