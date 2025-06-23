@@ -24,8 +24,13 @@ const {
   getRetailCustomer,
   fetchRegCustomers,
   uploadMilkCollection,
+  updateFatGeneral,
+  updateFatDifference,
+  updateSnfGeneral,
+  updateSnfDifference,
 } = require("../Controllers/MilkController");
 const verifyToken = require("../Middlewares/VerifyToken");
+const { applyRateChart } = require("../Controllers/RatechartController");
 
 const router = express.Router();
 
@@ -68,6 +73,15 @@ router.route("/retail/sale-report").get(verifyToken, retailMilkReports);
 router
   .route("/retail/center/sale-report")
   .get(verifyToken, centerReMilkReports);
-
+//FAt SNF TADJOD-------------------------------------------------------------------------------------------------------->
+router.route("/update/fat").put(verifyToken, updateFatGeneral, applyRateChart);
+router
+  .route("/update/fat-diff")
+  .put(verifyToken, updateFatDifference, applyRateChart);
+router.route("/update/snf").put(verifyToken, updateSnfGeneral, applyRateChart);
+router
+  .route("/update/snf-diff")
+  .put(verifyToken, updateSnfDifference, applyRateChart);
+  
 // Customer Routes
 module.exports = router;

@@ -361,7 +361,7 @@ exports.milkCollection = async (req, res) => {
   // SQL query for bulk inserting entries
   const milkCollectionQuery = `
     INSERT INTO ${dairy_table} 
-    (companyid, userid, ReceiptDate, ME, CB, Litres, fat, snf, Amt, GLCode, AccCode, Digree, rate, cname, rno, center_id) 
+    (companyid, userid, ReceiptDate, ME, CB, Litres, snf, snf, Amt, GLCode, AccCode, Digree, rate, cname, rno, center_id) 
     VALUES ?
   `;
 
@@ -1862,24 +1862,6 @@ exports.custWiseMilkCReort = async (req, res) => {
 };
 
 //------------------------------------------------------------------------------------------------------------------->
-// Update dairy Milk Collection Customer Wise
-//------------------------------------------------------------------------------------------------------------------->
-
-exports.updateMilkCollCustWise = async (req, res) => {};
-
-//------------------------------------------------------------------------------------------------------------------->
-// Delete Perticular (Time / Date) Milk Collection Customer Wise
-//------------------------------------------------------------------------------------------------------------------->
-
-exports.DeleteMilkCollCustWise = async (req, res) => {};
-
-//------------------------------------------------------------------------------------------------------------------->
-// Delete All Milk Collection Of Perticular Customer
-//------------------------------------------------------------------------------------------------------------------->
-
-exports.DeleteAllMilkCollCustomer = async (req, res) => {};
-
-//------------------------------------------------------------------------------------------------------------------->
 // todays milk report for Admin
 //------------------------------------------------------------------------------------------------------------------->
 // updated isDeleted --> 23/4/25
@@ -2665,3 +2647,610 @@ exports.uploadMilkCollection = async (req, res) => {
     }
   });
 };
+
+//---------------------------------------------------------------------------------------------------------//
+//<<<<<<<<<<<<<<<<<<<<<<<<<------- FAT SNF TADJOD KG to LITER Converter -------->>>>>>>>>>>>>>>>>>>>>>>>>>>//
+//---------------------------------------------------------------------------------------------------------//
+
+//------------------------------------------------------------------------------------------------------------------->
+// Update General 3.5 FAT to all Milk Collection of perticular master  and update rate amount
+//------------------------------------------------------------------------------------------------------------------->
+
+exports.updateFatGeneral = async (req, res, next) => {
+  const { fromDate, toDate, fat } = req.query;
+  const { dairy_id, center_id, user_role } = req.user;
+
+  if (!dairy_id) {
+    return res.status(401).json({ status: 401, message: "Unauthorized User!" });
+  }
+  if (!fromDate || !toDate || !fat) {
+    return res.status(400).json({
+      status: 400,
+      message:
+        "fromDate, toDate and fat data is required to update milk collection!",
+    });
+  }
+
+  const currentDate = new Date().toISOString().split("T")[0];
+  const dairy_table = `dailymilkentry_${dairy_id}`;
+  const batchSize = 300;
+
+  pool.getConnection((err, connection) => {
+    if (err) {
+      console.error("Error getting MySQL connection: ", err);
+      return res
+        .status(500)
+        .json({ status: 500, message: "Database connection error" });
+    }
+
+    const fetchEntries = (offset) => {
+      return new Promise((resolve, reject) => {
+        const selectQuery = `
+          SELECT id, fat FROM ${dairy_table}
+          WHERE center_id = ? AND ReceiptDate BETWEEN ? AND ?
+          ORDER BY id ASC
+          LIMIT ? OFFSET ?
+        `;
+
+        connection.query(
+          selectQuery,
+          [center_id, fromDate, toDate, batchSize, offset],
+          (err, results) => {
+            if (err) return reject(err);
+            resolve(results);
+          }
+        );
+      });
+    };
+
+    const updateBatch = (ids) => {
+      return new Promise((resolve, reject) => {
+        if (ids.length === 0) return resolve(); // Nothing to update
+        const placeholders = ids.map(() => "?").join(",");
+
+        const updateQuery = `
+          UPDATE ${dairy_table}
+          SET fat = ?, updatedOn = ?, UpdatedBy = ?
+          WHERE id IN (${placeholders})
+        `;
+
+        connection.query(
+          updateQuery,
+          [fat, currentDate, user_role, ...ids],
+          (err, result) => {
+            if (err) return reject(err);
+            resolve(result);
+          }
+        );
+      });
+    };
+
+    const processBatches = async () => {
+      try {
+        let offset = 0;
+        while (true) {
+          const rows = await fetchEntries(offset);
+          if (rows.length === 0) break;
+
+          const ids = rows.map((row) => row.id);
+          await updateBatch(ids);
+
+          if (rows.length < batchSize) break; // Done if last batch is smaller than 300
+          offset += batchSize;
+        }
+
+        connection.release();
+        res.status(200).json({
+          status: 200,
+          message: "Milk collection updated in batches successfully!",
+        });
+
+        // Pass data to next middleware
+        req.body = {
+          rcfromdate: fromDate,
+          rctodate: toDate,
+          custFrom,
+          custTo,
+        };
+        next();
+      } catch (err) {
+        connection.release();
+        console.error("Batch processing error: ", err);
+        res
+          .status(500)
+          .json({ status: 500, message: "Error during batch update" });
+      }
+    };
+
+    processBatches();
+  });
+};
+
+//------------------------------------------------------------------------------------------------------------------->
+// Update Difference eg. -0.1 FAT to all Milk Collection of perticular master and update rate amount
+//------------------------------------------------------------------------------------------------------------------->
+
+exports.updateFatDifference = async (req, res) => {
+  const { fromDate, toDate, fatDiff } = req.query;
+  const { dairy_id, center_id, user_role } = req.user;
+
+  const fatDifference = parseFloat(fatDiff);
+
+  if (!dairy_id) {
+    return res.status(401).json({ status: 401, message: "Unauthorized User!" });
+  }
+  if (!fromDate || !toDate || isNaN(fatDifference)) {
+    return res.status(400).json({
+      status: 400,
+      message: "fromDate, toDate and numeric fatDiff are required!",
+    });
+  }
+
+  const currentDate = new Date().toISOString().split("T")[0];
+  const dairy_table = `dailymilkentry_${dairy_id}`;
+  const batchSize = 300;
+
+  pool.getConnection((err, connection) => {
+    if (err) {
+      console.error("DB Connection Error: ", err);
+      return res
+        .status(500)
+        .json({ status: 500, message: "Database connection error" });
+    }
+
+    const fetchEntries = (offset) => {
+      return new Promise((resolve, reject) => {
+        const selectQuery = `
+          SELECT id, fat FROM ${dairy_table}
+          WHERE center_id = ? AND ReceiptDate BETWEEN ? AND ?
+          ORDER BY id ASC
+          LIMIT ? OFFSET ?
+        `;
+        connection.query(
+          selectQuery,
+          [center_id, fromDate, toDate, batchSize, offset],
+          (err, results) => {
+            if (err) return reject(err);
+            resolve(results);
+          }
+        );
+      });
+    };
+
+    const updateFatValues = (entries) => {
+      return new Promise((resolve, reject) => {
+        if (entries.length === 0) return resolve();
+
+        const updates = entries.map(({ id, fat }) => {
+          const newFat = Math.max(0, parseFloat(fat) + fatDifference); // avoid negative fat
+          return [newFat, currentDate, user_role, id];
+        });
+
+        const updateQuery = `
+          UPDATE ${dairy_table}
+          SET fat = ?, updatedOn = ?, UpdatedBy = ?
+          WHERE id = ?
+        `;
+
+        // Execute update one by one
+        let processed = 0;
+        for (const params of updates) {
+          connection.query(updateQuery, params, (err) => {
+            if (err) return reject(err);
+            processed++;
+            if (processed === updates.length) resolve(); // done all
+          });
+        }
+      });
+    };
+
+    const processBatches = async () => {
+      try {
+        let offset = 0;
+        while (true) {
+          const rows = await fetchEntries(offset);
+          if (rows.length === 0) break;
+
+          await updateFatValues(rows);
+
+          if (rows.length < batchSize) break;
+          offset += batchSize;
+        }
+
+        connection.release();
+        res.status(200).json({
+          status: 200,
+          message: "Fat values updated with difference successfully!",
+        });
+
+        // Pass data to next middleware
+        req.body = {
+          rcfromdate: fromDate,
+          rctodate: toDate,
+          custFrom,
+          custTo,
+        };
+        next();
+      } catch (err) {
+        connection.release();
+        console.error("Batch update error: ", err);
+        res
+          .status(500)
+          .json({ status: 500, message: "Failed to update fat in batches" });
+      }
+    };
+
+    processBatches();
+  });
+};
+
+//------------------------------------------------------------------------------------------------------------------->
+// Update last master FAT to Milk Collection of perticular master and update rate amount
+//------------------------------------------------------------------------------------------------------------------->
+
+exports.updateFatToLastFat = async (req, res) => {};
+
+//------------------------------------------------------------------------------------------------------------------->
+// Update General 3.5 SNF to all Milk Collection of perticular master and update rate amount
+//------------------------------------------------------------------------------------------------------------------->
+
+exports.updateSnfGeneral = async (req, res, next) => {
+  const { fromDate, toDate, snf } = req.query;
+  const { dairy_id, center_id, user_role } = req.user;
+
+  if (!dairy_id) {
+    return res.status(401).json({ status: 401, message: "Unauthorized User!" });
+  }
+  if (!fromDate || !toDate || !snf) {
+    return res.status(400).json({
+      status: 400,
+      message:
+        "fromDate, toDate and snf data is required to update milk collection!",
+    });
+  }
+
+  const currentDate = new Date().toISOString().split("T")[0];
+  const dairy_table = `dailymilkentry_${dairy_id}`;
+  const batchSize = 300;
+
+  pool.getConnection((err, connection) => {
+    if (err) {
+      console.error("Error getting MySQL connection: ", err);
+      return res
+        .status(500)
+        .json({ status: 500, message: "Database connection error" });
+    }
+
+    const fetchEntries = (offset) => {
+      return new Promise((resolve, reject) => {
+        const selectQuery = `
+          SELECT id, snf FROM ${dairy_table}
+          WHERE center_id = ? AND ReceiptDate BETWEEN ? AND ?
+          ORDER BY id ASC
+          LIMIT ? OFFSET ?
+        `;
+
+        connection.query(
+          selectQuery,
+          [center_id, fromDate, toDate, batchSize, offset],
+          (err, results) => {
+            if (err) return reject(err);
+            resolve(results);
+          }
+        );
+      });
+    };
+
+    const updateBatch = (ids) => {
+      return new Promise((resolve, reject) => {
+        if (ids.length === 0) return resolve(); // Nothing to update
+        const placeholders = ids.map(() => "?").join(",");
+
+        const updateQuery = `
+          UPDATE ${dairy_table}
+          SET snf = ?, updatedOn = ?, UpdatedBy = ?
+          WHERE id IN (${placeholders})
+        `;
+
+        connection.query(
+          updateQuery,
+          [snf, currentDate, user_role, ...ids],
+          (err, result) => {
+            if (err) return reject(err);
+            resolve(result);
+          }
+        );
+      });
+    };
+
+    const processBatches = async () => {
+      try {
+        let offset = 0;
+        while (true) {
+          const rows = await fetchEntries(offset);
+          if (rows.length === 0) break;
+
+          const ids = rows.map((row) => row.id);
+          await updateBatch(ids);
+
+          if (rows.length < batchSize) break; // Done if last batch is smaller than 300
+          offset += batchSize;
+        }
+
+        connection.release();
+        res.status(200).json({
+          status: 200,
+          message: "Milk collection updated in batches successfully!",
+        });
+
+        // Pass data to next middleware
+        req.body = {
+          rcfromdate: fromDate,
+          rctodate: toDate,
+          custFrom,
+          custTo,
+        };
+        next();
+      } catch (err) {
+        connection.release();
+        console.error("Batch processing error: ", err);
+        res
+          .status(500)
+          .json({ status: 500, message: "Error during batch update" });
+      }
+    };
+
+    processBatches();
+  });
+};
+
+//------------------------------------------------------------------------------------------------------------------->
+// Update Difference eg. -0.1 FAT to all Milk Collection of perticular master and update rate amount
+//------------------------------------------------------------------------------------------------------------------->
+
+exports.updateSnfDifference = async (req, res) => {
+  const { fromDate, toDate, fatDiff } = req.query;
+  const { dairy_id, center_id, user_role } = req.user;
+
+  const fatDifference = parseFloat(fatDiff);
+
+  if (!dairy_id) {
+    return res.status(401).json({ status: 401, message: "Unauthorized User!" });
+  }
+  if (!fromDate || !toDate || isNaN(fatDifference)) {
+    return res.status(400).json({
+      status: 400,
+      message: "fromDate, toDate and numeric fatDiff are required!",
+    });
+  }
+
+  const currentDate = new Date().toISOString().split("T")[0];
+  const dairy_table = `dailymilkentry_${dairy_id}`;
+  const batchSize = 300;
+
+  pool.getConnection((err, connection) => {
+    if (err) {
+      console.error("DB Connection Error: ", err);
+      return res
+        .status(500)
+        .json({ status: 500, message: "Database connection error" });
+    }
+
+    const fetchEntries = (offset) => {
+      return new Promise((resolve, reject) => {
+        const selectQuery = `
+          SELECT id, snf FROM ${dairy_table}
+          WHERE center_id = ? AND ReceiptDate BETWEEN ? AND ?
+          ORDER BY id ASC
+          LIMIT ? OFFSET ?
+        `;
+        connection.query(
+          selectQuery,
+          [center_id, fromDate, toDate, batchSize, offset],
+          (err, results) => {
+            if (err) return reject(err);
+            resolve(results);
+          }
+        );
+      });
+    };
+
+    const updateSnfValues = (entries) => {
+      return new Promise((resolve, reject) => {
+        if (entries.length === 0) return resolve();
+
+        const updates = entries.map(({ id, snf }) => {
+          const newSnf = Math.max(0, parseFloat(snf) + snfDifference); // avoid negative snf
+          return [newSnf, currentDate, user_role, id];
+        });
+
+        const updateQuery = `
+          UPDATE ${dairy_table}
+          SET snf = ?, updatedOn = ?, UpdatedBy = ?
+          WHERE id = ?
+        `;
+
+        // Execute update one by one
+        let processed = 0;
+        for (const params of updates) {
+          connection.query(updateQuery, params, (err) => {
+            if (err) return reject(err);
+            processed++;
+            if (processed === updates.length) resolve(); // done all
+          });
+        }
+      });
+    };
+
+    const processBatches = async () => {
+      try {
+        let offset = 0;
+        while (true) {
+          const rows = await fetchEntries(offset);
+          if (rows.length === 0) break;
+
+          await updateSnfValues(rows);
+
+          if (rows.length < batchSize) break;
+          offset += batchSize;
+        }
+
+        connection.release();
+        res.status(200).json({
+          status: 200,
+          message: "Snf values updated with difference successfully!",
+        });
+
+        // Pass data to next middleware
+        req.body = {
+          rcfromdate: fromDate,
+          rctodate: toDate,
+          custFrom,
+          custTo,
+        };
+        next();
+      } catch (err) {
+        connection.release();
+        console.error("Batch update error: ", err);
+        res
+          .status(500)
+          .json({ status: 500, message: "Failed to update snf in batches" });
+      }
+    };
+
+    processBatches();
+  });
+};
+
+//------------------------------------------------------------------------------------------------------------------->
+// Update last master SNF to Milk Collection of perticular master and update rate amount
+//------------------------------------------------------------------------------------------------------------------->
+
+exports.updateSnfToLastSnf = async (req, res) => {};
+
+//------------------------------------------------------------------------------------------------------------------->
+// Convert KG to Liters or Liters to KG of all Milk Collection of perticular master and update rate amount
+//------------------------------------------------------------------------------------------------------------------->
+
+exports.updateKGLiters = async (req, res) => {
+  const { dairy_id, center_id, user_role } = req.user;
+  const { fromDate, toDate, milkIn, amount } = req.body;
+
+  if (!dairy_id || !user_role) {
+    return res.status(401).json({ status: 401, message: "Unauthorized User!" });
+  }
+
+  if (!fromDate || !toDate || !milkIn || !amount) {
+    return res.status(400).json({
+      status: 400,
+      message: "fromDate, toDate, milkIn and amount are required!",
+    });
+  }
+
+  const currentDate = new Date().toISOString().split("T")[0];
+  const dairy_table = `dailymilkentry_${dairy_id}`;
+  const batchSize = 300;
+
+  pool.getConnection((err, connection) => {
+    if (err) {
+      return res.status(500).json({ message: "Database connection error" });
+    }
+
+    const fetchEntries = (offset) => {
+      return new Promise((resolve, reject) => {
+        const selectQuery = `
+          SELECT id, Litres, rate FROM ${dairy_table}
+          WHERE center_id = ? AND ReceiptDate BETWEEN ? AND ?
+          ORDER BY id ASC
+          LIMIT ? OFFSET ?
+        `;
+        connection.query(
+          selectQuery,
+          [center_id, fromDate, toDate, batchSize, offset],
+          (err, results) => {
+            if (err) return reject(err);
+            resolve(results);
+          }
+        );
+      });
+    };
+
+    const updateSnfValues = (entries) => {
+      return new Promise((resolve, reject) => {
+        if (entries.length === 0) return resolve();
+
+        const updates = entries.map(({ id, Litres, rate }) => {
+          let newLtr = 0;
+
+          if (milkIn === "kg") {
+            newLtr = Litres * parseFloat(amount); // convert kg ➝ liters
+          } else if (milkIn === "ltr") {
+            newLtr = Litres / parseFloat(amount); // convert liters ➝ kg
+          } else {
+            newLtr = Litres; // fallback, no change
+          }
+
+          const newAmt = newLtr * rate;
+
+          return [
+            newLtr.toFixed(3),
+            newAmt.toFixed(2),
+            currentDate,
+            user_role,
+            id,
+          ];
+        });
+
+        const updateQuery = `
+          UPDATE ${dairy_table}
+          SET Litres = ?, Amt = ?, updatedOn = ?, UpdatedBy = ?
+          WHERE id = ?
+        `;
+
+        let processed = 0;
+        for (const params of updates) {
+          connection.query(updateQuery, params, (err) => {
+            if (err) return reject(err);
+            processed++;
+            if (processed === updates.length) resolve();
+          });
+        }
+      });
+    };
+
+    const processBatches = async () => {
+      try {
+        let offset = 0;
+        while (true) {
+          const rows = await fetchEntries(offset);
+          if (rows.length === 0) break;
+
+          await updateSnfValues(rows);
+
+          if (rows.length < batchSize) break;
+          offset += batchSize;
+        }
+
+        connection.release();
+        res.status(200).json({
+          status: 200,
+          message: "Milk entries updated for KG/LTR conversion successfully!",
+        });
+      } catch (err) {
+        connection.release();
+        res.status(500).json({
+          status: 500,
+          message: "Failed to update milk data in batches",
+        });
+      }
+    };
+
+    processBatches();
+  });
+};
+
+//------------------------------------------------------------------------------------------------------------------->
+// Convert Liters to KG of all Milk Collection of perticular master and update rate amount
+//------------------------------------------------------------------------------------------------------------------->
+
+exports.updateLitersKG = async (req, res) => {};
