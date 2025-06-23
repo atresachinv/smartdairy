@@ -2657,7 +2657,7 @@ exports.uploadMilkCollection = async (req, res) => {
 //------------------------------------------------------------------------------------------------------------------->
 
 exports.updateFatGeneral = async (req, res, next) => {
-  const { fromDate, toDate, fat } = req.query;
+  const { fromDate, toDate, custFrom, custTo, fat } = req.query;
   const { dairy_id, center_id, user_role } = req.user;
 
   if (!dairy_id) {
@@ -2771,7 +2771,7 @@ exports.updateFatGeneral = async (req, res, next) => {
 //------------------------------------------------------------------------------------------------------------------->
 
 exports.updateFatDifference = async (req, res) => {
-  const { fromDate, toDate, fatDiff } = req.query;
+  const { fromDate, toDate, custFrom, custTo, fatDiff } = req.query;
   const { dairy_id, center_id, user_role } = req.user;
 
   const fatDifference = parseFloat(fatDiff);
@@ -2895,7 +2895,7 @@ exports.updateFatToLastFat = async (req, res) => {};
 //------------------------------------------------------------------------------------------------------------------->
 
 exports.updateSnfGeneral = async (req, res, next) => {
-  const { fromDate, toDate, snf } = req.query;
+  const { fromDate, toDate, custFrom, custTo, snf } = req.query;
   const { dairy_id, center_id, user_role } = req.user;
 
   if (!dairy_id) {
@@ -3009,7 +3009,7 @@ exports.updateSnfGeneral = async (req, res, next) => {
 //------------------------------------------------------------------------------------------------------------------->
 
 exports.updateSnfDifference = async (req, res) => {
-  const { fromDate, toDate, fatDiff } = req.query;
+  const { fromDate, toDate, custFrom, custTo, snfDiff } = req.query;
   const { dairy_id, center_id, user_role } = req.user;
 
   const fatDifference = parseFloat(fatDiff);
@@ -3134,7 +3134,7 @@ exports.updateSnfToLastSnf = async (req, res) => {};
 
 exports.updateKGLiters = async (req, res) => {
   const { dairy_id, center_id, user_role } = req.user;
-  const { fromDate, toDate, milkIn, amount } = req.body;
+  const { fromDate, toDate, milkIn, amount } = req.query;
 
   if (!dairy_id || !user_role) {
     return res.status(401).json({ status: 401, message: "Unauthorized User!" });
