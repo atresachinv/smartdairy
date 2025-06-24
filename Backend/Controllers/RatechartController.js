@@ -317,7 +317,7 @@ exports.saveRateChart = async (req, res) => {
 //-------------------------------------------------------------------------------->
 //v3 function
 exports.applyRateChart = async (req, res) => {
-  const { rcfromdate, rctodate, custFrom, custTo } = req.body;
+  const { rcfromdate, rctodate, custFrom, custTo, success } = req.body;
   const dairy_id = req.user.dairy_id;
   const center_id = req.user.center_id;
 

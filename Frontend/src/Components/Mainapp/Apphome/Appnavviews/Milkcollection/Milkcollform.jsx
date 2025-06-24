@@ -78,7 +78,6 @@ const MilkColleform = ({ switchToSettings, times }) => {
   };
 
   const [values, setValues] = useState(initialValues);
-  console.log("settings", settings);
   //---------------------------------------------------------------------------------------->
   // Milk Collection list ---------------------------------------------------------------------------------------->
   const milkColl = useSelector((state) => state.milkCollection.entries || [])

@@ -53,7 +53,7 @@ function App() {
   const getFingerprint = async () => {
     const fp = await FingerprintJS.load();
     const result = await fp.get();
-    console.log("Fingerprint ID:", result.visitorId);
+    // console.log("Fingerprint ID:", result.visitorId);
     return result.visitorId;
   };
 
@@ -98,7 +98,7 @@ function App() {
   //       const token = await requestForToken();
   //       if (token) {
   //         setFCMToken(token);
-
+  //         console.log("token", token);
   //         // Check if the user is logged in before storing the token
   //         if (profile?.srno) {
   //           dispatch(saveFCMTokenToDB({ token, cust_no: profile.srno }));
@@ -138,6 +138,7 @@ function App() {
   //   });
   // });
 
+  // console.log("token", fcmToken);
   return (
     <>
       <BrowserRouter>

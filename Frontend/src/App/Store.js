@@ -44,6 +44,7 @@ import ledgerReducer from "./Features/Mainapp/Masters/ledgerSlice"; //super-admi
 
 import smsReducer from "./Features/Mainapp/Dairyinfo/smsSlice";
 import voucherReducer from "./Features/Mainapp/Account/voucherSlice";
+import fatsnfReducer from "./Features/Mainapp/Milk/FatSnfSlice";
 
 export const store = configureStore({
   reducer: {
@@ -65,6 +66,7 @@ export const store = configureStore({
     animal: animalReducer, //mainapp
     tanker: tankerReducer, //mainapp
     sangha: sanghaReducer, //mainapp
+    fatsnf: fatsnfReducer, //mainapp
     // register new dairy
     register: registerReducer,
     profile: profileReducer, //for profile info

@@ -417,16 +417,16 @@ exports.customerList = async (req, res) => {
     return res.status(401).json({ status: 401, message: "Unauthorized User!" });
   }
 
-  const cacheKey = `customerList_${dairy_id}_${center_id}`;
+  // const cacheKey = `customerList_${dairy_id}_${center_id}`;
   // Check if data exists in cache
-  const cachedData = cache.get(cacheKey);
-  if (cachedData) {
-    return res.status(200).json({
-      status: 200,
-      customerList: cachedData,
-      message: "Customers found!",
-    });
-  }
+  // const cachedData = cache.get(cacheKey);
+  // if (cachedData) {
+  //   return res.status(200).json({
+  //     status: 200,
+  //     customerList: cachedData,
+  //     message: "Customers found!",
+  //   });
+  // }
 
   // SQL Query for retrieving customers
   const getCustList =
@@ -463,7 +463,7 @@ exports.customerList = async (req, res) => {
         }
 
         // Store in cache before sending response
-        cache.set(cacheKey, result);
+        // cache.set(cacheKey, result);
 
         return res.status(200).json({
           status: 200,
@@ -636,7 +636,7 @@ exports.custDashboardInfo = async (req, res) => {
 
 exports.uploadExcelCustomer = async (req, res) => {
   const { excelData, prefix } = req.body;
-  const { dairy_id, centerid, user_role } = req.user;
+  const { dairy_id, center_id, user_role } = req.user;
 
   const designation = "Customer";
   const isAdmin = "0";
@@ -695,7 +695,7 @@ exports.uploadExcelCustomer = async (req, res) => {
         // Check if customer exists
         const existingCustomer = await query(
           `SELECT cid FROM customer WHERE orgid = ? AND centerid = ? AND srno = ? AND ctype = 1`,
-          [dairy_id, centerid, Code]
+          [dairy_id, center_id, Code]
         );
 
         if (existingCustomer.length > 0) {
@@ -744,7 +744,7 @@ exports.uploadExcelCustomer = async (req, res) => {
               Mobile,
               dairy_id,
               customerId,
-              centerid,
+              center_id,
               customerId,
             ]
           );
@@ -778,7 +778,7 @@ exports.uploadExcelCustomer = async (req, res) => {
               fax,
               dairy_id,
               Marathi_Name,
-              centerid,
+              center_id,
               Code,
               Pincode,
               Addhar_No || null,
@@ -810,7 +810,7 @@ exports.uploadExcelCustomer = async (req, res) => {
               Mobile,
               dairy_id,
               customerid,
-              centerid,
+              center_id,
             ]
           );
         }
@@ -820,7 +820,7 @@ exports.uploadExcelCustomer = async (req, res) => {
       connection.release();
 
       // Remove cached customer list
-      const cacheKey = `customerList_${dairy_id}_${centerid}`;
+      const cacheKey = `customerList_${dairy_id}_${center_id}`;
       cache.del(cacheKey);
 
       return res.status(200).json({

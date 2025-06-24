@@ -29,9 +29,11 @@ const {
   updateSnfGeneral,
   updateSnfDifference,
   updateKGLiters,
+  finallyApplyRateChart,
+  updateFatToLastFat,
+  updateSnfToLastSnf,
 } = require("../Controllers/MilkController");
 const verifyToken = require("../Middlewares/VerifyToken");
-const { applyRateChart } = require("../Controllers/RatechartController");
 
 const router = express.Router();
 
@@ -75,14 +77,24 @@ router
   .route("/retail/center/sale-report")
   .get(verifyToken, centerReMilkReports);
 //FAt SNF TADJOD-------------------------------------------------------------------------------------------------------->
-router.route("/update/fat").put(verifyToken, updateFatGeneral, applyRateChart);
+router
+  .route("/update/fat")
+  .put(verifyToken, updateFatGeneral, finallyApplyRateChart);
+router
+  .route("/update/previous/fat")
+  .put(verifyToken, updateFatToLastFat, finallyApplyRateChart);
 router
   .route("/update/fat-diff")
-  .put(verifyToken, updateFatDifference, applyRateChart);
-router.route("/update/snf").put(verifyToken, updateSnfGeneral, applyRateChart);
+  .put(verifyToken, updateFatDifference, finallyApplyRateChart);
+router
+  .route("/update/snf")
+  .put(verifyToken, updateSnfGeneral, finallyApplyRateChart);
+router
+  .route("/update/previous/snf")
+  .put(verifyToken, updateSnfToLastSnf, finallyApplyRateChart);
 router
   .route("/update/snf-diff")
-  .put(verifyToken, updateSnfDifference, applyRateChart);
+  .put(verifyToken, updateSnfDifference, finallyApplyRateChart);
 router.route("/convert/kg-ltr/ltr-kg").put(verifyToken, updateKGLiters);
 
 // Customer Routes
