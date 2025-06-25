@@ -235,72 +235,6 @@ const Sanghsales = ({ clsebtn, isModalOpen, editData }) => {
     }
   };
 
-  // Fetch and process center milk data --------------------------------------------------------->
-  const fetchCenterMilkData = async () => {
-    try {
-      const data = await dispatch(
-        getCenterMSales({
-          date: values.date,
-          centerid: values.centerid,
-          collectedBy: values.collectedBy,
-          shift: values.shift,
-        })
-      ).unwrap();
-
-      if (!data || data.length === 0) return;
-
-      const totalLitres = data.reduce((acc, item) => acc + item.Litres, 0);
-      const totalAmt = data.reduce((acc, item) => acc + item.Amt, 0);
-      const totalAmount = totalAmt.toFixed(2);
-      const avgRate = totalLitres > 0 ? (totalAmt / totalLitres).toFixed(2) : 0;
-
-      const totalFatValue = data.reduce(
-        (acc, item) => acc + item.Litres * item.fat,
-        0
-      );
-      const totalSNFValue = data.reduce(
-        (acc, item) => acc + item.Litres * item.snf,
-        0
-      );
-
-      const avgFat =
-        totalLitres > 0 ? (totalFatValue / totalLitres).toFixed(1) : 0;
-      const avgSNF =
-        totalLitres > 0 ? (totalSNFValue / totalLitres).toFixed(1) : 0;
-
-      setValues((prev) => ({
-        ...prev,
-        cliters: totalLitres,
-        cfat: avgFat,
-        csnf: avgSNF,
-        crate: avgRate,
-        camt: totalAmount,
-      }));
-
-      if (values.liters && values.fat && values.snf) {
-        setValues((prev) => ({
-          ...prev,
-          dliters: Math.abs(totalLitres - values.liters).toFixed(2),
-          dfat: Math.abs(avgFat - values.fat).toFixed(1),
-          dsnf: Math.abs(avgSNF - values.snf).toFixed(1),
-          drate: Math.abs(avgRate - values.rate).toFixed(2),
-          damt: Math.abs(totalAmount - values.amt).toFixed(2),
-        }));
-      } else {
-        setValues((prev) => ({
-          ...prev,
-          dliters: 0,
-          dfat: 0,
-          dsnf: 0,
-          drate: 0,
-          damt: 0,
-        }));
-      }
-    } catch (err) {
-      console.error("Error fetching and processing milk data", err);
-    }
-  };
-
   // const calculateRateAndAmount = async () => {
   //   try {
   //     const { fat, snf, liters, rcName } = values;
@@ -453,10 +387,7 @@ const Sanghsales = ({ clsebtn, isModalOpen, editData }) => {
       id="sanghasles"
       className="sangh-milk-sales-container w100 h1 d-flex-col a-center p10"
     >
-      <form
-        onSubmit={handleSanghaSales}
-        className="milk-col-form w65 h1 d-flex-col bg p10"
-      >
+      <form className="milk-col-form w65 h1 d-flex-col bg p10">
         {isModalOpen ? (
           <div className="heading-and-close-btn-container w100 d-flex sb p10">
             {editData ? (
@@ -782,7 +713,7 @@ const Sanghsales = ({ clsebtn, isModalOpen, editData }) => {
                   type="submit"
                   ref={submitbtn}
                   disabled={status === "loading"}
-                  onClick={fetchCenterMilkData}
+                  onClick={handleSanghaSales}
                 >
                   {status === "loading" ? "सेव्ह करत आहोत..." : `सेव्ह करा`}
                 </button>

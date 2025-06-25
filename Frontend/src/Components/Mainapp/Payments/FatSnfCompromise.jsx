@@ -1,12 +1,24 @@
 import { useEffect, useState } from "react";
+import { toast } from "react-toastify";
 import "../../../Styles/Mainapp/Payments//FatSnfCompromise.css";
 import { useDispatch, useSelector } from "react-redux";
-import { updateGeneralFat } from "../../../App/Features/Mainapp/Milk/FatSnfSlice";
+import {
+  convertKgLiters,
+  updateDiffFat,
+  updateDiffSnf,
+  updateGeneralFat,
+  updateGeneralSnf,
+  updatePreviousFat,
+  updatePreviousSnf,
+} from "../../../App/Features/Mainapp/Milk/FatSnfSlice";
 import { getMaxCustNo } from "../../../App/Features/Mainapp/Masters/custMasterSlice";
 const FatSnfCompromise = () => {
   const dispatch = useDispatch();
   const tDate = useSelector((state) => state.date?.toDate);
   const custno = useSelector((state) => state.customer?.maxCustNo);
+  const fatstatus = useSelector((state) => state.fatsnf?.fatstatus);
+  const snfstatus = useSelector((state) => state.fatsnf?.snfstatus);
+  const convertKLstatus = useSelector((state) => state.fatsnf?.convertKLstatus);
 
   const initialValues = {
     fromDate: "",
@@ -27,10 +39,17 @@ const FatSnfCompromise = () => {
 
   const handleInputs = (e) => {
     const { name, value, type } = e.target;
-    setValues((prevData) => ({
-      ...prevData,
-      [name]: type === "radio" ? Number(value) : value,
-    }));
+    if (type === "radio") {
+      setValues((prevData) => ({
+        ...prevData,
+        [name]: Number(value),
+      }));
+    } else {
+      setValues((prevData) => ({
+        ...prevData,
+        [name]: value,
+      }));
+    }
   };
 
   useEffect(() => {
@@ -49,22 +68,200 @@ const FatSnfCompromise = () => {
     }));
   }, [custno, tDate]);
 
-  const handleFatUpdates = () => {
-    // console.log("values", values);
-    if (values.fatOption === "0") {
-      console.log("values 0", values);
-    } else if (values.fatOption === "1") {
-      console.log("values 1", values);
-    } else {
-      console.log("values 2", values);
-    }
-    // dispatch(
-    //   updateGeneralFat({ fromDate, toDate, custFrom, custTo, fat: fatAmt })
-    // );
+  const handleResetFatData = () => {
+    setValues((prevFormData) => ({
+      ...prevFormData,
+      fatOption: "",
+      fatAmt: "",
+    }));
   };
+  const handleResetSnfData = () => {
+    setValues((prevFormData) => ({
+      ...prevFormData,
+      snfOption: "",
+      snfAmt: "",
+    }));
+  };
+
+  // handling fat updates ------------------------------------------------------->
+  const handleFatUpdates = async () => {
+    if (!values.shift) {
+      return toast.error("Please select shift to update Records!");
+    }
+
+    if (values.fatOption === 0) {
+      const responce = await dispatch(
+        updateGeneralFat({
+          fromDate: values.fromDate,
+          toDate: values.toDate,
+          shift: values.shift,
+          custFrom: values.custFrom,
+          custTo: values.custTo,
+          fat: values.fatAmt,
+        })
+      ).unwrap();
+      if (responce.status === 200) {
+        handleResetFatData();
+        toast.success("General fat and Rates is updated successfully!");
+      } else if (responce.status === 204) {
+        toast.error("Milk Collection not found to update general fat.");
+      } else {
+        toast.error("Failed to update general fat.");
+      }
+    } else if (values.fatOption === 1) {
+      const responce = await dispatch(
+        updatePreviousFat({
+          fromDate: values.fromDate,
+          toDate: values.toDate,
+          shift: values.shift,
+          custFrom: values.custFrom,
+          custTo: values.custTo,
+        })
+      ).unwrap();
+      if (responce.status === 200) {
+        handleResetFatData();
+        toast.success("Previous fat and Rates is updated successfully!");
+      } else if (responce.status === 204) {
+        toast.error("Milk Collection not found to update previous fat.");
+      } else {
+        toast.error("Failed to update previous fat.");
+      }
+    } else if (values.fatOption === 2) {
+      const responce = await dispatch(
+        updateDiffFat({
+          fromDate: values.fromDate,
+          toDate: values.toDate,
+          shift: values.shift,
+          custFrom: values.custFrom,
+          custTo: values.custTo,
+          fatDiff: values.fatAmt,
+        })
+      ).unwrap();
+      if (responce.status === 200) {
+        handleResetFatData();
+        toast.success("Difference fat and Rates is updated successfully!");
+      } else if (responce.status === 204) {
+        toast.error("Milk Collection not found to update difference fat.");
+      } else {
+        toast.error("Failed to update defference fat.");
+      }
+    } else {
+      toast.error("फॅट बदलण्यासाठी कुठलाही पर्याय निवडलेला नाही!");
+    }
+  };
+
+  // handling snf updates ------------------------------------------------------->
+  const handleSnfUpdates = async () => {
+    if (!values.shift) {
+      return toast.error("Please select shift to update Records!");
+    }
+    if (values.snfOption === 0) {
+      const responce = await dispatch(
+        updateGeneralSnf({
+          fromDate: values.fromDate,
+          toDate: values.toDate,
+          shift: values.shift,
+          custFrom: values.custFrom,
+          custTo: values.custTo,
+          snf: values.snfAmt,
+        })
+      ).unwrap();
+      if (responce.status === 200) {
+        handleResetSnfData();
+        toast.success("General snf and Rates is updated successfully!");
+      } else if (responce.status === 204) {
+        toast.error("Milk Collection not found to update general snf.");
+      } else {
+        toast.error("Failed to update general snf.");
+      }
+    } else if (values.snfOption === 1) {
+      const responce = await dispatch(
+        updatePreviousSnf({
+          fromDate: values.fromDate,
+          toDate: values.toDate,
+          shift: values.shift,
+          custFrom: values.custFrom,
+          custTo: values.custTo,
+        })
+      ).unwrap();
+      if (responce.status === 200) {
+        handleResetSnfData();
+        toast.success("Previous snf and Rates is updated successfully!");
+      } else if (responce.status === 204) {
+        toast.error("Milk Collection not found to update previous snf.");
+      } else {
+        toast.error("Failed to update previous snf.");
+      }
+    } else if (values.snfOption === 2) {
+      const responce = await dispatch(
+        updateDiffSnf({
+          fromDate: values.fromDate,
+          toDate: values.toDate,
+          shift: values.shift,
+          custFrom: values.custFrom,
+          custTo: values.custTo,
+          snfDiff: values.snfAmt,
+        })
+      ).unwrap();
+      if (responce.status === 200) {
+        handleResetSnfData();
+        toast.success("Difference snf and Rates is updated successfully!");
+      } else if (responce.status === 204) {
+        toast.error("Milk Collection not found to update difference snf.");
+      } else {
+        toast.error("Failed to update defference snf.");
+      }
+    } else {
+      toast.error("एस.एन.एफ बदलण्यासाठी कुठलाही पर्याय निवडलेला नाही!");
+    }
+  };
+
+  const handleResetBtn = (e) => {
+    e.preventDefault();
+    setValues((prevFormData) => ({
+      ...prevFormData,
+      shift: "",
+      fatOption: "",
+      fatAmt: "",
+      snfOption: "",
+      snfAmt: "",
+      literOption: "",
+      ltrAmt: "",
+      milkIn: "",
+      milkAmt: "",
+    }));
+  };
+
+  const handleConvertKL = async (e) => {
+    e.preventDefault();
+    const responce = await dispatch(
+      convertKgLiters({
+        fromDate: values.fromDate,
+        toDate: values.toDate,
+        shift: values.shift,
+        custFrom: values.custFrom,
+        custTo: values.custTo,
+        milkIn: values.milkIn,
+        amount: values.milkAmt,
+      })
+    ).unwrap();
+    const unit = values.milkIn === 0 ? "KG" : "Liter";
+    const unit2 = values.milkIn === 0 ? "Liter" : "KG";
+    if (responce.status === 200) {
+      handleResetSnfData();
+      toast.success(
+        `Milk collection from ${unit} to ${unit2} converted successfully!`
+      );
+    } else if (responce.status === 204) {
+      toast.error("Milk Collection not found for conversion!");
+    } else {
+      toast.error("Failed to convert milk collection!");
+    }
+  };
+
   return (
     <div className="fatsnf-container w100 h1 d-flex-col sb p10">
-      <span className="px10 heading">FAT-SNF तडजोड :</span>
+      <span className="px10 heading">फॅट-एस.एन.एफ तडजोड :</span>
       <div className="first-half-snf-fat-container w100 h25 d-flex-col sa p10 bg">
         <div className="fat-snf-update-details-div w70 h50 d-flex a-center sb">
           <div className="from-date-snf-fat w45 d-flex a-center sb">
@@ -81,26 +278,29 @@ const FatSnfCompromise = () => {
               onChange={handleInputs}
             />
           </div>
-          <div className="to-date-snf-fat w45  d-flex a-center sb">
-            <label htmlFor="tdate" className="w40 label-text">
-              पर्यत:
-            </label>
-            <input
-              id="tdate"
-              className="data w60"
-              type="date"
-              name="toDate"
-              max={tDate}
-              value={values.toDate}
-              onChange={handleInputs}
-            />
-          </div>
+          {values.fatOption !== 1 && values.snfOption !== 1 ? (
+            <div className="to-date-snf-fat w45  d-flex a-center sb">
+              <label htmlFor="tdate" className="w40 label-text">
+                पर्यत:
+              </label>
+              <input
+                id="tdate"
+                className="data w60"
+                type="date"
+                name="toDate"
+                max={tDate}
+                value={values.toDate}
+                onChange={handleInputs}
+              />
+            </div>
+          ) : null}
         </div>
-        <div className="fat-snf-update-details-div w100 h50 d-flex a-center">
-          <div className="radio-button-mrg-eve w50 d-flex">
+        <div className="fat-snf-update-details-div w100 h50 d-flex a-center sb">
+          <div className="radio-button-mrg-eve w40 d-flex sb">
             <div className="morning-snf-div w30 d-flex a-center sa">
               <input
                 id="mrg"
+                className="w20 h1"
                 type="radio"
                 name="shift"
                 value={0}
@@ -114,6 +314,7 @@ const FatSnfCompromise = () => {
             <div className="morning-snf-div w30 d-flex a-center sa">
               <input
                 id="eve"
+                className="w20 h1"
                 type="radio"
                 name="shift"
                 value={1}
@@ -127,6 +328,7 @@ const FatSnfCompromise = () => {
             <div className="morning-snf-div w30 d-flex a-center sa">
               <input
                 id="both"
+                className="w20 h1"
                 type="radio"
                 name="shift"
                 value={2}
@@ -138,14 +340,14 @@ const FatSnfCompromise = () => {
               </label>
             </div>
           </div>
-          <div className="codeno-fat-snf-div w50 d-flex sa">
-            <div className="from-code-snf-fat w40 d-flex a-center">
+          <div className="codeno-fat-snf-div w40 d-flex sa">
+            <div className="from-code-snf-fat w60 d-flex a-center">
               <label htmlFor="cfrom" className="px10 label-text">
                 कोड नं. पासून:
               </label>
               <input
                 id="cfrom"
-                className="data w35"
+                className="data w30"
                 type="number"
                 name="custFrom"
                 value={values.custFrom}
@@ -158,7 +360,7 @@ const FatSnfCompromise = () => {
               </label>
               <input
                 id="cto"
-                className="data w35"
+                className="data w45"
                 type="number"
                 name="custTo"
                 value={values.custTo}
@@ -166,6 +368,9 @@ const FatSnfCompromise = () => {
               />
             </div>
           </div>
+          <button type="button" className="w-btn" onClick={handleResetBtn}>
+            रद्द करा
+          </button>
         </div>
       </div>
       <div className="second-half-clr-snf-fat w100 h70 d-flex-col sa">
@@ -215,9 +420,27 @@ const FatSnfCompromise = () => {
               </label>
             </div>
           </div>
-          <div className="input-filed-updated-button-div w30 d-flex sb">
-            <input className="data w40" type="text" />
-            <button className="w-btn">बदला</button>
+          <div className="input-filed-updated-button-div w30 d-flex a-center sb">
+            {values.fatOption !== 1 ? (
+              <input
+                className="data w40 t-center"
+                type="text"
+                name="fatAmt"
+                placeholder="0.0"
+                onChange={handleInputs}
+              />
+            ) : (
+              <span className="w40"></span>
+            )}
+
+            <button
+              className="w40 btn"
+              type="button"
+              disabled={fatstatus === "loading"}
+              onClick={handleFatUpdates}
+            >
+              {fatstatus === "loading" ? "बदल करत आहोत..." : "बदला"}
+            </button>
           </div>
         </div>
         <div className="update-option-details w100 d-flex p10 a-center bg8">
@@ -266,9 +489,26 @@ const FatSnfCompromise = () => {
               </label>
             </div>
           </div>
-          <div className="input-filed-updated-button-div w30 d-flex sb">
-            <input className="data w40" type="text" />
-            <button className="w-btn">बदला</button>
+          <div className="input-filed-updated-button-div w30 d-flex a-center sb">
+            {values.snfOption !== 1 ? (
+              <input
+                className="data w40 t-center"
+                type="text"
+                name="snfAmt"
+                placeholder="0.0"
+                onChange={handleInputs}
+              />
+            ) : (
+              <span className="w40"></span>
+            )}
+            <button
+              className="w40 btn"
+              type="button"
+              disabled={snfstatus === "loading"}
+              onClick={handleSnfUpdates}
+            >
+              {snfstatus === "loading" ? "बदल करत आहोत..." : "बदला"}
+            </button>
           </div>
         </div>
 
@@ -318,9 +558,16 @@ const FatSnfCompromise = () => {
               </label>
             </div>
           </div>
-          <div className="input-filed-updated-button-div w30 d-flex sb">
-            <input id="" className="data w40" type="text" />
-            <button className="w-btn">बदला</button>
+          <div className="input-filed-updated-button-div w30 d-flex a-center sb">
+            <input
+              id=""
+              className="data w40 t-center"
+              type="text"
+              name="ltrAmt"
+              placeholder="0.0"
+              onChange={handleInputs}
+            />
+            <button className="w40 btn">बदला</button>
           </div>
         </div>
         <div className="update-option-details w100 d-flex p10 a-center bg8">
@@ -356,10 +603,17 @@ const FatSnfCompromise = () => {
             </div>
             <div className="differance-radio-button w25"></div>
           </div>
-          <div className="input-filed-updated-button-div w30 d-flex sb">
-            <input className="data w40" type="text" />
-            <button className="w-btn" onClick={handleFatUpdates}>
-              बदला
+          <div className="input-filed-updated-button-div w30 d-flex a-center sb">
+            <input
+              className="data w40 t-center"
+              type="text"
+              name="milkAmt"
+              placeholder="0.0"
+              disabled={convertKLstatus === "loading"}
+              onChange={handleInputs}
+            />
+            <button type="button" className="w40 btn" onClick={handleConvertKL}>
+              {convertKLstatus === "loading" ? "बदल करत आहोत..." : "बदला"}
             </button>
           </div>
         </div>
