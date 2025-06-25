@@ -499,8 +499,22 @@ const Mainappnavlinks = ({ setselected, handleSidebar }) => {
         {
           name: `${t("दुध बिल रिपोर्ट")}`,
           icon: <FaFileInvoiceDollar className="icon" />,
-          index: 6.10,
+          index: 6.1,
           path: "reports/Milkbill",
+          role: ["admin", "super_admin", "manager"],
+        },
+        {
+          name: `${t("दुध संघ रिपोर्ट")}`,
+          icon: <FaFileInvoiceDollar className="icon" />,
+          index: 6.11,
+          path: "reports/SanghMilkReport",
+          role: ["admin", "super_admin", "manager"],
+        },
+        {
+          name: `${t("Tankar रिपोर्ट")}`,
+          icon: <FaFileInvoiceDollar className="icon" />,
+          index: 6.12,
+          path: "reports/tanker",
           role: ["admin", "super_admin", "manager"],
         },
       ],

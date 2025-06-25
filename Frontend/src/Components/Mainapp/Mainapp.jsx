@@ -91,7 +91,9 @@ import Milkbill from "./Reports/milkBill/Milkbill";
 import AnimalMaster from "./Masters/MasterPages/AnimalMaster";
 import ReportProblem from "./DairyInfo/Centers/ReportProblem";
 import SanghPayReport from "./MilkSales/SanghsalesPages/SanghPayReport";
+import SanghMilkReport from "./Reports/MilkSanghReport/SanghMilkReport";
 import TanckerMaster from "./Masters/MasterPages/TanckerMaster";
+import TankerReport from "./Reports/TankerReport";
 
 const Mainapp = () => {
   const dispatch = useDispatch();
@@ -314,6 +316,11 @@ const Mainapp = () => {
             <Route path="reports/bank/*" element={<BankReportMaster />} />
             <Route path="reports/deduction/*" element={<Deductionlist />} />
             <Route path="reports/Milkbill/*" element={<Milkbill />} />
+            <Route
+              path="reports/SanghMilkReport/*"
+              element={<SanghMilkReport />}
+            />
+            <Route path="reports/tanker" element={<TankerReport/>} />
             {/* payment routes */}
             <Route
               path="payment/milk-correction/*"
