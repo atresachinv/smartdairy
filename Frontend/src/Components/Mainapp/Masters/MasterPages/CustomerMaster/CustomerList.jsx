@@ -97,8 +97,7 @@ const CustomerList = () => {
 
   // handle edit customer icon click  ----------------------------------------------------->
   const handleEdit = (cust_code) => {
-    console.log(cust_code);
-    navigate(`/mainapp/milk/customer/master/add-new/${cust_code}?isedit=true`);
+    navigate(`/mainapp/master/customer/add-new/${cust_code}?isedit=true`);
   };
 
   //  save only lgoin center customer list in local storage --------------------------------------->

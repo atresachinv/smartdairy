@@ -208,12 +208,12 @@ const Mainapp = () => {
             <Route path="milk/collection/*" element={<Apphome />} />
             <Route path="milk/collection/:time" element={<MilkColleform />} />
             <Route path="milk/collection/:time" element={<MilkColleform />} />
-            <Route path="milk/customer/master" element={<CustomersMaster />}>
+            {/* <Route path="milk/customer/master" element={<CustomersMaster />}>
               <Route path="list" element={<CustomerList />} />
               <Route path="add-new" element={<CreateCustomer />} />
               <Route path="add-new/:cust_code" element={<CreateCustomer />} />
-            </Route>
-            <Route path="milk/rate/master/*" element={<MilkRateMaster />} />
+            </Route> */}
+            {/* <Route path="milk/rate/master/*" element={<MilkRateMaster />} /> */}
             <Route path="milk/payment/master/*" element={<Payments />} />
             <Route
               path="milk/vehicle/milk-report"
@@ -280,13 +280,18 @@ const Mainapp = () => {
             <Route path="master/main-ledger/*" element={<MainLedger />} />
             <Route path="master/sub-ledger/*" element={<SubLedger />} />
             {/* <Route path="master/customer/*" element={<CustomersMaster />} /> */}
+            <Route path="master/customer/" element={<CustomersMaster />}>
+              <Route path="list" element={<CustomerList />} />
+              <Route path="add-new" element={<CreateCustomer />} />
+              <Route path="add-new/:cust_code" element={<CreateCustomer />} />
+            </Route>
+            <Route path="master/ratechart/*" element={<MilkRateMaster />} />
             <Route path="master/employee/*" element={<EmployeeMaster />} />
             <Route path="master/bank/*" element={<BankMaster />} />
             <Route path="master/deductions/*" element={<DeductionMaster />} />
             <Route path="master/doctor/*" element={<DoctorMaster />} />
             <Route path="master/animal" element={<AnimalMaster />} />
             <Route path="master/tancker" element={<TanckerMaster />} />
-            {/* <Route path="master/ratechart/*" element={<MilkRateMaster />} /> */}
             {/* purchase routes */}
             <Route path="purchase/cattlefeed/*" element={<PurchaseMaster />} />
             <Route

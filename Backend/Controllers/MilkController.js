@@ -2926,17 +2926,168 @@ exports.updateFatDifference = async (req, res, next) => {
 // Update last master FAT to Milk Collection of perticular master and update rate amount
 //------------------------------------------------------------------------------------------------------------------->
 
+// exports.updateFatToLastFat = async (req, res, next) => {
+//   const { fromDate, toDate, shift, custFrom, custTo, days } = req.body;
+//   const { dairy_id, center_id, user_role } = req.user;
+//   if (!dairy_id) {
+//     return res.status(401).json({ status: 401, message: "Unauthorized User!" });
+//   }
+
+//   if (!fromDate || !custFrom || !custTo) {
+//     return res.status(400).json({
+//       status: 400,
+//       message: "fromDate, custFrom, custTo are required!",
+//     });
+//   }
+
+//   const currentDate = new Date().toISOString().split("T")[0];
+//   const dairy_table = `dailymilkentry_${dairy_id}`;
+//   const batchSize = 300;
+
+//   // first we have two dates fromDate and toDate
+//   // we are going to update fat each customer for perticular dates
+//   // if fromDate is 01-04-2025 and toDate is 15-04-2025, custFrom 1, custTo 300, days 15
+//   // we are given above data where days = 15 so we have to fetch data 15 before of given date like 17-03-2025 0f fromDate
+//   // so 17-03-2025 s fat is update to 01-04-2025 , like this 18-03-2025 s fat is update to 02-04-2025 and so on till toDate
+//   // 31-03-2025 s fat is update to 15-04-2025
+//   // and other process same batch wise update
+
+//   // 1️⃣ Calculate Previous Date
+//   const newFromDate = new Date(fromDate);
+//   newFromDate.setDate(newFromDate.getDate() - 1);
+//   const prevDate = newFromDate.toISOString().split("T")[0];
+
+//   pool.getConnection((err, connection) => {
+//     if (err) {
+//       console.error("DB connection error:", err);
+//       return res.status(500).json({ status: 500, message: "Database error" });
+//     }
+
+//     // 2️⃣ Fetch previous date entries with fat
+//     const fetchEntries = (offset) => {
+//       return new Promise((resolve, reject) => {
+//         let selectQuery = `
+//           SELECT rno, fat FROM ${dairy_table}
+//           WHERE center_id = ? AND ReceiptDate = ? AND rno BETWEEN ? AND ?
+//         `;
+//         let queryParams = [center_id, prevDate, custFrom, custTo];
+
+//         if (parseInt(shift) === 2) {
+//           selectQuery += ` AND ME IN (0, 1)`;
+//         } else {
+//           selectQuery += ` AND ME = ?`;
+//           queryParams.push(shift);
+//         }
+
+//         selectQuery += ` ORDER BY id ASC LIMIT ? OFFSET ?`;
+//         queryParams.push(batchSize, offset);
+
+//         connection.query(selectQuery, queryParams, (err, results) => {
+//           if (err) return reject(err);
+//           resolve(results);
+//         });
+//       });
+//     };
+
+//     // 3️⃣ Update current date records with previous day's fat
+//     const updateBatch = (records) => {
+//       return new Promise((resolve, reject) => {
+//         if (records.length === 0) return resolve(0);
+
+//         let updateCount = 0;
+//         let completed = 0;
+
+//         records.forEach(({ rno, fat }) => {
+//           const updateQuery = `
+//             UPDATE ${dairy_table}
+//             SET fat = ?, updatedOn = ?, UpdatedBy = ?
+//             WHERE center_id = ? AND ReceiptDate = ? AND rno = ?
+//           `;
+
+//           const params = [
+//             fat,
+//             currentDate,
+//             user_role,
+//             center_id,
+//             fromDate,
+//             rno,
+//           ];
+
+//           connection.query(updateQuery, params, (err, result) => {
+//             if (err) return reject(err);
+//             updateCount += result.affectedRows;
+//             completed++;
+//             if (completed === records.length) resolve(updateCount);
+//           });
+//         });
+//       });
+//     };
+
+//     // 4️⃣ Process in batches
+//     const processBatches = async () => {
+//       try {
+//         let offset = 0;
+//         let firstRun = true;
+//         let totalUpdated = 0;
+
+//         while (true) {
+//           const rows = await fetchEntries(offset);
+
+//           if (rows.length === 0 && firstRun) {
+//             connection.release();
+//             return res.status(204).json({
+//               status: 204,
+//               message: "No records found on previous date!",
+//             });
+//           }
+
+//           firstRun = false;
+//           if (rows.length === 0) break;
+
+//           const updatedCount = await updateBatch(rows);
+//           totalUpdated += updatedCount;
+
+//           if (rows.length < batchSize) break;
+//           offset += batchSize;
+//         }
+
+//         connection.release();
+
+//         req.body = {
+//           rcfromdate: fromDate,
+//           rctodate: toDate,
+//           custFrom,
+//           custTo,
+//           success: true,
+//         };
+
+//         next();
+//       } catch (err) {
+//         console.error("Batch update error:", err);
+//         connection.release();
+//         return res.status(500).json({
+//           status: 500,
+//           message: "Error during batch update",
+//         });
+//       }
+//     };
+
+//     processBatches();
+//   });
+// };
+
 exports.updateFatToLastFat = async (req, res, next) => {
-  const { fromDate, toDate, shift, custFrom, custTo } = req.body;
+  const { fromDate, toDate, shift, custFrom, custTo, days } = req.body;
   const { dairy_id, center_id, user_role } = req.user;
+
   if (!dairy_id) {
     return res.status(401).json({ status: 401, message: "Unauthorized User!" });
   }
 
-  if (!fromDate || !custFrom || !custTo) {
+  if (!fromDate || !toDate || !custFrom || !custTo || !days) {
     return res.status(400).json({
       status: 400,
-      message: "fromDate, custFrom, custTo are required!",
+      message: "fromDate, toDate, custFrom, custTo, and days are required!",
     });
   }
 
@@ -2944,103 +3095,95 @@ exports.updateFatToLastFat = async (req, res, next) => {
   const dairy_table = `dailymilkentry_${dairy_id}`;
   const batchSize = 300;
 
-  // 1️⃣ Calculate Previous Date
-  const newFromDate = new Date(fromDate);
-  newFromDate.setDate(newFromDate.getDate() - 1);
-  const prevDate = newFromDate.toISOString().split("T")[0];
-
   pool.getConnection((err, connection) => {
     if (err) {
       console.error("DB connection error:", err);
       return res.status(500).json({ status: 500, message: "Database error" });
     }
 
-    // 2️⃣ Fetch previous date entries with fat
-    const fetchEntries = (offset) => {
-      return new Promise((resolve, reject) => {
-        let selectQuery = `
-          SELECT rno, fat FROM ${dairy_table}
-          WHERE center_id = ? AND ReceiptDate = ? AND rno BETWEEN ? AND ?
-        `;
-        let queryParams = [center_id, prevDate, custFrom, custTo];
-
-        if (parseInt(shift) === 2) {
-          selectQuery += ` AND ME IN (0, 1)`;
-        } else {
-          selectQuery += ` AND ME = ?`;
-          queryParams.push(shift);
-        }
-
-        selectQuery += ` ORDER BY id ASC LIMIT ? OFFSET ?`;
-        queryParams.push(batchSize, offset);
-
-        connection.query(selectQuery, queryParams, (err, results) => {
-          if (err) return reject(err);
-          resolve(results);
-        });
-      });
-    };
-
-    // 3️⃣ Update current date records with previous day's fat
-    const updateBatch = (records) => {
-      return new Promise((resolve, reject) => {
-        if (records.length === 0) return resolve(0);
-
-        let updateCount = 0;
-        let completed = 0;
-
-        records.forEach(({ rno, fat }) => {
-          const updateQuery = `
-            UPDATE ${dairy_table}
-            SET fat = ?, updatedOn = ?, UpdatedBy = ?
-            WHERE center_id = ? AND ReceiptDate = ? AND rno = ?
-          `;
-
-          const params = [
-            fat,
-            currentDate,
-            user_role,
-            center_id,
-            fromDate,
-            rno,
-          ];
-
-          connection.query(updateQuery, params, (err, result) => {
-            if (err) return reject(err);
-            updateCount += result.affectedRows;
-            completed++;
-            if (completed === records.length) resolve(updateCount);
-          });
-        });
-      });
-    };
-
-    // 4️⃣ Process in batches
-    const processBatches = async () => {
+    const processDateRange = async () => {
       try {
-        let offset = 0;
-        let firstRun = true;
         let totalUpdated = 0;
 
-        while (true) {
-          const rows = await fetchEntries(offset);
+        for (let i = 0; i < parseInt(days); i++) {
+          const sourceDateObj = new Date(fromDate);
+          const targetDateObj = new Date(fromDate);
 
-          if (rows.length === 0 && firstRun) {
-            connection.release();
-            return res.status(204).json({
-              status: 204,
-              message: "No records found on previous date!",
+          sourceDateObj.setDate(sourceDateObj.getDate() - parseInt(days) + i);
+          targetDateObj.setDate(targetDateObj.getDate() + i);
+
+          const sourceDate = sourceDateObj.toISOString().split("T")[0];
+          const targetDate = targetDateObj.toISOString().split("T")[0];
+
+          let offset = 0;
+
+          while (true) {
+            const rows = await new Promise((resolve, reject) => {
+              let selectQuery = `
+                SELECT rno, fat FROM ${dairy_table}
+                WHERE center_id = ? AND ReceiptDate = ? AND rno BETWEEN ? AND ?
+              `;
+              const queryParams = [center_id, sourceDate, custFrom, custTo];
+
+              if (parseInt(shift) === 2) {
+                selectQuery += ` AND ME IN (0, 1)`;
+              } else {
+                selectQuery += ` AND ME = ?`;
+                queryParams.push(shift);
+              }
+
+              selectQuery += ` ORDER BY id ASC LIMIT ? OFFSET ?`;
+              queryParams.push(batchSize, offset);
+
+              connection.query(selectQuery, queryParams, (err, results) => {
+                if (err) return reject(err);
+                resolve(results);
+              });
             });
+
+            if (rows.length === 0 && offset === 0 && i === 0) {
+              connection.release();
+              return res.status(204).json({
+                status: 204,
+                message: "No records found for source dates!",
+              });
+            }
+
+            if (rows.length === 0) break;
+
+            const updatedCount = await new Promise((resolve, reject) => {
+              let completed = 0;
+              let count = 0;
+
+              rows.forEach(({ rno, fat }) => {
+                const updateQuery = `
+                  UPDATE ${dairy_table}
+                  SET fat = ?, updatedOn = ?, UpdatedBy = ?
+                  WHERE center_id = ? AND ReceiptDate = ? AND rno = ?
+                `;
+                const params = [
+                  fat,
+                  currentDate,
+                  user_role,
+                  center_id,
+                  targetDate,
+                  rno,
+                ];
+
+                connection.query(updateQuery, params, (err, result) => {
+                  if (err) return reject(err);
+                  count += result.affectedRows;
+                  completed++;
+                  if (completed === rows.length) resolve(count);
+                });
+              });
+            });
+
+            totalUpdated += updatedCount;
+
+            if (rows.length < batchSize) break;
+            offset += batchSize;
           }
-
-          firstRun = false;
-          if (rows.length === 0) break;
-
-          const updatedCount = await updateBatch(rows);
-          totalUpdated += updatedCount;
-
-          if (rows.length < batchSize) break;
-          offset += batchSize;
         }
 
         connection.release();
@@ -3050,6 +3193,7 @@ exports.updateFatToLastFat = async (req, res, next) => {
           rctodate: toDate,
           custFrom,
           custTo,
+          updatedCount: totalUpdated,
           success: true,
         };
 
@@ -3059,12 +3203,12 @@ exports.updateFatToLastFat = async (req, res, next) => {
         connection.release();
         return res.status(500).json({
           status: 500,
-          message: "Error during batch update",
+          message: "Error during batch fat update",
         });
       }
     };
 
-    processBatches();
+    processDateRange();
   });
 };
 
@@ -3345,17 +3489,17 @@ exports.updateSnfDifference = async (req, res, next) => {
 //------------------------------------------------------------------------------------------------------------------->
 
 exports.updateSnfToLastSnf = async (req, res, next) => {
-  const { fromDate, toDate, shift, custFrom, custTo } = req.body;
+  const { fromDate, toDate, shift, custFrom, custTo, days } = req.body;
   const { dairy_id, center_id, user_role } = req.user;
 
   if (!dairy_id) {
     return res.status(401).json({ status: 401, message: "Unauthorized User!" });
   }
 
-  if (!fromDate || !custFrom || !custTo) {
+  if (!fromDate || !toDate || !custFrom || !custTo || !days) {
     return res.status(400).json({
       status: 400,
-      message: "fromDate, custFrom, and custTo are required!",
+      message: "fromDate, toDate, custFrom, custTo, and days are required!",
     });
   }
 
@@ -3363,103 +3507,95 @@ exports.updateSnfToLastSnf = async (req, res, next) => {
   const dairy_table = `dailymilkentry_${dairy_id}`;
   const batchSize = 300;
 
-  // 📅 Calculate previous date
-  const newFromDate = new Date(fromDate);
-  newFromDate.setDate(newFromDate.getDate() - 1);
-  const prevDate = newFromDate.toISOString().split("T")[0];
-
   pool.getConnection((err, connection) => {
     if (err) {
       console.error("DB connection error:", err);
       return res.status(500).json({ status: 500, message: "Database error" });
     }
 
-    // 🔍 Fetch SNF from previous day
-    const fetchEntries = (offset) => {
-      return new Promise((resolve, reject) => {
-        let selectQuery = `
-          SELECT rno, snf FROM ${dairy_table}
-          WHERE center_id = ? AND ReceiptDate = ? AND rno BETWEEN ? AND ?
-        `;
-        let queryParams = [center_id, prevDate, custFrom, custTo];
-
-        if (parseInt(shift) === 2) {
-          selectQuery += ` AND ME IN (0, 1)`;
-        } else {
-          selectQuery += ` AND ME = ?`;
-          queryParams.push(shift);
-        }
-
-        selectQuery += ` ORDER BY id ASC LIMIT ? OFFSET ?`;
-        queryParams.push(batchSize, offset);
-
-        connection.query(selectQuery, queryParams, (err, results) => {
-          if (err) return reject(err);
-          resolve(results);
-        });
-      });
-    };
-
-    // 🔄 Update SNF in current date using previous day's SNF
-    const updateBatch = (records) => {
-      return new Promise((resolve, reject) => {
-        if (records.length === 0) return resolve(0);
-
-        let updateCount = 0;
-        let completed = 0;
-
-        records.forEach(({ rno, snf }) => {
-          const updateQuery = `
-            UPDATE ${dairy_table}
-            SET snf = ?, updatedOn = ?, UpdatedBy = ?
-            WHERE center_id = ? AND ReceiptDate = ? AND rno = ?
-          `;
-
-          const params = [
-            snf,
-            currentDate,
-            user_role,
-            center_id,
-            fromDate,
-            rno,
-          ];
-
-          connection.query(updateQuery, params, (err, result) => {
-            if (err) return reject(err);
-            updateCount += result.affectedRows;
-            completed++;
-            if (completed === records.length) resolve(updateCount);
-          });
-        });
-      });
-    };
-
-    // ⚙️ Process in batches
-    const processBatches = async () => {
+    const processDateRange = async () => {
       try {
-        let offset = 0;
-        let firstRun = true;
         let totalUpdated = 0;
 
-        while (true) {
-          const rows = await fetchEntries(offset);
+        for (let i = 0; i < parseInt(days); i++) {
+          const sourceDateObj = new Date(fromDate);
+          const targetDateObj = new Date(fromDate);
 
-          if (rows.length === 0 && firstRun) {
-            connection.release();
-            return res.status(204).json({
-              status: 204,
-              message: "No records found on previous date!",
+          sourceDateObj.setDate(sourceDateObj.getDate() - parseInt(days) + i);
+          targetDateObj.setDate(targetDateObj.getDate() + i);
+
+          const sourceDate = sourceDateObj.toISOString().split("T")[0];
+          const targetDate = targetDateObj.toISOString().split("T")[0];
+
+          let offset = 0;
+
+          while (true) {
+            const rows = await new Promise((resolve, reject) => {
+              let selectQuery = `
+                SELECT rno, snf FROM ${dairy_table}
+                WHERE center_id = ? AND ReceiptDate = ? AND rno BETWEEN ? AND ?
+              `;
+              const queryParams = [center_id, sourceDate, custFrom, custTo];
+
+              if (parseInt(shift) === 2) {
+                selectQuery += ` AND ME IN (0, 1)`;
+              } else {
+                selectQuery += ` AND ME = ?`;
+                queryParams.push(shift);
+              }
+
+              selectQuery += ` ORDER BY id ASC LIMIT ? OFFSET ?`;
+              queryParams.push(batchSize, offset);
+
+              connection.query(selectQuery, queryParams, (err, results) => {
+                if (err) return reject(err);
+                resolve(results);
+              });
             });
+
+            if (rows.length === 0 && offset === 0 && i === 0) {
+              connection.release();
+              return res.status(204).json({
+                status: 204,
+                message: "No records found for source SNF dates!",
+              });
+            }
+
+            if (rows.length === 0) break;
+
+            const updatedCount = await new Promise((resolve, reject) => {
+              let completed = 0;
+              let count = 0;
+
+              rows.forEach(({ rno, snf }) => {
+                const updateQuery = `
+                  UPDATE ${dairy_table}
+                  SET snf = ?, updatedOn = ?, UpdatedBy = ?
+                  WHERE center_id = ? AND ReceiptDate = ? AND rno = ?
+                `;
+                const params = [
+                  snf,
+                  currentDate,
+                  user_role,
+                  center_id,
+                  targetDate,
+                  rno,
+                ];
+
+                connection.query(updateQuery, params, (err, result) => {
+                  if (err) return reject(err);
+                  count += result.affectedRows;
+                  completed++;
+                  if (completed === rows.length) resolve(count);
+                });
+              });
+            });
+
+            totalUpdated += updatedCount;
+
+            if (rows.length < batchSize) break;
+            offset += batchSize;
           }
-
-          firstRun = false;
-          if (rows.length === 0) break;
-
-          const updatedCount = await updateBatch(rows);
-          totalUpdated += updatedCount;
-
-          if (rows.length < batchSize) break;
-          offset += batchSize;
         }
 
         connection.release();
@@ -3469,12 +3605,13 @@ exports.updateSnfToLastSnf = async (req, res, next) => {
           rctodate: toDate,
           custFrom,
           custTo,
+          updatedCount: totalUpdated,
           success: true,
         };
 
         next();
       } catch (err) {
-        console.error("Batch update error:", err);
+        console.error("SNF batch update error:", err);
         connection.release();
         return res.status(500).json({
           status: 500,
@@ -3483,7 +3620,7 @@ exports.updateSnfToLastSnf = async (req, res, next) => {
       }
     };
 
-    processBatches();
+    processDateRange();
   });
 };
 
@@ -3547,12 +3684,15 @@ exports.updateKGLiters = async (req, res, next) => {
         });
       });
     };
+    
+    console.log("1111111111111111111");
 
     const updateMilkValues = (entries) => {
       return new Promise((resolve, reject) => {
         if (entries.length === 0) return resolve();
 
         const updates = entries.map(({ id, Litres, rate }) => {
+          console.log("first", id, Litres, rate);
           let newLtr = Litres;
 
           if (milkIn === 0) {

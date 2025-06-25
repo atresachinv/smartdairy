@@ -35,7 +35,7 @@ export const updateGeneralFat = createAsyncThunk(
 export const updatePreviousFat = createAsyncThunk(
   "fatsnf/updatePreviousFat",
   async (
-    { fromDate, toDate, shift, custFrom, custTo },
+    { fromDate, toDate, shift, custFrom, custTo, days },
     { rejectWithValue }
   ) => {
     try {
@@ -45,6 +45,7 @@ export const updatePreviousFat = createAsyncThunk(
         shift,
         custFrom,
         custTo,
+        days,
       });
       return response;
     } catch (error) {
@@ -103,7 +104,7 @@ export const updateGeneralSnf = createAsyncThunk(
 export const updatePreviousSnf = createAsyncThunk(
   "fatsnf/updatePreviousSnf",
   async (
-    { fromDate, toDate, shift, custFrom, custTo },
+    { fromDate, toDate, shift, custFrom, custTo, days },
     { rejectWithValue }
   ) => {
     try {
@@ -113,6 +114,7 @@ export const updatePreviousSnf = createAsyncThunk(
         shift,
         custFrom,
         custTo,
+        days,
       });
       return response;
     } catch (error) {

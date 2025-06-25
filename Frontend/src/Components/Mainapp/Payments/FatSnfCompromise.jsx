@@ -116,6 +116,7 @@ const FatSnfCompromise = () => {
           shift: values.shift,
           custFrom: values.custFrom,
           custTo: values.custTo,
+          days: values.fatAmt,
         })
       ).unwrap();
       if (responce.status === 200) {
@@ -182,6 +183,7 @@ const FatSnfCompromise = () => {
           shift: values.shift,
           custFrom: values.custFrom,
           custTo: values.custTo,
+          days: values.snfAmt,
         })
       ).unwrap();
       if (responce.status === 200) {
@@ -278,22 +280,21 @@ const FatSnfCompromise = () => {
               onChange={handleInputs}
             />
           </div>
-          {values.fatOption !== 1 && values.snfOption !== 1 ? (
-            <div className="to-date-snf-fat w45  d-flex a-center sb">
-              <label htmlFor="tdate" className="w40 label-text">
-                पर्यत:
-              </label>
-              <input
-                id="tdate"
-                className="data w60"
-                type="date"
-                name="toDate"
-                max={tDate}
-                value={values.toDate}
-                onChange={handleInputs}
-              />
-            </div>
-          ) : null}
+
+          <div className="to-date-snf-fat w45  d-flex a-center sb">
+            <label htmlFor="tdate" className="w40 label-text">
+              पर्यत:
+            </label>
+            <input
+              id="tdate"
+              className="data w60"
+              type="date"
+              name="toDate"
+              max={tDate}
+              value={values.toDate}
+              onChange={handleInputs}
+            />
+          </div>
         </div>
         <div className="fat-snf-update-details-div w100 h50 d-flex a-center sb">
           <div className="radio-button-mrg-eve w40 d-flex sb">
@@ -421,18 +422,13 @@ const FatSnfCompromise = () => {
             </div>
           </div>
           <div className="input-filed-updated-button-div w30 d-flex a-center sb">
-            {values.fatOption !== 1 ? (
-              <input
-                className="data w40 t-center"
-                type="text"
-                name="fatAmt"
-                placeholder="0.0"
-                onChange={handleInputs}
-              />
-            ) : (
-              <span className="w40"></span>
-            )}
-
+            <input
+              className="data w40 t-center"
+              type="text"
+              name="fatAmt"
+              placeholder="0.0"
+              onChange={handleInputs}
+            />
             <button
               className="w40 btn"
               type="button"
@@ -490,17 +486,13 @@ const FatSnfCompromise = () => {
             </div>
           </div>
           <div className="input-filed-updated-button-div w30 d-flex a-center sb">
-            {values.snfOption !== 1 ? (
-              <input
-                className="data w40 t-center"
-                type="text"
-                name="snfAmt"
-                placeholder="0.0"
-                onChange={handleInputs}
-              />
-            ) : (
-              <span className="w40"></span>
-            )}
+            <input
+              className="data w40 t-center"
+              type="text"
+              name="snfAmt"
+              placeholder="0.0"
+              onChange={handleInputs}
+            />
             <button
               className="w40 btn"
               type="button"

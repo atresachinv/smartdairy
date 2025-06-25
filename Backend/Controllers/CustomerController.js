@@ -417,16 +417,16 @@ exports.customerList = async (req, res) => {
     return res.status(401).json({ status: 401, message: "Unauthorized User!" });
   }
 
-  // const cacheKey = `customerList_${dairy_id}_${center_id}`;
+  const cacheKey = `customerList_${dairy_id}_${center_id}`;
   // Check if data exists in cache
-  // const cachedData = cache.get(cacheKey);
-  // if (cachedData) {
-  //   return res.status(200).json({
-  //     status: 200,
-  //     customerList: cachedData,
-  //     message: "Customers found!",
-  //   });
-  // }
+  const cachedData = cache.get(cacheKey);
+  if (cachedData) {
+    return res.status(200).json({
+      status: 200,
+      customerList: cachedData,
+      message: "Customers found!",
+    });
+  }
 
   // SQL Query for retrieving customers
   const getCustList =
@@ -463,7 +463,7 @@ exports.customerList = async (req, res) => {
         }
 
         // Store in cache before sending response
-        // cache.set(cacheKey, result);
+        cache.set(cacheKey, result);
 
         return res.status(200).json({
           status: 200,

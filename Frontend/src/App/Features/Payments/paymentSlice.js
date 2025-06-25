@@ -74,7 +74,6 @@ export const getPaymentsInfo = createAsyncThunk(
   }
 );
 
-
 // Transfer Milk Morning TO Evening ------------>
 export const updateMilkData = createAsyncThunk(
   "payment/updateMilkData",
@@ -400,7 +399,8 @@ export const fetchTrnDeductions = createAsyncThunk(
         params: {
           fromDate,
           toDate,
-          GlCodes,center_id
+          GlCodes,
+          center_id,
         },
       });
       return response.data.trnDeductions;
@@ -517,7 +517,8 @@ export const fetchPaymentDetails = createAsyncThunk(
       const response = await axiosInstance.get("/fetch/payment", {
         params: {
           fromdate,
-          todate, center_id
+          todate,
+          center_id,
         },
       });
       return response.data.paymentDetails;
@@ -600,16 +601,16 @@ const paymentSlice = createSlice({
         state.status = "failed";
         state.error = action.payload;
       }) // everleap data ------------------------------------------->
-      .addCase(getPaymentsInfo .pending, (state) => {
+      .addCase(getPaymentsInfo.pending, (state) => {
         state.status = "loading";
         state.error = null;
       })
-      .addCase(getPaymentsInfo .fulfilled, (state, action) => {
+      .addCase(getPaymentsInfo.fulfilled, (state, action) => {
         state.loading = false;
         state.status = "succeeded";
         state.payment = action.payload.payment;
       })
-      .addCase(getPaymentsInfo .rejected, (state, action) => {
+      .addCase(getPaymentsInfo.rejected, (state, action) => {
         state.loading = false;
         state.status = "failed";
         state.error = action.payload;

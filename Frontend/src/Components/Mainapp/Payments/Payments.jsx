@@ -62,7 +62,7 @@ const Payments = ({ setCurrentPage }) => {
   const [payStatus, setPayStatus] = useState(false);
   const [selectedCenter, setSelectedCenter] = useState("");
   const [payShowStatus, setPayShowStatus] = useState(false);
-  
+
   const initialData = {
     billDate: "",
     vcDate: "",
@@ -745,6 +745,7 @@ const Payments = ({ setCurrentPage }) => {
           fetchPaymentDetails({
             fromdate: formData.fromDate,
             todate: formData.toDate,
+            center_id: formData.center_id,
           })
         ).unwrap();
 
@@ -752,6 +753,7 @@ const Payments = ({ setCurrentPage }) => {
           fetchMilkPaydata({
             fromDate: formData.fromDate,
             toDate: formData.toDate,
+            center_id: formData.center_id,
           })
         ).unwrap();
 
@@ -765,6 +767,7 @@ const Payments = ({ setCurrentPage }) => {
             fromDate: formData.fromDate,
             toDate: formData.toDate,
             GlCodes: otherDeduction,
+            center_id: formData.center_id,
           })
         ).unwrap();
       } else {
