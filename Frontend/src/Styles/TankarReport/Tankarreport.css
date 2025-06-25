@@ -1,0 +1,58 @@
+.Tankerreport-milk-table {
+  overflow-x: auto;
+}
+.Tanker-report-table-header {
+  min-width: 1000px;
+  position: sticky;
+  top: 0;
+  background-color: #17acc0;
+  padding: 5px 0;
+}
+.Tanker-report-data-table-row {
+  min-width: 1000px;
+  padding: 5px 0;
+}
+.tanker-report-total-row {
+  min-width: 1000px;
+}
+@media screen and (max-width: 425px) {
+  .tankar-Report-outer-container {
+    min-height: auto;
+  }
+  .tankar-report-form-div .tankar-report-from-to-date-div .tankar-from-div {
+    width: 50%;
+  }
+  .tankar-report-form-div
+    .tankar-report-from-to-date-div
+    .tankar-from-div
+    input {
+    width: 135px;
+    margin-right: 20px;
+  }
+  .tankar-report-form-div .tankar-report-from-to-date-div .tatankar-to-div {
+    width: 50%;
+  }
+  .tankar-report-form-div .tankar-report-from-to-date-div .tankar-to-div input {
+    width: 135px;
+    margin-left: 20px;
+  }
+  .tankar-report-form-div .select-tankers-button-div {
+    flex-direction: column;
+    min-height: fit-content;
+  }
+  .tankar-report-form-div .select-tankers-button-div .select-master-div {
+    width: 100%;
+    margin-bottom: 10px;
+  }
+  .tankar-report-form-div .select-tankers-button-div .select-master-div span {
+    width: 210px;
+  }
+  .tankar-report-form-div .select-tankers-button-div .tankers-button-div {
+    width: 100%;
+
+  }
+  .Tankerreport-milk-table {
+    height: 65%;
+  }
+
+}

@@ -24,14 +24,14 @@ exports.fetchCenterMilkColl = async (req, res) => {
     getMilkData = `
       SELECT fat, snf, rate, Litres, Amt 
       FROM ${dairy_table} 
-      WHERE companyid = ? AND ReceiptDate = ? AND center_id = ? 
+      WHERE ReceiptDate = ? AND center_id = ? 
         AND ME = ? AND isDeleted = 0
   `;
   } else {
     getMilkData = `
       SELECT fat, snf, rate, Litres, Amt 
       FROM ${dairy_table} 
-      WHERE companyid = ? AND ReceiptDate = ? AND center_id = ? 
+      WHERE ReceiptDate = ? AND center_id = ? 
         AND userid = ? AND ME = ? AND isDeleted = 0
     `;
   }

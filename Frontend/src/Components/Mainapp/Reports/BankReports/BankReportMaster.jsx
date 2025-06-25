@@ -1165,7 +1165,12 @@ const BankReportMaster = () => {
               </thead>
               <tbody>
                 {displayedBankDetails.map((bank, index) => (
-                  <tr key={index}>
+                  <tr
+                    key={index}
+                    style={{
+                      backgroundColor: index % 2 === 0 ? "#faefe3" : "#fff",
+                    }}
+                  >
                     <td>{bank.bankcode}</td>
                     <td>{bank.srno}</td>
                     <td>{bank.bankname}</td>
@@ -1175,6 +1180,7 @@ const BankReportMaster = () => {
                   </tr>
                 ))}
               </tbody>
+
               <tfoot>
                 <tr>
                   <td

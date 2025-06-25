@@ -510,6 +510,7 @@ const SanghMilkReport = () => {
           <div className="milk-sangh-report-table-data w100 h60 d-flex sa bg">
             <span className="label-text w20">
               {fromDate} TO {toDate}
+              
             </span>
             <span className="label-text w10">{totalDairyMilk.toFixed(2)}</span>
             <span className="label-text w10">{totalGoodMilk.toFixed(2)}</span>

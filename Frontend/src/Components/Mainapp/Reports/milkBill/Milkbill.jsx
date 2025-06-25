@@ -908,7 +908,7 @@ const Milkbill = () => {
     const dateStr = new Date().toLocaleDateString("hi-IN");
 
     let bodyRows = "";
-
+   
     if (deduction.length > 0) {
       deduction.forEach((item, index) => {
         bodyRows += `

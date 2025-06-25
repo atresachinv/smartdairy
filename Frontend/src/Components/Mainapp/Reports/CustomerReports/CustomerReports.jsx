@@ -19,9 +19,7 @@ const CustomerReports = () => {
   const [isSabhasadFilter, setIsSabhasadFilter] = useState("All");
   const [selectedCenterId, setSelectedCenterId] = useState("");
 
-  const centerList = useSelector(
-    (state) => state.center.centersList || []
-  );
+  const centerList = useSelector((state) => state.center.centersList || []);
 
   // Function to handle selection change
   const handleCenterChange = (event) => {
@@ -186,10 +184,10 @@ const CustomerReports = () => {
     // Create worksheet and workbook
     const worksheet = XLSX.utils.json_to_sheet(filteredExcelData);
     const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Milk Collection Report");
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Customer Report");
 
     // Export Excel file
-    XLSX.writeFile(workbook, "Milk_Collection_Report.xlsx");
+    XLSX.writeFile(workbook, "Customer_Report.xlsx");
   };
 
   const exportToPDF = () => {
@@ -257,67 +255,157 @@ const CustomerReports = () => {
     });
 
     // Save the PDF
-    doc.save("Milk_Collection_Report.pdf");
+    doc.save("Customer Report.pdf");
   };
+
+  // const handlePrint = () => {
+  //   const dairyName = dairyname;
+  //   const cityName = CityName;
+  //   const reportTitle = "Customer Report";
+  //   const fromDate = "2025-01-01";
+  //   const toDate = "2025-01-31";
+
+  //   const tableElement = document.getElementById("customer-table");
+  //   if (!tableElement) {
+  //     alert("Customer table not found!");
+  //     return;
+  //   }
+
+  //   const printContents = tableElement.outerHTML;
+
+  //   const fullHTML = `
+  //     <html>
+  //       <head>
+  //         <title>Print</title>
+  //         <style>
+  //           body {
+  //             font-family: Arial, sans-serif;
+  //             margin: 20px;
+  //           }
+  //           h1, h2, h3 {
+  //             text-align: center;
+  //             margin: 5px 0;
+  //           }
+  //           table {
+  //             width: 100%;
+  //             border-collapse: collapse;
+  //             margin-top: 20px;
+  //           }
+  //           th, td {
+  //             border: 1px solid #000;
+  //             text-align: left;
+  //             padding: 8px;
+  //           }
+  //           th {
+  //             background-color: #f2f2f2;
+  //           }
+  //         </style>
+  //       </head>
+  //       <body>
+  //         <h1>${dairyName}</h1>
+  //         <h2>City: ${cityName}</h2>
+  //         <h3>${reportTitle}</h3>
+  //         <h4>From: ${fromDate} To: ${toDate}</h4>
+  //         ${printContents}
+  //       </body>
+  //     </html>
+  //   `;
+
+  //   const newWindow = window.open("", "_blank");
+  //   newWindow.document.write(fullHTML);
+  //   newWindow.document.close();
+  //   newWindow.print();
+  // };
+
+  // Map the keys as options
 
   const handlePrint = () => {
-    const dairyName = dairyname; // Replace with the actual dairy name
-    const cityName = CityName; // Replace with the actual city name
-    const reportTitle = "Customer Report";
+    if (filteredData.length === 0) {
+      alert("No data available to print.");
+      return;
+    }
 
-    // Example dates - replace with dynamic values
-    const fromDate = "2025-01-01"; // Replace with actual from date
-    const toDate = "2025-01-31"; // Replace with actual to date
+    // Helper to format dates
+    const formatDate = (date) => (date ? date.split("T")[0] : "N/A");
 
-    // Fetch the customer table content
-    const printContents = document.getElementById("customer-table").outerHTML;
+    // From and To dates
+    const fromDate = formatDate(filteredData[0]?.createdon);
+    const toDate = formatDate(filteredData[filteredData.length - 1]?.createdon);
 
-    // Construct the full HTML for printing
-    const fullHTML = `
-    <html>
-      <head>
-        <title>Print</title>
-        <style>
-          body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-          }
-          h1, h2, h3 {
-            text-align: center;
-            margin: 5px 0;
-          }
-          table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-          }
-          th, td {
-            border: 1px solid #000;
-            text-align: left;
-            padding: 8px;
-          }
-          th {
-            background-color: #f2f2f2;
-          }
-        </style>
-      </head>
-      <body>
-        <h1>${dairyName}</h1>
-        <h2>City: ${cityName}</h2>
-        <h3>${reportTitle}</h3>
-        <h4>From: ${fromDate} To: ${toDate}</h4>
-        ${printContents}
-      </body>
-    </html>
-  `;
+    // Unique cities
+    const uniqueCities = [
+      ...new Set(filteredData.map((item) => item.city || "Unknown City")),
+    ];
+    const cityName = uniqueCities.join(", ");
 
-    // Open a new window for printing
-    const newWindow = window.open("", "_blank");
-    newWindow.document.write(fullHTML);
-    newWindow.document.close();
-    newWindow.print();
+    // Columns & rows
+    const columns = Object.values(selectedColumns).filter(Boolean);
+    const rows = filteredData.map((row) =>
+      columns.map((col) => row[col] || "N/A")
+    );
+
+    // HTML table header
+    const tableHeader = columns.map((col) => `<th>${col}</th>`).join("");
+
+    // HTML table rows
+    const tableRows = rows
+      .map(
+        (row) => `<tr>${row.map((cell) => `<td>${cell}</td>`).join("")}</tr>`
+      )
+      .join("");
+
+    // Full HTML content
+    const htmlContent = `
+      <html>
+        <head>
+          <title>Milk Collection Report</title>
+          <style>
+            body {
+              font-family: Arial, sans-serif;
+              padding: 20px;
+            }
+            h1, h2, h3, h4 {
+              text-align: center;
+              margin: 5px 0;
+            }
+            table {
+              width: 100%;
+              border-collapse: collapse;
+              margin-top: 20px;
+            }
+            th, td {
+              border: 1px solid #000;
+              padding: 6px;
+              text-align: center;
+              font-size: 13px;
+            }
+            th {
+              background-color: #f2f2f2;
+            }
+          </style>
+        </head>
+        <body>
+          <h1>${dairyname}</h1>
+        
+          <h3>Milk Collection Report</h3>
+          <h4>From: ${fromDate} To: ${toDate}</h4>
+  
+          <table>
+            <thead><tr>${tableHeader}</tr></thead>
+            <tbody>${tableRows}</tbody>
+          </table>
+        </body>
+      </html>
+    `;
+
+    // Open and print
+    const printWindow = window.open("", "_blank");
+    printWindow.document.write(htmlContent);
+    printWindow.document.close();
+    printWindow.focus();
+    printWindow.print();
   };
-  // Map the keys as options
+
   const dropdown = Object.keys(columnOptions).map((key, idx) => (
     <option key={idx} value={columnOptions[key]}>
       {key} {/* This will display the column names */}
@@ -487,6 +575,7 @@ const CustomerReports = () => {
               ) : (
                 displayedData.map((row, rowIndex) => (
                   <tr key={rowIndex}>
+                    
                     {Object.values(selectedColumns)
                       .filter(Boolean)
                       .map((col, colIndex) => (
