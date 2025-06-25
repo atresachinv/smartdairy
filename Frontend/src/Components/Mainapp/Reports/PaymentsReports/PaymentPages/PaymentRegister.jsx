@@ -555,12 +555,19 @@ const PaymentRegister = ({ showbtn, setCurrentPage }) => {
             </thead>
             <tbody>
               {filteredDeductions.map((data, index) => (
-                <tr key={index}>
+                <tr
+                  key={index}
+                  style={{
+                    backgroundColor: index % 2 === 0 ? "#faefe3" : "#fff",
+                  }}
+                >
                   <td>{data.Code}</td>
                   <td>{data.customerName}</td>
+
                   {dnames.map((dname) => (
                     <td key={dname}>{data[dname] || 0}</td>
                   ))}
+
                   <td>{data.tliters}</td>
                   <td>
                     {data.tliters > 0
@@ -573,6 +580,7 @@ const PaymentRegister = ({ showbtn, setCurrentPage }) => {
                 </tr>
               ))}
             </tbody>
+
             <tfoot>
               <tr>
                 <td colSpan={2}>

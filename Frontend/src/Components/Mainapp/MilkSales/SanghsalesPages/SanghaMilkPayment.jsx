@@ -91,8 +91,9 @@ const SanghaMilkPayment = ({ clsebtn, todate, editData }) => {
   // fillter data over sanghaid  from sanghaSales------------------------------------------>
   useEffect(() => {
     const sanghaMilkDetails = sanghaSales?.filter(
-      (sangh) => sangh?.sanghid.toString() === sanghid
+      (sangh) => sangh?.sanghid.toString() === sanghid.toString()
     );
+    console.log(sanghaMilkDetails);
     setSMData(sanghaMilkDetails);
   }, [sanghaSales, sanghid]);
 
@@ -113,7 +114,8 @@ const SanghaMilkPayment = ({ clsebtn, todate, editData }) => {
       setSanghLedger(updatedLedger);
     }
   };
-
+console.log("sanghaSales", sanghaSales);
+console.log("sanghaList", sanghaList);
   // Calculate total amount only when sanghaLedger changes
   const totalAmount = useMemo(() => {
     if (editData) {

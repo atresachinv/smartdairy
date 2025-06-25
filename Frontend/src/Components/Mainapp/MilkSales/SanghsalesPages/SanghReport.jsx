@@ -28,7 +28,9 @@ const SanghReport = () => {
   const [selectedMilk, setSelectedMilk] = useState(null);
   const [fromDate, setFromDate] = useState(tDate);
   const [toDate, setToDate] = useState(tDate);
+   
 
+  console.log("sanghaMilkColl", sanghaMilkColl);
   useEffect(() => {
     dispatch(fetchSanghaList());
   }, []);
@@ -51,7 +53,7 @@ const SanghReport = () => {
       cancelButtonColor: "#d33",
       confirmButtonText: "Yes, delete it!",
     });
-
+    
     if (result.isConfirmed) {
       if (id) {
         const res = await dispatch(deletesanghaMilkColl({ id })).unwrap();
@@ -67,6 +69,8 @@ const SanghReport = () => {
       }
     }
   };
+
+  
   return (
     <div className="sanghsale-report-container w100 h1 d-flex-col p10 sb">
       <span className="heading mx10">संघ दुध पेमेंट :</span>

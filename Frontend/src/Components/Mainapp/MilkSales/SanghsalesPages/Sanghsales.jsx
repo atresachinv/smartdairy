@@ -511,6 +511,7 @@ const Sanghsales = ({ clsebtn, isModalOpen, editData }) => {
               onKeyDown={(e) => handleKeyDown(e, fdateRef)}
               ref={timeRef}
             >
+              <option value="">-- निवडा --</option>
               {tankerList.length > 0 &&
                 tankerList.map((tanker, i) => (
                   <option key={i} value={tanker.tno}>

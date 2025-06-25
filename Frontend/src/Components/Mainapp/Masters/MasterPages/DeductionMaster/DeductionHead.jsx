@@ -459,6 +459,12 @@ const DeductionHead = () => {
                 className="Deductionhead-table-data-container w100  h20 d-flex sa a-center"
                 key={item.id}
               >
+                <tr
+                  key={item.id}
+                  style={{
+                    backgroundColor: item.id % 2 === 0 ? "#faefe3" : "#fff",
+                  }}
+                ></tr>
                 <span
                   className="w10"
                   onClick={() => handleEdit(item.id)}

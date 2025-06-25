@@ -967,10 +967,14 @@ const SalesReport = () => {
             </tr>
           ) : (
             filteredData.map((item, index) => {
+              style = {
+                backgroundColor: index % 2 === 0 ? "#faefe3" : "#fff",
+              };
               const rowStyle = {
                 backgroundColor: "inherit",
                 cursor: "default",
               };
+            
               switch (selectedReport) {
                 case "Sale Register":
                   return (

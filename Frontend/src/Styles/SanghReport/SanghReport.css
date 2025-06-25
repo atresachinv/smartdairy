@@ -62,19 +62,6 @@
   overflow-x: auto;
 }
 
-/* ad.
-
-/* Alternate row coloring */
-
-/* Hover effect for rows */
-
-/* Cell styling */
-.label-text {
-  text-align: left;
-
-  overflow: hidden;
-}
-
 /* Fixed header implementation */
 .sangha-tabledata-section-div {
   position: relative;
