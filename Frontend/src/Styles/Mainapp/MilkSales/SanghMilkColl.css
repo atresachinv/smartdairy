@@ -78,7 +78,7 @@
   .sangha-from-to-datediv-container {
     width: 65%;
   }
-  .sangha-sales-buttons-div button {
+  .sangha-from-to-datediv-container .sangha-sales-buttons-divs button {
     width: 45%;
   }
   .Daybook-button-div button {
@@ -105,12 +105,13 @@
     width: 100%;
     margin-bottom: 10px;
   }
-  .sangha-sales-date-buttons-div .sangha-sales-buttons-div {
+  .sangha-sales-date-buttons-div .sangha-sales-buttons-divs {
+    width: 100%;
     min-height: fit-content;
     flex-direction: row-reverse;
     margin-bottom: 10px;
   }
-  .sangha-sales-date-buttons-div .sangha-sales-buttons-div button {
+  .sangha-sales-date-buttons-div .sangha-sales-buttons-divs button {
     width: 45%;
   }
 
@@ -251,6 +252,7 @@
   }
   .sanghsale-report-container .sangha-sales-buttons-div button {
     width: 100%;
+    margin-bottom: 10px;
   }
   .sanghsale-report-container .sangha-details-table-container {
     overflow-x: auto;

@@ -32,6 +32,7 @@ import "../../../Styles/Mainapp/Dashbaord/Dashboard.css";
 import { getCenterSetting } from "../../../App/Features/Mainapp/Settings/dairySettingSlice";
 import { listEmployee } from "../../../App/Features/Mainapp/Masters/empMasterSlice";
 import { getMasterDates } from "../../../App/Features/Customers/Date/masterSlice";
+import { toast } from "react-toastify";
 
 const Dashboard = () => {
   const { t } = useTranslation("common");
@@ -48,12 +49,15 @@ const Dashboard = () => {
     (state) => state.admindashboard?.centerMilk || [] // center wise liter and amount
   );
   const customerCounts = useSelector(
-    (state) => state.admindashboard?.custCount // center wise liter and amount
+    (state) => state.admindashboard?.custCount || [] // center wise liter and amount
   );
   const status = useSelector((state) => state.milkCollection?.allmilkstatus);
   const customerslist = useSelector((state) => state.customer?.customerlist); //save customer list
   const fDate = useSelector((state) => state.date?.formDate); // to fetch default date data
   const tDate = useSelector((state) => state.date?.toDate); // to fetch default date data
+  const [fromDate, setFromDate] = useState(tDate);
+  const [toDate, setToDate] = useState(tDate);
+  const [loading, setLoading] = useState(false);
   const [selectedDate, setSelectedDate] = useState(null);
   const [summaryData, setSummaryData] = useState([]); //for summary data
   const [showSummary, setShowSummary] = useState(false); //for summary data
@@ -81,7 +85,6 @@ const Dashboard = () => {
     dispatch(listCustomer());
     dispatch(listEmployee());
   }, []);
-
 
   // -------------------------------------------------------------------------------------->
   // Round data total customers, Liters , AMount And Average Fat -------------------------->
@@ -152,42 +155,61 @@ const Dashboard = () => {
   // Handle the date selection ------------------------------------------------------------------>
 
   useEffect(() => {
-    if (selectedDate) {
-      // If a date is selected from manualMaster, use it
+    dispatch(
+      getAllMilkCollReport({
+        fromDate,
+        toDate,
+      })
+    );
+    if (center_id === 0) {
       dispatch(
-        getAllMilkCollReport({
-          fromDate: selectedDate.start,
-          toDate: selectedDate.end,
+        getCenterMilkData({
+          fromDate,
+          toDate,
         })
       );
-      if (center_id === 0) {
-        dispatch(
-          getCenterMilkData({
-            fromDate: selectedDate.start,
-            toDate: selectedDate.end,
-          })
-        );
-        dispatch(centersLists());
-        dispatch(getCenterCustCount());
-      }
-    } else if (fDate && tDate) {
-      // If no date is selected, use fDate and tDate from Redux store
-      dispatch(
-        getAllMilkCollReport({
-          fromDate: fDate,
-          toDate: tDate,
-        })
-      );
-      if (center_id === 0) {
-        dispatch(
-          getCenterMilkData({
-            fromDate: fDate,
-            toDate: tDate,
-          })
-        );
-      }
+      dispatch(centersLists());
+      dispatch(getCenterCustCount({ fromDate, toDate }));
     }
-  }, [dispatch, selectedDate, fDate, tDate]);
+  }, []);
+
+  // useEffect(() => {
+  //   if (selectedDate) {
+  //     // If a date is selected from manualMaster, use it
+  //     dispatch(
+  //       getAllMilkCollReport({
+  //         fromDate: selectedDate.start,
+  //         toDate: selectedDate.end,
+  //       })
+  //     );
+  //     if (center_id === 0) {
+  //       dispatch(
+  //         getCenterMilkData({
+  //           fromDate: selectedDate.start,
+  //           toDate: selectedDate.end,
+  //         })
+  //       );
+  //       dispatch(centersLists());
+  //       dispatch(getCenterCustCount());
+  //     }
+  //   } else if (fDate && tDate) {
+  //     // If no date is selected, use fDate and tDate from Redux store
+  //     dispatch(
+  //       getAllMilkCollReport({
+  //         fromDate: fDate,
+  //         toDate: tDate,
+  //       })
+  //     );
+  //     if (center_id === 0) {
+  //       dispatch(
+  //         getCenterMilkData({
+  //           fromDate: fDate,
+  //           toDate: tDate,
+  //         })
+  //       );
+  //     }
+  //   }
+  // }, [dispatch, selectedDate, fDate, tDate]);
 
   const handleSelectChange = (e) => {
     const selectedIndex = e.target.value;
@@ -200,6 +222,27 @@ const Dashboard = () => {
     }
   };
 
+  const handleFetchData = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+
+    try {
+      await dispatch(getAllMilkCollReport({ fromDate, toDate }));
+
+      if (center_id === 0) {
+        await Promise.all([
+          dispatch(getCenterMilkData({ fromDate, toDate })),
+          dispatch(centersLists()),
+          dispatch(getCenterCustCount({ fromDate, toDate })),
+        ]);
+      }
+    } catch (err) {
+      toast.error("Error fetching data", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   // to show centerwise data ------------------------------------------------------------------->
 
   useEffect(() => {
@@ -207,20 +250,19 @@ const Dashboard = () => {
   }, [dispatch]);
 
   // Merged center data
-  const centersmergedData = centerLiterAmt.map((literEntry) => {
-    const center = centerList.find(
-      (c) => c.center_id.toString() === literEntry.center_id.toString()
+  const centersmergedData = centerLiterAmt?.map((literEntry) => {
+    const center = centerList?.find(
+      (c) => c.center_id === literEntry?.center_id
     );
-    const customerCount = customerCounts.find(
-      (cust) => cust.centerid.toString() === literEntry.center_id.toString()
+    const customerCount = customerCounts?.find(
+      (cust) => cust?.center_id === literEntry?.center_id
     );
     return {
       ...literEntry,
-      center_name: center ? center.center_name : "Unknown",
-      total_customers: customerCount ? customerCount.total_customers : 0,
+      center_name: center ? center?.center_name : "Unknown",
+      total_customers: customerCount ? customerCount?.total_customers : 0,
     };
   });
-
   // ------------------------------------------------------------------------------------------->
   // Pie chart Data to show center wise Milk Collection ---------------------------------------->
   // ------------------------------------------------------------------------------------------->
@@ -339,9 +381,9 @@ const Dashboard = () => {
       </div>
       <div className="dashboard-scrll-container w100 h1 mh100 hidescrollbar ">
         <div className="Milk-sale-details-container w100 hidescrollbar">
-          <form className="selection-container w100 h10 d-flex a-center j-start">
-            <div className="select-data-text w60 h10 d-flex a-center px10">
-              <span className="w35 info-text">{t("c-select-period")} :</span>
+          <form className="selection-container w100 h10 d-flex a-center j-start px10">
+            <span className="w15 label-text">{t("c-select-period")} :</span>
+            {/* <div className="select-data-text w60 h10 d-flex a-center px10">
               <div className="custmize-report-div w65 h1 data d-flex a-center sb">
                 <span className="cl-icon w10 d-flex center">
                   <BsCalendar3 />
@@ -415,7 +457,47 @@ const Dashboard = () => {
               ) : (
                 <span></span>
               )}
-            </span>
+            </span> */}
+            <div className="dates-container w25 h1 d-flex a-center sa">
+              <label htmlFor="fromDate" className="w25 label-text">
+                पासुन
+              </label>
+              <input
+                type="date"
+                name="fromDate"
+                id="fromDate"
+                className="data w70"
+                value={fromDate}
+                max={toDate}
+                onChange={(e) => {
+                  setFromDate(e.target.value);
+                }}
+              />
+            </div>
+            <div className="dates-container w25 h1 d-flex a-center sa">
+              <label htmlFor="toDate" className="w25 label-text">
+                पर्यंत
+              </label>
+              <input
+                type="date"
+                name="toDate"
+                id="toDate"
+                className="data w70"
+                max={tDate}
+                value={toDate}
+                onChange={(e) => {
+                  setToDate(e.target.value);
+                }}
+              />
+            </div>
+            <button
+              type="button"
+              className="w-btn mx10"
+              onClick={handleFetchData}
+              disabled={loading}
+            >
+              {loading ? "दाखवा..." : "दाखवा"}
+            </button>
           </form>
           <div className="dashboard-cards w100 h15 d-flex j-start f-wrap sa">
             <div className="card h1 sb">
@@ -557,11 +639,11 @@ const Dashboard = () => {
                   </div>
                   <div className="summary-table-conatiner w100 mh60 hidescrollbar d-flex-col bg">
                     <div className="summary-headings-div w100 p10 d-flex sb t-center sticky-top bg7">
-                      <span className="f-label-text w10">No.</span>
-                      <span className="f-label-text w30">Milk Collector</span>
-                      <span className="f-label-text w20">Designation</span>
-                      <span className="f-label-text w20">Total Liters</span>
-                      <span className="f-label-text w20">Total Amount</span>
+                      <span className="label-text w10">No.</span>
+                      <span className="label-text w30">Milk Collector</span>
+                      <span className="label-text w20">Designation</span>
+                      <span className="label-text w20">Total Liters</span>
+                      <span className="label-text w20">Total Amount</span>
                     </div>
                     {Array.isArray(summaryData) && summaryData.length > 0 ? (
                       summaryData.map((user, index) => (
@@ -570,7 +652,7 @@ const Dashboard = () => {
                           className="summary-data-div w100 p10 d-flex sb t-center"
                           style={{
                             backgroundColor:
-                              index % 2 === 0 ? "#faefe3" : "#fff",
+                              index % 2 === 0 ? "#d4edf7" : "#fff",
                           }}
                         >
                           <span className="label-text w10">{index + 1}</span>
@@ -581,7 +663,7 @@ const Dashboard = () => {
                             {user.designation}
                           </span>
                           <span className="label-text w20">
-                            {user.totalLitres}
+                            {user?.totalLitres.toFixed(2)}
                           </span>
                           <span
                             className="label-text w20"
@@ -619,7 +701,7 @@ const Dashboard = () => {
                     </span>
                   </div>
                   <div className="detail-table-conatiner w100 mh60 hidescrollbar d-flex-col bg">
-                    <div className="detail-headings-div w100 p10 d-flex sb t-center sticky-top bg7">
+                    <div className="detail-headings-div w100 p10 d-flex sb t-center sticky-top bg-yellow">
                       <span className="f-label-text w20">Date</span>
                       <span className="f-label-text w10">Code</span>
                       <span className="f-label-text w30">Customer</span>
@@ -636,7 +718,7 @@ const Dashboard = () => {
                           className="detail-data-div w100 p10 d-flex sb t-center"
                           style={{
                             backgroundColor:
-                              index % 2 === 0 ? "#faefe3" : "#fff",
+                              index % 2 === 0 ? "#eef5c5" : "#fff",
                           }}
                         >
                           <span className="label-text w20">
@@ -660,7 +742,7 @@ const Dashboard = () => {
                 <></>
               )}
             </div>
-            <div className="liter-sales-details-inner-container w100 h60 d-flex-col sb p10">
+            <div className="liter-sales-details-inner-container w100 h65 d-flex-col sb p10">
               <span className="heading">{t("c-anaylatics")} : </span>
               <div className="pie-chart-container w100 h1 d-flex a-center sb p10">
                 <div className="liter-sales-card w25 h90 d-flex-col sb bg-light-skyblue br6 p10 ">
@@ -672,7 +754,7 @@ const Dashboard = () => {
                         cy="50%"
                         labelLine={false}
                         label={renderCustomizedLabel}
-                        outerRadius={80}
+                        outerRadius={75}
                         fill="#8884d8"
                         dataKey="total_litres"
                       >
@@ -698,7 +780,7 @@ const Dashboard = () => {
                         cy="50%"
                         labelLine={false}
                         label={renderCustomizedLabel}
-                        outerRadius={80}
+                        outerRadius={75}
                         fill="#8884d8"
                         dataKey="total_amount"
                       >

@@ -12,6 +12,7 @@ import "../../../../Styles/Mainapp/Apphome/Appnavview/Milkcollection.css";
 import "../../../../Styles/Mainapp/MilkSales/SanghMilkColl.css";
 import { getCenterMSales } from "../../../../App/Features/Mainapp/Milk/DairyMilkSalesSlice";
 import { getTankerList } from "../../../../App/Features/Mainapp/Masters/tankerMasterSlice";
+import { dairydailyLossGain } from "../../../../App/Features/Mainapp/Dairyinfo/milkCollectionSlice";
 
 const Sanghsales = ({ clsebtn, isModalOpen, editData }) => {
   const { t } = useTranslation(["milkcollection", "common", "master"]);
@@ -71,6 +72,9 @@ const Sanghsales = ({ clsebtn, isModalOpen, editData }) => {
 
   useEffect(() => {
     dispatch(fetchSanghaList());
+    dispatch(
+      dairydailyLossGain({ fromDate: "2025-05-01", toDate: "2025-05-01" })
+    );
     if (tankerList.length === 0) {
       dispatch(getTankerList());
     }
@@ -452,14 +456,16 @@ const Sanghsales = ({ clsebtn, isModalOpen, editData }) => {
             >
               <option value="0">सकाळ</option>
               <option value="1">सायंकाळ</option>
-              <option value="2">एकत्रित</option>
+              <option value="2">सकाळ + सायंकाळ</option>
+              <option value="3">काल साय + आज सकाळ</option>
+              <option value="4">एकत्रीत</option>
             </select>
           </div>
         </div>
         <div className="date-details w100 h20 d-flex sb a-center">
           <div className="form-div w30 px10">
             <label htmlFor="date" className="info-text w100">
-              {t("common:c-date")} {values.shift === "2" ? "पासून" : ""}{" "}
+              {t("common:c-date")} {values.shift === "4" ? "पासून" : ""}{" "}
               <span className="req">*</span>{" "}
             </label>
             <input
@@ -476,7 +482,7 @@ const Sanghsales = ({ clsebtn, isModalOpen, editData }) => {
               ref={fdateRef}
             />
           </div>
-          {values.shift === "2" ? (
+          {values.shift === "4" ? (
             <div className="form-div w30 px10">
               <label htmlFor="todate" className="info-text w100">
                 {t("common:c-date")} पर्यत
@@ -558,7 +564,7 @@ const Sanghsales = ({ clsebtn, isModalOpen, editData }) => {
                 ref={nashlitersRef}
               />
             </div>
-            {values.shift !== "2" ? (
+            {values.shift !== "4" ? (
               <>
                 <div className="form-div  px10">
                   <label htmlFor="fat" className="info-text">
@@ -635,7 +641,7 @@ const Sanghsales = ({ clsebtn, isModalOpen, editData }) => {
                 ref={kplitersRef}
               />
             </div>
-            {values.shift !== "2" ? (
+            {values.shift !== "4" ? (
               <div className="form-div px10">
                 <label htmlFor="rate" className="info-text">
                   {t("common:c-rate")}
@@ -727,4 +733,3 @@ const Sanghsales = ({ clsebtn, isModalOpen, editData }) => {
 };
 
 export default Sanghsales;
-58;

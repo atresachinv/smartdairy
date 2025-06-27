@@ -29,10 +29,11 @@ export const getCenterMilkData = createAsyncThunk(
 
 export const getCenterCustCount = createAsyncThunk(
   "dashboard/getCenterCustCount",
-  async (_, { rejectWithValue }) => {
+  async ({ fromDate, toDate }, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.post(
-        "/dashboard/centers/customer-count"
+      const response = await axiosInstance.get(
+        "/dashboard/centers/customer-count",
+        { params: { fromDate, toDate } }
       );
       return response.data.custCounts;
     } catch (error) {

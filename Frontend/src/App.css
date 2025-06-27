@@ -265,6 +265,19 @@
 .my15 {
   margin: 15px 0;
 }
+.mt-10 {
+  margin-top: 10px;
+}
+.mb-10 {
+  margin-bottom: 10px;
+}
+.ml-10 {
+  margin-left: 10px;
+}
+.mr-10 {
+  margin-right: 10px;
+}
+
 .p10 {
   padding: 10px;
 }
@@ -291,6 +304,18 @@
 }
 .py15 {
   padding: 15px 0;
+}
+.pt-10 {
+  padding-top: 10px;
+}
+.pb-10 {
+  padding-bottom: 10px;
+}
+.pl-10 {
+  padding-left: 10px;
+}
+.pr-10 {
+  padding-right: 10px;
 }
 /* margin and paddings end */
 
@@ -425,6 +450,12 @@
   font-weight: 300;
   cursor: pointer;
 }
+
+.tip-text {
+  font-size: clamp(8px, 2vw, 12px);
+  font-weight: 400;
+  cursor: pointer;
+}
 /* .num-text {
   font-size: clamp(10px, 2vw, 14px);
   font-weight: 300;
@@ -505,6 +536,12 @@
 }
 .bg-light-skyblue {
   background-color: #cff3f8;
+}
+.bg-yellow {
+  background-color: #ccc04f;
+}
+.bg-yell {
+  background-color: #84cab9;
 }
 .bg-fff {
   background-color: #fff;

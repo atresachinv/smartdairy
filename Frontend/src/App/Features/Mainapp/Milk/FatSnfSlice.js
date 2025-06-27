@@ -229,9 +229,8 @@ const FatSnfSlice = createSlice({
       .addCase(updateDiffSnf.pending, (state) => {
         state.snfstatus = "loading";
       })
-      .addCase(updateDiffSnf.fulfilled, (state, action) => {
+      .addCase(updateDiffSnf.fulfilled, (state) => {
         state.snfstatus = "succeeded";
-        state.drList = action.payload;
       })
       .addCase(updateDiffSnf.rejected, (state, action) => {
         state.snfstatus = "failed";
@@ -240,9 +239,8 @@ const FatSnfSlice = createSlice({
       .addCase(convertKgLiters.pending, (state) => {
         state.convertKLstatus = "loading";
       })
-      .addCase(convertKgLiters.fulfilled, (state, action) => {
+      .addCase(convertKgLiters.fulfilled, (state) => {
         state.convertKLstatus = "succeeded";
-        state.drList = action.payload;
       })
       .addCase(convertKgLiters.rejected, (state, action) => {
         state.convertKLstatus = "failed";

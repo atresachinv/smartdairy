@@ -6,12 +6,15 @@ const initialState = {
   customerInfo: {},
   milkRate: {},
   milkCollection: {},
+  dairyColl: [],
+  dailylsStatus: "idle",
   getCustInfoStatus: "idle",
   getCustInfoError: null,
   getMilkRateStatus: "idle",
   getMilkRateError: null,
   saveMilkCollectionStatus: "idle",
   saveMilkCollectionError: null,
+  Error: null,
 };
 
 // Async Thunk to get Customer Information
@@ -57,13 +60,31 @@ export const getMilkRate = createAsyncThunk(
 // Async Thunk to Save Milk Collection
 export const saveMilkCollection = createAsyncThunk(
   "milkCollection/saveMilkCollection",
-  async ({milkColl}, { rejectWithValue }) => {
+  async ({ milkColl }, { rejectWithValue }) => {
     try {
       const response = await axiosInstance.post(
         "/save/milk/collection",
         milkColl
       );
       return response.data;
+    } catch (error) {
+      const errorMessage = error.response
+        ? error.response.data
+        : "Failed to save Milk Collection.";
+      return rejectWithValue(errorMessage);
+    }
+  }
+);
+
+// Async Thunk to Save Milk Collection
+export const dairydailyLossGain = createAsyncThunk(
+  "milkCollection/dairydailyLossGain",
+  async ({ fromDate, toDate }, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.get("/dairy/daily/loss-gain", {
+        params: { fromDate, toDate },
+      });
+      return response.data.dairyLossGain;
     } catch (error) {
       const errorMessage = error.response
         ? error.response.data
@@ -120,6 +141,18 @@ const milkCollectionSlice = createSlice({
       .addCase(saveMilkCollection.rejected, (state, action) => {
         state.saveMilkCollectionStatus = "failed";
         state.saveMilkCollectionError = action.payload;
+      }) // dairy daily loss gain report ----------------------------------->
+      .addCase(dairydailyLossGain.pending, (state) => {
+        state.dailylsStatus = "loading";
+        state.Error = null;
+      })
+      .addCase(dairydailyLossGain.fulfilled, (state, action) => {
+        state.dailylsStatus = "succeeded";
+        state.dairyColl = action.payload;
+      })
+      .addCase(dairydailyLossGain.rejected, (state, action) => {
+        state.dailylsStatus = "failed";
+        state.Error = action.payload;
       });
   },
 });

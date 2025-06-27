@@ -24,6 +24,7 @@ const CenterCollection = () => {
   const centerMilk = useSelector(
     (state) => state.dMilkSales.centerMilkData || []
   );
+  const status = useSelector((state) => state.dMilkSales.status);
   const milkcollRatechart = useSelector(
     (state) => state.ratechart.latestrChart
   );
@@ -637,10 +638,10 @@ const CenterCollection = () => {
             className="w-btn label-text mx10"
             type="button"
             ref={submitbtn}
-            disabled={loading}
+            disabled={status === "loading"}
             onClick={fetchCenterMilkData}
           >
-            {loading ? "Checking..." : `Check`}
+            {status === "loading" ? "Checking..." : `Check`}
           </button>
         </div>
       </form>

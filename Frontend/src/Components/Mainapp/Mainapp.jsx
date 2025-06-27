@@ -18,7 +18,6 @@ import SubLedger from "./Masters/MasterPages/SubLedger";
 import CustomersMaster from "./Masters/MasterPages/CustomerMaster/CustomersMaster";
 import EmployeeMaster from "./Masters/MasterPages/EmployeeMaster/EmployeeMaster";
 import BankMaster from "./Masters/MasterPages/BankMaster/BankMaster";
-import MilkRateMaster from "./Masters/MasterPages/RatechartMaster/MilkRateMaster";
 import CustomerReports from "./Reports/CustomerReports/CustomerReports";
 import MilkcollectionReports from "./Reports/MilkReports/MilkcollectionReports";
 import PaymentReports from "./Reports/PaymentsReports/PaymentReports";
@@ -94,6 +93,12 @@ import SanghPayReport from "./MilkSales/SanghsalesPages/SanghPayReport";
 import SanghMilkReport from "./Reports/MilkSanghReport/SanghMilkReport";
 import TanckerMaster from "./Masters/MasterPages/TanckerMaster";
 import TankerReport from "./Reports/TankerReport";
+import RatechartMaster from "./Masters/MasterPages/RatechartMaster/RatechartMaster";
+import AddtypeRatechart from "./Masters/MasterPages/RatechartMaster/AddtypeRatechart";
+import SaveRatecharts from "./Masters/MasterPages/RatechartMaster/SaveRatecharts";
+import Updateratecharts from "./Masters/MasterPages/RatechartMaster/Updateratecharts";
+import Applyratecharts from "./Masters/MasterPages/RatechartMaster/Applyratecharts";
+import PreviousRatechart from "./Masters/MasterPages/RatechartMaster/PreviousRatechart";
 
 const Mainapp = () => {
   const dispatch = useDispatch();
@@ -287,7 +292,14 @@ const Mainapp = () => {
               <Route path="add-new" element={<CreateCustomer />} />
               <Route path="add-new/:cust_code" element={<CreateCustomer />} />
             </Route>
-            <Route path="master/ratechart/*" element={<MilkRateMaster />} />
+            <Route path="master/ratechart/*" element={<RatechartMaster />}>
+              <Route path="previous/list" element={<PreviousRatechart />} />
+              <Route path="add/new-type" element={<AddtypeRatechart />} />
+              <Route path="save" element={<SaveRatecharts />} />
+              <Route path="update" element={<Updateratecharts />} />
+              <Route path="apply" element={<Applyratecharts />} />
+              <Route path="*" element={<PreviousRatechart />} />
+            </Route>
             <Route path="master/employee/*" element={<EmployeeMaster />} />
             <Route path="master/bank/*" element={<BankMaster />} />
             <Route path="master/deductions/*" element={<DeductionMaster />} />
@@ -325,7 +337,7 @@ const Mainapp = () => {
               path="reports/SanghMilkReport/*"
               element={<SanghMilkReport />}
             />
-            <Route path="reports/tanker" element={<TankerReport/>} />
+            <Route path="reports/tanker" element={<TankerReport />} />
             {/* payment routes */}
             <Route
               path="payment/milk-correction/*"

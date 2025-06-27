@@ -1,38 +1,41 @@
-import React from "react";
 import { BsSaveFill } from "react-icons/bs";
 import { VscSave } from "react-icons/vsc";
 import { IoIosSave } from "react-icons/io";
 import { GrUpdate } from "react-icons/gr";
 import { NavLink } from "react-router-dom";
-import { useSelector } from "react-redux";
 import { useTranslation } from "react-i18next";
 
-const RateChartNavlinks = ({ isselected, setIsSelected }) => {
+const RateMasterNavs = ({ isselected, setIsSelected }) => {
   const { t } = useTranslation("ratechart");
-  const ratechart = useSelector((state) => state.ratechart.excelRatechart);
   const ratechartnavlinks = [
+    {
+      name: `${t("मागील दरपत्रक")}`,
+      icon: <IoIosSave className="icon" />,
+      index: 0,
+      path: "previous/list",
+    },
     {
       name: `${t("rc-add-type")}`,
       icon: <IoIosSave className="icon" />,
-      index: 0,
+      index: 1,
       path: "add/new-type",
     },
-    ratechart.length > 0 && {
-      name: `${t("rc-save")}`,
+    {
+      name: `एक्सेल वरून दरपत्रक`,
       icon: <VscSave className="icon" />,
-      index: 1,
-      path: "save-new",
-    },
-    {
-      name: `${t("rc-update")}`,
-      icon: <GrUpdate className="icon" />,
       index: 2,
-      path: "update-save",
+      path: "save",
     },
     {
-      name: `${t("rc-apply")}`,
-      icon: <BsSaveFill className="icon" />,
+      name: `${t("दर वाढ/कमी करा")}`,
+      icon: <GrUpdate className="icon" />,
       index: 3,
+      path: "update",
+    },
+    {
+      name: `${t("rc-apply")} करा`,
+      icon: <BsSaveFill className="icon" />,
+      index: 4,
       path: "apply",
     },
   ];
@@ -61,4 +64,4 @@ const RateChartNavlinks = ({ isselected, setIsSelected }) => {
   );
 };
 
-export default RateChartNavlinks;
+export default RateMasterNavs;

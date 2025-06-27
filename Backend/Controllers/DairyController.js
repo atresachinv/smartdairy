@@ -1213,7 +1213,7 @@ exports.getCenterWiseMilkData = (req, res) => {
     `;
 
     connection.query(getLiterAmt, [fromDate, toDate], (err, result) => {
-      connection.release(); // Always release the connection back to the pool
+      connection.release();
 
       if (err) {
         console.error("Error executing query: ", err);
@@ -1222,8 +1222,9 @@ exports.getCenterWiseMilkData = (req, res) => {
           .json({ status: 500, message: "Query execution error" });
       }
       if (result.length === 0) {
-        return res.status(404).json({
+        return res.status(200).json({
           status: 200,
+          centerData: [],
           message: "Rate not found for the provided parameters.",
         });
       }
@@ -1237,12 +1238,57 @@ exports.getCenterWiseMilkData = (req, res) => {
 // Center wise customer count ---------------------------------------------------------------------------->
 //-------------------------------------------------------------------------------------------------------->
 
+// exports.getCenterCustomerCount = (req, res) => {
+//   const dairy_id = req.user.dairy_id;
+//   if (!dairy_id) {
+//     connection.release();
+//     return res.status(401).json({ status: 401, message: "Unauthorised User!" });
+//   }
+
+//   pool.getConnection((err, connection) => {
+//     if (err) {
+//       console.error("Error getting MySQL connection: ", err);
+//       return res
+//         .status(500)
+//         .json({ status: 500, message: "Database connection error" });
+//     }
+//     // we have to fetch count of customer centerwise but count
+//     // shift wise count from
+//     const getCustCount = `
+//       SELECT centerid, COUNT(*) AS total_customers
+//       FROM customer WHERE orgid = ?
+//       GROUP BY centerid;
+//   `;
+
+//     connection.query(getCustCount, [dairy_id], (err, result) => {
+//       connection.release(); // Always release the connection back to the pool
+
+//       if (err) {
+//         console.error("Error executing query: ", err);
+//         return res
+//           .status(500)
+//           .json({ status: 500, message: "Query execution error" });
+//       }
+//       if (result.length === 0) {
+//         return res.status(404).json({
+//           custCounts: [],
+//           status: 404,
+//           message: "No Customers Available for this Dairy.",
+//         });
+//       }
+//       res.status(200).json({ status: 200, custCounts: result });
+//     });
+//   });
+// };
+
 exports.getCenterCustomerCount = (req, res) => {
-  const dairy_id = req.user.dairy_id;
+  const { dairy_id, center_id } = req.user;
+  const {fromDate, toDate } = req.query;
   if (!dairy_id) {
-    connection.release();
     return res.status(401).json({ status: 401, message: "Unauthorised User!" });
   }
+
+  const dairy_table = `dailymilkentry_${dairy_id}`;
 
   pool.getConnection((err, connection) => {
     if (err) {
@@ -1253,29 +1299,36 @@ exports.getCenterCustomerCount = (req, res) => {
     }
 
     const getCustCount = `
-      SELECT centerid, COUNT(*) AS total_customers
-      FROM customer WHERE orgid = ?
-      GROUP BY centerid;
-  `;
+      SELECT center_id, COUNT(DISTINCT rno) AS total_customers
+      FROM ${dairy_table}
+      WHERE center_id = ? AND ReceiptDate BETWEEN ? AND ?
+      GROUP BY center_id;
+    `;
 
-    connection.query(getCustCount, [dairy_id], (err, result) => {
-      connection.release(); // Always release the connection back to the pool
+    connection.query(
+      getCustCount,
+      [center_id, fromDate, toDate],
+      (err, result) => {
+        connection.release(); // Always release the connection back to the pool
 
-      if (err) {
-        console.error("Error executing query: ", err);
-        return res
-          .status(500)
-          .json({ status: 500, message: "Query execution error" });
+        if (err) {
+          console.error("Error executing query: ", err);
+          return res
+            .status(500)
+            .json({ status: 500, message: "Query execution error" });
+        }
+
+        if (result.length === 0) {
+          return res.status(204).json({
+            custCounts: [],
+            status: 204,
+            message: "No Customers Available for this Dairy.",
+          });
+        }
+
+        res.status(200).json({ status: 200, custCounts: result });
       }
-      if (result.length === 0) {
-        return res.status(404).json({
-          custCounts: [],
-          status: 404,
-          message: "No Customers Available for this Dairy.",
-        });
-      }
-      res.status(200).json({ status: 200, custCounts: result });
-    });
+    );
   });
 };
 
