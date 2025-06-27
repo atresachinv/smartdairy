@@ -103,18 +103,25 @@
     flex-direction: column;
   }
 
-  .selection-container .select-data-text {
+  .selection-container .label-text {
     width: 100%;
+    text-align: center;
     min-height: fit-content;
     flex-direction: column;
   }
-  .selection-container .priod-container {
+  .selection-container .dates-container {
     width: 100%;
+    text-align: start;
+    justify-content: space-between;
+    margin-bottom: 10px;
   }
-  .selection-container .select-data-text .info-text {
-    width: 100%;
+  .selection-container .dates-container .label-text {
+    width: 30%;
   }
-  .selection-container .select-data-text .label-text {
+  .selection-container .dates-container input {
+    width: 50%;
+  }
+  .selection-container button {
     width: 100%;
   }
   .dashboard-cards {

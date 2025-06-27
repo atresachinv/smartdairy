@@ -1,4 +1,5 @@
 const jwt = require("jsonwebtoken");
+const moment = require("moment");
 const dotenv = require("dotenv");
 const pool = require("../Configs/Database");
 dotenv.config({ path: "Backend/.env" });
@@ -923,310 +924,6 @@ exports.PreviousMilkCollectionList = async (req, res) => {
     }
   });
 };
-
-// //------------------------------------------------------------------------------------------------------------------->
-// // Save Previous Milk Collection
-// //------------------------------------------------------------------------------------------------------------------->
-
-// //get rate from rate chart and calculate amount....................................................................
-
-// exports.getRateAmount = (req, res) => {
-//   const { rccode, rcdate, fat, snf, time, animal, liters } = req.body;
-
-//   pool.getConnection((err, connection) => {
-//     if (err) {
-//       console.error("Error getting MySQL connection: ", err);
-//       return res.status(500).json({ message: "Database connection error" });
-//     }
-
-//     const dairy_id = req.user.dairy_id;
-//     const center_id = req.user.center_id;
-
-//     if (!dairy_id) {
-//       connection.release();
-//       return res.status(400).json({ message: "Dairy ID not found!" });
-//     }
-
-//     const getRateAmt = `
-//     SELECT rate
-//     FROM mysql_4234_inventory11.ratemaster
-//     WHERE companyid = ? AND center_id = ? AND rcdate <= ? AND fat = ? AND snf = ? AND ME = ? AND CB = ?
-//     ORDER BY rcdate DESC LIMIT 1
-//   `;
-//     // in query
-//     // rcdate is lessthan or equal to ratechartdate
-
-//     connection.query(
-//       getRateAmt,
-//       [dairy_id, center_id, rccode, rcdate, fat, snf, time, animal],
-//       (err, results) => {
-//         connection.release(); // Always release the connection back to the pool
-
-//         if (err) {
-//           console.error("Error executing query: ", err);
-//           return res.status(500).json({ message: "Query execution error" });
-//         }
-
-//         if (results.length === 0) {
-//           return res
-//             .status(404)
-//             .json({ message: "Rate not found for the provided parameters." });
-//         }
-
-//         const rate = results[0].rate;
-
-//         // Ensure 'liters' is a number
-//         const litersNumber = parseFloat(liters);
-//         if (isNaN(litersNumber)) {
-//           return res.status(400).json({ message: "Invalid value for liters." });
-//         }
-
-//         const amt = litersNumber * parseFloat(rate);
-
-//         res.status(200).json({ rate: parseFloat(rate), amt });
-//       }
-//     );
-//   });
-// };
-
-// //.................................................................................................................
-
-// exports.PreviousMilkCollection = async (req, res) => {
-//   const {
-//     code,
-//     date,
-//     time,
-//     animal,
-//     liters,
-//     fat,
-//     snf,
-//     amt,
-//     degree,
-//     rate,
-//     cname,
-//     acccode,
-//   } = req.body;
-
-//   pool.getConnection((err, connection) => {
-//     if (err) {
-//       console.error("Error getting MySQL connection: ", err);
-//       return res.status(500).json({ message: "Database connection error" });
-//     }
-
-//     try {
-//       const dairy_id = req.user.dairy_id;
-//       const user_role = req.user.user_role;
-//       const center_id = req.user.center_id;
-
-//       if (!dairy_id) {
-//         connection.release();
-//         return res.status(400).json({ message: "Dairy ID not found!" });
-//       }
-
-//       const dairy_table = `dailymilkentry_${dairy_id}`;
-
-//       //       // Get the current date in YYYY-MM-DD format
-//       //       const currentDate = new Date().toISOString().split("T")[0];
-//       //
-//       //       // Get the current hour to determine AM or PM
-//       //       const currentHour = new Date().getHours();
-//       //       const time = currentHour < 12 ? 0 : 1;
-
-//       // Prepare the SQL query
-//       const milkcollection = `
-//         INSERT INTO ${dairy_table}
-//         (companyid, userid, ReceiptDate, ME, CB, Litres, fat, snf, Amt, GLCode, AccCode, Digree, rate, cname, rno, center_id)
-//         // VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-//       `;
-
-//       // Execute the query
-//       connection.query(
-//         milkcollection,
-//         [
-//           dairy_id,
-//           user_role,
-//           date,
-//           time,
-//           animal,
-//           liters,
-//           fat,
-//           snf,
-//           amt,
-//           "28", // GLCode
-//           acccode,
-//           degree,
-//           rate,
-//           cname,
-//           code,
-//           center_id,
-//         ],
-//         (err, result) => {
-//           connection.release();
-
-//           if (err) {
-//             console.error("Error executing query: ", err);
-//             return res.status(500).json({ message: "Query execution error" });
-//           }
-//           res.status(200).json({ message: "Milk entry saved successfully!" });
-//         }
-//       );
-//     } catch (error) {
-//       connection.release();
-//       console.error("Error processing request: ", error);
-//       return res.status(500).json({ message: "Internal server error" });
-//     }
-//   });
-// };
-
-// //------------------------------------------------------------------------------------------------------------------->
-// // Upload Previous Milk Collection Excel
-// //------------------------------------------------------------------------------------------------------------------->
-
-// exports.UploadPreviousMilkCollection = async (req, res) => {
-//   const { code, animal, liters, cname, sample, acccode } = req.body;
-
-//   pool.getConnection((err, connection) => {
-//     if (err) {
-//       console.error("Error getting MySQL connection: ", err);
-//       return res.status(500).json({ message: "Database connection error" });
-//     }
-
-//     try {
-//       const dairy_id = req.user.dairy_id;
-//       const user_role = req.user.user_role;
-//       const center_id = req.user.center_id;
-
-//       if (!dairy_id) {
-//         connection.release();
-//         return res.status(400).json({ message: "Dairy ID not found!" });
-//       }
-
-//       const dairy_table = `dailymilkentry_${dairy_id}`;
-
-//       // Get the current date in YYYY-MM-DD format
-//       const currentDate = new Date().toISOString().split("T")[0];
-
-//       // Get the current hour to determine AM or PM
-//       const currentHour = new Date().getHours();
-//       const time = currentHour < 12 ? 0 : 1;
-
-//       // Prepare the SQL query
-//       const milkcollection = `
-//         INSERT INTO ${dairy_table}
-//         (companyid, userid, ReceiptDate, ME, CB, Litres, GLCode, AccCode, cname, rno, Driver, SampleNo, center_id)
-//         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-//       `;
-
-//       // Execute the query
-//       connection.query(
-//         milkcollection,
-//         [
-//           dairy_id,
-//           user_role,
-//           currentDate,
-//           time,
-//           animal,
-//           liters,
-//           "28", // GLCode
-//           acccode,
-//           cname,
-//           code,
-//           "1",
-//           sample,
-//           center_id,
-//         ],
-//         (err, result) => {
-//           connection.release();
-
-//           if (err) {
-//             console.error("Error executing query: ", err);
-//             return res.status(500).json({ message: "Query execution error" });
-//           }
-//           res.status(200).json({ message: "Milk entry saved successfully!" });
-//         }
-//       );
-//     } catch (error) {
-//       connection.release();
-//       console.error("Error processing request: ", error);
-//       return res.status(500).json({ message: "Internal server error" });
-//     }
-//   });
-// };
-
-// //------------------------------------------------------------------------------------------------------------------->
-// //  Previous Milk Collection List
-// //------------------------------------------------------------------------------------------------------------------->
-
-// exports.PreviousMilkCollectionList = async (req, res) => {
-//   const { code, animal, liters, cname, sample, acccode } = req.body;
-
-//   pool.getConnection((err, connection) => {
-//     if (err) {
-//       console.error("Error getting MySQL connection: ", err);
-//       return res.status(500).json({ message: "Database connection error" });
-//     }
-
-//     try {
-//       const dairy_id = req.user.dairy_id;
-//       const user_role = req.user.user_role;
-//       const center_id = req.user.center_id;
-
-//       if (!dairy_id) {
-//         connection.release();
-//         return res.status(400).json({ message: "Dairy ID not found!" });
-//       }
-
-//       const dairy_table = `dailymilkentry_${dairy_id}`;
-
-//       // Get the current date in YYYY-MM-DD format
-//       const currentDate = new Date().toISOString().split("T")[0];
-
-//       // Get the current hour to determine AM or PM
-//       const currentHour = new Date().getHours();
-//       const time = currentHour < 12 ? 0 : 1;
-
-//       // Prepare the SQL query
-//       const milkcollection = `
-//         INSERT INTO ${dairy_table}
-//         (companyid, userid, ReceiptDate, ME, CB, Litres, GLCode, AccCode, cname, rno, Driver, SampleNo, center_id)
-//         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-//       `;
-
-//       // Execute the query
-//       connection.query(
-//         milkcollection,
-//         [
-//           dairy_id,
-//           user_role,
-//           currentDate,
-//           time,
-//           animal,
-//           liters,
-//           "28", // GLCode
-//           acccode,
-//           cname,
-//           code,
-//           "1",
-//           sample,
-//           center_id,
-//         ],
-//         (err, result) => {
-//           connection.release();
-
-//           if (err) {
-//             console.error("Error executing query: ", err);
-//             return res.status(500).json({ message: "Query execution error" });
-//           }
-//           res.status(200).json({ message: "Milk entry saved successfully!" });
-//         }
-//       );
-//     } catch (error) {
-//       connection.release();
-//       console.error("Error processing request: ", error);
-//       return res.status(500).json({ message: "Internal server error" });
-//     }
-//   });
-// };
 
 //---------------------------------------------------------------------------------------->
 // Save Mobile Milk Collection (single entry) -------------------------------------------->
@@ -2648,6 +2345,190 @@ exports.uploadMilkCollection = async (req, res) => {
   });
 };
 
+// ----------------------------------------------------------------------------------------------->
+// dairy / tanker milk loss gain report ---------------------------------------------------------->
+// ----------------------------------------------------------------------------------------------->
+
+exports.dairyMilkLossGain = (req, res) => {
+  const { dairy_id, center_id } = req.user;
+  const { fromDate, toDate } = req.query;
+
+  if (!dairy_id) {
+    return res.status(401).json({ status: 401, message: "Unauthorized User!" });
+  }
+
+  const dairy_table = `dailymilkentry_${dairy_id}`;
+
+  pool.getConnection((err, connection) => {
+    if (err) {
+      console.error("DB connection error:", err);
+      return res
+        .status(500)
+        .json({ status: 500, message: "Database connection error" });
+    }
+
+    const sanghQuery = `
+      SELECT shift, colldate, liter, fat, snf, rate, amt
+      FROM sanghmilkentry
+      WHERE dairy_id = ? AND center_id = ? AND colldate BETWEEN ? AND ?
+    `;
+
+    connection.query(
+      sanghQuery,
+      [dairy_id, center_id, fromDate, toDate],
+      (err, sanghData) => {
+        if (err) {
+          connection.release();
+          console.error("Error fetching sangh data:", err);
+          return res
+            .status(500)
+            .json({ status: 500, message: "Error fetching sangh data" });
+        }
+
+        if (sanghData.length === 0) {
+          connection.release();
+          return res.status(200).json({
+            status: 200,
+            dairyLossGain: [],
+            message: "No records found",
+          });
+        }
+
+        const result = [];
+        let pending = sanghData.length;
+
+        sanghData.forEach(({ shift, colldate, liter, fat, snf, amt, rate }) => {
+          // Push sangh data first
+          result.push({
+            type: "sangh",
+            colldate,
+            shift,
+            totalLitres: Number(liter?.toFixed(2)),
+            avgFat: Number(fat?.toFixed(2) || 0),
+            avgSnf: Number(snf?.toFixed(2) || 0),
+            totalAmt: Number(amt?.toFixed(2)),
+            avgRate: Number(rate?.toFixed(2) || 0),
+          });
+
+          // Build dairy query
+          const { query, params } = buildDairyAggQuery(
+            shift,
+            colldate,
+            center_id,
+            dairy_table,
+            fromDate,
+            toDate
+          );
+
+          if (!query) {
+            pending--;
+            if (pending === 0) {
+              connection.release();
+              return res.status(200).json({
+                status: 200,
+                dairyLossGain: result,
+                message: "Milk loss/gain report generated",
+              });
+            }
+            return;
+          }
+
+          connection.query(query, params, (err, [dairy]) => {
+            if (err) {
+              console.error("Error fetching dairy data:", err);
+              pending--;
+              if (pending === 0) {
+                connection.release();
+                return res.status(500).json({
+                  status: 500,
+                  message: "Error fetching dairy data",
+                });
+              }
+              return;
+            }
+
+            result.push({
+              type: "dairy",
+              colldate,
+              shift,
+              totalLitres: Number(dairy.totalLitres?.toFixed(2) || 0),
+              avgFat: Number(dairy.avgFat?.toFixed(2) || 0),
+              avgSnf: Number(dairy.avgSnf?.toFixed(2) || 0),
+              totalAmt: Number(dairy.totalAmt?.toFixed(2) || 0),
+              avgRate: Number(dairy.avgRate?.toFixed(2) || 0),
+            });
+
+            pending--;
+            if (pending === 0) {
+              connection.release();
+              return res.status(200).json({
+                status: 200,
+                dairyLossGain: result,
+                message: "Milk loss/gain report generated",
+              });
+            }
+          });
+        });
+      }
+    );
+  });
+};
+
+// Generate aggregate dairy query
+function buildDairyAggQuery(
+  shift,
+  colldate,
+  center_id,
+  table,
+  fromDate,
+  toDate
+) {
+  let query = "";
+  let params = [];
+
+  const aggSelect = `
+    SELECT 
+      SUM(Litres) AS totalLitres,
+      SUM(Litres * fat) / NULLIF(SUM(Litres), 0) AS avgFat,
+      SUM(Litres * snf) / NULLIF(SUM(Litres), 0) AS avgSnf,
+      SUM(Amt) AS totalAmt,
+      SUM(Amt) / NULLIF(SUM(Litres), 0) AS avgRate
+  `;
+
+  switch (shift) {
+    case 0:
+    case 1:
+      query = `${aggSelect} FROM ${table} WHERE ME = ? AND center_id = ? AND ReceiptDate = ?`;
+      params = [shift, center_id, colldate];
+      break;
+    case 2:
+      query = `${aggSelect} FROM ${table} WHERE ME IN (0,1) AND center_id = ? AND ReceiptDate = ?`;
+      params = [center_id, colldate];
+      break;
+    case 3:
+      const prevDate = moment(colldate)
+        .subtract(1, "days")
+        .format("YYYY-MM-DD");
+      query = `
+        ${aggSelect} FROM ${table} 
+        WHERE center_id = ? AND (
+          (ME = 1 AND ReceiptDate = ?) OR 
+          (ME = 0 AND ReceiptDate = ?)
+        )
+      `;
+      params = [center_id, prevDate, colldate];
+      break;
+    case 4:
+      query = `${aggSelect} FROM ${table} WHERE ME IN (0,1) AND center_id = ? AND ReceiptDate BETWEEN ? AND ?`;
+      params = [center_id, fromDate, toDate];
+      break;
+    default:
+      return { query: null, params: [] };
+  }
+
+  return { query, params };
+}
+
 //---------------------------------------------------------------------------------------------------------//
 //<<<<<<<<<<<<<<<<<<<<<<<<<------- FAT SNF TADJOD KG to LITER Converter -------->>>>>>>>>>>>>>>>>>>>>>>>>>>//
 //---------------------------------------------------------------------------------------------------------//
@@ -2925,156 +2806,6 @@ exports.updateFatDifference = async (req, res, next) => {
 //------------------------------------------------------------------------------------------------------------------->
 // Update last master FAT to Milk Collection of perticular master and update rate amount
 //------------------------------------------------------------------------------------------------------------------->
-
-// exports.updateFatToLastFat = async (req, res, next) => {
-//   const { fromDate, toDate, shift, custFrom, custTo, days } = req.body;
-//   const { dairy_id, center_id, user_role } = req.user;
-//   if (!dairy_id) {
-//     return res.status(401).json({ status: 401, message: "Unauthorized User!" });
-//   }
-
-//   if (!fromDate || !custFrom || !custTo) {
-//     return res.status(400).json({
-//       status: 400,
-//       message: "fromDate, custFrom, custTo are required!",
-//     });
-//   }
-
-//   const currentDate = new Date().toISOString().split("T")[0];
-//   const dairy_table = `dailymilkentry_${dairy_id}`;
-//   const batchSize = 300;
-
-//   // first we have two dates fromDate and toDate
-//   // we are going to update fat each customer for perticular dates
-//   // if fromDate is 01-04-2025 and toDate is 15-04-2025, custFrom 1, custTo 300, days 15
-//   // we are given above data where days = 15 so we have to fetch data 15 before of given date like 17-03-2025 0f fromDate
-//   // so 17-03-2025 s fat is update to 01-04-2025 , like this 18-03-2025 s fat is update to 02-04-2025 and so on till toDate
-//   // 31-03-2025 s fat is update to 15-04-2025
-//   // and other process same batch wise update
-
-//   // 1️⃣ Calculate Previous Date
-//   const newFromDate = new Date(fromDate);
-//   newFromDate.setDate(newFromDate.getDate() - 1);
-//   const prevDate = newFromDate.toISOString().split("T")[0];
-
-//   pool.getConnection((err, connection) => {
-//     if (err) {
-//       console.error("DB connection error:", err);
-//       return res.status(500).json({ status: 500, message: "Database error" });
-//     }
-
-//     // 2️⃣ Fetch previous date entries with fat
-//     const fetchEntries = (offset) => {
-//       return new Promise((resolve, reject) => {
-//         let selectQuery = `
-//           SELECT rno, fat FROM ${dairy_table}
-//           WHERE center_id = ? AND ReceiptDate = ? AND rno BETWEEN ? AND ?
-//         `;
-//         let queryParams = [center_id, prevDate, custFrom, custTo];
-
-//         if (parseInt(shift) === 2) {
-//           selectQuery += ` AND ME IN (0, 1)`;
-//         } else {
-//           selectQuery += ` AND ME = ?`;
-//           queryParams.push(shift);
-//         }
-
-//         selectQuery += ` ORDER BY id ASC LIMIT ? OFFSET ?`;
-//         queryParams.push(batchSize, offset);
-
-//         connection.query(selectQuery, queryParams, (err, results) => {
-//           if (err) return reject(err);
-//           resolve(results);
-//         });
-//       });
-//     };
-
-//     // 3️⃣ Update current date records with previous day's fat
-//     const updateBatch = (records) => {
-//       return new Promise((resolve, reject) => {
-//         if (records.length === 0) return resolve(0);
-
-//         let updateCount = 0;
-//         let completed = 0;
-
-//         records.forEach(({ rno, fat }) => {
-//           const updateQuery = `
-//             UPDATE ${dairy_table}
-//             SET fat = ?, updatedOn = ?, UpdatedBy = ?
-//             WHERE center_id = ? AND ReceiptDate = ? AND rno = ?
-//           `;
-
-//           const params = [
-//             fat,
-//             currentDate,
-//             user_role,
-//             center_id,
-//             fromDate,
-//             rno,
-//           ];
-
-//           connection.query(updateQuery, params, (err, result) => {
-//             if (err) return reject(err);
-//             updateCount += result.affectedRows;
-//             completed++;
-//             if (completed === records.length) resolve(updateCount);
-//           });
-//         });
-//       });
-//     };
-
-//     // 4️⃣ Process in batches
-//     const processBatches = async () => {
-//       try {
-//         let offset = 0;
-//         let firstRun = true;
-//         let totalUpdated = 0;
-
-//         while (true) {
-//           const rows = await fetchEntries(offset);
-
-//           if (rows.length === 0 && firstRun) {
-//             connection.release();
-//             return res.status(204).json({
-//               status: 204,
-//               message: "No records found on previous date!",
-//             });
-//           }
-
-//           firstRun = false;
-//           if (rows.length === 0) break;
-
-//           const updatedCount = await updateBatch(rows);
-//           totalUpdated += updatedCount;
-
-//           if (rows.length < batchSize) break;
-//           offset += batchSize;
-//         }
-
-//         connection.release();
-
-//         req.body = {
-//           rcfromdate: fromDate,
-//           rctodate: toDate,
-//           custFrom,
-//           custTo,
-//           success: true,
-//         };
-
-//         next();
-//       } catch (err) {
-//         console.error("Batch update error:", err);
-//         connection.release();
-//         return res.status(500).json({
-//           status: 500,
-//           message: "Error during batch update",
-//         });
-//       }
-//     };
-
-//     processBatches();
-//   });
-// };
 
 exports.updateFatToLastFat = async (req, res, next) => {
   const { fromDate, toDate, shift, custFrom, custTo, days } = req.body;
@@ -3629,8 +3360,9 @@ exports.updateSnfToLastSnf = async (req, res, next) => {
 //------------------------------------------------------------------------------------------------------------------->
 
 exports.updateKGLiters = async (req, res, next) => {
-  const { dairy_id, shift, center_id, user_role } = req.user;
-  const { fromDate, toDate, milkIn, amount, custFrom, custTo } = req.body;
+  const { dairy_id, center_id, user_role } = req.user;
+  const { fromDate, toDate, shift, milkIn, amount, custFrom, custTo } =
+    req.body;
 
   if (!dairy_id || !user_role) {
     return res.status(401).json({ status: 401, message: "Unauthorized User!" });
@@ -3684,22 +3416,16 @@ exports.updateKGLiters = async (req, res, next) => {
         });
       });
     };
-    
-    console.log("1111111111111111111");
 
     const updateMilkValues = (entries) => {
       return new Promise((resolve, reject) => {
         if (entries.length === 0) return resolve();
 
         const updates = entries.map(({ id, Litres, rate }) => {
-          console.log("first", id, Litres, rate);
-          let newLtr = Litres;
-
-          if (milkIn === 0) {
-            newLtr = Litres * parseFloat(amount); // KG ➝ LTR
-          } else if (milkIn === 1) {
-            newLtr = Litres / parseFloat(amount); // LTR ➝ KG
-          }
+          let newLtr =
+            milkIn === 0
+              ? Litres * parseFloat(amount)
+              : Litres / parseFloat(amount);
 
           const newAmt = newLtr * rate;
 
@@ -3760,12 +3486,6 @@ exports.updateKGLiters = async (req, res, next) => {
     processBatches();
   });
 };
-
-//------------------------------------------------------------------------------------------------------------------->
-// Convert Liters to KG of all Milk Collection of perticular master and update rate amount
-//------------------------------------------------------------------------------------------------------------------->
-
-exports.updateLitersKG = async (req, res) => {};
 
 //------------------------------------------------------------------------------------------------------------------->
 //after fat or snf updated Apply rate chart ------------------------------------------------------------------------->

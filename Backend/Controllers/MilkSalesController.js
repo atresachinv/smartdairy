@@ -17,29 +17,18 @@ exports.fetchCenterMilkColl = async (req, res) => {
   }
 
   const dairy_table = `dailymilkentry_${dairy_id}`;
-  let getMilkData = "";
 
-  // Conditional query based on collectedBy
-  if (collectedBy !== "" || !collectedBy) {
-    getMilkData = `
-      SELECT fat, snf, rate, Litres, Amt 
-      FROM ${dairy_table} 
-      WHERE ReceiptDate = ? AND center_id = ? 
-        AND ME = ? AND isDeleted = 0
+  let getMilkData = `
+    SELECT fat, snf, rate, Litres, Amt 
+    FROM ${dairy_table}
+    WHERE ReceiptDate = ? AND center_id = ? AND ME = ? AND isDeleted = 0
   `;
-  } else {
-    getMilkData = `
-      SELECT fat, snf, rate, Litres, Amt 
-      FROM ${dairy_table} 
-      WHERE ReceiptDate = ? AND center_id = ? 
-        AND userid = ? AND ME = ? AND isDeleted = 0
-    `;
-  }
+  const params = [date, centerid, shift];
 
-  const params =
-    collectedBy && collectedBy !== ""
-      ? [dairy_id, date, centerid, shift]
-      : [dairy_id, date, centerid, collectedBy, shift];
+  if (collectedBy && collectedBy.trim() !== "") {
+    getMilkData += ` AND userid = ?`;
+    params.push(collectedBy);
+  }
 
   pool.getConnection((err, connection) => {
     if (err) {

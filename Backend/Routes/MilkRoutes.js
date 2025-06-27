@@ -32,6 +32,7 @@ const {
   finallyApplyRateChart,
   updateFatToLastFat,
   updateSnfToLastSnf,
+  dairyMilkLossGain,
 } = require("../Controllers/MilkController");
 const verifyToken = require("../Middlewares/VerifyToken");
 
@@ -76,6 +77,7 @@ router.route("/retail/sale-report").get(verifyToken, retailMilkReports);
 router
   .route("/retail/center/sale-report")
   .get(verifyToken, centerReMilkReports);
+router.route("/dairy/daily/loss-gain").get(verifyToken, dairyMilkLossGain); // -------------------------------------------------------------->
 //FAt SNF TADJOD-------------------------------------------------------------------------------------------------------->
 router
   .route("/update/fat")

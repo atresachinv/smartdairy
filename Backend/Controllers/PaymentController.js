@@ -2387,7 +2387,6 @@ exports.fetchPaymentMasters = async (req, res) => {
 exports.fetchSelectedPayAmt = async (req, res) => {
   const dairy_id = req.user.dairy_id;
   const { fromdate, todate, center_id } = req.query;
-console.log("first", fromdate, todate, center_id);
   if (!dairy_id) {
     return res.status(401).json({ status: 401, message: "Unauthorised User!" });
   }

@@ -114,8 +114,7 @@ const SanghaMilkPayment = ({ clsebtn, todate, editData }) => {
       setSanghLedger(updatedLedger);
     }
   };
-console.log("sanghaSales", sanghaSales);
-console.log("sanghaList", sanghaList);
+
   // Calculate total amount only when sanghaLedger changes
   const totalAmount = useMemo(() => {
     if (editData) {

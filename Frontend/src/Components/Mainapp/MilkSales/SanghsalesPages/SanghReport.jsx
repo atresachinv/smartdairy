@@ -30,7 +30,6 @@ const SanghReport = () => {
   const [toDate, setToDate] = useState(tDate);
    
 
-  console.log("sanghaMilkColl", sanghaMilkColl);
   useEffect(() => {
     dispatch(fetchSanghaList());
   }, []);
@@ -95,7 +94,7 @@ const SanghReport = () => {
             />
           </div>
         </div>
-        <div className="sangha-sales-buttons-div w50 h1  d-flex sa a-center">
+        <div className="sangha-sales-buttons-divs w50 h1  d-flex sa a-center">
           <button className="w-btn" type="button" onClick={handleShowbtn}>
             दाखवा
           </button>

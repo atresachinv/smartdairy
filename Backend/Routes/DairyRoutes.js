@@ -59,7 +59,7 @@ router
   .post(verifyToken, getCenterWiseMilkData);
 router
   .route("/dashboard/centers/customer-count")
-  .post(verifyToken, getCenterCustomerCount);
+  .get(verifyToken, getCenterCustomerCount);
 
 // Sangha routes ----------------------------------------------------------------------------------->
 router.route("/create/sangha").post(verifyToken, createMilkSangha);

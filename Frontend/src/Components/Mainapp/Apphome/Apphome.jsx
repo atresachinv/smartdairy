@@ -1,26 +1,12 @@
-import React, { useEffect, useState } from "react";
-import { Route, Routes } from "react-router-dom";
-import AppNavviews from "./AppNavviews";
+import { useEffect, useState } from "react";
 import "../../../Styles/Mainapp/Apphome/Apphome.css";
 import AppNavlinks from "./AppNavlinks";
 import { useDispatch, useSelector } from "react-redux";
 import { listCustomer } from "../../../App/Features/Customers/customerSlice";
-import { getRateCharts } from "../../../App/Features/Mainapp/Masters/rateChartSlice";
 import { getMasterDates } from "../../../App/Features/Customers/Date/masterSlice";
 import { generateMaster } from "../../../App/Features/Customers/Date/masterdateSlice";
 import { getProfileInfo } from "../../../App/Features/Mainapp/Profile/ProfileSlice";
-import Milkcollection from "./Appnavviews/Milkcollection/Milkcollection";
-import MilkSankalan from "./Appnavviews/MilkSankalan/MilkSankalan";
-import CompleteMilkColl from "./Appnavviews/Milkcollection/CompleteMilkColl";
-import SankalanReport from "./Appnavviews/MilkSankalan/SankalanReport";
-import MilkCollectorsReports from "./Appnavviews/Milkcollection/MilkCollectorsReports";
-import CreateCattleFeed from "../Sales/CattleFeed/CreateCattleFeed";
-import SalesReports from "./Appnavviews/MilkSankalan/SalesReports";
-import AdminSalesReports from "./Appnavviews/MilkSankalan/AdminSalesReports";
-import Milksales from "./Appnavviews/MilksalesPages/Milksales";
-import MilksalesReport from "./Appnavviews/MilksalesPages/MilksalesReport";
 import { getretailCustomer } from "../../../App/Features/Mainapp/Milksales/milkSalesSlice";
-import StockReport from "./Appnavviews/Sales/StockReport";
 import AppNavViews from "./AppNavviews";
 
 const Apphome = () => {

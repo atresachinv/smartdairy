@@ -30,7 +30,7 @@
     min-height: 50%;
     margin-bottom: 10px;
   }
-  .save-ratechart-container .button-div .btn{
+  .save-ratechart-container .button-div .btn {
     width: 30%;
   }
   .save-ratechart-container .rate-chart-options-container {
@@ -38,5 +38,49 @@
   }
   .rate-chart-div .rate-chart-row-value {
     padding: 5px 0;
+  }
+}
+
+@media screen and (max-width: 426px) {
+  .update-ratechart-container,
+  .apply-ratechart-container,
+  .save-ratechart-container,
+  .add-milk-type-container,
+  .previous-rate-chart-outer-container {
+    min-height: auto;
+    flex-direction: column;
+  }
+
+  .apply-ratechart-container .rate-chart-setting-div,
+  .update-ratechart-container .rate-chart-setting-div,
+  .save-ratechart-container .rate-chart-setting-div,
+  .add-milk-type-container .add-milk-type,
+  .previous-rate-chart-outer-container .previous-ratechart-container {
+    width: 100%;
+    margin-bottom: 10px;
+  }
+
+  .apply-ratechart-container .previous-rate-chart-container,
+  .update-ratechart-container .previous-rate-chart-container,
+  .save-ratechart-container .select-ratechart-container,
+  .add-milk-type-container .ratechart-type-list-container,
+  .previous-rate-chart-outer-container .rate-chart-container {
+    min-height: 80%;
+    width: 100%;
+    margin-bottom: 10px;
+  }
+  .apply-ratechart-container .rate-chart-setting-div .button-div button {
+    width: 100%;
+    margin-top: 10px;
+  }
+  .save-ratechart-container .rate-chart-setting-div .button-div button {
+    width: 100%;
+  }
+
+  /* top navigation css */
+  .ratechart-master-container .ratechart-master-navigation {
+    overflow-x: auto;
+    white-space: nowrap;
+    min-width: 100%;
   }
 }

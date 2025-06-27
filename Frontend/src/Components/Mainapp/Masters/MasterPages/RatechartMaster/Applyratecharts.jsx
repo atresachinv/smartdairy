@@ -3,17 +3,23 @@ import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import { getMaxCustNo } from "../../../../../App/Features/Customers/customerSlice";
 import Spinner from "../../../../Home/Spinner/Spinner";
-import { applyRateChart } from "../../../../../App/Features/Mainapp/Masters/rateChartSlice";
+import {
+  applyRateChart,
+  fetchRateChart,
+} from "../../../../../App/Features/Mainapp/Masters/rateChartSlice";
 import { useTranslation } from "react-i18next";
 
-const ApplyRatechart = ({ isSet, ratechart }) => {
+const Applyratecharts = ({ isSet, ratechart }) => {
   const { t } = useTranslation("ratechart");
   const dispatch = useDispatch();
   const tDate = useSelector((state) => state.date.toDate);
   const status = useSelector((state) => state.ratechart.applyrcstatus);
   const custno = useSelector((state) => state.customer.maxCustNo);
+  const ratechartlist = useSelector(
+    (state) => state.ratechart.ratechartList || []
+  );
   const [errors, setErrors] = useState({});
-
+  const [selectedRateChart, setSelectedRateChart] = useState(null);
   const [formData, setFormData] = useState({
     rcfromdate: "",
     rctodate: "",
@@ -73,6 +79,23 @@ const ApplyRatechart = ({ isSet, ratechart }) => {
     return validationErrors;
   };
 
+  // Function to handle row click
+  const handleRowClick = (ratechart) => {
+    // If the clicked rate chart is already selected, deselect it
+    if (selectedRateChart === ratechart) {
+      setSelectedRateChart(null);
+    } else {
+      setSelectedRateChart(ratechart);
+      dispatch(
+        fetchRateChart({
+          rccode: ratechart.rccode,
+          rcdate: ratechart.rcdate,
+          rctype: ratechart.rctypename,
+        })
+      );
+    }
+  };
+
   const handleInput = (e) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({
@@ -80,6 +103,7 @@ const ApplyRatechart = ({ isSet, ratechart }) => {
       [name]: value,
     }));
   };
+
   // updated function -------------------------------------------------------------->
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -112,9 +136,57 @@ const ApplyRatechart = ({ isSet, ratechart }) => {
   };
 
   return (
-    <>
+    <div className="apply-ratechart-container w100 h1 d-flex sb p10">
+      <div className="previous-rate-chart-container w45 h1 d-flex-col bg">
+        <span className="heading">{t("दरपत्रक")} : </span>
+        <span className="tip-text">
+          ( दरपत्रक निवडण्यासाठी खाली दिलेल्या योग्य दरपत्रकावर क्लिक करा )
+        </span>
+        <div className="previous-ratechart-container w100 h1 d-flex-col mh100 hidescrollbar mt-10">
+          <div className="rate-chart-col-title w100 d-flex a-center t-center sa py10 bg1 sticky-top">
+            <span className="f-info-text w10">{t("rc-no")}</span>
+            <span className="f-info-text w20">{t("rc-date")}</span>
+            <span className="f-info-text w25">{t("rc-type")}</span>
+          </div>
+          {ratechartlist.length > 0 ? (
+            ratechartlist
+              .slice()
+              .sort((a, b) => a.rccode - b.rccode)
+              .map((ratechart, index) => (
+                <div
+                  onClick={() => handleRowClick(ratechart)}
+                  key={index}
+                  className="rate-chart-row-value w100 d-flex a-center t-center py10 sa"
+                  style={{
+                    backgroundColor:
+                      selectedRateChart === ratechart
+                        ? "#d1e7dd"
+                        : index % 2 === 0
+                        ? "#faefe3"
+                        : "#fff",
+                    cursor: "pointer",
+                  }}
+                >
+                  <span className="info-text w10">{ratechart.rccode}</span>
+                  <span className="info-text w20">
+                    {new Date(ratechart.rcdate).toLocaleDateString("en-GB", {
+                      year: "2-digit",
+                      month: "2-digit",
+                      day: "2-digit",
+                    })}
+                  </span>
+                  <span className="info-text w25">{ratechart.rctypename}</span>
+                </div>
+              ))
+          ) : (
+            <div className="box d-flex center">
+              <span className="label-text">No Record Found!</span>
+            </div>
+          )}
+        </div>
+      </div>
       <form
-        className="rate-chart-setting-div w100 h1 d-flex-col sa"
+        className="rate-chart-setting-div w45 h60 d-flex-col bg-light-green br9 p10 sa"
         onSubmit={handleSubmit}
       >
         <span className="heading p10">{t("rc-apply-s-rc")} :</span>
@@ -206,8 +278,8 @@ const ApplyRatechart = ({ isSet, ratechart }) => {
           </button>
         </div>
       </form>
-    </>
+    </div>
   );
 };
 
-export default ApplyRatechart;
+export default Applyratecharts;

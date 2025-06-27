@@ -51,10 +51,16 @@
 /*--------Mobile Screen CSS-------*/
 
 @media screen and (max-width: 426px) {
-  .home-nav-item  a  span {
+  .home-nav-item a span {
     display: none;
   }
   .dropdown-menu {
     right: 10px;
+  }
+
+  .app-home-container .header-nav {
+    overflow-x: auto;
+    white-space: nowrap;
+    min-width: 100%;
   }
 }

@@ -235,6 +235,9 @@ const FatSnfCompromise = () => {
   };
 
   const handleConvertKL = async (e) => {
+    if (!values.shift) {
+      return toast.error("Please select shift to update Records!");
+    }
     e.preventDefault();
     const responce = await dispatch(
       convertKgLiters({
