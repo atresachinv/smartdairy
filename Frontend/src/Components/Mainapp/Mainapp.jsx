@@ -94,6 +94,7 @@ import SanghPayReport from "./MilkSales/SanghsalesPages/SanghPayReport";
 import SanghMilkReport from "./Reports/MilkSanghReport/SanghMilkReport";
 import TanckerMaster from "./Masters/MasterPages/TanckerMaster";
 import TankerReport from "./Reports/TankerReport";
+import Lossgainreport from "./Reports/LossGainReport/Lossgainreport";
 
 const Mainapp = () => {
   const dispatch = useDispatch();
@@ -325,7 +326,8 @@ const Mainapp = () => {
               path="reports/SanghMilkReport/*"
               element={<SanghMilkReport />}
             />
-            <Route path="reports/tanker" element={<TankerReport/>} />
+            <Route path="reports/lossgain/*" element={<Lossgainreport />} />
+            <Route path="reports/tanker" element={<TankerReport />} />
             {/* payment routes */}
             <Route
               path="payment/milk-correction/*"

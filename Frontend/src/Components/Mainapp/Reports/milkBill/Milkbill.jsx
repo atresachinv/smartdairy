@@ -649,19 +649,51 @@ const Milkbill = () => {
         })
         .join("");
 
-    const deductionRows = (records) =>
-      records
-        .filter(
-          (d) => d.AMT && parseFloat(d.AMT) !== 0 && d.dname?.trim() !== ""
-        )
-        .map(
-          (d) => `
-        <tr><td>${d.dname}</td><td style="text-align:right;">${parseFloat(
-            d.AMT
-          ).toFixed(2)}</td></tr>
-      `
-        )
+    // Deduction
+    const deductionRows = (records = []) => {
+      if (!Array.isArray(records) || records.length === 0) return "";
+
+      let html = `
+    <table border="1" cellpadding="5" cellspacing="0" style="width: 100%; border-collapse: collapse; font-family: Arial, sans-serif; font-size: 13px;">
+      <thead style="background-color:#f2f2f2;">
+        <tr>
+          <th>Deduction Name</th>
+          <th style="text-align:right;">शिल्लक</th>
+          <th style="text-align:right;">मागील बाकी</th>
+          <th style="text-align:right;">कपात </th>
+          <th style="text-align:right;">कपात Amount</th>
+        </tr>
+      </thead>
+      <tbody>
+  `;
+
+      html += records
+        .filter((d) => d?.dname?.trim() !== "")
+        .map((d) => {
+          const bamt = isNaN(parseFloat(d.BAMT)) ? 0 : parseFloat(d.BAMT);
+          const mamt = isNaN(parseFloat(d.MAMT)) ? 0 : parseFloat(d.MAMT);
+          const damt = isNaN(parseFloat(d.DAMT)) ? 0 : parseFloat(d.DAMT);
+          const amt = isNaN(parseFloat(d.AMT)) ? 0 : parseFloat(d.AMT);
+
+          return `
+        <tr>
+          <td>${d.dname}</td>
+          <td style="text-align:right;">${bamt.toFixed(2)}</td>
+          <td style="text-align:right;">${mamt.toFixed(2)}</td>
+          <td style="text-align:right;">${damt.toFixed(2)}</td>
+          <td style="text-align:right;">${amt.toFixed(2)}</td>
+        </tr>
+      `;
+        })
         .join("");
+
+      html += `
+      </tbody>
+    </table>
+  `;
+
+      return html;
+    };
 
     const buildPaymentSummary = (payment) => {
       if (payment.length === 0)
@@ -908,7 +940,7 @@ const Milkbill = () => {
     const dateStr = new Date().toLocaleDateString("hi-IN");
 
     let bodyRows = "";
-   
+
     if (deduction.length > 0) {
       deduction.forEach((item, index) => {
         bodyRows += `

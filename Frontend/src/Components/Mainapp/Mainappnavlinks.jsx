@@ -523,6 +523,13 @@ const Mainappnavlinks = ({ setselected, handleSidebar }) => {
           path: "reports/tanker",
           role: ["admin", "super_admin", "manager"],
         },
+        {
+          name: `${t("LossGain रिपोर्ट")}`,
+          icon: <FaFileInvoiceDollar className="icon" />,
+          index: 6.13,
+          path: "reports/lossgain",
+          role: ["admin", "super_admin", "manager"],
+        },
       ],
     },
     {
