@@ -8,7 +8,7 @@ import {
   fetchsanghaMilkColl,
   fetchsanghaMilkDetails,
 } from "../../../../App/Features/Mainapp/Sangha/sanghaSlice";
-// import { getdairymilkection } from "../../../../App/Features/Mainapp/Milksales/milkSalesSlice";
+// import { getdairymilkcoll} from "../../../../App/Features/Mainapp/Milksales/milkSalesSlice";
 import { getAllMilkCollReport } from "../../../../App/Features/Mainapp/Milk/MilkCollectionSlice";
 import { getPayMasters } from "../../../../App/Features/Payments/paymentSlice";
 const SanghMilkReport = () => {
@@ -534,7 +534,6 @@ const SanghMilkReport = () => {
 
 export default SanghMilkReport;
 
-
 // import React, { useEffect, useMemo, useState } from "react";
 // import "../../../../Styles/SanghMilkReport/SanghMilkReport.css";
 // import { useDispatch, useSelector } from "react-redux";
@@ -621,18 +620,17 @@ export default SanghMilkReport;
 //     setShow(false);
 
 //     try {
-//       await dispatch(getPayMasters()).unwrap();           
-//       await dispatch(fetchsanghaMilkColl()).unwrap();     
-//       await dispatch(getAllMilkCollReport()).unwrap();    
-//       await dispatch(getDairyCollection()).unwrap();   
-      
+//       await dispatch(getPayMasters()).unwrap();
+//       await dispatch(fetchsanghaMilkColl()).unwrap();
+//       await dispatch(getAllMilkCollReport()).unwrap();
+//       await dispatch(getDairyCollection()).unwrap();
+
 //     } catch (error) {
 //       console.error("Error fetching data:", error);
 //     }
 
 //     setShow(true);
 //   };
-  
 
 //   console.log("payMasters", payMasters);
 //   console.log("sanghaMilkColl", sanghaMilkColl);
