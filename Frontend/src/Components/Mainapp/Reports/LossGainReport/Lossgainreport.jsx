@@ -32,8 +32,6 @@ const Lossgainreport = () => {
     }
   };
 
-
-
   //..
   const printDairyLossGainReport = (dairyColl = []) => {
     const format = (v, d = 2) =>
