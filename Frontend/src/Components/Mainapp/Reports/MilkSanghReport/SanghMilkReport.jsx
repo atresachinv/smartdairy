@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
 import "../../../../Styles/SanghMilkReport/SanghMilkReport.css";
@@ -8,9 +8,9 @@ import {
   fetchsanghaMilkColl,
   fetchsanghaMilkDetails,
 } from "../../../../App/Features/Mainapp/Sangha/sanghaSlice";
-import { getAllMilkCollReport } from "../../../../App/Features/Mainapp/Milk/milkCollectionSlice";
-import { getDairyCollection } from "../../../../App/Features/Mainapp/Milksales/milkSalesSlice";
-import autoTable from "jspdf-autotable";
+// import { getdairymilkcollection} from "../../../../App/Features/Mainapp/Milksales/milkSalesSlice";
+import { getAllMilkCollReport } from "../../../../App/Features/Mainapp/Milk/MilkCollectionSlice";
+import { getPayMasters } from "../../../../App/Features/Payments/paymentSlice";
 const SanghMilkReport = () => {
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
@@ -18,11 +18,9 @@ const SanghMilkReport = () => {
   const dispatch = useDispatch();
   const sanghaMilkColl = useSelector((state) => state.sangha.sanghamilkColl);
   const data = useSelector((state) => state.milkCollection.allMilkColl);
-  const tDate = useSelector((state) => state.date.toDate);
-  const sanghaSales = useSelector((state) => state.sangha.sanghaSales); // sangha Sales
-
+  const payMasters = useSelector((state) => state.payment.paymasters || []);
   const dairymilk = useSelector((state) => state.milksales.dairyMilk); // sangha Sales
-  const sanghaLedger = useSelector((state) => state.sangha.sanghaLedger); // sangha Ledger
+
   const dairyname = useSelector(
     (state) =>
       state.dairy.dairyData.SocietyName || state.dairy.dairyData.center_name
@@ -42,10 +40,18 @@ const SanghMilkReport = () => {
     dispatch(fetchsanghaLedger({ fromDate, toDate }));
     setShowTable(true);
   };
+
+  ///.......
+
+  useEffect(() => {
+    if (payMasters.length === 0) {
+      dispatch(getPayMasters());
+    }
+  }, []);
   console.log("sanghaMilkColl", sanghaMilkColl);
   // console.log("sanghaSales", sanghaSales);
   console.log("Dairymilk", dairymilk);
-  // console.log("milkcilectiondata", data);
+  console.log("payMasters", payMasters);
   // Calculate values
   const totalDairyMilk = data?.reduce(
     (sum, item) => sum + Number(item.Litres || 0),
@@ -158,7 +164,7 @@ const SanghMilkReport = () => {
           <h2>${dairyname || ""}, ${CityName || ""}</h2>
           <h4>दूध संकलन विवरण अहवाल</h4>
           <h4>दिनांक: ${fromDate} ते ${toDate}</h4>
-  
+
           <table>
             <thead>
               <tr>
@@ -185,7 +191,7 @@ const SanghMilkReport = () => {
               </tr>
             </tbody>
           </table>
-  
+
           <script>
             window.onload = function () {
               window.print();
@@ -200,7 +206,6 @@ const SanghMilkReport = () => {
     printWindow.document.write(htmlContent);
     printWindow.document.close();
   };
-  
 
   const printDairyMilkData = (dairymilk, sanghaMilkColl) => {
     const format = (val, digits = 2) =>
@@ -248,7 +253,7 @@ const SanghMilkReport = () => {
           <h4>Sangh Milk Report (${formatDisplayDate(
             fromDate
           )} to ${formatDisplayDate(toDate)})</h4>
-  
+
           <table>
             <thead>
               <tr>
@@ -510,7 +515,6 @@ const SanghMilkReport = () => {
           <div className="milk-sangh-report-table-data w100 h60 d-flex sa bg">
             <span className="label-text w20">
               {fromDate} TO {toDate}
-              
             </span>
             <span className="label-text w10">{totalDairyMilk.toFixed(2)}</span>
             <span className="label-text w10">{totalGoodMilk.toFixed(2)}</span>
@@ -529,3 +533,153 @@ const SanghMilkReport = () => {
 };
 
 export default SanghMilkReport;
+
+// import React, { useEffect, useMemo, useState } from "react";
+// import "../../../../Styles/SanghMilkReport/SanghMilkReport.css";
+// import { useDispatch, useSelector } from "react-redux";
+// import { fetchsanghaMilkColl } from "../../../../App/Features/Mainapp/Sangha/sanghaSlice";
+// import { getAllMilkCollReport } from "../../../../App/Features/Mainapp/Milk/MilkCollectionSlice";
+// import { getPayMasters } from "../../../../App/Features/Payments/paymentSlice";
+
+// const SanghMilkReport = () => {
+//   const dispatch = useDispatch();
+
+//   const [show, setShow] = useState(false);
+
+//   const payMasters = useSelector((state) => state.payment.paymasters || []);
+//   const sanghaMilkColl = useSelector(
+//     (state) => state.sangha.sanghamilkColl || []
+//   );
+//   const dairymilk = useSelector((state) => state.milksales.dairyMilk || []);
+
+//   const data = useSelector((state) => state.milkCollection.allMilkColl || []);
+
+//   const fmt = (v, d = 2) =>
+//     v === null || v === undefined || isNaN(v) ? "0.00" : Number(v).toFixed(d);
+
+//   const dOnly = (date) =>
+//     date ? new Date(date).toISOString().split("T")[0] : "";
+
+//   const rows = useMemo(() => {
+//     if (!payMasters.length) return [];
+
+//     return payMasters.map((pm) => {
+//       const dateISO = dOnly(pm.masterdate);
+//       const dateForUI = dateISO
+//         ? new Date(dateISO).toLocaleDateString("en-GB")
+//         : "";
+
+//       const dairyRows = dairymilk.filter(
+//         (d) => dOnly(d.ReceiptDate) === dateISO
+//       );
+//       const dairyLitres = dairyRows.reduce(
+//         (s, r) => s + Number(r.Litres || 0),
+//         0
+//       );
+
+//       const sanghRows = sanghaMilkColl.filter(
+//         (s) => dOnly(s.colldate) === dateISO
+//       );
+//       const goodMilk = sanghRows.reduce(
+//         (s, r) => s + Number(r.liter || 0) + Number(r.evening_ltr || 0),
+//         0
+//       );
+//       const lowMilk = sanghRows.reduce(
+//         (s, r) => s + Number(r.kamiprat_ltr || 0),
+//         0
+//       );
+//       const rejected = sanghRows.reduce(
+//         (s, r) => s + Number(r.nash_ltr || 0),
+//         0
+//       );
+//       const retailLitres = sanghRows.reduce(
+//         (s, r) => s + Number(r.kirkol_sale || 0),
+//         0
+//       );
+
+//       const ghat =
+//         dairyLitres > goodMilk ? fmt(dairyLitres - goodMilk, 2) : "0.00";
+//       const vaadh =
+//         goodMilk > dairyLitres ? fmt(goodMilk - dairyLitres, 2) : "0.00";
+
+//       return {
+//         date: dateForUI,
+//         dairyLitres: fmt(dairyLitres, 2),
+//         goodMilk: fmt(goodMilk, 2),
+//         lowMilk: fmt(lowMilk, 2),
+//         rejected: fmt(rejected, 2),
+//         retail: fmt(retailLitres, 2),
+//         ghat,
+//         vaadh,
+//       };
+//     });
+//   }, [payMasters, sanghaMilkColl, dairymilk]);
+
+//   const handleShowBtn = async (e) => {
+//     e.preventDefault(); // Prevent form reload
+//     setShow(false);
+
+//     try {
+//       await dispatch(getPayMasters()).unwrap();
+//       await dispatch(fetchsanghaMilkColl()).unwrap();
+//       await dispatch(getAllMilkCollReport()).unwrap();
+//       await dispatch(getDairyCollection()).unwrap();
+
+//     } catch (error) {
+//       console.error("Error fetching data:", error);
+//     }
+
+//     setShow(true);
+//   };
+
+//   console.log("payMasters", payMasters);
+//   console.log("sanghaMilkColl", sanghaMilkColl);
+//   console.log("dairymilk", dairymilk);
+//   console.log("dairymilk data", data);
+//   return (
+//     <div className="milk-sangha-report-container w100 h1 d-flex-col">
+//       <span className="heading px10">दुध संघ रिपोर्ट</span>
+
+//       <div className="milksangh-report-container w100 h70 d-flex-col">
+//         <div className="sanghamilk-collection-show-button w50 px10">
+//           <button className="w-btn" onClick={handleShowBtn}>
+//             Show
+//           </button>
+//         </div>
+
+//         {show && (
+//           <>
+//             <div className="milk-sangh-report-table-heading w100 h10 d-flex sa bg7">
+//               <span className="label-text w20">Date</span>
+//               <span className="label-text w10">डेअरी दुध</span>
+//               <span className="label-text w10">चांगली प्रत</span>
+//               <span className="label-text w10">कमी प्रत</span>
+//               <span className="label-text w10">नाकारलेले</span>
+//               <span className="label-text w10">किरकोळ दुध विक्री</span>
+//               <span className="label-text w10">घट</span>
+//               <span className="label-text w10">वाढ</span>
+//             </div>
+
+//             {rows.map((r, index) => (
+//               <div
+//                 key={r.date || `row-${index}`}
+//                 className="milk-sangh-report-table-data w100 h60 d-flex sa bg"
+//               >
+//                 <span className="label-text w20">{r.date}</span>
+//                 <span className="label-text w10">{r.dairyLitres}</span>
+//                 <span className="label-text w10">{r.goodMilk}</span>
+//                 <span className="label-text w10">{r.lowMilk}</span>
+//                 <span className="label-text w10">{r.rejected}</span>
+//                 <span className="label-text w10">{r.retail}</span>
+//                 <span className="label-text w10">{r.ghat}</span>
+//                 <span className="label-text w10">{r.vaadh}</span>
+//               </div>
+//             ))}
+//           </>
+//         )}
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default SanghMilkReport;
