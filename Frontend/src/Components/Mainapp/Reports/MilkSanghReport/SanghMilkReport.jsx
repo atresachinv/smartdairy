@@ -8,7 +8,7 @@ import {
   fetchsanghaMilkColl,
   fetchsanghaMilkDetails,
 } from "../../../../App/Features/Mainapp/Sangha/sanghaSlice";
-// import { getdairymilkcoll} from "../../../../App/Features/Mainapp/Milksales/milkSalesSlice";
+// import { getdairymilkcollection} from "../../../../App/Features/Mainapp/Milksales/milkSalesSlice";
 import { getAllMilkCollReport } from "../../../../App/Features/Mainapp/Milk/MilkCollectionSlice";
 import { getPayMasters } from "../../../../App/Features/Payments/paymentSlice";
 const SanghMilkReport = () => {
@@ -36,7 +36,7 @@ const SanghMilkReport = () => {
     dispatch(fetchsanghaMilkColl({ fromDate, toDate }));
     dispatch(fetchsanghaMilkDetails({ fromDate, toDate }));
     dispatch(getAllMilkCollReport({ fromDate, toDate }));
-    dispatch(getdairymilkcollection({ fromDate, toDate }));
+    dispatch(getDairyCollection({ fromDate, toDate }));
     dispatch(fetchsanghaLedger({ fromDate, toDate }));
     setShowTable(true);
   };
