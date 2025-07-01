@@ -1432,33 +1432,8 @@ exports.updateCenterSetting = (req, res) => {
 
 exports.updateCenterSetup = (req, res) => {
   const { dairy_id, center_id, user_id } = req.user;
-  const { centerid, ...formData } = req.body;
+  const { centerid, id, ...formData } = req.body;
   const currentDate = new Date().toISOString().slice(0, 10);
-  const {
-    id,
-    milkType,
-    previnfo,
-    fill_manually,
-    whsms,
-    print,
-    billDays,
-    minPayment,
-    milkRate,
-    pType,
-    vSalesms,
-    millcoll,
-    printmilKcoll,
-    salesms,
-    printSales,
-    vMillcoll,
-    cmillcoll,
-    noRatesms,
-    kgliters,
-    collUnit
-  } = formData;
-
-  const parsedMinPayment = parseFloat(minPayment) || 0.0;
-  const parsedMilkRate = parseFloat(milkRate) || 0.0;
 
   pool.getConnection((err, connection) => {
     if (err) {
@@ -1470,71 +1445,93 @@ exports.updateCenterSetup = (req, res) => {
       });
     }
 
+    // Dynamic UPDATE
     if (id !== undefined) {
-      const updateQuery = `
-        UPDATE setting_Master 
-        SET  pType = ?, salesms = ?, printSales = ?, vSalesms = ?, millcoll = ?, printmilKcoll = ?, vMillcoll = ?,
-          cmillcoll = ?, noRatesms = ?, billDays = ?, minPayment =?, milkRate = ? , updatedBy = ?, updatedDate = ?,
-          milkType = ?, previnfo = ?, fill_manually = ?, whsms = ?, print = ?, KgLitres = ?, collUnit = ?
-        WHERE id = ?
-      `;
+      const fields = [];
+      const values = [];
 
-      connection.query(
-        updateQuery,
-        [
-          pType || null,
-          salesms || 0,
-          printSales || 0,
-          vSalesms || 0,
-          millcoll || 0,
-          printmilKcoll || 0,
-          vMillcoll || 0,
-          cmillcoll || 0,
-          noRatesms || 0,
-          billDays || 0,
-          parsedMinPayment || 0,
-          parsedMilkRate || 0,
-          user_id,
-          currentDate,
-          milkType || 0,
-          previnfo || null,
-          fill_manually || null,
-          whsms || 0,
-          print || 0,
-          kgliters || null,
-          collUnit || 0,
-          id,
-        ],
-        (err, results) => {
-          connection.release();
+      // Loop through provided keys and build SET clause
+      Object.keys(formData).forEach((key) => {
+        fields.push(`${key} = ?`);
+        let value = formData[key];
 
-          if (err) {
-            console.error("Error executing update query: ", err);
-            return res.status(500).json({
-              status: 500,
-              success: false,
-              message: "Error updating settings",
-            });
-          }
+        // Handle special parsing
+        if (key === "minPayment" || key === "milkRate") {
+          value = parseFloat(value) || 0.0;
+        } else if (
+          typeof value === "string" &&
+          (value.toLowerCase() === "null" || value === "")
+        ) {
+          value = null;
+        }
 
-          return res.status(200).json({
-            status: 200,
-            success: true,
-            message:
-              results.affectedRows > 0
-                ? "Settings updated successfully"
-                : "No changes made",
+        values.push(value);
+      });
+
+      // Add updater info
+      fields.push("updatedBy = ?", "updatedDate = ?");
+      values.push(user_id, currentDate);
+
+      const updateQuery = `UPDATE setting_Master SET ${fields.join(
+        ", "
+      )} WHERE id = ?`;
+      values.push(id);
+
+      connection.query(updateQuery, values, (err, results) => {
+        connection.release();
+
+        if (err) {
+          console.error("Error executing dynamic update query: ", err);
+          return res.status(500).json({
+            status: 500,
+            success: false,
+            message: "Error updating settings",
           });
         }
-      );
+
+        return res.status(200).json({
+          status: 200,
+          success: true,
+          message:
+            results.affectedRows > 0
+              ? "Settings updated successfully"
+              : "No changes made",
+        });
+      });
     } else {
+      // INSERT remains the same (full insert)
+      const {
+        milkType,
+        previnfo,
+        fill_manually,
+        whsms,
+        print,
+        billDays,
+        minPayment,
+        milkRate,
+        pType,
+        vSalesms,
+        millcoll,
+        printmilKcoll,
+        salesms,
+        printSales,
+        vMillcoll,
+        cmillcoll,
+        noRatesms,
+        kgliters,
+        collUnit,
+      } = formData;
+
+      const parsedMinPayment = parseFloat(minPayment) || 0.0;
+      const parsedMilkRate = parseFloat(milkRate) || 0.0;
+
       const insertQuery = `
-    INSERT INTO setting_Master 
-    (center_id, dairy_id, milkType, previnfo, fill_manually, whsms, print, millcoll,
-      printmilKcoll, vMillcoll, pType, salesms, printSales, vSalesms, KgLitres, cmillcoll, 
-      noRatesms, billDays, minPayment, milkRate, collUnit, updatedBy, updatedDate)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-  `;
+        INSERT INTO setting_Master 
+        (center_id, dairy_id, milkType, previnfo, fill_manually, whsms, print, millcoll,
+          printmilKcoll, vMillcoll, pType, salesms, printSales, vSalesms, KgLitres, cmillcoll, 
+          noRatesms, billDays, minPayment, milkRate, collUnit, updatedBy, updatedDate)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `;
 
       const insertValues = [
         centerid || center_id,
@@ -1555,8 +1552,8 @@ exports.updateCenterSetup = (req, res) => {
         cmillcoll || 0,
         noRatesms || 0,
         billDays || 0,
-        parsedMinPayment || 0,
-        parsedMilkRate || 0,
+        parsedMinPayment,
+        parsedMilkRate,
         collUnit || 0,
         user_id,
         currentDate,
@@ -1584,6 +1581,7 @@ exports.updateCenterSetup = (req, res) => {
     }
   });
 };
+
 
 // <<<<<<<<<----------------------------- Sangha ---------------------------->>>>>>>>>>>>
 

@@ -1,13 +1,6 @@
-/* Data table css */
+
 .Milk-report-heading {
   overflow-x: auto;
-}
-.milkdata-headings-div {
-  min-width: 1000px;
-  position: sticky;
-  top: 0;
-  background-color: #17acc0;
-  padding: 5px 0;
 }
 
 .fillter-conditions-div1 {
@@ -16,13 +9,7 @@
 
 .fillter-data-container .fitter-hide-show-container {
   min-height: fit-content;
-}
-.bg-total {
-  background-color: #e0e0e0;
-  font-weight: bold;
-}
-.days-selection-div {
-  margin-bottom: 20px;
+  margin-bottom: 10px;
 }
 
 @media screen and (max-width: 426px) {
@@ -129,20 +116,20 @@
     width: 100%;
     margin-top: 10px;
   }
-  .fillter-conditions-div1 .days-selection-div label{
+  .fillter-conditions-div1 .days-selection-div label {
     width: 50%;
   }
-  .master-hide-show-chackbox-div{
-     flex-direction: column;
+  .master-hide-show-chackbox-div {
+    flex-direction: column;
   }
-   .master-hide-show-chackbox-div .custmize-report-div {
+  .master-hide-show-chackbox-div .custmize-report-div {
     width: 100%;
   }
-   .master-hide-show-chackbox-div  .daswada-filter-container{
+  .master-hide-show-chackbox-div .daswada-filter-container {
     width: 100%;
   }
 }
-@media screen and (max-width: 768px) {
+@media screen and (max-width: 769px) {
   .Milkcollection-container {
     height: auto;
   }
@@ -246,16 +233,16 @@
     width: 100%;
     margin-top: 10px;
   }
-  .fillter-conditions-div1 .days-selection-div label{
+  .fillter-conditions-div1 .days-selection-div label {
     width: 50%;
   }
-  .master-hide-show-chackbox-div{
-     flex-direction: column;
+  .master-hide-show-chackbox-div {
+    flex-direction: column;
   }
-   .master-hide-show-chackbox-div .custmize-report-div {
+  .master-hide-show-chackbox-div .custmize-report-div {
     width: 100%;
   }
-   .master-hide-show-chackbox-div  .daswada-filter-container{
+  .master-hide-show-chackbox-div .daswada-filter-container {
     width: 100%;
   }
 }

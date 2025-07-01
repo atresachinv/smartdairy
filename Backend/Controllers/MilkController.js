@@ -483,6 +483,7 @@ exports.milkCollectionOneEntry = async (req, res) => {
     shift,
     animal,
     liters,
+    kg,
     fat,
     snf,
     amt,
@@ -560,8 +561,8 @@ exports.milkCollectionOneEntry = async (req, res) => {
       // Insert milk collection entry
       const insertMilkCollectionQuery = `
         INSERT INTO ${dairy_table} 
-        (userid, ReceiptDate, ME, CB, Litres, fat, snf, Amt, rctype, GLCode, AccCode, Digree, rate, cname, rno, center_id) 
-        VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        (userid, ReceiptDate, ME, CB, Litres, Kg, fat, snf, Amt, rctype, GLCode, AccCode, Digree, rate, cname, rno, center_id) 
+        VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       `;
 
       await query(insertMilkCollectionQuery, [
@@ -570,6 +571,7 @@ exports.milkCollectionOneEntry = async (req, res) => {
         shift,
         animal,
         liters,
+        kg,
         fat,
         snf,
         amt,

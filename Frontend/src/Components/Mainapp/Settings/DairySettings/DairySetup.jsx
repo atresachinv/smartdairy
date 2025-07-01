@@ -48,7 +48,7 @@ const DairySetup = () => {
     noRatesms: 0,
     printmilKcoll: 0,
     printSales: 0,
-    kgliters: 0,
+    KgLitres: 0,
   };
 
   const [formData, setFormData] = useState(initialFormState);
@@ -89,7 +89,7 @@ const DairySetup = () => {
         noRatesms: cSettings.noRatesms,
         printmilKcoll: cSettings.printmilKcoll,
         printSales: cSettings.printSales,
-        kgliters: cSettings.KgLitres,
+        KgLitres: cSettings.KgLitres,
       });
     }
   }, [cSettings]);
@@ -366,18 +366,18 @@ const DairySetup = () => {
             </div>
           </div>
           <div className="kg-liters-setting-container w50 h1 d-flex-col se">
-            <label htmlFor="kgliters" className="label-text py10">
+            <label htmlFor="KgLitres" className="label-text py10">
               किलो-लिटर / लिटर-किलो :
             </label>
             <input
-              id="kgliters"
+              id="KgLitres"
               type="number"
-              name="kgliters"
+              name="KgLitres"
               inputMode="numeric"
               maxLength={8}
               className="data w30"
               placeholder="00.0000"
-              value={formData.kgliters || ""}
+              value={formData.KgLitres || ""}
               onChange={handleInputChange}
               onKeyDown={(e) =>
                 handleKeyPress(e, document.getElementById("uset-btn"))

@@ -47,6 +47,9 @@ const MilkColleform = ({ times }) => {
   const centerSetting = useSelector(
     (state) => state.dairySetting.centerSetting //center settings
   );
+  const collunit = useSelector(
+    (state) => state.dairySetting.centerSetting[0]?.collUnit //center settings
+  );
   const prevdata = useSelector(
     (state) => state.milkCollection.prevMilkData || [] //prev milk data fat, snf ,degree
   );
@@ -66,6 +69,7 @@ const MilkColleform = ({ times }) => {
   const litersRef = useRef(null);
   const fatRef = useRef(null);
   const snfRef = useRef(null);
+  const kgRef = useRef(null);
   const submitbtn = useRef(null);
   const initialValues = {
     date: changedDate || tDate,
@@ -73,6 +77,7 @@ const MilkColleform = ({ times }) => {
     shift: "",
     animal: 0,
     liters: "",
+    kg: "",
     fat: "",
     snf: "",
     amt: "",
@@ -123,6 +128,39 @@ const MilkColleform = ({ times }) => {
       }));
     }
   }, [prevdata, values.code, values.liters]);
+
+  // liter to kg convert and save ---------------------------------------------------------------->
+
+  useEffect(() => {
+    if (
+      values.liters > 0 &&
+      centerSetting.length > 0 &&
+      collunit === 0 &&
+      centerSetting[0].KgLitres
+    ) {
+      const kgValue = (values.liters * centerSetting[0].KgLitres).toFixed(2);
+      setValues((prevData) => ({
+        ...prevData,
+        kg: kgValue,
+      }));
+    }
+  }, [values.liters, centerSetting]);
+  //  kg to liter convert and save ---------------------------------------------------------------->
+  useEffect(() => {
+    if (
+      values.kg > 0 &&
+      centerSetting.length > 0 &&
+      collunit === 1 &&
+      centerSetting[0].KgLitres &&
+      centerSetting[0].KgLitres !== 0
+    ) {
+      const literValue = (values.kg / centerSetting[0].KgLitres).toFixed(2);
+      setValues((prevData) => ({
+        ...prevData,
+        liters: literValue,
+      }));
+    }
+  }, [values.kg, centerSetting]);
 
   // dynamic shift time set in time And allow is updated from state ---------------------------->
   useEffect(() => {
@@ -383,6 +421,14 @@ const MilkColleform = ({ times }) => {
       case "liters":
         if (!/^\d+(\.\d{1,2})?$/.test(value.toString())) {
           error[name] = "Invalid liters.";
+        } else {
+          delete errors[name];
+        }
+        break;
+
+      case "kg":
+        if (!/^\d+(\.\d{1,4})?$/.test(value.toString())) {
+          error[name] = "Invalid kg.";
         } else {
           delete errors[name];
         }
@@ -1071,25 +1117,48 @@ const MilkColleform = ({ times }) => {
         </div>
         <div className="milk-details-div w100 h70 d-flex">
           <div className="milk-info w50 h1 d-flex-col">
-            <div className="form-div px10">
-              <label htmlFor="liters" className="info-text">
-                {t("common:c-liters")} <span className="req">*</span>{" "}
-              </label>
-              <input
-                className={`data ${errors.liters ? "input-error" : ""}`}
-                type="number"
-                required
-                placeholder="00.0"
-                name="liters"
-                id="liters"
-                step="any"
-                onChange={handleInputs}
-                disabled={!values.code}
-                value={values.liters}
-                onKeyDown={(e) => handleKeyDown(e, fatRef)}
-                ref={litersRef}
-              />
-            </div>
+            {collunit === 0 ? (
+              <div className="form-div px10">
+                <label htmlFor="liters" className="info-text">
+                  {t("common:c-liters")} <span className="req">*</span>{" "}
+                </label>
+                <input
+                  className={`data ${errors.liters ? "input-error" : ""}`}
+                  type="number"
+                  required
+                  placeholder="00.0"
+                  name="liters"
+                  id="liters"
+                  step="any"
+                  onChange={handleInputs}
+                  disabled={!values.code}
+                  value={values.liters}
+                  onKeyDown={(e) => handleKeyDown(e, fatRef)}
+                  ref={litersRef}
+                />
+              </div>
+            ) : (
+              <div className="form-div px10">
+                <label htmlFor="kg" className="info-text">
+                  {t("किलो")} <span className="req">*</span>{" "}
+                </label>
+                <input
+                  className={`data ${errors.kg ? "input-error" : ""}`}
+                  type="number"
+                  required
+                  placeholder="00.0"
+                  name="kg"
+                  id="kg"
+                  step="any"
+                  onChange={handleInputs}
+                  disabled={!values.code}
+                  value={values.kg}
+                  onKeyDown={(e) => handleKeyDown(e, fatRef)}
+                  ref={kgRef}
+                />
+              </div>
+            )}
+
             <div className="form-div  px10">
               <label htmlFor="fat" className="info-text">
                 {t("common:c-fat")} <span className="req">*</span>{" "}
@@ -1306,10 +1375,7 @@ const MilkColleform = ({ times }) => {
 
       {isModalOpen && (
         <div className="model-container w100 d-flex center">
-          <CollSettings
-            clsebtn={setModalOpen}
-            isModalOpen={isModalOpen}
-          />
+          <CollSettings clsebtn={setModalOpen} isModalOpen={isModalOpen} />
         </div>
       )}
     </div>
