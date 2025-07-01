@@ -93,6 +93,7 @@ import SanghPayReport from "./MilkSales/SanghsalesPages/SanghPayReport";
 import SanghMilkReport from "./Reports/MilkSanghReport/SanghMilkReport";
 import TanckerMaster from "./Masters/MasterPages/TanckerMaster";
 import TankerReport from "./Reports/TankerReport";
+import Lossgainreport from "./Reports/LossGainReport/Lossgainreport";
 import RatechartMaster from "./Masters/MasterPages/RatechartMaster/RatechartMaster";
 import AddtypeRatechart from "./Masters/MasterPages/RatechartMaster/AddtypeRatechart";
 import SaveRatecharts from "./Masters/MasterPages/RatechartMaster/SaveRatecharts";
@@ -337,6 +338,7 @@ const Mainapp = () => {
               path="reports/SanghMilkReport/*"
               element={<SanghMilkReport />}
             />
+            <Route path="reports/lossgain/*" element={<Lossgainreport />} />
             <Route path="reports/tanker" element={<TankerReport />} />
             {/* payment routes */}
             <Route
