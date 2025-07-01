@@ -2,6 +2,7 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 import { IoPersonAdd, IoList } from "react-icons/io5";
 import { NavLink } from "react-router-dom";
+import "../../../../../Styles/Mainapp/Masters/CustomerMaster.css";
 
 const CustomerNavlinks = ({ isselected, setIsSelected }) => {
   const { t } = useTranslation(["master"]);
@@ -32,7 +33,7 @@ const CustomerNavlinks = ({ isselected, setIsSelected }) => {
           }}
         >
           <NavLink to={button.path} className={"sub-navlinks f-label-text"}>
-            {button.icon}
+            <span className="nav-icon">{button.icon}</span>
             <span>{button.name}</span>
           </NavLink>
         </li>

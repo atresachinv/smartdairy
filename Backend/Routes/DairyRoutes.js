@@ -50,7 +50,7 @@ router.route("/save-otp").put(saveOTP); //save otp
 router.route("/verify-otp").post(verifyOtp); //verify otp
 router.route("/update/user/password").post(verifyOtp); //verify otp
 router.route("/center/setting").post(verifyToken, getCenterSetting);
-router.route("/center/setting/one").post(verifyToken, getOneCenterSetting);
+router.route("/center/setting/one").get(verifyToken, getOneCenterSetting);
 router.route("/center/update-setting").post(verifyToken, updateCenterSetting);
 router.route("/center/update/setting").post(verifyToken, updateCenterSetup);
 // Dashboard data display routes -------------------------------------------------------------------->

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Swal from "sweetalert2";
 import "../../../../Styles/Mainapp/Setting/DairySetup.css";
@@ -21,7 +21,7 @@ const DairySetup = () => {
     (state) =>
       state.dairy.dairyData.center_id || state.dairy.dairyData.center_id
   );
-  
+
   const [centerid, setCenterid] = useState("0");
   const [cSettings, setCSettings] = useState({});
 
@@ -48,6 +48,7 @@ const DairySetup = () => {
     noRatesms: 0,
     printmilKcoll: 0,
     printSales: 0,
+    kgliters: 0,
   };
 
   const [formData, setFormData] = useState(initialFormState);
@@ -88,6 +89,7 @@ const DairySetup = () => {
         noRatesms: cSettings.noRatesms,
         printmilKcoll: cSettings.printmilKcoll,
         printSales: cSettings.printSales,
+        kgliters: cSettings.KgLitres,
       });
     }
   }, [cSettings]);
@@ -327,39 +329,60 @@ const DairySetup = () => {
             </div>
           </div>
         </div>
-        <div className="sms-setting-container w100 h20 d-flex-col sb bg-light-skyblue br9 my10">
-          <label htmlFor="" className="label-text p10">
-            प्रिंट सेटिंग :
-          </label>
-          <div className="option-setting-container w100 h90 d-flex f-wrap px10">
-            <div className="dairy-setup-form w25 h40 d-flex a-center se">
-              <label htmlFor="printmilKcoll" className="label-text w100">
-                दुध संकलन :
-              </label>
-              <input
-                id="printmilKcoll"
-                type="checkbox"
-                name="printmilKcoll"
-                className=" w100 h70"
-                placeholder="0.0"
-                checked={formData.printmilKcoll}
-                onChange={handleInputChange}
-              />
+        <div className="sms-setting-outer-container w100 h25 d-flex se bg-light-skyblue br9">
+          <div className="sms-setting-container w50 h1 d-flex-col sb">
+            <label htmlFor="" className="label-text p10">
+              प्रिंट सेटिंग :
+            </label>
+            <div className="option-setting-container w100 h90 d-flex f-wrap px10">
+              <div className="dairy-setup-form w50 h50 d-flex a-center se">
+                <label htmlFor="printmilKcoll" className="label-text w100">
+                  दुध संकलन :
+                </label>
+                <input
+                  id="printmilKcoll"
+                  type="checkbox"
+                  name="printmilKcoll"
+                  className=" w100"
+                  placeholder="0.0"
+                  checked={formData.printmilKcoll}
+                  onChange={handleInputChange}
+                />
+              </div>
+              <div className="dairy-setup-form w50 h50 d-flex a-center se">
+                <label htmlFor="printSales" className="label-text w100">
+                  पशु खाद्यविक्री :
+                </label>
+                <input
+                  id="printSales"
+                  type="checkbox"
+                  name="printSales"
+                  className=" w100"
+                  placeholder="0.0"
+                  checked={formData.printSales}
+                  onChange={handleInputChange}
+                />
+              </div>
             </div>
-            <div className="dairy-setup-form w25 h40 d-flex a-center se">
-              <label htmlFor="printSales" className="label-text w100">
-                पशु खाद्यविक्री :
-              </label>
-              <input
-                id="printSales"
-                type="checkbox"
-                name="printSales"
-                className=" w100 h70"
-                placeholder="0.0"
-                checked={formData.printSales}
-                onChange={handleInputChange}
-              />
-            </div>
+          </div>
+          <div className="kg-liters-setting-container w50 h1 d-flex-col se">
+            <label htmlFor="kgliters" className="label-text py10">
+              किलो-लिटर / लिटर-किलो :
+            </label>
+            <input
+              id="kgliters"
+              type="number"
+              name="kgliters"
+              inputMode="numeric"
+              maxLength={8}
+              className="data w30"
+              placeholder="00.0000"
+              value={formData.kgliters || ""}
+              onChange={handleInputChange}
+              onKeyDown={(e) =>
+                handleKeyPress(e, document.getElementById("uset-btn"))
+              }
+            />
           </div>
         </div>
         <div className="btn-container w100 h10 d-flex j-end a-center">

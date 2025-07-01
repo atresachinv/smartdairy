@@ -1,6 +1,7 @@
 @media screen and (max-width: 426px) {
   .sub-ledger-container {
     min-height: auto;
+    margin: 10px;
   }
   .sub-ledger-container .ledger-master-form-container {
     min-height: fit-content;
@@ -17,6 +18,10 @@
     flex-direction: column;
   }
   .ledger-no-group-container .ledger-no-div {
+    width: 100%;
+    margin-bottom: 10px;
+  }
+  .ledger-no-group-container .ledger-no-div input {
     width: 30%;
   }
   .ledger-no-group-container .ledger-group-div {
@@ -82,5 +87,12 @@
   .ledger-list-headers-div,
   .ledger-list-data-div {
     min-width: 700px;
+  }
+  .ledger-settings-contsiner .ledger-buttons-div {
+    justify-content: space-between;
+    margin: 0;
+  }
+  .ledger-buttons-div button {
+    width: 30%;
   }
 }

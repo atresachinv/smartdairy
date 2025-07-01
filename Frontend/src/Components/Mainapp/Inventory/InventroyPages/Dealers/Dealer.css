@@ -88,6 +88,15 @@
   .create-dealer-form-container .button-container {
     flex-direction: row;
   }
+  .group-code-and-button-div {
+    min-height: fit-content;
+    flex-wrap: wrap;
+  }
+  .group-code-and-button-div .excel-btn,
+  .group-code-and-button-div .pdf-btn {
+    width: 45%;
+  }
+
   .minSize {
     padding: 15px !important;
   }

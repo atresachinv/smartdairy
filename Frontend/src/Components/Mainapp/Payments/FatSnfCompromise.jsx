@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import "../../../Styles/Mainapp/Payments//FatSnfCompromise.css";
 import { useDispatch, useSelector } from "react-redux";
 import {
   convertKgLiters,
@@ -12,6 +11,7 @@ import {
   updatePreviousSnf,
 } from "../../../App/Features/Mainapp/Milk/FatSnfSlice";
 import { getMaxCustNo } from "../../../App/Features/Mainapp/Masters/custMasterSlice";
+import "../../../Styles/Mainapp/Payments//FatSnfCompromise.css";
 const FatSnfCompromise = () => {
   const dispatch = useDispatch();
   const tDate = useSelector((state) => state.date?.toDate);
@@ -264,12 +264,13 @@ const FatSnfCompromise = () => {
     }
   };
 
+  
   return (
-    <div className="fatsnf-container w100 h1 d-flex-col sb p10">
+    <div className="fatsnf-compromise-container w100 h1 d-flex-col sb p10">
       <span className="px10 heading">फॅट-एस.एन.एफ तडजोड :</span>
-      <div className="first-half-snf-fat-container w100 h25 d-flex-col sa p10 bg">
+      <div className="snf-fat-compromise-form-container w100 h25 d-flex-col sa p10 bg">
         <div className="fat-snf-update-details-div w70 h50 d-flex a-center sb">
-          <div className="from-date-snf-fat w45 d-flex a-center sb">
+          <div className="date-snf-fat-div w45 d-flex a-center sb">
             <label htmlFor="fdate" className="w40 label-text">
               संकलन पासून:
             </label>
@@ -284,7 +285,7 @@ const FatSnfCompromise = () => {
             />
           </div>
 
-          <div className="to-date-snf-fat w45  d-flex a-center sb">
+          <div className="date-snf-fat-div w45  d-flex a-center sb">
             <label htmlFor="tdate" className="w40 label-text">
               पर्यत:
             </label>
@@ -346,7 +347,7 @@ const FatSnfCompromise = () => {
           </div>
           <div className="codeno-fat-snf-div w40 d-flex sa">
             <div className="from-code-snf-fat w60 d-flex a-center">
-              <label htmlFor="cfrom" className="px10 label-text">
+              <label htmlFor="cfrom" className="w70 label-text">
                 कोड नं. पासून:
               </label>
               <input
@@ -377,11 +378,11 @@ const FatSnfCompromise = () => {
           </button>
         </div>
       </div>
-      <div className="second-half-clr-snf-fat w100 h70 d-flex-col sa">
+      <div className="fat-snf-update-containers w100 h70 d-flex-col sa">
         <div className="update-option-details w100 d-flex p10 a-center bg8">
           <label className="f-label-text w10">FAT :</label>
-          <div className="radio-button1-div w60 d-flex">
-            <div className="jounral-radio-button w25 d-flex px10 a-center sb">
+          <div className="radio-button-container w60 d-flex">
+            <div className="radio-button-div w25 d-flex px10 a-center sb">
               <input
                 id="fgen"
                 className="w15 h1"
@@ -395,7 +396,7 @@ const FatSnfCompromise = () => {
                 जरनल
               </label>
             </div>
-            <div className="Back-day-radio-button w40 d-flex px10 a-center sb">
+            <div className="radio-button-div w40 d-flex px10 a-center sb">
               <input
                 id="flast"
                 className="w15 h80"
@@ -409,7 +410,7 @@ const FatSnfCompromise = () => {
                 मागील दिवसाची FAT
               </label>
             </div>
-            <div className="differance-radio-button w25 d-flex px10 a-center sb">
+            <div className="radio-button-div w25 d-flex px10 a-center sb">
               <input
                 id="fdiff"
                 className="w15 h1"
@@ -444,8 +445,8 @@ const FatSnfCompromise = () => {
         </div>
         <div className="update-option-details w100 d-flex p10 a-center bg8">
           <label className="f-label-text w10">SNF :</label>
-          <div className="radio-button1-div w60 d-flex ">
-            <div className="jounral-radio-button w25 d-flex px10 a-center sb">
+          <div className="radio-button-container w60 d-flex ">
+            <div className="radio-button-div w25 d-flex px10 a-center sb">
               <input
                 id="sgen"
                 className="w15 h1"
@@ -459,7 +460,7 @@ const FatSnfCompromise = () => {
                 जरनल
               </label>
             </div>
-            <div className="Back-day-radio-button w40 d-flex px10 a-center sb">
+            <div className="radio-button-div w40 d-flex px10 a-center sb">
               <input
                 id="slast"
                 className="w15 h80"
@@ -473,7 +474,7 @@ const FatSnfCompromise = () => {
                 मागील दिवसाची SNF
               </label>
             </div>
-            <div className="differance-radio-button w25 d-flex px10 a-center sb">
+            <div className="radio-button-div w25 d-flex px10 a-center sb">
               <input
                 id="sdiff"
                 className="w15 h1"
@@ -506,11 +507,10 @@ const FatSnfCompromise = () => {
             </button>
           </div>
         </div>
-
         <div className="update-option-details w100 d-flex p10 a-center bg8">
           <label className="f-label-text w10">लिटर :</label>
-          <div className="radio-button1-div w60 d-flex">
-            <div className="jounral-radio-button w25 d-flex px10 a-center sb">
+          <div className="other-radio-button-container w60 d-flex">
+            <div className="radio-button-div w25 d-flex px10 a-center sb">
               <input
                 id="lperltr"
                 className="w15 h1"
@@ -524,7 +524,7 @@ const FatSnfCompromise = () => {
                 प्रती लिटर
               </label>
             </div>
-            <div className="Back-day-radio-button w40 d-flex px10 a-center sb">
+            <div className="radio-button-div w40 d-flex px10 a-center sb">
               <input
                 id="lsame"
                 className="w15 h80"
@@ -538,7 +538,7 @@ const FatSnfCompromise = () => {
                 एकसारखे
               </label>
             </div>
-            <div className="differance-radio-button w25 d-flex px10 a-center sb">
+            <div className="radio-button-div w25 d-flex px10 a-center sb">
               <input
                 id="lrate"
                 className="w15 h1"
@@ -567,8 +567,8 @@ const FatSnfCompromise = () => {
         </div>
         <div className="update-option-details w100 d-flex p10 a-center bg8">
           <label className="f-label-text w10">बदला :</label>
-          <div className="radio-button1-div w60 d-flex ">
-            <div className="jounral-radio-button w25 d-flex px10 a-center sb">
+          <div className="change-radio-button-container w60 d-flex ">
+            <div className="radio-button-div w25 d-flex px10 a-center sb">
               <input
                 id="ckg"
                 className="w15 h1"
@@ -582,7 +582,7 @@ const FatSnfCompromise = () => {
                 किलो - लिटर
               </label>
             </div>
-            <div className="Back-day-radio-button w40 d-flex px10 a-center sb">
+            <div className="radio-button-div w40 d-flex px10 a-center sb">
               <input
                 id="cliters"
                 className="w15 h80"
@@ -596,7 +596,7 @@ const FatSnfCompromise = () => {
                 लिटर - किलो
               </label>
             </div>
-            <div className="differance-radio-button w25"></div>
+            <div className="radio-button-div w25"></div>
           </div>
           <div className="input-filed-updated-button-div w30 d-flex a-center sb">
             <input

@@ -72,9 +72,9 @@ const Sanghsales = ({ clsebtn, isModalOpen, editData }) => {
 
   useEffect(() => {
     dispatch(fetchSanghaList());
-    dispatch(
-      dairydailyLossGain({ fromDate: "2025-05-01", toDate: "2025-05-01" })
-    );
+    // dispatch(
+    //   dairydailyLossGain({ fromDate: "2025-05-01", toDate: "2025-05-01" })
+    // );
     if (tankerList.length === 0) {
       dispatch(getTankerList());
     }

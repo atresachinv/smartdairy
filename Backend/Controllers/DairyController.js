@@ -323,121 +323,6 @@ exports.maxCenterId = async (req, res) => {
 
 // ------------------------------FIND MAX CENTERID
 
-// exports.createCenter = async (req, res) => {
-//   const {
-//     center_id,
-//     center_name,
-//     marathi_name,
-//     reg_no,
-//     reg_date,
-//     mobile,
-//     email,
-//     city,
-//     tehsil,
-//     district,
-//     pincode,
-//     auditclass,
-//     password,
-//     date,
-//     prefix,
-//   } = req.body;
-
-//   const dairy_id = req.user.dairy_id;
-//   const user_role = req.user.user_role;
-
-//   if (!dairy_id) {
-//     return res.status(401).json({ status: 401, message: "Unauthorized User!" });
-//   }
-//   pool.getConnection(async (err, connection) => {
-//     if (err) {
-//       console.error("Error getting MySQL connection: ", err);
-//       return res
-//         .status(500)
-//         .json({ status: 500, message: "Database connection error" });
-//     }
-
-//     // const hashedPassword = await bcrypt.hash(password, 10);
-
-//     // SQL query to create the center
-//     const createCenterQuery = `
-//       INSERT INTO centermaster (center_id, center_name, marathi_name, reg_no, reg_date, mobile, email, city, tehsil, district, pincode, orgid, auditclass, prefix)
-//       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )
-//     `;
-
-//     const designation = "Admin";
-//     const isAdmin = "1";
-//     const insertRegNo = reg_no && reg_no !== "" ? parseInt(reg_no, 10) : null;
-//     const insertRegDate = reg_date && reg_date !== "" ? reg_date : null;
-
-//     // SQL query to create the user associated with the center
-//     const createUserQuery = `
-//       INSERT INTO users (username, password, isAdmin, createdon, createdby, designation, SocietyCode, center_id)
-//       VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-//     `;
-
-//     // First, create the center
-//     connection.query(
-//       createCenterQuery,
-//       [
-//         center_id,
-//         center_name,
-//         marathi_name,
-//         insertRegNo,
-//         insertRegDate,
-//         mobile,
-//         email,
-//         city,
-//         tehsil,
-//         district,
-//         pincode,
-//         dairy_id,
-//         auditclass,
-//         prefix,
-//       ],
-//       (err, centerResult) => {
-//         if (err) {
-//           connection.release();
-//           console.error("Error executing createCenter query: ", err);
-//           return res
-//             .status(500)
-//             .json({ status: 500, message: "Database query error" });
-//         }
-
-//         // Now create the user associated with the center
-//         connection.query(
-//           createUserQuery,
-//           [
-//             mobile,
-//             password,
-//             isAdmin,
-//             date,
-//             user_role,
-//             designation,
-//             dairy_id,
-//             center_id,
-//           ],
-//           (err, userResult) => {
-//             connection.release();
-//             if (err) {
-//               console.error("Error executing createUser query: ", err);
-//               return res
-//                 .status(500)
-//                 .json({ status: 500, message: "Error creating user" });
-//             }
-//             // Invalidate the cache for this dairy_id
-//             const cacheKey = `centers_${dairy_id}_${center_id}`;
-//             cache.del(cacheKey);
-//             // Successfully created center
-//             res
-//               .status(200)
-//               .json({ status: 200, message: "Center created successfully!" });
-//           }
-//         );
-//       }
-//     );
-//   });
-// };
-
 exports.createCenter = (req, res) => {
   const {
     center_id,
@@ -1189,7 +1074,7 @@ exports.saveMessage = async (req, res) => {
 
 exports.getCenterWiseMilkData = (req, res) => {
   const { fromDate, toDate } = req.body;
-  const { dairy_id, center_id } = req.user;
+  const { dairy_id } = req.user;
   if (!dairy_id) {
     connection.release();
     return res.status(401).json({ status: 401, message: "Unathorised User!" });
@@ -1283,7 +1168,7 @@ exports.getCenterWiseMilkData = (req, res) => {
 
 exports.getCenterCustomerCount = (req, res) => {
   const { dairy_id, center_id } = req.user;
-  const {fromDate, toDate } = req.query;
+  const { fromDate, toDate } = req.query;
   if (!dairy_id) {
     return res.status(401).json({ status: 401, message: "Unauthorised User!" });
   }
@@ -1546,12 +1431,16 @@ exports.updateCenterSetting = (req, res) => {
 //-------------------------------------------------------------------------------------------------------->
 
 exports.updateCenterSetup = (req, res) => {
-  const { dairy_id, user_id } = req.user;
+  const { dairy_id, center_id, user_id } = req.user;
   const { centerid, ...formData } = req.body;
   const currentDate = new Date().toISOString().slice(0, 10);
-  console.log(formData);
   const {
     id,
+    milkType,
+    previnfo,
+    fill_manually,
+    whsms,
+    print,
     billDays,
     minPayment,
     milkRate,
@@ -1564,6 +1453,8 @@ exports.updateCenterSetup = (req, res) => {
     vMillcoll,
     cmillcoll,
     noRatesms,
+    kgliters,
+    collUnit
   } = formData;
 
   const parsedMinPayment = parseFloat(minPayment) || 0.0;
@@ -1583,14 +1474,15 @@ exports.updateCenterSetup = (req, res) => {
       const updateQuery = `
         UPDATE setting_Master 
         SET  pType = ?, salesms = ?, printSales = ?, vSalesms = ?, millcoll = ?, printmilKcoll = ?, vMillcoll = ?,
-         cmillcoll = ?, noRatesms = ?, billDays = ?, minPayment =?, milkRate = ? , updatedBy = ?, updatedDate = ?
+          cmillcoll = ?, noRatesms = ?, billDays = ?, minPayment =?, milkRate = ? , updatedBy = ?, updatedDate = ?,
+          milkType = ?, previnfo = ?, fill_manually = ?, whsms = ?, print = ?, KgLitres = ?, collUnit = ?
         WHERE id = ?
       `;
 
       connection.query(
         updateQuery,
         [
-          pType,
+          pType || null,
           salesms || 0,
           printSales || 0,
           vSalesms || 0,
@@ -1604,6 +1496,13 @@ exports.updateCenterSetup = (req, res) => {
           parsedMilkRate || 0,
           user_id,
           currentDate,
+          milkType || 0,
+          previnfo || null,
+          fill_manually || null,
+          whsms || 0,
+          print || 0,
+          kgliters || null,
+          collUnit || 0,
           id,
         ],
         (err, results) => {
@@ -1631,14 +1530,20 @@ exports.updateCenterSetup = (req, res) => {
     } else {
       const insertQuery = `
     INSERT INTO setting_Master 
-    (center_id, dairy_id, millcoll, printmilKcoll, vMillcoll, pType, salesms, printSales, vSalesms, cmillcoll,
-     noRatesms, billDays, minPayment, milkRate, updatedBy, updatedDate)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    (center_id, dairy_id, milkType, previnfo, fill_manually, whsms, print, millcoll,
+      printmilKcoll, vMillcoll, pType, salesms, printSales, vSalesms, KgLitres, cmillcoll, 
+      noRatesms, billDays, minPayment, milkRate, collUnit, updatedBy, updatedDate)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `;
 
       const insertValues = [
-        centerid,
+        centerid || center_id,
         dairy_id,
+        milkType || 0,
+        previnfo || null,
+        fill_manually || null,
+        whsms || 0,
+        print || 0,
         millcoll || 0,
         printmilKcoll || 0,
         vMillcoll || 0,
@@ -1646,11 +1551,13 @@ exports.updateCenterSetup = (req, res) => {
         salesms || 0,
         printSales || 0,
         vSalesms || 0,
+        kgliters || null,
         cmillcoll || 0,
         noRatesms || 0,
         billDays || 0,
         parsedMinPayment || 0,
         parsedMilkRate || 0,
+        collUnit || 0,
         user_id,
         currentDate,
       ];
@@ -2016,176 +1923,8 @@ exports.createDairyInitInfo = (req, res) => {
 };
 
 //-------------------------------------------------------------------------------------------------------->
-// Update Dairy Starting Information ---------------------------------------------------------------------------->
+// Update Dairy Starting Information --------------------------------------------------------------------->
 //-------------------------------------------------------------------------------------------------------->
-// exports.updateDairyInitInfo = (req, res) => {
-//   const {
-//     id,
-//     CashOnHandGlcode,
-//     CashOnHandAmt,
-//     ClosingDate,
-//     PLGLCode,
-//     PreviousPLGLCode,
-//     TreadingPLGlCode,
-//     ShareCapitalAmt,
-//     MilkPurchaseGL,
-//     MilkSaleGL,
-//     MilkPurchasePaybleGL,
-//     MilkSaleRecivableGl,
-//     AllowSameUserPassing,
-//     RebateGlCode,
-//     BankCurrentAccount,
-//     RoundAmtGL,
-//     saleincomeGL,
-//     ArambhiShillakMalGL,
-//     AkherShillakMal,
-//     anamatGlcode,
-//     MilkCommisionAndAnudan,
-//     ribetIncome,
-//     ribetExpense,
-//     milkRateDiff,
-//     CashOnHandAmt_3,
-//     chillinggl,
-//     advGL,
-//     kirkolmilksale_yene,
-//     ghutnashgl,
-//     transportgl,
-//   } = req.body.formData;
-
-//   const { dairy_id, center_id } = req.user;
-
-//   if (!dairy_id) {
-//     return res.status(401).json({ status: 401, message: "Unauthorized User!" });
-//   }
-
-//   pool.getConnection((err, connection) => {
-//     if (err) {
-//       console.error("Error getting MySQL connection: ", err);
-//       return res
-//         .status(500)
-//         .json({ status: 500, message: "Database connection error" });
-//     }
-
-//     if (!id) {
-//       const insertQuery = `
-//         INSERT INTO InitialParameters (
-//           dairy_id, center_id, CashOnHandGlcode, CashOnHandAmt, ClosingDate, PLGLCode, PreviousPLGLCode,
-//           TreadingPLGlCode, ShareCapitalAmt, MilkPurchaseGL, MilkSaleGL, MilkPurchasePaybleGL, MilkSaleRecivableGl,
-//           AllowSameUserPassing, RebateGlCode, BankCurrentAccount, RoundAmtGL, saleincomeGL, ArambhiShillakMalGL,
-//           AkherShillakMal, anamatGlcode, MilkCommisionAndAnudan, ribetIncome, ribetExpense, milkRateDiff, CashOnHandAmt_3,
-//           chillinggl, advGL, kirkolmilksale_yene, ghutnashgl, transportgl)
-//         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-//       `;
-
-//       connection.query(
-//         insertQuery,
-//         [
-//           dairy_id,
-//           center_id,
-//           CashOnHandGlcode,
-//           CashOnHandAmt,
-//           ClosingDate,
-//           PLGLCode,
-//           PreviousPLGLCode,
-//           TreadingPLGlCode,
-//           ShareCapitalAmt,
-//           MilkPurchaseGL,
-//           MilkSaleGL,
-//           MilkPurchasePaybleGL,
-//           MilkSaleRecivableGl,
-//           AllowSameUserPassing,
-//           RebateGlCode,
-//           BankCurrentAccount,
-//           RoundAmtGL,
-//           saleincomeGL,
-//           ArambhiShillakMalGL,
-//           AkherShillakMal,
-//           anamatGlcode,
-//           MilkCommisionAndAnudan,
-//           ribetIncome,
-//           ribetExpense,
-//           milkRateDiff,
-//           CashOnHandAmt_3,
-//           chillinggl,
-//           advGL,
-//           kirkolmilksale_yene,
-//           ghutnashgl,
-//           transportgl,
-//         ],
-//         (err, result) => {
-//           connection.release();
-//           if (err) {
-//             console.error("Error inserting record: ", err);
-//             return res
-//               .status(500)
-//               .json({ status: 500, message: "Error in inserting data!" });
-//           }
-//           return res
-//             .status(201)
-//             .json({ status: 201, message: "Record inserted successfully!" });
-//         }
-//       );
-//     } else {
-//       const updateQuery = `
-//         UPDATE InitialParameters
-//         SET CashOnHandGlcode = ?, CashOnHandAmt = ?, ClosingDate = ?, PLGLCode = ?, PreviousPLGLCode = ?,
-//           TreadingPLGlCode = ?, ShareCapitalAmt = ?, MilkPurchaseGL = ?, MilkSaleGL = ?, MilkPurchasePaybleGL = ?, MilkSaleRecivableGl = ?,
-//           AllowSameUserPassing = ?, RebateGlCode = ?, BankCurrentAccount = ?, RoundAmtGL = ?, saleincomeGL = ?, ArambhiShillakMalGL = ?,
-//           AkherShillakMal = ?, anamatGlcode = ?, MilkCommisionAndAnudan = ?, ribetIncome = ?, ribetExpense = ?, milkRateDiff = ?,
-//           CashOnHandAmt_3 = ?, chillinggl = ?, advGL = ?, kirkolmilksale_yene = ?, ghutnashgl = ?, transportgl
-//         WHERE id = ?
-//       `;
-
-//       connection.query(
-//         updateQuery,
-//         [
-//           CashOnHandGlcode,
-//           CashOnHandAmt,
-//           ClosingDate,
-//           PLGLCode,
-//           PreviousPLGLCode,
-//           TreadingPLGlCode,
-//           ShareCapitalAmt,
-//           MilkPurchaseGL,
-//           MilkSaleGL,
-//           MilkPurchasePaybleGL,
-//           MilkSaleRecivableGl,
-//           AllowSameUserPassing,
-//           RebateGlCode,
-//           BankCurrentAccount,
-//           RoundAmtGL,
-//           saleincomeGL,
-//           ArambhiShillakMalGL,
-//           AkherShillakMal,
-//           anamatGlcode,
-//           MilkCommisionAndAnudan,
-//           ribetIncome,
-//           ribetExpense,
-//           milkRateDiff,
-//           CashOnHandAmt_3,
-//           chillinggl,
-//           advGL,
-//           kirkolmilksale_yene,
-//           ghutnashgl,
-//           transportgl,
-//           id,
-//         ],
-//         (err, result) => {
-//           connection.release();
-//           if (err) {
-//             console.error("Error updating record: ", err);
-//             return res
-//               .status(500)
-//               .json({ status: 500, message: "Error in updating data!" });
-//           }
-//           return res
-//             .status(200)
-//             .json({ status: 200, message: "Record updated successfully!" });
-//         }
-//       );
-//     }
-//   });
-// };
 
 exports.updateDairyInitInfo = (req, res) => {
   const {
