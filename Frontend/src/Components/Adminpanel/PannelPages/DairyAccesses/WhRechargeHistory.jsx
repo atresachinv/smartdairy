@@ -54,7 +54,7 @@ const WhRechargeHistory = () => {
               <th>Date</th>
               <th>Center Name</th>
               <th>Recharge Amount</th>
-              <th>Created By</th>
+              <th>Recharge By</th>
             </tr>
           </thead>
           <tbody>
@@ -65,7 +65,7 @@ const WhRechargeHistory = () => {
                 <tr key={index}>
                   <td>{index + 1}</td>
                   <td>{formatDate(item.bal_date)}</td>
-                  <td>
+                  <td style={{ textAlign: "left" }}>
                     {centerList &&
                       centerList.find(
                         (center) =>

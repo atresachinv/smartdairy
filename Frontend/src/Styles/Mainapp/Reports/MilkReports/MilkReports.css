@@ -1,4 +1,3 @@
-
 .Milk-report-heading {
   overflow-x: auto;
 }
@@ -10,6 +9,14 @@
 .fillter-data-container .fitter-hide-show-container {
   min-height: fit-content;
   margin-bottom: 10px;
+}
+
+.milkdata-headings-div {
+  min-width: 1000px;
+  position: sticky;
+  top: 0;
+  background-color: #17acc0;
+  padding: 5px 0;
 }
 
 @media screen and (max-width: 426px) {
@@ -31,7 +38,7 @@
   }
 
   .Milkcollection-container .Milk-collection-report-container {
-    min-height: 90%;
+    min-height: 70%;
   }
 
   .master-and-buttons-div .custmize-report-div {
@@ -148,7 +155,7 @@
   }
 
   .Milkcollection-container .Milk-collection-report-container {
-    min-height: 90%;
+    min-height: 70%;
   }
 
   .master-and-buttons-div .custmize-report-div {

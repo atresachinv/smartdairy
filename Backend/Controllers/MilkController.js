@@ -571,7 +571,7 @@ exports.milkCollectionOneEntry = async (req, res) => {
         shift,
         animal,
         liters,
-        kg,
+        kg || null,
         fat,
         snf,
         amt,

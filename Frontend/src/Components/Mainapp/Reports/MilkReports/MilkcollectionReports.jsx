@@ -936,7 +936,7 @@ const MilkcollectionReports = () => {
         <div className="Milk-collection-report-container w100 h60 d-flex-col bg">
           <span className="heading  px10">दुध संकलन</span>
           <div className="Milk-report-heading w100 h1 mh100 d-flex-col hidescrollbar">
-            <div className="milkdata-headings-div w100 p10 py10 d-flex center t-center sa sticky-top bg7">
+            <div className="milkdata-headings-div w100 p10 d-flex center t-center sb sticky-top bg7">
               {sumreport ? (
                 <>
                   <span className="w10 f-info-text">Code</span>
@@ -1002,7 +1002,7 @@ const MilkcollectionReports = () => {
                     ))}
 
                     {/* Total Row */}
-                    <div className="milkdata-div w100 h10 d-flex center t-center sa bg-total">
+                    <div className="milkdata-div w100 h10 d-flex center t-center p10 sa bg7 br-bottom">
                       <span className="w10 text t-center font-bold">Total</span>
                       <span className="w25 text t-start"></span>
 
@@ -1120,6 +1120,7 @@ const MilkcollectionReports = () => {
                     ))}
 
                     {/* Total Row */}
+
                     <div className="milkdata-div w100 h10 d-flex center t-center p10 sa bg7 br-bottom">
                       <span className="w10 f-label-text t-center">Total</span>
                       <span className="w5"></span>

@@ -1,18 +1,10 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { v4 as uuidv4 } from "uuid";
-import {
-  BsHouseFill,
-  BsCoin,
-  BsGearFill,
-  BsGridFill,
-  BsCaretUpFill,
-  BsCaretDownFill,
-  BsBuildingFillGear,
-  BsHouseGearFill,
-} from "react-icons/bs";
+import { BsGridFill, BsCaretUpFill, BsCaretDownFill } from "react-icons/bs";
 import { NavLink } from "react-router-dom";
+import "../../../Styles/AdminPannel/AdminPannel.css";
 
-const SidebarNavlinks = () => {
+const SidebarNavlinks = ({ setselected, handleSidebar }) => {
   const [activeMenu, setActiveMenu] = useState(null);
 
   const superadminnavs = [
@@ -117,11 +109,15 @@ const SidebarNavlinks = () => {
     if (button.submenus) {
       setActiveMenu(activeMenu === button.index ? null : button.index);
     } else {
+      setselected(button.index);
+      handleSidebar();
       setActiveMenu(null);
     }
   };
 
   const handleSubmenuClick = () => {
+    setselected(submenu.index);
+    handleSidebar();
     setActiveMenu(null);
   };
 

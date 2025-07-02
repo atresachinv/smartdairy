@@ -108,59 +108,36 @@ const MilkColleform = ({ times }) => {
   }, []);
 
   //set settings --------------------------------------------------------------------------------->
+  const prevShiftDate = useRef({ date: "", shift: "" });
+
   useEffect(() => {
     const previnfo = centerSetting?.[0]?.previnfo;
-
-    if (previnfo !== null && previnfo !== "") {
+    if (
+      previnfo &&
+      (values.date !== prevShiftDate.current.date ||
+        values.shift !== prevShiftDate.current.shift)
+    ) {
       dispatch(getPrevMilkdata({ date: values.date, shift: values.shift }));
+      prevShiftDate.current = { date: values.date, shift: values.shift };
     }
   }, [centerSetting, values.date, values.shift]);
-
-  useEffect(() => {
-    if (prevdata?.length > 0 && values.code && values.liters) {
-      const customerData = prevdata.find(
-        (cust) => cust.rno.toString() === values.code
-      );
-      setValues((prevData) => ({
-        ...prevData,
-        fat: customerData.fat,
-        snf: customerData.snf,
-      }));
-    }
-  }, [prevdata, values.code, values.liters]);
+  
 
   // liter to kg convert and save ---------------------------------------------------------------->
 
   useEffect(() => {
-    if (
-      values.liters > 0 &&
-      centerSetting.length > 0 &&
-      collunit === 0 &&
-      centerSetting[0].KgLitres
-    ) {
-      const kgValue = (values.liters * centerSetting[0].KgLitres).toFixed(2);
-      setValues((prevData) => ({
-        ...prevData,
-        kg: kgValue,
-      }));
+    if (centerSetting.length > 0 && centerSetting[0].KgLitres) {
+      const unit = centerSetting[0].KgLitres;
+
+      if (collunit === 0 && values.liters > 0) {
+        const kgValue = (values.liters * unit).toFixed(2);
+        setValues((prevData) => ({ ...prevData, kg: kgValue }));
+      } else if (collunit === 1 && values.kg > 0 && unit !== 0) {
+        const literValue = (values.kg / unit).toFixed(2);
+        setValues((prevData) => ({ ...prevData, liters: literValue }));
+      }
     }
-  }, [values.liters, centerSetting]);
-  //  kg to liter convert and save ---------------------------------------------------------------->
-  useEffect(() => {
-    if (
-      values.kg > 0 &&
-      centerSetting.length > 0 &&
-      collunit === 1 &&
-      centerSetting[0].KgLitres &&
-      centerSetting[0].KgLitres !== 0
-    ) {
-      const literValue = (values.kg / centerSetting[0].KgLitres).toFixed(2);
-      setValues((prevData) => ({
-        ...prevData,
-        liters: literValue,
-      }));
-    }
-  }, [values.kg, centerSetting]);
+  }, [values.liters, values.kg, centerSetting]);
 
   // dynamic shift time set in time And allow is updated from state ---------------------------->
   useEffect(() => {
@@ -852,11 +829,6 @@ const MilkColleform = ({ times }) => {
     }
 
     setLoading(true);
-    setValues((prevData) => ({
-      ...prevData,
-      shift: times === "morning" ? 0 : time === "morning" ? 0 : 1,
-    }));
-
     try {
       const result = await dispatch(saveMilkOneEntry(values)).unwrap();
       if (result?.status === 200) {
