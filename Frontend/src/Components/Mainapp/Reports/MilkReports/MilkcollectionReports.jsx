@@ -33,7 +33,7 @@ const MilkcollectionReports = () => {
   const [selectedME, setSelectedME] = useState(null);
   const [sumreport, setSumreport] = useState(false); //...sum avravge sate
   const [selectedDate, setSelectedDate] = useState(null);
-  const [selectedCenterId, setSelectedCenterId] = useState("0");
+  const [selectedCenterId, setSelectedCenterId] = useState("");
   const [centerData, setCenterData] = useState([]); //..
   const centerList = useSelector((state) => state.center.centersList || []);
 
@@ -813,6 +813,7 @@ const MilkcollectionReports = () => {
                         id="001"
                         onChange={handleCenterChange}
                       >
+                        <option value=""> All Center</option>
                         {centerList &&
                           centerList.length > 0 &&
                           centerList.map((center, index) => {

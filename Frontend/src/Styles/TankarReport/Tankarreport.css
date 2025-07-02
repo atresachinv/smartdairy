@@ -42,17 +42,101 @@
   }
   .tankar-report-form-div .select-tankers-button-div .select-master-div {
     width: 100%;
-    margin-bottom: 10px;
+    margin-bottom: 5px;
   }
   .tankar-report-form-div .select-tankers-button-div .select-master-div span {
-    width: 210px;
+    width: 170px;
   }
   .tankar-report-form-div .select-tankers-button-div .tankers-button-div {
     width: 100%;
-
   }
   .Tankerreport-milk-table {
     height: 65%;
   }
+  .tankar-report-form-div
+    .tankar-report-from-to-date-div
+    .tankar-from-div
+    span {
+    width: 52px;
+  }
+  .tankar-report-form-div
+    .tankar-report-from-to-date-div
+    .tankar-from-div
+    input {
+    width: 144px;
+  }
+  .tankar-report-form-div .tankar-report-from-to-date-div .tankar-to-div input {
+    width: 140px;
+  }
+  .tankar-report-from-to-date-div-button {
+    flex-direction: column;
+  }
+  .tankar-report-from-to-date-div-button .tanker-report-from-to-date-first {
+    width: 100%;
+    margin-bottom: 10px;
+    margin-top: 5px;
+    flex-direction: column;
+  }
+  .tankar-report-from-to-date-div-button
+    .tanker-report-from-to-date-first
+    .tankar-from-div {
+    width: 100%;
+    margin-bottom: 3px;
+  }
+  .tanker-report-from-to-date-first .tankar-from-div span {
+    width: 100px;
+    margin-left: 10px;
+  }
+  .tanker-report-from-to-date-first .tankar-from-div input {
+    width: 250px;
+  }
+  .tankar-report-from-to-date-div-button
+    .tanker-report-from-to-date-first
+    .tankar-to-div {
+    width: 100%;
+    margin-bottom: 3px;
+  }
+  .tankar-report-from-to-date-div-button
+    .tanker-report-from-to-date-first
+    .tankar-to-div
+    span {
+    width: 100px;
+    margin-left: 10px;
+  }
+  .tankar-report-from-to-date-div-button
+    .tanker-report-from-to-date-first
+    .tankar-to-div
+    input {
+    width: 250px;
+  }
 
+  .tankar-report-from-to-date-div-button .tankar-number-show-button {
+    width: 100%;
+    margin-bottom: 5px;
+  }
+  .tankar-report-from-to-date-div-button .tankar-number-show-button button {
+    width: 100%;
+  }
+  .tankar-report-form-div {
+    min-height: fit-content;
+  }
+  .select-tankers-button-div .select-shift-div-intankar-div {
+    width: 100%;
+    margin-bottom: 5px;
+  }
+  .select-tankers-button-div .select-shift-div-intankar-div span {
+    width: 170px;
+  }
+  .select-tankers-button-div .select-shift-div-intankar-div select {
+    width: 190px;
+  }
+  .select-tankers-button-div .tankers-button-div {
+    margin-bottom: 5px;
+  }
+  .select-tankers-button-div
+    .tankers-button-div
+    .tabkar-number-show-button
+    button {
+    width: 120px;
+  }
 }
