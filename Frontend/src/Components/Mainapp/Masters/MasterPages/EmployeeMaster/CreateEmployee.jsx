@@ -317,7 +317,7 @@ const CreateEmployee = () => {
       setErrors(validationErrors);
       return;
     }
-    if (isAvailable) {
+    if (!isAvailable) {
       return toast.error(
         "मोबाईल नंबर अगोदर वापरलेला आहे, कृपया दुसऱ्या नंबर सह पुन्हा प्रयत्न करा!"
       );
