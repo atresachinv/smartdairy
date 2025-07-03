@@ -33,6 +33,7 @@ const Sanghsales = ({ clsebtn, isModalOpen, editData }) => {
   const snfRef = useRef(null);
   const rateRef = useRef(null);
   const amtRef = useRef(null);
+  const chillingRef = useRef(null);
   const otherChargesRef = useRef(null);
   const submitbtn = useRef(null);
   const [errors, setErrors] = useState({});
@@ -149,10 +150,7 @@ const Sanghsales = ({ clsebtn, isModalOpen, editData }) => {
   const validateFields = () => {
     const fieldsToValidate = [
       "code",
-      "cname",
       "liters",
-      "fat",
-      "snf",
       "rate",
       "amt",
     ];
@@ -281,7 +279,6 @@ const Sanghsales = ({ clsebtn, isModalOpen, editData }) => {
       const parsedRate = parseFloat(rate);
       const parsedLiters = parseFloat(liters);
       const Amount = (parsedLiters * parsedRate).toFixed(2);
-
       setValues((prev) => ({
         ...prev,
         amt: Amount,
@@ -300,13 +297,11 @@ const Sanghsales = ({ clsebtn, isModalOpen, editData }) => {
 
   const handleSanghaSales = async (e) => {
     e.preventDefault();
-
     const validationErrors = validateFields();
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
       return;
     }
-
     try {
       const res = await dispatch(addsanghaMilkColl(values)).unwrap();
 
@@ -560,7 +555,9 @@ const Sanghsales = ({ clsebtn, isModalOpen, editData }) => {
                 step="any"
                 value={values.nashliters}
                 onChange={handleInputs}
-                onKeyDown={(e) => handleKeyDown(e, fatRef)}
+                onKeyDown={(e) =>
+                  handleKeyDown(e, values.shift !== "4" ? fatRef : chillingRef)
+                }
                 ref={nashlitersRef}
               />
             </div>
@@ -609,7 +606,7 @@ const Sanghsales = ({ clsebtn, isModalOpen, editData }) => {
                   प्रशासकीय व इतर अनुदान :
                 </label>
                 <input
-                  className={`data ${errors.fat ? "input-error" : ""}`}
+                  className={`data ${errors.otherCharges ? "input-error" : ""}`}
                   type="number"
                   placeholder="0.0"
                   name="otherCharges"
@@ -617,7 +614,7 @@ const Sanghsales = ({ clsebtn, isModalOpen, editData }) => {
                   step="any"
                   onChange={handleInputs}
                   value={values.otherCharges}
-                  onKeyDown={(e) => handleKeyDown(e, snfRef)}
+                  onKeyDown={(e) => handleKeyDown(e, amtRef)}
                   ref={otherChargesRef}
                 />
               </div>
@@ -629,7 +626,7 @@ const Sanghsales = ({ clsebtn, isModalOpen, editData }) => {
                 कमिप्रत लिटर
               </label>
               <input
-                className={`data ${errors.degree ? "input-error" : ""}`}
+                className={`data ${errors.kpliters ? "input-error" : ""}`}
                 type="number"
                 placeholder="00.0"
                 name="kpliters"
@@ -666,7 +663,7 @@ const Sanghsales = ({ clsebtn, isModalOpen, editData }) => {
                   शीतकरण :
                 </label>
                 <input
-                  className={`data ${errors.snf ? "input-error" : ""}`}
+                  className={`data ${errors.chilling ? "input-error" : ""}`}
                   type="number"
                   placeholder="00.0"
                   name="chilling"
@@ -675,7 +672,7 @@ const Sanghsales = ({ clsebtn, isModalOpen, editData }) => {
                   onChange={handleInputs}
                   value={values.chilling}
                   onKeyDown={(e) => handleKeyDown(e, otherChargesRef)}
-                  ref={rateRef}
+                  ref={chillingRef}
                 />
               </div>
             )}
@@ -693,6 +690,7 @@ const Sanghsales = ({ clsebtn, isModalOpen, editData }) => {
                 id="amt"
                 ref={amtRef}
                 value={values.amt}
+                onChange={handleInputs}
               />
             </div>
             <div className="button-container w100 h20 d-flex j-center my10">

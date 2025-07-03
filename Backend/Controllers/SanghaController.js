@@ -13,6 +13,7 @@ exports.createSanghaMColl = (req, res) => {
     const { dairy_id, center_id, user_role } = req.user;
     const {
       date,
+      todate,
       sanghid,
       tankerno,
       shift,
@@ -28,7 +29,7 @@ exports.createSanghaMColl = (req, res) => {
     } = values;
 
     // Input validation
-    if (!date || !liters || !rate || !amt) {
+    if (!date || !liters || !amt) {
       return res
         .status(400)
         .json({ status: 400, message: "All info is Required!" });
@@ -78,7 +79,7 @@ exports.createSanghaMColl = (req, res) => {
 
           const insertQuery = `
           INSERT INTO sanghmilkentry (
-            dairy_id, center_id, sanghid, tankerno, shift, colldate, liter, kamiprat_ltr,
+            dairy_id, center_id, sanghid, tankerno, shift, colldate, tocolldate, liter, kamiprat_ltr,
             otherCharges, chilling, nash_ltr, fat, snf, rate, amt, createdOn, createdBy
           ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         `;
@@ -92,6 +93,7 @@ exports.createSanghaMColl = (req, res) => {
               tankerno || null,
               shift,
               date,
+              todate || null,
               liters || 0.0,
               kpliters || 0.0,
               otherCharges || 0.0,

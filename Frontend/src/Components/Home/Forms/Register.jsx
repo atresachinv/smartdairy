@@ -88,7 +88,6 @@ const Register = ({ switchToLogin }) => {
   // cheking dairyname or username is exit or not -------------------------------------------->
   useEffect(() => {
     if (values.dairy_name.length > 2) {
-      console.log("heloo from dairy name");
       const delay = setTimeout(checkDairyName, 500); // Delay API call
       return () => clearTimeout(delay);
     }
@@ -96,7 +95,6 @@ const Register = ({ switchToLogin }) => {
 
   useEffect(() => {
     if (values.user_name.length > 2) {
-      console.log("heloo from user name");
       const delay = setTimeout(checkUserName, 1500); // Delay API call
       return () => clearTimeout(delay);
     }
@@ -115,6 +113,7 @@ const Register = ({ switchToLogin }) => {
     ).unwrap();
     setUserName(result.available);
   };
+
 
   // --------------------------------------------------------------------------------------------->
   // Field validation function

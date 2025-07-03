@@ -8,6 +8,7 @@ import {
 import { IoMdEye, IoMdEyeOff } from "react-icons/io";
 import { toast } from "react-toastify";
 import "../../../../Styles/Mainapp/Dairy/Center.css";
+import { checkuserName } from "../../../../App/Features/Users/authSlice";
 
 const CreateCenter = () => {
   const dispatch = useDispatch();
@@ -21,6 +22,7 @@ const CreateCenter = () => {
   const [prefixString, setPrefixString] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showCPassword, setShowCPassword] = useState(false);
+  const [isAvailable, setIsAvailable] = useState(false);
 
   //   // Generate prefix string on component mount
   //   useEffect(() => {
@@ -36,7 +38,7 @@ const CreateCenter = () => {
   //
   //     generatePrefix();
   //   }, []);
-  
+
   const initialValues = {
     marathi_name: "",
     center_name: "",
@@ -206,12 +208,37 @@ const CreateCenter = () => {
     return validationErrors;
   };
 
+  // checking mobile number is available or not ------------------------------------------->
+  //--------------------------------------------------------------------------------------->
+  useEffect(() => {
+    const check = async () => {
+      if (formData.mobile.length === 10) {
+        const result = await dispatch(
+          checkuserName({ username: formData.mobile })
+        ).unwrap();
+        setIsAvailable(result.available);
+        if (result.available === true) {
+          toast.error(
+            "मोबाईल नंबर अगोदर वापरलेला आहे, कृपया दुसऱ्या नंबर सह प्रयत्न करा!"
+          );
+        }
+      }
+    };
+
+    check();
+  }, [formData.mobile]);
+
   const handleSubmit = (e) => {
     e.preventDefault();
     const validationErrors = validateFields();
     if (Object.keys(validationErrors).length) {
       setErrors(validationErrors);
       return;
+    }
+    if (isAvailable) {
+      return toast.error(
+        "मोबाईल नंबर अगोदर वापरलेला आहे, कृपया दुसऱ्या नंबर सह पुन्हा प्रयत्न करा!"
+      );
     }
 
     try {
@@ -324,7 +351,9 @@ const CreateCenter = () => {
               Mobile
             </label>
             <input
-              className={`data w100 ${errors.mobile ? "input-error" : ""}`}
+              className={`data w100 ${
+                errors.mobile ? "input-error" : isAvailable ? "input-error" : ""
+              }`}
               type="text"
               name="mobile"
               id="mobile"

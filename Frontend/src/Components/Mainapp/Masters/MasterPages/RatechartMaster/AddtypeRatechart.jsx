@@ -26,7 +26,7 @@ const AddtypeRatechart = () => {
     dispatch(fetchMaxRctype());
     dispatch(listRcType());
   }, []);
-  console.log("first", rctypes);
+
   useEffect(() => {
     if (maxRct) {
       setFormData((prevData) => ({ ...prevData, rccode: maxRct }));

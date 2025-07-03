@@ -58,7 +58,7 @@ const LockPayments = ({ showbtn, setCurrentPage }) => {
     <div className="lock-payment-container w100 h1 d-flex-col a-center p10">
       <div className="lock-unlock-payment-container w50 h1 d-flex-col">
         <div className="title-back-btn-container w100 h10 d-flex a-center sb">
-          <span className="heading py10">Lock / Unlock Payments :</span>
+          <span className="heading py10">लॉक / अनलॉक पेमेंट :</span>
           {showbtn ? (
             <button
               className="btn-danger mx10"
@@ -72,8 +72,8 @@ const LockPayments = ({ showbtn, setCurrentPage }) => {
         </div>
         <div className="payment-master-dates-lock-container w100 h80 mh80 d-flex-col hidescrollbar bg">
           <div className="master-heading-container w100 p10 d-flex a-center sb t-center sticky-top bg7">
-            <span className="f-label-text w70">Payment Masters</span>
-            <span className="f-label-text w25">Lock/Unlock</span>
+            <span className="f-label-text w70">पेमेंट मास्टर</span>
+            <span className="f-label-text w30">लॉक/अनलॉक</span>
           </div>
           {payMstatus === "loading" ? (
             <div className="box d-flex center">
@@ -93,7 +93,7 @@ const LockPayments = ({ showbtn, setCurrentPage }) => {
                   {master.ToDate.slice(0, 10)}
                 </span>
                 <input
-                  className="w25 h70"
+                  className="w25 h50"
                   type="checkbox"
                   checked={master.islock === 1}
                   onChange={(e) => handleCheckboxChange(e, index)}

@@ -83,4 +83,17 @@
     white-space: nowrap;
     min-width: 100%;
   }
+  /* ---------- upload ratechart --------- */
+  .update-ratechart-container .rate-chart-setting-div .button-div button {
+    width: 100%;
+    margin: 0;
+  }
+  /* ---------- Apply ratechart --------- */
+  .rate-chart-setting-div .customer-count-outer {
+    margin-bottom: 5px;
+  }
+  .apply-ratechart-container .rate-chart-setting-div .button-div button {
+    width: 100%;
+    margin: 0;
+  }
 }

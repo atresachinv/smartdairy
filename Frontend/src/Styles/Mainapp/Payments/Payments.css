@@ -54,6 +54,9 @@
     width: 100%;
     margin-bottom: 10px;
   }
+  .lock-payment-container .lock-unlock-payment-container {
+    width: 70%;
+  }
 }
 
 @media screen and (max-width: 426px) {
@@ -176,5 +179,15 @@
   .bill-payments-container-div button {
     width: 45%;
     margin-bottom: 10px;
+  }
+}
+
+/* ------- Lock payment Bill css -------- */
+@media screen and (max-width: 426px) {
+  .lock-payment-container {
+    min-height: auto;
+  }
+  .lock-payment-container .lock-unlock-payment-container {
+    width: 100%;
   }
 }

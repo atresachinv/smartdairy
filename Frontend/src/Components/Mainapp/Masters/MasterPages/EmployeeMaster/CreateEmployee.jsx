@@ -9,6 +9,7 @@ import {
 } from "../../../../../App/Features/Mainapp/Masters/empMasterSlice";
 import "../../../../../Styles/Mainapp/Masters/EmpMaster.css";
 import { useTranslation } from "react-i18next";
+import { checkuserName } from "../../../../../App/Features/Users/authSlice";
 
 const CreateEmployee = () => {
   const { t } = useTranslation(["master", "common"]);
@@ -19,6 +20,7 @@ const CreateEmployee = () => {
   const empData = useSelector((state) => state.emp.employee);
   const [isEditing, setIsEditing] = useState(false);
   const [errors, setErrors] = useState({});
+  const [isAvailable, setIsAvailable] = useState(false);
   const codeRef = useRef(null);
   const mnameRef = useRef(null);
   const enameRef = useRef(null);
@@ -284,8 +286,29 @@ const CreateEmployee = () => {
     }
   }, [formData.code, isEditing]);
 
-  // .................................................................................
+  // checking mobile number is available or not ------------------------------------------->
+  //--------------------------------------------------------------------------------------->
+  useEffect(() => {
+    const check = async () => {
+      if (formData.mobile.length === 10) {
+        const result = await dispatch(
+          checkuserName({ username: formData.mobile })
+        ).unwrap();
+        setIsAvailable(result.available);
+        if (result.available === true) {
+          toast.error(
+            "मोबाईल नंबर अगोदर वापरलेला आहे, कृपया दुसऱ्या नंबर सह प्रयत्न करा!"
+          );
+        }
+      }
+    };
 
+    check();
+  }, [formData.mobile]);
+
+  //--------------------------------------------------------------------------------------->
+  //  handle employee create and update --------------------------------------------------->
+  
   const handleEmployee = async (e) => {
     e.preventDefault();
     // Validate fields before submission
@@ -293,6 +316,11 @@ const CreateEmployee = () => {
     if (Object.keys(validationErrors).length) {
       setErrors(validationErrors);
       return;
+    }
+    if (isAvailable) {
+      return toast.error(
+        "मोबाईल नंबर अगोदर वापरलेला आहे, कृपया दुसऱ्या नंबर सह पुन्हा प्रयत्न करा!"
+      );
     }
 
     if (isEditing) {
@@ -397,7 +425,13 @@ const CreateEmployee = () => {
                 </label>
                 <input
                   required
-                  className={`data w100 ${errors.mobile ? "input-error" : ""}`}
+                  className={`data w100 ${
+                    errors.mobile
+                      ? "input-error"
+                      : isAvailable
+                      ? "input-error"
+                      : ""
+                  }`}
                   type="number"
                   name="mobile"
                   id="mobile"

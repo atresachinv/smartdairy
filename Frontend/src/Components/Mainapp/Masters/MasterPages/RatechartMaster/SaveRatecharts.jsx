@@ -108,48 +108,120 @@ const SaveRatecharts = () => {
   };
 
   // Transformation Function
+  // const transformExcelData = (data) => {
+  //   const transformed = [];
+
+  //   data.forEach((row, rowIndex) => {
+  //     const fatSnfKey = "fat/snf";
+  //     const commonFAT = parseFloat(row[fatSnfKey]);
+
+  //     if (isNaN(commonFAT)) {
+  //       console.warn(
+  //         `Row ${rowIndex + 1}: Invalid or missing '${fatSnfKey}' value.`
+  //       );
+  //       return; // Skip this row if FAT is invalid
+  //     }
+
+  //     // Iterate over each key-value pair in the row
+  //     Object.entries(row).forEach(([key, value]) => {
+  //       if (key.toLowerCase() === fatSnfKey.toLowerCase()) {
+  //         return; // Skip the 'fat/snf' entry
+  //       }
+
+  //       const snf = parseFloat(key);
+  //       const rate = parseFloat(value);
+
+  //       if (isNaN(snf) || isNaN(rate)) {
+  //         console.warn(
+  //           `Row ${
+  //             rowIndex + 1
+  //           }: Invalid SNF or Rate. SNF: ${key}, Rate: ${value}`
+  //         );
+  //         return; // Skip invalid entries
+  //       }
+
+  //       transformed.push({
+  //         fat: commonFAT,
+  //         snf: snf,
+  //         rate: Math.round(rate * 100) / 100, // Round to two decimal places
+  //       });
+  //     });
+  //   });
+
+  //   return transformed;
+  // };
+
   const transformExcelData = (data) => {
     const transformed = [];
 
-    data.forEach((row, rowIndex) => {
-      const fatSnfKey = "fat/snf";
-      const commonFAT = parseFloat(row[fatSnfKey]);
+    // Empty or invalid Excel
+    if (!data || data.length === 0) return transformed;
 
-      if (isNaN(commonFAT)) {
-        console.warn(
-          `Row ${rowIndex + 1}: Invalid or missing '${fatSnfKey}' value.`
-        );
-        return; // Skip this row if FAT is invalid
-      }
+    const headers = Object.keys(data[0]).map((h) => h.toLowerCase());
 
-      // Iterate over each key-value pair in the row
-      Object.entries(row).forEach(([key, value]) => {
-        if (key.toLowerCase() === fatSnfKey.toLowerCase()) {
-          return; // Skip the 'fat/snf' entry
-        }
+    // Format 2: Direct rows with 'fat', 'snf', 'rate'
+    const isRowFormat =
+      headers.includes("fat") &&
+      headers.includes("snf") &&
+      headers.includes("rate");
 
-        const snf = parseFloat(key);
-        const rate = parseFloat(value);
+    if (isRowFormat) {
+      data.forEach((row, i) => {
+        const fat = parseFloat(row["fat"]);
+        const snf = parseFloat(row["snf"]);
+        const rate = parseFloat(row["rate"]);
 
-        if (isNaN(snf) || isNaN(rate)) {
-          console.warn(
-            `Row ${
-              rowIndex + 1
-            }: Invalid SNF or Rate. SNF: ${key}, Rate: ${value}`
-          );
-          return; // Skip invalid entries
+        if (isNaN(fat) || isNaN(snf) || isNaN(rate)) {
+          console.warn(`Row ${i + 1}: Invalid FAT, SNF, or Rate`);
+          return;
         }
 
         transformed.push({
-          fat: commonFAT,
-          snf: snf,
-          rate: Math.round(rate * 100) / 100, // Round to two decimal places
+          fat,
+          snf,
+          rate: Math.round(rate * 100) / 100,
         });
       });
-    });
+    } else {
+      // Format 1: 'fat/snf' key and SNF as columns
+      const fatSnfKey = "fat/snf";
+
+      data.forEach((row, rowIndex) => {
+        const commonFAT = parseFloat(row[fatSnfKey]);
+        if (isNaN(commonFAT)) {
+          console.warn(
+            `Row ${rowIndex + 1}: Invalid or missing '${fatSnfKey}' value.`
+          );
+          return;
+        }
+
+        Object.entries(row).forEach(([key, value]) => {
+          if (key.toLowerCase() === fatSnfKey.toLowerCase()) return;
+
+          const snf = parseFloat(key);
+          const rate = parseFloat(value);
+
+          if (isNaN(snf) || isNaN(rate)) {
+            console.warn(
+              `Row ${
+                rowIndex + 1
+              }: Invalid SNF or Rate. SNF: ${key}, Rate: ${value}`
+            );
+            return;
+          }
+
+          transformed.push({
+            fat: commonFAT,
+            snf,
+            rate: Math.round(rate * 100) / 100,
+          });
+        });
+      });
+    }
 
     return transformed;
   };
+  
 
   const validateField = (name, value) => {
     let error = {};
@@ -259,7 +331,7 @@ const SaveRatecharts = () => {
             Loading...
           </div>
         )}
-        <div className="rate-chart-container w100 h90 d-flex-col bg">
+        <div className="rate-chart-container w100 h90 mh90 hidescrollbar d-flex-col bg">
           <span className="heading p10">{t("rc-s-rc-excel")} : </span>
           <div className="rate-chart-div w100 h1 mh100 d-flex-col hidescrollbar">
             <div className="rate-chart-col-title w100 d-flex a-center t-center sa py10 sticky-top bg7">
