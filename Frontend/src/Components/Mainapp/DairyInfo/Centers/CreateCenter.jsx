@@ -22,7 +22,7 @@ const CreateCenter = () => {
   const [prefixString, setPrefixString] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showCPassword, setShowCPassword] = useState(false);
-  const [isAvailable, setIsAvailable] = useState(false);
+  const [isAvailable, setIsAvailable] = useState(true);
 
   //   // Generate prefix string on component mount
   //   useEffect(() => {
@@ -217,7 +217,7 @@ const CreateCenter = () => {
           checkuserName({ username: formData.mobile })
         ).unwrap();
         setIsAvailable(result.available);
-        if (result.available === true) {
+        if (result.available === false) {
           toast.error(
             "मोबाईल नंबर अगोदर वापरलेला आहे, कृपया दुसऱ्या नंबर सह प्रयत्न करा!"
           );
@@ -352,7 +352,7 @@ const CreateCenter = () => {
             </label>
             <input
               className={`data w100 ${
-                errors.mobile ? "input-error" : isAvailable ? "input-error" : ""
+                errors.mobile ? "input-error" : !isAvailable ? "input-error" : ""
               }`}
               type="text"
               name="mobile"
