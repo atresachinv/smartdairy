@@ -101,6 +101,7 @@ import Updateratecharts from "./Masters/MasterPages/RatechartMaster/Updateratech
 import Applyratecharts from "./Masters/MasterPages/RatechartMaster/Applyratecharts";
 import PreviousRatechart from "./Masters/MasterPages/RatechartMaster/PreviousRatechart";
 
+
 const Mainapp = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -340,6 +341,7 @@ const Mainapp = () => {
             />
             <Route path="reports/lossgain/*" element={<Lossgainreport />} />
             <Route path="reports/tanker" element={<TankerReport />} />
+           
             {/* payment routes */}
             <Route
               path="payment/milk-correction/*"
