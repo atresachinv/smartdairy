@@ -69,6 +69,7 @@
     padding: 5px 10px;
     font-size: 8px;
   }
+  
 }
 
 @media screen and (max-width: 426px) {
@@ -127,6 +128,12 @@
   }
   .customer-data-values-div {
     min-width: 900px;
+  }
+  /* top navigation css */
+  .customer-master-container .customer-master-navigation {
+    overflow-x: auto;
+    white-space: nowrap;
+    min-width: 100%;
   }
 }
 

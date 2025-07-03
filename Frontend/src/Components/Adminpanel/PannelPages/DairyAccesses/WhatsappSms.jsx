@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import Select from "react-select";
-import "../../../../Styles/AdminPannel/AccessControls/WhatsapSms.css";
 import { useSelector, useDispatch } from "react-redux";
 import {
   getCenterList,
@@ -9,6 +8,7 @@ import {
 import axiosInstance from "../../../../App/axiosInstance";
 import { toast } from "react-toastify";
 import { NavLink } from "react-router-dom";
+import "../../../../Styles/AdminPannel/AccessControls/WhatsapSms.css";
 
 const WhatsappSms = () => {
   const { dairyList, centerList } = useSelector((state) => state.access);

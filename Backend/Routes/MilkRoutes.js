@@ -15,6 +15,7 @@ const {
   updateMobileCollection,
   allMilkCollection,
   fetchPrevLiters,
+  fetchPrevFSD,
   todaysMilkCollReport,
   completedMilkReport,
   RetailMilkCollection,
@@ -60,6 +61,7 @@ router
 router.route("/mobile/milkreport").get(verifyToken, fetchMobileMilkColl); // mobile Milkcollector
 router.route("/regular/customer/list").get(verifyToken, fetchRegCustomers); // regular customer list
 router.route("/mobile/prevliters").get(verifyToken, fetchPrevLiters); // mobile Milkcollector
+router.route("/prev/milkdata").get(verifyToken, fetchPrevFSD); 
 router
   .route("/fetch/mobile/collection")
   .get(verifyToken, fetchMobileMilkCollection); // fetch mobile milk collection

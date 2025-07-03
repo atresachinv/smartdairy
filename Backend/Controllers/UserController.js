@@ -210,6 +210,7 @@ exports.userRegister = async (req, res) => {
             snf DECIMAL(5,2) DEFAULT 0.00,
             Digree DECIMAL(5,2) DEFAULT 0.00,
             Litres DECIMAL(8,2) DEFAULT 0.00,
+            Kg DECIMAL(8,4) DEFAULT 0.00,
             rate DECIMAL(8,2) DEFAULT 0.00,
             Amt DECIMAL(10,2) DEFAULT 0.00,
             rctype VARCHAR(50),

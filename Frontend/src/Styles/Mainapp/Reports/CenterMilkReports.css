@@ -7,7 +7,11 @@
 .center-milk-data-container {
   min-width: 1400px;
 }
-
+@media screen and (min-width: 426px) and (max-width: 769px){
+  .master-dates-btn-container .master-dates-container .fd-txt {
+    width: 12%;
+  }
+}
 @media screen and (max-width: 426px) {
   .center-milk-coll-report-container {
     min-height: auto;
@@ -22,6 +26,7 @@
   .master-dates-btn-container .master-dates-container {
     min-height: fit-content;
     width: 100%;
+    padding: 0 10px;
     text-align: center;
     flex-wrap: wrap;
   }
@@ -30,13 +35,15 @@
     margin-left: 15px;
   }
   .master-dates-btn-container .master-dates-container .fd-txt {
-    width: 12%;
+    width: 25%;
+    margin-right: 35%;
   }
   .master-dates-btn-container .master-dates-container .td-txt {
-    width: 7%;
+    width: 25%;
+    margin-right: 35%;
   }
   .master-dates-btn-container .master-dates-container input {
-    width: 35%;
+    width: 40%;
     margin-bottom: 10px;
   }
   .master-dates-btn-container button {
@@ -53,6 +60,7 @@
   }
   .center-milk-collection-details {
     min-height: 80%;
+    margin-bottom: 10px;
   }
   .center-master-selection-container .center-milk-heading-container {
     min-width: 1250px;

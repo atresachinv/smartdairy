@@ -32,9 +32,7 @@ const DealersList = () => {
       state.dairy.dairyData.center_name
   );
   const [filteredData, setFilteredData] = useState([]);
-  const centerList = useSelector(
-    (state) => state.center.centersList || []
-  );
+  const centerList = useSelector((state) => state.center.centersList || []);
 
   const centerSetting = useSelector(
     (state) => state.dairySetting.centerSetting
@@ -350,17 +348,11 @@ const DealersList = () => {
                   ))}
             </select>
           )}
-          <button
-            className="btn sales-dates-container-mobile-btn"
-            onClick={downloadExcel}
-          >
+          <button className="btn excel-btn" onClick={downloadExcel}>
             <span className="f-label-text px10"> {t("ps-down-excel")}</span>
             <FaDownload />
           </button>
-          <button
-            className="btn sales-dates-container-mobile-btn"
-            onClick={downloadPdf}
-          >
+          <button className="btn pdf-btn" onClick={downloadPdf}>
             <span className="f-label-text px10"> PDF</span>
             <FaDownload />
           </button>

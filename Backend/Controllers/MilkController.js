@@ -483,6 +483,7 @@ exports.milkCollectionOneEntry = async (req, res) => {
     shift,
     animal,
     liters,
+    kg,
     fat,
     snf,
     amt,
@@ -560,8 +561,8 @@ exports.milkCollectionOneEntry = async (req, res) => {
       // Insert milk collection entry
       const insertMilkCollectionQuery = `
         INSERT INTO ${dairy_table} 
-        (userid, ReceiptDate, ME, CB, Litres, fat, snf, Amt, rctype, GLCode, AccCode, Digree, rate, cname, rno, center_id) 
-        VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        (userid, ReceiptDate, ME, CB, Litres, Kg, fat, snf, Amt, rctype, GLCode, AccCode, Digree, rate, cname, rno, center_id) 
+        VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       `;
 
       await query(insertMilkCollectionQuery, [
@@ -570,6 +571,7 @@ exports.milkCollectionOneEntry = async (req, res) => {
         shift,
         animal,
         liters,
+        kg || null,
         fat,
         snf,
         amt,
@@ -1152,6 +1154,87 @@ exports.fetchPrevLiters = async (req, res) => {
           }
 
           res.status(200).json({ PrevLiters: result });
+        }
+      );
+    } catch (error) {
+      connection.release();
+      console.error("Error processing request: ", error);
+      return res.status(500).json({ message: "Internal server error" });
+    }
+  });
+};
+
+//------------------------------------------------------------------------------------------------------------------->
+// Fetch Previous day and shift's  code fat, snf & Degree to use for milk collection
+//------------------------------------------------------------------------------------------------------------------->
+
+//v2 function
+exports.fetchPrevFSD = async (req, res) => {
+  const { date, shift } = req.query;
+
+  // If no date is provided, return an error
+  if (!date) {
+    return res.status(400).json({ message: "Date is required" });
+  }
+
+  // Convert the date to one day earlier
+  const adjustToPreviousDate = (inputDate) => {
+    const parsedDate = new Date(inputDate);
+    parsedDate.setDate(parsedDate.getDate() - 1);
+    const year = parsedDate.getFullYear();
+    const month = String(parsedDate.getMonth() + 1).padStart(2, "0");
+    const day = String(parsedDate.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  };
+
+  const {dairy_id, center_id} = req.user;
+  if (!dairy_id) {
+    return res.status(400).json({ message: "Missing required fields" });
+  }
+
+  const dairy_table = `dailymilkentry_${dairy_id}`;
+  const previousDate = adjustToPreviousDate(date);
+
+  pool.getConnection((err, connection) => {
+    if (err) {
+      console.error("Error getting MySQL connection: ", err);
+      return res.status(500).json({ message: "Database connection error" });
+    }
+
+    try {
+      
+
+      // Prepare the SQL query
+      const prevliterReport = `
+        SELECT rno, fat, snf, Digree
+        FROM ${dairy_table}
+        WHERE center_id = ? AND ReceiptDate = ? AND ME = ?
+      `;
+
+      // Execute the query
+      connection.query(
+        prevliterReport,
+        [center_id, previousDate, shift],
+        (err, result) => {
+          connection.release();
+
+          if (err) {
+            console.error("Error executing query: ", err);
+            return res.status(500).json({ message: "Query execution error" });
+          }
+
+          // If no records are found, return an empty result
+          if (result.length === 0) {
+            return res.status(200).json({ PrevmilkData: [] });
+          }
+
+          res
+            .status(200)
+            .json({
+              PrevmilkData: result,
+              message:
+                "Previous date fat, snf, degree data fetch successfully!",
+            });
         }
       );
     } catch (error) {

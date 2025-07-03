@@ -730,14 +730,15 @@ const MilkcollectionReports = () => {
       milkData: filteredMilkData,
     });
   }, [selectedCenterId, summaryData, filteredData]); // Re-run when selectedCenterId or data changes
+
   return (
     <>
-      <div className="Milkcollection-container w100 h1 d-flex-col sb">
-        <span className="heading px10 "> Milk Collection Report</span>
-        <div className="fillter-data-container w100 h30 d-flex-col ">
-          <div className="master-and-buttons-div w100 h30 d-flex sb px10">
-            <div className="master-hide-show-chackbox-div w65 d-flex sb">
-              <div className="custmize-report-div w60 h1 px10 d-flex a-center sb">
+      <div className="Milkcollection-container w100 h1 d-flex-col sb p10">
+        <span className="heading px10"> दुध संकलन रिपोर्ट :</span>
+        <div className="fillter-data-container w100 h30 d-flex-col">
+          <div className="master-and-buttons-div w100 h30 d-flex sb">
+            <div className="master-hide-show-chackbox-div w65 h1 d-flex sb">
+              <div className="data custmize-report-div w60 h1 px10 d-flex a-center sb">
                 <span className="cl-icon w20 h1 d-flex center info-text">
                   <BsCalendar3 />
                 </span>
@@ -799,11 +800,10 @@ const MilkcollectionReports = () => {
               </button>
             </div>
           </div>
-
-          <div className="fitter-hide-show-container w100 h30  d-flex-col sa">
+          <div className="fitter-hide-show-container w100 h50 d-flex-col sa">
             {isChecked && (
               <div className="heided-conatiner-div w100 h1 d-flex-col sa">
-                <div className="fillter-conditions-div w100 h80 d-flex  a-center  px10 sb">
+                <div className="fillter-conditions-div w100 h50 d-flex a-center sb">
                   {profile.designation !== "milkcollector" ? (
                     <div className="centerwisee-data-show w40 h1 d-flex a-center ">
                       <span className="info-text w20">Center:</span>
@@ -813,7 +813,7 @@ const MilkcollectionReports = () => {
                         id="001"
                         onChange={handleCenterChange}
                       >
-                        <option value=""> All Center</option>
+                        <option value="">All Centers</option>
                         {centerList &&
                           centerList.length > 0 &&
                           centerList.map((center, index) => {
@@ -864,8 +864,8 @@ const MilkcollectionReports = () => {
                     </div>
                   </div>
                 </div>
-                <div className="fillter-conditions-div1 w100 h50  d-flex px10 sb">
-                  <div className="days-selection-div w40  h1 d-flex center px10 ">
+                <div className="fillter-conditions-div1 w100 h50 d-flex sb">
+                  <div className="days-selection-div w35 h1 d-flex a-center sb">
                     <label htmlFor="daywise" className="info-text w30">
                       Day wise :
                     </label>
@@ -886,7 +886,7 @@ const MilkcollectionReports = () => {
                     </select>
                     {/* </div> */}
                   </div>
-                  <div className="filter-condition-divs w30  h1 d-flex center sb">
+                  <div className="filter-condition-divs w30  h1 d-flex a-center sb">
                     <label htmlFor="animal" className="info-text w40">
                       Milk Type :
                     </label>
@@ -907,8 +907,7 @@ const MilkcollectionReports = () => {
                       </option>
                     </select>
                   </div>
-
-                  <div className="filter-condition-divs w30 h1 d-flex center ">
+                  <div className="filter-condition-divs w30 h1 d-flex a-center sb">
                     <label htmlFor="milktype" className="info-text w30">
                       Shift Wise :
                     </label>
@@ -935,9 +934,9 @@ const MilkcollectionReports = () => {
           </div>
         </div>
         <div className="Milk-collection-report-container w100 h60 d-flex-col bg">
-          <span className="heading  px10">Milk Collection</span>
+          <span className="heading  px10">दुध संकलन</span>
           <div className="Milk-report-heading w100 h1 mh100 d-flex-col hidescrollbar">
-            <div className="milkdata-headings-div w100 h10 py10 d-flex center t-center sa bg1">
+            <div className="milkdata-headings-div w100 p10 d-flex center t-center sb sticky-top bg7">
               {sumreport ? (
                 <>
                   <span className="w10 f-info-text">Code</span>
@@ -974,7 +973,7 @@ const MilkcollectionReports = () => {
                     {summaryData.map((customer, index) => (
                       <div
                         key={index}
-                        className={`milkdata-div w100 h10 d-flex center t-center sa ${
+                        className={`milkdata-div w100 p10 d-flex center t-center sa ${
                           index % 2 === 0 ? "bg-light" : "bg-dark"
                         }`}
                         style={{
@@ -1003,7 +1002,7 @@ const MilkcollectionReports = () => {
                     ))}
 
                     {/* Total Row */}
-                    <div className="milkdata-div w100 h10 d-flex center t-center sa bg-total">
+                    <div className="milkdata-div w100 h10 d-flex center t-center p10 sa bg7 br-bottom">
                       <span className="w10 text t-center font-bold">Total</span>
                       <span className="w25 text t-start"></span>
 
@@ -1090,7 +1089,7 @@ const MilkcollectionReports = () => {
                     {centerData.milkData.map((customer, index) => (
                       <div
                         key={index}
-                        className={`milkdata-div w100 h10 d-flex center t-center sa ${
+                        className={`milkdata-div w100 p10 d-flex center t-center sa ${
                           index % 2 === 0 ? "bg-light" : "bg-dark"
                         }`}
                         style={{
@@ -1121,11 +1120,12 @@ const MilkcollectionReports = () => {
                     ))}
 
                     {/* Total Row */}
-                    <div className="milkdata-div w100 h10 d-flex center t-center sa bg-total">
-                      <span className="w10 text t-center font-bold">Total</span>
-                      <span className="w5 text t-center"></span>
-                      <span className="w5 text t-center"></span>
-                      <span className="w25 text t-start"></span>
+
+                    <div className="milkdata-div w100 h10 d-flex center t-center p10 sa bg7 br-bottom">
+                      <span className="w10 f-label-text t-center">Total</span>
+                      <span className="w5"></span>
+                      <span className="w5"></span>
+                      <span className="w25"></span>
 
                       {/* Total Litres */}
                       <span className="w5 text t-end font-bold">

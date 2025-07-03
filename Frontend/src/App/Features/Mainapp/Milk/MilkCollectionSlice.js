@@ -10,6 +10,7 @@ const initialState = {
   mobileCollection: [], //update mobile milk collection
   completedColle: [], //completed milk collection
   PrevLiters: [], //Previous liters
+  prevMilkData: [], //Previous fat, snf, degree
   todaysMilk: [],
   regularCustomers: [], // regular customer for milk collection
   status: "idle",
@@ -149,6 +150,24 @@ export const mobilePrevLiters = createAsyncThunk(
   }
 );
 
+//Mobile Milk Collection Previous Liters
+export const getPrevMilkdata = createAsyncThunk(
+  "milkCollection/getPrevMilkdata",
+  async ({ date, shift }, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.get("/prev/milkdata", {
+        params: { date, shift },
+      });
+      return response.data.PrevmilkData;
+    } catch (error) {
+      const errorMessage = error.response
+        ? error.response.data
+        : "Failed to fetch Previous Liters.";
+      return rejectWithValue(errorMessage);
+    }
+  }
+);
+
 // fetch Mobile milk collection report
 export const getMilkCollReport = createAsyncThunk(
   "milkCollection/getMilkCollReport",
@@ -269,8 +288,6 @@ export const getRegCustomers = createAsyncThunk(
   }
 );
 
-
-
 const milkCollectionSlice = createSlice({
   name: "milkCollection",
   initialState,
@@ -372,6 +389,18 @@ const milkCollectionSlice = createSlice({
         state.PrevLiters = action.payload;
       })
       .addCase(mobilePrevLiters.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.payload;
+      }) // get previous date fat, snf, degree --------------------------->
+      .addCase(getPrevMilkdata.pending, (state) => {
+        state.status = "loading";
+        state.error = null;
+      })
+      .addCase(getPrevMilkdata.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        state.prevMilkData = action.payload;
+      })
+      .addCase(getPrevMilkdata.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.payload;
       })

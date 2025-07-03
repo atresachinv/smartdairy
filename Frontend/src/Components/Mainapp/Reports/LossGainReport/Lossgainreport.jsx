@@ -1,31 +1,41 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { dairydailyLossGain } from "../../../../App/Features/Mainapp/Dairyinfo/milkCollectionSlice";
 import "../../../../Styles/Mainapp/Reports/LossGainReport/LossGainReport.css";
+import { toast } from "react-toastify";
 const Lossgainreport = () => {
-  const [fromDate, setFromDate] = useState("");
-  const [toDate, setToDate] = useState("");
-  const [showTable, setShowTable] = useState(false);
   const dispatch = useDispatch();
+  const tDate = useSelector((state) => state.date.toDate);
   const dairyColl = useSelector((state) => state.custinfo.dairyColl); // sangha Sales
   const dairyname = useSelector(
     (state) =>
       state.dairy.dairyData.SocietyName || state.dairy.dairyData.center_name
   );
   const CityName = useSelector((state) => state.dairy.dairyData.city);
+  const [fromDate, setFromDate] = useState(tDate);
+  const [toDate, setToDate] = useState(tDate);
+  const [showTable, setShowTable] = useState(false);
+  const todateRef = useRef(null);
+  const showbtnRef = useRef(null);
+
+  // handle enter press move cursor to next refrence Input -------------------------------->
+  const handleKeyDown = (e, nextRef) => {
+    if (e.key === "Enter" && nextRef.current) {
+      e.preventDefault();
+      nextRef.current.focus();
+    }
+  };
 
   const handleShowbtn = async (e) => {
     e.preventDefault();
     setShowTable(false);
 
     if (!fromDate || !toDate) {
-      alert("Please select From and To dates");
-      return;
+      return toast.error("Please select From and To dates");
     }
 
     try {
       const result = await dispatch(dairydailyLossGain({ fromDate, toDate }));
-      console.log("Fetched Data:", result.payload); // Debug
       setShowTable(true);
     } catch (err) {
       console.error("Error fetching data:", err);
@@ -152,37 +162,40 @@ const Lossgainreport = () => {
   return (
     <div className="loss-gain-report-outer-container w100 h1 d-flex center">
       <div className="loss-gain-report-container w60 h1 d-flex-col center">
-        <span className="heading px10">Loss gain Report</span>
+        <span className="heading px10">नफा-तोटा रिपोर्ट :</span>
         <div className="first-loss-gain-report-div w100 h40 d-flex-col bg center ">
           <div className="loss-gain-report-from-to-date-div w90 h30 d-flex    ">
             <div className="loss-gain-from-date-div w50  d-flex a-center ">
-              <span className="label-text px10"> From:</span>
+              <span className="label-text px10"> पासुन :</span>
               <input
-                className="data w50"
+                className="data w60"
                 type="date"
                 value={fromDate}
                 onChange={(e) => setFromDate(e.target.value)}
+                onKeyDown={(e) => handleKeyDown(e, todateRef)}
               />
             </div>
-            <div className="loss-gain-to-date-div w50  d-flex a-center ">
-              <span className="label-text px10">To:</span>
+            <div className="loss-gain-from-date-div w50  d-flex a-center ">
+              <span className="label-text px10">पर्यंत :</span>
               <input
-                className="data w50"
+                className="data w60"
                 type="date"
                 value={toDate}
+                ref={todateRef}
                 onChange={(e) => setToDate(e.target.value)}
+                onKeyDown={(e) => handleKeyDown(e, showbtnRef)}
               />
             </div>
           </div>
-          <div className="button-loss-gain-div w90 d-flex a-center sa ">
-            <button className="w-btn" onClick={handleShowbtn}>
-              Show
+          <div className="button-loss-gain-div w90 d-flex a-center sa">
+            <button className="w-btn" ref={showbtnRef} onClick={handleShowbtn}>
+              दाखवा
             </button>
             <button
               className="w-btn"
               onClick={() => printDairyLossGainReport(dairyColl)}
             >
-              Print
+              प्रिंट
             </button>
           </div>
         </div>

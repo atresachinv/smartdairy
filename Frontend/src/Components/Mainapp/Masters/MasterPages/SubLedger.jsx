@@ -263,15 +263,13 @@ const SubLedger = () => {
   };
 
   return (
-    <div
-      className={`sub-ledger-container w100 h1 d-flex-col p10 sb ${
-        isEditing ? "edit-bg" : ""
-      }`}
-    >
+    <div className={`sub-ledger-container w100 h1 d-flex-col p10 sb `}>
       <span className="heading">Ledger Master :</span>
       <form
         onSubmit={handleFrom}
-        className={`ledger-master-form-container w100 h35 d-flex sb`}
+        className={`ledger-master-form-container w100 h35 d-flex p10 br9 sb ${
+          isEditing ? "bg-light-green" : "bg-light-skyblue"
+        }`}
       >
         <div className="ledger-info-contsiner w65 h1 d-flex-col sb">
           <div className="ledger-no-group-container w100 h20 d-flex a-center sb">

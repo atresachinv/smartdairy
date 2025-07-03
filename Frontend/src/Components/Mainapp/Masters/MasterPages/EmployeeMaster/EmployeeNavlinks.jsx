@@ -27,15 +27,17 @@ const EmployeeNavlinks = ({ isselected, setIsSelected }) => {
           }`}
           onClick={() => {
             setIsSelected(index);
-          }}>
+          }}
+        >
           <NavLink
             to={button.path}
             className={({ isActive }) =>
               isActive
                 ? "sub-navlinks f-label-text selected"
                 : "sub-navlinks f-label-text"
-            }>
-            {button.icon}
+            }
+          >
+            <span className="nav-icon">{button.icon}</span>
             <span>{button.name}</span>
           </NavLink>
         </li>

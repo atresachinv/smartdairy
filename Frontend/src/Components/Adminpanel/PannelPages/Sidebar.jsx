@@ -4,10 +4,8 @@ import { BiLogOutCircle } from "react-icons/bi";
 import { useNavigate } from "react-router-dom";
 import applogo from "../../../assets/samrtdairylogo.png";
 import axios from "axios";
-// import "../../Styles/Mainapp/Sidebar.css";
+import "../../../Styles/AdminPannel/Sidebar.css";
 import { useDispatch, useSelector } from "react-redux";
-// import { logoutUser } from "../../App/Features/Users/authSlice";
-// import { toast } from "react-toastify";
 import axiosInstance from "../../../App/axiosInstance";
 import SidebarNavlinks from "./SidebarNavlinks";
 

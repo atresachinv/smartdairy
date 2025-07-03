@@ -1,9 +1,8 @@
-import React from "react";
+import React, { useState } from "react";
 import { Route, Routes, useNavigate } from "react-router-dom";
 import Sidebar from "./PannelPages/Sidebar";
 import Dashboard from "./PannelPages/Dashboard/Dashboard";
 import TopNavigation from "./PannelPages/Dashboard/TopNavigation";
-import DairyAccess from "./PannelPages/DairyAccesses/DairyAccess";
 import CreateAccess from "./CreateAccess";
 import MilkCollAccess from "./PannelPages/DairyAccesses/MilkCollAccess";
 import WhatsappSms from "./PannelPages/DairyAccesses/WhatsappSms";
@@ -15,16 +14,31 @@ import DairyList from "./PannelPages/DairyActivations/DairyList";
 import NewActivation from "./PannelPages/DairyActivations/NewActivation";
 import UpdateDAmc from "./PannelPages/DairyActivations/UpdateDAmc";
 import UpdateAllAmc from "./PannelPages/DairyActivations/UpdateAllAmc";
+import "../../Styles/AdminPannel/AdminPannel.css";
 
 const AdminPannel = () => {
+  const [openSidebar, setOpenSidebar] = useState(false);
+  // handle open close sidebar ---------------------------------------------------------->
+  const handleSidebar = () => {
+    setOpenSidebar(!openSidebar);
+  };
+
+  // Retrieve isselected from localStorage, defaulting to 0 if not set ------------------>
+  const [isselected, setIsselected] = useState(
+    parseInt(localStorage.getItem("selectedNavIndex")) || 0
+  );
   return (
     <div className="super-admin-dashboard-container w100 h100 d-flex">
-      <div className="sidebar-nav-container w20 h1 d-flex-col bg7">
-        <Sidebar />
+      <div
+        className={`sidebar-nav-container ${
+          openSidebar ? "open-sidebar-container" : "close-sidebar-container"
+        }`}
+      >
+        <Sidebar setselected={setIsselected} handleSidebar={handleSidebar} />
       </div>
       <div className="main-page-views-container w80 h1 d-flex-col sb">
         <div className="top-navigation-container w100 h10 d-flex a-center bg6">
-          <TopNavigation />
+          <TopNavigation handleSidebar={handleSidebar} />
         </div>
         <div className="page-view-container w100 h90 d-flex center p10">
           <Routes>
