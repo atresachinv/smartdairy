@@ -15,6 +15,7 @@ const TankerReport = () => {
   const [selectedTanker, setSelectedTanker] = useState("");
   const [filteredData, setFilteredData] = useState([]);
   const [showClicked, setShowClicked] = useState(false);
+  const [selectedShift, setSelectedShift] = useState(""); // "", "0", "1", "2", "3"
 
   const dairyname = useSelector(
     (state) =>
@@ -46,23 +47,22 @@ const TankerReport = () => {
   }, [sanghaMilkColl, tankerList]);
 
   useEffect(() => {
-    if (showClicked && mergedData.length && fromDate && toDate) {
-      const filtered = mergedData.filter((item) => {
-        const inDateRange =
-          new Date(item.colldate) >= new Date(fromDate) &&
-          new Date(item.colldate) <= new Date(toDate);
+    if (!mergedData.length || !fromDate || !toDate) return;
 
-        if (selectedTanker) {
-          return item.tno === selectedTanker && inDateRange;
-        } else {
-          return inDateRange; // show all if no tanker selected
-        }
-      });
+    const filtered = mergedData.filter((item) => {
+      const inDateRange =
+        new Date(item.colldate) >= new Date(fromDate) &&
+        new Date(item.colldate) <= new Date(toDate);
 
-      setFilteredData(filtered);
-      setShowClicked(false);
-    }
-  }, [mergedData, selectedTanker, fromDate, toDate, showClicked]);
+      if (selectedTanker) {
+        return item.tno === selectedTanker && inDateRange;
+      } else {
+        return inDateRange;
+      }
+    });
+
+    setFilteredData(filtered);
+  }, [mergedData, selectedTanker, fromDate, toDate]);
 
   const uniqueTankerNumbers = [
     ...new Set(mergedData.map((item) => item.tno).filter(Boolean)),
@@ -163,8 +163,6 @@ const TankerReport = () => {
 
     doc.save("Tanker_Report.pdf");
   };
-  
-  
 
   const printMergedData = (data) => {
     const printWindow = window.open("", "_blank");
@@ -278,53 +276,92 @@ const TankerReport = () => {
     0
   );
   console.log("filteredData", filteredData);
+
+  //... Select Shift 
+  useEffect(() => {
+    if (!mergedData.length || !fromDate || !toDate) return;
+
+    const filtered = mergedData.filter((item) => {
+      const inDateRange =
+        new Date(item.colldate) >= new Date(fromDate) &&
+        new Date(item.colldate) <= new Date(toDate);
+
+      const matchesTanker =
+        selectedTanker === "" || item.tno === selectedTanker;
+
+      const matchesShift =
+        selectedShift === "" || String(item.shift) === selectedShift;
+
+      return inDateRange && matchesTanker && matchesShift;
+    });
+
+    setFilteredData(filtered);
+  }, [mergedData, selectedTanker, selectedShift, fromDate, toDate]);
+  
   return (
     <div className="tankar-Report-outer-container w100 h1 d-flex-col">
       <span className="heading px10">Tanker Report</span>
       <div className="tankar-report-form-div w100 h30 d-flex-col sa bg ">
-        <div className="tankar-report-from-to-date-div w100  d-flex a-center">
-          <div className="tankar-from-div w30 d-flex a-center">
-            <span className="label-text px10 w50">From</span>
-            <input
-              className="data w90"
-              value={fromDate}
-              type="date"
-              onChange={(e) => setFromDate(e.target.value)}
-            />
+        <div className="tankar-report-from-to-date-div-button w100  d-flex a-center sa">
+          <div className="tanker-report-from-to-date-first w70 d-flex">
+            <div className="tankar-from-div w50 d-flex a-center">
+              <span className="label-text px10  w30">From</span>
+              <input
+                className="data w70"
+                value={fromDate}
+                type="date"
+                onChange={(e) => setFromDate(e.target.value)}
+              />
+            </div>
+            <div className="tankar-to-div w50 d-flex  a-center">
+              <span className="label-text w20 px10">To</span>
+              <input
+                className="data w70"
+                value={toDate}
+                type="date"
+                onChange={(e) => setToDate(e.target.value)}
+              />
+            </div>
           </div>
-          <div className="tankar-to-div w30 d-flex px10 a-center">
-            <span className="label-text w30">To</span>
-            <input
-              className="data w90"
-              value={toDate}
-              type="date"
-              onChange={(e) => setToDate(e.target.value)}
-            />
+          <div className="tankar-number-show-button  d-flex w30 a-center px10 ">
+            <button className="w-btn" onClick={handleShowbtn}>
+              Show
+            </button>
           </div>
-          <div className="show-button-div-tankar"></div>
         </div>
         <div className="select-tankers-button-div w100 h30 d-flex a-center ">
-          <div className="select-master-div w50 d-flex a-center">
-            <span className="label-text w50 px10">Select Tankar No</span>
+          <div className="select-master-div w40 d-flex a-center">
+            <span className="label-text w40 px10">Select Tankar No</span>
             <select
-              className="data w40"
+              className="w50 d-flex data"
               value={selectedTanker}
               onChange={(e) => setSelectedTanker(e.target.value)}
             >
-              <option value="">-- Select --</option>
-              {uniqueTankerNumbers.map((tno, index) => (
-                <option key={index} value={tno}>
-                  {tno}
+              <option value="">-- All Tankers --</option>
+              {uniqueTankerNumbers.map((num) => (
+                <option key={num} value={num}>
+                  {num}
                 </option>
               ))}
             </select>
           </div>
-          <div className="tankers-button-div d-flex w50 sa">
-            <div className="tankar-number-show-button w20 ">
-              <button className="w-btn" onClick={handleShowbtn}>
-                Show
-              </button>
-            </div>
+          <div className="select-shift-div-intankar-div w30 d-flex a-center">
+            <span className="w30 label-text px10">Shift</span>
+            <select
+              className="data"
+              id="002"
+              value={selectedShift}
+              onChange={(e) => setSelectedShift(e.target.value)}
+            >
+              <option value="">सर्व (All)</option>
+              <option value="2">एकत्रित (M+E)</option>
+              <option value="3">संध्याकाळ + सकाळ (YE+TM)</option>
+              <option value="0">सकाळ (Morning)</option>
+              <option value="1">संध्याकाळ (Evening)</option>
+            </select>
+          </div>
+
+          <div className="tankers-button-div d-flex w40 sa">
             <div className="tabkar-number-show-button w20">
               <button
                 className="w-btn"
@@ -351,10 +388,10 @@ const TankerReport = () => {
           <div className="Tanker-report-table-header w100 d-flex bg7">
             <span className="label-text w5">No</span>
             <span className="label-text w15">Date</span>
-            <span className="label-text w5">Shift</span>
-            <span className="label-text w15">FAT</span>
+            <span className="label-text w20">Shift</span>
             <span className="label-text w15">Tanker No</span>
-            <span className="label-text w15">SNF</span>
+            <span className="label-text w5">FAT</span>
+            <span className="label-text w5">SNF</span>
             <span className="label-text w10">Liter</span>
             <span className="label-text w10">Rate/Ltr</span>
             <span className="label-text w10">Amount</span>
@@ -373,12 +410,20 @@ const TankerReport = () => {
               <span className="label-text w15">
                 {new Date(row.colldate).toISOString().slice(0, 10)}
               </span>
-              <span className="label-text w5">
-                {row.shift === "0" || row.shift === 0 ? "Mrg" : "Eve"}
+              <span className="label-text w20">
+                {row.shift === 0
+                  ? "सकाळ"
+                  : row.shift === 1
+                  ? "सद्याकाळ"
+                  : row.shift === 2
+                  ? "एकत्रित"
+                  : row.shift === 3
+                  ? "काल सद्यकाल + आज सकाळ "
+                  : "Master"}
               </span>
-              <span className="label-text w15">{row.fat}</span>
               <span className="label-text w15">{row.tno}</span>
-              <span className="label-text w15">{row.snf}</span>
+              <span className="label-text w5">{row.fat}</span>
+              <span className="label-text w5">{row.snf}</span>
               <span className="label-text w10">
                 {Number(row.liter).toFixed(1)}
               </span>
