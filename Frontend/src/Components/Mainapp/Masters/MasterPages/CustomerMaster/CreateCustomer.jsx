@@ -386,9 +386,11 @@ const CreateCustomer = () => {
       setErrors(validationErrors);
       return;
     }
+
     if (!formData.bankName || !formData.bankIFSC) {
       return toast.error("Select Bank Again!");
     }
+    
     try {
       if (isEditing) {
         // Update existing customer in DB
