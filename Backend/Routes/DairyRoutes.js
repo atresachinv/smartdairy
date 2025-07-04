@@ -7,6 +7,7 @@ const {
   updatedetails,
   maxCenterId,
   createCenter,
+  setupBasicInformation,
   updateCenterInfo,
   getCenterDetails,
   getAllcenters,
@@ -39,7 +40,9 @@ router.route("/dairy/dashboard").post(verifyToken, dairyDashboardInfo);
 router.route("/dairyinfo").post(verifyToken, dairyInfo);
 router.route("/update/dairyinfo").put(verifyToken, updatedetails);
 router.route("/center/maxid").post(verifyToken, maxCenterId);
-router.route("/create/center").post(verifyToken, createCenter);
+router
+  .route("/create/center")
+  .post(verifyToken, createCenter, setupBasicInformation);
 router.route("/update/centerdetails").post(verifyToken, updateCenterInfo);
 router.route("/center/details").post(verifyToken, getCenterDetails);
 router.route("/all/centerdetails").post(verifyToken, getAllcenters);

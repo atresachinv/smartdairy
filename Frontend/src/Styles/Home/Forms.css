@@ -115,12 +115,15 @@
 }
 
 @media screen and (max-width: 426px) {
-  /* .app-logo-div {
-    margin-top: 150px;
-  } */
-
   .forms-container-div .form-container {
     margin-top: 20px;
+    width: 100%;
+  }
+  .form-container .cow-image-container {
+    display: none;
+  }
+
+  .auth-container .form-container .login-form-container {
     width: 100%;
   }
 
@@ -147,18 +150,54 @@
 }
 
 /* ----------------------------  Register page css --------------------------- */
-@media screen and (max-width: 426px) {
-  .form-container {
+@media screen and (min-width: 426px) and (max-width: 769px) {
+  .register-user-form-container {
     min-height: auto;
+    flex-wrap: wrap;
   }
-  .form-container .signup-form {
+  .register-user-form-container .cow-image-container {
+    display: none;
+  }
+  .register-user-form-container .signup-form-container {
     min-height: fit-content;
+    width: 60%;
   }
-  .signup-form .data-outer {
+  .signup-form-container .register-details-div {
+    width: 100%;
     min-height: fit-content;
     flex-direction: column;
   }
-  .data-outer .data-div-2 {
+  .signup-form-container .register-details-div input,
+  .terms-conditions {
+    margin-bottom: 10px;
+  }
+  .register-details-div .data-input-container {
+    width: 100%;
+  }
+}
+
+@media screen and (max-width: 426px) {
+  .register-user-form-container {
+    min-height: auto;
+    padding: 10px;
+  }
+  .register-user-form-container .cow-image-container {
+    display: none;
+  }
+  .register-user-form-container .signup-form-container {
+    min-height: fit-content;
+    width: 100%;
+  }
+  .signup-form-container .register-details-div {
+    width: 100%;
+    min-height: fit-content;
+    flex-direction: column;
+  }
+  .signup-form-container .register-details-div input,
+  .terms-conditions {
+    margin-bottom: 10px;
+  }
+  .register-details-div .data-input-container {
     width: 100%;
   }
 }

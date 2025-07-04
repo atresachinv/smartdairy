@@ -318,12 +318,6 @@ const CreateEmployee = () => {
       return;
     }
 
-    if (isAvailable) {
-      return toast.error(
-        "मोबाईल नंबर अगोदर वापरलेला आहे, कृपया दुसऱ्या नंबर सह पुन्हा प्रयत्न करा!"
-      );
-    }
-
     if (isEditing) {
       const response = await dispatch(updateEmp(formData)).unwrap();
 
@@ -460,10 +454,11 @@ const CreateEmployee = () => {
                 <option value="">-- Select Designation --</option>
                 <option value="manager">Manager</option>
                 <option value="milkcollector">Milk Collector</option>
-                <option value="mobilecollector">Mobile Milk Collector</option>
+                <option value="mobilecollector">Milk Sample Collector</option>
                 <option value="salesman">Stock Keeper</option>
               </select>
             </div>
+            
             <div className="details-div w30 d-flex-col a-center px10">
               <label htmlFor="salary" className="info-text w100 ">
                 Salary<span className="req">*</span>

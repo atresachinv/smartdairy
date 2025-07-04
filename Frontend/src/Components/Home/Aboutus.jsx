@@ -1,9 +1,8 @@
-import React from "react";
-
+import "../../Styles/Home/Aboutus.css";
 const Aboutus = () => {
   return (
-    <div className="about-us-container wh100 d-flex-col a-center j-center bg-light-green">
-      <div className="aboutus-inner-container w50 h1 d-flex-col j-center">
+    <div className="about-us-container w100 h1 d-flex-col a-center j-center bg-light-green">
+      <div className="aboutus-inner-container w50 h1 mh100 hidescrollbar d-flex-col j-center">
         <h1 className="title t-center my10">About Us</h1>
         <p className="info-text">
           <strong>Vikern Smart Invent Software Technology Pvt. Ltd.</strong> is

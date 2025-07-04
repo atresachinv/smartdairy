@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import "../../../Styles/Home/Forms.css";
+import CowImage from "../CowImage";
 import { toast } from "react-toastify";
 import { registerUser, reset } from "../../../App/Features/Dairy/registerSlice";
 import {
@@ -113,7 +114,6 @@ const Register = ({ switchToLogin }) => {
     ).unwrap();
     setUserName(result.available);
   };
-
 
   // --------------------------------------------------------------------------------------------->
   // Field validation function
@@ -286,13 +286,16 @@ const Register = ({ switchToLogin }) => {
   }, [status, error, dispatch, switchToLogin]);
 
   return (
-    <div className="form-container w70 h1 d-flex-col">
+    <div className="register-user-form-container w100 h1 d-flex sa">
+      <div className="cow-image-container w50 h1 d-flex center">
+        <CowImage />
+      </div>
       <form
         onSubmit={handleRegister}
-        className="signup-form w100 d-flex-col align-center p10"
+        className="signup-form-container w40 h1 d-flex-col align-center sb"
       >
         <span className="title t-center">Register Now</span>
-        <div className="data-div w100 h10">
+        <div className="register-details-div w100 h15">
           <label htmlFor="dairy_name" className="text">
             Enter Dairy Name <span className="req">*</span>{" "}
           </label>
@@ -317,7 +320,7 @@ const Register = ({ switchToLogin }) => {
             </span>
           )}
         </div>
-        <div className="data-div w100 h10">
+        <div className="register-details-div w100 h15">
           <label htmlFor="m-name" className="text">
             Marathi Dairy Name <span className="req">*</span>
           </label>
@@ -335,8 +338,8 @@ const Register = ({ switchToLogin }) => {
             <span className="error-message">Invalid marathi name.</span>
           )}
         </div>
-        <div className="data-outer w100 h10 d-flex sb">
-          <div className="data-div-2">
+        <div className="register-details-div w100 h15 d-flex sb">
+          <div className="data-input-container w45">
             <label htmlFor="user_name" className="text">
               Enter Username <span className="req">*</span>
             </label>
@@ -363,7 +366,7 @@ const Register = ({ switchToLogin }) => {
           </div>
 
           {/* Phone Number */}
-          <div className="data-div-2">
+          <div className="data-input-container w45">
             <label htmlFor="user_phone" className="text">
               Enter Phone Number <span className="req">*</span>
             </label>
@@ -384,9 +387,9 @@ const Register = ({ switchToLogin }) => {
         </div>
 
         {/* City and Pincode */}
-        <div className="data-outer w100 h10 d-flex sb">
+        <div className="register-details-div w100 h15 d-flex sb">
           {/* City */}
-          <div className="data-div-2">
+          <div className="data-input-container w45">
             <label htmlFor="user_city" className="text">
               Enter City <span className="req">*</span>
             </label>
@@ -406,7 +409,7 @@ const Register = ({ switchToLogin }) => {
           </div>
 
           {/* Pincode */}
-          <div className="data-div-2">
+          <div className="data-input-container w45">
             <label htmlFor="user_pincode" className="text">
               Enter Pincode <span className="req">*</span>
             </label>
@@ -427,9 +430,9 @@ const Register = ({ switchToLogin }) => {
         </div>
 
         {/* Password and Confirm Password */}
-        <div className="data-outer w100 h10 d-flex sb">
+        <div className="register-details-div w100 h15 d-flex sb">
           {/* Password */}
-          <div className="data-div-2">
+          <div className="data-input-container w45">
             <label htmlFor="user_password" className="text">
               Enter Password <span className="req">*</span>
             </label>
@@ -451,7 +454,7 @@ const Register = ({ switchToLogin }) => {
           </div>
 
           {/* Confirm Password */}
-          <div className="data-div-2">
+          <div className="data-input-container w45">
             <label htmlFor="confirm_password" className="text">
               Confirm Password <span className="req">*</span>
             </label>
@@ -472,8 +475,8 @@ const Register = ({ switchToLogin }) => {
         </div>
 
         {/* Terms and Conditions */}
-        <div className="terms-conditions h10 d-flex center">
-          <span className="w100 d-flex text center p10">
+        <div className="terms-conditions w100 d-flex center">
+          <span className="w100 h1 d-flex text a-center">
             <input
               className={`checkboxx ${errors.terms ? "input-error" : ""}`}
               type="checkbox"
@@ -491,7 +494,7 @@ const Register = ({ switchToLogin }) => {
         {/* Register Button */}
         <button
           type="submit"
-          className="btn w100"
+          className="btn w100 h10"
           disabled={status === "loading"}
         >
           {status === "loading" ? "Registering..." : "Register"}

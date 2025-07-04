@@ -8,6 +8,27 @@ const NodeCache = require("node-cache");
 const cache = new NodeCache({});
 const axios = require("axios");
 
+const getConnectionPromise = () => {
+  return new Promise((resolve, reject) => {
+    pool.getConnection((err, connection) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(connection);
+      }
+    });
+  });
+};
+
+const queryPromise = (connection, sql, params = []) => {
+  return new Promise((resolve, reject) => {
+    connection.query(sql, params, (err, results) => {
+      if (err) reject(err);
+      else resolve(results);
+    });
+  });
+};
+
 //-------------------------------------------------------------------------------------------------------->
 //Dairy info --------------------------------------------------------------------------------------------->
 //-------------------------------------------------------------------------------------------------------->
@@ -323,7 +344,135 @@ exports.maxCenterId = async (req, res) => {
 
 // ------------------------------FIND MAX CENTERID
 
-exports.createCenter = (req, res) => {
+// exports.createCenter = (req, res) => {
+//   const {
+//     center_id,
+//     center_name,
+//     marathi_name,
+//     reg_no,
+//     reg_date,
+//     mobile,
+//     email,
+//     city,
+//     tehsil,
+//     district,
+//     pincode,
+//     auditclass,
+//     password,
+//     date,
+//     prefix,
+//   } = req.body;
+
+//   const dairy_id = req.user.dairy_id;
+//   const user_role = req.user.user_role;
+
+//   if (!dairy_id) {
+//     return res.status(401).json({ status: 401, message: "Unauthorized User!" });
+//   }
+
+//   pool.getConnection((err, connection) => {
+//     if (err) {
+//       console.error("MySQL connection error:", err);
+//       return res
+//         .status(500)
+//         .json({ status: 500, message: "Database connection error" });
+//     }
+
+//     // Hash password before inserting into `users`
+//     bcrypt.hash(password, 10, (hashErr, hashedPassword) => {
+//       if (hashErr) {
+//         connection.release();
+//         console.error("Error hashing password:", hashErr);
+//         return res
+//           .status(500)
+//           .json({ status: 500, message: "Password hashing error" });
+//       }
+
+//       // Insert into `centermaster`
+//       const createCenterQuery = `
+//         INSERT INTO centermaster (
+//           center_id, center_name, marathi_name, reg_no, reg_date,
+//           mobile, email, city, tehsil, district, pincode,
+//           orgid, auditclass, prefix
+//         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+//       `;
+
+//       const insertRegNo = reg_no && reg_no !== "" ? parseInt(reg_no, 10) : null;
+//       const insertRegDate = reg_date && reg_date !== "" ? reg_date : null;
+
+//       connection.query(
+//         createCenterQuery,
+//         [
+//           center_id,
+//           center_name,
+//           marathi_name,
+//           insertRegNo,
+//           insertRegDate,
+//           mobile,
+//           email || null,
+//           city || null,
+//           tehsil || null,
+//           district || null,
+//           pincode || null,
+//           dairy_id,
+//           auditclass || null,
+//           prefix,
+//         ],
+//         (err, centerResult) => {
+//           if (err) {
+//             connection.release();
+//             console.error("Error inserting into centermaster:", err);
+//             return res
+//               .status(500)
+//               .json({ status: 500, message: "Center creation failed" });
+//           }
+
+//           // Insert into `users`
+//           const createUserQuery = `
+//             INSERT INTO users (
+//               username, password, isAdmin, createdon,
+//               createdby, designation, SocietyCode, center_id
+//             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+//           `;
+
+//           const designation = "Admin";
+//           const isAdmin = "1";
+
+//           connection.query(
+//             createUserQuery,
+//             [
+//               mobile,
+//               hashedPassword,
+//               isAdmin,
+//               date,
+//               user_role,
+//               designation,
+//               dairy_id,
+//               center_id,
+//             ],
+//             (err, userResult) => {
+//               connection.release();
+
+//               if (err) {
+//                 console.error("Error inserting into users:", err);
+//                 return res
+//                   .status(500)
+//                   .json({ status: 500, message: "User creation failed" });
+//               }
+
+//               return res.status(200).json({
+//                 status: 200,
+//                 message: "Center and user created successfully!",
+//               });
+//             }
+//           );
+//         }
+//       );
+//     });
+//   });
+// };
+
+exports.createCenter = (req, res, next) => {
   const {
     center_id,
     center_name,
@@ -357,24 +506,20 @@ exports.createCenter = (req, res) => {
         .json({ status: 500, message: "Database connection error" });
     }
 
-    // Hash password before inserting into `users`
     bcrypt.hash(password, 10, (hashErr, hashedPassword) => {
       if (hashErr) {
         connection.release();
-        console.error("Error hashing password:", hashErr);
         return res
           .status(500)
           .json({ status: 500, message: "Password hashing error" });
       }
 
-      // Insert into `centermaster`
       const createCenterQuery = `
         INSERT INTO centermaster (
           center_id, center_name, marathi_name, reg_no, reg_date,
           mobile, email, city, tehsil, district, pincode,
           orgid, auditclass, prefix
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-      `;
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
       const insertRegNo = reg_no && reg_no !== "" ? parseInt(reg_no, 10) : null;
       const insertRegDate = reg_date && reg_date !== "" ? reg_date : null;
@@ -388,44 +533,38 @@ exports.createCenter = (req, res) => {
           insertRegNo,
           insertRegDate,
           mobile,
-          email,
-          city,
-          tehsil,
-          district,
-          pincode,
+          email || null,
+          city || null,
+          tehsil || null,
+          district || null,
+          pincode || null,
           dairy_id,
-          auditclass,
+          auditclass || null,
           prefix,
         ],
         (err, centerResult) => {
           if (err) {
             connection.release();
-            console.error("Error inserting into centermaster:", err);
             return res
               .status(500)
               .json({ status: 500, message: "Center creation failed" });
           }
 
-          // Insert into `users`
           const createUserQuery = `
             INSERT INTO users (
               username, password, isAdmin, createdon,
               createdby, designation, SocietyCode, center_id
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-          `;
-
-          const designation = "Admin";
-          const isAdmin = "1";
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
 
           connection.query(
             createUserQuery,
             [
               mobile,
               hashedPassword,
-              isAdmin,
+              "1", // isAdmin
               date,
-              user_role,
-              designation,
+              user_role, // createdby
+              "Admin", // designation
               dairy_id,
               center_id,
             ],
@@ -433,24 +572,146 @@ exports.createCenter = (req, res) => {
               connection.release();
 
               if (err) {
-                console.error("Error inserting into users:", err);
                 return res
                   .status(500)
                   .json({ status: 500, message: "User creation failed" });
               }
 
-              const cacheKey = `centers_${dairy_id}_${center_id}`;
-              cache.del(cacheKey); // Clear cache if you're using it
-
-              return res.status(200).json({
-                status: 200,
-                message: "Center and user created successfully!",
-              });
+              // Pass control to the next middleware
+              req.dairy_id = dairy_id;
+              req.center_id = center_id;
+              next(); // Do not send response here
             }
           );
         }
       );
     });
+  });
+};
+
+exports.setupBasicInformation = async (req, res) => {
+  const SocietyCode = req.dairy_id;
+  const CenterId = req.center_id;
+
+  const connection = await getConnectionPromise();
+
+  try {
+    await queryPromise(
+      connection,
+      `INSERT INTO ratecharttype (companyid, center_id, rctypeid, rctypename) VALUES (?, ?, ?, ?)`,
+      [SocietyCode, CenterId, 1, "Cow"]
+    );
+
+    await queryPromise(
+      connection,
+      `INSERT INTO bankmaster (code, name, branch, ifsc, companyid, center_id) VALUES (?, ?, ?, ?, ?, ?)`,
+      [1, "Demo Bank", "Demo", "DEMO000123", SocietyCode, CenterId]
+    );
+
+    connection.release();
+
+    res.status(200).json({
+      status: 200,
+      message: "Center and basic information created successfully!",
+    });
+  } catch (err) {
+    connection.release();
+    console.error("setupBasicInformation error:", err);
+    res.status(500).json({
+      status: 500,
+      message: "Center created, but basic information creation failed!",
+    });
+  }
+};
+
+//-------------------------------------------------------------------------------------------------------->
+// update center details --------------------------------------------------------------------------------->
+//-------------------------------------------------------------------------------------------------------->
+
+//v2
+exports.updateCenterInfo = async (req, res) => {
+  const {
+    marathi_name,
+    center_name,
+    reg_no,
+    reg_date,
+    center_id,
+    auditclass,
+    mobile,
+    email,
+    city,
+    tehsil,
+    district,
+    pincode,
+  } = req.body;
+
+  const dairy_id = req.user.dairy_id;
+
+  if (!dairy_id) {
+    return res.status(401).json({ status: 401, message: "Unauthorized user!" });
+  }
+
+  pool.getConnection((err, connection) => {
+    if (err) {
+      console.error("MySQL connection error: ", err);
+      return res
+        .status(500)
+        .json({ status: 500, message: "Database connection error!" });
+    }
+
+    try {
+      const updateCenterDetails = `
+        UPDATE centermaster 
+        SET center_name = ?, marathi_name = ?, reg_no = ?, reg_date = ?, mobile = ?, email = ?, city = ?, tehsil = ?, district = ?, pincode = ?, auditclass = ? 
+        WHERE center_id = ? AND orgid = ?
+      `;
+
+      connection.query(
+        updateCenterDetails,
+        [
+          center_name,
+          marathi_name,
+          reg_no,
+          reg_date,
+          mobile,
+          email,
+          city,
+          tehsil,
+          district,
+          pincode,
+          auditclass,
+          center_id,
+          dairy_id,
+        ],
+        (err, result) => {
+          connection.release(); // Ensure connection is released after the query
+          if (err) {
+            console.error("Update center details query execution error!", err);
+            return res
+              .status(500)
+              .json({ status: 500, message: "Database query error!" });
+          }
+
+          if (result.affectedRows === 0) {
+            return res.status(404).json({
+              status: 404,
+              message: "No center data found for updating!",
+            });
+          }
+
+          res.status(200).json({
+            status: 200,
+            message: "Center details updated successfully!",
+          });
+        }
+      );
+    } catch (error) {
+      connection.release(); // Make sure to release the connection in case of an error
+      console.error("Error processing request: ", error);
+      return res
+        .status(500)
+        .json({ status: 500, message: "Internal server error" });
+    }
   });
 };
 
@@ -529,11 +790,6 @@ exports.updateCenterInfo = async (req, res) => {
             });
           }
 
-          // Invalidate the cache for this dairy_id
-          const cacheKey1 = `centers_${dairy_id}_${center_id}`;
-          const cacheKey = `dairyInfo_${dairy_id}_${center_id}`;
-          cache.del(cacheKey1, cacheKey);
-
           res.status(200).json({
             status: 200,
             message: "Center details updated successfully!",
@@ -601,14 +857,6 @@ exports.getAllcenters = async (req, res) => {
     return res.status(401).json({ status: 401, message: "Unauthorized User!" });
   }
 
-  // Check if the data is cached
-  // const cacheKey = `centers_${dairy_id}_${center_id}`;
-  // const cachedData = cache.get(cacheKey);
-
-  // if (cachedData) {
-  //   return res.status(200).json({ status: 200, centersDetails: cachedData });
-  // }
-
   pool.getConnection((err, connection) => {
     if (err) {
       console.error("Getting MySQL connection error!", err);
@@ -639,8 +887,6 @@ exports.getAllcenters = async (req, res) => {
           });
         }
 
-        // Store the result in cache
-        // cache.set(cacheKey, result);
         res.status(200).json({ status: 200, centersDetails: result });
       });
     } catch (error) {
@@ -1581,7 +1827,6 @@ exports.updateCenterSetup = (req, res) => {
     }
   });
 };
-
 
 // <<<<<<<<<----------------------------- Sangha ---------------------------->>>>>>>>>>>>
 

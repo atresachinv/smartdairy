@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
-import "../../../Styles/Home/Forms.css";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
-import { saveMessage } from "../../../App/Features/Mainapp/Dairyinfo/smsSlice";
+import CowImage from "../CowImage";
 import axiosInstance from "../../../App/axiosInstance";
 import { saveOtptext } from "../../../App/Features/Users/authSlice";
+import "../../../Styles/Home/Forms.css";
 
 const SendOtp = ({ switchVerify, switchToLogin }) => {
   const dispatch = useDispatch();
@@ -70,30 +70,36 @@ const SendOtp = ({ switchVerify, switchToLogin }) => {
   };
 
   return (
-    <form className="update-container w80 h90 d-flex-col a-center">
-      <span className="heading t-center">Forget Password</span>
-      {userMobile.mobile && userMobile.mobile.length >= 6 ? (
-        <span className="info-text t-center my10">
-          Send OTP on <strong>Whatsapp</strong> {userMobile.mobile.slice(0, 6)}
-          XXXX
-        </span>
-      ) : (
-        <span className="info-text t-center my10">
-          Mobile number not available
-        </span>
-      )}
-      <button
-        // onClick={switchVerify}
-        onClick={handleSendOTP}
-        type="submit"
-        className="w50 my10 form-btn"
-      >
-        Send
-      </button>
-      <button onClick={switchToLogin} type="submit" className="w50 form-btn">
-        Back
-      </button>
-    </form>
+    <div className="send-otp-container w100 h1 d-flex center sb ">
+      <div className="cow-image-container w50 h1 d-flex center">
+        <CowImage />
+      </div>
+      <form className="update-password-container w40 h1 d-flex-col center">
+        <span className="heading t-center">Forget Password</span>
+        {userMobile.mobile && userMobile.mobile.length >= 6 ? (
+          <span className="info-text t-center my10">
+            Send OTP on <strong>Whatsapp</strong>{" "}
+            {userMobile.mobile.slice(0, 6)}
+            XXXX
+          </span>
+        ) : (
+          <span className="info-text t-center my10">
+            Mobile number not available
+          </span>
+        )}
+        <button
+          // onClick={switchVerify}
+          onClick={handleSendOTP}
+          type="submit"
+          className="w50 my10 form-btn"
+        >
+          Send
+        </button>
+        <button onClick={switchToLogin} type="submit" className="w50 form-btn">
+          Back
+        </button>
+      </form>
+    </div>
   );
 };
 

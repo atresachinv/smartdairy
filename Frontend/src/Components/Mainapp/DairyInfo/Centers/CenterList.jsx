@@ -8,7 +8,7 @@ const CenterList = ({ onEdit }) => {
   const centerList = useSelector((state) => state.center.centersList || []);
   useEffect(() => {
     dispatch(centersLists());
-  }, [dispatch]);
+  }, []);
 
   // Function to format the date
   const formatDate = (dateString) => {

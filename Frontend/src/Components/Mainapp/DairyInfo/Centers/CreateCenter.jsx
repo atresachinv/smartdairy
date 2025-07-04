@@ -107,14 +107,14 @@ const CreateCenter = () => {
     const error = {};
     switch (name) {
       case "marathi_name":
-        if (!/^[\u0900-\u097Fa-zA-Z0-9\s]+$/.test(value)) {
+        if (!/^[\u0900-\u097Fa-zA-Z0-9.,()\s]+$/.test(value)) {
           error[name] = "Invalid name.";
         } else {
           delete errors[name];
         }
         break;
       case "center_name":
-        if (!/^[a-zA-Z0-9\s]+$/.test(value)) {
+        if (!/^[a-zA-Z0-9.,()\s]+$/.test(value)) {
           error[name] = "Invalid name.";
         } else {
           delete errors[name];
@@ -188,10 +188,6 @@ const CreateCenter = () => {
     const fieldsToValidate = [
       "marathi_name",
       "center_name",
-      "city",
-      "tehsil",
-      "district",
-      "pincode",
       "password",
       "confirm_pass",
     ];
@@ -234,11 +230,6 @@ const CreateCenter = () => {
     if (Object.keys(validationErrors).length) {
       setErrors(validationErrors);
       return;
-    }
-    if (isAvailable) {
-      return toast.error(
-        "मोबाईल नंबर अगोदर वापरलेला आहे, कृपया दुसऱ्या नंबर सह पुन्हा प्रयत्न करा!"
-      );
     }
 
     try {

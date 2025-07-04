@@ -129,7 +129,7 @@ const MilkColleform = ({ times }) => {
     if (centerSetting.length > 0 && centerSetting[0].KgLitres) {
       const unit = centerSetting[0].KgLitres;
 
-      if (collunit === 0 && values.liters > 0) {
+      if (collunit === 0 && values.liters > 0 && unit !== 0) {
         const kgValue = (values.liters * unit).toFixed(2);
         setValues((prevData) => ({ ...prevData, kg: kgValue }));
       } else if (collunit === 1 && values.kg > 0 && unit !== 0) {
@@ -892,7 +892,7 @@ const MilkColleform = ({ times }) => {
         ? MilkEntries
         : prevMilkData;
     });
-  }, [milkColl, time]); // Only re-run when milkColl or time changes
+  }, [milkColl, time]); 
 
   useEffect(() => {
     const storedCustList = localStorage.getItem("rcustlist");

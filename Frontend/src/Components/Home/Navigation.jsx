@@ -19,44 +19,42 @@ const Navigation = () => {
   };
 
   return (
-    <>
-      <nav className="navbar w100 d-flex sb p10">
-        <div className="logo w20">
-          <span className="logo-text">SMARTDAIRY</span>
+    <nav className="navbar w100 d-flex sb p10">
+      <div className="logo w20">
+        <span className="logo-text">SMARTDAIRY</span>
+      </div>
+      <div className={`${openNavbar ? "open" : "close"}`}>
+        <div className={`navlinks w80 d-flex`}>
+          <BsXLg className="menu-btn close-btn" onClick={showNavbar} />
+          <Link onClick={showNavbar} to={"#"}>
+            Home
+          </Link>
+          <Link onClick={showNavbar} to={"/about"}>
+            About
+          </Link>
+          <Link onClick={showNavbar} to={"#"}>
+            Pricing
+          </Link>
+          <Link onClick={showNavbar} to={"#"}>
+            Contact
+          </Link>
         </div>
-        <div className={`${openNavbar ? "open" : "close"}`}>
-          <div className={`navlinks w80 d-flex`}>
-            <BsXLg className="menu-btn close-btn" onClick={showNavbar} />
-            <Link onClick={showNavbar} to={"#"}>
-              Home
-            </Link>
-            <Link onClick={showNavbar} to={"/about"}>
-              About
-            </Link>
-            <Link onClick={showNavbar} to={"#"}>
-              Pricing
-            </Link>
-            <Link onClick={showNavbar} to={"#"}>
-              Contact
-            </Link>
-          </div>
-        </div>
-        <div className="logout-btn w40 d-flex sb">
-          <select
-            className="lang-selector-btn"
-            onChange={(e) => handleLanguageChange(e.target.value)}
-          >
-            <option className="opts" value="mr">
-              मराठी
-            </option>
-            <option className="opts" value="en">
-              English
-            </option>
-          </select>
-        </div>
-        <BsList className="menu-btn open-btn" onClick={showNavbar} />
-      </nav>
-    </>
+      </div>
+      <div className="logout-btn w40 d-flex sb">
+        <select
+          className="lang-selector-btn"
+          onChange={(e) => handleLanguageChange(e.target.value)}
+        >
+          <option className="opts" value="mr">
+            मराठी
+          </option>
+          <option className="opts" value="en">
+            English
+          </option>
+        </select>
+      </div>
+      <BsList className="menu-btn open-btn" onClick={showNavbar} />
+    </nav>
   );
 };
 

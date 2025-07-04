@@ -5,6 +5,7 @@ const {
   checkUniqueusername,
   userLogin,
   userRegister,
+  setupBasicInformation,
   userLogout,
   sendOtp,
   getUserProfile,
@@ -19,7 +20,7 @@ const router = express.Router();
 
 router.route("/check/dairyname").post(checkUniqueDname);
 router.route("/check/username").post(checkUniqueusername);
-router.route("/register").post(userRegister);
+router.route("/register").post(userRegister, setupBasicInformation);
 router.route("/login").post(userLogin);
 router.route("/logout").post(verifyToken, userLogout);
 router.route("/verify-session").post(verifyToken, verifySession);
