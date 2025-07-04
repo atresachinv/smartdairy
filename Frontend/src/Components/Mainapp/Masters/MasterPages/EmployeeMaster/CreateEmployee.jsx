@@ -308,7 +308,7 @@ const CreateEmployee = () => {
 
   //--------------------------------------------------------------------------------------->
   //  handle employee create and update --------------------------------------------------->
-  
+
   const handleEmployee = async (e) => {
     e.preventDefault();
     // Validate fields before submission
@@ -317,6 +317,7 @@ const CreateEmployee = () => {
       setErrors(validationErrors);
       return;
     }
+
     if (isAvailable) {
       return toast.error(
         "मोबाईल नंबर अगोदर वापरलेला आहे, कृपया दुसऱ्या नंबर सह पुन्हा प्रयत्न करा!"
@@ -342,22 +343,22 @@ const CreateEmployee = () => {
   };
 
   return (
-    <div className="emp-create-update-container w100 h1 d-flex-col center">
+    <div className="emp-create-update-container w100 h1 d-flex-col center p10">
       <form
         onSubmit={handleEmployee}
-        className={`create-emp-container w60 h1 d-flex sa ${
-          isEditing ? "edit-bg" : "bg"
-        }`}
+        className={`create-emp-container w60 h1 d-flex sb`}
       >
-        <div className="emp-details-container w100 h1 d-flex-col sb">
-          <div className="tilte-container w100 d-flex a-center sb p10">
-            <span className="heading">
-              {isEditing ? "Update Employee" : "Create Employee"}
-            </span>
-          </div>
+        <div
+          className={`emp-details-container w100 h1 d-flex-col sb ${
+            isEditing ? "edit-bg" : "bg"
+          }`}
+        >
+          <span className="heading px10">
+            {isEditing ? "Update Employee" : "Create Employee"}
+          </span>
 
           {isEditing ? (
-            <div className="emp-div emp-details-div w100 d-flex sb">
+            <div className="emp-details-div w100 d-flex sb">
               <div className="details-div w30 d-flex-col px10">
                 <label htmlFor="ecode" className="info-text w100">
                   Employee Code<span className="req">*</span>
@@ -378,7 +379,7 @@ const CreateEmployee = () => {
           ) : (
             ""
           )}
-          <div className="emp-name-details-div w100 d-flex sa">
+          <div className="emp-details-div w100 h15 d-flex sa">
             <div className="details-div w50 d-flex-col a-center px10">
               <label htmlFor="mname" className="info-text w100">
                 Marathi Name<span className="req">*</span>{" "}
@@ -415,11 +416,11 @@ const CreateEmployee = () => {
             </div>
           </div>
 
-          <div className="emp-mds-details-div w100 d-flex sb">
+          <div className="emp-details-div w100 h15 d-flex sb">
             {isEditing ? (
               ""
             ) : (
-              <div className="mobile-details-div w25 d-flex-col a-center px10">
+              <div className="details-div w25 d-flex-col a-center px10">
                 <label htmlFor="mobile" className="info-text w100">
                   Mobile<span className="req">*</span>
                 </label>
@@ -443,7 +444,7 @@ const CreateEmployee = () => {
               </div>
             )}
 
-            <div className="desig-details-div w40 d-flex-col a-center px10">
+            <div className="details-div w40 d-flex-col a-center px10">
               <label htmlFor="designation" className="info-text w100">
                 Designation<span className="req">*</span>{" "}
               </label>
@@ -456,13 +457,14 @@ const CreateEmployee = () => {
                 onKeyDown={(e) => handleKeyDown(e, salRef)}
                 ref={designationRef}
               >
+                <option value="">-- Select Designation --</option>
                 <option value="manager">Manager</option>
                 <option value="milkcollector">Milk Collector</option>
                 <option value="mobilecollector">Mobile Milk Collector</option>
                 <option value="salesman">Stock Keeper</option>
               </select>
             </div>
-            <div className="sal-details-div w30 d-flex-col a-center px10">
+            <div className="details-div w30 d-flex-col a-center px10">
               <label htmlFor="salary" className="info-text w100 ">
                 Salary<span className="req">*</span>
               </label>
@@ -479,137 +481,126 @@ const CreateEmployee = () => {
               />
             </div>
           </div>
-          <div className="address-details-div w100 d-flex-col sb">
-            <span className="label-text px10">Address Details :</span>
-            <div className="Address-details w100 h1 d-flex sb">
-              <div className="details-div w25 d-flex-col a-center px10">
-                <label htmlFor="city" className="info-text w100 ">
-                  City<span className="req">*</span>
-                </label>
-                <input
-                  required
-                  className={`data w100 ${errors.city ? "input-error" : ""}`}
-                  type="text"
-                  name="city"
-                  id="city"
-                  onChange={handleInputChange}
-                  value={formData.city || ""}
-                  onKeyDown={(e) => handleKeyDown(e, telRef)}
-                  ref={cityRef}
-                />
-              </div>
-              <div className="details-div w30 d-flex-col a-center px10">
-                <label htmlFor="tehsil" className="info-text w100">
-                  Tehsil<span className="req">*</span>{" "}
-                </label>
-                <input
-                  required
-                  className={`data w100 ${errors.tehsil ? "input-error" : ""}`}
-                  type="text"
-                  name="tehsil"
-                  id="tehsil"
-                  onChange={handleInputChange}
-                  value={formData.tehsil || ""}
-                  onKeyDown={(e) => handleKeyDown(e, stateRef)}
-                  ref={telRef}
-                />
-              </div>
-              <div className="details-div w30 d-flex-col a-center px10">
-                <label htmlFor="dist" className="info-text w100">
-                  District<span className="req">*</span>{" "}
-                </label>
-                <input
-                  required
-                  className={`data w100 ${
-                    errors.district ? "input-error" : ""
-                  }`}
-                  type="text"
-                  name="district"
-                  id="disttehsil"
-                  onChange={handleInputChange}
-                  value={formData.district || ""}
-                  onKeyDown={(e) => handleKeyDown(e, pinRef)}
-                  ref={stateRef}
-                />
-              </div>
-              <div className="details-div w20 d-flex-col a-center px10">
-                <label htmlFor="pincode" className="info-text w100">
-                  Pincode<span className="req">*</span>{" "}
-                </label>
-                <input
-                  required
-                  className={`data w100 ${errors.pincode ? "input-error" : ""}`}
-                  type="text"
-                  name="pincode"
-                  id="pincode"
-                  onChange={handleInputChange}
-                  value={formData.pincode || ""}
-                  onKeyDown={(e) => handleKeyDown(e, bankRef)}
-                  ref={pinRef}
-                />
-              </div>
+
+          <div className="emp-details-div w100 h15 d-flex sb">
+            <div className="details-div w25 d-flex-col a-center px10">
+              <label htmlFor="city" className="info-text w100 ">
+                City<span className="req">*</span>
+              </label>
+              <input
+                required
+                className={`data w100 ${errors.city ? "input-error" : ""}`}
+                type="text"
+                name="city"
+                id="city"
+                onChange={handleInputChange}
+                value={formData.city || ""}
+                onKeyDown={(e) => handleKeyDown(e, telRef)}
+                ref={cityRef}
+              />
+            </div>
+            <div className="details-div w30 d-flex-col a-center px10">
+              <label htmlFor="tehsil" className="info-text w100">
+                Tehsil<span className="req">*</span>{" "}
+              </label>
+              <input
+                required
+                className={`data w100 ${errors.tehsil ? "input-error" : ""}`}
+                type="text"
+                name="tehsil"
+                id="tehsil"
+                onChange={handleInputChange}
+                value={formData.tehsil || ""}
+                onKeyDown={(e) => handleKeyDown(e, stateRef)}
+                ref={telRef}
+              />
+            </div>
+            <div className="details-div w30 d-flex-col a-center px10">
+              <label htmlFor="dist" className="info-text w100">
+                District<span className="req">*</span>{" "}
+              </label>
+              <input
+                required
+                className={`data w100 ${errors.district ? "input-error" : ""}`}
+                type="text"
+                name="district"
+                id="disttehsil"
+                onChange={handleInputChange}
+                value={formData.district || ""}
+                onKeyDown={(e) => handleKeyDown(e, pinRef)}
+                ref={stateRef}
+              />
+            </div>
+            <div className="details-div w20 d-flex-col a-center px10">
+              <label htmlFor="pincode" className="info-text w100">
+                Pincode<span className="req">*</span>{" "}
+              </label>
+              <input
+                required
+                className={`data w100 ${errors.pincode ? "input-error" : ""}`}
+                type="text"
+                name="pincode"
+                id="pincode"
+                onChange={handleInputChange}
+                value={formData.pincode || ""}
+                onKeyDown={(e) => handleKeyDown(e, bankRef)}
+                ref={pinRef}
+              />
             </div>
           </div>
 
-          <div className="Bank-details-div w100 d-flex-col sb">
-            <span className="label-text px10">Bank Details :</span>
-            <div className="Bank-details w100 h1 d-flex sb">
-              <div className="details-div w40 d-flex-col a-center px10">
-                <label htmlFor="bank" className="info-text w100 ">
-                  Bank Name
-                </label>{" "}
-                <input
-                  className={`data w100 ${
-                    errors.bankName ? "input-error" : ""
-                  }`}
-                  type="text"
-                  name="bankName"
-                  id="bank"
-                  onChange={handleInputChange}
-                  value={formData.bankName || ""}
-                  onKeyDown={(e) => handleKeyDown(e, bankacRef)}
-                  ref={bankRef}
-                />
-              </div>
-              <div className="details-div w30 d-flex-col a-center px10">
-                <label htmlFor="acc" className="info-text w100">
-                  Bank A/C
-                </label>{" "}
-                <input
-                  className={`data w100 ${errors.bank_ac ? "input-error" : ""}`}
-                  type="number"
-                  name="bank_ac"
-                  id="acc"
-                  onChange={handleInputChange}
-                  value={formData.bank_ac || ""}
-                  onKeyDown={(e) => handleKeyDown(e, bankifscRef)}
-                  ref={bankacRef}
-                />
-              </div>
-              <div className="details-div w30 d-flex-col a-center px10">
-                <label htmlFor="ifsc" className="info-text w100">
-                  Bank IFSC
-                </label>{" "}
-                <input
-                  className={`data w100 ${
-                    errors.bankIFSC ? "input-error" : ""
-                  }`}
-                  type="text"
-                  name="bankIFSC"
-                  id="ifsc"
-                  onChange={handleInputChange}
-                  value={formData.bankIFSC || ""}
-                  onKeyDown={(e) => handleKeyDown(e, passRef)}
-                  ref={bankifscRef}
-                />
-              </div>
+          <div className="emp-details-div w100 h15 d-flex sb">
+            <div className="details-div w40 d-flex-col a-center px10">
+              <label htmlFor="bank" className="info-text w100 ">
+                Bank Name
+              </label>{" "}
+              <input
+                className={`data w100 ${errors.bankName ? "input-error" : ""}`}
+                type="text"
+                name="bankName"
+                id="bank"
+                onChange={handleInputChange}
+                value={formData.bankName || ""}
+                onKeyDown={(e) => handleKeyDown(e, bankacRef)}
+                ref={bankRef}
+              />
+            </div>
+            <div className="details-div w30 d-flex-col a-center px10">
+              <label htmlFor="acc" className="info-text w100">
+                Bank A/C
+              </label>{" "}
+              <input
+                className={`data w100 ${errors.bank_ac ? "input-error" : ""}`}
+                type="number"
+                name="bank_ac"
+                id="acc"
+                onChange={handleInputChange}
+                value={formData.bank_ac || ""}
+                onKeyDown={(e) => handleKeyDown(e, bankifscRef)}
+                ref={bankacRef}
+              />
+            </div>
+            <div className="details-div w30 d-flex-col a-center px10">
+              <label htmlFor="ifsc" className="info-text w100">
+                Bank IFSC
+              </label>{" "}
+              <input
+                className={`data w100 ${errors.bankIFSC ? "input-error" : ""}`}
+                type="text"
+                name="bankIFSC"
+                id="ifsc"
+                onChange={handleInputChange}
+                value={formData.bankIFSC || ""}
+                onKeyDown={(e) => handleKeyDown(e, passRef)}
+                ref={bankifscRef}
+              />
             </div>
           </div>
 
           {isEditing ? (
             ""
           ) : (
-            <div className="emp-pass-details-div w100 d-flex py10 sb">
+            <div className="emp-details-div w100 d-flex py10 sb">
               <div className="details-div w50 d-flex-col a-center px10">
                 <label htmlFor="pass" className="info-text w100">
                   Enter Password<span className="req">*</span>
@@ -649,7 +640,7 @@ const CreateEmployee = () => {
             </div>
           )}
 
-          <div className="button-container w100 d-flex j-end p10">
+          <div className="button-container w100 h10 d-flex j-end">
             <button
               type="button"
               className="w-btn mx10"
@@ -670,7 +661,7 @@ const CreateEmployee = () => {
               </button>
             ) : (
               <button
-                className="w-btn"
+                className="w-btn mx10"
                 type="submit"
                 disabled={createStatus === "loading"}
                 ref={submitbtn}
