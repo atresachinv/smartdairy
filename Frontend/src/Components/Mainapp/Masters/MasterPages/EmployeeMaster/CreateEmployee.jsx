@@ -20,7 +20,7 @@ const CreateEmployee = () => {
   const empData = useSelector((state) => state.emp.employee);
   const [isEditing, setIsEditing] = useState(false);
   const [errors, setErrors] = useState({});
-  const [isAvailable, setIsAvailable] = useState(false);
+  const [isAvailable, setIsAvailable] = useState(true);
   const codeRef = useRef(null);
   const mnameRef = useRef(null);
   const enameRef = useRef(null);
@@ -295,7 +295,7 @@ const CreateEmployee = () => {
           checkuserName({ username: formData.mobile })
         ).unwrap();
         setIsAvailable(result.available);
-        if (result.available === true) {
+        if (result.available === false) {
           toast.error(
             "मोबाईल नंबर अगोदर वापरलेला आहे, कृपया दुसऱ्या नंबर सह प्रयत्न करा!"
           );
@@ -429,7 +429,7 @@ const CreateEmployee = () => {
                   className={`data w100 ${
                     errors.mobile
                       ? "input-error"
-                      : isAvailable
+                      : !isAvailable
                       ? "input-error"
                       : ""
                   }`}
