@@ -139,7 +139,7 @@ const Login = ({ switchToRegister, switchToOptSend }) => {
       <div className="cow-image-container w50 h1 d-flex center">
         <CowImage />
       </div>
-      <div className="login-form-container w40 h1 d-flex-col p10">
+      <div className="login-form-container w30 h1 d-flex-col p10">
         <div className="form-title w100 h10 d-flex-col t-center">
           <span className="title">Login Now</span>
         </div>
