@@ -628,15 +628,11 @@ exports.userLogin = async (req, res) => {
                 .status(500)
                 .json({ message: "Error updating session" });
             }
-            res.setHeader(
-              "Access-Control-Allow-Origin",
-              "https://smartdairy.in"
-            );
-            res.setHeader("Access-Control-Allow-Credentials", "true");
 
             res.cookie("token", token, {
               httpOnly: true,
-              sameSite: "strict",
+              secure: true,
+              sameSite: "none",
               maxAge: 4 * 60 * 60 * 1000,
             });
 
