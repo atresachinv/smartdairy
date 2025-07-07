@@ -15,12 +15,14 @@ app.use(bodyParser.json());
 
 app.use(
   cors({
-    origin: "https://smartdairy.in",
+    origin: process.env.ORIGIN || "https://smartdairy.in",
     credentials: true,
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
+
+app.options("*", cors());
 
 // Route Imports
 const user = require("./Routes/UserRoutes");
