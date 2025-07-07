@@ -67,55 +67,6 @@ const Register = ({ switchToLogin }) => {
   }, [tDate]);
 
   // --------------------------------------------------------------------------------------------->
-  // Handle input changes and validation
-  const handleInputs = (e) => {
-    const { name, value, type, checked } = e.target;
-    const updatedValues = {
-      ...values,
-      [name]: type === "checkbox" ? checked : value,
-    };
-    setValues(updatedValues);
-
-    // Validate the field for other errors
-    const fieldError = validateField(name, value);
-    setErrors((prevErrors) => {
-      const updatedErrors = { ...prevErrors, ...fieldError };
-      if (!value) delete updatedErrors[name]; // Clear error if field is empty
-      return updatedErrors;
-    });
-  };
-
-  // --------------------------------------------------------------------------------------------->
-  // cheking dairyname or username is exit or not -------------------------------------------->
-  useEffect(() => {
-    if (values.dairy_name.length > 2) {
-      const delay = setTimeout(checkDairyName, 500); // Delay API call
-      return () => clearTimeout(delay);
-    }
-  }, [values.dairy_name]);
-
-  useEffect(() => {
-    if (values.user_name.length > 2) {
-      const delay = setTimeout(checkUserName, 1500); // Delay API call
-      return () => clearTimeout(delay);
-    }
-  }, [values.user_name]);
-
-  const checkDairyName = async () => {
-    const result = await dispatch(
-      checkdairyName({ dairyname: values.dairy_name })
-    ).unwrap();
-    setDairyName(result.available);
-  };
-
-  const checkUserName = async () => {
-    const result = await dispatch(
-      checkuserName({ username: values.user_name })
-    ).unwrap();
-    setUserName(result.available);
-  };
-
-  // --------------------------------------------------------------------------------------------->
   // Field validation function
   const validateField = (name, value) => {
     const error = {};
@@ -193,7 +144,6 @@ const Register = ({ switchToLogin }) => {
   const validateFields = () => {
     const fieldsToValidate = [
       "dairy_name",
-      "dairy_name",
       "user_name",
       "user_phone",
       "user_city",
@@ -202,7 +152,6 @@ const Register = ({ switchToLogin }) => {
       "confirm_password",
       "terms",
     ];
-    const errors = {};
 
     const validationErrors = {};
     fieldsToValidate.forEach((field) => {
@@ -211,8 +160,58 @@ const Register = ({ switchToLogin }) => {
         validationErrors[field] = fieldError[field];
       }
     });
+
     setErrors(validationErrors);
-    return errors;
+    return validationErrors;
+  };
+
+  // --------------------------------------------------------------------------------------------->
+  // Handle input changes and validation
+  const handleInputs = (e) => {
+    const { name, value, type, checked } = e.target;
+    const updatedValues = {
+      ...values,
+      [name]: type === "checkbox" ? checked : value,
+    };
+    setValues(updatedValues);
+
+    // Validate the field for other errors
+    const fieldError = validateField(name, value);
+    setErrors((prevErrors) => {
+      const updatedErrors = { ...prevErrors, ...fieldError };
+      if (!value) delete updatedErrors[name];
+      return updatedErrors;
+    });
+  };
+
+  // --------------------------------------------------------------------------------------------->
+  // cheking dairyname or username is exit or not -------------------------------------------->
+  useEffect(() => {
+    if (values.dairy_name.length > 2) {
+      const delay = setTimeout(checkDairyName, 500); // Delay API call
+      return () => clearTimeout(delay);
+    }
+  }, [values.dairy_name]);
+
+  useEffect(() => {
+    if (values.user_name.length > 2) {
+      const delay = setTimeout(checkUserName, 1500); // Delay API call
+      return () => clearTimeout(delay);
+    }
+  }, [values.user_name]);
+
+  const checkDairyName = async () => {
+    const result = await dispatch(
+      checkdairyName({ dairyname: values.dairy_name })
+    ).unwrap();
+    setDairyName(result.available);
+  };
+
+  const checkUserName = async () => {
+    const result = await dispatch(
+      checkuserName({ username: values.user_name })
+    ).unwrap();
+    setUserName(result.available);
   };
 
   // Handle form registration
@@ -346,7 +345,7 @@ const Register = ({ switchToLogin }) => {
             <input
               id="user_name"
               className={`data ${
-                errors.user_name || userName === false ? "input-error" : ""
+                errors.user_name || !userName ? "input-error" : ""
               }`}
               type="text"
               name="user_name"

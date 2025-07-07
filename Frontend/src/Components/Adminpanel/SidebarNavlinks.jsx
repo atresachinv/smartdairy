@@ -2,7 +2,7 @@ import { useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { BsGridFill, BsCaretUpFill, BsCaretDownFill } from "react-icons/bs";
 import { NavLink } from "react-router-dom";
-import "../../../Styles/AdminPannel/AdminPannel.css";
+import "../../Styles/AdminPannel/AdminPannel.css";
 
 const SidebarNavlinks = ({ setselected, handleSidebar }) => {
   const [activeMenu, setActiveMenu] = useState(null);
@@ -73,7 +73,7 @@ const SidebarNavlinks = ({ setselected, handleSidebar }) => {
         {
           name: "New Activation",
           icon: <BsGridFill className="color-icon" />,
-          path: "new/activvation",
+          path: "new/activation",
           index: 4.1,
         },
         {
@@ -123,7 +123,6 @@ const SidebarNavlinks = ({ setselected, handleSidebar }) => {
 
   return (
     <>
-      {" "}
       <ul className="sidenav-btns">
         {superadminnavs.map((button, index) => (
           <li key={uuidv4()} className="main-navs py5">
@@ -157,7 +156,10 @@ const SidebarNavlinks = ({ setselected, handleSidebar }) => {
                     key={submenu.index}
                     className="submenu-item w90 d-flex a-center"
                     to={submenu.path}
-                    onClick={() => handleSubmenuClick(submenu)}
+                    onClick={() => {
+                      setselected(submenu.index);
+                      handleSidebar();
+                    }}
                   >
                     {submenu.icon}
                     <span className="f-label-text px10">{submenu.name}</span>

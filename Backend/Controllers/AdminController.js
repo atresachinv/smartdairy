@@ -181,38 +181,50 @@ exports.updateOneDAmc = async (req, res) => {
 
 exports.updateAllDAmc = async (req, res) => {
   const { type, amount } = req.body;
-  if ((!type || !amount) ) {
-    console.log("access_name not recived!");
-    return;
+
+  if (!type || !amount) {
+    return res
+      .status(400)
+      .json({ status: 400, message: "Missing type or amount in request body" });
   }
 
   pool.getConnection((err, connection) => {
     if (err) {
       console.error("Error getting MySQL connection: ", err);
-      return res.status(500).json({ message: "Database connection error" });
+      return res
+        .status(500)
+        .json({ status: 500, message: "Database connection error" });
     }
 
     try {
-      const cereate_access = `
-      INSERT INTO app_features 
-      (name , description)
-        VALUES ( ?, ?)
-      `;
+      let updateQuery = "";
 
-      // Execute the query
-      connection.query(
-        cereate_access,
-        [access_name, access_desc],
-        (err, result) => {
-          connection.release();
+      if (type === "rs") {
+        // Add fixed rupees to all AMC
+        updateQuery = `UPDATE societymaster SET amc = amc + ?`;
+      } else if (type === "%") {
+        // Add percentage to AMC
+        updateQuery = `UPDATE societymaster SET amc = amc + (amc * ? / 100)`;
+      } else {
+        connection.release();
+        return res
+          .status(400)
+          .json({ message: "Invalid type. Must be 'rs' or '%'." });
+      }
 
-          if (err) {
-            console.error("Error executing query: ", err);
-            return res.status(500).json({ message: "Query execution error" });
-          }
-          res.status(200).json({ message: "New access created successfully!" });
+      connection.query(updateQuery, [amount], (err, result) => {
+        connection.release();
+
+        if (err) {
+          console.error("Error executing query: ", err);
+          return res.status(500).json({ message: "Query execution error" });
         }
-      );
+
+        return res.status(200).json({
+          message: "AMC amounts updated successfully",
+          affectedRows: result.affectedRows,
+        });
+      });
     } catch (error) {
       connection.release();
       console.error("Error processing request: ", error);

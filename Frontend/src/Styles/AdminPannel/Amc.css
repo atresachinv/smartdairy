@@ -1,0 +1,34 @@
+
+/* -------- Update AMC for ONE ---------------- */
+@media screen and (max-width: 426px) {
+  .update-one-dairy-amc-container .dairy-amc-update-container {
+    width: 100%;
+  }
+  /* .dairy-amc-update-container .dairy-details-div label {
+    width: 60%;
+  }
+  .dairy-amc-update-container .dairy-details-div .data {
+    width: 40%;
+  }
+  .dairy-amc-update-container .button-div button {
+    width: 60%;
+  } */
+}
+
+/* -------- Update AMC for ALL ---------------- */
+@media screen and (max-width: 426px) {
+  .update-all-amc-container .dairy-amc-update-container {
+    width: 100%;
+  }
+  .dairy-amc-update-container .dairy-details-div label {
+    width: 60%;
+  }
+  .dairy-amc-update-container .dairy-details-div .data {
+    width: 40%;
+  }
+  .dairy-amc-update-container .button-div button {
+    width: 60%;
+  }
+}
+
+

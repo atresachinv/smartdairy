@@ -135,7 +135,7 @@ const Login = ({ switchToRegister, switchToOptSend }) => {
   };
 
   return (
-    <div className="form-container w100 h1 d-flex sa">
+    <div className="login-form-outer-container w100 h1 d-flex sa">
       <div className="cow-image-container w50 h1 d-flex center">
         <CowImage />
       </div>

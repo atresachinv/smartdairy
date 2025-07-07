@@ -53,9 +53,9 @@ input:checked + .slider::before {
 
 .main-access-add-remove-outer-container .main-access-add-remove-container {
   flex-wrap: wrap;
-  gap: 25px;
+  gap: 10px;
 }
 
 .access-controller-div {
-  width: 23%;
+  min-width: 25%;
 }

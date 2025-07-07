@@ -245,7 +245,7 @@ const CollSettings = ({ clsebtn, isModalOpen }) => {
             संकलन मेसेज व प्रिंट साठी पर्याय निवडा :
           </span>
           <div className="col-inputs-div w100 h50 d-flex">
-            <div className="input-radio-btn w30 h1 d-flex a-center sa">
+            <div className="input-radio-btn w40 h1 d-flex a-center sa">
               <input
                 className="w20"
                 type="checkbox"

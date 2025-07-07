@@ -1,4 +1,5 @@
 import React from "react";
+import "../../../../Styles/AdminPannel/Amc.css";
 
 const UpdateDAmc = () => {
   return (

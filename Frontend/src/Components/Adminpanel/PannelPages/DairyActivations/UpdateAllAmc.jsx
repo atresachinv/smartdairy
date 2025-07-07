@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import "../../../../Styles/AdminPannel/Amc.css"
 
 const UpdateAllAmc = () => {
   const [formData, setFormData] = useState({
@@ -28,7 +29,7 @@ const UpdateAllAmc = () => {
     <div className="update-all-amc-container w100 h1 d-flex-col center">
       <form
         onSubmit={handleUpdate}
-        className="dairy-amc-update-container w50 h40 d-flex-col p10 bg"
+        className="dairy-amc-update-container w50 h50 d-flex-col p10 bg"
       >
         <span className="heading py10 t-center">
           Update Annual Maintenance Charge (AMC) For All Dairies

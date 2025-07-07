@@ -6,7 +6,6 @@ const nodemailer = require("nodemailer");
 const crypto = require("crypto");
 dotenv.config({ path: "Backend/.env" });
 
-
 const getConnectionPromise = () => {
   return new Promise((resolve, reject) => {
     pool.getConnection((err, connection) => {
@@ -480,7 +479,7 @@ exports.setupBasicInformation = async (req, res) => {
     await queryPromise(
       connection,
       `INSERT INTO bankmaster (code, name, branch, ifsc, companyid, center_id) VALUES (?, ?, ?, ?, ?, ?)`,
-      [1,"Demo Bank", "Demo", "DEMO000123",SocietyCode, 0]
+      [1, "Demo Bank", "Demo", "DEMO000123", SocietyCode, 0]
     );
 
     await queryPromise(
@@ -631,7 +630,8 @@ exports.userLogin = async (req, res) => {
 
             res.cookie("token", token, {
               httpOnly: true,
-              sameSite: "strict",
+              secure: true,
+              sameSite: "None",
               maxAge: 4 * 60 * 60 * 1000,
             });
 
