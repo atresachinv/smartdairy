@@ -13,11 +13,19 @@ app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 app.use(cookieParser());
 app.use(bodyParser.json());
 
+const allowedOrigins = ["https://smartdairy.in", "http://localhost:5173"];
+
 app.use(
-  cors({
-    origin: process.env.ORIGIN || "https://smartdairy.in",
+  require("cors")({
+    origin: function (origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
     credentials: true,
-    methods: ["POST", "GET", "PUT", "PATCH", "DELETE"],
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
   })
 );
 
