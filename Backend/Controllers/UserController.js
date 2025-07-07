@@ -632,7 +632,7 @@ exports.userLogin = async (req, res) => {
               "https://smartdairy.in"
             );
             res.setHeader("Access-Control-Allow-Credentials", "true");
-            app.set("trust proxy", 1);
+
             res.cookie("token", token, {
               httpOnly: true,
               secure: true,
