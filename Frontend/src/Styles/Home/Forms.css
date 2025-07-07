@@ -99,44 +99,35 @@
   }
 }
 
-@media screen and (min-width: 426px) and (max-width: 769px) {
-  .login-form-outer-container .cow-image-container {
-    width: 60%;
+@media screen and (max-width: 769px) {
+  .app-logo-div .applogo {
+    margin-top: 10px;
   }
 
-  .login-form-outer-container .login-form-container {
-    width: 40%;
+  .auth-container .form-container {
+    margin-top: 20px;
+    width: 80%;
   }
+
   .pass {
     padding: 5px;
   }
 }
 
 @media screen and (max-width: 426px) {
-  .forms-container-div .login-form-outer-container {
-    min-height: auto;
+  .forms-container-div .form-container {
+    margin-top: 20px;
     width: 100%;
   }
-  .login-form-outer-container .cow-image-container {
+  .form-container .cow-image-container {
+    display: none;
+  }
+
+  .auth-container .form-container .login-form-container {
     width: 100%;
   }
 
-  .login-form-outer-container .login-form-container {
-    width: 100%;
-    position: absolute;
-    min-height: fit-content;
-    z-index: 10;
-    background: rgba(255, 255, 255, 0.09);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(8px);
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1),
-      inset 0 1px 0 rgba(255, 255, 255, 0.5),
-      inset 0 -1px 0 rgba(255, 255, 255, 0.1),
-      inset 0 0 38px 19px rgba(255, 255, 255, 1.9);
-  }
-
-  .login-form-container .login-form {
+  .auth-container .login-form {
     width: 80%;
     margin: 0 10%;
   }
@@ -191,25 +182,12 @@
     padding: 10px;
   }
   .register-user-form-container .cow-image-container {
-    width: 100%;
-    min-height: fit-content;
+    display: none;
   }
   .register-user-form-container .signup-form-container {
-    position: absolute;
     min-height: fit-content;
     width: 100%;
-    padding: 10px;
-    z-index: 10;
-    background: rgba(255, 255, 255, 0.09);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(8px);
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1),
-      inset 0 1px 0 rgba(255, 255, 255, 0.5),
-      inset 0 -1px 0 rgba(255, 255, 255, 0.1),
-      inset 0 0 38px 19px rgba(255, 255, 255, 1.9);
   }
-
   .signup-form-container .register-details-div {
     width: 100%;
     min-height: fit-content;

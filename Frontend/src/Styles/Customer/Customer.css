@@ -48,7 +48,7 @@
 /* navliks css*/
 /* .............................................. */
 
-.menu-icon-btn .icon-div .icon {
+.menu-icon-btn .icon-div .icon{
   font-size: 35px;
 }
 /* .............................................. */
@@ -237,12 +237,5 @@
   }
   .close {
     display: none;
-  }
-}
-
-/* customer payment css */
-@media screen and (max-width: 426px) {
-  .payment-details-div .btn-container button {
-    width: 45%;
   }
 }

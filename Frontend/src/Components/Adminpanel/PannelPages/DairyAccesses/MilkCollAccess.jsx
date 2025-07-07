@@ -3,7 +3,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchAllDairyInfo } from "../../../../App/Features/Admin/Dairyinfo/dairySlice";
 import "../../../../Styles/AdminPannel/AccessControls/MilkAccess.css";
 import Select from "react-select";
-import "../../../../Styles/AdminPannel/Activation.css"
 
 const customStyles = {
   control: (provided, state) => ({
@@ -45,7 +44,7 @@ const customStyles = {
   }),
 };
 
-const MilkCollAccess = ({ clsebtn }) => {
+const MilkCollAccess = () => {
   const dispatch = useDispatch();
   const dairyList = useSelector((state) => state.dairy.allDairyData);
   const [dairylist, setDairyList] = useState([]);
@@ -96,22 +95,13 @@ const MilkCollAccess = ({ clsebtn }) => {
     label: `${item.SocietyCode}`,
   }));
 
-  return ( 
-    <div className="milk-access-container w60 h70 d-flex-col p10 bg">
-      <div className="page-title-container w100 d-flex a-center sb">
-        <span className="label-text">Select Dairy :</span>
-        <span
-          type="button"
-          className="heading span-btn"
-          onClick={() => clsebtn(false)}
-        >
-          X
-        </span>
-      </div>
+  return (
+    <div className="milk-access-container w100 h1 d-flex-col">
       <div className="select-dairy-to-add-remove-access w100 h10 d-flex a-center">
+        <div className="label-text">Select Dairy :</div>
         <Select
           options={dairyOptions1}
-          className="dairyid mx5 w10"
+          className="mx5 w10"
           placeholder=""
           isSearchable
           styles={customStyles}
@@ -128,7 +118,7 @@ const MilkCollAccess = ({ clsebtn }) => {
         />
         <Select
           options={dairyOptions}
-          className="dairyname mx5 w40"
+          className="mx5 w40"
           placeholder=""
           isSearchable
           styles={customStyles}
@@ -146,9 +136,9 @@ const MilkCollAccess = ({ clsebtn }) => {
       </div>
       <div className="main-access-add-remove-outer-container w100 h80 d-flex-col">
         <span className="w100 heading">Milk Collection Access</span>
-        <div className="main-access-add-remove-container w100 h90 d-flex sb">
+        <div className="main-access-add-remove-container w100 h90 d-flex">
           {/* Vehicle Milk Collection */}
-          <div className="access-controller-div w30 h25 d-flex-col bg7 br9 p10 sb">
+          <div className="access-controller-div h20 d-flex-col bg p10">
             <label htmlFor="milk-access" className="label-text t-center">
               Vehicle Milk Collection
             </label>
@@ -166,7 +156,7 @@ const MilkCollAccess = ({ clsebtn }) => {
           </div>
 
           {/* Retail Milk Sales */}
-          <div className="access-controller-div w30 h25 d-flex-col bg7 br9 p10 sb">
+          <div className="access-controller-div h20 d-flex-col bg p10">
             <label htmlFor="milk-access" className="label-text t-center">
               Retail Milk Sales
             </label>
@@ -183,7 +173,7 @@ const MilkCollAccess = ({ clsebtn }) => {
             </div>
           </div>
           {/* Whatsapp Message */}
-          <div className="access-controller-div w30 h25 d-flex-col bg7 br9 p10 sb">
+          <div className="access-controller-div h20 d-flex-col bg p10">
             <label htmlFor="milk-access" className="label-text t-center">
               Whatsapp Message
             </label>
@@ -200,7 +190,7 @@ const MilkCollAccess = ({ clsebtn }) => {
             </div>
           </div>
           {/* Generate PDF */}
-          <div className="access-controller-div w30 h25 d-flex-col bg7 br9 p10 sb">
+          <div className="access-controller-div h20 d-flex-col bg p10">
             <label htmlFor="milk-access" className="label-text t-center">
               Generate PDF
             </label>
@@ -218,7 +208,7 @@ const MilkCollAccess = ({ clsebtn }) => {
             </div>
           </div>
           {/* Create Center */}
-          <div className="access-controller-div w30 h25 d-flex-col bg7 br9 p10 sb">
+          <div className="access-controller-div h20 d-flex-col bg p10">
             <label htmlFor="milk-access" className="label-text t-center">
               Create Center
             </label>
@@ -253,7 +243,7 @@ const MilkCollAccess = ({ clsebtn }) => {
             </div>
           </div> */}
           {/* Create Sub Ladger */}
-          <div className="access-controller-div w30 h25 d-flex-col bg7 br9 p10 sb">
+          <div className="access-controller-div h20 d-flex-col bg p10">
             <label htmlFor="milk-access" className="label-text t-center">
               Create Sub Ladger
             </label>

@@ -92,20 +92,20 @@ const WhatsappSms = () => {
 
   return (
     <>
-      <div className="whatsapp-recharge-from-container w100 h1 d-flex-col a-center">
-        <div className="whatsapp-sms-recharge-container w60 h60 d-flex-col">
-          <div className="page-title-container w100 d-flex my10 sb">
-            <span className="w70 heading">WhatsApp Sms Recharge</span>
-            <NavLink to="/adminpanel/whatsapp-sms" className="w-btn d-none">
-              Back
-            </NavLink>
-          </div>
-          <div className="whatsapp-recharge-container w100 h90 d-flex-col a-center sa bg p10">
-            <div className="input-data-container w100 h20 d-flex a-center sb">
-              <span className="info-text w25">Select Dairy :</span>
+      <div className=" w100 h1 j-center d-flex-col">
+        <div className="w100 d-flex sb">
+          <div className="heading">WhatsApp Sms Recharge</div>
+          <NavLink to="/adminpanel/whatsapp-sms" className="w-btn">
+            Back
+          </NavLink>
+        </div>
+        <div className="d-flex j-center abmin-whatsapp-sms">
+          <div className=" d-flex-col m10   bg w100 recharge-whsms-container">
+            <div className="d-flex a-center w100">
+              <div className="info-text">Select Dairy :-</div>
               <Select
                 options={dairyOptions1}
-                className="data-input-div w20"
+                className="mx5 w20"
                 placeholder=""
                 isSearchable
                 styles={{
@@ -127,8 +127,8 @@ const WhatsappSms = () => {
               />
               <Select
                 options={dairyOptions}
-                className="data-input-div w50"
-                placeholder="--- Select Dairy ---"
+                className=" mx5 w50"
+                placeholder=""
                 isSearchable
                 styles={{
                   menu: (provided) => ({
@@ -148,11 +148,11 @@ const WhatsappSms = () => {
                 }}
               />
             </div>
-            <div className="input-data-container w100 h20 d-flex a-center sb">
-              <span className="info-text w25">Select Center :</span>
+            <div className="d-flex a-center my15">
+              <div className="info-text">Select Center :-</div>
               <Select
                 options={centerOptions1}
-                className="data-input-div w20"
+                className="  w20"
                 placeholder=""
                 isSearchable
                 styles={{
@@ -174,8 +174,8 @@ const WhatsappSms = () => {
               />
               <Select
                 options={centerOptions}
-                className="data-input-div w50"
-                placeholder="--- Select Center ---"
+                className=" mx5 w50"
+                placeholder=""
                 isSearchable
                 styles={{
                   menu: (provided) => ({
@@ -195,11 +195,11 @@ const WhatsappSms = () => {
                 }}
               />
             </div>
-            <div className="input-data-container w100 h20 d-flex a-center">
-              <span className="info-text w25">Balance :</span>
+            <div className="d-flex a-center my5">
+              <div className="info-text">Balance :-</div>
               <input
                 type="number"
-                className="data data-input-div w20"
+                className="data mx10 w30"
                 placeholder=""
                 value={formData.balance}
                 onChange={(e) => {
@@ -207,7 +207,7 @@ const WhatsappSms = () => {
                 }}
               />
             </div>
-            <div className="button-container w100 d-flex j-end">
+            <div className="d-flex j-end mx10 ">
               <button className="w-btn" type="submit" onClick={handleReset}>
                 Reset
               </button>

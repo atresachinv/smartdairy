@@ -2,10 +2,7 @@
   .coll-inputs-div .col-inputs-div {
     width: 100%;
   }
-  .collection-settings-form-div .button-container {
-    padding: 0;
-  }
-  .collection-settings-form-div .button-container button {
-    width: 100%;
+  .collection-settings-form-div .button-container{
+    padding:0;
   }
 }

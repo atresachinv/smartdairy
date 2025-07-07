@@ -297,7 +297,7 @@ const CustPayment = () => {
         ) : (
           // payment info
           <div className="payment-details-div w100 h90 d-flex-col hidescrollbar p10">
-            <div className="btn-container w100 h10 d-flex a-center j-end my10">
+            <div className="w100 h10 d-flex a-center j-end my10">
               <button
                 type="button"
                 className="label-text color-icon w30 btn"

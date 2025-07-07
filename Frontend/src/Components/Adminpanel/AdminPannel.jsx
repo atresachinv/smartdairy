@@ -1,19 +1,19 @@
 import React, { useState } from "react";
 import { Route, Routes, useNavigate } from "react-router-dom";
-import Sidebar from "./Sidebar";
+import Sidebar from "./PannelPages/Sidebar";
 import Dashboard from "./PannelPages/Dashboard/Dashboard";
 import TopNavigation from "./PannelPages/Dashboard/TopNavigation";
 import CreateAccess from "./CreateAccess";
 import MilkCollAccess from "./PannelPages/DairyAccesses/MilkCollAccess";
 import WhatsappSms from "./PannelPages/DairyAccesses/WhatsappSms";
 import WhRechargeHistory from "./PannelPages/DairyAccesses/WhRechargeHistory";
+import MilkFilterData from "./PannelPages/MilkFilterData/MilkFilterData";
 import UploadMilkEntrys from "./PannelPages/UploadMilkEntrys/UploadMilkEntrys";
 import AmcSettings from "./PannelPages/DairyActivations/AmcSettings";
+import DairyList from "./PannelPages/DairyActivations/DairyList";
 import NewActivation from "./PannelPages/DairyActivations/NewActivation";
 import UpdateDAmc from "./PannelPages/DairyActivations/UpdateDAmc";
 import UpdateAllAmc from "./PannelPages/DairyActivations/UpdateAllAmc";
-import MilkFilterData from "./PannelPages/MilkFilterData/MilkFilterData";
-import DairyList from "./PannelPages/DairyActivations/DairyList";
 import "../../Styles/AdminPannel/AdminPannel.css";
 
 const AdminPannel = () => {
@@ -42,7 +42,7 @@ const AdminPannel = () => {
         </div>
         <div className="page-view-container w100 h90 d-flex center p10">
           <Routes>
-            <Route path="dashboard/*" element={<Dashboard />} />
+            <Route path="dashboard" element={<Dashboard />} />
             <Route path="create/access" element={<CreateAccess />} />
             <Route path="milk-collection/access" element={<MilkCollAccess />} />
             <Route path="whatsapp-sms" element={<WhRechargeHistory />} />
