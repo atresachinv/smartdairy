@@ -15,9 +15,9 @@ app.use(bodyParser.json());
 
 app.use(
   cors({
-    origin: [process.env.ORIGIN],
-    methods: ["POST", "GET", "PUT", "PATCH", "DELETE"],
+    origin: process.env.ORIGIN || "https://smartdairy.in",
     credentials: true,
+    methods: ["POST", "GET", "PUT", "PATCH", "DELETE"],
   })
 );
 
