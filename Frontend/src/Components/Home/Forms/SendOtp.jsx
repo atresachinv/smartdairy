@@ -70,7 +70,7 @@ const SendOtp = ({ switchVerify, switchToLogin }) => {
   };
 
   return (
-    <div className="send-otp-container w100 h1 d-flex center sb ">
+    <div className="send-otp-container w100 h1 d-flex center sb">
       <div className="cow-image-container w50 h1 d-flex center">
         <CowImage />
       </div>

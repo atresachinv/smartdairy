@@ -104,9 +104,12 @@
     margin-top: 10px;
   }
 
-  .auth-container .form-container {
-    margin-top: 20px;
-    width: 80%;
+  .form-container .cow-image-container {
+    width: 60%;
+  }
+
+  .auth-container .form-container .login-form-container {
+    width: 40%;
   }
 
   .pass {
@@ -125,11 +128,11 @@
 
   .auth-container .form-container .login-form-container {
     width: 100%;
+    align-items: center;
   }
 
   .auth-container .login-form {
-    width: 80%;
-    margin: 0 10%;
+    width: 90%;
   }
 
   .remember-me-div {
@@ -199,6 +202,9 @@
   }
   .register-details-div .data-input-container {
     width: 100%;
+  }
+  .signup-form-container .account-check-div {
+    margin-bottom: 50px;
   }
 }
 

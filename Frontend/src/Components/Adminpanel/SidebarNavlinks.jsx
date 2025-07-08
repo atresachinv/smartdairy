@@ -2,7 +2,7 @@ import { useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { BsGridFill, BsCaretUpFill, BsCaretDownFill } from "react-icons/bs";
 import { NavLink } from "react-router-dom";
-import "../../../Styles/AdminPannel/AdminPannel.css";
+import "../../Styles/AdminPannel/AdminPannel.css";
 
 const SidebarNavlinks = ({ setselected, handleSidebar }) => {
   const [activeMenu, setActiveMenu] = useState(null);
@@ -37,7 +37,6 @@ const SidebarNavlinks = ({ setselected, handleSidebar }) => {
       name: "Message Settings",
       icon: <BsGridFill className="color-icon" />,
       index: 3,
-      // path: "dairy-settings",
       submenus: [
         {
           name: "Milk Collection",
@@ -122,53 +121,53 @@ const SidebarNavlinks = ({ setselected, handleSidebar }) => {
   };
 
   return (
-    <>
-      {" "}
-      <ul className="sidenav-btns">
-        {superadminnavs.map((button, index) => (
-          <li key={uuidv4()} className="main-navs py5">
-            <div
-              className="nav-link w90 d-flex a-center"
-              onClick={() => handleMainClick(button)}
-            >
-              <div className="nav-main w80 d-flex a-center">
-                {button.icon}
-                <NavLink
-                  className="main-nav-text px5 f-label-text"
-                  to={button.path}
-                >
-                  {button.name}
-                </NavLink>
-              </div>
-              {button.submenus && (
-                <NavLink className="icon w10">
-                  {activeMenu === button.index ? (
-                    <BsCaretUpFill />
-                  ) : (
-                    <BsCaretDownFill />
-                  )}
-                </NavLink>
-              )}
+    <ul className="sidenav-btns">
+      {superadminnavs.map((button) => (
+        <li key={uuidv4()} className="main-navs py5">
+          <div
+            className="nav-link w90 d-flex a-center"
+            onClick={() => handleMainClick(button)}
+          >
+            <div className="nav-main w80 d-flex a-center">
+              {button.icon}
+              <NavLink
+                className="main-nav-text px5 f-label-text"
+                to={button.path}
+              >
+                {button.name}
+              </NavLink>
             </div>
-            {button.submenus && activeMenu === button.index && (
-              <ul className="submenu w100 d-flex-col j-end">
-                {button.submenus.map((submenu) => (
-                  <NavLink
-                    key={submenu.index}
-                    className="submenu-item w90 d-flex a-center"
-                    to={submenu.path}
-                    onClick={() => handleSubmenuClick(submenu)}
-                  >
-                    {submenu.icon}
-                    <span className="f-label-text px10">{submenu.name}</span>
-                  </NavLink>
-                ))}
-              </ul>
+            {button.submenus && (
+              <NavLink className="icon w10">
+                {activeMenu === button.index ? (
+                  <BsCaretUpFill />
+                ) : (
+                  <BsCaretDownFill />
+                )}
+              </NavLink>
             )}
-          </li>
-        ))}
-      </ul>
-    </>
+          </div>
+          {button.submenus && activeMenu === button.index && (
+            <ul className="submenu w100 d-flex-col j-end">
+              {button.submenus.map((submenu) => (
+                <NavLink
+                  key={submenu.index}
+                  className="submenu-item w90 d-flex a-center"
+                  to={submenu.path}
+                  onClick={() => {
+                    setselected(submenu.index);
+                    handleSidebar();
+                  }}
+                >
+                  {submenu.icon}
+                  <span className="f-label-text px10">{submenu.name}</span>
+                </NavLink>
+              ))}
+            </ul>
+          )}
+        </li>
+      ))}
+    </ul>
   );
 };
 

@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { Route, Routes, useNavigate } from "react-router-dom";
-import Sidebar from "./PannelPages/Sidebar";
 import Dashboard from "./PannelPages/Dashboard/Dashboard";
 import TopNavigation from "./PannelPages/Dashboard/TopNavigation";
 import CreateAccess from "./CreateAccess";
@@ -15,6 +14,7 @@ import NewActivation from "./PannelPages/DairyActivations/NewActivation";
 import UpdateDAmc from "./PannelPages/DairyActivations/UpdateDAmc";
 import UpdateAllAmc from "./PannelPages/DairyActivations/UpdateAllAmc";
 import "../../Styles/AdminPannel/AdminPannel.css";
+import Sidebar from "./Sidebar";
 
 const AdminPannel = () => {
   const [openSidebar, setOpenSidebar] = useState(false);

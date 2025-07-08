@@ -68,6 +68,7 @@
     width: 100%;
   }
   .menu-icon {
+    margin-left: 15px;
     display: block;
   }
   .open-sidebar-container {

@@ -513,15 +513,6 @@ exports.setupBasicInformation = async (req, res) => {
   }
 };
 
-// // Helper Function for Promisified Queries
-// const queryPromise = (connection, sql, params = []) => {
-//   return new Promise((resolve, reject) => {
-//     connection.query(sql, params, (err, result) => {
-//       if (err) reject(err);
-//       else resolve(result);
-//     });
-//   });
-// };
 
 //---------------------------------------------------------------------------->
 // Login --------------------------------------------------------------------->
