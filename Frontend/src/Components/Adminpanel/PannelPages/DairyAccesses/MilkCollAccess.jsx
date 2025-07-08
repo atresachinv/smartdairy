@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchAllDairyInfo } from "../../../../App/Features/Admin/Dairyinfo/dairySlice";
-import "../../../../Styles/AdminPannel/AccessControls/MilkAccess.css";
+import "../../../../Styles/AdminPannel/MilkAccess.css";
 import Select from "react-select";
 
 const customStyles = {
