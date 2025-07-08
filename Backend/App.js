@@ -17,7 +17,7 @@ app.use(
   cors({
     origin: process.env.ORIGIN || "https://smartdairy.in",
     credentials: true,
-    methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
   })
 );

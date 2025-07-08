@@ -2382,7 +2382,6 @@ exports.uploadMilkCollection = async (req, res) => {
 
       // Prepare insert data
       const values = milkData.map((row) => [
-        dairy_id,
         user_role,
         row["दिनांक"],
         parseInt(row["सत्र"]),
@@ -2401,7 +2400,7 @@ exports.uploadMilkCollection = async (req, res) => {
 
       const insertQuery = `
         INSERT INTO ${dairy_table}
-        (companyid, userid, ReceiptDate, ME, CB, Litres, fat, snf, GLCode, rate, Amt, cname, rno,rctype, center_id)
+        (userid, ReceiptDate, ME, CB, Litres, fat, snf, GLCode, rate, Amt, cname, rno,rctype, center_id)
         VALUES ?
       `;
       connection.query(insertQuery, [values], (err, result) => {
