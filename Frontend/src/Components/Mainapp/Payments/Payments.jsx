@@ -86,6 +86,7 @@ const Payments = ({ setCurrentPage }) => {
   const submitbtn = useRef(null);
   const autoCenter = settings?.autoCenter;
 
+  // console.log("deductionDetails", deductionDetails);
   // ----------------------------------------------------------------------->
   // check if payment is lock or not ------------------------------------->
 
@@ -475,10 +476,12 @@ const Payments = ({ setCurrentPage }) => {
         remainingAmt = (remainingAmt + allComm - totalTransport).toFixed(2);
         const userPrevMamts = prevMamt.filter((item) => item.AccCode === rno);
         // FIXED DEDUCTIONS
+
         for (const deduction of filteredDeductions) {
           const matchPrevAmt = userPrevMamts.find(
             (item) => item.GLCode === deduction.GLCode
           );
+
           const prevAmt = matchPrevAmt ? Math.abs(matchPrevAmt.totalamt) : 0;
 
           const amt = +(totalLitres * deduction.RatePerLitre).toFixed(2);
@@ -486,14 +489,14 @@ const Payments = ({ setCurrentPage }) => {
           remainingAmt -= amt.toFixed(2);
 
           deductionEntries.push({
-            DeductionId: deduction.DeductionId,
-            GLCode: deduction.GLCode,
+            DeductionId: deduction?.DeductionId,
+            GLCode: deduction?.GLCode,
             rno,
             AccCode,
-            dname: deduction.dname,
-            MAMT: prevAmt.toFixed(2),
-            amt: amt.toFixed(2),
-            damt: amt.toFixed(2),
+            dname: deduction?.dname,
+            MAMT: prevAmt?.toFixed(2),
+            amt: amt?.toFixed(2),
+            damt: amt?.toFixed(2),
             cname: "",
             totalamt: (prevAmt + amt).toFixed(2),
             totalLitres: 0.0,
@@ -561,7 +564,11 @@ const Payments = ({ setCurrentPage }) => {
         const roundOffDedu = deductionDetails.find(
           (deduction) => deduction.RatePerLitre === 0 && deduction.GLCode === 2
         );
-
+        if (roundOffDedu.DeductionId === undefined) {
+          return toast.error(
+            "Round Off Deduction Not Found, Create and try again."
+          );
+        }
         const flooredAmt = Math.floor(remainingAmt);
         const roundAmt = Math.floor((remainingAmt - flooredAmt) * 100) / 100;
         if (roundAmt > 0) {
@@ -626,7 +633,6 @@ const Payments = ({ setCurrentPage }) => {
       return [];
     }
   };
-
   //get previous payment last remaing amount of dedAmts ------------------------->
   useEffect(() => {
     if (formData.fromDate && otherDeduction.length > 0) {
@@ -674,7 +680,7 @@ const Payments = ({ setCurrentPage }) => {
           center_id: formData.center_id,
         })
       ).unwrap();
-
+      console.log("result", result);
       if (result?.status === 200) {
         toast.error("Milk correction required!");
         return;
