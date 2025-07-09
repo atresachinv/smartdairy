@@ -35,7 +35,6 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
-app.options("*", cors(corsOptions));
 
 // Route Imports
 const user = require("./Routes/UserRoutes");
