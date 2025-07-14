@@ -1634,6 +1634,7 @@ exports.saveFixDeductions = async (req, res) => {
             BAMT,
             AccCode,
             dtype,
+            paygentype,
           } = row;
 
           return [
@@ -1672,6 +1673,7 @@ exports.saveFixDeductions = async (req, res) => {
             Number(parseFloat(amt || 0).toFixed(2)),
             AccCode,
             dtype,
+            paygentype,
           ];
         });
 
@@ -1681,7 +1683,7 @@ exports.saveFixDeductions = async (req, res) => {
           (companyid, center_id, CBId, BillNo, BillDate, VoucherNo, VoucherDate,
           GLCode, Code, FromDate, ToDate, dname, DeductionId, Amt, MAMT, BAMT,
           tliters, tmor, teve, tcommor, tcomeve, tcom, tcomribetmor, tcomribeteve,
-          tcomribet, allComm, transport, afat, asnf, arate, pamt, damt, namt, AccCode, dtype)
+          tcomribet, allComm, transport, afat, asnf, arate, pamt, damt, namt, AccCode, dtype, paygentype)
           VALUES ?
         `;
 
@@ -2408,7 +2410,7 @@ exports.fetchSelectedPayAmt = async (req, res) => {
     const fetchPaymentquery = `
       SELECT  id, BillNo, BillDate, FromDate, ToDate, Code, GLCode, Amt, DeductionId,
         dname, MAMT, BAMT, afat, asnf, arate, tliters, pamt, damt, namt, tmor, teve, tcommor, tcomeve, tcom, tcomribetmor,
-        tcomribeteve, tcomribet, allComm, transport, dtype
+        tcomribeteve, tcomribet, allComm, transport, dtype, paygentype
         FROM custbilldetails
         WHERE companyid = ? AND center_id = ? AND FromDate = ? AND ToDate = ? 
         ORDER BY DeductionId ASC, Code ASC;

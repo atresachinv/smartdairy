@@ -9,7 +9,7 @@
   color: white;
 }
 
-@media screen and (max-width: 768px) {
+@media screen and (min-width: 426px) and (max-width: 768px) {
   .payment-bill-deduction-main-container {
     min-height: auto;
   }
@@ -85,5 +85,118 @@
     width: 100%;
     min-height: 50%;
     margin-bottom: 10px;
+  }
+}
+
+@media screen and (max-width: 426px) {
+  .payment-bill-deduction-main-container {
+    min-height: auto;
+  }
+  .payment-deduction-info-outer-container {
+    width: 100%;
+    min-height: fit-content;
+    flex-direction: column;
+    margin-bottom: 10px;
+  }
+  .payment-deduction-info-container .paymebt-bill-customer-details-div {
+    flex-wrap: wrap;
+    min-height: fit-content;
+    margin: 0;
+  }
+  .paymebt-bill-customer-details-div .bill-no-comopent {
+    width: 40%;
+    margin-bottom: 10px;
+    padding: 0;
+  }
+  .paymebt-bill-customer-details-div .bill-date-comopent {
+    width: 55%;
+    margin-bottom: 10px;
+    padding: 0;
+  }
+  .paymebt-bill-customer-details-div button {
+    width: 100%;
+    margin-bottom: 10px;
+  }
+
+  .payment-deduction-info-outer-container .payment-deduction-info-container,
+  .payment-deduction-info-outer-container .bill-payment-deduction-first-half {
+    width: 100%;
+    min-height: fit-content;
+    margin-bottom: 10px;
+    padding: 0 10px;
+  }
+
+  .morening-evening-all-collection .morening-liter-compoentv,
+  .collection-commision-all-commission .commision-compoent,
+  .rebet-commission-container .commission-compoent {
+    flex-direction: column;
+    padding-bottom: 10px;
+  }
+
+  .payment-deduction-info-container .customer-details-container {
+    flex-direction: column;
+    min-height: fit-content;
+    align-items: flex-start;
+    justify-content: flex-start;
+  }
+
+  .customer-details-container .btn-code-container {
+    width: 50%;
+    margin-bottom: 10px;
+  }
+
+  .customer-details-container .cust_name {
+    width: 100%;
+  }
+
+  .morening-evening-all-collection .morening-liter-compoentv label,
+  .morening-evening-all-collection .morening-liter-compoentv input,
+  .collection-commision-all-commission .commision-compoent label,
+  .collection-commision-all-commission .commision-compoent input,
+  .rebet-commission-container .commission-compoent label,
+  .rebet-commission-container .commission-compoent input {
+    width: 100%;
+  }
+
+  .payment-deduction-details-table-container {
+    flex-direction: column;
+    min-height: fit-content;
+  }
+  
+  .payment-deduction-details-table-container
+    .payment-deduction-table-container {
+    width: 100%;
+    min-height: 70%;
+    margin-bottom: 10px;
+  }
+  /* ------- table container css ---------- */
+  .payment-deduction-details-table-container
+    .payment-deduction-table-container {
+    overflow-x: scroll;
+  }
+  .payment-deduction-table-container .deduction-heading-container {
+    min-width: 600px;
+  }
+
+  .payment-deduction-details-table-container .payment-amt-details-container {
+    width: 100%;
+    min-height: auto;
+    margin-bottom: 10px;
+  }
+
+  .payment-amt-details-container .deduction-amount-container {
+    width: 100%;
+    min-height: fit-content;
+    flex-wrap: wrap;
+  }
+
+  .deduction-amount-container .deduction-details {
+    width: 45%;
+    height: fit-content;
+    margin-bottom: 10px;
+  }
+  .deduction-amount-container button {
+    width: 45%;
+    margin: 0 0 10px 0;
   }
 }
