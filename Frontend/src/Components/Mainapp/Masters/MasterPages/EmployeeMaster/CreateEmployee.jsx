@@ -347,15 +347,15 @@ const CreateEmployee = () => {
             isEditing ? "edit-bg" : "bg"
           }`}
         >
-          <span className="heading px10">
-            {isEditing ? "Update Employee" : "Create Employee"}
+          <span className="heading p10">
+            {isEditing ? "सेवक माहिती दुरुस्थी" : "नवीन सेवक नोंदवा"}
           </span>
 
           {isEditing ? (
             <div className="emp-details-div w100 d-flex sb">
               <div className="details-div w30 d-flex-col px10">
                 <label htmlFor="ecode" className="info-text w100">
-                  Employee Code<span className="req">*</span>
+                  सेवक क्र.<span className="req">*</span>
                 </label>
                 <input
                   required
@@ -376,7 +376,7 @@ const CreateEmployee = () => {
           <div className="emp-details-div w100 h15 d-flex sa">
             <div className="details-div w50 d-flex-col a-center px10">
               <label htmlFor="mname" className="info-text w100">
-                Marathi Name<span className="req">*</span>{" "}
+                मराठी नाव :<span className="req">*</span>{" "}
               </label>
               <input
                 required
@@ -394,7 +394,7 @@ const CreateEmployee = () => {
             </div>
             <div className="details-div w50 d-flex-col a-center px10">
               <label htmlFor="engname" className="info-text w100">
-                English Name<span className="req">*</span>
+                इंग्रजी नाव :<span className="req">*</span>
               </label>
               <input
                 required
@@ -416,7 +416,7 @@ const CreateEmployee = () => {
             ) : (
               <div className="details-div w25 d-flex-col a-center px10">
                 <label htmlFor="mobile" className="info-text w100">
-                  Mobile<span className="req">*</span>
+                  मोबईल :<span className="req">*</span>
                 </label>
                 <input
                   required
@@ -440,7 +440,7 @@ const CreateEmployee = () => {
 
             <div className="details-div w40 d-flex-col a-center px10">
               <label htmlFor="designation" className="info-text w100">
-                Designation<span className="req">*</span>{" "}
+                हुद्दा :<span className="req">*</span>{" "}
               </label>
               <select
                 className="data w100 "
@@ -451,17 +451,17 @@ const CreateEmployee = () => {
                 onKeyDown={(e) => handleKeyDown(e, salRef)}
                 ref={designationRef}
               >
-                <option value="">-- Select Designation --</option>
-                <option value="manager">Manager</option>
-                <option value="milkcollector">Milk Collector</option>
-                <option value="mobilecollector">Milk Sample Collector</option>
-                <option value="salesman">Stock Keeper</option>
+                <option value="">-- हुद्दा निवडा --</option>
+                <option value="manager">मॅनेजर</option>
+                <option value="milkcollector">दूध संकलक</option>
+                <option value="mobilecollector">दूध सॅम्पल संकलक</option>
+                <option value="salesman">स्टॉक किपर</option>
               </select>
             </div>
-            
+
             <div className="details-div w30 d-flex-col a-center px10">
               <label htmlFor="salary" className="info-text w100 ">
-                Salary<span className="req">*</span>
+                पगार :<span className="req">*</span>
               </label>
               <input
                 required
@@ -480,7 +480,7 @@ const CreateEmployee = () => {
           <div className="emp-details-div w100 h15 d-flex sb">
             <div className="details-div w25 d-flex-col a-center px10">
               <label htmlFor="city" className="info-text w100 ">
-                City<span className="req">*</span>
+                शहर :<span className="req">*</span>
               </label>
               <input
                 required
@@ -496,7 +496,7 @@ const CreateEmployee = () => {
             </div>
             <div className="details-div w30 d-flex-col a-center px10">
               <label htmlFor="tehsil" className="info-text w100">
-                Tehsil<span className="req">*</span>{" "}
+                तालुका :<span className="req">*</span>{" "}
               </label>
               <input
                 required
@@ -512,7 +512,7 @@ const CreateEmployee = () => {
             </div>
             <div className="details-div w30 d-flex-col a-center px10">
               <label htmlFor="dist" className="info-text w100">
-                District<span className="req">*</span>{" "}
+                जिल्हा :<span className="req">*</span>{" "}
               </label>
               <input
                 required
@@ -528,7 +528,7 @@ const CreateEmployee = () => {
             </div>
             <div className="details-div w20 d-flex-col a-center px10">
               <label htmlFor="pincode" className="info-text w100">
-                Pincode<span className="req">*</span>{" "}
+                पिनकोड :<span className="req">*</span>{" "}
               </label>
               <input
                 required
@@ -547,7 +547,7 @@ const CreateEmployee = () => {
           <div className="emp-details-div w100 h15 d-flex sb">
             <div className="details-div w40 d-flex-col a-center px10">
               <label htmlFor="bank" className="info-text w100 ">
-                Bank Name
+                बँकेचे नाव :
               </label>{" "}
               <input
                 className={`data w100 ${errors.bankName ? "input-error" : ""}`}
@@ -562,7 +562,7 @@ const CreateEmployee = () => {
             </div>
             <div className="details-div w30 d-flex-col a-center px10">
               <label htmlFor="acc" className="info-text w100">
-                Bank A/C
+                बँक अ/नं. :
               </label>{" "}
               <input
                 className={`data w100 ${errors.bank_ac ? "input-error" : ""}`}
@@ -577,7 +577,7 @@ const CreateEmployee = () => {
             </div>
             <div className="details-div w30 d-flex-col a-center px10">
               <label htmlFor="ifsc" className="info-text w100">
-                Bank IFSC
+                बँक IFSC :
               </label>{" "}
               <input
                 className={`data w100 ${errors.bankIFSC ? "input-error" : ""}`}
@@ -598,7 +598,7 @@ const CreateEmployee = () => {
             <div className="emp-details-div w100 d-flex py10 sb">
               <div className="details-div w50 d-flex-col a-center px10">
                 <label htmlFor="pass" className="info-text w100">
-                  Enter Password<span className="req">*</span>
+                  पासवर्ड टाका : <span className="req">*</span>
                 </label>
                 <input
                   required
@@ -616,7 +616,7 @@ const CreateEmployee = () => {
               </div>
               <div className="details-div w50 d-flex-col a-center px10">
                 <label htmlFor="cpass" className="info-text w100">
-                  Confirm Password<span className="req">*</span>
+                  पासवर्डची पुष्टी करा :<span className="req">*</span>
                 </label>
                 <input
                   required

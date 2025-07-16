@@ -1,0 +1,92 @@
+@media screen and (min-width: 426px) and (max-width: 769px) {
+  .sales-prod-list-container .sales-prod-detilas-table-div {
+    overflow-x: scroll;
+  }
+  .sales-prod-detilas-table-div .data-headings-div {
+    width: 820px;
+  }
+}
+
+@media screen and (max-width: 426px) {
+  .sold-products-list-container {
+    min-height: auto;
+  }
+  .sold-products-list-container .download-print-pdf-excel-container {
+    min-height: fit-content;
+  }
+  .download-print-pdf-excel-container .sales-dates-add-new-sales-container {
+    min-height: fit-content;
+    flex-direction: column-reverse;
+  }
+  .sales-dates-add-new-sales-container .sales-dates-container button {
+    width: 100%;
+  }
+  .sales-dates-add-new-sales-container .add-new-sales-div {
+    width: 100%;
+    margin: 10px 0;
+  }
+  .sales-dates-add-new-sales-container .add-new-sales-div #btnss {
+    width: 30%;
+  }
+  .sold-products-list-container .sales-prod-list-container {
+    min-height: 90%;
+  }
+  .sales-prod-list-container .sales-prod-detilas-table-div {
+    overflow-x: scroll;
+  }
+  .sales-prod-detilas-table-div .data-headings-div {
+    width: 800px;
+  }
+}
+
+/* ----------- product sales css ------------ */
+
+@media screen and (max-width: 426px) {
+  .sale-products-list-container {
+    min-height: auto;
+  }
+  .sale-products-list-container .page-title-center-select-container {
+    width: 100%;
+    min-height: fit-content;
+    flex-direction: column;
+  }
+  .sale-products-list-container .page-title-center-select-container .heading {
+    margin-bottom: 10px;
+  }
+  .sale-products-list-container .sale-products-and-invoice-container {
+    min-height: fit-content;
+    flex-direction: column;
+  }
+  .sale-products-and-invoice-container .create-sales-form-container {
+    width: 100%;
+    min-height: fit-content;
+    margin-bottom: 10px;
+  }
+  .create-sales-form-container .sales-details-container {
+    width: 100%;
+    min-height: fit-content;
+    flex-direction: column;
+  }
+  .sales-details-container .sales-input-container {
+    width: 100%;
+    flex-direction: row;
+    margin-bottom: 10px;
+    justify-content: space-between;
+  }
+  .sales-details-container .sales-input-container label {
+    width: 40%;
+  }
+  .sales-details-container .sales-input-container .data {
+    width: 60%;
+  }
+  .sales-details-container .sales-input-container .select-data {
+    width: 60%;
+  }
+  .create-sales-form-container .sales-btn-container button {
+    width: 100%;
+  }
+  .sale-products-and-invoice-container .sales-invoice-prod-list-container {
+    width: 100%;
+    min-height: 90%;
+  }
+}

@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import React, { useEffect, useState } from "react";
 import * as XLSX from "xlsx";
 import Spinner from "../../../../Home/Spinner/Spinner";
@@ -317,9 +316,9 @@ const ProductsList = () => {
     <div className="product-list-container w100 h1 d-flex-col p10">
       <div className="download-print-pdf-excel-container w100 h10 d-flex sb">
         <span className="w30 prod-page-title heading px10">
-          {t("ps-nv-pro-list")}
+          {t("ps-nv-pro-list")} :
         </span>
-        <div className="group-code-and-button-div w100 h1  d-flex sb">
+        <div className="group-code-and-button-div w100 h1 d-flex sb">
           {centerId > 0 ? (
             <></>
           ) : (
@@ -340,7 +339,7 @@ const ProductsList = () => {
                   ))}
             </select>
           )}
-          <div className="d-flex w40 a-center px15">
+          <div className="group-selection-container w40 d-flex a-center px15">
             <label id="selectItemgrpName" htmlFor="seletgrop" className="w30">
               {t("ps-sel-grp")}
             </label>
@@ -362,17 +361,11 @@ const ProductsList = () => {
               ))}
             </select>
           </div>
-          <button
-            className="btn sales-dates-container-mobile-btn"
-            onClick={downloadExcel}
-          >
+          <button className="btn mx10" onClick={downloadExcel}>
             <span className="f-label-text px10"> {t("ps-down-excel")}</span>
             <FaDownload />
           </button>
-          <button
-            className="btn sales-dates-container-mobile-btn mx5"
-            onClick={downloadPdf}
-          >
+          <button className="btn" onClick={downloadPdf}>
             <span className="f-label-text px10">PDF</span>
             <FaDownload />
           </button>
@@ -381,12 +374,11 @@ const ProductsList = () => {
 
       <div className="product-list-table w100 h90 d-flex-col bg">
         <div className="product-heading-title-scroller w100 h1 mh100 hidescrollbar d-flex-col br6">
-          <div className="sales-data-headings-div p10 d-flex center sticky-top bg7 sa">
-            {/* <span className="f-info-text w5">{t("ps-srNo")}</span> */}
-            <span className="f-info-text w15">
+          <div className="sales-data-values-div p10 d-flex center sticky-top bg7 sa">
+            <span className="f-info-text w15 d-flex a-center">
               {t("ps-code")}
               <span
-                className="px10 f-color-icon"
+                className="px5 f-color-icon"
                 type="button"
                 onClick={() => handleSort("ItemCode")}
               >
@@ -401,10 +393,10 @@ const ProductsList = () => {
                 )}
               </span>
             </span>
-            <span className="f-info-text w30">
+            <span className="f-info-text w30 d-flex a-center">
               English Name
               <span
-                className="px10 f-color-icon"
+                className="px5 f-color-icon"
                 type="button"
                 onClick={() => handleSort("ItemName")}
               >
@@ -419,7 +411,7 @@ const ProductsList = () => {
                 )}
               </span>
             </span>{" "}
-            <span className="f-info-text w30">
+            <span className="f-info-text w30 d-flex a-center">
               Marathi Name
               <span
                 className="px10 f-color-icon"
@@ -437,7 +429,6 @@ const ProductsList = () => {
                 )}
               </span>
             </span>
-            {/* <span className="f-info-text w20">{t("ps-desc")}</span> */}
             <span className="f-info-text w10">Action</span>
           </div>
           {loading ? (

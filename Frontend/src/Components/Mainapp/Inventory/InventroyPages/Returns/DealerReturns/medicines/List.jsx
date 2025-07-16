@@ -344,14 +344,12 @@ const MedList = () => {
     );
   };
   return (
-    <div className="customer-list-container-div w100 h1 d-flex-col p10">
-      <div
-        className="download-print-pdf-excel-container w100 h10 d-flex j-end"
-        style={{ display: "contents" }}
-      >
-        <div className="sales-dates-container w100  d-flex a-center sb sales-dates-container-mobile">
-          <div className="d-flex sb w60 sales-dates-container-mobile-w100">
-            <div className="date-input-div w35 d-flex a-center sb">
+    <div className="dealer-return-list-container w100 h1 d-flex-col">
+      <span className="heading">व्यापारी औषधे परत :</span>
+      <div className="download-print-pdf-excel-container w100 h25 d-flex-col sb">
+        <div className="sales-dates-and-add-return-container w100 h50 d-flex a-center sb">
+          <div className="sales-dates-container w65 d-flex a-center sb">
+            <div className="date-input-div w40 d-flex a-center sb">
               <label htmlFor="" className="label-text w30">
                 {t("ps-from")} :
               </label>
@@ -363,7 +361,7 @@ const MedList = () => {
                 max={date2}
               />
             </div>
-            <div className="date-input-div w35 d-flex a-center sb">
+            <div className="date-input-div w40 d-flex a-center sb">
               <label htmlFor="" className="label-text w30">
                 {t("ps-to")} :
               </label>
@@ -379,12 +377,12 @@ const MedList = () => {
               {t("ps-show")}
             </button>
           </div>
-          <div className="d-flex h1 sb center w30 sales-dates-container-mobile-w100 bg p10 ">
+          <div className="add-new-return-div w30 d-flex h1 sb center  bg p10">
             <label htmlFor="" className="label-text   ">
-              {t("ps-addDealReturnMedi")}
+              {t("व्यापारी परत औषधे")}
             </label>
             <NavLink
-              className="w-btn d-flex "
+              className="w-btn add-btn d-flex"
               style={{ textDecoration: "none" }}
               to="add-deal-return"
             >
@@ -393,43 +391,34 @@ const MedList = () => {
             </NavLink>
           </div>
         </div>
-        <div className="find-customer-container w100   d-flex a-center my5 py5">
-          <div className="customer-search-div  d-flex a-center sb">
-            <input
-              type="text"
-              className="data w100"
-              name="code"
-              onFocus={(e) => e.target.select()}
-              value={fcode}
-              onChange={(e) =>
-                setFcode(e.target.value.replace(/[^a-zA-Z0-9 ]/g, ""))
-              }
-              min="0"
-              title="Enter code or name to search details"
-              placeholder={`${t("ps-search")}`}
-            />
-          </div>
-          <button
-            className="w-btn mx10 sales-dates-container-mobile-btn"
-            onClick={downloadExcel}
-          >
+        <div className="find-returns-by-customer-container w100 h50 d-flex a-center">
+          <input
+            type="text"
+            className="data w40"
+            name="code"
+            onFocus={(e) => e.target.select()}
+            value={fcode}
+            onChange={(e) =>
+              setFcode(e.target.value.replace(/[^a-zA-Z0-9 ]/g, ""))
+            }
+            min="0"
+            title="Enter code or name to search details"
+            placeholder={`${t("ps-search")}`}
+          />
+          <button className="w15 btn mx10" onClick={downloadExcel}>
             <span className="f-label-text px10"> {t("ps-down-excel")}</span>
             <FaDownload />
           </button>
-          <button
-            className="w-btn mx10 sales-dates-container-mobile-btn"
-            onClick={downloadPdf}
-          >
+          <button className="w15 btn" onClick={downloadPdf}>
             <span className="f-label-text px10">PDF</span>
             <FaDownload />
           </button>
         </div>
       </div>
-      <div className="customer-list-table w100 h1 d-flex-col hidescrollbar bg">
-        <span className="heading p10">{t("ps-dealRetrnRep")}</span>
-        <div className="customer-heading-title-scroller w100 h1 mh100 d-flex-col">
-          <div className="data-headings-div sale-data-headings-div h10 d-flex center t-center sb bg7">
-            {/* <span className="f-info-text w5">{t("ps-srNo")}</span> */}
+      <div className="dealer-return-prod-list-container w100 h70 d-flex-col hidescrollbar bg">
+        <span className="heading p10">{t("ps-dealRetrnRep")} :</span>
+        <div className="dealer-returns-prod-detilas-table-div w100 h1 mh100 d-flex-col hidescrollbar">
+          <div className="data-headings-div w100 p10 d-flex a-center t-center sb sticky-top bg7">
             <span className="f-info-text w15">
               {t("ps-date")}
               <span
@@ -448,8 +437,8 @@ const MedList = () => {
                 )}
               </span>
             </span>
-            <span className="f-info-text w5">{t("ps-rect-no")}</span>
-            <span className="f-info-text w10">
+            <span className="f-info-text w10">{t("ps-rect-no")}</span>
+            <span className="f-info-text w15">
               {t("ps-code")}
               <span
                 className="px5 f-color-icon"
@@ -467,7 +456,7 @@ const MedList = () => {
                 )}
               </span>
             </span>
-            <span className="f-info-text w25">
+            <span className="f-info-text w40">
               {t("ps-dealer-name")}
               <span
                 className="px5 f-color-icon"
@@ -485,9 +474,10 @@ const MedList = () => {
                 )}
               </span>
             </span>
-            <span className="f-info-text w5">{t("ps-ttl-amt")}</span>
-            <span className="f-info-text w5">Actions</span>
-            {userRole === "salesman" ? (
+            <span className="f-info-text w10">{t("ps-ttl-amt")}</span>
+            <span className="f-info-text w10">Actions</span>
+
+            {/* {userRole === "salesman" ? (
               <></>
             ) : (
               <>
@@ -510,33 +500,29 @@ const MedList = () => {
                   </span>
                 </span>
               </>
-            )}
+            )} */}
           </div>
-          {/* Show Spinner if loading, otherwise show the feed list */}
           {loading ? (
             <Spinner />
           ) : groupedPurchaseArray.length > 0 ? (
             groupedPurchaseArray.map((item, index) => (
               <div
                 key={index}
-                className={`data-values-div sale-data-values-div w100 h10 d-flex center t-center sa ${
-                  index % 2 === 0 ? "bg-light" : "bg-dark"
-                }`}
+                className={`data-values-div sale-data-values-div w100 p10 d-flex center t-center sa`}
                 style={{
                   backgroundColor: index % 2 === 0 ? "#faefe3" : "#fff",
                 }}
               >
-                {/* <span className="text w5">{index + 1}</span> */}
                 <span className="text w15">
                   {formatDateToDDMMYYYY(item.purchasedate)}
                 </span>
-                <span className="text w5 ">{item.receiptno}</span>
-                <span className="text w10">{item.dealerCode}</span>
-                <span className="text w25">{item.dealerName}</span>
+                <span className="text w10">{item.receiptno}</span>
+                <span className="text w15">{item.dealerCode}</span>
+                <span className="text w40">{item.dealerName}</span>
 
-                <span className="text w5">{item.TotalAmount}</span>
+                <span className="text w10">{item.TotalAmount}</span>
 
-                <span className="text w5 d-flex j-center a-center">
+                <span className="text w10 d-flex j-center a-center">
                   <button
                     className="px5"
                     onClick={() => handleView(item?.billno)}
@@ -552,7 +538,7 @@ const MedList = () => {
                     style={{ color: "red" }}
                   />
                 </span>
-                {userRole === "salesman" ? (
+                {/* {userRole === "salesman" ? (
                   <></>
                 ) : (
                   <>
@@ -560,9 +546,7 @@ const MedList = () => {
                       {item.createdby || "Unknown"}
                     </span>
                   </>
-                )}
-
-                {/* Assuming all customers are active */}
+                )} */}
               </div>
             ))
           ) : (
@@ -600,7 +584,6 @@ const MedList = () => {
               </h4>
               <h4 className="mx15">{viewItems[0]?.dealerName || ""}</h4>
             </div>
-            {/* <div className="modal-content w100  "> */}
             <div className="sales-table-container w100">
               <table className="sales-table w100 ">
                 <thead className="bg1">
@@ -641,11 +624,7 @@ const MedList = () => {
               </table>
             </div>
           </div>
-          {/* <div className="d-flex my15 j-end">
-                      <button className="btn">Update</button>
-                    </div> */}
         </div>
-        // </div>
       )}
     </div>
   );

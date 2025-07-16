@@ -185,7 +185,7 @@ const CreateDealers = () => {
 
   return (
     <div className="create-dealer-container w100 h1 d-flex-col p10 ">
-      <span className="heading">{t("ps-nv-create-dealer")}</span>
+      <span className="heading">{t("ps-nv-create-dealer")} :</span>
       <div className="create-dealer-inner-container w100 h1 d-flex-col center">
         <form
           onSubmit={handleSubmit}

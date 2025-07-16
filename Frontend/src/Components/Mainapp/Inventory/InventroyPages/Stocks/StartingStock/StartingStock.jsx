@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import * as XLSX from "xlsx";
 import { FaDownload } from "react-icons/fa6";
 import axiosInstance from "../../../../../../App/axiosInstance";
-import "./Stock.css";
+import "../../../../../../Styles/Mainapp/Inventory/InventoryPages/StartingStock.css";
 import { MdAddShoppingCart, MdDeleteOutline } from "react-icons/md";
 import { toast } from "react-toastify";
 import { FaRegEdit } from "react-icons/fa";
@@ -15,7 +15,7 @@ import jsPDF from "jspdf";
 import { useSelector } from "react-redux";
 import { TbSortAscending2, TbSortDescending2 } from "react-icons/tb";
 
-const StockList = () => {
+const StartingStock = () => {
   const { t } = useTranslation(["puchasesale", "common"]);
   const [productList, setProductList] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -292,69 +292,63 @@ const StockList = () => {
   };
 
   return (
-    <div className="product-list-container w100 h1 d-flex-col p10">
-      <div className="download-print-pdf-excel-container w100 h30 d-flex j-center">
-        <div className="sales-dates-container w100 h80 d-flex a-center sb sales-dates-container-mobile">
-          <div className="d-flex sb w60 sales-dates-container-mobile-w100 py10">
-            <div>
-              <label htmlFor="seletgrop" className="mx5">
-                {t("ps-sel-grp")}:
-              </label>
-              <select
-                name="ItemGroupCode"
-                className="data form-field"
-                onChange={(e) => setFilter(e.target.value)}
-                value={filter}
-              >
-                <option value=""> {t("ps-all")} </option>
-                {[
-                  { value: 1, label: `${t("ps-cattle")}` },
-                  { value: 2, label: `${t("ps-medicine")}` },
-                  { value: 3, label: `${t("ps-grocery")}` },
-                  { value: 4, label: `${t("ps-other")}` },
-                ].map((item) => (
-                  <option key={item.value} value={item.value}>
-                    {item.label}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <button
-              className="btn sales-dates-container-mobile-btn"
-              onClick={downloadExcel}
-            >
-              <span className="f-label-text px10"> {t("ps-down-excel")}</span>
-              <FaDownload />
-            </button>{" "}
-            <button
-              className="btn sales-dates-container-mobile-btn"
-              onClick={downloadPdf}
-            >
-              <span className="f-label-text px10"> PDF</span>
-              <FaDownload />
-            </button>
-          </div>
-          <div className="d-flex h1 sb center w25 sales-dates-container-mobile-w100  p10 bg">
-            <label htmlFor="" className="label-text px5 ">
-              {t("ps-newStock")}
+    <div className="starting-stock-list-container w100 h1 d-flex-col sb p10">
+      <label htmlFor="" className="heading px10">
+        आरंभीचा माल यादी :
+      </label>
+      <div className="download-print-pdf-excel-container w100 h10 d-flex j-center sb">
+        <div className="sales-dates-container w60 h1 d-flex a-center sb">
+          <div className="select-group-container w60 d-flex a-center sb">
+            <label htmlFor="seletgrop" className="w30">
+              {t("ps-sel-grp")} :
             </label>
-            <NavLink
-              className="w-btn d-flex "
-              style={{ textDecoration: "none" }}
-              to="add-stock"
+            <select
+              name="ItemGroupCode"
+              className="data w65"
+              onChange={(e) => setFilter(e.target.value)}
+              value={filter}
             >
-              <MdAddShoppingCart className="icon f-label" />
-              {t("ps-new")}
-            </NavLink>
+              <option value=""> {t("ps-all")} </option>
+              {[
+                { value: 1, label: `${t("ps-cattle")}` },
+                { value: 2, label: `${t("ps-medicine")}` },
+                { value: 3, label: `${t("ps-grocery")}` },
+                { value: 4, label: `${t("ps-other")}` },
+              ].map((item) => (
+                <option key={item.value} value={item.value}>
+                  {item.label}
+                </option>
+              ))}
+            </select>
           </div>
+          <button className="w15 btn" onClick={downloadExcel}>
+            <span className="f-label-text px10"> {t("ps-down-excel")}</span>
+            <FaDownload />
+          </button>{" "}
+          <button className="w15 btn" onClick={downloadPdf}>
+            <span className="f-label-text px10"> PDF</span>
+            <FaDownload />
+          </button>
+        </div>
+        <div className="add-new-prod-stock-container w30 h1 d-flex a-center p10  sb bg">
+          <label htmlFor="" className="label-text px5 ">
+            {t("ps-newStock")}
+          </label>
+          <NavLink
+            className="w-btn d-flex "
+            style={{ textDecoration: "none" }}
+            to="add-stock"
+          >
+            <MdAddShoppingCart className="icon f-label" />
+            {t("ps-new")}
+          </NavLink>
         </div>
       </div>
 
-      <div className="product-list-table w100 h1 d-flex-col hidescrollbar bg ">
+      <div className="starting-stock-product-list-table-container w100 h80 d-flex-col bg">
         <span className="heading p10"> {t("ps-stockReport")}</span>
-        <div className="product-heading-title-scroller w100 h1 mh100 d-flex-col">
-          <div className="data-headings-div h10 d-flex forWidth center t-center sa bg7">
-            {/* <span className="f-info-text w5"> {t("ps-srNo")}</span> */}
+        <div className="starting-stock-product-table w100 h1 mh100 hidescrollbar d-flex-col">
+          <div className="starting-stock-data-div w100 py10 d-flex a-center t-center sticky-top sa bg7">
             <span className="f-info-text w10">
               {t("ps-code")}
               <span
@@ -373,7 +367,7 @@ const StockList = () => {
                 )}
               </span>
             </span>
-            <span className="f-info-text w15">
+            <span className="f-info-text w35">
               {t("ps-itm-name")}
               <span
                 className="px5 f-color-icon"
@@ -391,7 +385,7 @@ const StockList = () => {
                 )}
               </span>
             </span>
-            <span className="f-info-text w5">
+            <span className="f-info-text w10">
               {t("ps-qty")}
               <span
                 className="px5 f-color-icon"
@@ -409,7 +403,7 @@ const StockList = () => {
                 )}
               </span>
             </span>
-            <span className="f-info-text w5">
+            <span className="f-info-text w10">
               {t("ps-rate")}
               <span
                 className="px5 f-color-icon"
@@ -427,9 +421,9 @@ const StockList = () => {
                 )}
               </span>
             </span>
-            <span className="f-info-text w5">{t("ps-sale-rate")}</span>
-            <span className="f-info-text w5">{t("ps-amt")}</span>
-            <span className="f-info-text w5">Action</span>
+            <span className="f-info-text w10">{t("ps-sale-rate")}</span>
+            <span className="f-info-text w10">{t("ps-amt")}</span>
+            <span className="f-info-text w10">Action</span>
           </div>
           {loading ? (
             <Spinner />
@@ -437,21 +431,20 @@ const StockList = () => {
             filteredProducts.map((product, index) => (
               <div
                 key={index}
-                className={`data-values-div w100 h10 d-flex forWidth center t-center sa ${
+                className={`starting-stock-data-div w100 h10 d-flex a-center t-center sa ${
                   index % 2 === 0 ? "bg-light" : "bg-dark"
                 }`}
                 style={{
                   backgroundColor: index % 2 === 0 ? "#faefe3" : "#fff",
                 }}
               >
-                {/* <span className="text w5">{index + 1}</span> */}
                 <span className="text w10">{product.ItemCode}</span>
-                <span className="text w15">{product.ItemName}</span>
-                <span className="text w5">{product.ItemQty}</span>
-                <span className="text w5">{product.ItemRate}</span>
-                <span className="text w5">{product.SaleRate}</span>
-                <span className="text w5">{product.Amount}</span>
-                <span className="text w5">
+                <span className="text w35">{product.ItemName}</span>
+                <span className="text w10">{product.ItemQty}</span>
+                <span className="text w10">{product.ItemRate}</span>
+                <span className="text w10">{product.SaleRate}</span>
+                <span className="text w10">{product.Amount}</span>
+                <span className="text w10">
                   <FaRegEdit
                     size={15}
                     className="table-icon"
@@ -467,7 +460,7 @@ const StockList = () => {
               </div>
             ))
           ) : (
-            <div className="d-flex h1 center">{t("ps-ProductFound")}</div>
+            <div className="w100 h1 d-flex center">{t("ps-ProductFound")}</div>
           )}
         </div>
       </div>
@@ -528,4 +521,4 @@ const StockList = () => {
   );
 };
 
-export default StockList;
+export default StartingStock;

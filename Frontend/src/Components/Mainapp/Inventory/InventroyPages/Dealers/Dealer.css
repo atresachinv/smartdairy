@@ -96,8 +96,12 @@
   .group-code-and-button-div .pdf-btn {
     width: 45%;
   }
+  .customer-list-container-div .customer-list-table {
+    margin-bottom: 10px;
+  }
 
-  .minSize {
-    padding: 15px !important;
+  /* ----- create dealer css -------- */
+  .create-dealer-container .create-dealer-inner-container {
+    margin-bottom: 10px;
   }
 }

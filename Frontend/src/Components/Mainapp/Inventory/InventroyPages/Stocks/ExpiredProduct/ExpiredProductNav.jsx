@@ -1,6 +1,6 @@
 import { useTranslation } from "react-i18next";
-import { MdDomainVerification } from "react-icons/md";
-import { SiElasticstack } from "react-icons/si";
+import { MdLocalGroceryStore, MdOutlineDevicesOther } from "react-icons/md";
+import { GiFertilizerBag, GiMedicines } from "react-icons/gi";
 import { NavLink } from "react-router-dom";
 
 const ExpiredProductNav = ({ isselected, setIsSelected, userRole }) => {
@@ -9,28 +9,28 @@ const ExpiredProductNav = ({ isselected, setIsSelected, userRole }) => {
   const hnavlinks = [
     {
       name: `${t("puchasesale:ps-nv-cattlefeed")}`,
-      icon: <MdDomainVerification className="icon" />,
+      icon: <GiFertilizerBag className="icon" />,
       index: 0,
       path: "cattlefeed",
       role: ["super_admin", "admin"],
     },
     {
       name: `${t("puchasesale:ps-nv-grocery")}`,
-      icon: <MdDomainVerification className="icon" />,
+      icon: <MdLocalGroceryStore className="icon" />,
       index: 1,
       path: "grocery",
       role: ["super_admin", "admin"],
     },
     {
       name: `${t("puchasesale:ps-nv-medicines")}`,
-      icon: <MdDomainVerification className="icon" />,
+      icon: <GiMedicines className="icon" />,
       index: 2,
       path: "medicines",
       role: ["super_admin", "admin"],
     },
     {
       name: `${t("puchasesale:ps-nv-other")}`,
-      icon: <MdDomainVerification className="icon" />,
+      icon: <MdOutlineDevicesOther className="icon" />,
       index: 3,
       path: "other-products",
       role: ["super_admin", "admin"],

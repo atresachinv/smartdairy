@@ -323,11 +323,11 @@ const DealersList = () => {
   };
   return (
     <div className="customer-list-container-div w100 h1 d-flex-col p10">
-      <div className="download-print-pdf-excel-container w100 h10 d-flex sb">
+      <div className="download-print-pdf-excel-container w100 h10 d-flex a-center sb">
         <span className="w30 prod-page-title heading px10">
-          {t("ps-nv-dealer-list")}
+          {t("ps-nv-dealer-list")} :
         </span>
-        <div className="group-code-and-button-div w100 h1 d-flex sb">
+        <div className="group-code-and-button-div w100 h1 d-flex a-center sb">
           {centerId > 0 ? (
             <div></div>
           ) : (

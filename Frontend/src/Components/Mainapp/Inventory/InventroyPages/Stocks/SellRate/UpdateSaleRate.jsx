@@ -5,7 +5,7 @@ import Swal from "sweetalert2";
 import { useEffect, useState } from "react";
 import axiosInstance from "../../../../../../App/axiosInstance";
 import { useTranslation } from "react-i18next";
-import "./SellRate.css";
+import "../../../../../../Styles/Mainapp/Inventory/InventoryPages/UpdateSellRate.css";
 
 const UpdateSaleRate = () => {
   const { t } = useTranslation(["puchasesale", "common"]);
@@ -40,6 +40,7 @@ const UpdateSaleRate = () => {
     SetDate1(getPreviousDate(30));
     SetDate2(getTodaysDate());
   }, []);
+
   // Fetch purchase list from API
   useEffect(() => {
     const fetchPurchaseList = async () => {
@@ -158,14 +159,12 @@ const UpdateSaleRate = () => {
   };
 
   return (
-    <div className="customer-list-container-div w100 h1 d-flex-col p10">
-      <div
-        className="download-print-pdf-excel-container w100 h10 d-flex j-end"
-        style={{ display: "contents" }}
-      >
-        <div className="w100 d-flex sa my5">
-          <div className="my10 px5 w50">
-            <label htmlFor="" className="info-text px10">
+    <div className="update-prod-sell-rate-container w100 h1 d-flex-col sb p10">
+      <span className="heading">उपडेट विक्री दर :</span>
+      <div className="download-print-pdf-excel-container w100 h15 d-flex sb">
+        <div className="select-dates-container w50 d-flex sa">
+          <div className="dates-div w48 d-flex-col sb">
+            <label htmlFor="" className="info-text">
               {t("ps-from")} :
             </label>
             <input
@@ -176,8 +175,8 @@ const UpdateSaleRate = () => {
               max={date2}
             />
           </div>
-          <div className="my10">
-            <label className="info-text px10" htmlFor="">
+          <div className="dates-div w48 d-flex-col sb">
+            <label className="info-text" htmlFor="">
               {t("ps-to")} :
             </label>
             <input
@@ -190,14 +189,15 @@ const UpdateSaleRate = () => {
             />
           </div>
         </div>
-        <div className="w100 d-flex ">
-          <div className="my5 w50 d-flex center">
-            <label className="info-text px5" htmlFor="">
+        <div className="select-group-prod-container w45 d-flex sa">
+          <div className="group-div w50 d-flex-col sb">
+            <label className="info-text w100" htmlFor="itemGroupCode">
               {t("ps-sel-grp")}:
             </label>
             <select
+              id="itemGroupCode"
               name="ItemGroupCode"
-              className="data form-field w40"
+              className="data"
               onChange={(e) => setSelectcode(e.target.value)}
               value={selectcode}
             >
@@ -214,13 +214,14 @@ const UpdateSaleRate = () => {
               ))}
             </select>
           </div>
-          <div className="my5 w50 d-flex center">
-            <label className="info-text px5" htmlFor="">
+          <div className="prod-name-div w45 d-flex-col sb">
+            <label className="info-text w100" htmlFor="Itemname">
               {t("ps-itm-name")}:
             </label>
             <select
-              name="ItemGroupCode"
-              className="data form-field w40"
+              id="Itemname"
+              name="Itemname"
+              className="data"
               onChange={(e) => setItemcode(e.target.value)}
               value={itemcode}
               disabled={!selectcode}
@@ -241,39 +242,35 @@ const UpdateSaleRate = () => {
           </div>
         </div>
       </div>
-      <div className="customer-list-table w100 h1 d-flex-col  bg">
+      <div className="update-product-list-container w100 h70 d-flex-col  bg">
         <span className="heading p10"> {t("ps-productList")}</span>
-        <div className="customer-heading-title-scroller w100 h1 mh100 hidescrollbar d-flex-col ">
-          <div className="data-headings-div h10 d-flex center formin t-center bg7 sb sticky-top">
-            {/* <span className="f-info-text w5">{t("ps-srNo")}</span> */}
-            <span className="f-info-text w5"> {t("ps-date")}</span>
+        <div className="update-prod-sell-rate-table w100 h1 mh100 hidescrollbar d-flex-col">
+          <div className="data-headings-div py10 d-flex center t-center sb sticky-top bg7">
+            <span className="f-info-text w15"> {t("ps-date")}</span>
             <span className="f-info-text w5"> {t("ps-rect-no")}</span>
-            <span className="f-info-text w25"> {t("ps-itm-name")}</span>
-            <span className="f-info-text w5">{t("ps-rate")}</span>
-            <span className="f-info-text w5">{t("ps-sale-rate")}</span>
-            <span className="f-info-text w5">{t("ps-qty")}</span>
+            <span className="f-info-text w40"> {t("ps-itm-name")}</span>
+            <span className="f-info-text w10">{t("ps-rate")}</span>
+            <span className="f-info-text w10">{t("ps-sale-rate")}</span>
+            <span className="f-info-text w10">{t("ps-qty")}</span>
             <span className="f-info-text w10">Actions</span>
           </div>
           {filteredList2.length > 0 ? (
             filteredList2.map((item, index) => (
               <div
                 key={index}
-                className={`data-values-div w100 h10 d-flex formin center t-center py5 sa ${
-                  index % 2 === 0 ? "bg-light" : "bg-dark"
-                }`}
+                className={`data-headings-div w100 py10 d-flex center t-center py5 sa`}
                 style={{
                   backgroundColor: index % 2 === 0 ? "#faefe3" : "#fff",
                 }}
               >
-                {/* <span className="text w5">{index + 1}</span> */}
-                <span className="text w5">
+                <span className="text w15">
                   {formatDateToDDMMYYYY(item.purchasedate)}
                 </span>
                 <span className="text w5">{item.receiptno}</span>
-                <span className="text w25">{item.itemname}</span>
-                <span className="text w5">{item.rate}</span>
-                <span className="text w5">{item.salerate}</span>
-                <span className="text w5">{item.qty}</span>
+                <span className="text w40">{item.itemname}</span>
+                <span className="text w10">{item.rate}</span>
+                <span className="text w10">{item.salerate}</span>
+                <span className="text w10">{item.qty}</span>
                 <span className="text w10 d-flex j-center a-center">
                   <FaRegEdit
                     size={15}
@@ -284,7 +281,7 @@ const UpdateSaleRate = () => {
               </div>
             ))
           ) : (
-            <div className="w100 d-flex center h1"> {t("ps-no-pur-foun")}</div>
+            <div className="w100 h1 d-flex center"> {t("ps-no-pur-foun")}</div>
           )}
         </div>
       </div>

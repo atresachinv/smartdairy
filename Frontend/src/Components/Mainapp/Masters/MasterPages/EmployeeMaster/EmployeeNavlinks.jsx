@@ -5,13 +5,13 @@ import { NavLink } from "react-router-dom";
 const EmployeeNavlinks = ({ isselected, setIsSelected }) => {
   const empNavbuttons = [
     {
-      name: "Employee List",
+      name: "सेवक यादी",
       icon: <IoList className="icon" />,
       index: 1,
       path: "list",
     },
     {
-      name: "Create Employee",
+      name: "सेवक नोंदवा",
       icon: <IoPersonAdd className="icon" />,
       index: 0,
       path: "add-new",

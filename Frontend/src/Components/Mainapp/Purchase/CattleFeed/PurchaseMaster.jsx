@@ -20,7 +20,7 @@ const PurchaseMaster = () => {
           setIsSelected={setIsSelected}
         />
       </div>
-      <div className="customer-views w100 h90 d-flex center">
+      <div className="customer-views w100 h90 d-flex center p10">
         <CattleFeedPurNavViews index={isselected} />
       </div>
     </div>

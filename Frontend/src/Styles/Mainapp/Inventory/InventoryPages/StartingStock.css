@@ -1,0 +1,34 @@
+@media screen and (max-width: 426px) {
+  .starting-stock-list-container {
+    min-height: auto;
+  }
+  .starting-stock-list-container .download-print-pdf-excel-container {
+    min-height: fit-content;
+    flex-direction: column;
+  }
+  .download-print-pdf-excel-container .sales-dates-container {
+    flex-wrap: wrap;
+    min-height: fit-content;
+  }
+  .sales-dates-container .select-group-container {
+    width: 100%;
+  }
+  .sales-dates-container button {
+    width: 45%;
+  }
+  .download-print-pdf-excel-container .add-new-prod-stock-container {
+    width: 100%;
+    margin-bottom: 10px;
+  }
+  .starting-stock-list-container .starting-stock-product-list-table-container {
+    min-height: 400px;
+    margin-bottom: 10px;
+  }
+  .starting-stock-product-list-table-container .starting-stock-product-table {
+    overflow-x: scroll;
+    min-height: fit-content;
+  }
+  .starting-stock-product-table .starting-stock-data-div {
+    width: 700px;
+  }
+}

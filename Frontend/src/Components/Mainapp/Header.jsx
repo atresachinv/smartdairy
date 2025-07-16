@@ -14,17 +14,13 @@ const Header = ({ handleSidebar }) => {
     (state) =>
       state.dairy.dairyData.marathiName || state.dairy.dairyData.marathi_name
   );
-  // const dairy = useSelector(
-  //   (state) => state.dairy.dairyData || state.dairy.dairyData
-  // );
-  // console.log(dairy);
 
   useEffect(() => {
     dispatch(fetchDairyInfo());
   }, []);
 
   return (
-    <>
+    <div className="header-container w100 d-flex a-center sb bg6">
       <div className="menu-header d-flex a-center">
         <BsJustify className="menu-icon w100 c1" onClick={handleSidebar} />
       </div>
@@ -32,7 +28,7 @@ const Header = ({ handleSidebar }) => {
         <span className="title w100">{dairyname}</span>
         <span className="label-text w100 ">{toDate}</span>
       </div>
-    </>
+    </div>
   );
 };
 

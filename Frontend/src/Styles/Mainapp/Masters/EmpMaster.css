@@ -58,24 +58,32 @@
 }
 
 @media screen and (max-width: 426px) {
-  .emp-list-container {
+  .emp-list-outer-container {
     min-height: auto;
+    padding: 10px;
   }
-  .title-div {
+  .emp-list-outer-container .emp-list-container {
+    width: 100%;
+    min-height: fit-content;
+    margin-bottom: 10px;
+  }
+  .emp-list-container .title-div {
     min-height: fit-content;
     flex-direction: column;
+    padding: 0;
   }
   .title-div span {
     width: 100%;
+    text-align: start;
   }
   .title-div .filter-emp-by-center {
     width: 100%;
   }
   .title-div .filter-emp-by-center .label-text {
-    width: 40%;
+    width: 30%;
   }
   .title-div .filter-emp-by-center .data {
-    width: 60%;
+    width: 70%;
   }
   .emp-data-list-container {
     min-height: 100%;

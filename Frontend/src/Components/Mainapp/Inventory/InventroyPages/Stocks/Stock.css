@@ -10,6 +10,7 @@
   align-items: center;
   justify-content: center;
 }
+
 .startingModal .modal-content {
   background-color: #ffffff;
   max-height: 90%;
@@ -21,22 +22,20 @@
   flex-direction: column;
   gap: 3px;
 }
+
 .startingModal .modal-content h2 {
-  /* font-size: 1.5rem; Slightly larger heading */
   margin-bottom: 10px;
-  color: #333; /* Darker text for better readability */
+  color: #333;
   text-align: center;
 }
 
 .startingModal .modal-content label {
-  /* font-size: 1rem; */
   color: #555;
   margin-bottom: 5px;
 }
 
 .startingModal .modal-content button {
   padding: 10px 20px;
-  /* font-size: 1rem; */
   border: none;
   border-radius: 8px;
   cursor: pointer;
@@ -62,12 +61,37 @@
   background-color: #e2e6ea;
 }
 
+@media screen and (min-width: 426px) and (max-width: 769px) {
+  .starting-stock-outer-container .starting-stock-container {
+    width: 80%;
+  }
+}
+
 @media screen and (max-width: 426px) {
-  .startingStock .startingStockForm {
-    width: 100%;
+  .stock-container .stock-nav-views {
+    height: 110%;
   }
 
-  /* .startingModal .modal-content {
-    padding: 0px !important;
-  } */
+  .starting-stock-outer-container {
+    min-height: auto;
+  }
+
+  .starting-stock-outer-container .starting-stock-container {
+    width: 100%;
+    min-height: fit-content;
+  }
+
+  .starting-stock-container .starting-stock-form-container {
+    min-height: fit-content;
+  }
+
+  .starting-stock-form-container .stock-details-outer-container {
+    width: 100%;
+    min-height: fit-content;
+    flex-direction: column;
+  }
+
+  .stock-details-outer-container .stock-details-div {
+    width: 100%;
+  }
 }

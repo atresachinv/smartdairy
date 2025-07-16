@@ -34,8 +34,8 @@ const DealersNavlinks = ({ isselected, setIsSelected }) => {
             }}
             className="sub-navlinks f-label-text"
           >
-            {button.icon}
-            <span>{button.name}</span>
+            <span className="nav-icon">{button.icon}</span>
+            {button.name}
           </NavLink>
         </li>
       ))}
