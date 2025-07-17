@@ -1,110 +1,74 @@
+@media screen and (min-width: 426px) and (max-width: 769px) {
+  .payment-summary-outer-container .payment-summary-details-container {
+    justify-content: space-around;
+  }
+
+  .payment-summary-total-details-container
+    .headings-pay-summary-totals-container {
+    width: 23%;
+    height: 70px;
+  }
+  
+  .payment-deduction-info-outer-container .payment-summary-info-container {
+    height: 60%;
+  }
+}
+
 @media screen and (max-width: 426px) {
-  .payment-register-container {
+  .payment-summary-container {
     min-height: auto;
   }
-  .payment-register-container .from-too-date-button-container {
-    height: fit-content;
+  .payment-summary-container .from-to-date-button-container {
+    min-height: fit-content;
     flex-direction: column;
+  }
+  .from-to-date-button-container .date-from-to-div {
+    width: 100%;
+    min-height: fit-content;
+    flex-direction: column;
+  }
+  .from-to-date-button-container .date-from-to-div .from-div-container {
+    width: 100%;
+    justify-content: space-between;
+    margin-bottom: 10px;
+  }
+
+  .date-from-to-div .from-div-container label {
+    width: 30%;
+  }
+  .date-from-to-div .from-div-container .data {
+    width: 50%;
+  }
+  .from-to-date-button-container .button-print-export-div {
+    width: 100%;
     justify-content: space-between;
   }
-  .payment-register-container .from-too-date-button-container input {
-   width: 130px;
-   
-  }
- .from-too-date-button-container .paymnet-register-show-button {
-     width: 100%;
-  }
-   .from-too-date-button-container  .paymnet-register-show-button button {
-     width: 1000px;
-     margin-top: 10px;
-  }
-  .select-center-cust-code-cust-name{
-    flex-direction: column;
-  }
-  .select-center-cust-code-cust-name .center-selection-payment-div{
-   width: 100%;
-   margin-top: 10px;
-   margin-bottom: 10px;
 
+  .from-to-date-button-container .button-print-export-div button {
+    width: 30%;
+    margin-bottom: 10px;
   }
-  .select-center-cust-code-cust-name .center-selection-payment-div span{
-   width: 140px;
+  .payment-summary-container .payment-summary-outer-container {
+    min-height: fit-content;
+    padding: 0;
   }
-  .select-center-cust-code-cust-name  .customer-name-code-selection-div{
-    width: 100%;
-    margin-bottom: 5px;
+  .payment-summary-outer-container .payment-summary-total-details-container {
+    min-height: fit-content;
+    flex-wrap: wrap;
+    justify-content: space-between;
   }
-  .filter-container  .pdf-print-excel-payment-button-div{
-
-    margin-bottom: 5px;
+  .payment-summary-total-details-container
+    .headings-pay-summary-totals-container {
+    width: 48%;
+    margin-bottom: 10px;
   }
 
-  .filter-container .date-from-too-div {
-    width: 100%;
-    margin-bottom: 50px;
-  }
-  .from-too-date-button-container {
-    flex-direction: column;
-  }
-  .from-too-date-button-container .date-from-toocontainer {
-    width: 100%;
-    height: fit-content;
-  }
-  .from-too-date-button-container
-    .date-from-toocontainer
-    .from-date-div-container {
-    width: 40%;
-  }
-  .from-too-date-button-container
-    .date-from-toocontainer
-    .from-date-div-container
-    input {
-    font-size: 0.7rem;
-    width: 108px;
-  }
-  .from-too-date-button-container
-    .date-from-toocontainer
-    .from-date-div-container
-    span {
-    font-size: small;
-  }
-  .from-too-date-button-container
-    .date-from-toocontainer
-    .to-date-div-container {
-    width: 40%;
-  }
-  .from-too-date-button-container
-    .date-from-toocontainer
-    .to-date-div-container
-    input {
-    font-size: 0.7rem;
-    width: 108px;
-  }
-  .from-too-date-button-container
-    .date-from-toocontainer
-    .to-date-div-container
-    span {
-    font-size: small;
-    width: 25px;
-    margin-left: 5px;
-  }
-  .from-too-date-button-container .filter-cname-andcust-name-div {
-    width: 100%;
-    height: 65%;
-  }
-  .payment-register-container .filter-container {
-    height: fit-content;
-  }
-  .button-and-customer-name-wise-div {
-    flex-direction: column;
-  }
-  .button-and-customer-name-wise-div .button-print-export-div {
+  .payment-deduction-info-outer-container
+    .headings-pay-summary-totals-container {
     width: 100%;
   }
-  .button-and-customer-name-wise-div .payment-register-centerwisee-data-show{
+  .payment-deduction-info-outer-container .payment-summary-info-container {
     width: 100%;
-  }
-  .payment-register-filter-customer-name-code-wise{
-    margin-top: 10px;
+    padding: 0;
   }
 }

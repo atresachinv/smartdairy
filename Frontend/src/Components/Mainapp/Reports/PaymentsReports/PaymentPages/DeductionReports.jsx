@@ -454,8 +454,9 @@ const DeductionReports = () => {
   const [filteredDeduction, setFilteredDeduction] = useState([]);
   const [dnameOptions, setDnameOptions] = useState([]);
   const [selectedDname, setSelectedDname] = useState("");
+  
+ 
 
-  console.log(selectedMaster);
 
   // Retrieve selected master from localStorage on component mount
   useEffect(() => {

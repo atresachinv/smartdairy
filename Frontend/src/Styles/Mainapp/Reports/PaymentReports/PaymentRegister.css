@@ -1,35 +1,66 @@
-@media screen and (max-width: 426px) {
+/* @media screen and (max-width: 426px) {
   .payment-register-container {
-    min-height: fit-content;
+    min-height: auto;
   }
   .payment-register-container .from-to-date-button-container {
     min-height: fit-content;
     flex-direction: column;
   }
-  .from-to-date-button-container .date-from-to-div,
+  .from-to-date-button-container .date-from-to-div {
+    width: 100%;
+    min-height: fit-content;
+    flex-direction: column;
+  }
+  .from-to-date-button-container .date-from-to-div .from-div-container {
+    width: 100%;
+    justify-content: space-between;
+    margin-bottom: 10px;
+  }
+
+  .date-from-to-div .from-div-container label {
+    width: 30%;
+  }
+  .date-from-to-div .from-div-container .data {
+    width: 50%;
+  }
   .from-to-date-button-container .button-print-export-div {
     width: 100%;
-    margin: 10px 0;
+    justify-content: space-between;
   }
-  .payment-register-outer-container{
-    min-height: 70%;
+
+  .from-to-date-button-container .button-print-export-div button {
+    width: 30%;
+    margin-bottom: 10px;
   }
-  .payment-register-total-details-container {
+  .payment-register-container .payment-register-outer-container {
+    min-height: fit-content;
+  }
+  .payment-register-outer-container .payment-register-total-details-container {
     min-height: fit-content;
     flex-wrap: wrap;
     justify-content: space-between;
   }
-  .payment-register-total-details-container  .headings-pay-register-totals-container {
-    width: 45%;
+  .payment-register-total-details-container
+    .headings-pay-register-totals-container {
+    width: 48%;
     margin-bottom: 10px;
   }
 
   .payment-deduction-info-container .headings-pay-register-totals-container {
     width: 100%;
   }
-    .from-to-date-button-container .date-from-to-div .from-div-container input{
-    font-size: 0.77em;
-  }
+  
+} */
+
+.payment-register-container .payment-register-table-side-container-div {
+  overflow-x: scroll;
+}
+.payment-register-table-side-container-div .pay-register-table-container {
+  min-width: auto;
+  overflow-x: scroll;
 }
 
-
+.pay-register-table-container .pay-register-data-container {
+  width: 1700px;
+  min-width: max-content;
+}

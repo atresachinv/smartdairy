@@ -1,9 +1,9 @@
 import React, { useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
-import "../../../Styles/Mainapp/Payments/Payments.css";
 import { useDispatch, useSelector } from "react-redux";
 import { getMaxCustNo } from "../../../App/Features/Mainapp/Masters/custMasterSlice";
 import Spinner from "../../Home/Spinner/Spinner";
+import "../../../Styles/Mainapp/Payments/Payments.css";
 
 import {
   checkAmtZero,
@@ -879,7 +879,8 @@ const Payments = ({ setCurrentPage }) => {
             className="data w40"
             name="center_id"
             id="select-center"
-            onChange={handleInput}>
+            onChange={handleInput}
+          >
             {centerList.map((center, index) => (
               <option key={index} value={center.center_id}>
                 {center.center_name}
@@ -892,7 +893,8 @@ const Payments = ({ setCurrentPage }) => {
       </div>
       <form
         onSubmit={handleGenerateBill}
-        className="generate-bill-form-container w100 h20 d-flex sb br6">
+        className="generate-bill-form-container w100 h20 d-flex sb br6"
+      >
         <div className="bill-voucher-date-container w30 px10 d-flex-col bg-light-skyblue br6 sa px10">
           <div className="bil-date-div d-flex w100 h1 a-center sb">
             <label htmlFor="billdate" className="label-text w50">
@@ -989,7 +991,8 @@ const Payments = ({ setCurrentPage }) => {
             type="button"
             className="w-btn"
             disabled={payShowStatus}
-            onClick={handleShowBtn}>
+            onClick={handleShowBtn}
+          >
             {payShowStatus ? "showing..." : "पाहणे "}
           </button>
           <button type="submit" className="w-btn" disabled={payStatus}>
@@ -1001,7 +1004,7 @@ const Payments = ({ setCurrentPage }) => {
         <div className="payment-data-report-btn-div w80 h1 d-flex-col se px10">
           <div className="customer-code-div w100 h10 d-flex a-center sb px10">
             <span className="label-text">Payment Details : </span>
-            <div className="cust-code-div d-flex w50 h1 sb a-center">
+            <div className="cust-code-div d-flex w50 sb a-center">
               <label htmlFor="cform" className="w50">
                 कोड नं पासून :
               </label>
@@ -1029,7 +1032,7 @@ const Payments = ({ setCurrentPage }) => {
               />
             </div>
           </div>
-          <div className="bill-payments-details-container w100 h70 d-flex-col mh70 hidescrollbar bg">
+          <div className="bill-payments-details-container w100 h70 mh70 hidescrollbar d-flex-col bg">
             <div className="bill-heading-div w100 p10 d-flex a-center t-center sb sticky-top bg7 br-top">
               <span className="f-label-text w10">उत्पा.क्र</span>
               <span className="f-label-text w40">उत्पादकाचे नाव</span>
@@ -1053,7 +1056,8 @@ const Payments = ({ setCurrentPage }) => {
                         : index % 2 === 0
                         ? "#faefe3"
                         : "#fff",
-                    }}>
+                    }}
+                  >
                     <span className="info-text w10 t-center">{item.Code}</span>
                     <span className="info-text w40 t-start">{item.cname}</span>
                     <span className="info-text w15 t-end">{item.tliters}</span>
@@ -1078,14 +1082,16 @@ const Payments = ({ setCurrentPage }) => {
               type="button"
               className="btn-danger mx10"
               onClick={deleteOneBill}
-              disabled={delOneStatus === "loading"}>
+              disabled={delOneStatus === "loading"}
+            >
               {delOneStatus === "loading" ? "काढूण टाकत आहे..." : "काढूण टाका"}
             </button>
             <button
               type="button"
               className="btn-danger"
               onClick={deleteAllBills}
-              disabled={delAllStatus === "loading"}>
+              disabled={delAllStatus === "loading"}
+            >
               {delAllStatus === "loading"
                 ? "काढूण टाकत आहे..."
                 : "सर्व काढूण टाका"}
@@ -1098,18 +1104,21 @@ const Payments = ({ setCurrentPage }) => {
           </button>
           <button
             className="w-btn"
-            onClick={() => setCurrentPage("milkcorrection")}>
+            onClick={() => setCurrentPage("milkcorrection")}
+          >
             संकलन दुरुस्थी
           </button>
           <button className="w-btn">कपात रिपोर्ट</button>
           <button
             className="w-btn"
-            onClick={() => setCurrentPage("payregister")}>
+            onClick={() => setCurrentPage("payregister")}
+          >
             पेमेंट रजिस्टर
           </button>
           <button
             className="w-btn"
-            onClick={() => setCurrentPage("paysummary")}>
+            onClick={() => setCurrentPage("paysummary")}
+          >
             पेमेंट समरी
           </button>
           <button className="w-btn">पेमेंट रजि. बँकेसाठी</button>

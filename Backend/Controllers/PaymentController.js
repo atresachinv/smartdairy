@@ -2571,3 +2571,74 @@ exports.deleteAllMilkPay = async (req, res) => {
     }
   });
 };
+
+// ----------------------------------------------------------------------------------->
+// Fetch Payment Summary ------------------------------------------------------------------->
+// ----------------------------------------------------------------------------------->
+
+exports.fetchPaySummary = async (req, res) => {
+  const { FromDate, ToDate } = req.query;
+  const { dairy_id, center_id } = req.user;
+
+  if (!FromDate || !ToDate) {
+    return res.status(400).json({
+      status: 400,
+      message: "fromDate and toDate is required!",
+    });
+  }
+
+  if (!dairy_id) {
+    return res.status(401).json({
+      status: 401,
+      message: "Unauthorized User!",
+    });
+  }
+
+  pool.getConnection((err, connection) => {
+    if (err) {
+      console.error("Error getting MySQL connection: ", err);
+      return res.status(500).json({ message: "Database connection error" });
+    }
+
+    try {
+      const fetchQuery = `
+          SELECT
+            sum(tliters) as totalLiters,
+            sum(pamt) as totalPayment,
+            sum(damt) as totalDeduction,
+            sum(namt) as totalNetPay 
+          FROM custbilldetails
+          WHERE companyid = ? AND center_id = ? AND DeductionId = 0 AND FromDate = ? AND ToDate = ? 
+        `;
+
+      connection.query(
+        fetchQuery,
+        [dairy_id, center_id, FromDate, ToDate],
+        (err, result) => {
+          connection.release();
+
+          if (err) {
+            console.error("Error executing delete query: ", err);
+            return res.status(500).json({ message: "Query execution error" });
+          }
+
+          if (!result || result.length === 0) {
+            return res.status(200).json({
+              status: 204,
+              message: "No records found!",
+            });
+          }
+
+          res.status(200).json({
+            status: 200,
+            paymentSummary: result[0],
+            message: "Payment summary records found successfully!",
+          });
+        }
+      );
+    } catch (error) {
+      console.error("Error processing request: ", error);
+      return res.status(500).json({ message: "Internal server error" });
+    }
+  });
+};

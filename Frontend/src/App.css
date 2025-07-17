@@ -536,22 +536,32 @@
 .bg7 {
   background-color: #17acc0;
 }
+
 .bg8 {
   background-color: #43beae;
   border-radius: 8px;
 }
+
 .bg-light-green {
   background-color: #c2f3cf;
 }
+
 .bg-light-skyblue {
   background-color: #cff3f8;
 }
+
 .bg-yellow {
-  background-color: #ccc04f;
+  color: #fff;
+  font-weight: 600;
+  background-color: #dbce56ea;
 }
-.bg-yell {
-  background-color: #84cab9;
+
+.bg-green {
+  font-weight: 600;
+  color: #fff;
+  background-color: #57d153cb;
 }
+
 .bg-fff {
   background-color: #fff;
 }
@@ -671,8 +681,6 @@ body {
     rgba(9, 166, 243, 1) 53%
   );
 }
-
-
 
 /*Responsive css*/
 

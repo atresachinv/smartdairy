@@ -524,8 +524,8 @@ const PayDeductions = ({ showbtn, setCurrentPage }) => {
           <span className="heading px10">Payment Deductions :</span>
           <div className="paymebt-bill-customer-details-div w100 h30 d-flex a-center sb">
             <div className="bill-no-comopent w30 d-flex a-center sb px10">
-              <label htmlFor="billtxt" className="label-text w45">
-                Bill No :
+              <label htmlFor="billtxt" className="label-text w50">
+                Bill No:
               </label>
               <input
                 id="billtxt"
@@ -540,13 +540,13 @@ const PayDeductions = ({ showbtn, setCurrentPage }) => {
                 }
               />
             </div>
-            <div className="bill-date-comopent w50 d-flex a-center sb px10">
+            <div className="bill-date-comopent w40 d-flex a-center sa">
               <label htmlFor="billdatetxt" className="label-text w40">
                 Bill Date:
               </label>
               <input
                 id="billdatetxt"
-                className="data w55 read-onlytxt"
+                className="data w60 read-onlytxt"
                 type="date"
                 readOnly
                 value={formData.billdate}
@@ -557,7 +557,7 @@ const PayDeductions = ({ showbtn, setCurrentPage }) => {
               />
             </div>
             <button type="button" className="btn">
-              संकलन तपशील दर्शवा{" "}
+              संकलन दर्शवा
             </button>
           </div>
           <div className="customer-details-container w100 h30 d-flex a-center sb">
@@ -608,7 +608,7 @@ const PayDeductions = ({ showbtn, setCurrentPage }) => {
             </div>
             <div className="morening-liter-compoentv w32 d-flex a-center sb">
               <label htmlFor="eveltrtxt" className="label-text w60">
-                सायंकाळ लि :
+                सायं. लि :
               </label>
               <input
                 id="eveltrtxt"
@@ -623,7 +623,7 @@ const PayDeductions = ({ showbtn, setCurrentPage }) => {
             </div>
             <div className="morening-liter-compoentv w32 d-flex a-center sb">
               <label htmlFor="totalmilktxt" className="label-text w60">
-                एकूण संकलन :
+                ए. संकलन :
               </label>
               <input
                 id="totalmilktxt"
@@ -670,7 +670,7 @@ const PayDeductions = ({ showbtn, setCurrentPage }) => {
             </div>
             <div className="commision-compoent w32 d-flex a-center sb">
               <label htmlFor="tcommtxt" className="label-text w60">
-                एकूण कमिशन :
+                ए. कमिशन :
               </label>
               <input
                 id="tcommtxt"
@@ -702,7 +702,7 @@ const PayDeductions = ({ showbtn, setCurrentPage }) => {
             </div>
             <div className="commission-compoent w32 d-flex a-center sb">
               <label htmlFor="erebettxt" className="label-text w60">
-                सायं. रीबेट क. :
+                सायं. री. क. :
               </label>
               <input
                 id="erebettxt"
@@ -717,7 +717,7 @@ const PayDeductions = ({ showbtn, setCurrentPage }) => {
             </div>
             <div className="commission-compoent w32 d-flex a-center sb">
               <label htmlFor="trebettxt" className="label-text w60">
-                एकूण रीबेट क. :
+                ए. रीबेट क. :
               </label>
               <input
                 id="trebettxt"
@@ -733,7 +733,7 @@ const PayDeductions = ({ showbtn, setCurrentPage }) => {
           </div>
         </div>
       </div>
-      <div className="payment-deduction-details-table-container  w100 h65 d-flex sb">
+      <div className="payment-deduction-details-table-container w100 h65 d-flex sb">
         <div className="payment-deduction-table-container  w60 h1 mh100 hidescrollbar d-flex-col bg">
           <div className="deduction-heading-container w100 p10 sa d-flex a-center t-center sticky-top bg7 br-top">
             <span className="f-label-text w30">कपातीचे नाव</span>
@@ -749,7 +749,8 @@ const PayDeductions = ({ showbtn, setCurrentPage }) => {
                 className="deduction-heading-container w100 p10 sa d-flex t-center a-center"
                 style={{
                   backgroundColor: "#f5d273",
-                }}>
+                }}
+              >
                 <span className="info-text w30">{item.dname}</span>
                 <span className="info-text w10">{item.MAMT}</span>
                 <span className="info-text w10">{item.Amt}</span>
@@ -767,7 +768,8 @@ const PayDeductions = ({ showbtn, setCurrentPage }) => {
                 className="deduction-heading-container w100 p10 sa d-flex t-center a-center"
                 style={{
                   backgroundColor: index % 2 === 0 ? "#faefe3" : "#fff",
-                }}>
+                }}
+              >
                 <span className="info-text w30">{item.dname || ""}</span>
                 <span className="info-text w10">{item.MAMT || 0}</span>
                 <span className="info-text w10">
@@ -799,7 +801,8 @@ const PayDeductions = ({ showbtn, setCurrentPage }) => {
                 className="deduction-heading-container w100 p10 sa d-flex t-center a-center"
                 style={{
                   backgroundColor: index % 2 === 0 ? "#faefe3" : "#fff",
-                }}>
+                }}
+              >
                 <span className="info-text w30">{item.dname || ""}</span>
                 <span className="info-text w10">{item.MAMT || 0}</span>
                 <span className="info-text w10">
@@ -860,7 +863,8 @@ const PayDeductions = ({ showbtn, setCurrentPage }) => {
               <label htmlFor="roff">राउंड रक्कम</label>
               <span
                 id="roff"
-                className="data h60 t-center label-text read-onlytxt">
+                className="data h60 t-center label-text read-onlytxt"
+              >
                 {formData.roundAmount || 0.0}
               </span>
             </div>
@@ -868,8 +872,9 @@ const PayDeductions = ({ showbtn, setCurrentPage }) => {
               <label htmlFor="netpay">निव्वळ देय</label>
               <span
                 id="netpay"
-                className="data h60 t-center label-text read-onlytxt"
-                readOnly>
+                className="data h60 t-center label-text bg-green"
+                readOnly
+              >
                 {formData.netPayment || 0.0}
               </span>
             </div>
@@ -878,7 +883,7 @@ const PayDeductions = ({ showbtn, setCurrentPage }) => {
           <div className="deduction-amount-container w100 h25 d-flex a-center sb">
             <div className="deduction-details w30 h1 d-flex-col a-center sb">
               <label htmlFor="">कमीत कमी रक्कम</label>
-              <span id="" className="data h60 t-center label-text read-onlytxt">
+              <span id="" className="data h60 t-center label-text bg-yellow">
                 {leastPayamt}
               </span>
             </div>
@@ -887,14 +892,16 @@ const PayDeductions = ({ showbtn, setCurrentPage }) => {
               className="btn"
               ref={submitBtnRef}
               onClick={handleBillSave}
-              disabled={dedStatus === "loading"}>
+              disabled={dedStatus === "loading"}
+            >
               {dedStatus === "loading" ? "saving..." : "बिल सेव्ह करा"}
             </button>
             {showbtn ? (
               <button
                 type="submit"
                 className="btn-danger mx10"
-                onClick={() => setCurrentPage("main")}>
+                onClick={() => setCurrentPage("main")}
+              >
                 बाहेर पडा
               </button>
             ) : (
