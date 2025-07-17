@@ -8,6 +8,7 @@ import {
 import { IoMdEye, IoMdEyeOff } from "react-icons/io";
 import { toast } from "react-toastify";
 import "../../../../Styles/Mainapp/Dairy/Center.css";
+import { checkuserName } from "../../../../App/Features/Users/authSlice";
 
 const CreateCenter = () => {
   const dispatch = useDispatch();
@@ -21,6 +22,7 @@ const CreateCenter = () => {
   const [prefixString, setPrefixString] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showCPassword, setShowCPassword] = useState(false);
+  const [isAvailable, setIsAvailable] = useState(true);
 
   //   // Generate prefix string on component mount
   //   useEffect(() => {
@@ -36,7 +38,7 @@ const CreateCenter = () => {
   //
   //     generatePrefix();
   //   }, []);
-  
+
   const initialValues = {
     marathi_name: "",
     center_name: "",
@@ -105,14 +107,14 @@ const CreateCenter = () => {
     const error = {};
     switch (name) {
       case "marathi_name":
-        if (!/^[\u0900-\u097Fa-zA-Z0-9\s]+$/.test(value)) {
+        if (!/^[\u0900-\u097Fa-zA-Z0-9.,()\s]+$/.test(value)) {
           error[name] = "Invalid name.";
         } else {
           delete errors[name];
         }
         break;
       case "center_name":
-        if (!/^[a-zA-Z0-9\s]+$/.test(value)) {
+        if (!/^[a-zA-Z0-9.,()\s]+$/.test(value)) {
           error[name] = "Invalid name.";
         } else {
           delete errors[name];
@@ -186,10 +188,6 @@ const CreateCenter = () => {
     const fieldsToValidate = [
       "marathi_name",
       "center_name",
-      "city",
-      "tehsil",
-      "district",
-      "pincode",
       "password",
       "confirm_pass",
     ];
@@ -205,6 +203,26 @@ const CreateCenter = () => {
     setErrors(validationErrors);
     return validationErrors;
   };
+
+  // checking mobile number is available or not ------------------------------------------->
+  //--------------------------------------------------------------------------------------->
+  useEffect(() => {
+    const check = async () => {
+      if (formData.mobile.length === 10) {
+        const result = await dispatch(
+          checkuserName({ username: formData.mobile })
+        ).unwrap();
+        setIsAvailable(result.available);
+        if (result.available === false) {
+          toast.error(
+            "मोबाईल नंबर अगोदर वापरलेला आहे, कृपया दुसऱ्या नंबर सह प्रयत्न करा!"
+          );
+        }
+      }
+    };
+
+    check();
+  }, [formData.mobile]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -324,7 +342,9 @@ const CreateCenter = () => {
               Mobile
             </label>
             <input
-              className={`data w100 ${errors.mobile ? "input-error" : ""}`}
+              className={`data w100 ${
+                errors.mobile ? "input-error" : !isAvailable ? "input-error" : ""
+              }`}
               type="text"
               name="mobile"
               id="mobile"

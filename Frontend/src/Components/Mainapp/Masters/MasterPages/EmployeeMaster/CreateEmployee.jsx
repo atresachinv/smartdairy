@@ -9,6 +9,7 @@ import {
 } from "../../../../../App/Features/Mainapp/Masters/empMasterSlice";
 import "../../../../../Styles/Mainapp/Masters/EmpMaster.css";
 import { useTranslation } from "react-i18next";
+import { checkuserName } from "../../../../../App/Features/Users/authSlice";
 
 const CreateEmployee = () => {
   const { t } = useTranslation(["master", "common"]);
@@ -19,6 +20,7 @@ const CreateEmployee = () => {
   const empData = useSelector((state) => state.emp.employee);
   const [isEditing, setIsEditing] = useState(false);
   const [errors, setErrors] = useState({});
+  const [isAvailable, setIsAvailable] = useState(true);
   const codeRef = useRef(null);
   const mnameRef = useRef(null);
   const enameRef = useRef(null);
@@ -284,7 +286,28 @@ const CreateEmployee = () => {
     }
   }, [formData.code, isEditing]);
 
-  // .................................................................................
+  // checking mobile number is available or not ------------------------------------------->
+  //--------------------------------------------------------------------------------------->
+  useEffect(() => {
+    const check = async () => {
+      if (formData.mobile.length === 10) {
+        const result = await dispatch(
+          checkuserName({ username: formData.mobile })
+        ).unwrap();
+        setIsAvailable(result.available);
+        if (result.available === false) {
+          toast.error(
+            "मोबाईल नंबर अगोदर वापरलेला आहे, कृपया दुसऱ्या नंबर सह प्रयत्न करा!"
+          );
+        }
+      }
+    };
+
+    check();
+  }, [formData.mobile]);
+
+  //--------------------------------------------------------------------------------------->
+  //  handle employee create and update --------------------------------------------------->
 
   const handleEmployee = async (e) => {
     e.preventDefault();
@@ -314,25 +337,25 @@ const CreateEmployee = () => {
   };
 
   return (
-    <div className="emp-create-update-container w100 h1 d-flex-col center">
+    <div className="emp-create-update-container w100 h1 d-flex-col center p10">
       <form
         onSubmit={handleEmployee}
-        className={`create-emp-container w60 h1 d-flex sa ${
-          isEditing ? "edit-bg" : "bg"
-        }`}
+        className={`create-emp-container w60 h1 d-flex sb`}
       >
-        <div className="emp-details-container w100 h1 d-flex-col sb">
-          <div className="tilte-container w100 d-flex a-center sb p10">
-            <span className="heading">
-              {isEditing ? "Update Employee" : "Create Employee"}
-            </span>
-          </div>
+        <div
+          className={`emp-details-container w100 h1 d-flex-col sb ${
+            isEditing ? "edit-bg" : "bg"
+          }`}
+        >
+          <span className="heading p10">
+            {isEditing ? "सेवक माहिती दुरुस्थी" : "नवीन सेवक नोंदवा"}
+          </span>
 
           {isEditing ? (
-            <div className="emp-div emp-details-div w100 d-flex sb">
+            <div className="emp-details-div w100 d-flex sb">
               <div className="details-div w30 d-flex-col px10">
                 <label htmlFor="ecode" className="info-text w100">
-                  Employee Code<span className="req">*</span>
+                  सेवक क्र.<span className="req">*</span>
                 </label>
                 <input
                   required
@@ -350,10 +373,10 @@ const CreateEmployee = () => {
           ) : (
             ""
           )}
-          <div className="emp-name-details-div w100 d-flex sa">
+          <div className="emp-details-div w100 h15 d-flex sa">
             <div className="details-div w50 d-flex-col a-center px10">
               <label htmlFor="mname" className="info-text w100">
-                Marathi Name<span className="req">*</span>{" "}
+                मराठी नाव :<span className="req">*</span>{" "}
               </label>
               <input
                 required
@@ -371,7 +394,7 @@ const CreateEmployee = () => {
             </div>
             <div className="details-div w50 d-flex-col a-center px10">
               <label htmlFor="engname" className="info-text w100">
-                English Name<span className="req">*</span>
+                इंग्रजी नाव :<span className="req">*</span>
               </label>
               <input
                 required
@@ -387,17 +410,23 @@ const CreateEmployee = () => {
             </div>
           </div>
 
-          <div className="emp-mds-details-div w100 d-flex sb">
+          <div className="emp-details-div w100 h15 d-flex sb">
             {isEditing ? (
               ""
             ) : (
-              <div className="mobile-details-div w25 d-flex-col a-center px10">
+              <div className="details-div w25 d-flex-col a-center px10">
                 <label htmlFor="mobile" className="info-text w100">
-                  Mobile<span className="req">*</span>
+                  मोबईल :<span className="req">*</span>
                 </label>
                 <input
                   required
-                  className={`data w100 ${errors.mobile ? "input-error" : ""}`}
+                  className={`data w100 ${
+                    errors.mobile
+                      ? "input-error"
+                      : !isAvailable
+                      ? "input-error"
+                      : ""
+                  }`}
                   type="number"
                   name="mobile"
                   id="mobile"
@@ -409,9 +438,9 @@ const CreateEmployee = () => {
               </div>
             )}
 
-            <div className="desig-details-div w40 d-flex-col a-center px10">
+            <div className="details-div w40 d-flex-col a-center px10">
               <label htmlFor="designation" className="info-text w100">
-                Designation<span className="req">*</span>{" "}
+                हुद्दा :<span className="req">*</span>{" "}
               </label>
               <select
                 className="data w100 "
@@ -422,15 +451,17 @@ const CreateEmployee = () => {
                 onKeyDown={(e) => handleKeyDown(e, salRef)}
                 ref={designationRef}
               >
-                <option value="manager">Manager</option>
-                <option value="milkcollector">Milk Collector</option>
-                <option value="mobilecollector">Mobile Milk Collector</option>
-                <option value="salesman">Stock Keeper</option>
+                <option value="">-- हुद्दा निवडा --</option>
+                <option value="manager">मॅनेजर</option>
+                <option value="milkcollector">दूध संकलक</option>
+                <option value="mobilecollector">दूध सॅम्पल संकलक</option>
+                <option value="salesman">स्टॉक किपर</option>
               </select>
             </div>
-            <div className="sal-details-div w30 d-flex-col a-center px10">
+
+            <div className="details-div w30 d-flex-col a-center px10">
               <label htmlFor="salary" className="info-text w100 ">
-                Salary<span className="req">*</span>
+                पगार :<span className="req">*</span>
               </label>
               <input
                 required
@@ -445,140 +476,129 @@ const CreateEmployee = () => {
               />
             </div>
           </div>
-          <div className="address-details-div w100 d-flex-col sb">
-            <span className="label-text px10">Address Details :</span>
-            <div className="Address-details w100 h1 d-flex sb">
-              <div className="details-div w25 d-flex-col a-center px10">
-                <label htmlFor="city" className="info-text w100 ">
-                  City<span className="req">*</span>
-                </label>
-                <input
-                  required
-                  className={`data w100 ${errors.city ? "input-error" : ""}`}
-                  type="text"
-                  name="city"
-                  id="city"
-                  onChange={handleInputChange}
-                  value={formData.city || ""}
-                  onKeyDown={(e) => handleKeyDown(e, telRef)}
-                  ref={cityRef}
-                />
-              </div>
-              <div className="details-div w30 d-flex-col a-center px10">
-                <label htmlFor="tehsil" className="info-text w100">
-                  Tehsil<span className="req">*</span>{" "}
-                </label>
-                <input
-                  required
-                  className={`data w100 ${errors.tehsil ? "input-error" : ""}`}
-                  type="text"
-                  name="tehsil"
-                  id="tehsil"
-                  onChange={handleInputChange}
-                  value={formData.tehsil || ""}
-                  onKeyDown={(e) => handleKeyDown(e, stateRef)}
-                  ref={telRef}
-                />
-              </div>
-              <div className="details-div w30 d-flex-col a-center px10">
-                <label htmlFor="dist" className="info-text w100">
-                  District<span className="req">*</span>{" "}
-                </label>
-                <input
-                  required
-                  className={`data w100 ${
-                    errors.district ? "input-error" : ""
-                  }`}
-                  type="text"
-                  name="district"
-                  id="disttehsil"
-                  onChange={handleInputChange}
-                  value={formData.district || ""}
-                  onKeyDown={(e) => handleKeyDown(e, pinRef)}
-                  ref={stateRef}
-                />
-              </div>
-              <div className="details-div w20 d-flex-col a-center px10">
-                <label htmlFor="pincode" className="info-text w100">
-                  Pincode<span className="req">*</span>{" "}
-                </label>
-                <input
-                  required
-                  className={`data w100 ${errors.pincode ? "input-error" : ""}`}
-                  type="text"
-                  name="pincode"
-                  id="pincode"
-                  onChange={handleInputChange}
-                  value={formData.pincode || ""}
-                  onKeyDown={(e) => handleKeyDown(e, bankRef)}
-                  ref={pinRef}
-                />
-              </div>
+
+          <div className="emp-details-div w100 h15 d-flex sb">
+            <div className="details-div w25 d-flex-col a-center px10">
+              <label htmlFor="city" className="info-text w100 ">
+                शहर :<span className="req">*</span>
+              </label>
+              <input
+                required
+                className={`data w100 ${errors.city ? "input-error" : ""}`}
+                type="text"
+                name="city"
+                id="city"
+                onChange={handleInputChange}
+                value={formData.city || ""}
+                onKeyDown={(e) => handleKeyDown(e, telRef)}
+                ref={cityRef}
+              />
+            </div>
+            <div className="details-div w30 d-flex-col a-center px10">
+              <label htmlFor="tehsil" className="info-text w100">
+                तालुका :<span className="req">*</span>{" "}
+              </label>
+              <input
+                required
+                className={`data w100 ${errors.tehsil ? "input-error" : ""}`}
+                type="text"
+                name="tehsil"
+                id="tehsil"
+                onChange={handleInputChange}
+                value={formData.tehsil || ""}
+                onKeyDown={(e) => handleKeyDown(e, stateRef)}
+                ref={telRef}
+              />
+            </div>
+            <div className="details-div w30 d-flex-col a-center px10">
+              <label htmlFor="dist" className="info-text w100">
+                जिल्हा :<span className="req">*</span>{" "}
+              </label>
+              <input
+                required
+                className={`data w100 ${errors.district ? "input-error" : ""}`}
+                type="text"
+                name="district"
+                id="disttehsil"
+                onChange={handleInputChange}
+                value={formData.district || ""}
+                onKeyDown={(e) => handleKeyDown(e, pinRef)}
+                ref={stateRef}
+              />
+            </div>
+            <div className="details-div w20 d-flex-col a-center px10">
+              <label htmlFor="pincode" className="info-text w100">
+                पिनकोड :<span className="req">*</span>{" "}
+              </label>
+              <input
+                required
+                className={`data w100 ${errors.pincode ? "input-error" : ""}`}
+                type="text"
+                name="pincode"
+                id="pincode"
+                onChange={handleInputChange}
+                value={formData.pincode || ""}
+                onKeyDown={(e) => handleKeyDown(e, bankRef)}
+                ref={pinRef}
+              />
             </div>
           </div>
 
-          <div className="Bank-details-div w100 d-flex-col sb">
-            <span className="label-text px10">Bank Details :</span>
-            <div className="Bank-details w100 h1 d-flex sb">
-              <div className="details-div w40 d-flex-col a-center px10">
-                <label htmlFor="bank" className="info-text w100 ">
-                  Bank Name
-                </label>{" "}
-                <input
-                  className={`data w100 ${
-                    errors.bankName ? "input-error" : ""
-                  }`}
-                  type="text"
-                  name="bankName"
-                  id="bank"
-                  onChange={handleInputChange}
-                  value={formData.bankName || ""}
-                  onKeyDown={(e) => handleKeyDown(e, bankacRef)}
-                  ref={bankRef}
-                />
-              </div>
-              <div className="details-div w30 d-flex-col a-center px10">
-                <label htmlFor="acc" className="info-text w100">
-                  Bank A/C
-                </label>{" "}
-                <input
-                  className={`data w100 ${errors.bank_ac ? "input-error" : ""}`}
-                  type="number"
-                  name="bank_ac"
-                  id="acc"
-                  onChange={handleInputChange}
-                  value={formData.bank_ac || ""}
-                  onKeyDown={(e) => handleKeyDown(e, bankifscRef)}
-                  ref={bankacRef}
-                />
-              </div>
-              <div className="details-div w30 d-flex-col a-center px10">
-                <label htmlFor="ifsc" className="info-text w100">
-                  Bank IFSC
-                </label>{" "}
-                <input
-                  className={`data w100 ${
-                    errors.bankIFSC ? "input-error" : ""
-                  }`}
-                  type="text"
-                  name="bankIFSC"
-                  id="ifsc"
-                  onChange={handleInputChange}
-                  value={formData.bankIFSC || ""}
-                  onKeyDown={(e) => handleKeyDown(e, passRef)}
-                  ref={bankifscRef}
-                />
-              </div>
+          <div className="emp-details-div w100 h15 d-flex sb">
+            <div className="details-div w40 d-flex-col a-center px10">
+              <label htmlFor="bank" className="info-text w100 ">
+                बँकेचे नाव :
+              </label>{" "}
+              <input
+                className={`data w100 ${errors.bankName ? "input-error" : ""}`}
+                type="text"
+                name="bankName"
+                id="bank"
+                onChange={handleInputChange}
+                value={formData.bankName || ""}
+                onKeyDown={(e) => handleKeyDown(e, bankacRef)}
+                ref={bankRef}
+              />
+            </div>
+            <div className="details-div w30 d-flex-col a-center px10">
+              <label htmlFor="acc" className="info-text w100">
+                बँक अ/नं. :
+              </label>{" "}
+              <input
+                className={`data w100 ${errors.bank_ac ? "input-error" : ""}`}
+                type="number"
+                name="bank_ac"
+                id="acc"
+                onChange={handleInputChange}
+                value={formData.bank_ac || ""}
+                onKeyDown={(e) => handleKeyDown(e, bankifscRef)}
+                ref={bankacRef}
+              />
+            </div>
+            <div className="details-div w30 d-flex-col a-center px10">
+              <label htmlFor="ifsc" className="info-text w100">
+                बँक IFSC :
+              </label>{" "}
+              <input
+                className={`data w100 ${errors.bankIFSC ? "input-error" : ""}`}
+                type="text"
+                name="bankIFSC"
+                id="ifsc"
+                onChange={handleInputChange}
+                value={formData.bankIFSC || ""}
+                onKeyDown={(e) => handleKeyDown(e, passRef)}
+                ref={bankifscRef}
+              />
             </div>
           </div>
 
           {isEditing ? (
             ""
           ) : (
-            <div className="emp-pass-details-div w100 d-flex py10 sb">
+            <div className="emp-details-div w100 d-flex py10 sb">
               <div className="details-div w50 d-flex-col a-center px10">
                 <label htmlFor="pass" className="info-text w100">
-                  Enter Password<span className="req">*</span>
+                  पासवर्ड टाका : <span className="req">*</span>
                 </label>
                 <input
                   required
@@ -596,7 +616,7 @@ const CreateEmployee = () => {
               </div>
               <div className="details-div w50 d-flex-col a-center px10">
                 <label htmlFor="cpass" className="info-text w100">
-                  Confirm Password<span className="req">*</span>
+                  पासवर्डची पुष्टी करा :<span className="req">*</span>
                 </label>
                 <input
                   required
@@ -615,7 +635,7 @@ const CreateEmployee = () => {
             </div>
           )}
 
-          <div className="button-container w100 d-flex j-end p10">
+          <div className="button-container w100 h10 d-flex j-end">
             <button
               type="button"
               className="w-btn mx10"
@@ -636,7 +656,7 @@ const CreateEmployee = () => {
               </button>
             ) : (
               <button
-                className="w-btn"
+                className="w-btn mx10"
                 type="submit"
                 disabled={createStatus === "loading"}
                 ref={submitbtn}

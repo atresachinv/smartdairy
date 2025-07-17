@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchAllDairyInfo } from "../../../../App/Features/Admin/Dairyinfo/dairySlice";
-import "../../../../Styles/AdminPannel/AccessControls/MilkAccess.css";
+import "../../../../Styles/AdminPannel/MilkAccess.css";
 import Select from "react-select";
 
 const customStyles = {
@@ -225,24 +225,6 @@ const MilkCollAccess = () => {
               </label>
             </div>
           </div>
-          {/* Generate Center Payment
-          <div className="access-controller-div h20 d-flex-col bg p10">
-            <label htmlFor="milk-access" className="label-text t-center">
-              Generate Center Payment
-            </label>
-            <div className="toggle-container w100 h50 d-flex center">
-              <span>{values.retail_sales === 1 ? "ON" : "OFF"}</span>
-              <label className="switch">
-                <input
-                  type="checkbox"
-                  checked={accessRights.includes("gen_center_payment")}
-                  onChange={() => handleToggle("gen_center_payment")}
-                />
-                <span className="slider"></span>
-              </label>
-            </div>
-          </div> */}
-          {/* Create Sub Ladger */}
           <div className="access-controller-div h20 d-flex-col bg p10">
             <label htmlFor="milk-access" className="label-text t-center">
               Create Sub Ladger

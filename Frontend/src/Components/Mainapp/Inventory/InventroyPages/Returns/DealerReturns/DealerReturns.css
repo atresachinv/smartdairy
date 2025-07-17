@@ -21,23 +21,110 @@
   flex-direction: column;
   gap: 3px;
 }
+
 @media screen and (max-width: 426px) {
-  .cust-return {
+  .dealer-return-container {
+    min-height: auto;
     flex-direction: column;
   }
-  .custCol {
+  .dealer-return-container .retun-product-details-container {
     width: 100%;
-    margin: 10px;
-    height: 100%;
+    min-height: fit-content;
+    margin-bottom: 10px;
   }
-  .deal-info {
-    padding: 10px 10px;
+  .retun-product-details-container .return-prod-details-div {
+    flex-direction: column;
   }
-  .deal-info-name {
-    padding: 0px 10px;
-    margin: 0px;
+  .return-prod-details-div .prod-detils-div {
+    width: 100%;
+    justify-content: space-between;
+    flex-direction: row;
+    margin-bottom: 10px;
   }
-  .returnModal .modal-content {
-    /* padding: 0px !important; */
+  .return-prod-details-div .prod-detils-div label {
+    width: 30%;
+    padding: 0;
+  }
+  .return-prod-details-div .prod-detils-div .data {
+    width: 65%;
+  }
+  .retun-product-details-container .return-btns-container button {
+    width: 100%;
+  }
+  /* ------- Bill Invoice CSS ---------- */
+  .dealer-return-container .return-product-invoice-container {
+    width: 100%;
+    min-height: 100%;
+    margin-bottom: 10px;
+  }
+  .return-product-invoice-container .return-prod-invoice-details-table {
+    width: 100%;
+    overflow-x: scroll;
+  }
+  .return-product-invoice-container .return-table-headings-div,
+  .return-product-invoice-container .return-table-data-div {
+    min-width: 600px;
+  }
+}
+
+/* ------- dealer return product list container ------- */
+@media screen and (max-width: 426px) {
+  .dealer-return-list-container {
+    width: 100%;
+    min-height: auto;
+  }
+  .dealer-return-list-container .download-print-pdf-excel-container {
+    min-height: fit-content;
+  }
+  .download-print-pdf-excel-container .sales-dates-and-add-return-container {
+    min-height: fit-content;
+    flex-direction: column-reverse;
+  }
+  .sales-dates-and-add-return-container .add-new-return-div {
+    width: 100%;
+    margin-bottom: 10px;
+  }
+  .sales-dates-and-add-return-container .add-new-return-div .add-btn {
+    width: 30%;
+  }
+  .sales-dates-and-add-return-container .sales-dates-container {
+    min-height: fit-content;
+    flex-direction: column;
+  }
+  .sales-dates-container .date-input-div {
+    width: 100%;
+    flex-direction: row;
+  }
+  .sales-dates-container .date-input-div label {
+    width: 35%;
+  }
+  .sales-dates-container .date-input-div input {
+    width: 55%;
+  }
+  .download-print-pdf-excel-container .find-returns-by-customer-container {
+    flex-wrap: wrap;
+    justify-content: space-between;
+    margin-bottom: 10px;
+  }
+  .find-returns-by-customer-container input {
+    width: 100%;
+  }
+  .find-returns-by-customer-container button {
+    width: 45%;
+    margin: 0;
+  }
+
+  /* -------- dealer return list ------------ */
+  .dealer-return-list-container .dealer-return-prod-list-container {
+    min-height: 90%;
+    margin-bottom: 10px;
+  }
+  .dealer-return-prod-list-container .dealer-returns-prod-detilas-table-div {
+    width: 100%;
+    min-height: 90%;
+    overflow-x: scroll;
+  }
+  .dealer-returns-prod-detilas-table-div .data-headings-div {
+    width: 600px;
   }
 }

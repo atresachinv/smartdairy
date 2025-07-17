@@ -13,13 +13,28 @@ app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 app.use(cookieParser());
 app.use(bodyParser.json());
 
-app.use(
-  cors({
-    origin: [process.env.ORIGIN],
-    methods: ["POST", "GET", "PUT", "PATCH", "DELETE"],
-    credentials: true,
-  })
-);
+const allowedOrigins = [
+  process.env.ORIGIN,
+  "https://smartdairy.in",
+  "https://www.smartdairy.in",
+];
+
+const corsOptions = {
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      console.warn("CORS blocked origin:", origin);
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+  credentials: true,
+  optionsSuccessStatus: 204,
+};
+
+app.use(cors(corsOptions));
 
 // Route Imports
 const user = require("./Routes/UserRoutes");

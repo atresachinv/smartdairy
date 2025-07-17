@@ -33,9 +33,9 @@
   font-size: clamp(1.3rem, 2vw, 1.4rem);
 }
 
-.submenu-text{
-text-decoration: none;
-color: #fff;
+.submenu-text {
+  text-decoration: none;
+  color: #fff;
   font-size: clamp(1.2rem, 2vw, 1.2rem);
 }
 
@@ -88,7 +88,9 @@ color: #fff;
   .close-sidebar {
     display: none;
   }
+
   .dairy-name-container {
+    overflow-x: scroll;
     margin-left: 10px;
   }
 }
@@ -125,4 +127,13 @@ color: #fff;
   .dairy-name {
     width: 90%;
   }
+
+  /* .header-container {
+    overflow-x: scroll;
+    min-width: min-content;
+  }
+
+  .header-container .dairy-name-container {
+    min-width: 500px;
+  } */
 }

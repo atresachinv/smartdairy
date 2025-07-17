@@ -53,7 +53,7 @@ import AdminSalesReports from "./Apphome/Appnavviews/MilkSankalan/AdminSalesRepo
 import MilkCollectorsReports from "./Apphome/Appnavviews/Milkcollection/MilkCollectorsReports";
 import DeliveryStockMaster from "./Inventory/InventroyPages/Stocks/DeliveryStock/DeliveryStockMaster";
 import CustReturns from "./Inventory/InventroyPages/Returns/CustomerReturns/CustReturns";
-import SellRateMaster from "./Inventory/InventroyPages/Stocks/SellRate/SellRateMaster";
+// import SellRateMaster from "./Inventory/InventroyPages/Stocks/SellRate/SellRateMaster";
 import ExpiredProductsMaster from "./Inventory/InventroyPages/Stocks/ExpiredProduct/ExpiredProductsMaster";
 import ComingSoon from "./ComingSoon";
 import { getCenterSetting } from "../../App/Features/Mainapp/Settings/dairySettingSlice";
@@ -101,7 +101,8 @@ import Updateratecharts from "./Masters/MasterPages/RatechartMaster/Updateratech
 import Applyratecharts from "./Masters/MasterPages/RatechartMaster/Applyratecharts";
 import PreviousRatechart from "./Masters/MasterPages/RatechartMaster/PreviousRatechart";
 import MilkBuySale from "./Reports/MilkBuySale/MilkBuySale";
-
+import UpdateSaleRate from "./Inventory/InventroyPages/Stocks/SellRate/UpdateSaleRate";
+import StartingStock from "./Inventory/InventroyPages/Stocks/StartingStock/StartingStock";
 
 const Mainapp = () => {
   const dispatch = useDispatch();
@@ -200,11 +201,8 @@ const Mainapp = () => {
         <Sidebar setselected={setIsselected} handleSidebar={handleSidebar} />
       </div>
       <div className="nav-main-view-container w80 h1 d-flex-col">
-        <div className="header-navs w100 h10 d-flex a-center sb px10 bg6">
-          <Header handleSidebar={handleSidebar} />
-        </div>
+        <Header handleSidebar={handleSidebar} />
         <div className="main-view-container w100 h90 d-flex center">
-          {/* <Mainappviews index={isselected} /> */}
           <Routes>
             {/* dashboard route */}
             {userRoutes.includes("dashboard") && (
@@ -257,7 +255,10 @@ const Mainapp = () => {
               element={<PurchaseMasters />}
             />
             <Route path="inventory/product/sales/*" element={<SalesMaster />} />
-            <Route path="inventory/product/stock/*" element={<Stocks />} />
+            <Route
+              path="inventory/product/stock/*"
+              element={<StartingStock />}
+            />
             <Route path="inventory/returns/*" element={<Returns />} />
             <Route
               path="inventory/returns/cust-return-list/*"
@@ -269,7 +270,7 @@ const Mainapp = () => {
             />{" "}
             <Route
               path="inventory/update-sell-rate/*"
-              element={<SellRateMaster />}
+              element={<UpdateSaleRate />}
             />{" "}
             <Route
               path="inventory/expired-product/*"

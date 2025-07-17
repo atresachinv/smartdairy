@@ -8,14 +8,8 @@ const CenterList = ({ onEdit }) => {
   const centerList = useSelector((state) => state.center.centersList || []);
   useEffect(() => {
     dispatch(centersLists());
-  }, [dispatch]);
+  }, []);
 
-  // Function to format the date
-  const formatDate = (dateString) => {
-    if (!dateString) return "";
-    const date = new Date(dateString);
-    return date.toISOString().split("T")[0];
-  };
 
   return (
     <div className="center-list-container w100 h1 d-flex-col p10">

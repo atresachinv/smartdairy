@@ -78,9 +78,10 @@
   .sangha-from-to-datediv-container {
     width: 65%;
   }
-  .sangha-from-to-datediv-container .sangha-sales-buttons-divs button {
+  .sangha-sales-date-buttons-div .sangha-sales-buttons-divs button {
     width: 45%;
   }
+
   .Daybook-button-div button {
     width: 25%;
   }

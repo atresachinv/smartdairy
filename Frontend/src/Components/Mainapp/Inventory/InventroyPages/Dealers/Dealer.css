@@ -88,7 +88,20 @@
   .create-dealer-form-container .button-container {
     flex-direction: row;
   }
-  .minSize {
-    padding: 15px !important;
+  .group-code-and-button-div {
+    min-height: fit-content;
+    flex-wrap: wrap;
+  }
+  .group-code-and-button-div .excel-btn,
+  .group-code-and-button-div .pdf-btn {
+    width: 45%;
+  }
+  .customer-list-container-div .customer-list-table {
+    margin-bottom: 10px;
+  }
+
+  /* ----- create dealer css -------- */
+  .create-dealer-container .create-dealer-inner-container {
+    margin-bottom: 10px;
   }
 }

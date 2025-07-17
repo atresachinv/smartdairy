@@ -5,6 +5,7 @@ import * as XLSX from "xlsx"; // Import xlsx library
 import { listSubLedger } from "../../../../App/Features/Mainapp/Masters/ledgerSlice";
 import { toast } from "react-toastify";
 import axiosInstance from "../../../../App/axiosInstance";
+import { centersLists } from "../../../../App/Features/Dairy/Center/centerSlice";
 
 // Get today's date
 const getTodaysDate = () => {
@@ -25,14 +26,15 @@ const UploadAccount = () => {
 
   const [tableData, setTableData] = useState([]); // State to hold table data
   const fileInputRef = useRef(null); // Ref for the file input
- const centerList = useSelector((state) => state.center.centersList || []);
+  const centerList = useSelector((state) => state.center.centersList || []);
 
   const centerId = useSelector((state) => state.dairy.dairyData.center_id);
   const [filter, setFilter] = useState(0);
 
   useEffect(() => {
     dispatch(listSubLedger());
-  }, [dispatch]);
+    dispatch(centersLists());
+  }, []);
 
   // Option lists for Select components
   const slegOptions = sledgerlist.map((i) => ({
@@ -51,7 +53,6 @@ const UploadAccount = () => {
       toast.error("कृपया एक फाइल निवडा.");
       return;
     }
-
     // Check if the file is an Excel file
     const validExtensions = ["xlsx", "xls"];
     const fileExtension = file.name.split(".").pop().toLowerCase();
@@ -72,17 +73,16 @@ const UploadAccount = () => {
       // Extract "Code" and "Amount" columns
       const extractedData = jsonData
         .map((row) => {
-          const code = row["Code"] || row["code"] || row["CODE"];
-          const amt = row["Amount"] || row["amt"] || row["AMOUNT"];
+          const code = row["code"] || row["Code"] || row["CODE"];
+          const amt = row["amount"] || row["Amount"] || row["AMOUNT"];
           const accname =
-            row["AccName"] ||
-            row["accname"] ||
-            row["ACCNAME"] ||
-            row["AccountName"] ||
+            row["custmer name"] ||
+            row["customer name"] ||
+            row["Customer Name"] ||
             row["accountname"] ||
-            row["ACCOUNTNAME"];
+            row["AccountName"];
 
-          if (!code || !amt) return null; // Skip rows missing required fields
+          if (!code || !amt) return null;
 
           return {
             code: code.toString().toLowerCase(),
@@ -90,10 +90,9 @@ const UploadAccount = () => {
             accname: accname ? accname.toString().toLowerCase() : "",
           };
         })
-        .filter((item) => item !== null); // Remove nulls
+        .filter((item) => item !== null);
 
       setTableData(extractedData); // Update table data state
-
       // Clear the file input after processing
       if (fileInputRef.current) {
         fileInputRef.current.value = ""; // Reset the file input
@@ -101,7 +100,7 @@ const UploadAccount = () => {
     };
     reader.readAsArrayBuffer(file);
   };
-
+  
   // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -178,11 +177,11 @@ const UploadAccount = () => {
         <div className="heading my5 w100 d-flex center">
           व्यवहार एक्सेल अपलोड
         </div>
-        <div className="d-flex w100 j-center my10">
+        <div className="select-center-component-container w100 d-flex j-center my10">
           {centerId > 0 ? (
             <></>
           ) : (
-            <div className="d-flex w50 a-center mx10">
+            <div className="w100 d-flex a-center mx10">
               <span className="info-text">सेंटर निवडा :</span>
               <select
                 className="data w50 a-center  my5 mx5"

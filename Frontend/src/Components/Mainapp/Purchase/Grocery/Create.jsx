@@ -290,17 +290,17 @@ const Create = () => {
   };
 
   return (
-    <div className="purchase-cattle-feed-container w100 h1 d-flex-col p10">
-      <div className="d-flex w100 sa">
-        <span className="heading"> {t("ps-nv-add-grocery")}</span>
+    <div className="purchase-products-container w100 h1 d-flex-col sb p10">
+      <div className="page-title-center-select-container w100 h15 d-flex a-center">
+        <span className="heading w20 px10"> {t("ps-nv-add-grocery")} :</span>
         {userRole === "admin" ? (
           centerId > 0 ? (
             <></>
           ) : (
-            <div className="d-flex a-center mx10">
-              <span className="info-text w50">सेंटर निवडा :</span>
+            <div className="center-selection-container w48 d-flex a-center sb">
+              <span className="label-text w50">सेंटर निवडा :</span>
               <select
-                className="data   a-center  my5 mx5"
+                className="data"
                 name="center"
                 value={filter}
                 onChange={(e) => handleCenterChange(e.target.value)}
@@ -320,11 +320,11 @@ const Create = () => {
           <></>
         )}
       </div>
-      <div className="purchase-cattle-feed-inner-container w100 h1 d-flex sb">
-        <form className="purchase-cattle-feed-form-container w50 h1 bg p10">
-          <div className="purchase-input-row w100 h20 d-flex  a-center sb">
-            <div className="purchase-input-col w45 d-flex-col sb">
-              <label className="info-text px10">{t("ps-date")} :</label>
+      <div className="purchase-new-prod-container w100 h90 d-flex sb">
+        <form className="purchase-new-prod-form-container w50 h1 bg p10">
+          <div className="purchase-details-container w100 h20 d-flex a-center sb">
+            <div className="purchase-input-container w48 d-flex-col sb">
+              <label className="info-text px10"> {t("ps-date")}:</label>
               <input
                 type="date"
                 id="date"
@@ -338,7 +338,7 @@ const Create = () => {
                 }
               />
             </div>
-            <div className="purchase-input-col w45 d-flex-col sb">
+            <div className="purchase-input-container w48 d-flex-col sb">
               <label className="info-text px10">{t("ps-rect-no")}:</label>
               <input
                 type="number"
@@ -355,10 +355,9 @@ const Create = () => {
               />
             </div>
           </div>
-          <div className="purchase-input-row w100 h20 d-flex  a-center sb">
-            <div className="purchase-input-col w45 d-flex-col sb">
+          <div className="purchase-details-container w100 h20 d-flex a-center sb">
+            <div className="purchase-input-container w48 d-flex-col sb">
               <label className="info-text px10">{t("ps-dealer-no")}:</label>
-
               <input
                 type="number"
                 id="fcode"
@@ -372,9 +371,8 @@ const Create = () => {
                 }
               />
             </div>
-            <div className="purchase-input-col w45 d-flex-col sb">
+            <div className="purchase-input-container w48 d-flex-col sb">
               <label className="info-text px10">{t("ps-dealer-name")}:</label>
-
               <select
                 id="cname"
                 value={cname}
@@ -394,11 +392,9 @@ const Create = () => {
               </select>
             </div>
           </div>
-
-          <div className="purchase-input-row w100 h20 d-flex a-center sb">
-            <div className="purchase-input-col w45 d-flex-col sb">
+          <div className="purchase-details-container w100 h20 d-flex a-center sb">
+            <div className="purchase-input-container w48 d-flex-col sb">
               <label className="info-text px10">Select Items:</label>
-
               <select
                 id="selectitemcode"
                 disabled={!cname}
@@ -418,9 +414,8 @@ const Create = () => {
                   ))}
               </select>
             </div>
-            <div className="purchase-input-col w45 d-flex-col sb">
+            <div className="purchase-input-container w48 d-flex-col sb">
               <label className="info-text px10"> {t("ps-qty")}:</label>
-
               <input
                 id="qty"
                 disabled={!selectitemcode}
@@ -437,10 +432,9 @@ const Create = () => {
               />
             </div>
           </div>
-          <div className="purchase-input-row w100 h20 d-flex a-center sb">
-            <div className="purchase-input-col w45 d-flex-col sb">
-              <label className="info-text px10">{t("ps-rate")}:</label>
-
+          <div className="purchase-details-container w100 h20 d-flex a-center sb">
+            <div className="purchase-input-container w48 d-flex-col sb">
+              <label className="info-text px10">{t("खरेदी दर ")}:</label>
               <input
                 id="rate"
                 type="number"
@@ -458,9 +452,8 @@ const Create = () => {
                 }
               />
             </div>
-            <div className="purchase-input-col w45 d-flex-col sb">
+            <div className="purchase-input-container w48 d-flex-col sb">
               <label className="info-text px10">{t("ps-sale-rate")}:</label>
-
               <input
                 id="sellrate"
                 type="number"
@@ -473,8 +466,8 @@ const Create = () => {
               />
             </div>
           </div>
-          <div className="purchase-input-row w100 h20 d-flex  a-center sb">
-            <div className="purchase-input-col w45 d-flex-col">
+          <div className="purchase-details-container w100 h20 d-flex a-center sb">
+            <div className="purchase-input-container w48 d-flex-col sb">
               <label className="info-text px10">{t("ps-amt")}:</label>
               <input
                 id="amt"
@@ -485,10 +478,9 @@ const Create = () => {
                 readOnly
               />
             </div>
-
-            <div className="button-container w100 h1 d-flex j-end my5">
+            <div className="button-container w48 h1 d-flex a-center j-end">
               <button
-                className="btn mx10"
+                className="w50 btn"
                 style={{ marginTop: "auto" }}
                 onClick={handleAddToCart}
               >
@@ -497,25 +489,26 @@ const Create = () => {
             </div>
           </div>
         </form>
-
-        <div className="sales-list-outer-container w45 h1 d-flex-col bg">
-          <span className="heading w50 p10">{t("ps-pur-list")}</span>
-
-          <div className="sales-list-conatainer w100 h1 d-flex-col">
-            <div className="sales-headings-row w100 h10 d-flex sb a-center t-center sticky-top t-heading-bg">
+        <div className="purchased-products-list-outer-container w48 h1 d-flex-col bg">
+          <span className="heading w50 p10">{t("ps-pur-list")} :</span>
+          <div className="purchased-products-list-conatainer w100 h90 mh90 hidescrollbar d-flex-col">
+            <div className="purchased-products-data-div w100 py10 d-flex a-center t-center sticky-top bg7 sb">
               <span className="f-label-text w10"> {t("ps-srNo")}</span>
               <span className="f-label-text w40">{t("ps-itm-name")}</span>
               <span className="f-label-text w10"> {t("ps-qty")}</span>
               <span className="f-label-text w10"> {t("ps-rate")}</span>
               <span className="f-label-text w10"> {t("ps-amt")}</span>
-              <span className="f-label-text w20 t-center">Action</span>
+              <span className="f-label-text w15 t-center">Action</span>
             </div>
             {cartItem.length > 0 ? (
               <>
                 {cartItem.map((item, i) => (
                   <div
                     key={i}
-                    className="sales-headings-row w100 h10 d-flex a-center sb"
+                    className="purchased-products-data-div w100 p10 d-flex a-center sb"
+                    style={{
+                      backgroundColor: i % 2 === 0 ? "#faefe3" : "#fff",
+                    }}
                   >
                     <span className="label-text w10 t-center">{i + 1}</span>
                     <span className="label-text w40 t-start">
@@ -524,7 +517,7 @@ const Create = () => {
                     <span className="label-text w10 t-center">{item.qty}</span>
                     <span className="label-text w10 t-end">{item.rate}</span>
                     <span className="label-text w10 t-end">{item.amount}</span>
-                    <span className="label-text w20 t-center">
+                    <span className="label-text w15 t-center">
                       <MdDeleteOutline
                         size={20}
                         className="table-icon"
@@ -538,7 +531,7 @@ const Create = () => {
                   <span className=" w10"></span>
                   <span className=" w40"></span>
                   <span className=" w10"></span>
-                  <span className="label-text w10">{t("ps-ttl-amt")} :</span>
+                  <span className="label-text w10"> {t("ps-ttl-amt")} </span>
                   <span className="label-text w10 t-end">
                     {cartItem.reduce((acc, item) => acc + item.amount, 0)}
                   </span>

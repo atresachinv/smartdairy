@@ -40,7 +40,6 @@ const EmployeeList = () => {
   };
 
   const handleDelete = async ({ id, mobile }) => {
-    console.log(id, mobile);
     const result = await Swal.fire({
       title: "Confirm Deletion?",
       text: "Are you sure you want to delete this?",
@@ -72,59 +71,59 @@ const EmployeeList = () => {
   };
 
   return (
-    <div className="emp-list-container w70 h90 d-flex-col">
-      <div className="title-div w100 h10 d-flex a-center sb px10 my10">
-        <span className="heading w30 t-center">Employee List</span>
-        <div className="filter-emp-by-center w60 d-flex a-center">
-          <span className="label-text w40 p10">{t("center List")}</span>
-          <select
-            className="data w60"
-            name="center"
-            onChange={handleFilter}
-            value={selectedCenter}
-          >
-            <option value="">-- Select Center --</option>
-            {centerList.map((center) => (
-              <option key={center.center_id} value={center.center_id}>
-                {center.center_name}
-              </option>
-            ))}
-          </select>
-        </div>
-      </div>
-      <div className="emp-data-list-container w100 h90 d-flex-col bg">
-        <div className="emp-data-heading-div w100 py10 d-flex a-center sb br-top bg7">
-          <span className="f-label-text w10  t-center">Id</span>
-          <span className="f-label-text w30  t-center">Employee Name</span>
-          <span className="f-label-text w20  t-center">Designation</span>
-          <span className="f-label-text w15  t-center">Mobile</span>
-          <span className="f-label-text w15  t-center">Salary</span>
-          <span className="f-label-text w10  t-center">Action</span>
-        </div>
-        <div className="emp-data-list-div w100 h90 mh90 d-flex-col hidescrollbar">
-          {filteredEmpList.map((emp, i) => (
-            <div
-              key={i + 3}
-              className={`emp-data-div w100 py10 d-flex a-center t-center sb ${
-                i % 2 === 0 ? "bg-light" : "bg-dark"
-              }`}
-              style={{ backgroundColor: i % 2 === 0 ? "#faefe3" : "#fff" }}
+    <div className="emp-list-outer-container w100 h1 d-flex-col center">
+      <div className="emp-list-container w70 h90 d-flex-col">
+        <div className="title-div w100 h10 d-flex a-center sb px10 my10">
+          <span className="heading w20 t-center">सेवक यादी :</span>
+          <div className="filter-emp-by-center w70 d-flex a-center">
+            <span className="label-text w30 p10">{t("center List")}</span>
+            <select
+              className="data w70"
+              name="center"
+              onChange={handleFilter}
+              value={selectedCenter}
             >
-              <span className="text w10">{emp.emp_id}</span>
-              <span className="text w30">{emp.emp_name}</span>
-              <span className="text w20">{emp.designation}</span>
-              <span className="text w15">{emp.emp_mobile}</span>
-              <span className="text w20">{emp.salary}</span>
-              <span type="button" className="icon w10" disabled>
-                <MdDeleteForever
-                  className="req"
-                  onClick={() =>
-                    handleDelete({ id: emp.emp_id, mobile: emp.emp_mobile })
-                  }
-                />
-              </span>
-            </div>
-          ))}
+              <option value="">-- सेंटर निवडा --</option>
+              {centerList.map((center) => (
+                <option key={center.center_id} value={center.center_id}>
+                  {center.center_name}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+        <div className="emp-data-list-container w100 h90 d-flex-col bg">
+          <div className="emp-data-heading-div w100 py10 d-flex a-center sb br-top bg7">
+            <span className="f-label-text w10  t-center">क्र.</span>
+            <span className="f-label-text w30  t-center">सेवकाचे नाव</span>
+            <span className="f-label-text w20  t-center">हुद्दा</span>
+            <span className="f-label-text w15  t-center">मोबाईल</span>
+            <span className="f-label-text w15  t-center">पगार</span>
+            <span className="f-label-text w10  t-center">Action</span>
+          </div>
+          <div className="emp-data-list-div w100 h90 mh90 d-flex-col hidescrollbar">
+            {filteredEmpList.map((emp, i) => (
+              <div
+                key={i + 3}
+                className={`emp-data-div w100 py10 d-flex a-center t-center sb`}
+                style={{ backgroundColor: i % 2 === 0 ? "#faefe3" : "#fff" }}
+              >
+                <span className="text w10">{emp.emp_id}</span>
+                <span className="text w30">{emp.emp_name}</span>
+                <span className="text w20">{emp.designation}</span>
+                <span className="text w15 t-end">{emp.emp_mobile}</span>
+                <span className="text w15">{emp.salary}</span>
+                <span type="button" className="icon w10" disabled>
+                  <MdDeleteForever
+                    className="req"
+                    onClick={() =>
+                      handleDelete({ id: emp.emp_id, mobile: emp.emp_mobile })
+                    }
+                  />
+                </span>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </div>

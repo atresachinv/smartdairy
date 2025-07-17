@@ -86,6 +86,7 @@ const Payments = ({ setCurrentPage }) => {
   const submitbtn = useRef(null);
   const autoCenter = settings?.autoCenter;
 
+  // console.log("deductionDetails", deductionDetails);
   // ----------------------------------------------------------------------->
   // check if payment is lock or not ------------------------------------->
 
@@ -311,6 +312,7 @@ const Payments = ({ setCurrentPage }) => {
             avgRate: 0.0,
             totalDeduction: 0.0,
             dtype: 0,
+            paygentype: 0,
           });
         }
 
@@ -351,6 +353,7 @@ const Payments = ({ setCurrentPage }) => {
             avgRate: 0.0,
             totalDeduction: 0.0,
             dtype: 1,
+            paygentype: 0,
           });
 
           if (remainingAmt <= leastPayamt) break;
@@ -385,6 +388,7 @@ const Payments = ({ setCurrentPage }) => {
             avgRate: 0.0,
             totalDeduction: 0.0,
             dtype: 1,
+            paygentype: 0,
           });
         }
 
@@ -416,6 +420,7 @@ const Payments = ({ setCurrentPage }) => {
           avgRate: avgRate.toFixed(1),
           totalDeduction: totalDeduction.toFixed(2),
           dtype: 2,
+          paygentype: 0,
         });
       }
 
@@ -475,10 +480,12 @@ const Payments = ({ setCurrentPage }) => {
         remainingAmt = (remainingAmt + allComm - totalTransport).toFixed(2);
         const userPrevMamts = prevMamt.filter((item) => item.AccCode === rno);
         // FIXED DEDUCTIONS
+
         for (const deduction of filteredDeductions) {
           const matchPrevAmt = userPrevMamts.find(
             (item) => item.GLCode === deduction.GLCode
           );
+
           const prevAmt = matchPrevAmt ? Math.abs(matchPrevAmt.totalamt) : 0;
 
           const amt = +(totalLitres * deduction.RatePerLitre).toFixed(2);
@@ -486,14 +493,14 @@ const Payments = ({ setCurrentPage }) => {
           remainingAmt -= amt.toFixed(2);
 
           deductionEntries.push({
-            DeductionId: deduction.DeductionId,
-            GLCode: deduction.GLCode,
+            DeductionId: deduction?.DeductionId,
+            GLCode: deduction?.GLCode,
             rno,
             AccCode,
-            dname: deduction.dname,
-            MAMT: prevAmt.toFixed(2),
-            amt: amt.toFixed(2),
-            damt: amt.toFixed(2),
+            dname: deduction?.dname,
+            MAMT: prevAmt?.toFixed(2),
+            amt: amt?.toFixed(2),
+            damt: amt?.toFixed(2),
             cname: "",
             totalamt: (prevAmt + amt).toFixed(2),
             totalLitres: 0.0,
@@ -502,6 +509,7 @@ const Payments = ({ setCurrentPage }) => {
             avgRate: 0.0,
             totalDeduction: 0.0,
             dtype: 0,
+            paygentype: 1,
           });
         }
 
@@ -552,6 +560,7 @@ const Payments = ({ setCurrentPage }) => {
             avgRate: 0.0,
             totalDeduction: 0.0,
             dtype: 1,
+            paygentype: 1,
           });
 
           if (remainingAmt <= leastPayamt) break;
@@ -561,7 +570,11 @@ const Payments = ({ setCurrentPage }) => {
         const roundOffDedu = deductionDetails.find(
           (deduction) => deduction.RatePerLitre === 0 && deduction.GLCode === 2
         );
-
+        if (roundOffDedu.DeductionId === undefined) {
+          return toast.error(
+            "Round Off Deduction Not Found, Create and try again."
+          );
+        }
         const flooredAmt = Math.floor(remainingAmt);
         const roundAmt = Math.floor((remainingAmt - flooredAmt) * 100) / 100;
         if (roundAmt > 0) {
@@ -586,6 +599,7 @@ const Payments = ({ setCurrentPage }) => {
             avgRate: 0.0,
             totalDeduction: 0.0,
             dtype: 1,
+            paygentype: 1,
           });
         }
 
@@ -617,6 +631,7 @@ const Payments = ({ setCurrentPage }) => {
           avgRate: avgRate.toFixed(1),
           totalDeduction: totalDeduction.toFixed(2),
           dtype: 2,
+          paygentype: 1,
         });
       }
 
@@ -674,7 +689,7 @@ const Payments = ({ setCurrentPage }) => {
           center_id: formData.center_id,
         })
       ).unwrap();
-
+      console.log("result", result);
       if (result?.status === 200) {
         toast.error("Milk correction required!");
         return;
@@ -856,7 +871,7 @@ const Payments = ({ setCurrentPage }) => {
         <label className="heading py10 mx10" htmlFor="">
           दुध बिले बनवा :
         </label>
-        <label className="label-text py10 mx10" htmlFor="">
+        <label className="label-text mx10" htmlFor="">
           सेंटर निवडा :
         </label>
         {center_id === 0 ? (
@@ -864,8 +879,7 @@ const Payments = ({ setCurrentPage }) => {
             className="data w40"
             name="center_id"
             id="select-center"
-            onChange={handleInput}
-          >
+            onChange={handleInput}>
             {centerList.map((center, index) => (
               <option key={index} value={center.center_id}>
                 {center.center_name}
@@ -878,8 +892,7 @@ const Payments = ({ setCurrentPage }) => {
       </div>
       <form
         onSubmit={handleGenerateBill}
-        className="generate-bill-form-container w100 h20 d-flex sb br6"
-      >
+        className="generate-bill-form-container w100 h20 d-flex sb br6">
         <div className="bill-voucher-date-container w30 px10 d-flex-col bg-light-skyblue br6 sa px10">
           <div className="bil-date-div d-flex w100 h1 a-center sb">
             <label htmlFor="billdate" className="label-text w50">
@@ -976,8 +989,7 @@ const Payments = ({ setCurrentPage }) => {
             type="button"
             className="w-btn"
             disabled={payShowStatus}
-            onClick={handleShowBtn}
-          >
+            onClick={handleShowBtn}>
             {payShowStatus ? "showing..." : "पाहणे "}
           </button>
           <button type="submit" className="w-btn" disabled={payStatus}>
@@ -1041,8 +1053,7 @@ const Payments = ({ setCurrentPage }) => {
                         : index % 2 === 0
                         ? "#faefe3"
                         : "#fff",
-                    }}
-                  >
+                    }}>
                     <span className="info-text w10 t-center">{item.Code}</span>
                     <span className="info-text w40 t-start">{item.cname}</span>
                     <span className="info-text w15 t-end">{item.tliters}</span>
@@ -1067,16 +1078,14 @@ const Payments = ({ setCurrentPage }) => {
               type="button"
               className="btn-danger mx10"
               onClick={deleteOneBill}
-              disabled={delOneStatus === "loading"}
-            >
+              disabled={delOneStatus === "loading"}>
               {delOneStatus === "loading" ? "काढूण टाकत आहे..." : "काढूण टाका"}
             </button>
             <button
               type="button"
               className="btn-danger"
               onClick={deleteAllBills}
-              disabled={delAllStatus === "loading"}
-            >
+              disabled={delAllStatus === "loading"}>
               {delAllStatus === "loading"
                 ? "काढूण टाकत आहे..."
                 : "सर्व काढूण टाका"}
@@ -1089,21 +1098,18 @@ const Payments = ({ setCurrentPage }) => {
           </button>
           <button
             className="w-btn"
-            onClick={() => setCurrentPage("milkcorrection")}
-          >
+            onClick={() => setCurrentPage("milkcorrection")}>
             संकलन दुरुस्थी
           </button>
           <button className="w-btn">कपात रिपोर्ट</button>
           <button
             className="w-btn"
-            onClick={() => setCurrentPage("payregister")}
-          >
+            onClick={() => setCurrentPage("payregister")}>
             पेमेंट रजिस्टर
           </button>
           <button
             className="w-btn"
-            onClick={() => setCurrentPage("paysummary")}
-          >
+            onClick={() => setCurrentPage("paysummary")}>
             पेमेंट समरी
           </button>
           <button className="w-btn">पेमेंट रजि. बँकेसाठी</button>

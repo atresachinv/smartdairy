@@ -193,7 +193,7 @@ const CenterReports = () => {
             <label className="flabel label-text w25" htmlFor="fromdate">
               मस्टर निवडा
             </label>
-            <label className="fd-txt label-text w15" htmlFor="fromdate">
+            <label className="fd-txt label-text w10" htmlFor="fromdate">
               पासुन :
             </label>
             <input
@@ -222,11 +222,11 @@ const CenterReports = () => {
         </div>
         <div className="center-milk-coll-details-div w100 h50 d-flex a-center">
           <div className="select-center-div w50 d-flex a-center sb px10">
-            <label htmlFor="centerid" className="info-text w30">
+            <label htmlFor="centerid" className="label-text w35">
               सेंटर निवडा : <span className="req">*</span>{" "}
             </label>
             <select
-              className="data w70"
+              className="data w65"
               name="centerid"
               id="centerid"
               value={values.centerid}
@@ -247,11 +247,11 @@ const CenterReports = () => {
             </select>
           </div>
           <div className="select-center-div w50 d-flex a-center sb px10">
-            <label htmlFor="collectedBy" className="info-text w35">
+            <label htmlFor="collectedBy" className="label-text w40">
               संकलक निवडा :
             </label>
             <select
-              className="data w65"
+              className="data w60"
               name="collectedBy"
               id="collectedBy"
               value={values.collectedBy}

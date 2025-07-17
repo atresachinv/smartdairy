@@ -6,6 +6,7 @@ const NodeCache = require("node-cache");
 const cache = new NodeCache({});
 const util = require("util");
 
+
 //----------------------------------------------------------------------->
 // Create New Customer (Admin Route)------------------------------------->
 //----------------------------------------------------------------------->
@@ -86,7 +87,7 @@ exports.createCustomer = async (req, res) => {
     h_transportation,
   } = req.body;
 
-  const { dairy_id, centerid, user_role } = req.user;
+  const { dairy_id, center_id, user_role } = req.user;
   const designation = "Customer";
   const isAdmin = "0";
   const formattedCode = String(cust_no).padStart(3, "0");
@@ -163,7 +164,7 @@ exports.createCustomer = async (req, res) => {
               dairy_id,
               marathi_name,
               rctype || null,
-              centerid,
+              center_id,
               cust_no,
               pincode,
               aadhaar_no || null,
@@ -196,7 +197,7 @@ exports.createCustomer = async (req, res) => {
                   console.error("Error inserting into customer table: ", err);
                   return res
                     .status(500)
-                    .json({ status: 500, message: "Database query error" });
+                    .json({ status: 500, message: "Database query error." });
                 });
               }
 
@@ -221,19 +222,32 @@ exports.createCustomer = async (req, res) => {
                   mobile,
                   dairy_id,
                   cid,
-                  centerid,
+                  center_id,
                 ],
                 (err, result) => {
+                  console.log("User Insert Values:", [
+                    fax,
+                    mobile || 123456,
+                    isAdmin,
+                    date,
+                    user_role,
+                    designation,
+                    pincode,
+                    mobile,
+                    dairy_id,
+                    cid,
+                    center_id,
+                  ]);
                   if (err) {
                     return connection.rollback(() => {
                       connection.release();
                       console.error("Error inserting into users table: ", err);
-                      return res
-                        .status(500)
-                        .json({ status: 500, message: "Database query error" });
+                      return res.status(500).json({
+                        status: 500,
+                        message: "Database query error!",
+                      });
                     });
                   }
-
                   // Commit transaction after both inserts succeed
                   connection.commit((err) => {
                     if (err) {
@@ -258,9 +272,6 @@ exports.createCustomer = async (req, res) => {
             }
           );
         });
-        // Remove the cached customer list
-        const cacheKey = `customerList_${dairy_id}_${centerid}`;
-        cache.del(cacheKey);
       } catch (error) {
         connection.rollback(() => {
           connection.release();
@@ -274,9 +285,9 @@ exports.createCustomer = async (req, res) => {
   });
 };
 
-//..................................................
+//----------------------------------------------------------------------->
 // Update Customer Info (Admin Route) Active........
-//..................................................
+//----------------------------------------------------------------------->
 
 //....................admin.........................
 
@@ -315,7 +326,6 @@ exports.updateCustomer = async (req, res) => {
     h_transportation,
   } = req.body;
 
-  const { dairy_id, center_id } = req.user;
   pool.getConnection((err, connection) => {
     if (err) {
       console.error("Error getting MySQL connection: ", err);
@@ -392,9 +402,6 @@ exports.updateCustomer = async (req, res) => {
             .json({ status: 200, message: "Customer updated successfully" });
         }
       );
-      // Remove the cached customer list
-      const cacheKey = `customerList_${dairy_id}_${center_id}`;
-      cache.del(cacheKey);
     } catch (error) {
       connection.release();
       console.error("Error processing request: ", error);
@@ -405,9 +412,9 @@ exports.updateCustomer = async (req, res) => {
   });
 };
 
-//..............................................................
+//----------------------------------------------------------------------->
 //Fetch Customers List .........................................
-//..............................................................
+//----------------------------------------------------------------------->
 
 exports.customerList = async (req, res) => {
   const dairy_id = req.user.dairy_id;
@@ -415,17 +422,6 @@ exports.customerList = async (req, res) => {
 
   if (!dairy_id) {
     return res.status(401).json({ status: 401, message: "Unauthorized User!" });
-  }
-
-  const cacheKey = `customerList_${dairy_id}_${center_id}`;
-  // Check if data exists in cache
-  const cachedData = cache.get(cacheKey);
-  if (cachedData) {
-    return res.status(200).json({
-      status: 200,
-      customerList: cachedData,
-      message: "Customers found!",
-    });
   }
 
   // SQL Query for retrieving customers
@@ -462,9 +458,6 @@ exports.customerList = async (req, res) => {
             .json({ status: 500, message: "Error fetching customer list" });
         }
 
-        // Store in cache before sending response
-        cache.set(cacheKey, result);
-
         return res.status(200).json({
           status: 200,
           customerList: result,
@@ -482,9 +475,9 @@ exports.customerList = async (req, res) => {
   });
 };
 
-//..................................................
+//----------------------------------------------------------------------->
 // Get list of unique RateCharts....................
-//..................................................
+//----------------------------------------------------------------------->
 
 exports.uniqueRchartList = async (req, res) => {
   const dairy_id = req.user.dairy_id;
@@ -526,9 +519,9 @@ exports.uniqueRchartList = async (req, res) => {
 
 //..................customer........................
 
-//..................................................
+//----------------------------------------------------------------------->
 // Delete Customer Info (Admin Route)...............
-//..................................................
+//----------------------------------------------------------------------->
 
 exports.deleteCustomer = async (req, res) => {
   const { cid } = req.body;
@@ -574,9 +567,9 @@ exports.deleteCustomer = async (req, res) => {
   });
 };
 
-//.................................................
+//----------------------------------------------------------------------->
 // Customer Dashboard Info (Customer Route)........
-//.................................................
+//----------------------------------------------------------------------->
 
 exports.custDashboardInfo = async (req, res) => {
   const { toDate, fromDate } = req.body;
@@ -882,9 +875,9 @@ exports.profileInfo = async (req, res) => {
   });
 };
 
-// ..................................................
+//----------------------------------------------------------------------->
 // App Customer Milk Report..........................
-// ..................................................
+//----------------------------------------------------------------------->
 
 exports.milkcollReport = async (req, res) => {
   const { fromDate, toDate } = req.body;
@@ -934,9 +927,9 @@ exports.milkcollReport = async (req, res) => {
   });
 };
 
-// ..................................................
+//----------------------------------------------------------------------->
 // App Custmize Milk Report..........................
-// ..................................................
+//----------------------------------------------------------------------->
 
 exports.customMilkReport = async (req, res) => {
   const { fromDate, toDate } = req.body;
@@ -1090,9 +1083,9 @@ exports.customrMilkReport = async (req, res) => {
 };
 
 // ------------------------------------ end -------------------------------------------- //
-// ..................................................
+//----------------------------------------------------------------------->
 // App Customer Milk Report..........................
-// ..................................................
+//----------------------------------------------------------------------->
 
 exports.custMilkReport = async (req, res) => {
   const { SocietyCode, AccCode } = req.body;
@@ -1185,9 +1178,9 @@ exports.custMilkReport = async (req, res) => {
   });
 };
 
-// ..................................................
+//----------------------------------------------------------------------->
 // Download Customer List Upload Excel Format .......
-// ..................................................
+//----------------------------------------------------------------------->
 
 exports.downloadExcelFormat = async (req, res) => {
   const { SocietyCode, AccCode } = req.body;

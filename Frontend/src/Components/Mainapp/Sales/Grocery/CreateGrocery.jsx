@@ -746,18 +746,17 @@ const CreateGrocery = () => {
   };
 
   return (
-    <div className="add-cattlefeed-sale-container w100 h1 d-flex-col sa">
-      <div className="d-flex w100 sa">
-        <span className="heading p10">{t("c-grocery")}</span>
-
+    <div className="sale-products-list-container w100 h1 d-flex-col sb p10">
+      <div className="page-title-center-select-container w100 h15 d-flex a-center">
+        <span className="heading w20 px10">किराणा विक्री :</span>
         {userRole === "admin" ? (
           centerId > 0 ? (
             <></>
           ) : (
-            <div className="d-flex a-center mx10">
-              <span className="info-text w50">सेंटर निवडा :</span>
+            <div className="center-selection-container w48 d-flex a-center sb">
+              <span className="label-text w30">सेंटर निवडा :</span>
               <select
-                className="data   a-center  my5 mx5"
+                className="data w70"
                 name="center"
                 value={filter}
                 onChange={(e) => handleCenterChange(e.target.value)}
@@ -777,10 +776,10 @@ const CreateGrocery = () => {
           <></>
         )}
       </div>
-      <div className="create-cattlefeed-sales-inner-container w100 h1 d-flex sb p10">
-        <form className="create-sales-form-container w50 h1 bg p10">
-          <div className="sales-details w100 h20 d-flex a-center sb ">
-            <div className="col w50 d-flex a-center ">
+      <div className="sale-products-and-invoice-container w100 h90 d-flex sb">
+        <form className="create-sales-form-container w50 h1 d-flex-col sb bg p10">
+          <div className="sales-details-container w100 h20 d-flex a-center sb">
+            <div className="sales-input-container w40 d-flex-col sb">
               <label htmlFor="date" className="info-text w100">
                 {t("c-date")} :
               </label>
@@ -795,7 +794,7 @@ const CreateGrocery = () => {
                 disabled={cartItem.length > 0}
               />
             </div>
-            <div className="col w30 d-flex a-center">
+            <div className="sales-input-container w25 d-flex-col a-center">
               <label htmlFor="recieptno" className="info-text w100">
                 {t("c-repno")} :
               </label>
@@ -815,10 +814,10 @@ const CreateGrocery = () => {
               />
             </div>
           </div>
-          <div className="sale-details w100 h20 d-flex a-center sb ">
-            <div className="col w20 ">
+          <div className="sales-details-container w100 h20 d-flex a-center sb">
+            <div className="sales-input-container w20 d-flex-col sa">
               <label htmlFor="code" className="info-text w100">
-                {t("milkcollection:m-cust-code")}:
+                {t("milkcollection:m-cust-code")} :
               </label>
               <input
                 type="number"
@@ -835,30 +834,23 @@ const CreateGrocery = () => {
                 disabled={cartItem.length > 0}
               />
             </div>
-            <div className="col w80">
+            <div className="sales-input-container w70 d-flex-col sa">
               <label
                 htmlFor="custname"
                 className="info-text w100 d-flex a-center sb"
               >
-                {t("milkcollection:m-cust-name")}:{" "}
-                {/* {userRole !== "mobilecollector" ? (
-                  <></>
-                ) : (
-                  <span className="label-text w50 d-flex j-center">
-                    {mobile}
-                  </span>
-                )} */}
+                {t("milkcollection:m-cust-name")} :
                 {settings.salesms === 1 ? (
                   <span className="label-text w50 d-flex j-center">
                     {mobile}
                   </span>
                 ) : (
                   <></>
-                )}
+                )}{" "}
               </label>
               <Select
                 options={custOptions2}
-                className=" mx10 w100"
+                className="select-data w100"
                 placeholder=""
                 isSearchable
                 styles={{
@@ -880,10 +872,10 @@ const CreateGrocery = () => {
               />
             </div>
           </div>
-          <div className="sales-details w100 h20 d-flex a-center sb ">
-            <div className="col w80">
+          <div className="sales-details-container w100 h20 d-flex a-center sb">
+            <div className="sales-input-container w70 d-flex-col sa">
               <label htmlFor="items" className="info-text w100">
-                {t("c-groce-select")}:
+                {t("c-prod-select")} :
               </label>
               {userRole !== "mobilecollector" ? (
                 <select
@@ -900,7 +892,7 @@ const CreateGrocery = () => {
                     handleKeyPress(e, document.getElementById("qty"))
                   }
                 >
-                  <option value="0">-- {t("c-groce-select")}--</option>
+                  <option value="0">-- {t("c-prod-select")} --</option>
                   {filteredItems.map((item, i) => (
                     <option key={i} value={item.id}>
                       {item.ItemName}
@@ -922,7 +914,7 @@ const CreateGrocery = () => {
                     handleKeyPress(e, document.getElementById("addtocart"))
                   }
                 >
-                  <option value="0">-- {t("c-groce-select")} --</option>
+                  <option value="0">-- {t("c-prod-select")} --</option>
                   {filteredItems.map((item, i) => (
                     <option key={i} value={item.id}>
                       {item.ItemName}
@@ -931,7 +923,7 @@ const CreateGrocery = () => {
                 </select>
               )}
             </div>
-            <div className="col w20">
+            <div className="sales-input-container w20 d-flex-col sa">
               <label htmlFor="qty" className="info-text w100">
                 {t("c-qty")}:
               </label>
@@ -952,17 +944,17 @@ const CreateGrocery = () => {
             </div>
           </div>
           {userRole !== "mobilecollector" ? (
-            <div className="sales-details w100 h20 d-flex ">
-              <div className="col w30 ">
+            <div className="sales-details-container w100 h20 d-flex a-center sb">
+              <div className="sales-input-container w30 d-flex-col sa">
                 <label htmlFor="rate" className="info-text w100">
-                  {t("c-amt")}:
+                  {t("c-rate")} :
                 </label>
                 <input
                   type="number"
                   name="rate"
                   id="rate"
                   className="data w70"
-                  value={rate}
+                  value={rate || ""}
                   onFocus={handleFocus}
                   onChange={(e) =>
                     setRate(Math.max(0, parseFloat(e.target.value)))
@@ -974,14 +966,14 @@ const CreateGrocery = () => {
                   }
                 />
               </div>
-              <div className="col w30">
+              <div className="sales-input-container w30 d-flex-col sa">
                 <label htmlFor="amt" className="info-text w100">
-                  {t("c-amt")}:
+                  {t("c-amt")} :
                 </label>
                 <input
                   type="number"
                   id="amt"
-                  className="data w70"
+                  className="data w100"
                   name="amount"
                   value={amt}
                   readOnly
@@ -992,10 +984,10 @@ const CreateGrocery = () => {
             <></>
           )}
 
-          <div className="sales-btn-container w100 h20 d-flex j-end my10">
+          <div className="sales-btn-container w100 h10 d-flex j-end">
             <button
               type="button"
-              className="btn m10"
+              className="w30 btn"
               id="addtocart"
               onClick={handleAddToCart}
             >
@@ -1004,11 +996,11 @@ const CreateGrocery = () => {
           </div>
         </form>
 
-        <div className="cattlefeed-sales-list-outer-container w45 h1 d-flex-col bg">
-          <div className="title-and-button-container w100 d-flex a-center sb">
-            <span className="heading w30 p10">{t("c-item-list")}</span>
+        <div className="sales-invoice-prod-list-container w48 h1 d-flex-col sb bg">
+          <div className="title-and-pdf-btn-container w100 d-flex a-center sb">
+            <span className="heading p10">{t("c-item-list")}</span>
             {userRole === "mobilecollector" ? (
-              <div className="w70 d-flex a-center j-end ">
+              <div className="sales-pdf-btn-container w70 d-flex a-center j-end ">
                 <div className="w100 d-flex j-end ">
                   <button type="button" className="w-btn">
                     PDF
@@ -1016,7 +1008,7 @@ const CreateGrocery = () => {
                 </div>
               </div>
             ) : (
-              <div className="w70 d-flex j-end">
+              <div className="sales-pdf-btn-container w70 d-flex a-center j-end">
                 <button
                   type="button"
                   className="w-btn mx10"
@@ -1034,17 +1026,17 @@ const CreateGrocery = () => {
               </div>
             )}
           </div>
-          <div className="sales-list-conatainer w100 h1 d-flex-col">
-            <div className="sales-headings-row w100 h10 d-flex sb a-center t-center sticky-top t-heading-bg">
+          <div className="sold-product-list-conatainer w100 h80 d-flex-col">
+            <div className="sold-product-data-div w100 py10 d-flex a-center t-center sticky-top bg7 sb">
               <span className="f-label-text w5">{t("c-no")}</span>
               <span className="f-label-text w35">{t("c-name")}</span>
               <span className="f-label-text w10">{t("c-qty")}</span>
-              <span className="f-label-text w20">{t("c-rate")}</span>
-              <span className="f-label-text w20">{t("c-amt")}</span>
+              <span className="f-label-text w15">{t("c-rate")}</span>
+              <span className="f-label-text w15">{t("c-amt")}</span>
               {userRole !== "mobilecollector" ? (
-                <span className="f-label-text w20 t-center">Action</span>
+                <span className="f-label-text w15 t-center">Action</span>
               ) : (
-                <span></span>
+                ""
               )}
             </div>
             {cartItem.length > 0 ? (
@@ -1052,17 +1044,17 @@ const CreateGrocery = () => {
                 {cartItem.map((item, i) => (
                   <div
                     key={i}
-                    className="sales-headings-row w100 h10 d-flex a-center sb"
+                    className="sold-product-data-div w100 p10 d-flex a-center sb"
                   >
                     <span className="label-text w5 t-center">{i + 1}</span>
                     <span className="label-text w35 t-center">
                       {item.ItemName}
                     </span>
                     <span className="label-text w10 t-center">{item.Qty}</span>
-                    <span className="label-text w20 t-end">{item.Rate}</span>
-                    <span className="label-text w20 t-end">{item.Amount}</span>
+                    <span className="label-text w15 t-end">{item.Rate}</span>
+                    <span className="label-text w15 t-end">{item.Amount}</span>
                     {userRole !== "mobilecollector" ? (
-                      <span className="label-text w20 t-center">
+                      <span className="label-text w15 t-center">
                         <MdDeleteOutline
                           size={20}
                           className="table-icon"
@@ -1071,7 +1063,7 @@ const CreateGrocery = () => {
                         />
                       </span>
                     ) : (
-                      <span></span>
+                      ""
                     )}
                   </div>
                 ))}
@@ -1079,13 +1071,13 @@ const CreateGrocery = () => {
                   <span className=" w5"></span>
                   <span className=" w35"></span>
                   <span className=" w10"></span>
-                  <span className="label-text w20">
+                  <span className="label-text w15">
                     {t("puchasesale:ps-ttl-amt")} :
                   </span>
-                  <span className="label-text w10 t-end">
+                  <span className="label-text w15 t-end">
                     {cartItem.reduce((acc, item) => acc + item.Amount, 0)}
                   </span>
-                  <span className=" w20"></span>
+                  <span className="w15"></span>
                 </div>
               </>
             ) : (
@@ -1096,10 +1088,11 @@ const CreateGrocery = () => {
           </div>
 
           <div className="sales-button-container w100 h10 d-flex a-center j-end">
-            <button className="w-btn m10" onClick={handelClear}>
+            <button type="button" className="w-btn" onClick={handelClear}>
               {t("puchasesale:ps-clr")}
             </button>
             <button
+              type="button"
               className="w-btn mx10"
               onClick={handleSubmit}
               disabled={cartItem.length == 0 || submitDis === false}

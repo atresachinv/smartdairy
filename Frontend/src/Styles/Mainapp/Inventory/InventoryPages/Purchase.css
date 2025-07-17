@@ -1,0 +1,114 @@
+@media screen and (max-width: 426px) {
+  .purchase-product-bill-list-container {
+    min-height: auto;
+  }
+  .purchase-product-bill-list-container .download-print-pdf-excel-container {
+    min-height: fit-content;
+    flex-direction: column;
+  }
+  .download-print-pdf-excel-container
+    .purchase-dates-add-new-purchase-container {
+    width: 100%;
+    min-height: fit-content;
+    flex-direction: column-reverse;
+  }
+
+  .purchase-dates-add-new-purchase-container .purchase-dates-container {
+    width: 100%;
+    min-height: fit-content;
+    flex-direction: column;
+  }
+  .purchase-dates-add-new-purchase-container .add-new-purchase-div .w-btn {
+    width: 40%;
+  }
+
+  .purchase-dates-add-new-purchase-container
+    .purchase-dates-container
+    .date-input-div {
+    width: 100%;
+    justify-content: space-between;
+  }
+  .purchase-dates-add-new-purchase-container .add-new-purchase-div {
+    width: 100%;
+    margin: 10px 0;
+  }
+  .purchase-product-bill-list-container .purchase-prod-list-container {
+    min-height: 90%;
+  }
+  .purchase-prod-list-container .purchase-prod-detilas-table-div {
+    overflow-x: scroll;
+  }
+  .purchase-prod-detilas-table-div .data-headings-div {
+    width: 800px;
+  }
+}
+
+/* ---------- new product purchase form css ---------- */
+
+@media screen and (max-width: 426px) {
+  .purchase-products-container {
+    min-height: auto;
+  }
+  .purchase-products-container .page-title-center-select-container {
+    min-height: fit-content;
+    flex-direction: column;
+  }
+  .page-title-center-select-container .heading {
+    width: 100%;
+  }
+  .page-title-center-select-container .center-selection-container {
+    width: 100%;
+    margin-bottom: 10px;
+  }
+  .purchase-products-container .purchase-new-prod-container {
+    min-height: fit-content;
+    flex-direction: column;
+  }
+  .purchase-new-prod-container .purchase-new-prod-form-container {
+    width: 100%;
+    min-height: fit-content;
+    margin-bottom: 10px;
+  }
+  .purchase-new-prod-form-container .purchase-details-container {
+    height: auto;
+    min-height: fit-content;
+    flex-direction: column;
+  }
+  .purchase-details-container .purchase-input-container {
+    width: 100%;
+    flex-direction: row;
+    justify-content: space-between;
+    margin-bottom: 10px;
+  }
+  .purchase-details-container .purchase-input-container label {
+    width: 40%;
+  }
+  .purchase-details-container .purchase-input-container .data {
+    width: 60%;
+  }
+  .purchase-details-container .button-container {
+    width: 100%;
+  }
+  .purchase-details-container .button-container button {
+    width: 100%;
+  }
+
+  .purchase-new-prod-container .purchased-products-list-outer-container {
+    width: 100%;
+    min-height: 70%;
+    margin-bottom: 10px;
+  }
+  .purchased-products-list-outer-container .purchased-products-list-conatainer {
+    overflow-x: scroll;
+  }
+  .purchased-products-list-conatainer .purchased-products-data-div {
+    width: 700px;
+  }
+  .purchased-products-list-outer-container .purchase-button-container {
+    width: 100%;
+    justify-content: space-between;
+  }
+  .purchased-products-list-outer-container .purchase-button-container button {
+    width: 48%;
+  }
+}

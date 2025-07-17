@@ -4,6 +4,7 @@ import { FaEdit } from "react-icons/fa";
 import { getDairyList } from "../../../../App/Features/Admin/SuperAdmin/accessSlice";
 import DairyDetails from "./DairyDetails";
 
+
 const DairyList = () => {
   const dispatch = useDispatch();
   const { dairyList } = useSelector((state) => state.access);
@@ -16,15 +17,14 @@ const DairyList = () => {
       <span className="heading py10">Dairy Activate / Deactivate</span>
 
       <div className="dairy-list-container w100 h90 d-flex-col mh90 hidescrollbar bg">
-        <div className="dairy-info-heading-container w100 p10 d-flex a-center sb sticky-top bg7 br9">
+        <div className="dairy-info-heading-container w100 p10 d-flex a-center t-center sb sticky-top bg7">
           <span className="f-label-text w5">Code</span>
           <span className="f-label-text w30">Name</span>
           <span className="f-label-text w15">Contact</span>
-          <span className="f-label-text w10">Created On</span>
-          <span className="f-label-text w10">Last Act.</span>
+          <span className="f-label-text w15">Created On</span>
+          <span className="f-label-text w15">Last Act.</span>
           <span className="f-label-text w10">AMC</span>
           <span className="f-label-text w10">Action</span>
-          {/* <span className="f-label-text w10">Activate</span> */}
         </div>
 
         {dairyList.length > 0 ? (
@@ -52,9 +52,6 @@ const DairyList = () => {
                   onClick={() => setModalOpen(true)}
                 />
               </span>
-              {/* <span className="text w10 t-center">
-                <input type="checkbox" name="" id="" />
-              </span> */}
             </div>
           ))
         ) : (

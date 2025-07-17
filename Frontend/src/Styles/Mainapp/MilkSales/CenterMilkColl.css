@@ -1,7 +1,27 @@
+@media screen and (min-width: 426px) and (max-width: 769px){
+  .center-milk-collection-outer-main-container .milk-col-form .form-btns{
+    width: 100%;
+    justify-content: space-between;
+  }
+  .center-milk-collection-outer-main-container .milk-col-form .form-btns button{
+    width: 45%;
+  }
+}
+
 @media screen and (max-width: 426px) {
-  .center-milk-collection-outer-main-container .milk-collection-diff-div {
+  .center-milk-collection-outer-main-container {
     width: 100%;
     min-height: auto;
+    flex-direction: column;
+  }
+  .center-milk-collection-outer-main-container .milk-col-form {
+    width: 100%;
+    min-height: fit-content;
+    margin-bottom: 10px;
+  }
+  .center-milk-collection-outer-main-container .milk-collection-diff-div {
+    width: 100%;
+    min-height: 70%;
     justify-content: space-between;
   }
 
@@ -9,10 +29,9 @@
     min-height: fit-content;
     margin-bottom: 10px;
   }
-  .center-milk-collection-outer-main-container .milk-col-form {
-    min-height: fit-content;
-  }
-  .center-milk-collection-outer-main-container .milk-col-form .user-details-div {
+  .center-milk-collection-outer-main-container
+    .milk-col-form
+    .user-details-div {
     flex-direction: column;
   }
   .user-details-div .form-div {
@@ -21,10 +40,18 @@
     padding: 0;
     margin-bottom: 10px;
   }
-  .center-milk-collection-outer-main-container .milk-col-form .user-details-div .form-div label {
+  .center-milk-collection-outer-main-container
+    .milk-col-form
+    .user-details-div
+    .form-div
+    label {
     width: 40%;
   }
-  .center-milk-collection-outer-main-container .milk-col-form .user-details-div .form-div select {
+  .center-milk-collection-outer-main-container
+    .milk-col-form
+    .user-details-div
+    .form-div
+    select {
     width: 60%;
   }
   .milk-collection-diff-div .collection-diff-container .coll-milk-info {

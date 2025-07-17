@@ -1,4 +1,4 @@
-.col {
+/* .col {
   display: flex;
   flex-direction: column;
   padding: 0px 10px;
@@ -24,7 +24,7 @@
   }
   .sales-dates-container-mobile-w100 .w-btn {
     /* margin-bottom: 15px; */
-    width: 70px;
+    /* width: 70px;
   }
   .sales-dates-container-mobile-btn {
     width: 70px !important;
@@ -33,4 +33,4 @@
   .purchase-add-text {
     display: none;
   }
-}
+} */

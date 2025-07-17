@@ -1,16 +1,51 @@
 @media screen and (max-width: 426px) {
-  .cust-return {
+  .customer-retuns-container {
+    width: 100%;
+    min-height: auto;
     flex-direction: column;
   }
-  .custCol {
-    width: 100% !important;
-    margin: 10px;
+  .customer-retuns-container .customer-return-prod-detials-container {
+    width: 100%;
+    min-height: fit-content;
+    margin-bottom: 10px;
   }
-  .deal-info {
-    padding: 10px 10px !important;
+  .customer-return-prod-detials-container .return-prod-details-div {
+    width: 100%;
+    flex-direction: column;
   }
-  .deal-info-name {
-    padding: 0px 10px !important;
-    margin: 0px!important;
+  .customer-return-prod-detials-container .return-btn-container button {
+    width: 100%;
+  }
+
+  /* ------- customer return products bill detials css ---------- */
+  .customer-retuns-container .customer-return-bill-detials-container {
+    width: 100%;
+    min-height: 100%;
+    margin-bottom: 10px;
+  }
+  .customer-return-bill-detials-container
+    .customer-return-prod-table-container {
+    width: 100%;
+    overflow-x: scroll;
+  }
+  .customer-return-prod-table-container .return-prod-data-div {
+    width: 600px;
+  }
+
+  /* ----- customer return product list css -------- */
+
+  .customer-return-prod-list-container {
+    width: 100%;
+    min-height: auto;
+    flex-direction: column;
+  }
+  .customer-return-prod-list-container .customer-return-prod-list-container {
+    width: 100%;
+    min-height: 90%;
+    overflow-x: scroll;
+  }
+
+  .customer-return-prod-list-container .data-headings-div {
+    width: 800px;
   }
 }

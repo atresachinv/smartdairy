@@ -54,6 +54,9 @@
     width: 100%;
     margin-bottom: 10px;
   }
+  .lock-payment-container .lock-unlock-payment-container {
+    width: 70%;
+  }
 }
 
 @media screen and (max-width: 426px) {
@@ -71,10 +74,10 @@
     width: 100%;
   }
   .page-title-select-center-container .label-text {
-    width: 30%;
+    width: 25%;
   }
   .page-title-select-center-container #select-center {
-    width: 60%;
+    width: 70%;
   }
 
   .generate-bill-form-container {
@@ -160,11 +163,18 @@
   }
 
   .payment-data-report-btn-div .bill-form-btn-div {
+    min-height: fit-content;
+    flex-wrap: wrap;
     justify-content: space-between;
     margin-bottom: 10px;
   }
+  .payment-data-report-btn-div .bill-form-btn-div .btn {
+    width: 100%;
+    margin-bottom: 10px;
+  }
   .payment-data-report-btn-div .bill-form-btn-div button {
-    width: 30%;
+    width: 45%;
+    margin: 0;
   }
   .payment-details-and-report-btn-div .bill-payments-container-div {
     width: 100%;
@@ -172,9 +182,20 @@
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
+    justify-content: space-between;
   }
   .bill-payments-container-div button {
     width: 45%;
     margin-bottom: 10px;
+  }
+}
+
+/* ------- Lock payment Bill css -------- */
+@media screen and (max-width: 426px) {
+  .lock-payment-container {
+    min-height: auto;
+  }
+  .lock-payment-container .lock-unlock-payment-container {
+    width: 100%;
   }
 }

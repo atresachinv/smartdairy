@@ -1,10 +1,7 @@
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
-import {
-  MdDomainVerification,
-  MdAddShoppingCart,
-  MdListAlt,
-} from "react-icons/md";
+import { MdLocalGroceryStore, MdOutlineDevicesOther } from "react-icons/md";
+import { GiFertilizerBag, GiMedicines } from "react-icons/gi";
 import { NavLink } from "react-router-dom";
 
 const SaleMasterNavlink = ({ isselected, setIsSelected }) => {
@@ -13,28 +10,28 @@ const SaleMasterNavlink = ({ isselected, setIsSelected }) => {
   const CustNavbuttons = [
     {
       name: `${t("ps-nv-cattlefeed")}`,
-      icon: <MdDomainVerification className="icon" />,
+      icon: <GiFertilizerBag className="icon" />,
       index: 1,
       path: "cattlefeed",
       role: ["super_admin", "admin"],
     },
     {
       name: `${t("ps-nv-grocery")}`,
-      icon: <MdDomainVerification className="icon" />,
+      icon: <MdLocalGroceryStore className="icon" />,
       index: 2,
       path: "grocery",
       role: ["super_admin", "admin"],
     },
     {
       name: `${t("ps-nv-medicines")}`,
-      icon: <MdDomainVerification className="icon" />,
+      icon: <GiMedicines className="icon" />,
       index: 3,
       path: "medicines",
       role: ["super_admin", "admin"],
     },
     {
       name: `${t("ps-nv-other")}`,
-      icon: <MdDomainVerification className="icon" />,
+      icon: <MdOutlineDevicesOther className="icon" />,
       index: 4,
       path: "other-products",
       role: ["super_admin", "admin"],

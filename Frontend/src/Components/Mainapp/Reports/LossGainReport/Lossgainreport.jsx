@@ -9,11 +9,13 @@ const Lossgainreport = () => {
   const [toDate, setToDate] = useState(today);
   const toDates = useRef(null);
   const fromdate = useRef(null);
+  const todateRef = useRef(null);
   const centerList = useSelector((state) => state.center.centersList || []);
   const dairyinfo = useSelector((state) => state.dairy.dairyData);
   const [selectedCenterId, setSelectedCenterId] = useState("");
   const [showTable, setShowTable] = useState(false);
   const dispatch = useDispatch();
+  const tDate = useSelector((state) => state.date.toDate);
   const dairyColl = useSelector((state) => state.custinfo.dairyColl); // sangha Sales
   const dairyname = dairyinfo.SocietyName || dairyinfo.center_name;
   const CityName = dairyinfo.city;
@@ -23,8 +25,7 @@ const Lossgainreport = () => {
     setShowTable(false);
 
     if (!fromDate || !toDate) {
-      alert("Please select From and To dates");
-      return;
+      return toast.error("Please select From and To dates");
     }
 
     try {
@@ -187,10 +188,10 @@ const Lossgainreport = () => {
               <input
                 className="data w70"
                 type="date"
-                onKeyDown={(e) => handleKeyDown(e, toDates)}
                 value={fromDate}
                 ref={fromdate}
                 onChange={(e) => setFromDate(e.target.value)}
+                onKeyDown={(e) => handleKeyDown(e, todateRef)}
               />
             </div>
             <div className="loss-gain-to-date-div w30 d-flex a-center">
@@ -201,6 +202,7 @@ const Lossgainreport = () => {
                 value={toDate}
                 ref={toDates}
                 onChange={(e) => setToDate(e.target.value)}
+                onKeyDown={(e) => handleKeyDown(e, showbtnRef)}
               />
             </div>
             <div className="center-selection-loss-gain-div w40 d-flex a-center">
@@ -227,7 +229,7 @@ const Lossgainreport = () => {
               className="w-btn"
               onClick={() => printDairyLossGainReport(dairyColl)}
             >
-              Print
+              प्रिंट
             </button>
           </div>
         </div>

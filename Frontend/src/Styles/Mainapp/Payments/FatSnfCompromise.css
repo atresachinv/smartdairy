@@ -1,87 +1,103 @@
+@media screen and (min-width: 426px) and (max-width: 769px) {
+  .snf-fat-compromise-form-container .fat-snf-update-details-div {
+    width: 100%;
+  }
+  .fat-snf-update-containers .update-option-details .radio-button-div input {
+    width: 20px;
+    margin-right: 5px;
+  }
+  .radio-button-container .radio-button-div:nth-child(2) {
+    width: 60%;
+  }
+  .update-option-details .other-radio-button-container .radio-button-div {
+    width: 33%;
+  }
+  .update-option-details
+    .change-radio-button-container
+    .radio-button-div:last-child {
+    display: none;
+  }
+  .update-option-details .change-radio-button-container .radio-button-div {
+    width: 40%;
+    justify-content: space-between;
+  }
+}
+
 @media screen and (max-width: 426px) {
-  .from-to-date-fat-snf-div .from-date-snf-fat {
-    width: 50%;
+  .fatsnf-compromise-container {
+    min-height: auto;
   }
-  .from-to-date-fat-snf-div .from-date-snf-fat span {
-    width: 100px;
-  }
-  .from-to-date-fat-snf-div .from-date-snf-fat input {
-    width: 130px;
-    font-size: small;
-  }
-  .from-to-date-fat-snf-div .to-date-snf-fat {
-    width: 50%;
-  }
-  .from-to-date-fat-snf-div .to-date-snf-fat span {
-    width: 50px;
-  }
-  .from-to-date-fat-snf-div .to-date-snf-fat input {
-    width: 130px;
-    font-size: small;
-  }
-  .radio-button-mrg-eve .morning-snf-div input {
-    width: 60px;
-  }
-  .radio-button-mrg-eve .morning-snf-div span {
-    width: 80px;
-  }
-  .codeno-fat-snf-div .from-code-snf-fat span {
-    width: 120px;
-  }
-  .codeno-fat-snf-div .to-code-snf-fat span {
-    width: 120px;
-  }
-
-  .second-half-clr-snf-fat .fat-info-div .jounral-radio-button span {
-    width: 120px;
-  }
-  .second-half-clr-snf-fat .fat-info-div  {
-    margin-bottom: 100px;
-
-  }
-   .filedsetfat {
+  .fatsnf-compromise-container .snf-fat-compromise-form-container {
+    min-height: fit-content;
     flex-direction: column;
-
+    margin-bottom: 10px;
   }
-   .filedsetfat .radio-button1-div {
-   width: 100%;
-   margin-bottom: 20px;
-
-  }
-   .filedsetfat .radio-button1-div .jounral-radio-button {
-   width: 150px;
-
-  }
-   .filedsetfat .radio-button1-div .Back-day-radio-button {
-   width: 150px;
-
-  }
-   .filedsetfat .radio-button1-div .differance-radio-button {
-   width: 150px;
-
-  }
-  .second-half-clr-snf-fat .fat-info-div .fieldset1 {
+  .snf-fat-compromise-form-container .fat-snf-update-details-div {
+    width: 100%;
+    min-height: fit-content;
     flex-direction: column;
   }
-   .fieldset1 .radio-button-first-part {
+  .fat-snf-update-details-div .date-snf-fat-div {
+    width: 100%;
+    margin-bottom: 10px;
+  }
+  .snf-fat-compromise-form-container .fat-snf-update-details-div {
     width: 100%;
   }
-   
-   
-   .fieldset1 .radio-button-first-part .Back-day-radio-button{
-     width: 35%;
+  .fat-snf-update-details-div .radio-button-mrg-eve,
+  .fat-snf-update-details-div .codeno-fat-snf-div {
+    width: 100%;
+    margin-bottom: 10px;
   }
-   
-   .fieldset1 .radio-button-first-part .Back-day-radio-button span{
-     width:300px ;
-  }
-   .second-half-clr-snf-fat .fat-info-div .fieldset{
-      flex-direction: column;
-  }
-     .filedsetfat .input-filed-updated-button-div{
+  .fat-snf-update-details-div button {
     width: 100%;
   }
-     .filedsetfat .input-filed-updated-button-div .updated-button{
-        width: 350px
+  .fatsnf-compromise-container .fat-snf-update-containers {
+    min-height: fit-content;
+  }
+
+  .fat-snf-update-containers .update-option-details {
+    width: 100%;
+    min-height: fit-content;
+    flex-direction: column;
+    margin-bottom: 10px;
+  }
+  .fat-snf-update-containers .update-option-details label {
+    width: 100%;
+    text-align: center;
+  }
+  .fat-snf-update-containers .update-option-details .radio-button-div input {
+    width: 25px;
+    margin-right: 5px;
+  }
+  .update-option-details .radio-button-container,
+  .update-option-details .other-radio-button-container,
+  .update-option-details .change-radio-button-container {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .radio-button-container .radio-button-div {
+    margin: 10px 0;
+  }
+  .radio-button-container .radio-button-div:nth-child(2) {
+    width: 60%;
+  }
+  .update-option-details .other-radio-button-container .radio-button-div {
+    width: 33%;
+    margin: 10px 0;
+  }
+  .update-option-details .change-radio-button-container .radio-button-div {
+    width: 40%;
+    justify-content: space-between;
+    margin: 10px 0;
+  }
+  .update-option-details
+    .change-radio-button-container
+    .radio-button-div:last-child {
+    display: none;
+  }
+  .update-option-details .input-filed-updated-button-div {
+    width: 100%;
   }
 }

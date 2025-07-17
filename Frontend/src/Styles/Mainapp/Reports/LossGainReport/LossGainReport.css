@@ -7,84 +7,37 @@
 @media screen and (max-width: 426px) {
   .loss-gain-report-outer-container .loss-gain-report-container {
     width: 100%;
+    align-items: flex-start;
+    justify-content: flex-start;
+    padding: 10px;
   }
   .first-loss-gain-report-div .loss-gain-report-from-to-date-div {
+    min-height: fit-content;
     width: 100%;
     flex-direction: column;
     justify-content: space-around;
-    height: 120px;
+    padding: 10px;
   }
-  .first-loss-gain-report-div
-    .loss-gain-report-from-to-date-div
-    .loss-gain-from-date-div
-    input {
-    width: 130px;
-  }
-
-  .first-loss-gain-report-div
-    .loss-gain-report-from-to-date-div
-    .loss-gain-from-date-div
-    span {
-    width: 55px;
-  }
-  .first-loss-gain-report-div
-    .loss-gain-report-from-to-date-div
-    .loss-gain-from-date-div {
+  .loss-gain-report-from-to-date-div .loss-gain-from-date-div {
     width: 100%;
+    justify-content: space-between;
+    margin-bottom: 10px;
   }
-
-  .first-loss-gain-report-div
-    .loss-gain-report-from-to-date-div
-    .loss-gain-to-date-div
-    input {
-    width: 100%;
+  .first-loss-gain-report-div .button-loss-gain-div {
+    justify-content: space-between;
+    margin: 0;
   }
   .first-loss-gain-report-div .button-loss-gain-div button {
-    margin-left: 60px;
-    width: 150px;
+    width: 45%;
   }
-  .first-loss-gain-report-div
-    .loss-gain-report-from-to-date-div
-    .loss-gain-from-date-div {
+  .loss-gain-report-from-to-date-div .center-selection-loss-gain-div {
     width: 100%;
   }
-  .first-loss-gain-report-div
-    .loss-gain-report-from-to-date-div
-    .loss-gain-from-date-div
-    span {
+  .loss-gain-report-from-to-date-div .center-selection-loss-gain-div span {
     width: 80px;
   }
-  .first-loss-gain-report-div
-    .loss-gain-report-from-to-date-div
-    .loss-gain-from-date-div
-    input {
+  .loss-gain-report-from-to-date-div .center-selection-loss-gain-div select {
     width: 200px;
-  }
-  .first-loss-gain-report-div
-    .loss-gain-report-from-to-date-div
-    .loss-gain-to-date-div {
-    width: 100%;
-  }
-  .first-loss-gain-report-div
-    .loss-gain-report-from-to-date-div
-    .loss-gain-to-date-div
-    input {
-    width: 200px;
-  }
-  .first-loss-gain-report-div
-    .loss-gain-report-from-to-date-div
-    .loss-gain-to-date-div
-    span {
-    width:68px;
-  }
-     .loss-gain-report-from-to-date-div .center-selection-loss-gain-div{
-         width: 100%;
-  }
-     .loss-gain-report-from-to-date-div .center-selection-loss-gain-div span{
-         width: 80px;
-  }
-     .loss-gain-report-from-to-date-div .center-selection-loss-gain-div select{
-         width: 200px;
-         margin-bottom: 5px;
+    margin-bottom: 5px;
   }
 }

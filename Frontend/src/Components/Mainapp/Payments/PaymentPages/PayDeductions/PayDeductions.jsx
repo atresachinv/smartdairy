@@ -45,11 +45,11 @@ const PayDeductions = ({ showbtn, setCurrentPage }) => {
   const [customerCodes, setCustomerCodes] = useState([]);
   const [filteredPayData, setFilteredPayData] = useState([]);
   const [otherDPayData, setOtherDPayData] = useState([]);
+  const [roundDedu, setRoundDedu] = useState([]);
   const [filteredPayData2, setFilteredPayData2] = useState({});
   const [mergedDeductions, setMergedDeductions] = useState([]);
   const [allDeductions, setAllDeductions] = useState([]);
   const [totalAmt, setTotalAmt] = useState(0);
-
   const [isLocked, setIsLocked] = useState(false);
   const [settings, setSettings] = useState({});
   const [custTrnDedu, setCustTrnDedu] = useState([]);
@@ -85,12 +85,12 @@ const PayDeductions = ({ showbtn, setCurrentPage }) => {
     netPayable: 0.0,
     netPayment: 0.0,
     minPayAmount: 0.0,
+    paygentype: "",
   }); // form data for the payment deduction
 
   useEffect(() => {
     dispatch(getCenterSetting());
   }, []);
-
   const autoCenter = settings?.autoCenter;
   //set setting
   useEffect(() => {
@@ -118,7 +118,6 @@ const PayDeductions = ({ showbtn, setCurrentPage }) => {
       setIsLocked(foundLocked);
     }
   }, [payData, payMasters]);
-
 
   // Effect to load customer list from local storage ------------------------------------------>
   useEffect(() => {
@@ -196,75 +195,15 @@ const PayDeductions = ({ showbtn, setCurrentPage }) => {
     }
   };
 
-  // Handle Milk Data display --------------------------------------------------->
-  // useEffect(() => {
-  //   if (milkData && milkData.length > 0) {
-  //     const currentCustomer = milkData.find(
-  //       (entry) => parseInt(entry.rno, 10) === parseInt(currentCode)
-  //     );
-  //     if (currentCustomer) {
-  //       setFormData((prevData) => ({
-  //         ...prevData,
-  //         morningliters: currentCustomer.mrgMilk,
-  //         eveningliters: currentCustomer.eveMilk,
-  //         totalcollection: currentCustomer.mrgMilk + currentCustomer.eveMilk,
-  //       }));
-  //     } else {
-  //       setFormData((prevData) => ({
-  //         ...prevData,
-  //         morningliters: 0.0,
-  //         eveningliters: 0.0,
-  //         totalcollection: 0.0,
-  //       }));
-  //     }
-  //     const customer = customerlist.find(
-  //       (entry) => parseInt(entry.srno, 10) === parseInt(currentCode)
-  //     );
-  //     if (currentCustomer) {
-  //       setFormData((prevData) => ({
-  //         ...prevData,
-  //         morningcommission: currentCustomer.mrgMilk * customer.commission,
-  //         eveningcommission: currentCustomer.eveMilk * customer.commission,
-  //         totalcommission:
-  //           currentCustomer.mrgMilk * customer.commission +
-  //           currentCustomer.eveMilk * customer.commission,
-  //         morningrebate: currentCustomer.mrgMilk * customer.rebet,
-  //         eveningrebate: currentCustomer.eveMilk * customer.rebet,
-  //         totalrebate:
-  //           currentCustomer.mrgMilk * customer.rebet +
-  //           currentCustomer.eveMilk * customer.rebet,
-  //         transport: customer.transportation,
-  //       }));
-  //     } else if (!currentCustomer || !customer) {
-  //       setFormData((prevData) => ({
-  //         ...prevData,
-  //         morningcommission: 0.0,
-  //         eveningcommission: 0.0,
-  //         totalcommission: 0.0,
-  //         morningrebate: 0.0,
-  //         eveningrebate: 0.0,
-  //         totalrebate: 0.0,
-  //         transport: 0.0,
-  //       }));
-  //     }
-  //   }
-  // }, [milkData, customerlist, currentCode]);
-
   // set round off amount for perticular customers ------------------------------------->
   useEffect(() => {
-    if (data && data.length > 0 && customerlist && customerlist.length > 0) {
-      const currentDedu = data.find(
-        (entry) =>
-          parseInt(entry.Code, 10) === currentCode && entry.DeductionId === 9
-      );
-      if (currentDedu) {
-        setFormData((prevData) => ({
-          ...prevData,
-          roundAmount: parseFloat(currentDedu.Amt) || 0.0,
-        }));
-      }
+    if (roundDedu) {
+      setFormData((prevData) => ({
+        ...prevData,
+        roundAmount: parseFloat(roundDedu[0]?.Amt) || 0.0,
+      }));
     }
-  }, [currentCode, data, customerlist]);
+  }, [roundDedu]);
 
   //----------------------------------------------------------------------------------->
   // manual deduction calculations ---------------------------------------------------->
@@ -298,7 +237,6 @@ const PayDeductions = ({ showbtn, setCurrentPage }) => {
         const mam = Math.abs(Number(item.MAMT) || 0);
         const total = Math.abs(Number(item.totalamt) || 0); // force +ve
         const amt = Math.abs(Number(item.Amt) || 0); // force +ve
-        // console.log("first all deductions",mam, total, amt)
         const net = mam + total - amt;
 
         return {
@@ -307,7 +245,6 @@ const PayDeductions = ({ showbtn, setCurrentPage }) => {
           netamt: net,
         };
       });
-
       setAllDeductions(withCalculated);
     }
   }, [custTrnDedu]);
@@ -353,27 +290,34 @@ const PayDeductions = ({ showbtn, setCurrentPage }) => {
   // fiter paydata for the current customer ------------------------------------->
   useEffect(() => {
     if (payData && currentCode) {
+      const roudoffDedu = payData.filter(
+        (item) =>
+          item.Code === currentCode &&
+          item.GLCode === 2 &&
+          item?.dname.toLowerCase() === "round off"
+      );
       const fixDeduData = payData.filter(
         (item) => item.Code === currentCode && item.dtype === 0
       );
+
       const otherDeduData = payData.filter(
         (item) =>
           item.Code === currentCode &&
           item.dtype === 1 &&
           item.GLCode !== 2 &&
-          item.BAMT !== 0
+          item.Amt !== 0
       );
 
       const mDeduData = payData.filter(
         (item) => item.Code === currentCode && item.dtype === 2
       );
 
-      setFilteredPayData(fixDeduData);
-      setOtherDPayData(otherDeduData);
-      setFilteredPayData2(mDeduData);
+      setFilteredPayData(fixDeduData); // fixed deductions
+      setOtherDPayData(otherDeduData); // other deductions
+      setFilteredPayData2(mDeduData); // main payment
+      setRoundDedu(roudoffDedu); // round off deduction
     }
   }, [payData, currentCode]);
-
   //----------------------------------------------------------------------------->
   // Filter milk collection data for the current customer
 
@@ -434,6 +378,7 @@ const PayDeductions = ({ showbtn, setCurrentPage }) => {
           eveningrebate: currentCustomer.tcomribeteve,
           totalrebate: currentCustomer.tcomribet,
           transport: currentCustomer.transport,
+          paygentype: currentCustomer.paygentype,
         }));
       } else {
         setCustomerName("");
@@ -571,420 +516,394 @@ const PayDeductions = ({ showbtn, setCurrentPage }) => {
       toast.error("Failed to save bill!");
     }
   };
-  
+
   return (
-    <>
-      <div className="payment-bill-deduction-main-container w100 h1 d-flex-col p10 sb">
-        <div className="payment-deduction-info-outer-container w100 h30 d-flex sb bg-light-green br6">
-          <div className="payment-deduction-info-container w50 h1 d-flex-col sa px10">
-            <span className="heading px10">Payment Deductions :</span>
-            <div className="paymebt-bill-customer-details-div w100 h30 d-flex a-center sb">
-              <div className="bill-no-comopent w30 d-flex a-center sb px10">
-                <label htmlFor="billtxt" className="label-text w45">
-                  Bill No :
-                </label>
-                <input
-                  id="billtxt"
-                  className="data w50 read-onlytxt"
-                  type="text"
-                  value={formData.billno}
-                  name="billno"
-                  readOnly
-                  placeholder="000"
-                  onChange={(e) =>
-                    setFormData({ ...formData, billno: e.target.value })
-                  }
-                />
-              </div>
-              <div className="bill-date-comopent w45 d-flex a-center sb px10">
-                <label htmlFor="billdatetxt" className="label-text w35">
-                  Bill Date:
-                </label>
-                <input
-                  id="billdatetxt"
-                  className="data w65 read-onlytxt"
-                  type="date"
-                  readOnly
-                  value={formData.billdate}
-                  name="billdate"
-                  onChange={(e) =>
-                    setFormData({ ...formData, billdate: e.target.value })
-                  }
-                />
-              </div>
-              <button type="button" className="btn">
-                संकलन तपशील दर्शवा{" "}
+    <div className="payment-bill-deduction-main-container w100 h1 d-flex-col p10 sb">
+      <div className="payment-deduction-info-outer-container w100 h30 d-flex sb bg-light-green br6">
+        <div className="payment-deduction-info-container w50 h1 d-flex-col sa px10">
+          <span className="heading px10">Payment Deductions :</span>
+          <div className="paymebt-bill-customer-details-div w100 h30 d-flex a-center sb">
+            <div className="bill-no-comopent w30 d-flex a-center sb px10">
+              <label htmlFor="billtxt" className="label-text w45">
+                Bill No :
+              </label>
+              <input
+                id="billtxt"
+                className="data w50 read-onlytxt"
+                type="text"
+                value={formData.billno}
+                name="billno"
+                readOnly
+                placeholder="000"
+                onChange={(e) =>
+                  setFormData({ ...formData, billno: e.target.value })
+                }
+              />
+            </div>
+            <div className="bill-date-comopent w50 d-flex a-center sb px10">
+              <label htmlFor="billdatetxt" className="label-text w40">
+                Bill Date:
+              </label>
+              <input
+                id="billdatetxt"
+                className="data w55 read-onlytxt"
+                type="date"
+                readOnly
+                value={formData.billdate}
+                name="billdate"
+                onChange={(e) =>
+                  setFormData({ ...formData, billdate: e.target.value })
+                }
+              />
+            </div>
+            <button type="button" className="btn">
+              संकलन तपशील दर्शवा{" "}
+            </button>
+          </div>
+          <div className="customer-details-container w100 h30 d-flex a-center sb">
+            <div className="btn-code-container w35 h1 d-flex a-center sb">
+              <button className="btn" onClick={handlePrev}>
+                <BsChevronDoubleLeft className="icon " />
+              </button>
+
+              <input
+                className="data w45 t-center mx5"
+                type="number"
+                name="code"
+                value={currentCode || ""}
+                onChange={handleInputChange}
+                onKeyDown={handleKeyDown}
+              />
+
+              <button className="btn" onClick={handleNext}>
+                <BsChevronDoubleRight className="icon" />
               </button>
             </div>
-            <div className="customer-details-container w100 h30 d-flex a-center sb">
-              <div className="btn-code-container w35 h1 d-flex a-center sb">
-                <button className="btn" onClick={handlePrev}>
-                  <BsChevronDoubleLeft className="icon " />
-                </button>
-
-                <input
-                  className="data w45 t-center mx5"
-                  type="number"
-                  name="code"
-                  value={currentCode || ""}
-                  onChange={handleInputChange}
-                  onKeyDown={handleKeyDown}
-                />
-
-                <button className="btn" onClick={handleNext}>
-                  <BsChevronDoubleRight className="icon" />
-                </button>
-              </div>
+            <input
+              className="cust_name data w60"
+              type="text"
+              name="customername"
+              value={customerName}
+              readOnly
+              placeholder="Customer Name"
+            />
+          </div>
+        </div>
+        <div className="bill-payment-deduction-first-half w50 h1 d-flex-col sa">
+          <div className="morening-evening-all-collection w100 d-flex sb">
+            <div className="morening-liter-compoentv w32 d-flex a-center sb">
+              <label htmlFor="mrgltrtxt" className="label-text w60">
+                सकाळ लि :
+              </label>
               <input
-                className="cust_name data w60"
+                id="mrgltrtxt"
+                className="data w40 read-onlytxt"
                 type="text"
-                name="customername"
-                value={customerName}
+                name="morningliters"
+                placeholder="0.00"
                 readOnly
-                placeholder="Customer Name"
+                value={formData.morningliters || ""}
+                onChange={handleFormDataChange}
+              />
+            </div>
+            <div className="morening-liter-compoentv w32 d-flex a-center sb">
+              <label htmlFor="eveltrtxt" className="label-text w60">
+                सायंकाळ लि :
+              </label>
+              <input
+                id="eveltrtxt"
+                className="data w40 read-onlytxt"
+                type="text"
+                name="eveningliters"
+                placeholder="0.00"
+                readOnly
+                value={formData.eveningliters || ""}
+                onChange={handleFormDataChange}
+              />
+            </div>
+            <div className="morening-liter-compoentv w32 d-flex a-center sb">
+              <label htmlFor="totalmilktxt" className="label-text w60">
+                एकूण संकलन :
+              </label>
+              <input
+                id="totalmilktxt"
+                className="data w40 read-onlytxt"
+                type="text"
+                name="totalcollection"
+                placeholder="0.00"
+                readOnly
+                value={formData.totalcollection || ""}
+                onChange={handleFormDataChange}
               />
             </div>
           </div>
-          <div className="bill-payment-deduction-first-half w50 h1 d-flex-col sa">
-            <div className="morening-evening-all-collection w100 d-flex sb">
-              <div className="morening-liter-compoentv w32 d-flex a-center sb">
-                <label htmlFor="mrgltrtxt" className="label-text w60">
-                  सकाळ लि :
-                </label>
-                <input
-                  id="mrgltrtxt"
-                  className="data w40 read-onlytxt"
-                  type="text"
-                  name="morningliters"
-                  placeholder="0.00"
-                  readOnly
-                  value={formData.morningliters || ""}
-                  onChange={handleFormDataChange}
-                />
-              </div>
-              <div className="morening-liter-compoentv w32 d-flex a-center sb">
-                <label htmlFor="eveltrtxt" className="label-text w60">
-                  सायंकाळ लि :
-                </label>
-                <input
-                  id="eveltrtxt"
-                  className="data w40 read-onlytxt"
-                  type="text"
-                  name="eveningliters"
-                  placeholder="0.00"
-                  readOnly
-                  value={formData.eveningliters || ""}
-                  onChange={handleFormDataChange}
-                />
-              </div>
-              <div className="morening-liter-compoentv w32 d-flex a-center sb">
-                <label htmlFor="totalmilktxt" className="label-text w60">
-                  एकूण संकलन :
-                </label>
-                <input
-                  id="totalmilktxt"
-                  className="data w40 read-onlytxt"
-                  type="text"
-                  name="totalcollection"
-                  placeholder="0.00"
-                  readOnly
-                  value={formData.totalcollection || ""}
-                  onChange={handleFormDataChange}
-                />
-              </div>
+          <div className="collection-commision-all-commission w100 sb d-flex">
+            <div className="commision-compoent w32 d-flex a-center sb">
+              <label htmlFor="mcomtxt" className="label-text w60">
+                स.कमिशन:
+              </label>
+              <input
+                id="mcomtxt"
+                className="data w40 read-onlytxt"
+                type="text"
+                name="morningcommission"
+                placeholder="0.00"
+                readOnly
+                value={formData.morningcommission || ""}
+                onChange={handleFormDataChange}
+              />
             </div>
-            <div className="collection-commision-all-commission w100 sb d-flex">
-              <div className="commision-compoent w32 d-flex a-center sb">
-                <label htmlFor="mcomtxt" className="label-text w60">
-                  स.कमिशन:
-                </label>
-                <input
-                  id="mcomtxt"
-                  className="data w40 read-onlytxt"
-                  type="text"
-                  name="morningcommission"
-                  placeholder="0.00"
-                  readOnly
-                  value={formData.morningcommission || ""}
-                  onChange={handleFormDataChange}
-                />
-              </div>
-              <div className="commision-compoent w32 d-flex a-center sb">
-                <label htmlFor="ecommtxt" className="label-text w60">
-                  सायं.कमिशन:
-                </label>
-                <input
-                  id="ecommtxt"
-                  className="data w40 read-onlytxt"
-                  type="text"
-                  name="eveningcommission"
-                  placeholder="0.00"
-                  readOnly
-                  value={formData.eveningcommission || ""}
-                  onChange={handleFormDataChange}
-                />
-              </div>
-              <div className="commision-compoent w32 d-flex a-center sb">
-                <label htmlFor="tcommtxt" className="label-text w60">
-                  एकूण कमिशन :
-                </label>
-                <input
-                  id="tcommtxt"
-                  className="data w40 read-onlytxt"
-                  type="text"
-                  name="totalcommission"
-                  placeholder="0.00"
-                  readOnly
-                  value={formData.totalcommission || ""}
-                  onChange={handleFormDataChange}
-                />
-              </div>
+            <div className="commision-compoent w32 d-flex a-center sb">
+              <label htmlFor="ecommtxt" className="label-text w60">
+                सायं.कमिशन:
+              </label>
+              <input
+                id="ecommtxt"
+                className="data w40 read-onlytxt"
+                type="text"
+                name="eveningcommission"
+                placeholder="0.00"
+                readOnly
+                value={formData.eveningcommission || ""}
+                onChange={handleFormDataChange}
+              />
             </div>
-            <div className="rebet-commission-container w100 sb d-flex">
-              <div className="commission-compoent w32 d-flex a-center sb">
-                <label htmlFor="mrebettxt" className="label-text w60">
-                  स. रीबेट क. :
-                </label>
-                <input
-                  id="mrebettxt"
-                  className="data w40 read-onlytxt"
-                  type="text"
-                  name="morningrebate"
-                  placeholder="0.00"
-                  readOnly
-                  value={formData.morningrebate || ""}
-                  onChange={handleFormDataChange}
-                />
-              </div>
-              <div className="commission-compoent w32 d-flex a-center sb">
-                <label htmlFor="erebettxt" className="label-text w60">
-                  सायं. रीबेट क. :
-                </label>
-                <input
-                  id="erebettxt"
-                  className="data w40 read-onlytxt"
-                  type="text"
-                  name="eveningrebate"
-                  placeholder="0.00"
-                  readOnly
-                  value={formData.eveningrebate || ""}
-                  onChange={handleFormDataChange}
-                />
-              </div>
-              <div className="commission-compoent w32 d-flex a-center sb">
-                <label htmlFor="trebettxt" className="label-text w60">
-                  एकूण रीबेट क. :
-                </label>
-                <input
-                  id="trebettxt"
-                  className="data w40 read-onlytxt"
-                  type="text"
-                  name="totalrebate"
-                  placeholder="0.00"
-                  readOnly
-                  value={formData.totalrebate || ""}
-                  onChange={handleFormDataChange}
-                />
-              </div>
+            <div className="commision-compoent w32 d-flex a-center sb">
+              <label htmlFor="tcommtxt" className="label-text w60">
+                एकूण कमिशन :
+              </label>
+              <input
+                id="tcommtxt"
+                className="data w40 read-onlytxt"
+                type="text"
+                name="totalcommission"
+                placeholder="0.00"
+                readOnly
+                value={formData.totalcommission || ""}
+                onChange={handleFormDataChange}
+              />
             </div>
           </div>
-        </div>
-        <div className="payment-deduction-details-table-container  w100 h65 d-flex sb">
-          <div className="payment-deduction-table-container  w60 h1 mh100 hidescrollbar d-flex-col bg">
-            <div className="deduction-heading-container w100 p10 sa d-flex a-center t-center sticky-top bg7 br6">
-              <span className="f-label-text w30">कपातीचे नाव</span>
-              <span className="f-label-text w20">मागील</span>
-              <span className="f-label-text w20">चालू</span>
-              <span className="f-label-text w20">कपात</span>
-              <span className="f-label-text w20">शिल्लक</span>
+          <div className="rebet-commission-container w100 sb d-flex">
+            <div className="commission-compoent w32 d-flex a-center sb">
+              <label htmlFor="mrebettxt" className="label-text w60">
+                स. रीबेट क. :
+              </label>
+              <input
+                id="mrebettxt"
+                className="data w40 read-onlytxt"
+                type="text"
+                name="morningrebate"
+                placeholder="0.00"
+                readOnly
+                value={formData.morningrebate || ""}
+                onChange={handleFormDataChange}
+              />
             </div>
-            {filteredPayData && filteredPayData.length > 0 ? (
-              filteredPayData.map((item, index) => (
-                <div
-                  key={index}
-                  className="deduction-heading-container w100 p10 sa d-flex t-center a-center"
-                  style={{
-                    backgroundColor: "#f5d273",
-                  }}
-                >
-                  <span className="info-text w30">{item.dname}</span>
-                  <span className="info-text w10">{item.MAMT}</span>
-                  <span className="info-text w10">{item.Amt}</span>
-                  <span className="info-text w20">{item.Amt}</span>
-                  <span className="info-text w10">{item.pamt}</span>
-                </div>
-              ))
-            ) : (
-              <></>
-            )}
-            {otherDPayData && otherDPayData.length > 0 ? (
-              otherDPayData.map((item, index) => (
-                <div
-                  key={index}
-                  className="deduction-heading-container w100 p10 sa d-flex t-center a-center"
-                  style={{
-                    backgroundColor: index % 2 === 0 ? "#faefe3" : "#fff",
-                  }}
-                >
-                  <span className="info-text w30">{item.dname || ""}</span>
-                  <span className="info-text w10">{item.MAMT || 0}</span>
-                  <span className="info-text w10">
-                    {Math.abs(item.pamt).toFixed(1) || 0.0}
-                  </span>
-                  <input
-                    type="number"
-                    className="data w20"
-                    readOnly={isLocked}
-                    value={item.Amt || ""}
-                    onChange={(e) => handleAmtChanges(index, e.target.value)}
-                    ref={(el) => (inputRefs.current[index] = el)}
-                    onKeyDown={(e) => handleEnterKey(e, index)}
-                    style={{ textAlign: "center" }}
-                  />
-                  <span className="info-text w10">{item.BAMT || 0}</span>
-                </div>
-              ))
-            ) : (
-              <></>
-            )}
-            {allDeductions &&
-            otherDPayData.length === 0 &&
-            allDeductions.length > 0 ? (
-              allDeductions.map((item, index) => (
-                <div
-                  key={index}
-                  className="deduction-heading-container w100 p10 sa d-flex t-center a-center"
-                  style={{
-                    backgroundColor: index % 2 === 0 ? "#faefe3" : "#fff",
-                  }}
-                >
-                  <span className="info-text w30">{item.dname || ""}</span>
-                  <span className="info-text w10">{item.MAMT || 0}</span>
-                  <span className="info-text w10">
-                    {Math.abs(item.totalamt).toFixed(1) || 0.0}
-                  </span>
-                  <input
-                    type="number"
-                    className="data w20"
-                    readOnly={isLocked}
-                    value={item.Amt || ""}
-                    onChange={(e) => handleAmtChange(index, e.target.value)}
-                    ref={(el) => (inputRefs.current[index] = el)}
-                    onKeyDown={(e) => handleEnterKey(e, index)}
-                    style={{ textAlign: "center" }}
-                  />
-                  <span className="info-text w10">{item.netamt || 0}</span>
-                </div>
-              ))
-            ) : (
-              <></>
-            )}
-          </div>
-          <div className="payment-amt-details-container w40 h1 d-flex-col se bg-light-skyblue br9 p10">
-            <div className="deduction-amount-container w100 h25 d-flex a-center sb">
-              <div className="deduction-details w20 h1 d-flex-col a-center sb">
-                <label htmlFor="">एकूण रक्कम </label>
-                <span
-                  id=""
-                  className="data h60 t-center label-text read-onlytxt"
-                >
-                  {formData.totalPayment || 0.0}
-                </span>
-              </div>
-              <div className="deduction-details w20 h1 d-flex-col a-center sb">
-                <label htmlFor="">एकूण कमिशन</label>
-                <span
-                  id=""
-                  className="data h60 t-center label-text read-onlytxt"
-                >
-                  {formData.netCommission || 0.0}
-                </span>
-              </div>
-              <div className="deduction-details w20 h1 d-flex-col a-center sb">
-                <label htmlFor="">एकूण अनामत</label>
-                <span
-                  id=""
-                  className="data h60 t-center label-text read-onlytxt"
-                >
-                  0.0
-                </span>
-              </div>
-              <div className="deduction-details w20 h1 d-flex-col a-center sb">
-                <label htmlFor="">एकूण वाहतूक</label>
-                <span
-                  id=""
-                  className="data h60 t-center label-text read-onlytxt"
-                >
-                  {formData.transport || 0.0}
-                </span>
-              </div>
+            <div className="commission-compoent w32 d-flex a-center sb">
+              <label htmlFor="erebettxt" className="label-text w60">
+                सायं. रीबेट क. :
+              </label>
+              <input
+                id="erebettxt"
+                className="data w40 read-onlytxt"
+                type="text"
+                name="eveningrebate"
+                placeholder="0.00"
+                readOnly
+                value={formData.eveningrebate || ""}
+                onChange={handleFormDataChange}
+              />
             </div>
-            <div className="deduction-amount-container w100 h25 d-flex a-center sb">
-              <div className="deduction-details w20 h1 d-flex-col a-center sb">
-                <label htmlFor="">एकूण कपात</label>
-                <span
-                  id=""
-                  className="data h60 t-center label-text read-onlytxt"
-                >
-                  {formData.netDeduction || 0.0}
-                </span>
-              </div>
-              <div className="deduction-details w20 h1 d-flex-col a-center sb">
-                <label htmlFor="roff">राउंड रक्कम</label>
-                <span
-                  id="roff"
-                  className="data h60 t-center label-text read-onlytxt"
-                >
-                  {formData.roundAmount || 0.0}
-                </span>
-              </div>
-              <div className="deduction-details w20 h1 d-flex-col a-center sb">
-                <label htmlFor="netpay">निव्वळ देय</label>
-                <span
-                  id="netpay"
-                  className="data h60 t-center label-text read-onlytxt"
-                  readOnly
-                >
-                  {formData.netPayment || 0.0}
-                </span>
-              </div>
-              <div className="deduction-details w20 h1 d-flex-col a-center sb"></div>
-            </div>
-            <div className="deduction-amount-container w100 h25 d-flex a-center sb">
-              <div className="deduction-details w30 h1 d-flex-col a-center sb">
-                <label htmlFor="">कमीत कमी रक्कम</label>
-                <span
-                  id=""
-                  className="data h60 t-center label-text read-onlytxt"
-                >
-                  {leastPayamt}
-                </span>
-              </div>
-              <button
-                type="submit"
-                className="btn"
-                ref={submitBtnRef}
-                onClick={handleBillSave}
-                disabled={dedStatus === "loading"}
-              >
-                {dedStatus === "loading" ? "saving..." : "बिल सेव्ह करा"}
-              </button>
-              {showbtn ? (
-                <button
-                  type="submit"
-                  className="btn-danger mx10"
-                  onClick={() => setCurrentPage("main")}
-                >
-                  बाहेर पडा
-                </button>
-              ) : (
-                ""
-              )}
+            <div className="commission-compoent w32 d-flex a-center sb">
+              <label htmlFor="trebettxt" className="label-text w60">
+                एकूण रीबेट क. :
+              </label>
+              <input
+                id="trebettxt"
+                className="data w40 read-onlytxt"
+                type="text"
+                name="totalrebate"
+                placeholder="0.00"
+                readOnly
+                value={formData.totalrebate || ""}
+                onChange={handleFormDataChange}
+              />
             </div>
           </div>
         </div>
       </div>
-    </>
+      <div className="payment-deduction-details-table-container  w100 h65 d-flex sb">
+        <div className="payment-deduction-table-container  w60 h1 mh100 hidescrollbar d-flex-col bg">
+          <div className="deduction-heading-container w100 p10 sa d-flex a-center t-center sticky-top bg7 br-top">
+            <span className="f-label-text w30">कपातीचे नाव</span>
+            <span className="f-label-text w20">मागील</span>
+            <span className="f-label-text w20">चालू</span>
+            <span className="f-label-text w20">कपात</span>
+            <span className="f-label-text w20">शिल्लक</span>
+          </div>
+          {filteredPayData && filteredPayData.length > 0 ? (
+            filteredPayData.map((item, index) => (
+              <div
+                key={index}
+                className="deduction-heading-container w100 p10 sa d-flex t-center a-center"
+                style={{
+                  backgroundColor: "#f5d273",
+                }}>
+                <span className="info-text w30">{item.dname}</span>
+                <span className="info-text w10">{item.MAMT}</span>
+                <span className="info-text w10">{item.Amt}</span>
+                <span className="info-text w20">{item.Amt}</span>
+                <span className="info-text w10">{item.pamt}</span>
+              </div>
+            ))
+          ) : (
+            <></>
+          )}
+          {otherDPayData && otherDPayData.length > 0 ? (
+            otherDPayData.map((item, index) => (
+              <div
+                key={index}
+                className="deduction-heading-container w100 p10 sa d-flex t-center a-center"
+                style={{
+                  backgroundColor: index % 2 === 0 ? "#faefe3" : "#fff",
+                }}>
+                <span className="info-text w30">{item.dname || ""}</span>
+                <span className="info-text w10">{item.MAMT || 0}</span>
+                <span className="info-text w10">
+                  {Math.abs(item.pamt).toFixed(1) || 0.0}
+                </span>
+                <input
+                  type="number"
+                  className="data w20"
+                  readOnly={isLocked}
+                  value={item.Amt || ""}
+                  onChange={(e) => handleAmtChanges(index, e.target.value)}
+                  ref={(el) => (inputRefs.current[index] = el)}
+                  onKeyDown={(e) => handleEnterKey(e, index)}
+                  style={{ textAlign: "center" }}
+                />
+                <span className="info-text w10">{item.BAMT || 0}</span>
+              </div>
+            ))
+          ) : (
+            <></>
+          )}
+          {allDeductions &&
+          custTrnDedu.length > 0 &&
+          formData.paygentype === 0 &&
+          allDeductions.length > 0 ? (
+            allDeductions.map((item, index) => (
+              <div
+                key={index}
+                className="deduction-heading-container w100 p10 sa d-flex t-center a-center"
+                style={{
+                  backgroundColor: index % 2 === 0 ? "#faefe3" : "#fff",
+                }}>
+                <span className="info-text w30">{item.dname || ""}</span>
+                <span className="info-text w10">{item.MAMT || 0}</span>
+                <span className="info-text w10">
+                  {Math.abs(item.totalamt).toFixed(1) || 0.0}
+                </span>
+                <input
+                  type="number"
+                  className="data w20"
+                  readOnly={isLocked}
+                  value={item.Amt || ""}
+                  onChange={(e) => handleAmtChange(index, e.target.value)}
+                  ref={(el) => (inputRefs.current[index] = el)}
+                  onKeyDown={(e) => handleEnterKey(e, index)}
+                  style={{ textAlign: "center" }}
+                />
+                <span className="info-text w10">{item.netamt || 0}</span>
+              </div>
+            ))
+          ) : (
+            <></>
+          )}
+        </div>
+        <div className="payment-amt-details-container w40 h1 d-flex-col se bg-light-skyblue br9 p10">
+          <div className="deduction-amount-container w100 h25 d-flex a-center sb">
+            <div className="deduction-details w20 h1 d-flex-col a-center sb">
+              <label htmlFor="">एकूण रक्कम </label>
+              <span id="" className="data h60 t-center label-text read-onlytxt">
+                {formData.totalPayment || 0.0}
+              </span>
+            </div>
+            <div className="deduction-details w20 h1 d-flex-col a-center sb">
+              <label htmlFor="">एकूण कमिशन</label>
+              <span id="" className="data h60 t-center label-text read-onlytxt">
+                {formData.netCommission || 0.0}
+              </span>
+            </div>
+            <div className="deduction-details w20 h1 d-flex-col a-center sb">
+              <label htmlFor="">एकूण अनामत</label>
+              <span id="" className="data h60 t-center label-text read-onlytxt">
+                0.0
+              </span>
+            </div>
+            <div className="deduction-details w20 h1 d-flex-col a-center sb">
+              <label htmlFor="">एकूण वाहतूक</label>
+              <span id="" className="data h60 t-center label-text read-onlytxt">
+                {formData.transport || 0.0}
+              </span>
+            </div>
+          </div>
+          <div className="deduction-amount-container w100 h25 d-flex a-center sb">
+            <div className="deduction-details w20 h1 d-flex-col a-center sb">
+              <label htmlFor="">एकूण कपात</label>
+              <span id="" className="data h60 t-center label-text read-onlytxt">
+                {formData.netDeduction || 0.0}
+              </span>
+            </div>
+            <div className="deduction-details w20 h1 d-flex-col a-center sb">
+              <label htmlFor="roff">राउंड रक्कम</label>
+              <span
+                id="roff"
+                className="data h60 t-center label-text read-onlytxt">
+                {formData.roundAmount || 0.0}
+              </span>
+            </div>
+            <div className="deduction-details w20 h1 d-flex-col a-center sb">
+              <label htmlFor="netpay">निव्वळ देय</label>
+              <span
+                id="netpay"
+                className="data h60 t-center label-text read-onlytxt"
+                readOnly>
+                {formData.netPayment || 0.0}
+              </span>
+            </div>
+            <div className="deduction-details w20 h1 d-flex-col a-center sb"></div>
+          </div>
+          <div className="deduction-amount-container w100 h25 d-flex a-center sb">
+            <div className="deduction-details w30 h1 d-flex-col a-center sb">
+              <label htmlFor="">कमीत कमी रक्कम</label>
+              <span id="" className="data h60 t-center label-text read-onlytxt">
+                {leastPayamt}
+              </span>
+            </div>
+            <button
+              type="submit"
+              className="btn"
+              ref={submitBtnRef}
+              onClick={handleBillSave}
+              disabled={dedStatus === "loading"}>
+              {dedStatus === "loading" ? "saving..." : "बिल सेव्ह करा"}
+            </button>
+            {showbtn ? (
+              <button
+                type="submit"
+                className="btn-danger mx10"
+                onClick={() => setCurrentPage("main")}>
+                बाहेर पडा
+              </button>
+            ) : (
+              ""
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
   );
 };
 

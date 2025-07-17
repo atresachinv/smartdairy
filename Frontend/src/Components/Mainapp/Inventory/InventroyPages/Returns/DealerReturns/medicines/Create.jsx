@@ -401,160 +401,150 @@ const CreateDealerMedi = () => {
   };
 
   return (
-    <div className="h1 w100 d-flex p10 sa a-center cust-return">
-      <div className="custCol bg w45 h90">
+    <div className="dealer-return-container w100 h1 d-flex sb">
+      <div className="retun-product-details-container w48 h1 p10 bg">
         <span className="heading p10"> {t("ps-addDealReturnMedi")}</span>
-        <div className="w100  px10">
-          <div className="d-flex sb">
-            <div className="col">
-              <label className="info-text px10"> {t("ps-date")}:</label>
-              <input
-                type="date"
-                className="data"
-                name="date"
-                value={date}
-                onChange={(e) => setDate(e.target.value)}
-                max={date}
-              />
-            </div>
-            <div className="col">
-              <label className="info-text px10">{t("ps-rect-no")}:</label>
-              <input
-                type="number"
-                name="number"
-                value={rctno}
-                onFocus={handleFocus}
-                className="data w40"
-                onChange={(e) => setRctno(e.target.value.replace(/\D/, ""))}
-                min="0"
-              />
-            </div>
+         <div className="return-prod-details-div w100 h20 d-flex sb">
+          <div className="prod-detils-div w48 d-flex-col sa">
+            <label className="info-text px10"> {t("ps-date")}:</label>
+            <input
+              type="date"
+              className="data"
+              name="date"
+              value={date}
+              onChange={(e) => setDate(e.target.value)}
+              max={date}
+            />
           </div>
-          <div className="d-flex sb my5">
-            <div className="col w50">
-              <label className="info-text px10"> {t("ps-custCode")}:</label>
-              <input
-                type="number"
-                name="code"
-                className="data "
-                value={fcode}
-                onChange={(e) => setFcode(e.target.value.replace(/\D/, ""))}
-                min="0"
-                onFocus={handleFocus}
-                onKeyDown={(e) =>
-                  handleKeyPress(e, document.getElementById("selectitemcode"))
-                }
-              />
-            </div>
-            <div className="col w50">
-              <label className="info-text px10">{t("ps-dealer-name")}:</label>
-              <select
-                id="cname"
-                value={cname}
-                className="data w100"
-                onChange={(e) => setCname(e.target.value)}
-                onKeyDown={(e) =>
-                  handleKeyPress(e, document.getElementById("selectitemcode"))
-                }
-              >
-                <option value="">{t("ps-dealer-name")}</option>
-                {dealerList.map((item, i) => (
-                  <option key={i} value={item.cname}>
-                    {item.cname}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-          <div className="d-flex sb w100 ">
-            <div className="col w50">
-              <label className="info-text px10">{t("ps-itm-name")}:</label>
-
-              <select
-                disabled={!fcode}
-                id="selectitemcode"
-                value={selectitemcode}
-                className="data"
-                onChange={(e) => setSelectitemcode(parseInt(e.target.value))}
-                onKeyDown={(e) =>
-                  handleKeyPress(e, document.getElementById("qty"))
-                }
-              >
-                <option value="0">{t("ps-itm-name")}</option>
-                {filteredItems.length > 0 &&
-                  filteredItems.map((item, i) => (
-                    <option key={i} value={item.ItemCode}>
-                      {item.ItemName}
-                    </option>
-                  ))}
-              </select>
-            </div>
-            <div className="col w50">
-              <label className="info-text px10">{t("ps-qty")}:</label>
-              <input
-                disabled={!selectitemcode}
-                type="number"
-                value={qty}
-                onFocus={handleFocus}
-                className="data"
-                id="qty"
-                name="qty"
-                min="1"
-                onKeyDown={(e) =>
-                  handleKeyPress(e, document.getElementById("rate"))
-                }
-                onChange={(e) => setQty(Math.max(1, parseInt(e.target.value)))}
-              />
-            </div>
-          </div>
-
-          <div className="d-flex sb my5 ">
-            <div className="col w50">
-              <label className="info-text px10">{t("ps-rate")}:</label>
-              <input
-                type="number"
-                name="rate"
-                id="rate"
-                className="data w50"
-                onKeyDown={(e) =>
-                  handleKeyPress(e, document.getElementById("addtocart"))
-                }
-                value={rate}
-                onFocus={handleFocus}
-                onChange={(e) =>
-                  setRate(Math.max(0, parseFloat(e.target.value)))
-                }
-                min="0"
-                disabled={!selectitemcode}
-              />
-            </div>
-            <div className="col w50">
-              <label className="info-text px10">{t("ps-amt")}:</label>
-              <input
-                type="number"
-                className="data"
-                name="amount w50"
-                value={amt}
-                readOnly
-              />
-            </div>
-          </div>
-
-          <div className=" d-flex j-end my10 ">
-            <button
-              className="btn my15"
-              id="addtocart"
-              onClick={handleAddToCart}
-            >
-              Add to Cart
-            </button>
+          <div className="prod-detils-div w48 d-flex-col sa">
+            <label className="info-text px10">{t("ps-rect-no")}:</label>
+            <input
+              type="number"
+              name="number"
+              value={rctno}
+              onFocus={handleFocus}
+              className="data w40"
+              onChange={(e) => setRctno(e.target.value.replace(/\D/, ""))}
+              min="0"
+            />
           </div>
         </div>
+        <div className="return-prod-details-div w100 h20 d-flex sb">
+          <div className="prod-detils-div w48 d-flex-col sa">
+            <label className="info-text px10"> {t("ps-custCode")}:</label>
+            <input
+              type="number"
+              name="code"
+              className="data "
+              value={fcode}
+              onChange={(e) => setFcode(e.target.value.replace(/\D/, ""))}
+              min="0"
+              onFocus={handleFocus}
+              onKeyDown={(e) =>
+                handleKeyPress(e, document.getElementById("selectitemcode"))
+              }
+            />
+          </div>
+          <div className="prod-detils-div w48 d-flex-col sa">
+            <label className="info-text px10">{t("ps-dealer-name")}:</label>
+            <select
+              id="cname"
+              value={cname}
+              className="data w100"
+              onChange={(e) => setCname(e.target.value)}
+              onKeyDown={(e) =>
+                handleKeyPress(e, document.getElementById("selectitemcode"))
+              }
+            >
+              <option value="">{t("ps-dealer-name")}</option>
+              {dealerList.map((item, i) => (
+                <option key={i} value={item.cname}>
+                  {item.cname}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+        <div className="return-prod-details-div w100 h20 d-flex sb">
+          <div className="prod-detils-div w48 d-flex-col sa">
+            <label className="info-text px10">{t("ps-itm-name")}:</label>
+
+            <select
+              disabled={!fcode}
+              id="selectitemcode"
+              value={selectitemcode}
+              className="data"
+              onChange={(e) => setSelectitemcode(parseInt(e.target.value))}
+              onKeyDown={(e) =>
+                handleKeyPress(e, document.getElementById("qty"))
+              }
+            >
+              <option value="0">{t("ps-itm-name")}</option>
+              {filteredItems.length > 0 &&
+                filteredItems.map((item, i) => (
+                  <option key={i} value={item.ItemCode}>
+                    {item.ItemName}
+                  </option>
+                ))}
+            </select>
+          </div>
+          <div className="prod-detils-div w48 d-flex-col sa">
+            <label className="info-text px10">{t("ps-qty")}:</label>
+            <input
+              disabled={!selectitemcode}
+              type="number"
+              value={qty}
+              onFocus={handleFocus}
+              className="data"
+              id="qty"
+              name="qty"
+              min="1"
+              onKeyDown={(e) =>
+                handleKeyPress(e, document.getElementById("rate"))
+              }
+              onChange={(e) => setQty(Math.max(1, parseInt(e.target.value)))}
+            />
+          </div>
+        </div>
+        <div className="return-prod-details-div w100 h20 d-flex sb ">
+          <div className="prod-detils-div w48 d-flex-col sa">
+            <label className="info-text px10">{t("ps-rate")}:</label>
+            <input
+              type="number"
+              name="rate"
+              id="rate"
+              className="data w50"
+              onKeyDown={(e) =>
+                handleKeyPress(e, document.getElementById("addtocart"))
+              }
+              value={rate}
+              onFocus={handleFocus}
+              onChange={(e) => setRate(Math.max(0, parseFloat(e.target.value)))}
+              min="0"
+              disabled={!selectitemcode}
+            />
+          </div>
+          <div className="prod-detils-div w48 d-flex-col sa">
+            <label className="info-text px10">{t("ps-amt")}:</label>
+            <input
+              type="number"
+              className="data"
+              name="amount w50"
+              value={amt}
+              readOnly
+            />
+          </div>
+        </div>
+        <div className="return-btns-container d-flex j-end my10 ">
+          <button className="w30 btn" id="addtocart" onClick={handleAddToCart}>
+            Add to Cart
+          </button>
+        </div>
       </div>
-      <div className="custCol bg w45 h80">
+       <div className="return-product-invoice-container w48 h1 d-flex-col bg">
         <span className="heading p10">{t("ps-InvoiceDetails")}</span>
-        <div className="w100 h70 p10">
-          <div className="w100 h10 d-flex sb a-center t-center sticky-top bg2 py10">
+        <div className="return-prod-invoice-details-table w100 h80 d-flex-col">
+          <div className="return-table-headings-div w100 p10 d-flex sb a-center t-center sticky-top bg7">
             <span className="f-label-text w5"> {t("ps-srNo")}</span>
             <span className="f-label-text w20"> {t("ps-itm-name")}</span>
             <span className="f-label-text w5"> {t("ps-qty")}</span>
@@ -567,16 +557,16 @@ const CreateDealerMedi = () => {
               {cartItem.map((item, i) => (
                 <div
                   key={i}
-                  className="w100 h10 d-flex sb a-center t-center py10"
+                  className="return-table-data-div w100 h10 d-flex sb a-center t-center py10"
                 >
-                  <span className="label-text w5">{i + 1}</span>
-                  <span className="label-text w15">
+                  <span className="info-text w5">{i + 1}</span>
+                  <span className="info-text w15">
                     {handleFindItemName(item.itemcode)}
                   </span>
-                  <span className="label-text w5">{item.qty}</span>
-                  <span className="label-text w5">{item.rate}</span>
-                  <span className="label-text w10">{item.qty * item.rate}</span>
-                  <span className="label-text w20 d-flex j-center">
+                  <span className="info-text w5">{item.qty}</span>
+                  <span className="info-text w5">{item.rate}</span>
+                  <span className="info-text w10">{item.qty * item.rate}</span>
+                  <span className="info-text w20 d-flex j-center">
                     <MdDeleteOutline
                       color="red"
                       className="color-icon"
@@ -586,7 +576,7 @@ const CreateDealerMedi = () => {
                 </div>
               ))}
 
-              <div className="w100 h10 d-flex sb a-center t-center">
+              <div className="return-table-total-div w100 h10 d-flex sb a-center t-center">
                 <span className="label-text w5"></span>
                 <span className="label-text w15"></span>
                 <span className="label-text w5"></span>
@@ -597,24 +587,24 @@ const CreateDealerMedi = () => {
                     0
                   )}
                 </span>
-                <span className="label-text w20 d-flex j-center"></span>
+                <span className="w20"></span>
               </div>
             </>
           ) : (
-            <div className="w100 d-flex h1 center">
+            <div className="w100 h1 d-flex center">
               {t("common:c-no-data-avai")}
             </div>
           )}
         </div>
-        <div className="w100 d-flex j-end py10 my10">
-          <button className="w-btn mx10 " onClick={handelClear}>
+        <div className="return-prod-btns-div w100 h10 d-flex a-center sa">
+          <button className="w30 btn" onClick={handelClear}>
             {t("puchasesale:ps-clr")}
           </button>
-          <button className="w-btn mx10" onClick={exportToPDF}>
+          <button className="w30 btn" onClick={exportToPDF}>
             Pdf
           </button>
 
-          <button className="w-btn " onClick={handleSubmit}>
+          <button className="w30 btn " onClick={handleSubmit}>
             {t("milkcollection:m-btn-save")}
           </button>
         </div>

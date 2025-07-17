@@ -5,13 +5,13 @@ import { NavLink } from "react-router-dom";
 const EmployeeNavlinks = ({ isselected, setIsSelected }) => {
   const empNavbuttons = [
     {
-      name: "Employee List",
+      name: "सेवक यादी",
       icon: <IoList className="icon" />,
       index: 1,
       path: "list",
     },
     {
-      name: "Create Employee",
+      name: "सेवक नोंदवा",
       icon: <IoPersonAdd className="icon" />,
       index: 0,
       path: "add-new",
@@ -27,15 +27,17 @@ const EmployeeNavlinks = ({ isselected, setIsSelected }) => {
           }`}
           onClick={() => {
             setIsSelected(index);
-          }}>
+          }}
+        >
           <NavLink
             to={button.path}
             className={({ isActive }) =>
               isActive
                 ? "sub-navlinks f-label-text selected"
                 : "sub-navlinks f-label-text"
-            }>
-            {button.icon}
+            }
+          >
+            <span className="nav-icon">{button.icon}</span>
             <span>{button.name}</span>
           </NavLink>
         </li>

@@ -9,6 +9,7 @@ import {
   saveUpdatedRC,
 } from "../../../../../App/Features/Mainapp/Masters/rateChartSlice";
 import { useTranslation } from "react-i18next";
+import "../../../../../Styles/Mainapp/Masters/MilkRateMaster.css";
 
 const Updateratecharts = ({ isSet, ratechart }) => {
   const { t } = useTranslation("ratechart");

@@ -270,15 +270,15 @@ const CreateProducts = () => {
   };
 
   return (
-    <div className="w100 h1 d-flex-col p10 ">
-      <span className="heading">{t("ps-nv-pro-add")}</span>
-      <div className="createProductContainer w100 h1 d-flex center sb">
+    <div className="add-product-container w100 h1 d-flex-col p10 ">
+      <span className="heading">{t("ps-nv-pro-add")} :</span>
+      <div className="create-product-container w100 h1 d-flex center sb">
         <form
           onSubmit={handleSubmit}
-          className="createProductContainer-item m10 w50 h90 d-flex-col p10 bg"
+          className="product-details-form-container m10 w50 h90 d-flex-col p10 bg"
         >
-          <div className="  d-flex my5">
-            <div className="col">
+          <div className="prod-details-outer-div w100 h20 d-flex sb">
+            <div className="prod-details-div w48 d-flex-col sa">
               <label className="info-text px10">
                 {t("ps-code")}
                 <span className="req">*</span>
@@ -288,15 +288,14 @@ const CreateProducts = () => {
                 name="ItemCode"
                 value={formData.ItemCode}
                 onFocus={(e) => e.target.select()}
-                className={`data form-field  `}
+                className="data prod-code"
                 onChange={handleInputChange}
                 onKeyDown={(e) => handleKeyDown(e, "ItemCode")}
                 placeholder="Item Code"
                 required
-                // disabled
               />
             </div>
-            <div className="col">
+            <div className="prod-details-div w48 d-flex-col sa">
               <label className="info-text px10">
                 {t("ps-itm-name")} <span className="req">*</span>
               </label>
@@ -308,13 +307,12 @@ const CreateProducts = () => {
                 className={`data form-field `}
                 onChange={handleInputChange}
                 onKeyDown={(e) => handleKeyDown(e, "ItemName")}
-                placeholder="Item Name"
                 required
               />
             </div>
           </div>
-          <div className="  d-flex my5">
-            <div className="col">
+          <div className="prod-details-outer-div w100 h20 d-flex sb">
+            <div className="prod-details-div w48 d-flex-col sa">
               <label className="info-text px10">
                 {t("ps-mar-name")}
                 <span className="req">*</span>
@@ -327,11 +325,10 @@ const CreateProducts = () => {
                 className={`data form-field `}
                 onChange={handleInputChange}
                 onKeyDown={(e) => handleKeyDown(e, "marname")}
-                placeholder="Item Marathi Name"
                 required
               />
             </div>
-            <div className="col">
+            <div className="prod-details-div w48 d-flex-col sa">
               <label className="info-text px10">
                 {t("ps-sel-grp")} <span className="req">*</span>
               </label>
@@ -343,7 +340,7 @@ const CreateProducts = () => {
                 onKeyDown={(e) => handleKeyDown(e, "ItemGroupCode")}
                 required
               >
-                <option value="">------ Select ------- </option>
+                <option value="">-- ग्रुप निवडा -- </option>
                 {[
                   { value: 1, label: `${t("ps-nv-cattlefeed")}` },
                   { value: 2, label: `${t("ps-nv-medicines")}` },
@@ -357,10 +354,10 @@ const CreateProducts = () => {
               </select>
             </div>
           </div>
-          <div className="  d-flex my5">
-            <div className="col">
+          <div className="prod-details-outer-div w100 h20 d-flex sb">
+            <div className="prod-details-div w48 d-flex-col sa">
               <label className="info-text px10">
-                Unit Code: <span className="req">*</span>
+                मोजण्याचे एकक: <span className="req">*</span>
               </label>
               <select
                 name="UnitCode"
@@ -370,11 +367,11 @@ const CreateProducts = () => {
                 onKeyDown={(e) => handleKeyDown(e, "UnitCode")}
                 required
               >
-                <option value="">-----Select Unit-----</option>
+                <option value="">- एकक निवडा -</option>
                 {[
-                  { value: "KG", label: "KG" },
-                  { value: "QTY", label: "QTY" },
-                  { value: "Others", label: "Others" },
+                  { value: "KG", label: "किलो" },
+                  { value: "QTY", label: "नग" },
+                  { value: "Others", label: "इतर" },
                 ].map((item) => (
                   <option key={item.value} value={item.value}>
                     {item.label}
@@ -382,7 +379,7 @@ const CreateProducts = () => {
                 ))}
               </select>
             </div>
-            <div className="col">
+            <div className="prod-details-div w48 d-flex-col sa">
               <label className="info-text px10">{t("ps-desc")}</label>
               <input
                 type="text"
@@ -396,8 +393,8 @@ const CreateProducts = () => {
               />
             </div>
           </div>
-          <div className="row d-flex my5">
-            <div className="col">
+          <div className="prod-details-outer-div w100 h20 d-flex sb">
+            <div className="prod-details-div w48 d-flex-col sa">
               <label className="info-text px10">{t("ps-manuf")}</label>
               <input
                 type="text"
@@ -411,22 +408,26 @@ const CreateProducts = () => {
               />
             </div>
           </div>
-          <div className="  d-flex a-center  j-end my10">
-            <button className="w-btn" type="button" onClick={handleClear}>
+          <div className="prod-btn-container w100 h20 d-flex a-center j-end">
+            <button
+              className="w30 btn mx10"
+              type="button"
+              onClick={handleClear}
+            >
               {t("ps-cancel")}
             </button>
-            <button className="w-btn mx10" type="submit">
+            <button className="w30 btn" type="submit">
               {t("ps-smt")}
             </button>
           </div>
         </form>
-        <div className="createProductContainer-item w50 m10  h90 d-flex-col p10 bg">
-          <div className=" w100  d-flex a-center my10  j-center">
+        <div className="product-ledgers-details-container w50 m10  h90 d-flex-col p10 bg">
+          <div className="select-center-container w100 h10 d-flex a-center">
             {centerId > 0 ? null : (
-              <div className="d-flex  center">
-                <span className="info-text w50">सेंटर निवडा :</span>
+              <div className="d-flex a-center">
+                <span className="info-text w30">सेंटर निवडा :</span>
                 <select
-                  className="data  my5"
+                  className="data w70"
                   name="center"
                   onChange={(e) => setSelectedCenter(e.target.value)}
                   value={selectedCenter}
@@ -443,11 +444,11 @@ const CreateProducts = () => {
               </div>
             )}
           </div>
-          <div className=" w100  d-flex a-center  j-center">
-            <span className="info-text">ग्रुपचे नाव :</span>
+          <div className="select-group-container w100 h15 d-flex a-center">
+            <span className="info-text w30">ग्रुपचे नाव :</span>
             <select
               name="ItemGroupCode"
-              className="data form-field w30"
+              className="data form-field w40"
               value={formData1.ItemGroupCode}
               onChange={handleOngrop}
             >
@@ -463,17 +464,17 @@ const CreateProducts = () => {
               ))}
             </select>
           </div>
-          <div className="w100 d-flex center my10">
-            <span className="info-text w70">खरेदी देणे ख. नं . : </span>
+          <div className="prod-ledger-details-div w100 h15 d-flex a-center sb">
+            <span className="info-text w30">खरेदी देणे ख.नं. : </span>
             <input
               type="text"
+              className={`data leno-text w20`}
               name="kharediDeneNo"
               value={formData1.kharediKharchNo}
-              className={`data mx5 w30`}
-              disabled
             />
             <input
               type="text"
+              className="data lename-text w45"
               name="kharediDeneNo"
               value={
                 formData1.kharediDeneNo
@@ -482,17 +483,15 @@ const CreateProducts = () => {
                     )?.marathi_name
                   : ""
               }
-              className={`data  `}
-              disabled
             />
           </div>
-          <div className="w100 d-flex center ">
-            <span className="info-text w70">विक्री येणे खतावणी नं. : </span>
+          <div className="prod-ledger-details-div w100 h15 d-flex a-center sb">
+            <span className="info-text w30">विक्री येणे ख.नं.: </span>
             <input
               type="text"
               name="kharediDeneNo"
               value={formData1.vikriUtpannaNo}
-              className={`data mx5 w30`}
+              className={`data leno-text w20`}
               disabled
             />
             <input
@@ -505,17 +504,17 @@ const CreateProducts = () => {
                     )?.marathi_name
                   : ""
               }
-              className={`data  `}
+              className={`data lename-text w45`}
               disabled
             />
           </div>
-          <div className="w100 d-flex center my10">
-            <span className="info-text w70">खरेदी खर्च ख. नं. : </span>
+          <div className="prod-ledger-details-div w100 h15 d-flex a-center sb">
+            <span className="info-text w30">खरेदी खर्च ख.नं. : </span>
             <input
               type="text"
               name="kharediDeneNo"
               value={formData1.kharediDeneNo}
-              className={`data mx5 w30`}
+              className={`data leno-text w20`}
               disabled
             />
             <input
@@ -528,17 +527,17 @@ const CreateProducts = () => {
                     )?.marathi_name
                   : ""
               }
-              className={`data  `}
+              className={`data lename-text w45`}
               disabled
             />
           </div>
-          <div className="w100 d-flex center ">
-            <span className="info-text w70">विक्री उत्पत्र ख. नं. : </span>
+          <div className="prod-ledger-details-div w100 h15 d-flex a-center sb">
+            <span className="info-text w30">विक्री उत्पत्र ख.नं. : </span>
             <input
               type="text"
               name="kharediDeneNo"
               value={formData1.VikriYeneNo}
-              className={`data mx5 w30`}
+              className={`data leno-text w20`}
               disabled
             />
             <input
@@ -551,17 +550,17 @@ const CreateProducts = () => {
                     )?.marathi_name
                   : ""
               }
-              className={`data  `}
+              className={`data lename-text w45`}
               disabled
             />
           </div>
-          <div className="w100 d-flex center my10">
-            <span className="info-text w70">घटनाश ख. नं. : </span>
+          <div className="prod-ledger-details-div w100 h15 d-flex a-center sb">
+            <span className="info-text w30">घटनाश ख.नं. : </span>
             <input
               type="text"
               name="kharediDeneNo"
               value={formData1.GhatnashakNo}
-              className={`data mx5 w30`}
+              className={`data leno-text w20`}
               disabled
             />
             <input
@@ -574,7 +573,7 @@ const CreateProducts = () => {
                     )?.marathi_name
                   : ""
               }
-              className={`data  `}
+              className={`data lename-text w45`}
               disabled
             />
           </div>

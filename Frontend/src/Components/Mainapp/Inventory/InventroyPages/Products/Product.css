@@ -65,59 +65,98 @@
 .productModel .modal-content button:first-child:hover {
   background-color: #e2e6ea;
 }
-
+/* --------- Product list css ------------ */
 @media screen and (max-width: 426px) {
-  #selectItemgrpName {
-    display: none;
-  }
-  .download-print-pdf-excel-container {
-    min-height: fit-content;
-    flex-direction: column;
-  }
-  .download-print-pdf-excel-container .prod-page-title {
+  .product-list-container {
     width: 100%;
-  }
-  .group-code-and-button-div {
-    min-height: fit-content;
-    padding: 10px 0;
-  }
-  .group-code-and-button-div .ItemGroupCode {
-    width: 60%;
-  }
-
-  .product-heading-title-scroller {
-    overflow-x: auto;
-  }
-  .sales-data-headings-div {
-    min-width: 600px;
-    padding: 5px 0;
-  }
-
-  .sales-data-values-div {
-    min-width: 600px;
-  }
-  .create-dealer-container {
     min-height: auto;
   }
-  .create-dealer-container .create-dealer-inner-container,
-  .create-dealer-container .create-dealer-form-container {
-    width: 100%;
+  .product-list-container .download-print-pdf-excel-container {
     min-height: fit-content;
-    padding: 0;
-  }
-  .create-dealer-form-container .row {
-    margin: 0;
-  }
-  .create-dealer-form-container .button-container {
-    flex-direction: row;
-  }
-  .forMin {
-    padding: 15px !important;
-  }
-  .createProductContainer {
     flex-direction: column;
   }
-  .createProductContainer .createProductContainer-item {
+  .download-print-pdf-excel-container .group-code-and-button-div {
+    min-height: fit-content;
+    flex-wrap: wrap;
+  }
+  .group-code-and-button-div .group-selection-container {
     width: 100%;
+    justify-content: space-between;
+    padding: 0;
+  }
+  .group-code-and-button-div button {
+    width: 45%;
+    margin: 0 0 10px 0;
+  }
+  .product-list-container .product-list-table {
+    min-height: 90%;
+    margin-bottom: 10px;
+  }
+  .product-list-table .product-heading-title-scroller {
+    overflow-x: scroll;
+  }
+  .product-heading-title-scroller .sales-data-values-div {
+    width: 700px;
+  }
+}
+
+/* --------- Add Product css ------------ */
+@media screen and (max-width: 426px) {
+  .add-product-container {
+    width: 100%;
+    min-height: auto;
+  }
+  .add-product-container .create-product-container {
+    width: 100%;
+    min-height: auto;
+    flex-direction: column;
+  }
+  .add-product-container .product-details-form-container {
+    width: 100%;
+    min-height: fit-content;
+  }
+  .product-details-form-container .prod-details-outer-div {
+    width: 100%;
+    min-height: fit-content;
+    flex-direction: column;
+  }
+  .prod-details-outer-div .prod-details-div .prod-code {
+    width: 30%;
+  }
+  .prod-details-outer-div .prod-details-div {
+    width: 100%;
+  }
+  .product-details-form-container .prod-btn-container {
+    width: 100%;
+    margin-top: 10px;
+    justify-content: space-between;
+  }
+  .prod-btn-container button {
+    width: 48%;
+    margin: 0;
+  }
+
+  /* ----- product ledger details css ------- */
+  .add-product-container .product-ledgers-details-container {
+    width: 100%;
+    min-height: fit-content;
+    margin-bottom: 10px;
+  }
+  .product-ledgers-details-container .select-group-container {
+    margin: 10px 0;
+  }
+  .product-ledgers-details-container .prod-ledger-details-div {
+    width: 100%;
+    min-height: fit-content;
+    flex-wrap: wrap;
+  }
+  .prod-ledger-details-div .info-text {
+    width: 100%;
+  }
+  .prod-ledger-details-div .leno-text {
+    width: 30%;
+  }
+  .prod-ledger-details-div .lename-text {
+    width: 60%;
   }
 }

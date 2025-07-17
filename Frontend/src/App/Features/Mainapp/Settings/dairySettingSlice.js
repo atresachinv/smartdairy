@@ -72,12 +72,9 @@ export const updateDairySetup = createAsyncThunk(
 // get a center setting
 export const getCenterSetting = createAsyncThunk(
   "dairySettings/getCenterSetting",
-  async (centerid, { rejectWithValue }) => {
+  async (_, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.post(
-        "/center/setting/one",
-        centerid
-      );
+      const response = await axiosInstance.get("/center/setting/one");
       return response.data.data;
     } catch (error) {
       const errorMessage = error.response

@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import Select from "react-select";
-import "../../../../Styles/AdminPannel/AccessControls/WhatsapSms.css";
 import { useSelector, useDispatch } from "react-redux";
 import {
   getCenterList,
@@ -9,6 +8,7 @@ import {
 import axiosInstance from "../../../../App/axiosInstance";
 import { toast } from "react-toastify";
 import { NavLink } from "react-router-dom";
+import "../../../../Styles/AdminPannel/WhatsapSms.css";
 
 const WhatsappSms = () => {
   const { dairyList, centerList } = useSelector((state) => state.access);
@@ -92,20 +92,20 @@ const WhatsappSms = () => {
 
   return (
     <>
-      <div className=" w100 h1 j-center d-flex-col">
-        <div className="w100 d-flex sb">
-          <div className="heading">WhatsApp Sms Recharge</div>
-          <NavLink to="/adminpanel/whatsapp-sms" className="w-btn">
-            Back
-          </NavLink>
-        </div>
-        <div className="d-flex j-center abmin-whatsapp-sms">
-          <div className=" d-flex-col m10   bg w100 recharge-whsms-container">
-            <div className="d-flex a-center w100">
-              <div className="info-text">Select Dairy :-</div>
+      <div className="whatsapp-sms-outer-container w100 h1 a-center d-flex-col">
+        <div className="whatsapp-sms-container w70 h60 d-flex j-center">
+          <div className="page-title-container w100 d-flex sb">
+            <div className="heading">WhatsApp Sms Recharge</div>
+            <NavLink to="/adminpanel/whatsapp-sms" className="w-btn d-none">
+              Back
+            </NavLink>
+          </div>
+          <div className="recharge-whsms-container w100 h90 d-flex-col sa my10 p10 bg">
+            <div className="sms-seting-div w100 h30 d-flex a-center sb">
+              <div className="label-text w20">Select Dairy :</div>
               <Select
                 options={dairyOptions1}
-                className="mx5 w20"
+                className="dairyid w20"
                 placeholder=""
                 isSearchable
                 styles={{
@@ -127,7 +127,7 @@ const WhatsappSms = () => {
               />
               <Select
                 options={dairyOptions}
-                className=" mx5 w50"
+                className="dairyname w50"
                 placeholder=""
                 isSearchable
                 styles={{
@@ -148,11 +148,11 @@ const WhatsappSms = () => {
                 }}
               />
             </div>
-            <div className="d-flex a-center my15">
-              <div className="info-text">Select Center :-</div>
+            <div className="sms-seting-div w100 h30 d-flex a-center sb">
+              <div className="label-text w20">Select Center :</div>
               <Select
                 options={centerOptions1}
-                className="  w20"
+                className="dairyid w20"
                 placeholder=""
                 isSearchable
                 styles={{
@@ -174,7 +174,7 @@ const WhatsappSms = () => {
               />
               <Select
                 options={centerOptions}
-                className=" mx5 w50"
+                className="dairyname w50"
                 placeholder=""
                 isSearchable
                 styles={{
@@ -195,11 +195,11 @@ const WhatsappSms = () => {
                 }}
               />
             </div>
-            <div className="d-flex a-center my5">
-              <div className="info-text">Balance :-</div>
+            <div className="sms-seting-div w100 h30 d-flex a-center">
+              <div className="label-text w25">Balance :</div>
               <input
                 type="number"
-                className="data mx10 w30"
+                className="w20 data dairyid"
                 placeholder=""
                 value={formData.balance}
                 onChange={(e) => {
@@ -207,15 +207,15 @@ const WhatsappSms = () => {
                 }}
               />
             </div>
-            <div className="d-flex j-end mx10 ">
-              <button className="w-btn" type="submit" onClick={handleReset}>
-                Reset
-              </button>
+            <div className="form-btn-container w100 d-flex j-end">
               <button
                 className="w-btn mx10"
                 type="submit"
-                onClick={handleSubmit}
+                onClick={handleReset}
               >
+                Reset
+              </button>
+              <button className="w-btn" type="submit" onClick={handleSubmit}>
                 Save
               </button>
             </div>

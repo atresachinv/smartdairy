@@ -31,8 +31,32 @@
   .dairy-setup-inner-container .sms-setting-container {
     min-height: fit-content;
   }
+  .dairy-setup-inner-container .sms-setting-outer-container {
+    flex-direction: column;
+    padding: 0;
+    margin-bottom: 10px;
+  }
+  .sms-setting-outer-container .sms-setting-container {
+    width: 100%;
+    justify-content: space-between;
+    padding: 0;
+  }
+  .sms-setting-outer-container .kg-liters-setting-container {
+    width: 100%;
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 0 10px 10px;
+  }
   .sms-setting-container .option-setting-container {
     flex-wrap: nowrap;
     flex-direction: column;
+    padding: 0;
+  }
+  .option-setting-container .dairy-setup-form input {
+    height: 70%;
+  }
+  .dairy-setup-inner-container .btn-container button {
+    width: 100%;
+    margin: 0;
   }
 }

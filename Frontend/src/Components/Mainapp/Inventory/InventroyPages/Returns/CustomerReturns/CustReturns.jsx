@@ -14,7 +14,7 @@ const CustReturns = () => {
   const [isselected, setIsSelected] = useState(0);
 
   return (
-    <div className="product-return-container w100 h1 ">
+    <div className="product-return-container w100 h1">
       <div className="header-nav w100 h10 d-flex a-center nav-bg">
         <ReturnsNavlinks
           isselected={isselected}

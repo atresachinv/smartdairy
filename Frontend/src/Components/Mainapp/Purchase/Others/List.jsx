@@ -411,11 +411,12 @@ const List = () => {
   };
 
   return (
-    <div className="customer-list-container-div w100 h1 d-flex-col p10">
-      <div className="download-print-pdf-excel-container w100 h30 d-flex-col sb">
-        <div className="sales-dates-container w100 h50 d-flex a-center sb sales-dates-container-mobile">
-          <div className="d-flex sb w60 sales-dates-container-mobile-w100 py5">
-            <div className="date-input-div   d-flex a-center sb">
+    <div className="purchase-product-bill-list-container w100 h1 d-flex-col sb p10">
+      <span className="heading">इतर वस्तु खरेदी यादी :</span>
+      <div className="download-print-pdf-excel-container w100 h25 d-flex-col sb">
+        <div className="purchase-dates-add-new-purchase-container w100 h50 d-flex a-center sb">
+          <div className="purchase-dates-container w65 d-flex a-center sb">
+            <div className="date-input-div w40 d-flex a-center sb">
               <label htmlFor="" className="label-text w30">
                 {t("ps-from")} :
               </label>
@@ -427,7 +428,7 @@ const List = () => {
                 max={date2}
               />
             </div>
-            <div className="date-input-div d-flex a-center sb">
+            <div className="date-input-div w40 d-flex a-center sb">
               <label htmlFor="" className="label-text w30">
                 {t("ps-to")} :
               </label>
@@ -439,12 +440,12 @@ const List = () => {
                 min={date1}
               />
             </div>
-            <button className="w-btn " onClick={handleShowbutton}>
+            <button className="w-btn" onClick={handleShowbutton}>
               {t("ps-show")}
             </button>
           </div>
-          <div className="d-flex h1 sb center w25 sales-dates-container-mobile-w100  p10 bg">
-            <label htmlFor="" className="label-text px5 ">
+          <div className="add-new-purchase-div w30 d-flex h1 sb center  bg p10">
+            <label htmlFor="" className="label-text">
               {t("ps-nv-add-other")}
             </label>
             <NavLink
@@ -452,48 +453,39 @@ const List = () => {
               style={{ textDecoration: "none" }}
               to="add-new"
             >
-              <MdAddShoppingCart className="icon f-label" />
+              <MdAddShoppingCart className="icon f-label mx10" />
               {t("ps-new")}
             </NavLink>
           </div>
         </div>
-        <div className="find-customer-container w100 h50 d-flex a-center my5">
-          <div className="customer-search-div  d-flex a-center sb">
-            <input
-              type="text"
-              className="data w100"
-              name="code"
-              onFocus={(e) => e.target.select()}
-              value={fcode}
-              onChange={(e) =>
-                setFcode(e.target.value.replace(/[^a-zA-Z0-9 ]/g, ""))
-              }
-              min="0"
-              title="Enter code or name to search details"
-              placeholder={`${t("ps-search")}`}
-            />
-          </div>
-          <button
-            className="w-btn mx10 sales-dates-container-mobile-btn"
-            onClick={downloadExcel}
-          >
+        <div className="find-returns-by-customer-container w100 h50 d-flex a-center">
+          <input
+            type="text"
+            className="data w40"
+            name="code"
+            onFocus={(e) => e.target.select()}
+            value={fcode}
+            onChange={(e) =>
+              setFcode(e.target.value.replace(/[^a-zA-Z0-9 ]/g, ""))
+            }
+            min="0"
+            title="Enter code or name to search details"
+            placeholder={`${t("ps-search")}`}
+          />
+          <button className="w15 btn mx10" onClick={downloadExcel}>
             <span className="f-label-text px10"> {t("ps-down-excel")}</span>
             <FaDownload className="icon" />
           </button>
-          <button
-            className="w-btn mx10 sales-dates-container-mobile-btn"
-            onClick={downloadPdf}
-          >
+          <button className="w15 btn" onClick={downloadPdf}>
             <span className="f-label-text px10"> PDF </span>
             <FaDownload className="icon" />
           </button>
         </div>
       </div>
-      <div className="customer-list-table w100 h1 d-flex-col  bg">
-        <span className="heading p10"> {t("ps-cattle-other-rep")}</span>
-        <div className="customer-heading-title-scroller w100 h1 mh100 hidescrollbar d-flex-col">
-          <div className="data-headings-div h10 d-flex center forDWidth t-center bg7 sb">
-            {/* <span className="f-info-text w5"> {t("ps-srNo")}</span> */}
+      <div className="purchase-prod-list-container w100 h65 d-flex-col bg">
+        <span className="heading p10"> {t("ps-cattle-other-rep")} :</span>
+        <div className="purchase-prod-detilas-table-div w100 h1 mh100 d-flex-col hidescrollbar">
+          <div className="data-headings-div w100 py10 d-flex a-center t-center sb sticky-top bg7">
             <span className="f-info-text w10">
               {t("ps-date")}
               <span
@@ -512,7 +504,7 @@ const List = () => {
                 )}
               </span>
             </span>
-            <span className="f-info-text w5">{t("ps-rect-no")}</span>
+            <span className="f-info-text w10">{t("ps-rect-no")}</span>
             <span className="f-info-text w15">
               {t("ps-dealer-no")}
               <span
@@ -531,7 +523,7 @@ const List = () => {
                 )}
               </span>
             </span>
-            <span className="f-info-text w15">
+            <span className="f-info-text w30">
               {t("ps-dealer-name")}
               <span
                 className="px5 f-color-icon"
@@ -551,7 +543,6 @@ const List = () => {
             </span>
             <span className="f-info-text w10">{t("ps-ttl-amt")}</span>
             <span className="f-info-text w10">Actions</span>
-
             {userRole === "salesman" ? (
               <></>
             ) : (
@@ -587,9 +578,7 @@ const List = () => {
                 groupedPurchaseArray.map((item, index) => (
                   <div
                     key={index}
-                    className={`data-values-div w100 h10 d-flex forDWidth center t-center sa ${
-                      index % 2 === 0 ? "bg-light" : "bg-dark"
-                    }`}
+                    className={`data-values-div sale-data-values-div w100 h10 d-flex center t-center sa`}
                     style={{
                       backgroundColor: index % 2 === 0 ? "#faefe3" : "#fff",
                     }}
@@ -598,13 +587,12 @@ const List = () => {
                     <span className="text w10">
                       {formatDateToDDMMYYYY(item.purchasedate)}
                     </span>
-                    <span className="text w5">{item.receiptno}</span>
+                    <span className="text w10">{item.receiptno}</span>
                     <span className="text w15">{item.dealerCode}</span>
-                    <span className="text w15">
+                    <span className="text w30">
                       {item.dealerName || "Unknown"}
                     </span>
                     <span className="text w10">{item.TotalAmount}</span>
-
                     <span className="text w10 d-flex j-center a-center">
                       <button
                         style={{ cursor: "pointer" }}
@@ -636,176 +624,139 @@ const List = () => {
               )}
             </>
           )}
-          {/* {groupedPurchaseArray.length > 0 ? (
-            groupedPurchaseArray.map((item, index) => (
-              <div
-                key={index}
-                className={`data-values-div w100 h10 d-flex forDWidth center t-center sa ${
-                  index % 2 === 0 ? "bg-light" : "bg-dark"
-                }`}
-                style={{
-                  backgroundColor: index % 2 === 0 ? "#faefe3" : "#fff",
-                }}>
-                <span className="text w5">{index + 1}</span>
-                <span className="text w5">
-                  {formatDateToDDMMYYYY(item.purchasedate)}
-                </span>
-                <span className="text w5">{item.receiptno}</span>
-                <span className="text w10">{item.dealerCode}</span>
-                <span className="text w15">{item.dealerName || "Unknown"}</span>
-                <span className="text w10">{item.TotalAmount}</span>
-                <span className="text w10 d-flex j-center a-center">
-                  <button
-                    style={{ cursor: "pointer" }}
-                    className="px5 "
-                    onClick={() => handleEditClick(item.billno)}>
-                    View
-                  </button>
-                  <MdDeleteOutline
-                    onClick={() => handleDelete(item.billno)}
-                    size={17}
-                    className="table-icon"
-                    style={{ color: "red" }}
-                  />
-                </span>
-              </div>
-            ))
-          ) : (
-            <div className="box d-flex center">No purchases found</div>
-          )} */}
         </div>
       </div>
-     {isModalOpen && updatelist.length > 0 && (
-            <div className="pramod modal">
-              <div className="modal-content">
-                <div className="d-flex sb deal-info">
-                  <label className="heading">{t("ps-pur-bill-det")}</label>
-                  <IoClose
-                    style={{
-                      cursor: "pointer",
-                      background: "#34078e",
-                      color: "#fff",
-                      borderRadius: "6px",
-                    }}
-                    size={25}
-                    onClick={() => setIsModalOpen(false)}
-                  />
-                </div>
-                <hr />
-                <div className=" d-flex sb mx15 px15 deal-info-name">
-                  <label className="label-text">
-                    {t("ps-rect-no")}:{" "}
-                    <span className="info-text">
-                      {updatelist[0]?.receiptno || ""}
-                    </span>
-                  </label>
-                  <div className="10">
-                    <label className="label-text">
-                      {t("ps-date")} :{" "}
-                      <span className="info-text">
-                        {formatDateToDDMMYYYY(updatelist[0]?.purchasedate)}
-                      </span>
-                    </label>
-                  </div>
-                </div>
-                <div className=" d-flex sb mx15 px15 deal-info-name">
-                  <label className="lable-text">
-                    {t("ps-dealer-no")}:{" "}
-                    <span className="info-text">
-                      {updatelist[0]?.dealerCode || ""}
-                    </span>
-                  </label>
-                  <label className="label-text">
-                    {t("ps-dealer-name")} :{" "}
-                    <span className="info-text">
-                      {updatelist[0]?.dealerName || ""}
-                    </span>
-                  </label>
-                </div>
-                {/* <div className="modal-content w100  "> */}
-                <div className="sales-table-container w100">
-                  <table className="sales-table w100 ">
-                    <thead className="bg1">
-                      <tr>
-                        {/* <th className="f-info-text"> {t("ps-srNo")}</th> */}
-                        <th className="f-info-text"> {t("ps-itm-name")}</th>
-                        <th className="f-info-text"> {t("ps-rate")}</th>
-                        <th className="f-info-text"> {t("ps-sale-rate")}</th>
-                        <th className="f-info-text"> {t("ps-qty")}</th>
-                        <th className="f-info-text"> {t("ps-amt")}</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {updatelist.map((item, i) => (
-                        <tr key={i}>
-                          {/* <td>{i + 1}</td> */}
-                          <td className="info-text">{item.itemname}</td>
-                          <td className="w20">
-                            <input
-                              name="rate"
-                              type="number"
-                              className="data"
-                              value={item.rate}
-                              onFocus={handleFocus}
-                              onChange={(e) =>
-                                handleItemChange(i, "rate", e.target.value)
-                              }
-                            />
-                          </td>
-                          <td className="w20">
-                            <input
-                              name="sale"
-                              type="number"
-                              className="data"
-                              value={item.salerate}
-                              onFocus={handleFocus}
-                              onChange={(e) =>
-                                handleItemChange(i, "salerate", e.target.value)
-                              }
-                            />
-                          </td>
-                          <td className="w20">
-                            <input
-                              name="qty"
-                              type="number"
-                              className="data"
-                              value={item.qty}
-                              onFocus={handleFocus}
-                              onChange={(e) =>
-                                handleItemChange(i, "qty", e.target.value)
-                              }
-                            />
-                          </td>
-                          <td>{item.rate * item.qty}</td>
-                        </tr>
-                      ))}
-                      <tr>
-                        {/* <td></td> */}
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td>
-                          <b> {t("ps-ttl-amt")}</b>
-                        </td>
-                        <td>
-                          {(updatelist || []).reduce(
-                            (acc, item) => acc + (item.amount || 0),
-                            0
-                          )}
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-                {/* </div> */}
-                <div className="d-flex my15 j-end">
-                  <button className="btn" onClick={handleUpdate}>
-                    {t("ps-update")}
-                  </button>
-                </div>
+      {isModalOpen && updatelist.length > 0 && (
+        <div className="pramod modal">
+          <div className="modal-content">
+            <div className="d-flex sb deal-info">
+              <label className="heading">{t("ps-pur-bill-det")}</label>
+              <IoClose
+                style={{
+                  cursor: "pointer",
+                  background: "#34078e",
+                  color: "#fff",
+                  borderRadius: "6px",
+                }}
+                size={25}
+                onClick={() => setIsModalOpen(false)}
+              />
+            </div>
+            <hr />
+            <div className=" d-flex sb mx15 px15 deal-info-name">
+              <label className="label-text">
+                {t("ps-rect-no")}:{" "}
+                <span className="info-text">
+                  {updatelist[0]?.receiptno || ""}
+                </span>
+              </label>
+              <div className="10">
+                <label className="label-text">
+                  {t("ps-date")} :{" "}
+                  <span className="info-text">
+                    {formatDateToDDMMYYYY(updatelist[0]?.purchasedate)}
+                  </span>
+                </label>
               </div>
             </div>
-          )}
+            <div className=" d-flex sb mx15 px15 deal-info-name">
+              <label className="lable-text">
+                {t("ps-dealer-no")}:{" "}
+                <span className="info-text">
+                  {updatelist[0]?.dealerCode || ""}
+                </span>
+              </label>
+              <label className="label-text">
+                {t("ps-dealer-name")} :{" "}
+                <span className="info-text">
+                  {updatelist[0]?.dealerName || ""}
+                </span>
+              </label>
+            </div>
+            {/* <div className="modal-content w100  "> */}
+            <div className="sales-table-container w100">
+              <table className="sales-table w100 ">
+                <thead className="bg1">
+                  <tr>
+                    {/* <th className="f-info-text"> {t("ps-srNo")}</th> */}
+                    <th className="f-info-text"> {t("ps-itm-name")}</th>
+                    <th className="f-info-text"> {t("खरेदी दर")}</th>
+                    <th className="f-info-text"> {t("ps-sale-rate")}</th>
+                    <th className="f-info-text"> {t("ps-qty")}</th>
+                    <th className="f-info-text"> {t("ps-amt")}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {updatelist.map((item, i) => (
+                    <tr key={i}>
+                      {/* <td>{i + 1}</td> */}
+                      <td className="info-text">{item.itemname}</td>
+                      <td className="w20">
+                        <input
+                          name="rate"
+                          type="number"
+                          className="data"
+                          value={item.rate}
+                          onFocus={handleFocus}
+                          onChange={(e) =>
+                            handleItemChange(i, "rate", e.target.value)
+                          }
+                        />
+                      </td>
+                      <td className="w20">
+                        <input
+                          name="sale"
+                          type="number"
+                          className="data"
+                          value={item.salerate}
+                          onFocus={handleFocus}
+                          onChange={(e) =>
+                            handleItemChange(i, "salerate", e.target.value)
+                          }
+                        />
+                      </td>
+                      <td className="w20">
+                        <input
+                          name="qty"
+                          type="number"
+                          className="data"
+                          value={item.qty}
+                          onFocus={handleFocus}
+                          onChange={(e) =>
+                            handleItemChange(i, "qty", e.target.value)
+                          }
+                        />
+                      </td>
+                      <td>{item.rate * item.qty}</td>
+                    </tr>
+                  ))}
+                  <tr>
+                    {/* <td></td> */}
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td>
+                      <b> {t("ps-ttl-amt")}</b>
+                    </td>
+                    <td>
+                      {(updatelist || []).reduce(
+                        (acc, item) => acc + (item.amount || 0),
+                        0
+                      )}
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            {/* </div> */}
+            <div className="d-flex my15 j-end">
+              <button className="btn" onClick={handleUpdate}>
+                {t("ps-update")}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

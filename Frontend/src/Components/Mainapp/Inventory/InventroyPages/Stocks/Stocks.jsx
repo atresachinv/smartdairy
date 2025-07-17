@@ -3,7 +3,8 @@ import { Route, Routes } from "react-router-dom";
 import StocksNavlinks from "./StocksNavlinks";
 import "../../../../../Styles/Mainapp/Inventory/InventoryPages/Stock.css";
 import CreateStock from "./StartingStock/CreateStock";
-import StockList from "./StartingStock/StockList";
+import StockList from "./StartingStock/StartingStock";
+import "./Stock.css";
 const Stocks = () => {
   const [userRole, setUserRole] = useState(null);
 

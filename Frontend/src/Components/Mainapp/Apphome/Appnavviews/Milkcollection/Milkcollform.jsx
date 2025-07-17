@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { BsGearFill } from "react-icons/bs";
 import { useDispatch, useSelector } from "react-redux";
 import {
+  getPrevMilkdata,
   getRegCustomers,
   saveMilkOneEntry,
   setEntries,
@@ -15,8 +16,9 @@ import axiosInstance from "../../../../../App/axiosInstance";
 import { useParams } from "react-router-dom";
 import { listCustomer } from "../../../../../App/Features/Mainapp/Masters/custMasterSlice";
 import { saveMessage } from "../../../../../App/Features/Mainapp/Dairyinfo/smsSlice";
+import CollSettings from "./CollSettings";
 
-const MilkColleform = ({ switchToSettings, times }) => {
+const MilkColleform = ({ times }) => {
   const dispatch = useDispatch();
   const { time } = useParams();
   const { t } = useTranslation(["milkcollection", "common", "master"]);
@@ -45,6 +47,12 @@ const MilkColleform = ({ switchToSettings, times }) => {
   const centerSetting = useSelector(
     (state) => state.dairySetting.centerSetting //center settings
   );
+  const collunit = useSelector(
+    (state) => state.dairySetting.centerSetting[0]?.collUnit //center settings
+  );
+  const prevdata = useSelector(
+    (state) => state.milkCollection.prevMilkData || [] //prev milk data fat, snf ,degree
+  );
 
   const [settings, setSettings] = useState({}); //center settings
   const [customerList, setCustomerList] = useState([]);
@@ -53,11 +61,15 @@ const MilkColleform = ({ switchToSettings, times }) => {
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
   const [changedDate, setChangedDate] = useState("");
+  const [isModalOpen, setModalOpen] = useState(false);
   const [slotCount, setSlotCount] = useState(0); //To rerive local stored milk entries
+  const [userRole, setUserRole] = useState(null);
+
   const codeInputRef = useRef(null);
   const litersRef = useRef(null);
   const fatRef = useRef(null);
   const snfRef = useRef(null);
+  const kgRef = useRef(null);
   const submitbtn = useRef(null);
   const initialValues = {
     date: changedDate || tDate,
@@ -65,6 +77,7 @@ const MilkColleform = ({ switchToSettings, times }) => {
     shift: "",
     animal: 0,
     liters: "",
+    kg: "",
     fat: "",
     snf: "",
     amt: "",
@@ -78,8 +91,8 @@ const MilkColleform = ({ switchToSettings, times }) => {
   };
 
   const [values, setValues] = useState(initialValues);
-  //---------------------------------------------------------------------------------------->
-  // Milk Collection list ---------------------------------------------------------------------------------------->
+  //---------------------------------------------------------------------------------------------->
+  // Milk Collection list ------------------------------------------------------------------------>
   const milkColl = useSelector((state) => state.milkCollection.entries || [])
     .slice()
     .reverse();
@@ -87,7 +100,46 @@ const MilkColleform = ({ switchToSettings, times }) => {
   const [milkData, setMilkData] = useState([]); // to check remainning customer list
   const [isRCust, setIsRCust] = useState(false); // to show remainning customer list
 
-  // dynamic shift time set in time And allow is updated from state -------------------------------------------------------------->
+  //get user role -------------------------------------------------------------------------------->
+
+  useEffect(() => {
+    const myrole = localStorage.getItem("userRole");
+    setUserRole(myrole.toLowerCase());
+  }, []);
+
+  //set settings --------------------------------------------------------------------------------->
+  const prevShiftDate = useRef({ date: "", shift: "" });
+
+  useEffect(() => {
+    const previnfo = centerSetting?.[0]?.previnfo;
+    if (
+      previnfo &&
+      (values.date !== prevShiftDate.current.date ||
+        values.shift !== prevShiftDate.current.shift)
+    ) {
+      dispatch(getPrevMilkdata({ date: values.date, shift: values.shift }));
+      prevShiftDate.current = { date: values.date, shift: values.shift };
+    }
+  }, [centerSetting, values.date, values.shift]);
+  
+
+  // liter to kg convert and save ---------------------------------------------------------------->
+
+  useEffect(() => {
+    if (centerSetting.length > 0 && centerSetting[0].KgLitres) {
+      const unit = centerSetting[0].KgLitres;
+
+      if (collunit === 0 && values.liters > 0 && unit !== 0) {
+        const kgValue = (values.liters * unit).toFixed(2);
+        setValues((prevData) => ({ ...prevData, kg: kgValue }));
+      } else if (collunit === 1 && values.kg > 0 && unit !== 0) {
+        const literValue = (values.kg / unit).toFixed(2);
+        setValues((prevData) => ({ ...prevData, liters: literValue }));
+      }
+    }
+  }, [values.liters, values.kg, centerSetting]);
+
+  // dynamic shift time set in time And allow is updated from state ---------------------------->
   useEffect(() => {
     setValues((prevData) => ({
       ...prevData,
@@ -96,7 +148,7 @@ const MilkColleform = ({ switchToSettings, times }) => {
     }));
   }, [time, times, values.shift, settings]);
 
-  //center settings ------------------------------------------------------------------------------>
+  //center settings ---------------------------------------------------------------------------->
 
   //set setting
   useEffect(() => {
@@ -105,18 +157,18 @@ const MilkColleform = ({ switchToSettings, times }) => {
     }
   }, [centerSetting]);
 
-  // Effect to get rate chart from backend -------------------------------------------------------->
+  // Effect to get rate chart from backend ----------------------------------------------------->
   useEffect(() => {
     dispatch(getRateCharts());
     dispatch(listCustomer());
   }, [dispatch]);
 
-  // effect to set rate chart --------------------------------------------------------------------->
+  // effect to set rate chart ----------------------------------------------------------------->
   useEffect(() => {
     setMilkRatechart(milkcollRatechart);
   }, [milkcollRatechart]);
 
-  //  handle input fields ------------------------------------------------------------------------>
+  //  handle input fields ---------------------------------------------------------------------->
   const handleInputs = (e) => {
     const { name, value } = e.target;
 
@@ -155,7 +207,7 @@ const MilkColleform = ({ switchToSettings, times }) => {
     });
   };
 
-  // used for decimal input correction ---------------------------------------------------------->
+  // used for decimal input correction --------------------------------------------------------->
   const handleInputChange = (e) => {
     const { name, value } = e.target;
 
@@ -196,7 +248,7 @@ const MilkColleform = ({ switchToSettings, times }) => {
       return updatedErrors;
     });
   };
-  // // Effect to load customer list from local storage ------------------------------------------>
+  // // Effect to load customer list from local storage ---------------------------------------->
   useEffect(() => {
     const custLists = customerlist.filter(
       (customer) => customer.centerid === centerid
@@ -204,7 +256,7 @@ const MilkColleform = ({ switchToSettings, times }) => {
     setCustomerList(custLists);
   }, [customerlist]);
 
-  // morning evening -------------------------------------------------------------------------->
+  // morning evening --------------------------------------------------------------------------->
   const handleTime = () => {
     setTime((prev) => !prev);
     setValues((prevData) => ({
@@ -346,6 +398,14 @@ const MilkColleform = ({ switchToSettings, times }) => {
       case "liters":
         if (!/^\d+(\.\d{1,2})?$/.test(value.toString())) {
           error[name] = "Invalid liters.";
+        } else {
+          delete errors[name];
+        }
+        break;
+
+      case "kg":
+        if (!/^\d+(\.\d{1,4})?$/.test(value.toString())) {
+          error[name] = "Invalid kg.";
         } else {
           delete errors[name];
         }
@@ -769,11 +829,6 @@ const MilkColleform = ({ switchToSettings, times }) => {
     }
 
     setLoading(true);
-    setValues((prevData) => ({
-      ...prevData,
-      shift: times === "morning" ? 0 : time === "morning" ? 0 : 1,
-    }));
-
     try {
       const result = await dispatch(saveMilkOneEntry(values)).unwrap();
       if (result?.status === 200) {
@@ -837,7 +892,7 @@ const MilkColleform = ({ switchToSettings, times }) => {
         ? MilkEntries
         : prevMilkData;
     });
-  }, [milkColl, time]); // Only re-run when milkColl or time changes
+  }, [milkColl, time]); 
 
   useEffect(() => {
     const storedCustList = localStorage.getItem("rcustlist");
@@ -986,7 +1041,17 @@ const MilkColleform = ({ switchToSettings, times }) => {
                 : `${t("common:c-eve")}`}
             </button>
           </div>
-          <BsGearFill className="color-icon w10" onClick={switchToSettings} />
+          {userRole === "admin" ? (
+            <BsGearFill
+              type="button"
+              className="color-icon w10"
+              onClick={() => {
+                setModalOpen(true);
+              }}
+            />
+          ) : (
+            <></>
+          )}
         </div>
         <div className="user-details w100 h20 d-flex">
           <div className="form-div w50 px10">
@@ -1024,25 +1089,48 @@ const MilkColleform = ({ switchToSettings, times }) => {
         </div>
         <div className="milk-details-div w100 h70 d-flex">
           <div className="milk-info w50 h1 d-flex-col">
-            <div className="form-div px10">
-              <label htmlFor="liters" className="info-text">
-                {t("common:c-liters")} <span className="req">*</span>{" "}
-              </label>
-              <input
-                className={`data ${errors.liters ? "input-error" : ""}`}
-                type="number"
-                required
-                placeholder="00.0"
-                name="liters"
-                id="liters"
-                step="any"
-                onChange={handleInputs}
-                disabled={!values.code}
-                value={values.liters}
-                onKeyDown={(e) => handleKeyDown(e, fatRef)}
-                ref={litersRef}
-              />
-            </div>
+            {collunit === 0 ? (
+              <div className="form-div px10">
+                <label htmlFor="liters" className="info-text">
+                  {t("common:c-liters")} <span className="req">*</span>{" "}
+                </label>
+                <input
+                  className={`data ${errors.liters ? "input-error" : ""}`}
+                  type="number"
+                  required
+                  placeholder="00.0"
+                  name="liters"
+                  id="liters"
+                  step="any"
+                  onChange={handleInputs}
+                  disabled={!values.code}
+                  value={values.liters}
+                  onKeyDown={(e) => handleKeyDown(e, fatRef)}
+                  ref={litersRef}
+                />
+              </div>
+            ) : (
+              <div className="form-div px10">
+                <label htmlFor="kg" className="info-text">
+                  {t("किलो")} <span className="req">*</span>{" "}
+                </label>
+                <input
+                  className={`data ${errors.kg ? "input-error" : ""}`}
+                  type="number"
+                  required
+                  placeholder="00.0"
+                  name="kg"
+                  id="kg"
+                  step="any"
+                  onChange={handleInputs}
+                  disabled={!values.code}
+                  value={values.kg}
+                  onKeyDown={(e) => handleKeyDown(e, fatRef)}
+                  ref={kgRef}
+                />
+              </div>
+            )}
+
             <div className="form-div  px10">
               <label htmlFor="fat" className="info-text">
                 {t("common:c-fat")} <span className="req">*</span>{" "}
@@ -1256,6 +1344,12 @@ const MilkColleform = ({ switchToSettings, times }) => {
           </div>
         )}
       </div>
+
+      {isModalOpen && (
+        <div className="model-container w100 d-flex center">
+          <CollSettings clsebtn={setModalOpen} isModalOpen={isModalOpen} />
+        </div>
+      )}
     </div>
   );
 };

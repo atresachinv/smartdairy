@@ -1,0 +1,52 @@
+
+
+/* ---------- Whatsapp sms Recharge css ------------- */
+@media screen and (min-width: 426px) and (max-width: 769px) {
+  .whatsapp-sms-outer-container .whatsapp-sms-container {
+    width: 90%;
+  }
+  .recharge-whsms-container .form-btn-container {
+    justify-content: space-between;
+  }
+  .recharge-whsms-container .form-btn-container button {
+    width: 45%;
+    margin: 0;
+  }
+}
+
+@media screen and (max-width: 426px) {
+  .whatsapp-sms-outer-container .whatsapp-sms-container {
+    width: 100%;
+    min-height: fit-content;
+  }
+  .recharge-whsms-container .sms-seting-div {
+    width: 100%;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+  }
+  .sms-seting-div .label-text {
+    width: 100%;
+  }
+  .sms-seting-div .dairyid {
+    width: 30%;
+  }
+  .sms-seting-div .dairyname {
+    width: 65%;
+  }
+
+
+  .recharge-whsms-container .form-btn-container {
+    justify-content: space-between;
+  }
+  .recharge-whsms-container .form-btn-container button {
+    width: 45%;
+    margin: 0;
+  }
+}
+
+/* ----------- Whatsapp recharge history css --------- */
+@media screen and (min-width: 426px) and (max-width: 769px){
+
+}
+
+@media screen and (max-width: 426px){}

@@ -8,6 +8,27 @@ const NodeCache = require("node-cache");
 const cache = new NodeCache({});
 const axios = require("axios");
 
+const getConnectionPromise = () => {
+  return new Promise((resolve, reject) => {
+    pool.getConnection((err, connection) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(connection);
+      }
+    });
+  });
+};
+
+const queryPromise = (connection, sql, params = []) => {
+  return new Promise((resolve, reject) => {
+    connection.query(sql, params, (err, results) => {
+      if (err) reject(err);
+      else resolve(results);
+    });
+  });
+};
+
 //-------------------------------------------------------------------------------------------------------->
 //Dairy info --------------------------------------------------------------------------------------------->
 //-------------------------------------------------------------------------------------------------------->
@@ -323,7 +344,7 @@ exports.maxCenterId = async (req, res) => {
 
 // ------------------------------FIND MAX CENTERID
 
-// exports.createCenter = async (req, res) => {
+// exports.createCenter = (req, res) => {
 //   const {
 //     center_id,
 //     center_name,
@@ -348,97 +369,110 @@ exports.maxCenterId = async (req, res) => {
 //   if (!dairy_id) {
 //     return res.status(401).json({ status: 401, message: "Unauthorized User!" });
 //   }
-//   pool.getConnection(async (err, connection) => {
+
+//   pool.getConnection((err, connection) => {
 //     if (err) {
-//       console.error("Error getting MySQL connection: ", err);
+//       console.error("MySQL connection error:", err);
 //       return res
 //         .status(500)
 //         .json({ status: 500, message: "Database connection error" });
 //     }
 
-//     // const hashedPassword = await bcrypt.hash(password, 10);
-
-//     // SQL query to create the center
-//     const createCenterQuery = `
-//       INSERT INTO centermaster (center_id, center_name, marathi_name, reg_no, reg_date, mobile, email, city, tehsil, district, pincode, orgid, auditclass, prefix)
-//       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )
-//     `;
-
-//     const designation = "Admin";
-//     const isAdmin = "1";
-//     const insertRegNo = reg_no && reg_no !== "" ? parseInt(reg_no, 10) : null;
-//     const insertRegDate = reg_date && reg_date !== "" ? reg_date : null;
-
-//     // SQL query to create the user associated with the center
-//     const createUserQuery = `
-//       INSERT INTO users (username, password, isAdmin, createdon, createdby, designation, SocietyCode, center_id)
-//       VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-//     `;
-
-//     // First, create the center
-//     connection.query(
-//       createCenterQuery,
-//       [
-//         center_id,
-//         center_name,
-//         marathi_name,
-//         insertRegNo,
-//         insertRegDate,
-//         mobile,
-//         email,
-//         city,
-//         tehsil,
-//         district,
-//         pincode,
-//         dairy_id,
-//         auditclass,
-//         prefix,
-//       ],
-//       (err, centerResult) => {
-//         if (err) {
-//           connection.release();
-//           console.error("Error executing createCenter query: ", err);
-//           return res
-//             .status(500)
-//             .json({ status: 500, message: "Database query error" });
-//         }
-
-//         // Now create the user associated with the center
-//         connection.query(
-//           createUserQuery,
-//           [
-//             mobile,
-//             password,
-//             isAdmin,
-//             date,
-//             user_role,
-//             designation,
-//             dairy_id,
-//             center_id,
-//           ],
-//           (err, userResult) => {
-//             connection.release();
-//             if (err) {
-//               console.error("Error executing createUser query: ", err);
-//               return res
-//                 .status(500)
-//                 .json({ status: 500, message: "Error creating user" });
-//             }
-//             // Invalidate the cache for this dairy_id
-//             const cacheKey = `centers_${dairy_id}_${center_id}`;
-//             cache.del(cacheKey);
-//             // Successfully created center
-//             res
-//               .status(200)
-//               .json({ status: 200, message: "Center created successfully!" });
-//           }
-//         );
+//     // Hash password before inserting into `users`
+//     bcrypt.hash(password, 10, (hashErr, hashedPassword) => {
+//       if (hashErr) {
+//         connection.release();
+//         console.error("Error hashing password:", hashErr);
+//         return res
+//           .status(500)
+//           .json({ status: 500, message: "Password hashing error" });
 //       }
-//     );
+
+//       // Insert into `centermaster`
+//       const createCenterQuery = `
+//         INSERT INTO centermaster (
+//           center_id, center_name, marathi_name, reg_no, reg_date,
+//           mobile, email, city, tehsil, district, pincode,
+//           orgid, auditclass, prefix
+//         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+//       `;
+
+//       const insertRegNo = reg_no && reg_no !== "" ? parseInt(reg_no, 10) : null;
+//       const insertRegDate = reg_date && reg_date !== "" ? reg_date : null;
+
+//       connection.query(
+//         createCenterQuery,
+//         [
+//           center_id,
+//           center_name,
+//           marathi_name,
+//           insertRegNo,
+//           insertRegDate,
+//           mobile,
+//           email || null,
+//           city || null,
+//           tehsil || null,
+//           district || null,
+//           pincode || null,
+//           dairy_id,
+//           auditclass || null,
+//           prefix,
+//         ],
+//         (err, centerResult) => {
+//           if (err) {
+//             connection.release();
+//             console.error("Error inserting into centermaster:", err);
+//             return res
+//               .status(500)
+//               .json({ status: 500, message: "Center creation failed" });
+//           }
+
+//           // Insert into `users`
+//           const createUserQuery = `
+//             INSERT INTO users (
+//               username, password, isAdmin, createdon,
+//               createdby, designation, SocietyCode, center_id
+//             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+//           `;
+
+//           const designation = "Admin";
+//           const isAdmin = "1";
+
+//           connection.query(
+//             createUserQuery,
+//             [
+//               mobile,
+//               hashedPassword,
+//               isAdmin,
+//               date,
+//               user_role,
+//               designation,
+//               dairy_id,
+//               center_id,
+//             ],
+//             (err, userResult) => {
+//               connection.release();
+
+//               if (err) {
+//                 console.error("Error inserting into users:", err);
+//                 return res
+//                   .status(500)
+//                   .json({ status: 500, message: "User creation failed" });
+//               }
+
+//               return res.status(200).json({
+//                 status: 200,
+//                 message: "Center and user created successfully!",
+//               });
+//             }
+//           );
+//         }
+//       );
+//     });
 //   });
 // };
 
-exports.createCenter = (req, res) => {
+exports.createCenter = (req, res, next) => {
   const {
     center_id,
     center_name,
@@ -472,24 +506,20 @@ exports.createCenter = (req, res) => {
         .json({ status: 500, message: "Database connection error" });
     }
 
-    // Hash password before inserting into `users`
     bcrypt.hash(password, 10, (hashErr, hashedPassword) => {
       if (hashErr) {
         connection.release();
-        console.error("Error hashing password:", hashErr);
         return res
           .status(500)
           .json({ status: 500, message: "Password hashing error" });
       }
 
-      // Insert into `centermaster`
       const createCenterQuery = `
         INSERT INTO centermaster (
           center_id, center_name, marathi_name, reg_no, reg_date,
           mobile, email, city, tehsil, district, pincode,
           orgid, auditclass, prefix
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-      `;
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
       const insertRegNo = reg_no && reg_no !== "" ? parseInt(reg_no, 10) : null;
       const insertRegDate = reg_date && reg_date !== "" ? reg_date : null;
@@ -503,44 +533,38 @@ exports.createCenter = (req, res) => {
           insertRegNo,
           insertRegDate,
           mobile,
-          email,
-          city,
-          tehsil,
-          district,
-          pincode,
+          email || null,
+          city || null,
+          tehsil || null,
+          district || null,
+          pincode || null,
           dairy_id,
-          auditclass,
+          auditclass || null,
           prefix,
         ],
         (err, centerResult) => {
           if (err) {
             connection.release();
-            console.error("Error inserting into centermaster:", err);
             return res
               .status(500)
               .json({ status: 500, message: "Center creation failed" });
           }
 
-          // Insert into `users`
           const createUserQuery = `
             INSERT INTO users (
               username, password, isAdmin, createdon,
               createdby, designation, SocietyCode, center_id
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-          `;
-
-          const designation = "Admin";
-          const isAdmin = "1";
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
 
           connection.query(
             createUserQuery,
             [
               mobile,
               hashedPassword,
-              isAdmin,
+              "1", // isAdmin
               date,
-              user_role,
-              designation,
+              user_role, // createdby
+              "Admin", // designation
               dairy_id,
               center_id,
             ],
@@ -548,24 +572,146 @@ exports.createCenter = (req, res) => {
               connection.release();
 
               if (err) {
-                console.error("Error inserting into users:", err);
                 return res
                   .status(500)
                   .json({ status: 500, message: "User creation failed" });
               }
 
-              const cacheKey = `centers_${dairy_id}_${center_id}`;
-              cache.del(cacheKey); // Clear cache if you're using it
-
-              return res.status(200).json({
-                status: 200,
-                message: "Center and user created successfully!",
-              });
+              // Pass control to the next middleware
+              req.dairy_id = dairy_id;
+              req.center_id = center_id;
+              next(); // Do not send response here
             }
           );
         }
       );
     });
+  });
+};
+
+exports.setupBasicInformation = async (req, res) => {
+  const SocietyCode = req.dairy_id;
+  const CenterId = req.center_id;
+
+  const connection = await getConnectionPromise();
+
+  try {
+    await queryPromise(
+      connection,
+      `INSERT INTO ratecharttype (companyid, center_id, rctypeid, rctypename) VALUES (?, ?, ?, ?)`,
+      [SocietyCode, CenterId, 1, "Cow"]
+    );
+
+    await queryPromise(
+      connection,
+      `INSERT INTO bankmaster (code, name, branch, ifsc, companyid, center_id) VALUES (?, ?, ?, ?, ?, ?)`,
+      [1, "Demo Bank", "Demo", "DEMO000123", SocietyCode, CenterId]
+    );
+
+    connection.release();
+
+    res.status(200).json({
+      status: 200,
+      message: "Center and basic information created successfully!",
+    });
+  } catch (err) {
+    connection.release();
+    console.error("setupBasicInformation error:", err);
+    res.status(500).json({
+      status: 500,
+      message: "Center created, but basic information creation failed!",
+    });
+  }
+};
+
+//-------------------------------------------------------------------------------------------------------->
+// update center details --------------------------------------------------------------------------------->
+//-------------------------------------------------------------------------------------------------------->
+
+//v2
+exports.updateCenterInfo = async (req, res) => {
+  const {
+    marathi_name,
+    center_name,
+    reg_no,
+    reg_date,
+    center_id,
+    auditclass,
+    mobile,
+    email,
+    city,
+    tehsil,
+    district,
+    pincode,
+  } = req.body;
+
+  const dairy_id = req.user.dairy_id;
+
+  if (!dairy_id) {
+    return res.status(401).json({ status: 401, message: "Unauthorized user!" });
+  }
+
+  pool.getConnection((err, connection) => {
+    if (err) {
+      console.error("MySQL connection error: ", err);
+      return res
+        .status(500)
+        .json({ status: 500, message: "Database connection error!" });
+    }
+
+    try {
+      const updateCenterDetails = `
+        UPDATE centermaster 
+        SET center_name = ?, marathi_name = ?, reg_no = ?, reg_date = ?, mobile = ?, email = ?, city = ?, tehsil = ?, district = ?, pincode = ?, auditclass = ? 
+        WHERE center_id = ? AND orgid = ?
+      `;
+
+      connection.query(
+        updateCenterDetails,
+        [
+          center_name,
+          marathi_name,
+          reg_no,
+          reg_date,
+          mobile,
+          email,
+          city,
+          tehsil,
+          district,
+          pincode,
+          auditclass,
+          center_id,
+          dairy_id,
+        ],
+        (err, result) => {
+          connection.release(); // Ensure connection is released after the query
+          if (err) {
+            console.error("Update center details query execution error!", err);
+            return res
+              .status(500)
+              .json({ status: 500, message: "Database query error!" });
+          }
+
+          if (result.affectedRows === 0) {
+            return res.status(404).json({
+              status: 404,
+              message: "No center data found for updating!",
+            });
+          }
+
+          res.status(200).json({
+            status: 200,
+            message: "Center details updated successfully!",
+          });
+        }
+      );
+    } catch (error) {
+      connection.release(); // Make sure to release the connection in case of an error
+      console.error("Error processing request: ", error);
+      return res
+        .status(500)
+        .json({ status: 500, message: "Internal server error" });
+    }
   });
 };
 
@@ -644,11 +790,6 @@ exports.updateCenterInfo = async (req, res) => {
             });
           }
 
-          // Invalidate the cache for this dairy_id
-          const cacheKey1 = `centers_${dairy_id}_${center_id}`;
-          const cacheKey = `dairyInfo_${dairy_id}_${center_id}`;
-          cache.del(cacheKey1, cacheKey);
-
           res.status(200).json({
             status: 200,
             message: "Center details updated successfully!",
@@ -716,14 +857,6 @@ exports.getAllcenters = async (req, res) => {
     return res.status(401).json({ status: 401, message: "Unauthorized User!" });
   }
 
-  // Check if the data is cached
-  // const cacheKey = `centers_${dairy_id}_${center_id}`;
-  // const cachedData = cache.get(cacheKey);
-
-  // if (cachedData) {
-  //   return res.status(200).json({ status: 200, centersDetails: cachedData });
-  // }
-
   pool.getConnection((err, connection) => {
     if (err) {
       console.error("Getting MySQL connection error!", err);
@@ -754,8 +887,6 @@ exports.getAllcenters = async (req, res) => {
           });
         }
 
-        // Store the result in cache
-        // cache.set(cacheKey, result);
         res.status(200).json({ status: 200, centersDetails: result });
       });
     } catch (error) {
@@ -1189,7 +1320,7 @@ exports.saveMessage = async (req, res) => {
 
 exports.getCenterWiseMilkData = (req, res) => {
   const { fromDate, toDate } = req.body;
-  const { dairy_id, center_id } = req.user;
+  const { dairy_id } = req.user;
   if (!dairy_id) {
     connection.release();
     return res.status(401).json({ status: 401, message: "Unathorised User!" });
@@ -1283,7 +1414,7 @@ exports.getCenterWiseMilkData = (req, res) => {
 
 exports.getCenterCustomerCount = (req, res) => {
   const { dairy_id, center_id } = req.user;
-  const {fromDate, toDate } = req.query;
+  const { fromDate, toDate } = req.query;
   if (!dairy_id) {
     return res.status(401).json({ status: 401, message: "Unauthorised User!" });
   }
@@ -1546,28 +1677,9 @@ exports.updateCenterSetting = (req, res) => {
 //-------------------------------------------------------------------------------------------------------->
 
 exports.updateCenterSetup = (req, res) => {
-  const { dairy_id, user_id } = req.user;
-  const { centerid, ...formData } = req.body;
+  const { dairy_id, center_id, user_id } = req.user;
+  const { centerid, id, ...formData } = req.body;
   const currentDate = new Date().toISOString().slice(0, 10);
-  console.log(formData);
-  const {
-    id,
-    billDays,
-    minPayment,
-    milkRate,
-    pType,
-    vSalesms,
-    millcoll,
-    printmilKcoll,
-    salesms,
-    printSales,
-    vMillcoll,
-    cmillcoll,
-    noRatesms,
-  } = formData;
-
-  const parsedMinPayment = parseFloat(minPayment) || 0.0;
-  const parsedMilkRate = parseFloat(milkRate) || 0.0;
 
   pool.getConnection((err, connection) => {
     if (err) {
@@ -1579,66 +1691,102 @@ exports.updateCenterSetup = (req, res) => {
       });
     }
 
+    // Dynamic UPDATE
     if (id !== undefined) {
-      const updateQuery = `
-        UPDATE setting_Master 
-        SET  pType = ?, salesms = ?, printSales = ?, vSalesms = ?, millcoll = ?, printmilKcoll = ?, vMillcoll = ?,
-         cmillcoll = ?, noRatesms = ?, billDays = ?, minPayment =?, milkRate = ? , updatedBy = ?, updatedDate = ?
-        WHERE id = ?
-      `;
+      const fields = [];
+      const values = [];
 
-      connection.query(
-        updateQuery,
-        [
-          pType,
-          salesms || 0,
-          printSales || 0,
-          vSalesms || 0,
-          millcoll || 0,
-          printmilKcoll || 0,
-          vMillcoll || 0,
-          cmillcoll || 0,
-          noRatesms || 0,
-          billDays || 0,
-          parsedMinPayment || 0,
-          parsedMilkRate || 0,
-          user_id,
-          currentDate,
-          id,
-        ],
-        (err, results) => {
-          connection.release();
+      // Loop through provided keys and build SET clause
+      Object.keys(formData).forEach((key) => {
+        fields.push(`${key} = ?`);
+        let value = formData[key];
 
-          if (err) {
-            console.error("Error executing update query: ", err);
-            return res.status(500).json({
-              status: 500,
-              success: false,
-              message: "Error updating settings",
-            });
-          }
+        // Handle special parsing
+        if (key === "minPayment" || key === "milkRate") {
+          value = parseFloat(value) || 0.0;
+        } else if (
+          typeof value === "string" &&
+          (value.toLowerCase() === "null" || value === "")
+        ) {
+          value = null;
+        }
 
-          return res.status(200).json({
-            status: 200,
-            success: true,
-            message:
-              results.affectedRows > 0
-                ? "Settings updated successfully"
-                : "No changes made",
+        values.push(value);
+      });
+
+      // Add updater info
+      fields.push("updatedBy = ?", "updatedDate = ?");
+      values.push(user_id, currentDate);
+
+      const updateQuery = `UPDATE setting_Master SET ${fields.join(
+        ", "
+      )} WHERE id = ?`;
+      values.push(id);
+
+      connection.query(updateQuery, values, (err, results) => {
+        connection.release();
+
+        if (err) {
+          console.error("Error executing dynamic update query: ", err);
+          return res.status(500).json({
+            status: 500,
+            success: false,
+            message: "Error updating settings",
           });
         }
-      );
+
+        return res.status(200).json({
+          status: 200,
+          success: true,
+          message:
+            results.affectedRows > 0
+              ? "Settings updated successfully"
+              : "No changes made",
+        });
+      });
     } else {
+      // INSERT remains the same (full insert)
+      const {
+        milkType,
+        previnfo,
+        fill_manually,
+        whsms,
+        print,
+        billDays,
+        minPayment,
+        milkRate,
+        pType,
+        vSalesms,
+        millcoll,
+        printmilKcoll,
+        salesms,
+        printSales,
+        vMillcoll,
+        cmillcoll,
+        noRatesms,
+        kgliters,
+        collUnit,
+      } = formData;
+
+      const parsedMinPayment = parseFloat(minPayment) || 0.0;
+      const parsedMilkRate = parseFloat(milkRate) || 0.0;
+
       const insertQuery = `
-    INSERT INTO setting_Master 
-    (center_id, dairy_id, millcoll, printmilKcoll, vMillcoll, pType, salesms, printSales, vSalesms, cmillcoll,
-     noRatesms, billDays, minPayment, milkRate, updatedBy, updatedDate)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-  `;
+        INSERT INTO setting_Master 
+        (center_id, dairy_id, milkType, previnfo, fill_manually, whsms, print, millcoll,
+          printmilKcoll, vMillcoll, pType, salesms, printSales, vSalesms, KgLitres, cmillcoll, 
+          noRatesms, billDays, minPayment, milkRate, collUnit, updatedBy, updatedDate)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `;
 
       const insertValues = [
-        centerid,
+        centerid || center_id,
         dairy_id,
+        milkType || 0,
+        previnfo || null,
+        fill_manually || null,
+        whsms || 0,
+        print || 0,
         millcoll || 0,
         printmilKcoll || 0,
         vMillcoll || 0,
@@ -1646,11 +1794,13 @@ exports.updateCenterSetup = (req, res) => {
         salesms || 0,
         printSales || 0,
         vSalesms || 0,
+        kgliters || null,
         cmillcoll || 0,
         noRatesms || 0,
         billDays || 0,
-        parsedMinPayment || 0,
-        parsedMilkRate || 0,
+        parsedMinPayment,
+        parsedMilkRate,
+        collUnit || 0,
         user_id,
         currentDate,
       ];
@@ -2016,176 +2166,8 @@ exports.createDairyInitInfo = (req, res) => {
 };
 
 //-------------------------------------------------------------------------------------------------------->
-// Update Dairy Starting Information ---------------------------------------------------------------------------->
+// Update Dairy Starting Information --------------------------------------------------------------------->
 //-------------------------------------------------------------------------------------------------------->
-// exports.updateDairyInitInfo = (req, res) => {
-//   const {
-//     id,
-//     CashOnHandGlcode,
-//     CashOnHandAmt,
-//     ClosingDate,
-//     PLGLCode,
-//     PreviousPLGLCode,
-//     TreadingPLGlCode,
-//     ShareCapitalAmt,
-//     MilkPurchaseGL,
-//     MilkSaleGL,
-//     MilkPurchasePaybleGL,
-//     MilkSaleRecivableGl,
-//     AllowSameUserPassing,
-//     RebateGlCode,
-//     BankCurrentAccount,
-//     RoundAmtGL,
-//     saleincomeGL,
-//     ArambhiShillakMalGL,
-//     AkherShillakMal,
-//     anamatGlcode,
-//     MilkCommisionAndAnudan,
-//     ribetIncome,
-//     ribetExpense,
-//     milkRateDiff,
-//     CashOnHandAmt_3,
-//     chillinggl,
-//     advGL,
-//     kirkolmilksale_yene,
-//     ghutnashgl,
-//     transportgl,
-//   } = req.body.formData;
-
-//   const { dairy_id, center_id } = req.user;
-
-//   if (!dairy_id) {
-//     return res.status(401).json({ status: 401, message: "Unauthorized User!" });
-//   }
-
-//   pool.getConnection((err, connection) => {
-//     if (err) {
-//       console.error("Error getting MySQL connection: ", err);
-//       return res
-//         .status(500)
-//         .json({ status: 500, message: "Database connection error" });
-//     }
-
-//     if (!id) {
-//       const insertQuery = `
-//         INSERT INTO InitialParameters (
-//           dairy_id, center_id, CashOnHandGlcode, CashOnHandAmt, ClosingDate, PLGLCode, PreviousPLGLCode,
-//           TreadingPLGlCode, ShareCapitalAmt, MilkPurchaseGL, MilkSaleGL, MilkPurchasePaybleGL, MilkSaleRecivableGl,
-//           AllowSameUserPassing, RebateGlCode, BankCurrentAccount, RoundAmtGL, saleincomeGL, ArambhiShillakMalGL,
-//           AkherShillakMal, anamatGlcode, MilkCommisionAndAnudan, ribetIncome, ribetExpense, milkRateDiff, CashOnHandAmt_3,
-//           chillinggl, advGL, kirkolmilksale_yene, ghutnashgl, transportgl)
-//         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-//       `;
-
-//       connection.query(
-//         insertQuery,
-//         [
-//           dairy_id,
-//           center_id,
-//           CashOnHandGlcode,
-//           CashOnHandAmt,
-//           ClosingDate,
-//           PLGLCode,
-//           PreviousPLGLCode,
-//           TreadingPLGlCode,
-//           ShareCapitalAmt,
-//           MilkPurchaseGL,
-//           MilkSaleGL,
-//           MilkPurchasePaybleGL,
-//           MilkSaleRecivableGl,
-//           AllowSameUserPassing,
-//           RebateGlCode,
-//           BankCurrentAccount,
-//           RoundAmtGL,
-//           saleincomeGL,
-//           ArambhiShillakMalGL,
-//           AkherShillakMal,
-//           anamatGlcode,
-//           MilkCommisionAndAnudan,
-//           ribetIncome,
-//           ribetExpense,
-//           milkRateDiff,
-//           CashOnHandAmt_3,
-//           chillinggl,
-//           advGL,
-//           kirkolmilksale_yene,
-//           ghutnashgl,
-//           transportgl,
-//         ],
-//         (err, result) => {
-//           connection.release();
-//           if (err) {
-//             console.error("Error inserting record: ", err);
-//             return res
-//               .status(500)
-//               .json({ status: 500, message: "Error in inserting data!" });
-//           }
-//           return res
-//             .status(201)
-//             .json({ status: 201, message: "Record inserted successfully!" });
-//         }
-//       );
-//     } else {
-//       const updateQuery = `
-//         UPDATE InitialParameters
-//         SET CashOnHandGlcode = ?, CashOnHandAmt = ?, ClosingDate = ?, PLGLCode = ?, PreviousPLGLCode = ?,
-//           TreadingPLGlCode = ?, ShareCapitalAmt = ?, MilkPurchaseGL = ?, MilkSaleGL = ?, MilkPurchasePaybleGL = ?, MilkSaleRecivableGl = ?,
-//           AllowSameUserPassing = ?, RebateGlCode = ?, BankCurrentAccount = ?, RoundAmtGL = ?, saleincomeGL = ?, ArambhiShillakMalGL = ?,
-//           AkherShillakMal = ?, anamatGlcode = ?, MilkCommisionAndAnudan = ?, ribetIncome = ?, ribetExpense = ?, milkRateDiff = ?,
-//           CashOnHandAmt_3 = ?, chillinggl = ?, advGL = ?, kirkolmilksale_yene = ?, ghutnashgl = ?, transportgl
-//         WHERE id = ?
-//       `;
-
-//       connection.query(
-//         updateQuery,
-//         [
-//           CashOnHandGlcode,
-//           CashOnHandAmt,
-//           ClosingDate,
-//           PLGLCode,
-//           PreviousPLGLCode,
-//           TreadingPLGlCode,
-//           ShareCapitalAmt,
-//           MilkPurchaseGL,
-//           MilkSaleGL,
-//           MilkPurchasePaybleGL,
-//           MilkSaleRecivableGl,
-//           AllowSameUserPassing,
-//           RebateGlCode,
-//           BankCurrentAccount,
-//           RoundAmtGL,
-//           saleincomeGL,
-//           ArambhiShillakMalGL,
-//           AkherShillakMal,
-//           anamatGlcode,
-//           MilkCommisionAndAnudan,
-//           ribetIncome,
-//           ribetExpense,
-//           milkRateDiff,
-//           CashOnHandAmt_3,
-//           chillinggl,
-//           advGL,
-//           kirkolmilksale_yene,
-//           ghutnashgl,
-//           transportgl,
-//           id,
-//         ],
-//         (err, result) => {
-//           connection.release();
-//           if (err) {
-//             console.error("Error updating record: ", err);
-//             return res
-//               .status(500)
-//               .json({ status: 500, message: "Error in updating data!" });
-//           }
-//           return res
-//             .status(200)
-//             .json({ status: 200, message: "Record updated successfully!" });
-//         }
-//       );
-//     }
-//   });
-// };
 
 exports.updateDairyInitInfo = (req, res) => {
   const {

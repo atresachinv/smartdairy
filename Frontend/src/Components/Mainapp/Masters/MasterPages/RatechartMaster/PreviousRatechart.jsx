@@ -119,6 +119,8 @@ const PreviousRatechart = () => {
     }
   };
 
+
+
   return (
     <div className="previous-rate-chart-outer-container w100 h1 d-flex sb p10">
       <div className="previous-ratechart-container w40 h1 d-flex-col bg-light-green br9">

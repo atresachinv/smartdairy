@@ -1,0 +1,38 @@
+@media screen and (max-width: 426px) {
+  .update-prod-sell-rate-container {
+    min-height: auto;
+  }
+  .update-prod-sell-rate-container .download-print-pdf-excel-container {
+    min-height: fit-content;
+    flex-direction: column;
+  }
+  .download-print-pdf-excel-container .select-dates-container,
+  .download-print-pdf-excel-container .select-group-prod-container {
+    width: 100%;
+    min-height: fit-content;
+    flex-direction: column;
+  }
+  .select-dates-container .dates-div,
+  .select-group-prod-container .group-div,
+  .select-group-prod-container .prod-name-div {
+    width: 100%;
+    min-height: fit-content;
+    flex-direction: row;
+  }
+  .select-dates-container .dates-div label {
+    width: 30%;
+  }
+  .select-dates-container .dates-div .data {
+    width: 50%;
+  }
+  .update-prod-sell-rate-container .update-product-list-container {
+    min-height: 100%;
+    margin-bottom: 10px;
+  }
+  .update-product-list-container .update-prod-sell-rate-table {
+    overflow-x: scroll;
+  }
+  .update-prod-sell-rate-table .data-headings-div {
+    width: 800px;
+  }
+}

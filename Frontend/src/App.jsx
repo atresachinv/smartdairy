@@ -1,3 +1,5 @@
+import "core-js/stable";
+import "regenerator-runtime/runtime";
 import Home from "./Components/Home/Home";
 import ProtectedRoute from "./ProtectedRoutes";
 import Mainapp from "./Components/Mainapp/Mainapp";

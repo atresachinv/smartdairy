@@ -1,0 +1,130 @@
+@media screen and (min-width: 426px) and (max-width: 769px) {
+  .trn-check-container {
+    width: 100%;
+    min-height: auto;
+  }
+  .trn-check-container .trn-check-form-container {
+    min-height: fit-content;
+    margin-bottom: 10px;
+  }
+  .trn-check-container .trncheck-tables-container {
+    min-height: 90%;
+    margin-bottom: 10px;
+  }
+  .trncheck-tables-container .trn-check-bill-header-table-container,
+  .trncheck-tables-container .trn-check-bill-details-table-container {
+    width: 49%;
+    min-height: 100%;
+  }
+  .trn-check-container .total-differance-div {
+    padding: 10px;
+  }
+}
+
+@media screen and (max-width: 426px) {
+  .trn-check-container {
+    min-height: auto;
+  }
+  .trn-check-container .trn-check-form-container {
+    min-height: fit-content;
+    margin-bottom: 10px;
+  }
+  .trn-check-form-container .center-date-select-container {
+    width: 100%;
+    min-height: fit-content;
+    flex-direction: column;
+  }
+  .center-date-select-container .centerwise-data-selection-div {
+    width: 100%;
+    margin-bottom: 10px;
+  }
+  .center-date-select-container .trn-check-dates-container {
+    width: 100%;
+    min-height: fit-content;
+    flex-direction: column;
+  }
+  .trn-check-dates-container .trn-cheks-dates-div {
+    width: 100%;
+    justify-content: space-between;
+    margin-bottom: 10px;
+  }
+  .trn-check-dates-container .trn-cheks-dates-div label {
+    width: 35%;
+  }
+  .trn-check-dates-container .trn-cheks-dates-div .data {
+    width: 50%;
+  }
+  .trn-check-form-container .selection-for-trncheck-container {
+    width: 100%;
+    min-height: fit-content;
+    flex-direction: column;
+  }
+  .selection-for-trncheck-container .sale-purches-trn-check-div {
+    width: 100%;
+    justify-content: space-between;
+    margin-bottom: 10px;
+  }
+  .selection-for-trncheck-container .pashukhandya-vibhag-trn-check-container {
+    width: 100%;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    margin-bottom: 10px;
+  }
+  .pashukhandya-vibhag-trn-check-container .f-heading {
+    width: 30%;
+  }
+  .pashukhandya-vibhag-trn-check-container .vibhag-trn-div {
+    width: 30%;
+  }
+  .pashukhandya-vibhag-trn-check-container .vibhag-trns-div {
+    width: 50%;
+    height: 50px;
+  }
+  .trn-check-form-container .bill-header-button-container {
+    width: 100%;
+    min-height: fit-content;
+    flex-direction: column;
+  }
+  .bill-header-button-container .selction-opt-div {
+    width: 100%;
+    justify-content: space-between;
+    margin-bottom: 10px;
+  }
+  .bill-header-button-container .selction-opt-div .purches-trn-div {
+    width: 33%;
+    height: 50px;
+  }
+  .bill-header-button-container button {
+    width: 100%;
+  }
+
+  .trn-check-container .trncheck-tables-container {
+    width: 100%;
+    height: 800px;
+    flex-direction: column;
+  }
+  .trncheck-tables-container .trn-check-bill-header-table-container,
+  .trncheck-tables-container .trn-check-bill-details-table-container {
+    width: 100%;
+    min-height: 300px;
+    margin-bottom: 10px;
+  }
+  .trn-check-container .total-differance-div {
+    min-height: fit-content;
+    flex-direction: column;
+    margin-bottom: 10px;
+    padding: 10px;
+  }
+  .total-differance-div .fisrdt-table-total {
+    width: 100%;
+    justify-content: space-between;
+    margin-bottom: 10px;
+  }
+  .total-differance-div .fisrdt-table-total label {
+    width: 30%;
+    padding: 0;
+  }
+  .total-differance-div .fisrdt-table-total .data {
+    width: 40%;
+  }
+}

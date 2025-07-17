@@ -6,8 +6,29 @@ const nodemailer = require("nodemailer");
 const crypto = require("crypto");
 dotenv.config({ path: "Backend/.env" });
 
+const getConnectionPromise = () => {
+  return new Promise((resolve, reject) => {
+    pool.getConnection((err, connection) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(connection);
+      }
+    });
+  });
+};
+
+const queryPromise = (connection, sql, params = []) => {
+  return new Promise((resolve, reject) => {
+    connection.query(sql, params, (err, results) => {
+      if (err) reject(err);
+      else resolve(results);
+    });
+  });
+};
+
 //------------------------------------------------------------------------------------------->
-// Check Existing dairyname & Username ------------------------------------------------------------------>
+// Check Existing dairyname & Username ------------------------------------------------------>
 //------------------------------------------------------------------------------------------->
 
 exports.checkUniqueDname = (req, res) => {
@@ -81,7 +102,206 @@ exports.checkUniqueusername = (req, res) => {
 //------------------------------------------------------------------------------------------->
 //v3 function to create dailymilkentry table ----------------------------------->
 
-exports.userRegister = async (req, res) => {
+// exports.userRegister = async (req, res) => {
+//   const {
+//     dairy_name,
+//     marathi_name,
+//     user_name,
+//     user_phone,
+//     user_city,
+//     user_pincode,
+//     user_password,
+//     terms,
+//     prefix,
+//     date,
+//     endDate,
+//   } = req.body;
+
+//   if (
+//     !dairy_name ||
+//     !marathi_name ||
+//     !user_name ||
+//     !user_phone ||
+//     !user_city ||
+//     !user_pincode ||
+//     !user_password ||
+//     !terms ||
+//     !prefix ||
+//     !date ||
+//     !endDate
+//   ) {
+//     return res
+//       .status(400)
+//       .json({ status: 400, message: "All fields are required!" });
+//   }
+
+//   const hashedPassword = await bcrypt.hash(user_password, 10);
+
+//   pool.getConnection((err, connection) => {
+//     if (err) {
+//       console.error("Error getting MySQL connection: ", err);
+//       return res
+//         .status(500)
+//         .json({ status: 500, message: "Database connection error" });
+//     }
+
+//     connection.beginTransaction(async (err) => {
+//       if (err) {
+//         connection.release();
+//         return res
+//           .status(500)
+//           .json({ status: 500, message: "Transaction start error!" });
+//       }
+
+//       try {
+//         //  Get Max SocietyCode
+//         const [maxCodeResult] = await queryPromise(
+//           connection,
+//           "SELECT MAX(SocietyCode) AS maxCode FROM societymaster"
+//         );
+//         const newSocietyCode = maxCodeResult.maxCode
+//           ? maxCodeResult.maxCode + 1
+//           : 1;
+//         const tableName = `dailymilkentry_${newSocietyCode}`;
+
+//         //  Insert into societymaster
+//         await queryPromise(
+//           connection,
+//           `
+//           INSERT INTO societymaster
+//           (SocietyCode, SocietyName, marathiName, PhoneNo, city, PinCode, prefix, terms, startdate, enddate)
+//           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+//           [
+//             newSocietyCode,
+//             dairy_name,
+//             marathi_name,
+//             user_phone,
+//             user_city,
+//             user_pincode,
+//             prefix,
+//             terms,
+//             date,
+//             endDate,
+//           ]
+//         );
+
+//         //  Insert into centermaster
+//         await queryPromise(
+//           connection,
+//           `
+//           INSERT INTO centermaster
+//           (center_id, center_name, marathi_name, mobile, city, pincode, orgid, prefix)
+//           VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+//           [
+//             0,
+//             dairy_name,
+//             marathi_name,
+//             user_phone,
+//             user_city,
+//             user_pincode,
+//             newSocietyCode,
+//             prefix,
+//           ]
+//         );
+
+//         //  Insert into users table
+//         await queryPromise(
+//           connection,
+//           `
+//           INSERT INTO users
+//           (username, password, designation, isAdmin, mobile, SocietyCode)
+//           VALUES (?, ?, ?, ?, ?, ?)`,
+//           [user_name, hashedPassword, "Admin", "1", user_phone, newSocietyCode]
+//         );
+
+//         //  Create Milk Entry Table
+//         await queryPromise(
+//           connection,
+//           `
+//           CREATE TABLE IF NOT EXISTS ${tableName} (
+//             id INT AUTO_INCREMENT PRIMARY KEY,
+//             companyid INT DEFAULT 0,
+//             center_id INT DEFAULT 0,
+//             userid VARCHAR(120),
+//             ReceiptDate DATE,
+//             rno INT,
+//             cname VARCHAR(120),
+//             AccCode INT,
+//             fat DECIMAL(5,2) DEFAULT 0.00,
+//             snf DECIMAL(5,2) DEFAULT 0.00,
+//             Digree DECIMAL(5,2) DEFAULT 0.00,
+//             Litres DECIMAL(8,2) DEFAULT 0.00,
+//             Kg DECIMAL(8,4) DEFAULT 0.00,
+//             rate DECIMAL(8,2) DEFAULT 0.00,
+//             Amt DECIMAL(10,2) DEFAULT 0.00,
+//             rctype VARCHAR(50),
+//             ME INT,
+//             CB INT,
+//             SampleNo INT,
+//             Driver INT DEFAULT 0,
+//             GLCode INT,
+//             BillNo INT,
+//             BillDate DATE,
+//             UpdatedBy VARCHAR(60),
+//             updatedOn DATE,
+//             isDeleted INT DEFAULT 0,
+//             deletedBy VARCHAR(60) null,
+//             deletedOn DATETIME null
+//           )`
+//         );
+
+//         //  Insert Default RateChartType
+//         await queryPromise(
+//           connection,
+//           `
+//           INSERT INTO ratecharttype
+//           (companyid, center_id, rctypeid, rctypename)
+//           VALUES (?, ?, ?, ?)`,
+//           [newSocietyCode, 0, 1, "Cow"]
+//         );
+
+//         //  Optimize Performance: Create Indexes
+//         await queryPromise(
+//           connection,
+//           `CREATE INDEX idx_receiptdate_rno ON ${tableName} (ReceiptDate, rno)`
+//         );
+//         await queryPromise(
+//           connection,
+//           `CREATE INDEX idx_rno_cname ON ${tableName} (rno, cname)`
+//         );
+//         await queryPromise(
+//           connection,
+//           `CREATE INDEX idx_litres_rate ON ${tableName} (Litres, rate)`
+//         );
+
+//         // Commit Transaction
+//         connection.commit((err) => {
+//           connection.release();
+//           if (err) {
+//             console.error("Transaction commit error: ", err);
+//             return res
+//               .status(500)
+//               .json({ status: 500, message: "Transaction commit error!" });
+//           }
+
+//           res.status(200).json({
+//             status: 200,
+//             message: "User registered successfully!",
+//             tableName: tableName,
+//           });
+//         });
+//       } catch (error) {
+//         connection.rollback(() => connection.release());
+//         console.error("Transaction error: ", error);
+//         return res
+//           .status(500)
+//           .json({ status: 500, message: "Database query error!" });
+//       }
+//     });
+//   });
+// };
+
+exports.userRegister = async (req, res, next) => {
   const {
     dairy_name,
     marathi_name,
@@ -133,7 +353,6 @@ exports.userRegister = async (req, res) => {
       }
 
       try {
-        //  Get Max SocietyCode
         const [maxCodeResult] = await queryPromise(
           connection,
           "SELECT MAX(SocietyCode) AS maxCode FROM societymaster"
@@ -141,15 +360,12 @@ exports.userRegister = async (req, res) => {
         const newSocietyCode = maxCodeResult.maxCode
           ? maxCodeResult.maxCode + 1
           : 1;
-        const tableName = `dailymilkentry_${newSocietyCode}`;
 
-        //  Insert into societymaster
         await queryPromise(
           connection,
-          `
-          INSERT INTO societymaster 
-          (SocietyCode, SocietyName, marathiName, PhoneNo, city, PinCode, prefix, terms, startdate, enddate) 
-          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+          `INSERT INTO societymaster 
+           (SocietyCode, SocietyName, marathiName, PhoneNo, city, PinCode, prefix, terms, startdate, enddate) 
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
           [
             newSocietyCode,
             dairy_name,
@@ -164,13 +380,11 @@ exports.userRegister = async (req, res) => {
           ]
         );
 
-        //  Insert into centermaster
         await queryPromise(
           connection,
-          `
-          INSERT INTO centermaster 
-          (center_id, center_name, marathi_name, mobile, city, pincode, orgid, prefix) 
-          VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+          `INSERT INTO centermaster 
+           (center_id, center_name, marathi_name, mobile, city, pincode, orgid, prefix) 
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
           [
             0,
             dairy_name,
@@ -183,90 +397,26 @@ exports.userRegister = async (req, res) => {
           ]
         );
 
-        //  Insert into users table
         await queryPromise(
           connection,
-          `
-          INSERT INTO users 
-          (username, password, designation, isAdmin, mobile, SocietyCode) 
-          VALUES (?, ?, ?, ?, ?, ?)`,
+          `INSERT INTO users 
+           (username, password, designation, isAdmin, mobile, SocietyCode) 
+           VALUES (?, ?, ?, ?, ?, ?)`,
           [user_name, hashedPassword, "Admin", "1", user_phone, newSocietyCode]
         );
 
-        //  Create Milk Entry Table
-        await queryPromise(
-          connection,
-          `
-          CREATE TABLE IF NOT EXISTS ${tableName} (
-            id INT AUTO_INCREMENT PRIMARY KEY,
-            companyid INT DEFAULT 0,
-            center_id INT DEFAULT 0,
-            userid VARCHAR(120),
-            ReceiptDate DATE,
-            rno INT,
-            cname VARCHAR(120),
-            AccCode INT,
-            fat DECIMAL(5,2) DEFAULT 0.00,
-            snf DECIMAL(5,2) DEFAULT 0.00,
-            Digree DECIMAL(5,2) DEFAULT 0.00,
-            Litres DECIMAL(8,2) DEFAULT 0.00,
-            rate DECIMAL(8,2) DEFAULT 0.00,
-            Amt DECIMAL(10,2) DEFAULT 0.00,
-            rctype VARCHAR(50),
-            ME INT,
-            CB INT,
-            SampleNo INT,
-            Driver INT DEFAULT 0,
-            GLCode INT,
-            BillNo INT,
-            BillDate DATE,
-            UpdatedBy VARCHAR(60),
-            updatedOn DATE,
-            isDeleted INT DEFAULT 0,
-            deletedBy VARCHAR(60) null,
-            deletedOn DATETIME null
-          )`
-        );
-
-        //  Insert Default RateChartType
-        await queryPromise(
-          connection,
-          `
-          INSERT INTO ratecharttype 
-          (companyid, center_id, rctypeid, rctypename) 
-          VALUES (?, ?, ?, ?)`,
-          [newSocietyCode, 0, 1, "Cow"]
-        );
-
-        //  Optimize Performance: Create Indexes
-        await queryPromise(
-          connection,
-          `CREATE INDEX idx_receiptdate_rno ON ${tableName} (ReceiptDate, rno)`
-        );
-        await queryPromise(
-          connection,
-          `CREATE INDEX idx_rno_cname ON ${tableName} (rno, cname)`
-        );
-        await queryPromise(
-          connection,
-          `CREATE INDEX idx_litres_rate ON ${tableName} (Litres, rate)`
-        );
-
-        // Commit Transaction
         connection.commit((err) => {
           connection.release();
           if (err) {
-            console.error("Transaction commit error: ", err);
-            return res
-              .status(500)
-              .json({ status: 500, message: "Transaction commit error!" });
+            return res.status(500).json({
+              status: 500,
+              message: "Transaction commit error!",
+            });
           }
 
-          res.status(200).json({
-            status: 200,
-            message: "User registered successfully!",
-            tableName: tableName,
-          });
+          // Attach SocietyCode for next function
+          req.SocietyCode = newSocietyCode;
+          next();
         });
       } catch (error) {
         connection.rollback(() => connection.release());
@@ -279,14 +429,87 @@ exports.userRegister = async (req, res) => {
   });
 };
 
-// Helper Function for Promisified Queries
-const queryPromise = (connection, sql, params = []) => {
-  return new Promise((resolve, reject) => {
-    connection.query(sql, params, (err, result) => {
-      if (err) reject(err);
-      else resolve(result);
+exports.setupBasicInformation = async (req, res) => {
+  const SocietyCode = req.SocietyCode;
+  const tableName = `dailymilkentry_${SocietyCode}`;
+
+  const connection = await getConnectionPromise();
+
+  try {
+    await queryPromise(
+      connection,
+      `CREATE TABLE IF NOT EXISTS ${tableName} (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        companyid INT DEFAULT 0,
+        center_id INT DEFAULT 0,
+        userid VARCHAR(120),
+        ReceiptDate DATE,
+        rno INT,
+        cname VARCHAR(120),
+        AccCode INT,
+        fat DECIMAL(5,2) DEFAULT 0.00,
+        snf DECIMAL(5,2) DEFAULT 0.00,
+        Digree DECIMAL(5,2) DEFAULT 0.00,
+        Litres DECIMAL(8,2) DEFAULT 0.00,
+        Kg DECIMAL(8,4) DEFAULT 0.00,
+        rate DECIMAL(8,2) DEFAULT 0.00,
+        Amt DECIMAL(10,2) DEFAULT 0.00,
+        rctype VARCHAR(50),
+        ME INT,
+        CB INT,
+        SampleNo INT,
+        Driver INT DEFAULT 0,
+        GLCode INT,
+        BillNo INT,
+        BillDate DATE,
+        UpdatedBy VARCHAR(60),
+        updatedOn DATE,
+        isDeleted INT DEFAULT 0,
+        deletedBy VARCHAR(60),
+        deletedOn DATETIME
+      )`
+    );
+
+    await queryPromise(
+      connection,
+      `INSERT INTO ratecharttype (companyid, center_id, rctypeid, rctypename) VALUES (?, ?, ?, ?)`,
+      [SocietyCode, 0, 1, "Cow"]
+    );
+
+    await queryPromise(
+      connection,
+      `INSERT INTO bankmaster (code, name, branch, ifsc, companyid, center_id) VALUES (?, ?, ?, ?, ?, ?)`,
+      [1, "Demo Bank", "Demo", "DEMO000123", SocietyCode, 0]
+    );
+
+    await queryPromise(
+      connection,
+      `CREATE INDEX idx_receiptdate_rno ON ${tableName} (ReceiptDate, rno)`
+    );
+    await queryPromise(
+      connection,
+      `CREATE INDEX idx_rno_cname ON ${tableName} (rno, cname)`
+    );
+    await queryPromise(
+      connection,
+      `CREATE INDEX idx_litres_rate ON ${tableName} (Litres, rate)`
+    );
+
+    connection.release();
+
+    res.status(200).json({
+      status: 200,
+      message: "User registered and milk table initialized successfully!",
+      tableName: tableName,
     });
-  });
+  } catch (err) {
+    connection.release();
+    console.error("Milk table init error:", err);
+    res.status(500).json({
+      status: 500,
+      message: "User registered, but milk table initialization failed!",
+    });
+  }
 };
 
 //---------------------------------------------------------------------------->
@@ -397,7 +620,8 @@ exports.userLogin = async (req, res) => {
 
             res.cookie("token", token, {
               httpOnly: true,
-              sameSite: "strict",
+              secure: true,
+              sameSite: "None",
               maxAge: 4 * 60 * 60 * 1000,
             });
 
@@ -420,10 +644,6 @@ exports.userLogin = async (req, res) => {
     }
   });
 };
-
-//---------------------------------------------------------------------------->
-// User Designation ---------------------------------------------------------->
-//---------------------------------------------------------------------------->
 
 //---------------------------------------------------------------------------->
 //Logout user----------------------------------------------------------------->
