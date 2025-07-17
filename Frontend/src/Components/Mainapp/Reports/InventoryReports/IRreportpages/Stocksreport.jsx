@@ -7,8 +7,9 @@ import { useSelector } from "react-redux";
 import "../../../../../Styles/InventoryReports/stockk.css";
 
 const Stocksreport = () => {
-  const [fromdate, setFromDate] = useState("");
-  const [todate, setToDate] = useState("");
+  const today = new Date().toISOString().split("T")[0];
+  const [fromdate, setFromDate] = useState(today);
+  const [todate, setToDate] = useState(today);
   const [sales, SetSales] = useState([]); // Purchase data
   const [saledata, SetSaleData] = useState([]); // Sale Data
   const [selectedStock, setSelectedStock] = useState(""); // Selected stock type
@@ -366,9 +367,11 @@ const Stocksreport = () => {
       <span className="heading">Stock Report</span>
       <div className="first-half-span-input-div w100 h25 d-flex">
         <div className="stocks-from-todate-reports-div d-flex-col w100 h60">
-          <div className="fromto-date-Stock-report w100 h70
+          <div
+            className="fromto-date-Stock-report w100 h70
           
-          d-flex">
+          d-flex"
+          >
             <div className="stock-report-from-to-date-div d-flex w80">
               <div className="fromdate-sale-stock-div w50 h1 d-flex a-center">
                 <span className="w20 info-text p30">From:</span>
@@ -442,7 +445,12 @@ const Stocksreport = () => {
             <tbody>
               {(selectedStock === "all" ? allStockData : filteredStock).map(
                 (item, index) => (
-                  <tr key={index}>
+                  <tr
+                    key={index}
+                    style={{
+                      backgroundColor: index % 2 === 0 ? "#faefe3" : "#fff",
+                    }}
+                  >
                     <td>{item.itemcode}</td>
                     <td>{item.itemname}</td>
                     <td>{item.purchasedQty}</td>
@@ -454,6 +462,7 @@ const Stocksreport = () => {
                 )
               )}
             </tbody>
+
             <tfoot>
               <tr>
                 <td colSpan="2" style={{ textAlign: "right" }}>

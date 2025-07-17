@@ -30,4 +30,14 @@
   .first-loss-gain-report-div .button-loss-gain-div button {
     width: 45%;
   }
+  .loss-gain-report-from-to-date-div .center-selection-loss-gain-div {
+    width: 100%;
+  }
+  .loss-gain-report-from-to-date-div .center-selection-loss-gain-div span {
+    width: 80px;
+  }
+  .loss-gain-report-from-to-date-div .center-selection-loss-gain-div select {
+    width: 200px;
+    margin-bottom: 5px;
+  }
 }

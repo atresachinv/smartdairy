@@ -411,15 +411,14 @@ const CustomerReports = () => {
       {key} {/* This will display the column names */}
     </option>
   ));
-
   return (
-    <div className="customer-master-container w100 h1 d-flex-col">
+    <div className="customer-master-container w100 h1 d-flex-col  ">
       <span className="heading ">Customer Report</span>
-      <div className="middel-filter-applay-div w100 h20 d-flex-col">
-        <div className="dropdown-filter-checkbox-div w100 h50 d-flex ">
-          <div className="dropdown-filter-div w100 h1 d-flex sa">
-            <div className="active-and-member-div w50  h1 a-center d-flex ">
-              <div className="active-not-active-data w50 h1 d-flex j-center a-center ">
+      <div className="middel-filter-applay-div w100 h20 d-flex-col bg3 ">
+        <div className="dropdown-filter-checkbox-div w100 h50 d-flex  ">
+          <div className="dropdown-filter-div w100 h1 d-flex sa ">
+            <div className="active-and-member-div w50  h1 a-center d-flex  ">
+              <div className="active-not-active-data w50 h1 d-flex j-center a-center  ">
                 <span className="info-text w50 ">Active:</span>
                 <select
                   className="w50 data my10"
@@ -521,7 +520,7 @@ const CustomerReports = () => {
           </div>
         </div>
       </div>
-      <div className="select-column-div w100 h10 d-flex  ">
+      <div className="select-column-div w100 h10 d-flex bg3  ">
         <div className="hide-selection-selection-bar d-flex w20 h1  a-center ">
           <span className="info-text w100 h1 d-flex a-center ">
             Select Column:
@@ -552,7 +551,7 @@ const CustomerReports = () => {
       <div className="table-container-Customer">
         <div className="table-scroll-wrapper-cutomer">
           <table className="customer-table-customer-Report">
-            <thead>
+            <thead style={{ backgroundColor: "#ffe1b3" }}>
               <tr>
                 {Object.values(selectedColumns)
                   .filter(Boolean)
@@ -573,20 +572,25 @@ const CustomerReports = () => {
                   </td>
                 </tr>
               ) : (
-                displayedData.map((row, rowIndex) => (
-                  <tr key={rowIndex}>
-                    
-                    {Object.values(selectedColumns)
-                      .filter(Boolean)
-                      .map((col, colIndex) => (
-                        <td key={colIndex}>
-                          {col === "createdon"
-                            ? row[col]?.slice(0, 10) || "0"
-                            : row[col] || "0"}
-                        </td>
-                      ))}
-                  </tr>
-                ))
+                displayedData.map((row, rowIndex) => {
+                  const bgColor = rowIndex % 2 === 0 ? "#faefe3" : "#fff";
+                  return (
+                    <tr key={rowIndex}>
+                      {Object.values(selectedColumns)
+                        .filter(Boolean)
+                        .map((col, colIndex) => (
+                          <td
+                            key={colIndex}
+                            style={{ backgroundColor: bgColor }}
+                          >
+                            {col === "createdon"
+                              ? row[col]?.slice(0, 10) || "0"
+                              : row[col] || "0"}
+                          </td>
+                        ))}
+                    </tr>
+                  );
+                })
               )}
             </tbody>
           </table>

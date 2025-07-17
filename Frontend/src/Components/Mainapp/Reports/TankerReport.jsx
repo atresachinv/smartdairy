@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { getTankerList } from "../../../App/Features/Mainapp/Masters/tankerMasterSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchsanghaMilkColl } from "../../../App/Features/Mainapp/Sangha/sanghaSlice";
@@ -9,14 +9,18 @@ const TankerReport = () => {
   const dispatch = useDispatch();
   const tankerList = useSelector((state) => state.tanker.tankersList || []);
   const sanghaMilkColl = useSelector((state) => state.sangha.sanghamilkColl);
-  const [fromDate, setFromDate] = useState("");
-  const [toDate, setToDate] = useState("");
+  const today = new Date().toISOString().split("T")[0];
+  const [fromDate, setFromDate] = useState(today);
+  const [toDate, setToDate] = useState(today);
   const [mergedData, setMergedData] = useState([]);
   const [selectedTanker, setSelectedTanker] = useState("");
   const [filteredData, setFilteredData] = useState([]);
   const [showClicked, setShowClicked] = useState(false);
   const [selectedShift, setSelectedShift] = useState(""); // "", "0", "1", "2", "3"
-
+  const toDates = useRef(null);
+  const fromdate = useRef(null);
+  const [selectedCenterId, setSelectedCenterId] = useState("");
+   const centerList = useSelector((state) => state.center.centersList || []);
   const dairyname = useSelector(
     (state) =>
       state.dairy.dairyData.SocietyName || state.dairy.dairyData.center_name
@@ -30,40 +34,43 @@ const TankerReport = () => {
     dispatch(fetchsanghaMilkColl({ fromDate, toDate }));
   };
 
-  useEffect(() => {
-    if (sanghaMilkColl.length && tankerList.length) {
-      const merged = sanghaMilkColl.map((entry) => {
-        const tanker = tankerList.find((t) => t.tno === entry.tankerno);
-        return {
-          ...entry,
-          tno: tanker?.tankerno || "",
-          ownername: tanker?.ownername || "",
-          contactno: tanker?.contactno || "",
-          rate: tanker?.rateltr || "",
-        };
-      });
-      setMergedData(merged);
-    }
-  }, [sanghaMilkColl, tankerList]);
-
-  useEffect(() => {
-    if (!mergedData.length || !fromDate || !toDate) return;
-
-    const filtered = mergedData.filter((item) => {
-      const inDateRange =
-        new Date(item.colldate) >= new Date(fromDate) &&
-        new Date(item.colldate) <= new Date(toDate);
-
-      if (selectedTanker) {
-        return item.tno === selectedTanker && inDateRange;
-      } else {
-        return inDateRange;
-      }
+useEffect(() => {
+  if (sanghaMilkColl.length && tankerList.length) {
+    const merged = sanghaMilkColl.map((entry) => {
+      const tanker = tankerList.find((t) => t.tno === entry.tankerno);
+      return {
+        ...entry,
+        tno: tanker?.tankerno || "",
+        ownername: tanker?.ownername || "",
+        contactno: tanker?.contactno || "",
+        rate: tanker?.rateltr || "",
+      };
     });
+    setMergedData(merged);
+  }
+}, [sanghaMilkColl, tankerList]);
 
-    setFilteredData(filtered);
-  }, [mergedData, selectedTanker, fromDate, toDate]);
+useEffect(() => {
+  if (!mergedData.length || !fromDate || !toDate) return;
 
+  const filtered = mergedData.filter((item) => {
+    const inDateRange =
+      new Date(item.colldate) >= new Date(fromDate) &&
+      new Date(item.colldate) <= new Date(toDate);
+
+    const matchesTanker = selectedTanker
+      ? item.tno?.toString() === selectedTanker.toString()
+      : true;
+
+    const matchesCenter = selectedCenterId
+      ? item.center_id?.toString() === selectedCenterId.toString()
+      : true;
+
+    return inDateRange && matchesTanker && matchesCenter;
+  });
+
+  setFilteredData(filtered);
+}, [mergedData, selectedTanker, selectedCenterId, fromDate, toDate]);
   const uniqueTankerNumbers = [
     ...new Set(mergedData.map((item) => item.tno).filter(Boolean)),
   ];
@@ -277,7 +284,7 @@ const TankerReport = () => {
   );
   console.log("filteredData", filteredData);
 
-  //... Select Shift 
+  //... Select Shift
   useEffect(() => {
     if (!mergedData.length || !fromDate || !toDate) return;
 
@@ -297,36 +304,67 @@ const TankerReport = () => {
 
     setFilteredData(filtered);
   }, [mergedData, selectedTanker, selectedShift, fromDate, toDate]);
-  
+
+  //...
+  const handleKeyDown = (e, nextRef) => {
+    if (e.key === "Enter" && nextRef.current) {
+      e.preventDefault();
+      nextRef.current.focus();
+    }
+  };
+
+
+   const handleCenterChange = (event) => {
+     setSelectedCenterId(event.target.value);
+   };
+     console.log("filteredData", filteredData);
   return (
     <div className="tankar-Report-outer-container w100 h1 d-flex-col">
       <span className="heading px10">Tanker Report</span>
       <div className="tankar-report-form-div w100 h30 d-flex-col sa bg ">
         <div className="tankar-report-from-to-date-div-button w100  d-flex a-center sa">
-          <div className="tanker-report-from-to-date-first w70 d-flex">
+          <div className="tanker-report-from-to-date-first w50 d-flex">
             <div className="tankar-from-div w50 d-flex a-center">
-              <span className="label-text px10  w30">From</span>
+              <span className="label-text px10 w30">From</span>
               <input
                 className="data w70"
                 value={fromDate}
+                ref={fromdate}
+                onKeyDown={(e) => handleKeyDown(e, toDates)}
                 type="date"
                 onChange={(e) => setFromDate(e.target.value)}
               />
             </div>
-            <div className="tankar-to-div w50 d-flex  a-center">
+            <div className="tankar-to-div w50 d-flex a-center">
               <span className="label-text w20 px10">To</span>
               <input
                 className="data w70"
                 value={toDate}
+                ref={toDates}
                 type="date"
                 onChange={(e) => setToDate(e.target.value)}
               />
             </div>
           </div>
-          <div className="tankar-number-show-button  d-flex w30 a-center px10 ">
+          <div className="tankar-number-show-button  d-flex w20 a-center px10 ">
             <button className="w-btn" onClick={handleShowbtn}>
               Show
             </button>
+          </div>
+          <div className="center-selection-tanker-div w30 d-flex a-center">
+            <span className="label-text w40">Select Center</span>
+            <select
+              className="data w50"
+              onChange={(e) => setSelectedCenterId(e.target.value)}
+              value={selectedCenterId}
+            >
+              <option value="">Select Center</option>
+              {centerList.map((center) => (
+                <option key={center.center_id} value={center.center_id}>
+                  {center.name || center.center_name}
+                </option>
+              ))}
+            </select>
           </div>
         </div>
         <div className="select-tankers-button-div w100 h30 d-flex a-center ">
@@ -401,10 +439,8 @@ const TankerReport = () => {
           {filteredData.map((row, idx) => (
             <div
               key={idx}
-              style={{
-                backgroundColor: idx % 2 === 0 ? "#faefe3" : "#fff",
-              }}
-              className="Tanker-report-data-table-row w100 mx90 hidescrollbar d-flex "
+              className="Tanker-report-data-table-row w100 mx90 hidescrollbar d-flex"
+              style={{ backgroundColor: idx % 2 === 0 ? "#faefe3" : "#fff" }}
             >
               <span className="label-text w5">{idx + 1}</span>
               <span className="label-text w15">
@@ -433,17 +469,14 @@ const TankerReport = () => {
               <span className="label-text w10">
                 {(row.liter * row.rate).toFixed(1)}
               </span>
-
-              {/* Round cell for each row */}
             </div>
           ))}
 
-          {/* Summary / Total Row */}
+          {/* Summary Row */}
           <div className="tanker-report-total-row w100 d-flex bg summary-row">
             <span className="label-text w10">Round</span>
             <span className="label-text w10">{filteredData.length}</span>
             <span className="label-text w5"></span>
-
             <span className="label-text w15"></span>
             <span className="label-text w5"></span>
             <span className="label-text w15"></span>

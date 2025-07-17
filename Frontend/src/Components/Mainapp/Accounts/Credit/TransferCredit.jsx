@@ -149,9 +149,7 @@ const TransferCredit = () => {
   const [haveSubAcc, setHaveSubAcc] = useState(false);
   const [filter, setFilter] = useState(0);
   const centerId = useSelector((state) => state.dairy.dairyData.center_id);
-  const centerList = useSelector(
-    (state) => state.center.centersList.centersDetails || []
-  );
+  const centerList = useSelector((state) => state.center.centersList || []);
 
   // Optimize fetchBal with proper error handling
   const fetchBal = useCallback(async () => {

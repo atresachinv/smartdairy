@@ -36,7 +36,6 @@ const MilkcollectionReports = () => {
   const [selectedCenterId, setSelectedCenterId] = useState("");
   const [centerData, setCenterData] = useState([]); //..
   const centerList = useSelector((state) => state.center.centersList || []);
-
   useEffect(() => {
     setCollectionData(data);
   }, [data]);
@@ -123,37 +122,37 @@ const MilkcollectionReports = () => {
     }
 
     const doc = new jsPDF();
-    const formatDate = selectedDate;
-    const fromDate = formatDate.start;
-    const toDate = formatDate.end.slice(0, 10);
+    if (!selectedDate || !selectedDate.start || !selectedDate.end) {
+      alert("Please select a valid date range.");
+      return;
+    }
 
-    const dairyName = dairyinfo.SocietyName.toUpperCase(); // Replace with actual dairy name
+    const fromDate = new Date(selectedDate.start).toISOString().slice(0, 10);
+    const toDate = new Date(selectedDate.end).toISOString().slice(0, 10);
     const pageWidth = doc.internal.pageSize.getWidth();
+    const dairyName = dairyinfo?.SocietyName?.toUpperCase() || "DAIRY NAME";
 
-    // Add dairy name
+    // Title: Dairy Name
     doc.setFontSize(16);
     doc.setFont("helvetica", "bold");
     const dairyTextWidth = doc.getTextWidth(dairyName);
-    const dairyXOffset = (pageWidth - dairyTextWidth) / 2; // Center align
-    doc.text(dairyName, dairyXOffset, 10);
+    doc.text(dairyName, (pageWidth - dairyTextWidth) / 2, 10);
 
-    // Add report name
+    // Title: Report Name
     const reportName = sumreport
       ? "Milk Collection Summary Report"
       : "Milk Collection Detailed Report";
     doc.setFontSize(14);
     const reportTextWidth = doc.getTextWidth(reportName);
-    const reportXOffset = (pageWidth - reportTextWidth) / 2; // Center align
-    doc.text(reportName, reportXOffset, 20);
+    doc.text(reportName, (pageWidth - reportTextWidth) / 2, 20);
 
-    // Add date range details
+    // Date Range
     const detailsText = `From: ${fromDate}  To: ${toDate}`;
     doc.setFontSize(12);
     const detailsTextWidth = doc.getTextWidth(detailsText);
-    const detailsXOffset = (pageWidth - detailsTextWidth) / 2;
-    doc.text(detailsText, detailsXOffset, 30);
+    doc.text(detailsText, (pageWidth - detailsTextWidth) / 2, 30);
 
-    // Table configuration based on sumreport
+    // Table Headers
     const tableColumn = sumreport
       ? ["Code", "Liters", "Fat", "Snf", "Name", "Rate", "Amount", "C/B"]
       : [
@@ -169,6 +168,7 @@ const MilkcollectionReports = () => {
           "C/B",
         ];
 
+    // Table Rows
     const tableRows = dataToExport.map((row) =>
       sumreport
         ? [
@@ -176,47 +176,46 @@ const MilkcollectionReports = () => {
             row.Liters,
             row.avgFat || row.fat,
             row.avgSNF || row.snf,
-            row.cname.toUpperCase(),
+            row.cname?.toUpperCase() || "",
             row.avgRate || row.rate,
             row.totalAmt || row.Amt,
             row.CB === 0 ? "C" : "B",
           ]
         : [
-            row.ReceiptDate.slice(0, 10),
+            row.ReceiptDate?.slice(0, 10) || "",
             row.ME === 0 ? "M" : "E",
             row.rno,
             row.Litres,
             row.fat,
             row.snf,
-            row.cname.toUpperCase(),
+            row.cname?.toUpperCase() || "",
             row.rate,
             row.Amt,
             row.CB === 0 ? "C" : "B",
           ]
     );
 
-    // Calculate total amount
+    // Total Amount
     const totalAmount = sumreport
       ? calculateTotalAmountSummary(summaryData)
       : calculateTotalAmountFiltered(filteredData);
 
-    // Add a row for the total amount
     const totalRow = sumreport
       ? ["", "", "", "", "Total", "", totalAmount.toFixed(2), ""]
       : ["", "", "", "", "", "", "Total", "", totalAmount.toFixed(2), ""];
 
     tableRows.push(totalRow);
 
-    // Generate table
+    // ✅ Create the Table
     doc.autoTable({
       head: [tableColumn],
       body: tableRows,
       startY: 40,
       styles: {
         font: "helvetica",
+        fontSize: 8,
         lineColor: [0, 0, 0],
         lineWidth: 0.1,
-        fontSize: 8,
       },
       columnStyles: sumreport
         ? {
@@ -241,7 +240,7 @@ const MilkcollectionReports = () => {
           },
     });
 
-    // Save the PDF
+    // ✅ Save PDF
     doc.save(
       sumreport ? "MilkCollectionSummary.pdf" : "MilkCollectionDetails.pdf"
     );
@@ -262,6 +261,7 @@ const MilkcollectionReports = () => {
       0
     );
   };
+  //......
 
   const exportToExcel = () => {
     if (!data || data.length === 0) {
@@ -729,7 +729,55 @@ const MilkcollectionReports = () => {
       summaryData: filteredSummaryData,
       milkData: filteredMilkData,
     });
-  }, [selectedCenterId, summaryData, filteredData]); // Re-run when selectedCenterId or data changes
+  }, [selectedCenterId, summaryData, filteredData]);
+
+  // Re-run when selectedCenterId or data changes
+
+  //.. Daswada Report Checks All filter Run
+  useEffect(() => {
+    const baseData = sumreport ? centerData.milkData : collectionData;
+
+    let data = baseData;
+
+    // Apply filters
+    if (selectedCustomer) {
+      data = data.filter((row) => row.rno.toString() === selectedCustomer);
+    }
+
+    if (customerName.trim()) {
+      data = data.filter((row) =>
+        row.cname.toLowerCase().includes(customerName.toLowerCase())
+      );
+    }
+
+    if (selectedDay) {
+      data = data.filter((row) => row.ReceiptDate.slice(0, 10) === selectedDay);
+    }
+
+    if (selectedMilkType === "0" || selectedMilkType === "1") {
+      data = data.filter((row) => row.CB.toString() === selectedMilkType);
+    }
+
+    if (selectedME === "0" || selectedME === "1") {
+      data = data.filter((row) => row.ME.toString() === selectedME);
+    }
+
+    // Update data accordingly
+    if (sumreport) {
+      setSummaryData(aggregateCustomerData(data));
+    } else {
+      setFilteredData(data);
+    }
+  }, [
+    sumreport,
+    collectionData,
+    centerData.milkData,
+    selectedCustomer,
+    customerName,
+    selectedDay,
+    selectedMilkType,
+    selectedME,
+  ]);
 
   return (
     <>
@@ -792,7 +840,11 @@ const MilkcollectionReports = () => {
               <button className="w-btn text" onClick={printReport}>
                 Print
               </button>
-              <button className="w-btn text mx10" onClick={exportToPDF}>
+              <button
+                type="button"
+                className="w-btn text mx10"
+                onClick={exportToPDF}
+              >
                 PDF
               </button>
               <button className="w-btn text" onClick={exportToExcel}>

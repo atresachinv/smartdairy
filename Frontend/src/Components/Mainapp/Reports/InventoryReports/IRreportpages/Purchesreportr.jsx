@@ -7,8 +7,9 @@ import axiosInstance from "../../../../../App/axiosInstance";
 import { toast } from "react-toastify";
 
 const Purchesreportr = () => {
-  const [fromdate, setFromDate] = useState("");
-  const [todate, setToDate] = useState("");
+  const today = new Date().toISOString().split("T")[0];
+  const [fromdate, setFromDate] = useState(today);
+  const [todate, setToDate] = useState(today);
   const [sales, SetSales] = useState([]); //... Purches data
   const [showTable, setShowTable] = useState(false);
   const [dealerCode, setDealerCode] = useState("");
@@ -1233,7 +1234,13 @@ Total Amount:        ${totalAmount.toFixed(2)}
             <tbody className="bg-white divide-y divide-gray-200">
               {filteredSales.length > 0 ? (
                 filteredSales.map((sale, index) => (
-                  <tr key={index} className="hover:bg-gray-100">
+                  <tr
+                    key={index}
+                    style={{
+                      backgroundColor: index % 2 === 0 ? "#faefe3" : "#fff",
+                    }}
+                    className="hover:bg-gray-100"
+                  >
                     {columns.map((col) => (
                       <td
                         key={col.accessor}
@@ -1257,6 +1264,7 @@ Total Amount:        ${totalAmount.toFixed(2)}
                 </tr>
               )}
             </tbody>
+
             {filteredSales.length > 0 && (
               <tfoot className="bg-gray-100 font-bold">
                 <tr>

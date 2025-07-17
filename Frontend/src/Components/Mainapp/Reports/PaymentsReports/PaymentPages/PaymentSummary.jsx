@@ -15,6 +15,9 @@ const PaymentSummary = ({ showbtn, setCurrentPage }) => {
   const [deductionData, setDeductionData] = useState({});
   const paysummaryData = useSelector((state) => state.payment?.paySummary);
   const tableRefs = useRef([]); // Array of refs  mn for multiple tables
+  const fromdate = useRef([]); // Array of refs  mn for multiple tables
+  const toDates = useRef([]); // Array of refs  mn for multiple tables
+  
   const deduction = useSelector((state) => state.deduction.alldeductionInfo);
   const status = useSelector((state) => state.deduction.deductionstatus);
   const dairyname = useSelector(
@@ -159,8 +162,15 @@ const PaymentSummary = ({ showbtn, setCurrentPage }) => {
   };
 
   // ---------------------------------------------------------------------->
+  const handleKeyDown = (e, nextRef) => {
+    if (e.key === "Enter" && nextRef.current) {
+      e.preventDefault();
+      nextRef.current.focus();
+    }
+  };
+
   // Print Report --------------------------------------------------------->
-  // ---------------------------------------------------------------------->
+
   const handlePrint = () => {
     const printWindow = window.open("", "_blank");
 
@@ -298,6 +308,8 @@ const PaymentSummary = ({ showbtn, setCurrentPage }) => {
               className="data w60"
               type="date"
               value={fromDate}
+              ref={fromdate}
+              onKeyDown={(e) => handleKeyDown(e, toDates)}
               onChange={(e) => setFromDate(e.target.value)}
               placeholder="From Date"
             />
@@ -308,6 +320,7 @@ const PaymentSummary = ({ showbtn, setCurrentPage }) => {
               type="date"
               className="data w60"
               value={toDate}
+              ref={toDates}
               onChange={(e) => setToDate(e.target.value)}
               placeholder="To Date"
               min={fromDate}

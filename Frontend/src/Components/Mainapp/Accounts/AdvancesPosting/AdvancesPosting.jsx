@@ -30,9 +30,7 @@ const AdvancesPosting = () => {
   const [customerList, setCustomerList] = useState([]);
   const [filter, setFilter] = useState(0);
   const [settings, setSettings] = useState({});
-  const centerList = useSelector(
-    (state) => state.center.centersList.centersDetails || []
-  );
+   const centerList = useSelector((state) => state.center.centersList || []);
   const sledgerlist = useSelector((state) => state.ledger.sledgerlist);
   const centerId = useSelector((state) => state.dairy.dairyData.center_id);
   const centerSetting = useSelector(

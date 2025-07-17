@@ -20,7 +20,8 @@ const PaymentNavlinks = ({ isselected, setIsSelected }) => {
       icon: <BsDatabaseAdd className="icon" />,
       index: 2,
       role: ["super_admin", "admin", "manager"],
-    },
+    }
+
   ];
   return (
     <>

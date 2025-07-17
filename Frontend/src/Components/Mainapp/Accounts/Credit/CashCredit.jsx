@@ -65,9 +65,7 @@ const CashCredit = () => {
   const [balance, setBalance] = useState(0);
   const [balanceData, setBalanceData] = useState([]);
   const [haveSubAcc, setHaveSubAcc] = useState(false);
-  const centerList = useSelector(
-    (state) => state.center.centersList.centersDetails || []
-  );
+   const centerList = useSelector((state) => state.center.centersList || []);
   const [isManualNarration, setIsManualNarration] = useState(false);
 
   const checkHaveSubAcc = useCallback(() => {
@@ -588,7 +586,7 @@ const CashCredit = () => {
       Narration1: e.target.value,
     });
   };
-
+     console.log("centerList", centerList);
   return (
     <div className="Credit-container w100 h1 d-flex-col">
       <div className="Credit-container-scroll d-flex-col w100">
@@ -597,8 +595,8 @@ const CashCredit = () => {
           {centerId > 0 ? (
             <></>
           ) : (
-            <div className="d-flex a-center mx10">
-              <span className="info-text">सेंटर निवडा :</span>
+            <div className="d-flex a-center w50  mx10">
+              <span className="info-text w30">सेंटर निवडा :</span>
               <select
                 className="data w50 a-center  my5 mx5"
                 name="center"

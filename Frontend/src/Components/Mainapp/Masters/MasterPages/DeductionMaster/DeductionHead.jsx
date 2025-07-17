@@ -445,7 +445,7 @@ const DeductionHead = () => {
           </div>
         </div>
         <div className="Deductionhead-table-section-container w100 h60 d-flex-col">
-          <div className="Deductionhead-table-heading-container w100 p10 d-flex sa a-center ">
+          <div className="Deductionhead-table-heading-container w100 p10  d-flex sa a-center ">
             <span className="w10">Edit</span>
             <span className="w20"> Code</span>
             <span className="w25"> Name</span>
