@@ -199,7 +199,7 @@ const PaymentRegister = ({ showbtn, setCurrentPage }) => {
 
   return (
     <div className="payment-register-container w100 h1 d-flex-col">
-      <span className="heading">Payment Register</span>
+      <span className="heading">Payment Register :</span>
 
       <div className=" filter-container d-flex-col  w100 h30 sa bg">
         <div className="from-too-date-button-container w100 h30 d-flex a-center">
