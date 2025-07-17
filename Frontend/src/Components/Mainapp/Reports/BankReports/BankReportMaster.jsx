@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import axios from "axios";
 import autoTable from "jspdf-autotable";
 import jsPDF from "jspdf";
@@ -14,8 +14,9 @@ const BankReportMaster = () => {
   const status = useSelector((state) => state.payment.fpaystatus); //api call Using reducx
   const payDetails = useSelector((state) => state.payment.paymentDetails);
   const bankList = useSelector((state) => state.bank.banksList || []); // bank list
-  const [fromdate, setFromDate] = useState("");
-  const [todate, setToDate] = useState("");
+  const today = new Date().toISOString().split("T")[0];
+  const [fromdate, setFromDate] = useState(today);
+  const [todate, setToDate] = useState(today);
   const [bankdetails, setBankdetails] = useState([]);
   const [selectedBank, setSelectedBank] = useState("");
   const [selectedCode, setSelectedCode] = useState("");
@@ -23,6 +24,8 @@ const BankReportMaster = () => {
   const [showIFSC, setShowIFSC] = useState(false);
   const [amtCustFilter, setAmtCustFilter] = useState(false);
   const [loading, setLoading] = useState(false);
+   const toDates = useRef(null);
+      const fromDate = useRef(null);
 
   const dairyname = useSelector(
     (state) =>
@@ -78,13 +81,6 @@ const BankReportMaster = () => {
     dispatch(getBankList());
   };
 
-  // useEffect(() => {
-  //   // we have payDetails we want just DeductionId: 0
-  //   // match payDetails.Code with customerlist.srno
-  //   // after this generate data (bankdetails) get cname , srno from customerlist and payDetails.pamt
-  //   // then match  customerlist.cust_bankname  with bankList.name
-  //   // push backList all in above generated data (bankdetails)
-  // }, [payDetails, customerlist, bankList]);
 
   useEffect(() => {
     if (!payDetails?.length || !customerlist?.length || !bankList?.length)
@@ -1002,7 +998,13 @@ const BankReportMaster = () => {
     XLSX.writeFile(workbook, excelFileName);
   };
 
-  //
+  //.... button Shift
+  const handleKeyDown = (e, nextRef) => {
+    if (e.key === "Enter" && nextRef.current) {
+      e.preventDefault();
+      nextRef.current.focus();
+    }
+  };
 
   const BankExportFunctions = {
     "ADCC Report": exportADDCToExcel,
@@ -1039,7 +1041,9 @@ const BankReportMaster = () => {
               <input
                 className="data w70"
                 type="date"
+                onKeyDown={(e) => handleKeyDown(e, toDates)}
                 value={fromdate}
+                ref={fromDate}
                 onChange={(e) => setFromDate(e.target.value)}
               />
             </div>
@@ -1049,6 +1053,7 @@ const BankReportMaster = () => {
                 className="data w70"
                 type="date"
                 value={todate}
+                ref={toDates}
                 onChange={(e) => setToDate(e.target.value)}
               />
             </div>
@@ -1140,6 +1145,7 @@ const BankReportMaster = () => {
                 English Excel
               </button>
             </div>
+            
             <div className="report-old-bank d-flex w30 h90 a-center">
               <button className="btn" onClick={exportToExcelMarathi}>
                 Marathi Excel

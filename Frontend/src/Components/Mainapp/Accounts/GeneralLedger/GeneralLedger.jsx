@@ -26,9 +26,7 @@ const GeneralLedger = () => {
   const [balance, setBalance] = useState(0);
   const [voucherList, setVoucherList] = useState([]);
   const [loading, setLoading] = useState(false);
-  const centerList = useSelector(
-    (state) => state.center.centersList.centersDetails || []
-  );
+  const centerList = useSelector((state) => state.center.centersList || []);
   const centerId = useSelector((state) => state.dairy.dairyData.center_id);
   const [filter, setFilter] = useState(0);
   const [formData, setFormData] = useState({

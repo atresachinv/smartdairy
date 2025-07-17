@@ -530,6 +530,13 @@ const Mainappnavlinks = ({ setselected, handleSidebar }) => {
           path: "reports/lossgain",
           role: ["admin", "super_admin", "manager"],
         },
+        {
+          name: `${t(" दुध खरेदी विक्री नफा रिपोर्ट")}`,
+          icon: <FaFileInvoiceDollar className="icon" />,
+          index: 6.14,
+          path: "reports/milkBuySale",
+          role: ["admin", "super_admin", "manager"],
+        },
       ],
     },
     {

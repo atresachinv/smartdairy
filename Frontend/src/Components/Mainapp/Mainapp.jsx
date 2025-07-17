@@ -100,6 +100,7 @@ import SaveRatecharts from "./Masters/MasterPages/RatechartMaster/SaveRatecharts
 import Updateratecharts from "./Masters/MasterPages/RatechartMaster/Updateratecharts";
 import Applyratecharts from "./Masters/MasterPages/RatechartMaster/Applyratecharts";
 import PreviousRatechart from "./Masters/MasterPages/RatechartMaster/PreviousRatechart";
+import MilkBuySale from "./Reports/MilkBuySale/MilkBuySale";
 
 
 const Mainapp = () => {
@@ -341,7 +342,7 @@ const Mainapp = () => {
             />
             <Route path="reports/lossgain/*" element={<Lossgainreport />} />
             <Route path="reports/tanker" element={<TankerReport />} />
-           
+            <Route path="reports/milkBuySale" element={<MilkBuySale />} />
             {/* payment routes */}
             <Route
               path="payment/milk-correction/*"

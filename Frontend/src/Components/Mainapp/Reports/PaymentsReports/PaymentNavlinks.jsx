@@ -4,12 +4,6 @@ import { BsDatabaseAdd } from "react-icons/bs";
 const PaymentNavlinks = ({ isselected, setIsSelected }) => {
   const paymentnavlinks = [
     {
-      name: `Deduction Report`,
-      icon: <BsDatabaseAdd className="icon" />,
-      index: 0,
-      role: ["super_admin", "admin", "manager"],
-    },
-    {
       name: `Payment Register `,
       icon: <BsDatabaseAdd className="icon" />,
       index: 1,
@@ -19,6 +13,12 @@ const PaymentNavlinks = ({ isselected, setIsSelected }) => {
       name: `Payment Summary `,
       icon: <BsDatabaseAdd className="icon" />,
       index: 2,
+      role: ["super_admin", "admin", "manager"],
+    },
+    {
+      name: `Deduction Report`,
+      icon: <BsDatabaseAdd className="icon" />,
+      index: 0,
       role: ["super_admin", "admin", "manager"],
     },
   ];

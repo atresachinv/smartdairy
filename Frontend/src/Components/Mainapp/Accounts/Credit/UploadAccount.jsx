@@ -25,9 +25,7 @@ const UploadAccount = () => {
 
   const [tableData, setTableData] = useState([]); // State to hold table data
   const fileInputRef = useRef(null); // Ref for the file input
-  const centerList = useSelector(
-    (state) => state.center.centersList.centersDetails || []
-  );
+ const centerList = useSelector((state) => state.center.centersList || []);
 
   const centerId = useSelector((state) => state.dairy.dairyData.center_id);
   const [filter, setFilter] = useState(0);
@@ -184,7 +182,7 @@ const UploadAccount = () => {
           {centerId > 0 ? (
             <></>
           ) : (
-            <div className="d-flex a-center mx10">
+            <div className="d-flex w50 a-center mx10">
               <span className="info-text">सेंटर निवडा :</span>
               <select
                 className="data w50 a-center  my5 mx5"

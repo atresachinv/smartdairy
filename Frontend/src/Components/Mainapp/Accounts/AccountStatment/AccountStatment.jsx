@@ -49,14 +49,13 @@ const AccountStatment = () => {
   const CityName = useSelector((state) => state.dairy.dairyData.city);
 
   // Redux selectors
-  const centerList = useSelector(
-    (state) => state.center.centersList.centersDetails || []
-  );
+
   const sledgerlist = useSelector((state) => state.ledger.sledgerlist);
   const centerId = useSelector((state) => state.dairy.dairyData.center_id);
   const centerSetting = useSelector(
     (state) => state.dairySetting.centerSetting
   );
+  const centerList = useSelector((state) => state.center.centersList || []);
 
   const autoCenter = useMemo(() => settings?.autoCenter, [settings]);
 

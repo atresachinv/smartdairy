@@ -8,12 +8,13 @@ import axiosInstance from "../../../../../App/axiosInstance";
 
 const SalesReport = () => {
   const [saledata, SetSaleData] = useState([]); //.. sale Data
-  const [fromdate, setFromDate] = useState("");
-  const [todate, setToDate] = useState("");
+  const today = new Date().toISOString().split("T")[0];
+  const [fromdate, setFromDate] = useState(today);
+  const [todate, setToDate] = useState(today);
   const [item, SetItem] = useState([]); //... Item Data
   const [itemName, setItemName] = useState([]); //... Item Data
   const [selectedReport, setSelectedReport] = useState("");
-  const [showPopup, setShowPopup] = useState(false);
+  const [groupeditems, setGroupedItems] = useState(false);
   const [itemNo, setItemNo] = useState("");
   const [isItemwiseChecked, setIsItemwiseChecked] = useState(false);
   const toDates = useRef(null);
@@ -954,11 +955,11 @@ const SalesReport = () => {
         </thead>
         <tbody>
           {!selectedReport ? (
-          
-              <span className="">
+            <tr>
+              <td colSpan={headers.length} style={{ padding: "20px" }}>
                 Data Not Available
-              </span>
-         
+              </td>
+            </tr>
           ) : filteredData.length === 0 ? (
             <tr>
               <td colSpan={headers.length} style={{ padding: "20px" }}>
@@ -967,18 +968,12 @@ const SalesReport = () => {
             </tr>
           ) : (
             filteredData.map((item, index) => {
-              style = {
-                backgroundColor: index % 2 === 0 ? "#faefe3" : "#fff",
-              };
-              const rowStyle = {
-                backgroundColor: "inherit",
-                cursor: "default",
-              };
-            
+              const bgColor = index % 2 === 0 ? "#faefe3" : "#fff";
+
               switch (selectedReport) {
                 case "Sale Register":
                   return (
-                    <tr key={index} style={rowStyle}>
+                    <tr key={index} style={{ backgroundColor: bgColor }}>
                       <td>{item.BillDate?.slice(0, 10) || "N/A"}</td>
                       <td>{item.BillNo || "N/A"}</td>
                       <td>{item.CustCode || "N/A"}</td>
@@ -986,9 +981,10 @@ const SalesReport = () => {
                       <td>{item.Amount ? item.Amount.toFixed(2) : "0.00"}</td>
                     </tr>
                   );
+
                 case "Disturbed Register list":
                   return (
-                    <tr key={index} style={rowStyle}>
+                    <tr key={index} style={{ backgroundColor: bgColor }}>
                       <td>{item.BillDate?.slice(0, 10) || "N/A"}</td>
                       <td>{item.BillNo || "N/A"}</td>
                       <td>{item.CustCode || "N/A"}</td>
@@ -998,30 +994,33 @@ const SalesReport = () => {
                       <td>{item.Amount ? item.Amount.toFixed(2) : "0.00"}</td>
                     </tr>
                   );
+
                 case "Customer Saleing Balance":
                   return (
-                    <tr key={index} style={rowStyle}>
+                    <tr key={index} style={{ backgroundColor: bgColor }}>
                       <td>{item.CustCode || "N/A"}</td>
                       <td>{item.cust_name || "N/A"}</td>
                       <td>{item.Amount ? item.Amount.toFixed(2) : "0.00"}</td>
                     </tr>
                   );
+
                 case "Customer Saleing Qtm Report":
                   return (
-                    <tr key={index} style={rowStyle}>
+                    <tr key={index} style={{ backgroundColor: bgColor }}>
                       <td>{item.CustCode || "N/A"}</td>
                       <td>{item.cust_name || "N/A"}</td>
                       <td>{item.Qty || 0}</td>
                       <td>{item.Amount ? item.Amount.toFixed(2) : "0.00"}</td>
                     </tr>
                   );
+
                 default:
                   return null;
               }
             })
           )}
           {selectedReport && filteredData.length > 0 && (
-            <tr style={{ backgroundColor: "inherit", cursor: "default" }}>
+            <tr>
               <td
                 colSpan={headers.length - 1}
                 style={{ textAlign: "right", fontWeight: "bold" }}
@@ -1034,6 +1033,7 @@ const SalesReport = () => {
         </tbody>
       </table>
     );
+    
   };
   
   
@@ -1259,7 +1259,10 @@ const SalesReport = () => {
   const handleCheckboxChange = (e) => {
     setIsItemwiseChecked(e.target.checked);
   };
-
+  //...
+  
+  
+   
   return (
     <>
       <div className="sales-report-conatiner w100 h1 d-flex-col bg ">
@@ -1272,9 +1275,9 @@ const SalesReport = () => {
                 <input
                   className="data w80"
                   type="date"
-                  value={fromdate} // Bind fromdate state to input
-                  onKeyDown={(e) => handleKeyDown(e, toDates)}
-                  onChange={(e) => setFromDate(e.target.value)} // Update fromdate on change
+                  value={fromdate}
+                 
+                  onChange={(e) => setFromDate(e.target.value)}
                 />
               </div>
               <div className="from-sales-date-div w50 h1 d-flex a-center p10">
@@ -1282,9 +1285,9 @@ const SalesReport = () => {
                 <input
                   className="data w80"
                   type="date"
-                  ref={toDates}
-                  value={todate} // Bind todate state to input
-                  onChange={(e) => setToDate(e.target.value)} // Update todate on change
+         
+                  value={todate}
+                  onChange={(e) => setToDate(e.target.value)}
                 />
               </div>
             </div>

@@ -29,9 +29,7 @@ const LedgerList = () => {
   const centerSetting = useSelector(
     (state) => state.dairySetting.centerSetting
   );
-  const centerList = useSelector(
-    (state) => state.center.centersList.centersDetails || []
-  );
+  const centerList = useSelector((state) => state.center.centersList || []);
   const [settings, setSettings] = useState({});
   const autoCenter = useMemo(() => settings?.autoCenter, [settings]);
   const centerId = useSelector((state) => state.dairy.dairyData.center_id);

@@ -21,7 +21,8 @@ const PaymentSummary = ({ showbtn, setCurrentPage }) => {
       state.dairy.dairyData.SocietyName || state.dairy.dairyData.center_name
   );
   const CityName = useSelector((state) => state.dairy.dairyData.city);
-
+  const toDates = useRef(null);
+  const fromdate = useRef(null);
   // ---------------------------------------------------------------------->
   // Calculate totals ----------------------------------------------------->
   // ---------------------------------------------------------------------->
@@ -42,6 +43,8 @@ const PaymentSummary = ({ showbtn, setCurrentPage }) => {
     return totals;
   };
   const totals = calculateTotals();
+
+  console.log("deduction", deduction);
 
   // ----------------------------------------------------------------------->
   // Fetch Data Handler ---------------------------------------------------->
@@ -158,8 +161,15 @@ const PaymentSummary = ({ showbtn, setCurrentPage }) => {
   };
 
   // ---------------------------------------------------------------------->
+  const handleKeyDown = (e, nextRef) => {
+    if (e.key === "Enter" && nextRef.current) {
+      e.preventDefault();
+      nextRef.current.focus();
+    }
+  };
+
   // Print Report --------------------------------------------------------->
-  // ---------------------------------------------------------------------->
+
   const handlePrint = () => {
     const printWindow = window.open("", "_blank");
 
@@ -253,23 +263,23 @@ const PaymentSummary = ({ showbtn, setCurrentPage }) => {
       console.error("Failed to open print window.");
     }
   };
-  // Date holding 
-   useEffect(() => {
-     const savedFromDate = localStorage.getItem("fromDate");
-     const savedToDate = localStorage.getItem("toDate");
+  // Date holding
+  useEffect(() => {
+    const savedFromDate = localStorage.getItem("fromDate");
+    const savedToDate = localStorage.getItem("toDate");
 
-     if (savedFromDate) setFromDate(savedFromDate);
-     if (savedToDate) setToDate(savedToDate);
-   }, []);
+    if (savedFromDate) setFromDate(savedFromDate);
+    if (savedToDate) setToDate(savedToDate);
+  }, []);
 
-   // Save dates to localStorage on change
-   useEffect(() => {
-     localStorage.setItem("fromDate", fromDate);
-   }, [fromDate]);
+  // Save dates to localStorage on change
+  useEffect(() => {
+    localStorage.setItem("fromDate", fromDate);
+  }, [fromDate]);
 
-   useEffect(() => {
-     localStorage.setItem("toDate", toDate);
-   }, [toDate]);
+  useEffect(() => {
+    localStorage.setItem("toDate", toDate);
+  }, [toDate]);
 
   return (
     <div className="payment-register-container w100 h1 d-flex-col p10">
@@ -297,6 +307,8 @@ const PaymentSummary = ({ showbtn, setCurrentPage }) => {
               className="data  w70"
               type="date"
               value={fromDate}
+              ref={fromdate}
+              onKeyDown={(e) => handleKeyDown(e, toDates)}
               onChange={(e) => setFromDate(e.target.value)}
               placeholder="From Date"
             />
@@ -307,6 +319,7 @@ const PaymentSummary = ({ showbtn, setCurrentPage }) => {
               type="date"
               className="data w70 "
               value={toDate}
+              ref={toDates}
               onChange={(e) => setToDate(e.target.value)}
               placeholder="To Date"
               min={fromDate}
@@ -330,7 +343,7 @@ const PaymentSummary = ({ showbtn, setCurrentPage }) => {
           <div className="box d-flex center">
             <Spinner />
           </div>
-        ) : deduction.length > 0 ? (
+        ) : deduction.length > 1 ? (
           <div className="payment-register-details-container w100 h1">
             <div className="payment-register-total-details-container w100 h20 d-flex t-center sa">
               <div className="headings-pay-register-totals-container w20 h1 d-flex-col a-center sa bg1">

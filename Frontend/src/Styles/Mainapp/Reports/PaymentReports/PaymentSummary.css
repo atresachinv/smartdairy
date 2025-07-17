@@ -5,9 +5,40 @@
   .payment-register-container .from-too-date-button-container {
     height: fit-content;
     flex-direction: column;
-
     justify-content: space-between;
   }
+  .payment-register-container .from-too-date-button-container input {
+   width: 130px;
+   
+  }
+ .from-too-date-button-container .paymnet-register-show-button {
+     width: 100%;
+  }
+   .from-too-date-button-container  .paymnet-register-show-button button {
+     width: 1000px;
+     margin-top: 10px;
+  }
+  .select-center-cust-code-cust-name{
+    flex-direction: column;
+  }
+  .select-center-cust-code-cust-name .center-selection-payment-div{
+   width: 100%;
+   margin-top: 10px;
+   margin-bottom: 10px;
+
+  }
+  .select-center-cust-code-cust-name .center-selection-payment-div span{
+   width: 140px;
+  }
+  .select-center-cust-code-cust-name  .customer-name-code-selection-div{
+    width: 100%;
+    margin-bottom: 5px;
+  }
+  .filter-container  .pdf-print-excel-payment-button-div{
+
+    margin-bottom: 5px;
+  }
+
   .filter-container .date-from-too-div {
     width: 100%;
     margin-bottom: 50px;

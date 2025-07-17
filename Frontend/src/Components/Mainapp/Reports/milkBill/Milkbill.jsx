@@ -38,7 +38,9 @@ const Milkbill = () => {
   const [toCode, setToCode] = React.useState("");
   const [centerdata, setCenterData] = React.useState("");
   const profile = useSelector((state) => state.userinfo.profile);
-  console.log("payDetails", payDetails);
+  console.log("processedDeductions", allDeductions);
+  const toDates = useRef(null);
+  const fromdate = useRef(null);
 
   useEffect(() => {
     dispatch(centersLists());
@@ -199,47 +201,54 @@ const Milkbill = () => {
   };
   //fetchdata
   const fetchData = async () => {
-    setIsLoading(true); // Start loading
-    setDataAvailable(true); // Assume data is available initially
+    setIsLoading(true);
+    setDataAvailable(true);
 
-    if (fromDate && toDate) {
-      dispatch(
-        getAllMilkCollReport({
-          fromDate,
-          toDate,
-        })
-      );
-      const fetchres = await dispatch(
-        fetchPaymentDetails({
-          fromdate: fromDate,
-          todate: toDate,
-          center_id: selectedCenterId,
-        })
-      ).unwrap();
-    }
     try {
       if (fromDate && toDate) {
+        // Step 1: Get Milk Collection Report (if needed center-wise, add center_id)
+        await dispatch(
+          getAllMilkCollReport({
+            fromDate,
+            toDate,
+          })
+        );
+
+        // Step 2: Get Payment Details center-wise
+        await dispatch(
+          fetchPaymentDetails({
+            fromdate: fromDate,
+            todate: toDate,
+            center_id: selectedCenterId, // center wise
+          })
+        ).unwrap();
+
+        // Step 3: Get Deductions
         const result = await dispatch(
-          getPaymentsDeductionInfo({ fromDate, toDate })
+          getPaymentsDeductionInfo({
+            fromDate,
+            toDate,
+            center_id: selectedCenterId, // add this if deduction is center-wise
+          })
         ).unwrap();
 
         if (!result || result.length === 0) {
-          setDataAvailable(false); // No data found
+          setDataAvailable(false);
         }
       } else {
         alert("Please select a valid date range.");
       }
     } catch (error) {
       console.error("Error fetching data:", error);
-      setDataAvailable(false); // Error occurred
+      setDataAvailable(false);
     } finally {
-      setIsLoading(false); // Stop loading
+      setIsLoading(false);
     }
   };
   useEffect(() => {
     if (allDeductions.length > 0 && customerlist.length > 0) {
       const grouped = {};
-      const dnameSet = new Set(); // To store unique dnames
+      const dnameSet = new Set();
 
       allDeductions.forEach((item) => {
         const code = item.Code;
@@ -249,25 +258,24 @@ const Milkbill = () => {
           grouped[code] = {
             ...item,
             customerName: customer ? customer.cname : "",
+            center_id: item.center_id, // ✅ important for filter
           };
         } else {
           if (item.dname && item.AMT !== undefined) {
-            const cleanDname = item.dname.replace(/\s+/g, "_"); // Replace spaces with underscores
-            dnameSet.add(cleanDname); // collect sanitized dnames
+            const cleanDname = item.dname.replace(/\s+/g, "_");
+            dnameSet.add(cleanDname);
 
             if (!grouped[code]) {
-              grouped[code] = {};
+              grouped[code] = { center_id: item.center_id }; // ✅ set center
             }
 
-            grouped[code][cleanDname] = item.AMT; // Add sanitized key
+            grouped[code][cleanDname] = item.AMT;
           }
         }
       });
 
       const finalData = Object.values(grouped);
       setProcessedDeductions(finalData);
-
-      // Set unique cleaned dnames
       setDnames(Array.from(dnameSet));
     }
   }, [allDeductions, customerlist]);
@@ -280,7 +288,7 @@ const Milkbill = () => {
 
     const matchesCenter =
       selectedCenterId === "" ||
-      item.center_id?.toString() === selectedCenterId;
+      item.center_id?.toString() === selectedCenterId?.toString(); // ✅ compare string
 
     const matchesCodeRange =
       (!fromCodeNum || codeNum >= fromCodeNum) &&
@@ -368,7 +376,6 @@ const Milkbill = () => {
   //... milk collection pdf
   const handleCenterChange = (e) => {
     setSelectedCenterId(e.target.value);
-    console.log("Selected Center ID:", e.target.value);
   };
   // Pdf ----------------->
   const exportMilkCollectionPDF = (
@@ -613,13 +620,7 @@ const Milkbill = () => {
 
     return words + " Only";
   }
-  const printMilkBillPages = ({
-    fromCode,
-    toCode,
-    data,
-    allDeductions,
-    payDetails,
-  }) => {
+  const printMilkBillPages = ({ fromCode, toCode }) => {
     const start = fromCode;
     const end = toCode;
     const customerCodes = [];
@@ -650,51 +651,112 @@ const Milkbill = () => {
         .join("");
 
     // Deduction
-    const deductionRows = (records = []) => {
-      if (!Array.isArray(records) || records.length === 0) return "";
+  // const deductionRows = (records = []) => {
+  //   if (!Array.isArray(records) || records.length === 0) return "";
 
-      let html = `
+  //   let html = `
+  //   <table border="1" cellpadding="5" cellspacing="0" style="width: 100%; border-collapse: collapse; font-family: Arial, sans-serif; font-size: 13px;">
+  //     <thead style="background-color:#f2f2f2;">
+  //       <tr>
+  //         <th>Deduction Name</th>
+  //         <th style="text-align:right;">शिल्लक</th>
+  //         <th style="text-align:right;">मागील बाकी</th>
+  //         <th style="text-align:right;">कपात </th>
+  //       </tr>
+  //     </thead>
+  //     <tbody>
+  // `;
+
+  //   html += records
+  //     .filter((d) => {
+  //       const name = d?.dname?.trim()?.toLowerCase();
+  //       const isValidName = name && name !== "null"; // skip "null" string or null/empty
+  //       return isValidName;
+  //     })
+  //     .map((d) => {
+  //       const bamt = isNaN(parseFloat(d.BAMT)) ? 0 : parseFloat(d.BAMT);
+  //       const mamt = isNaN(parseFloat(d.MAMT)) ? 0 : parseFloat(d.MAMT);
+  //       const amt = isNaN(parseFloat(d.AMT)) ? 0 : parseFloat(d.AMT);
+
+  //       return `
+  //       <tr>
+  //         <td>${d.dname}</td>
+  //         <td style="text-align:right;">${bamt.toFixed(2)}</td>
+  //         <td style="text-align:right;">${mamt.toFixed(2)}</td>
+  //         <td style="text-align:right;">${amt.toFixed(2)}</td>
+  //       </tr>
+  //     `;
+  //     })
+  //     .join("");
+
+  //   html += `
+  //     </tbody>
+  //   </table>
+  // `;
+
+  //   return html;
+  // };
+
+  const deductionRows = (records = []) => {
+    if (!Array.isArray(records) || records.length === 0) return "";
+
+    let totalAmt = 0;
+
+    let html = `
     <table border="1" cellpadding="5" cellspacing="0" style="width: 100%; border-collapse: collapse; font-family: Arial, sans-serif; font-size: 13px;">
       <thead style="background-color:#f2f2f2;">
         <tr>
           <th>Deduction Name</th>
           <th style="text-align:right;">शिल्लक</th>
           <th style="text-align:right;">मागील बाकी</th>
-          <th style="text-align:right;">कपात </th>
-          <th style="text-align:right;">कपात Amount</th>
+          <th style="text-align:right;">कपात</th>
         </tr>
       </thead>
       <tbody>
   `;
 
-      html += records
-        .filter((d) => d?.dname?.trim() !== "")
-        .map((d) => {
-          const bamt = isNaN(parseFloat(d.BAMT)) ? 0 : parseFloat(d.BAMT);
-          const mamt = isNaN(parseFloat(d.MAMT)) ? 0 : parseFloat(d.MAMT);
-          const damt = isNaN(parseFloat(d.DAMT)) ? 0 : parseFloat(d.DAMT);
-          const amt = isNaN(parseFloat(d.AMT)) ? 0 : parseFloat(d.AMT);
+    const filteredRecords = records.filter((d) => {
+      const name = d?.dname?.trim()?.toLowerCase();
+      return name && name !== "null";
+    });
 
-          return `
+    html += filteredRecords
+      .map((d) => {
+        const bamt = isNaN(parseFloat(d.BAMT)) ? 0 : parseFloat(d.BAMT);
+        const mamt = isNaN(parseFloat(d.MAMT)) ? 0 : parseFloat(d.MAMT);
+        const amt = isNaN(parseFloat(d.AMT)) ? 0 : parseFloat(d.AMT);
+
+        totalAmt += amt;
+
+        return `
         <tr>
           <td>${d.dname}</td>
           <td style="text-align:right;">${bamt.toFixed(2)}</td>
           <td style="text-align:right;">${mamt.toFixed(2)}</td>
-          <td style="text-align:right;">${damt.toFixed(2)}</td>
           <td style="text-align:right;">${amt.toFixed(2)}</td>
         </tr>
       `;
-        })
-        .join("");
+      })
+      .join("");
 
-      html += `
+    // Add total row
+    html += `
+        <tr style="font-weight: bold; background-color: #f9f9f9;">
+          <td colspan="3" style="text-align:right;">Total कपात</td>
+          <td style="text-align:right;">${totalAmt.toFixed(2)}</td>
+        </tr>
+  `;
+
+    html += `
       </tbody>
     </table>
   `;
 
-      return html;
-    };
+    return html;
+  };
 
+
+  ///... Paymnet
     const buildPaymentSummary = (payment) => {
       if (payment.length === 0)
         return "<tr><td colspan='2'>No payment data</td></tr>";
@@ -1365,6 +1427,13 @@ const Milkbill = () => {
       setIsLoading(false);
     }
   };
+  //...Next Key Enter
+  const handleKeyDown = (e, nextRef) => {
+    if (e.key === "Enter" && nextRef.current) {
+      e.preventDefault();
+      nextRef.current.focus();
+    }
+  };
 
   return (
     <>
@@ -1379,6 +1448,8 @@ const Milkbill = () => {
                   <input
                     className="data w50"
                     type="date"
+                    onKeyDown={(e) => handleKeyDown(e, toDates)}
+                    ref={fromdate}
                     value={fromDate}
                     onChange={(e) => setFromDate(e.target.value)}
                   />
@@ -1388,6 +1459,7 @@ const Milkbill = () => {
                   <input
                     className="data w50"
                     type="date"
+                    ref={toDates}
                     value={toDate}
                     onChange={(e) => setToDate(e.target.value)}
                   />
