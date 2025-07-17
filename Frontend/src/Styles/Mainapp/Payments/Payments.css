@@ -44,8 +44,8 @@
   .generate-bill-form-container .form-button-div button {
     width: 45%;
   }
-  .payment-details-and-report-btn-div {
-    min-height: 80%;
+  .Bil-list-container .payment-details-and-report-btn-div {
+    min-height: fit-content;
   }
   .payment-details-and-report-btn-div .bill-payments-container-div {
     width: 20%;
@@ -122,18 +122,19 @@
   .generate-bill-form-container .form-button-div button {
     width: 45%;
   }
-  .payment-details-and-report-btn-div {
-    min-height: 180%;
+  .Bil-list-container .payment-details-and-report-btn-div {
+    min-height: auto;
     flex-direction: column;
   }
 
   .payment-details-and-report-btn-div .payment-data-report-btn-div {
-    min-height: fit-content;
+    min-height: 550px;
     width: 100%;
     padding: 0;
+    /* margin-bottom: 10px; */
   }
 
-  .payment-details-and-report-btn-div .customer-code-div {
+  .Bil-list-container .payment-details-and-report-btn-div .customer-code-div {
     width: 100%;
     min-height: fit-content;
     flex-direction: column;
@@ -141,23 +142,24 @@
 
   .payment-data-report-btn-div .customer-code-div span {
     width: 100%;
+    min-height: fit-content;
   }
   .payment-data-report-btn-div .customer-code-div .label-text {
     min-height: 30px;
     margin-bottom: 10px;
   }
 
-  .customer-code-div .cust-code-div {
+  .payment-data-report-btn-div .customer-code-div .cust-code-div {
     width: 100%;
     min-height: fit-content;
     margin-bottom: 10px;
   }
 
-  .cust-code-div input {
+  .customer-code-div .cust-code-div input {
     width: 20%;
   }
 
-  .bill-payments-details-container {
+  .payment-data-report-btn-div .bill-payments-details-container {
     min-height: 60%;
     margin-bottom: 10px;
   }

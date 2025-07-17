@@ -29,6 +29,7 @@ const {
   deleteAllMilkPay,
   paymentDetails,
   paymentsDetail,
+  fetchPaySummary,
 } = require("../Controllers/PaymentController");
 
 const router = express.Router();
@@ -85,5 +86,6 @@ router
   .route("/delete/selected/bill")
   .delete(verifyToken, deleteSelectedMilkPays);
 router.route("/delete/all/payment").delete(verifyToken, deleteAllMilkPay);
+router.route("/payment/summary").get(verifyToken, fetchPaySummary);
 
 module.exports = router;

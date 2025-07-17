@@ -1,10 +1,10 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import "../../../../../Styles/Mainapp/Reports/PaymentReports/PaymentSummary.css";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
 import * as XLSX from "xlsx"; // Library for Excel export
 import { getPaymentsDeductionInfo } from "../../../../../App/Features/Deduction/deductionSlice";
+import "../../../../../Styles/Mainapp/Reports/PaymentReports/PaymentRegister.css";
 /// PAYMENT Register
 const PaymentRegister = ({ showbtn, setCurrentPage }) => {
   const dispatch = useDispatch();
@@ -19,15 +19,12 @@ const PaymentRegister = ({ showbtn, setCurrentPage }) => {
     (state) => state.deduction.alldeductionInfo
   );
   const customerlist = useSelector((state) => state.customer.customerlist);
- 
- 
+
   const [filterCode, setFilterCode] = useState("");
   const [isloading, setIsLoading] = useState("");
   const [dataavailable, setDataAvailable] = useState("");
   const [customerName, setCustomerName] = useState("");
-  const centerList = useSelector(
-    (state) => state.center.centersList || []
-  );
+  const centerList = useSelector((state) => state.center.centersList || []);
   const dairyinfo = useSelector((state) => state.dairy.dairyData);
   const [selectedCenterId, setSelectedCenterId] = useState("");
 
@@ -37,8 +34,6 @@ const PaymentRegister = ({ showbtn, setCurrentPage }) => {
       state.dairy.dairyData.SocietyName || state.dairy.dairyData.center_name
   );
   const CityName = useSelector((state) => state.dairy.dairyData.city);
-
- 
 
   // Export data to Excel
 
@@ -378,6 +373,7 @@ const PaymentRegister = ({ showbtn, setCurrentPage }) => {
   const handleCenterChange = (event) => {
     setSelectedCenterId(event.target.value);
   };
+
   const filteredCenterCustomer = customerlist?.filter(
     (row) => String(row.centerid) === String(selectedCenterId) // Ensure type match
   );
@@ -411,13 +407,11 @@ const PaymentRegister = ({ showbtn, setCurrentPage }) => {
     }
   };
 
- 
-
   return (
-    <div className="payment-register-container w100 h1 d-flex-col bg ">
-      <span className="heading h10 ">Payment Register :</span>
-      <div className="filter-container d-flex-col  w100 h30 sa">
-        <div className="from-too-date-button-container w100 h30  d-flex">
+    <div className="payment-register-container w100 h1 d-flex-col sb">
+      <span className="heading">Payment Register :</span>
+      <div className="filter-container d-flex-col  w100 h20 sa">
+        <div className="from-too-date-button-container w100 h50  d-flex">
           <div className="date-from-toocontainer w60 h50 d-flex sa ">
             <div className="from-date-div-container w30 d-flex h1 a-center ">
               <span className="info-text w40">From:</span>
@@ -487,7 +481,7 @@ const PaymentRegister = ({ showbtn, setCurrentPage }) => {
             </div>
           </div>
         </div>
-        <div className="button-and-customer-name-wise-div w100 h60 d-flex a-center">
+        <div className="button-and-customer-name-wise-div w100 h50 d-flex a-center">
           <div className="button-print-export-div w40 h1 a-center d-flex sa j-end ">
             <button type="button" className="w-btn" onClick={handleExportExcel}>
               Excel
@@ -525,115 +519,95 @@ const PaymentRegister = ({ showbtn, setCurrentPage }) => {
       </div>
       {/* Display filtered data */}
 
-      <div className=" payment-register-table-side-container-div w100 h70 d-flex-col">
+      <div className="payment-register-table-side-container-div w100 h70 d-flex-col bg">
         <div
-          className="table-container"
-          style={{ overflowX: "auto", whiteSpace: "nowrap" }}
+          className="pay-register-table-container w100 h1 mh100 hidescrollbar d-flex-col"
+          ref={tableRef}
         >
-          <table
-            className="table"
-            ref={tableRef}
-            style={{
-              width: "100%",
-              minWidth: "max-content",
-              borderCollapse: "collapse",
-            }}
-          >
-            <thead>
-              <tr>
-                <th>Code</th>
-                <th>Customer Name</th>
-                {dnames.map((dname) => (
-                  <th key={dname}>{dname}</th>
-                ))}
-                <th>Liters</th>
-                <th>AVG Rate</th>
-                <th>Payment</th>
-                <th>Deduction</th>
-                <th>NAMT</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredDeductions.map((data, index) => (
-                <tr
-                  key={index}
-                  style={{
-                    backgroundColor: index % 2 === 0 ? "#faefe3" : "#fff",
-                  }}
-                >
-                  <td>{data.Code}</td>
-                  <td>{data.customerName}</td>
+          <div className="pay-register-data-container w100 p10 d-flex t-center a-center sticky-top bg7">
+            <span className="f-label-text w10">Code</span>
+            <span className="f-label-text w30">Customer Name</span>
+            {dnames.map((dname) => (
+              <span className="f-label-text w20" key={dname}>
+                {dname}
+              </span>
+            ))}
+            <span className="f-label-text w10">Liters</span>
+            <span className="f-label-text w15">AVG Rate</span>
+            <span className="f-label-text w15">Payment</span>
+            <span className="f-label-text w20">Deduction</span>
+            <span className="f-label-text w15">NAMT</span>
+          </div>
 
-                  {dnames.map((dname) => (
-                    <td key={dname}>{data[dname] || 0}</td>
-                  ))}
+          {filteredDeductions.map((data, index) => (
+            <div
+              key={index}
+              className="pay-register-data-container w100 p10 d-flex a-center sb"
+              style={{
+                backgroundColor: index % 2 === 0 ? "#faefe3" : "#fff",
+              }}
+            >
+              <span className="info-text w10">{data.Code}</span>
+              <span className="info-text w30">{data.customerName}</span>
 
-                  <td>{data.tliters}</td>
-                  <td>
-                    {data.tliters > 0
-                      ? (data.pamt / data.tliters).toFixed(2)
-                      : "N/A"}
-                  </td>
-                  <td>{data.pamt}</td>
-                  <td>{data.damt}</td>
-                  <td>{(data.pamt - data.damt).toFixed(2)}</td>
-                </tr>
+              {dnames.map((dname) => (
+                <span className="info-text w20" key={dname}>
+                  {data[dname] || 0}
+                </span>
               ))}
-            </tbody>
 
-            <tfoot>
-              <tr>
-                <td colSpan={2}>
-                  <strong>Total</strong>
-                </td>
-                {dnames.map((dname) => {
-                  const total = filteredDeductions.reduce(
-                    (sum, item) => sum + (parseFloat(item[dname]) || 0),
-                    0
-                  );
-                  return (
-                    <td key={dname}>
-                      <strong>{total.toFixed(2)}</strong>
-                    </td>
-                  );
-                })}
-                <td>
-                  <strong>
-                    {filteredDeductions
-                      .reduce((sum, item) => sum + (item.tliters || 0), 0)
-                      .toFixed(2)}
-                  </strong>
-                </td>
-                <td>-</td>
-                <td>
-                  <strong>
-                    {filteredDeductions
-                      .reduce((sum, item) => sum + (item.pamt || 0), 0)
-                      .toFixed(2)}
-                  </strong>
-                </td>
-                <td>
-                  <strong>
-                    {filteredDeductions
-                      .reduce((sum, item) => sum + (item.damt || 0), 0)
-                      .toFixed(2)}
-                  </strong>
-                </td>
-                <td>
-                  <strong>
-                    {filteredDeductions
-                      .reduce(
-                        (sum, item) =>
-                          sum + ((item.pamt || 0) - (item.damt || 0)),
-                        0
-                      )
-                      .toFixed(2)}
-                  </strong>
-                </td>
-              </tr>
-            </tfoot>
-          </table>
+              <span className="info-text w10">{data.tliters}</span>
+              <span className="info-text w20">
+                {data.tliters > 0
+                  ? (data.pamt / data.tliters).toFixed(2)
+                  : "N/A"}
+              </span>
+              <span className="info-text w15">{data.pamt}</span>
+              <span className="info-text w20">{data.damt}</span>
+              <span className="info-text w15">
+                {(data.pamt - data.damt).toFixed(2)}
+              </span>
+            </div>
+          ))}
         </div>
+        {filteredDeductions.length > 0 ? (
+          <div className="total-row-container w100 p10 d-flex a-center sb">
+            <span>Total</span>
+            {dnames.map((dname) => {
+              const total = filteredDeductions.reduce(
+                (sum, item) => sum + (parseFloat(item[dname]) || 0),
+                0
+              );
+              return <span key={dname}>{total.toFixed(2)}</span>;
+            })}
+            <span>
+              {filteredDeductions
+                .reduce((sum, item) => sum + (item.tliters || 0), 0)
+                .toFixed(2)}
+            </span>
+            <span>-</span>
+            <span>
+              {filteredDeductions
+                .reduce((sum, item) => sum + (item.pamt || 0), 0)
+                .toFixed(2)}
+            </span>
+            <span>
+              {filteredDeductions
+                .reduce((sum, item) => sum + (item.damt || 0), 0)
+                .toFixed(2)}
+            </span>
+            <span>
+              {filteredDeductions
+                .reduce(
+                  (sum, item) => sum + ((item.pamt || 0) - (item.damt || 0)),
+                  0
+                )
+                .toFixed(2)}
+            </span>
+          </div>
+        ) : (
+          ""
+        )}
       </div>
     </div>
   );

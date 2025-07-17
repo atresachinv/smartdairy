@@ -29,7 +29,6 @@ const DeductionReports = () => {
   const [dnameOptions, setDnameOptions] = useState([]);
   const [selectedDname, setSelectedDname] = useState("");
   
-  console.log(selectedMaster);
  
 
 

@@ -11,6 +11,8 @@ const initialState = {
   lastMamt: [],
   trnDeductions: [],
   paymasters: [],
+  paySummary: [], // payment summary data
+  psstatus: "idle",
   status: "idle",
   lockPaytstatus: "idle",
   delOnestatus: "idle",
@@ -411,7 +413,7 @@ export const fetchTrnDeductions = createAsyncThunk(
     }
   }
 );
-//get trn deduction amt------------------------------------------------------------->
+//get last mamt amt------------------------------------------------------------->
 
 export const fetchLastMAMT = createAsyncThunk(
   "payment/fetchLastMAMT",
@@ -574,6 +576,23 @@ export const deleteAllPayment = createAsyncThunk(
     } catch (error) {
       const errorMessage =
         error.response?.data?.message || "Failed to delete all milk Payment!.";
+      return rejectWithValue(errorMessage);
+    }
+  }
+);
+
+// Payment summary data ---------------------------------->
+export const getPaymentSummary = createAsyncThunk(
+  "payment/getPaymentSummary",
+  async ({ FromDate, ToDate }, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.get("/payment/summary", {
+        params: { FromDate, ToDate },
+      });
+      return response.data.paymentSummary;
+    } catch (error) {
+      const errorMessage =
+        error.response?.data?.message || "Failed to get payment summary!.";
       return rejectWithValue(errorMessage);
     }
   }
@@ -886,6 +905,18 @@ const paymentSlice = createSlice({
       })
       .addCase(deleteAllPayment.rejected, (state, action) => {
         state.delAllstatus = "failed";
+        state.error = action.payload;
+      }) // get payment summary ------------------------------------------------>
+      .addCase(getPaymentSummary.pending, (state) => {
+        state.psstatus = "loading";
+        state.error = null;
+      })
+      .addCase(getPaymentSummary.fulfilled, (state, action) => {
+        state.psstatus = "succeeded";
+        state.paySummary = action.payload;
+      })
+      .addCase(getPaymentSummary.rejected, (state, action) => {
+        state.psstatus = "failed";
         state.error = action.payload;
       });
   },

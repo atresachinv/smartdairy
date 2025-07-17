@@ -1,26 +1,27 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-// import "../../../../Styles/MachineSettings/MachineSettings.css";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
 import { toast } from "react-toastify";
 import Spinner from "../../../../Home/Spinner/Spinner";
 import { getPaymentsDeductionInfo } from "../../../../../App/Features/Deduction/deductionSlice";
-import "../../../../../Styles/Mainapp/Reports/PaymentReports/PaymentRegister.css";
+import "../../../../../Styles/Mainapp/Reports/PaymentReports/PaymentSummary.css";
+import { getPaymentSummary } from "../../../../../App/Features/Payments/paymentSlice";
 
 const PaymentSummary = ({ showbtn, setCurrentPage }) => {
   const dispatch = useDispatch();
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
   const [deductionData, setDeductionData] = useState({});
+  const paysummaryData = useSelector((state) => state.payment?.paySummary);
   const tableRefs = useRef([]); // Array of refs  mn for multiple tables
   const deduction = useSelector((state) => state.deduction.alldeductionInfo);
   const status = useSelector((state) => state.deduction.deductionstatus);
   const dairyname = useSelector(
     (state) =>
-      state.dairy.dairyData.SocietyName || state.dairy.dairyData.center_name
+      state.dairy.dairyData?.SocietyName || state.dairy.dairyData?.center_name
   );
-  const CityName = useSelector((state) => state.dairy.dairyData.city);
+  const CityName = useSelector((state) => state.dairy.dairyData?.city);
 
   // ---------------------------------------------------------------------->
   // Calculate totals ----------------------------------------------------->
@@ -42,14 +43,14 @@ const PaymentSummary = ({ showbtn, setCurrentPage }) => {
     return totals;
   };
   const totals = calculateTotals();
-
   // ----------------------------------------------------------------------->
-  // Fetch Data Handler ---------------------------------------------------->
+  // Handle show payment summary ------------------------------------------->
   // ----------------------------------------------------------------------->
   const handlefetchData = (e) => {
     e.preventDefault();
     if (fromDate && toDate) {
       dispatch(getPaymentsDeductionInfo({ fromDate, toDate }));
+      dispatch(getPaymentSummary({ FromDate: fromDate, ToDate: toDate }));
     } else {
       toast.error("Please select a valid date range.");
     }
@@ -253,28 +254,28 @@ const PaymentSummary = ({ showbtn, setCurrentPage }) => {
       console.error("Failed to open print window.");
     }
   };
-  // Date holding 
-   useEffect(() => {
-     const savedFromDate = localStorage.getItem("fromDate");
-     const savedToDate = localStorage.getItem("toDate");
+  // Date holding
+  useEffect(() => {
+    const savedFromDate = localStorage.getItem("fromDate");
+    const savedToDate = localStorage.getItem("toDate");
 
-     if (savedFromDate) setFromDate(savedFromDate);
-     if (savedToDate) setToDate(savedToDate);
-   }, []);
+    if (savedFromDate) setFromDate(savedFromDate);
+    if (savedToDate) setToDate(savedToDate);
+  }, []);
 
-   // Save dates to localStorage on change
-   useEffect(() => {
-     localStorage.setItem("fromDate", fromDate);
-   }, [fromDate]);
+  // Save dates to localStorage on change
+  useEffect(() => {
+    localStorage.setItem("fromDate", fromDate);
+  }, [fromDate]);
 
-   useEffect(() => {
-     localStorage.setItem("toDate", toDate);
-   }, [toDate]);
+  useEffect(() => {
+    localStorage.setItem("toDate", toDate);
+  }, [toDate]);
 
   return (
-    <div className="payment-register-container w100 h1 d-flex-col p10">
+    <div className="payment-summary-container w100 h1 d-flex-col sb">
       <div className="title-back-btn-container w100 h10 d-flex a-center sb">
-        <span className="heading py10">Payment Summary :</span>
+        <span className="heading">पेमेंट समरी :</span>
         {showbtn ? (
           <button
             className="btn-danger mx10"
@@ -288,24 +289,24 @@ const PaymentSummary = ({ showbtn, setCurrentPage }) => {
       </div>
       <form
         onSubmit={handlefetchData}
-        className="from-to-date-button-container w100 h20 d-flex"
+        className="from-to-date-button-container w100 h10 d-flex a-center sa"
       >
-        <div className="date-from-to-div w40 d-flex h50 ">
-          <div className="from-div-container w50 d-flex h1 a-center sa">
-            <span className="label-text w30">From:</span>
+        <div className="date-from-to-div w60 d-flex">
+          <div className="from-div-container w45 d-flex h1 a-center sa">
+            <label className="label-text w30">पासुन :</label>
             <input
-              className="data  w70"
+              className="data w60"
               type="date"
               value={fromDate}
               onChange={(e) => setFromDate(e.target.value)}
               placeholder="From Date"
             />
           </div>
-          <div className="from-div-container w50 d-flex h1 a-center sa">
-            <span className="label-text w20">To: </span>
+          <div className="from-div-container w45 d-flex h1 a-center sa">
+            <label className="label-text w20">पर्यंत: </label>
             <input
               type="date"
-              className="data w70 "
+              className="data w60"
               value={toDate}
               onChange={(e) => setToDate(e.target.value)}
               placeholder="To Date"
@@ -313,91 +314,93 @@ const PaymentSummary = ({ showbtn, setCurrentPage }) => {
             />
           </div>
         </div>
-        <div className="button-print-export-div w40 h50 a-center sa d-flex">
+        <div className="button-print-export-div w40 a-center sa d-flex">
           <button type="submit" className="w-btn">
-            show
+            दाखवा
           </button>
           <button type="button" className="w-btn" onClick={handlePrint}>
-            Print
+            प्रिंट
           </button>
           <button type="button" className="w-btn" onClick={generatePDF}>
             PDF
           </button>
         </div>
       </form>
-      <div className="payment-register-outer-container d-flex-col w100 h80 bg">
+      <div className="payment-summary-outer-container d-flex-col w100 h80 p10">
         {status === "loading" ? (
           <div className="box d-flex center">
             <Spinner />
           </div>
         ) : deduction.length > 0 ? (
-          <div className="payment-register-details-container w100 h1">
-            <div className="payment-register-total-details-container w100 h20 d-flex t-center sa">
-              <div className="headings-pay-register-totals-container w20 h1 d-flex-col a-center sa bg1">
+          <div className="payment-summary-details-container w100 h1 d-flex-col sb">
+            <div className="payment-summary-total-details-container w100 h25 d-flex t-center sa">
+              <div className="headings-pay-summary-totals-container w20 d-flex-col a-center sa bg7 br9">
                 <span className="w100 h50 d-flex center f-label-text">
-                  Total Liters
+                  एकूण लिटर
                 </span>
                 <span
-                  className="w100 h50 d-flex center label-text"
+                  className="w100 h50 d-flex center label-text br-bottom"
                   style={{ backgroundColor: "#faefe3" }}
                 >
-                  {totals.tliters.toFixed(2)}
+                  {paysummaryData?.totalLiters?.toFixed(2) || 0}
                 </span>
               </div>
-              <div className="headings-pay-register-totals-container w20 h1 d-flex-col a-center sa bg1">
+              <div className="headings-pay-summary-totals-container w20 d-flex-col a-center sa bg7 br9">
                 <span className="w100 h50 d-flex center f-label-text">
-                  Total Payment{" "}
+                  एकूण पेमेंट
                 </span>
                 <span
-                  className="w100 h50 d-flex center label-text"
+                  className="w100 h50 d-flex center label-text br-bottom"
                   style={{ backgroundColor: "#faefe3" }}
                 >
-                  {totals.pamt.toFixed(2)}
+                  {paysummaryData?.totalPayment?.toFixed(2) || 0}
                 </span>
               </div>
-              <div className="headings-pay-register-totals-container w20 h1 d-flex-col a-center sa bg1">
+              <div className="headings-pay-summary-totals-container w20 d-flex-col a-center sa bg7 br9">
                 <span className="w100 h50 d-flex center f-label-text">
-                  Total Deductions{" "}
+                  एकूण कपात
                 </span>
                 <span
-                  className="w100 h50 d-flex center label-text"
+                  className="w100 h50 d-flex center label-text br-bottom"
                   style={{ backgroundColor: "#faefe3" }}
                 >
-                  {totals.damt.toFixed(2)}
+                  {paysummaryData?.totalDeduction?.toFixed(2) || 0}
                 </span>
               </div>
-              <div className="headings-pay-register-totals-container w20 h1 d-flex-col a-center sa bg1">
+              <div className="headings-pay-summary-totals-container w20 d-flex-col a-center sa bg7 br9">
                 <span className="w100 h50 d-flex center f-label-text">
-                  Net Payment
+                  निव्वळ पेमेंट
                 </span>
                 <span
-                  className="w100 h50 d-flex center label-text"
+                  className="w100 h50 d-flex center label-text br-bottom"
                   style={{ backgroundColor: "#faefe3" }}
                 >
-                  {(totals.pamt - totals.damt).toFixed(2)}
+                  {paysummaryData?.totalNetPay?.toFixed(2) || 0}
                 </span>
               </div>
             </div>
-            <div className="payment-deduction-info-container w100 h80 mh80 hidescrollbar d-flex-col center">
-              <div className="headings-pay-register-totals-container w50 p10 d-flex t-center sticky-top sb bg1">
-                <span className="w50 f-label-text">Deduction Name</span>
-                <span className="w50 f-label-text">Deduction Amount</span>
-              </div>
-              {Object.entries(deductionData).map(([name, total], index) => (
-                <div
-                  key={index}
-                  style={{
-                    backgroundColor: index % 2 === 0 ? "#faefe3" : "#fff",
-                  }}
-                  className="headings-pay-register-totals-container w50 h10 d-flex a-center sb"
-                >
-                  <span className="w50 label-text px10">{name}</span>
-                  <span className="w50 label-text t-end px10">
-                    {total.toFixed(2)}
-                  </span>
+            <div className="payment-deduction-info-outer-container w100 h70 d-flex-col center">
+              <div className="payment-summary-info-container w50 h1 mh100 hidescrollbar d-flex-col center sb">
+                <div className="headings-pay-summary-totals-container w100 p10 d-flex t-center sticky-top sb bg7 br-top">
+                  <span className="w50 f-label-text">कपातीचे नाव</span>
+                  <span className="w50 f-label-text">कपात रक्कम</span>
                 </div>
-              ))}
-              <div className="headings-pay-register-totals-container w50 h10 d-flex a-center sb bg1">
+                {Object.entries(deductionData).map(([name, total], index) => (
+                  <div
+                    key={index}
+                    style={{
+                      backgroundColor: index % 2 === 0 ? "#faefe3" : "#fff",
+                    }}
+                    className="headings-pay-summary-totals-container w100 p10 d-flex a-center sb"
+                  >
+                    <span className="w50 label-text px10">{name}</span>
+                    <span className="w50 label-text t-end px10">
+                      {total.toFixed(2)}
+                    </span>
+                  </div>
+                ))}
+              </div>
+              <div className="headings-pay-summary-totals-container w50 p10 d-flex a-center sb bg1 br-bottom">
                 <span className="w50 f-label-text px10">Total : </span>
                 <span className="w50 f-label-text t-end px10">
                   {totals.damt.toFixed(2)}
