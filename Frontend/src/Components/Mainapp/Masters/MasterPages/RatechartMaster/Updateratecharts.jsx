@@ -11,7 +11,7 @@ import {
 import { useTranslation } from "react-i18next";
 import "../../../../../Styles/Mainapp/Masters/MilkRateMaster.css";
 
-const Updateratecharts = ({ isSet, ratechart }) => {
+const Updateratecharts = ({ isSet, ratechart, setIsSelected }) => {
   const { t } = useTranslation("ratechart");
   const dispatch = useDispatch();
   const tDate = useSelector((state) => state.date.toDate);
@@ -31,6 +31,11 @@ const Updateratecharts = ({ isSet, ratechart }) => {
     rcdate: "",
     rccode: "",
   });
+
+  // set active tab --------------------------------->
+  useEffect(() => {
+    setIsSelected(3);
+  }, []);
 
   useEffect(() => {
     dispatch(listRateCharts());
@@ -172,8 +177,8 @@ const Updateratecharts = ({ isSet, ratechart }) => {
 
   return (
     <div className="update-ratechart-container w100 h1 d-flex sb p10">
-      <div className="previous-rate-chart-container w45 h70 d-flex-col bg">
-        <span className="heading sticky-top">{t("दरपत्रक")} : </span>
+      <div className="previous-rate-chart-container w45 h1 d-flex-col bg">
+        <span className="heading sticky-top m10">{t("दरपत्रक")} : </span>
         <span className="tip-text">
           ( दरपत्रक निवडण्यासाठी खाली दिलेल्या योग्य दरपत्रकावर क्लिक करा )
         </span>{" "}
@@ -197,7 +202,7 @@ const Updateratecharts = ({ isSet, ratechart }) => {
                   style={{
                     backgroundColor:
                       selectedRateChart === ratechart
-                        ? "#d1e7dd"
+                        ? "#ffc46bff"
                         : index % 2 === 0
                         ? "#faefe3"
                         : "#fff",

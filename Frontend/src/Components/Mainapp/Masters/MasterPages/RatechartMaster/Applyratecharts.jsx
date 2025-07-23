@@ -9,7 +9,7 @@ import {
 } from "../../../../../App/Features/Mainapp/Masters/rateChartSlice";
 import { useTranslation } from "react-i18next";
 
-const Applyratecharts = ({ isSet, ratechart }) => {
+const Applyratecharts = ({ isSet, ratechart, setIsSelected }) => {
   const { t } = useTranslation("ratechart");
   const dispatch = useDispatch();
   const tDate = useSelector((state) => state.date.toDate);
@@ -27,7 +27,9 @@ const Applyratecharts = ({ isSet, ratechart }) => {
     toCust: "",
   });
 
+  // set active tab --------------------------------->
   useEffect(() => {
+    setIsSelected(4);
     dispatch(getMaxCustNo());
   }, []);
 
@@ -138,7 +140,7 @@ const Applyratecharts = ({ isSet, ratechart }) => {
   return (
     <div className="apply-ratechart-container w100 h1 d-flex sb p10">
       <div className="previous-rate-chart-container w45 h1 d-flex-col bg">
-        <span className="heading">{t("दरपत्रक")} : </span>
+        <span className="heading m10">{t("दरपत्रक")} : </span>
         <span className="tip-text">
           ( दरपत्रक निवडण्यासाठी खाली दिलेल्या योग्य दरपत्रकावर क्लिक करा )
         </span>
@@ -160,7 +162,7 @@ const Applyratecharts = ({ isSet, ratechart }) => {
                   style={{
                     backgroundColor:
                       selectedRateChart === ratechart
-                        ? "#d1e7dd"
+                        ? "#ffc46bff"
                         : index % 2 === 0
                         ? "#faefe3"
                         : "#fff",

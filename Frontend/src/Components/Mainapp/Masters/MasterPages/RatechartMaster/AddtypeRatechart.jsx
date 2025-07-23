@@ -8,7 +8,7 @@ import {
 import { toast } from "react-toastify";
 import { useTranslation } from "react-i18next";
 
-const AddtypeRatechart = () => {
+const AddtypeRatechart = ({ setIsSelected }) => {
   const { t } = useTranslation("ratechart");
   const dispatch = useDispatch();
   const status = useSelector((state) => state.ratechart.savercstatus);
@@ -20,6 +20,11 @@ const AddtypeRatechart = () => {
     rccode: "",
     rctype: "",
   });
+
+  // set active tab --------------------------------->
+  useEffect(() => {
+    setIsSelected(1);
+  }, []);
 
   // Update rccode when maxRct changes
   useEffect(() => {

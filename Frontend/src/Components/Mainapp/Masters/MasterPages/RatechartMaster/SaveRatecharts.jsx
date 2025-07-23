@@ -13,7 +13,7 @@ import Spinner from "../../../../Home/Spinner/Spinner";
 import { useTranslation } from "react-i18next";
 import * as xlsx from "xlsx";
 
-const SaveRatecharts = () => {
+const SaveRatecharts = ({ setIsSelected }) => {
   const { t } = useTranslation("ratechart");
   const dispatch = useDispatch();
   const tDate = useSelector((state) => state.date.toDate);
@@ -29,6 +29,11 @@ const SaveRatecharts = () => {
     rctype: "",
     rcdate: "",
   });
+
+  // set active tab --------------------------------->
+  useEffect(() => {
+    setIsSelected(2);
+  }, []);
 
   useEffect(() => {
     dispatch(fetchMaxRcCode());
@@ -221,7 +226,6 @@ const SaveRatecharts = () => {
 
     return transformed;
   };
-  
 
   const validateField = (name, value) => {
     let error = {};

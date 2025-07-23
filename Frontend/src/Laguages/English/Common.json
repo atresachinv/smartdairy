@@ -75,7 +75,7 @@
   "c-qty": "Qty",
   "c-prod": "Product",
   "c-customer": "Customer",
-  "c-purch-amt": "Purchase Amt.",
+  "c-purch-amt": "Amount",
   "c-rs": "rs.",
   "c-total": "Total",
   "c-t-liters": "Total Liters",
@@ -108,6 +108,7 @@
   "c-name": "Name",
 
   "c-center-info": "Center Information",
+  "c-se-center": "Select Center",
   "c-centerno": "Center No.",
   "c-anylatics": "Anylatics",
   "c-liter-chart": "Liter Chart",

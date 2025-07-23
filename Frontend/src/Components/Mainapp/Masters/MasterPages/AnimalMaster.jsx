@@ -266,7 +266,7 @@ const AnimalMaster = () => {
 
     if (result.isConfirmed) {
       try {
-        const res = await dispatch(deleteAnimal({ id })).unwrap();
+        const res = await dispatch(deleteAnimal(id )).unwrap();
         if (res.status === 200) {
           dispatch(fetchCustAnimals(values.cust_code));
           toast.success("Animal deleted successfully!");
@@ -276,7 +276,7 @@ const AnimalMaster = () => {
       } catch (error) {
         toast.error("Server failed to delete the animal!");
       }
-    }
+    } 
   };
 
   const handleReset = () => {

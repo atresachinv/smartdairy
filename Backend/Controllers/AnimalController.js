@@ -255,6 +255,13 @@ exports.deleteAnimal = async (req, res) => {
     return res.status(401).json({ status: 401, message: "Unauthorized User!" });
   }
 
+  if (!id) {
+    return res.status(400).json({
+      status: 400,
+      message: "Id is required to delete animal!",
+    });
+  }
+
   pool.getConnection((err, connection) => {
     if (err) {
       console.error("Error getting MySQL connection: ", err);

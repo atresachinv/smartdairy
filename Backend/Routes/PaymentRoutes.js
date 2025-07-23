@@ -30,6 +30,7 @@ const {
   paymentDetails,
   paymentsDetail,
   fetchPaySummary,
+  fetchSelectedPayData,
 } = require("../Controllers/PaymentController");
 
 const router = express.Router();
@@ -80,6 +81,7 @@ router
 router.route("/fetch/trn/deductions").get(verifyToken, fetchTrnDeductionData);
 router.route("/fetch/payment/mamt").get(verifyToken, fetchTrnRemAmt);
 router.route("/fetch/payment").get(verifyToken, fetchSelectedPayAmt);
+router.route("/fetch/payment/bill-data").get(verifyToken, fetchSelectedPayData); // fetch payment to print bill
 router.route("/update/payment/lock").put(verifyToken, lockMilkPayment);
 router.route("/fetch/payment/masters").get(verifyToken, fetchPaymentMasters);
 router

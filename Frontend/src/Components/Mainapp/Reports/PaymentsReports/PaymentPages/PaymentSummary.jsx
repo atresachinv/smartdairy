@@ -17,7 +17,7 @@ const PaymentSummary = ({ showbtn, setCurrentPage }) => {
   const tableRefs = useRef([]); // Array of refs  mn for multiple tables
   const fromdate = useRef([]); // Array of refs  mn for multiple tables
   const toDates = useRef([]); // Array of refs  mn for multiple tables
-  
+
   const deduction = useSelector((state) => state.deduction.alldeductionInfo);
   const status = useSelector((state) => state.deduction.deductionstatus);
   const dairyname = useSelector(
@@ -26,26 +26,6 @@ const PaymentSummary = ({ showbtn, setCurrentPage }) => {
   );
   const CityName = useSelector((state) => state.dairy.dairyData?.city);
 
-  // ---------------------------------------------------------------------->
-  // Calculate totals ----------------------------------------------------->
-  // ---------------------------------------------------------------------->
-  const calculateTotals = () => {
-    const totals = {
-      tliters: 0,
-      pamt: 0,
-      damt: 0,
-      namt: 0,
-    };
-    deduction.forEach((data) => {
-      totals.tliters += data.tliters || 0;
-      totals.pamt += data.pamt || 0;
-      totals.damt += data.damt || 0;
-      totals.namt += data.namt || 0;
-    });
-
-    return totals;
-  };
-  const totals = calculateTotals();
   // ----------------------------------------------------------------------->
   // Handle show payment summary ------------------------------------------->
   // ----------------------------------------------------------------------->
@@ -99,16 +79,16 @@ const PaymentSummary = ({ showbtn, setCurrentPage }) => {
       doc.text(text, (pageWidth - textWidth) / 2, y);
     };
     // Add header information
-    centerText(`${dairyname} , ${CityName} ` || "", startY, 16);
+    centerText(`${dairyname}, ${CityName}` || "", startY, 16);
     startY += 10;
-    centerText("Payment Register Summary", startY, 12);
+    centerText("Payment Summary", startY, 12);
     startY += 10;
     centerText(
       `Date: From ${formattedFromDate} To ${formattedToDate}`,
       startY,
       12
     );
-    startY += 20;
+    startY += 10;
 
     // Add the summary table
     doc.autoTable({
@@ -118,13 +98,14 @@ const PaymentSummary = ({ showbtn, setCurrentPage }) => {
       ],
       body: [
         [
-          totals.tliters.toFixed(2),
-          totals.pamt.toFixed(2),
-          totals.damt.toFixed(2),
-          totals.namt.toFixed(2),
+          paysummaryData?.totalLiters?.toFixed(2),
+          paysummaryData?.totalPayment?.toFixed(2),
+          paysummaryData?.totalDeduction?.toFixed(2),
+          paysummaryData?.totalNetPay?.toFixed(2),
         ],
       ],
       theme: "grid",
+      styles: { halign: "center" },
     });
 
     // Add the detailed table (Deduction Details)
@@ -138,9 +119,9 @@ const PaymentSummary = ({ showbtn, setCurrentPage }) => {
 
     // Add totals row
     deductionRows.push([
-      { content: "Total", styles: { fontStyle: "bold", halign: "left" } },
+      { content: "Total :", styles: { fontStyle: "bold", halign: "left" } },
       {
-        content: totals.damt.toFixed(2),
+        content: paysummaryData?.totalDeduction?.toFixed(2),
         styles: { fontStyle: "bold", halign: "right" },
       },
     ]);
@@ -149,8 +130,8 @@ const PaymentSummary = ({ showbtn, setCurrentPage }) => {
       startY,
       head: [
         [
-          { content: "Deduction Name", styles: { halign: "left" } },
-          { content: "Deduction Amount", styles: { halign: "right" } },
+          { content: "Deduction Name", styles: { halign: "center" } },
+          { content: "Deduction Amount", styles: { halign: "center" } },
         ],
       ],
       body: deductionRows,
@@ -196,9 +177,8 @@ const PaymentSummary = ({ showbtn, setCurrentPage }) => {
         </head>
         <body>
           <div class="header">
-            <h1>${dairyname || "Dairy Name"}</h1>
-            <h2>City: ${CityName || "City Name"}</h2>
-            <h3>Payment Register Summary</h3>
+            <h1>${dairyname || "Dairy Name"}, ${CityName || "City Name"}</h1>
+            <h3>Payment Summary</h3>
             <h4>Date: From ${fromDate || "N/A"} To ${toDate || "N/A"}</h4>
           </div>
 
@@ -213,23 +193,23 @@ const PaymentSummary = ({ showbtn, setCurrentPage }) => {
             </thead>
             <tbody>
               <tr>
-                <td style="font-weight: bold; text-align: center;">${totals.tliters.toFixed(
+                <td style="font-weight: bold; text-align: center;">${paysummaryData?.totalLiters?.toFixed(
                   2
                 )}</td>
-                <td style="font-weight: bold; text-align: center;">${totals.pamt.toFixed(
+                <td style="font-weight: bold; text-align: center;">${paysummaryData?.totalPayment?.toFixed(
                   2
                 )}</td>
-                <td style="font-weight: bold; text-align: center;">${totals.damt.toFixed(
+                <td style="font-weight: bold; text-align: center;">${paysummaryData?.totalDeduction?.toFixed(
                   2
                 )}</td>
-                <td style="font-weight: bold; text-align: center;">${totals.namt.toFixed(
+                <td style="font-weight: bold; text-align: center;">${paysummaryData?.totalNetPay?.toFixed(
                   2
                 )}</td>
               </tr>
             </tbody>
           </table>
 
-          <h3>Deduction Details</h3>
+          <h3>Deduction Details :</h3>
           <table>
             <thead>
               <tr>
@@ -250,7 +230,7 @@ const PaymentSummary = ({ showbtn, setCurrentPage }) => {
                 .join("")}
               <tr style="font-weight: bold;">
                 <td>Total</td>
-                <td>${totals.damt.toFixed(2)}</td>
+                <td>${paysummaryData?.totalDeduction?.toFixed(2)}</td>
               </tr>
             </tbody>
           </table>
@@ -264,6 +244,7 @@ const PaymentSummary = ({ showbtn, setCurrentPage }) => {
       console.error("Failed to open print window.");
     }
   };
+
   // Date holding
   useEffect(() => {
     const savedFromDate = localStorage.getItem("fromDate");
@@ -283,9 +264,9 @@ const PaymentSummary = ({ showbtn, setCurrentPage }) => {
   }, [toDate]);
 
   return (
-    <div className="payment-summary-container w100 h1 d-flex-col sb">
+    <div className="payment-summary-container w100 h1 d-flex-col sb p10">
       <div className="title-back-btn-container w100 h10 d-flex a-center sb">
-        <span className="heading">पेमेंट समरी :</span>
+        <span className="heading px10">पेमेंट समरी :</span>
         {showbtn ? (
           <button
             className="btn-danger mx10"
@@ -339,7 +320,7 @@ const PaymentSummary = ({ showbtn, setCurrentPage }) => {
           </button>
         </div>
       </form>
-      <div className="payment-summary-outer-container d-flex-col w100 h80 p10">
+      <div className="payment-summary-outer-container d-flex-col w100 h80 bg p10">
         {status === "loading" ? (
           <div className="box d-flex center">
             <Spinner />
@@ -416,7 +397,7 @@ const PaymentSummary = ({ showbtn, setCurrentPage }) => {
               <div className="headings-pay-summary-totals-container w50 p10 d-flex a-center sb bg1 br-bottom">
                 <span className="w50 f-label-text px10">Total : </span>
                 <span className="w50 f-label-text t-end px10">
-                  {totals.damt.toFixed(2)}
+                  {paysummaryData?.totalDeduction?.toFixed(2) || 0}
                 </span>
               </div>
             </div>

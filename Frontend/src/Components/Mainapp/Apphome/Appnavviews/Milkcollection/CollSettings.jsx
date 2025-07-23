@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import "../../../../../Styles/Mainapp/Apphome/Appnavview/collsetting.css";
-import { saveMilkCollSetting } from "../../../../../App/Features/Mainapp/Milk/MilkCollectionSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import {
@@ -15,7 +14,8 @@ const CollSettings = ({ clsebtn, isModalOpen }) => {
   const centerSetting = useSelector(
     (state) => state.dairySetting.centerSetting
   );
-  const { status, error } = useSelector((state) => state.milkCollection);
+  const status = useSelector((state) => state.dairySetting.cupdateStatus);
+  // const { status, error } = useSelector((state) => state.milkCollection);
 
   // Initialize state for form inputs
   const [formData, setFormData] = useState({
@@ -106,8 +106,9 @@ const CollSettings = ({ clsebtn, isModalOpen }) => {
     });
 
     if (result.isConfirmed) {
-      await dispatch(updateDairySetup({ formData, centerid: null }));
+      await dispatch(updateDairySetup({ formData, centerid: null })).unwrap();
       dispatch(getCenterSetting({ centerid: dairyInfo.center_id }));
+      clsebtn(false);
     }
   };
 
@@ -269,8 +270,12 @@ const CollSettings = ({ clsebtn, isModalOpen }) => {
         </div>
 
         <div className="button-container w100 h20 d-flex j-end">
-          <button type="submit" className="btn f-btn info-text mx10">
-            Save & Start Collection
+          <button
+            type="submit"
+            className="btn f-btn info-text mx10"
+            disabled={status === "loading"}
+          >
+            {status === "loading" ? "सेव्ह करा..." : "सेव्ह करा"}
           </button>
         </div>
       </form>

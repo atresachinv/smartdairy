@@ -57,11 +57,11 @@ const Purchesreportr = () => {
       salefetchData();
     } else {
       // Handle other functionality when dates are not selected
-      console.log("No date selected yet. Please select a date range.");
+      // console.log("No date selected yet. Please select a date range.");
     }
   }, [fromdate, todate]);
 
-  console.log("Sales", sales);
+  // console.log("Sales", sales);
   //---------------------------DealerWise Report --------------------------------------->>
   useEffect(() => {
     const fetchData = async () => {

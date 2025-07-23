@@ -26,10 +26,10 @@ const CustomersMaster = () => {
       </div>
       <div className="customer-views w100 h90 d-flex center">
         <Routes>
-          <Route path="list" element={<CustomerList />} />
-          <Route path="add-new" element={<CreateCustomer />} />
-          <Route path="add-new/:code" element={<CreateCustomer />} />
-          <Route path="*" element={<CustomerList />} />
+          <Route path="list" element={<CustomerList setIsSelected={setIsSelected}/>} />
+          <Route path="add-new" element={<CreateCustomer setIsSelected={setIsSelected}/>} />
+          <Route path="add-new/:code" element={<CreateCustomer setIsSelected={setIsSelected}/>} />
+          <Route path="*" element={<CustomerList setIsSelected={setIsSelected}/>} />
         </Routes>
       </div>
     </div>

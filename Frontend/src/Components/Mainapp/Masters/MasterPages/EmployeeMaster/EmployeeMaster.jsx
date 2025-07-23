@@ -33,9 +33,9 @@ const EmployeeMaster = () => {
       <div className="Employee-views w100 h90 d-flex center">
         {/* <EmployeeNavViews index={isselected} /> */}
         <Routes>
-          <Route path="list" element={<EmployeeList />} />
-          <Route path="add-new" element={<CreateEmployee />} />
-          <Route path="*" element={<EmployeeList />} />
+          <Route path="list" element={<EmployeeList setIsSelected={setIsSelected}/>} />
+          <Route path="add-new" element={<CreateEmployee setIsSelected={setIsSelected}/>} />
+          <Route path="*" element={<EmployeeList setIsSelected={setIsSelected}/>} />
         </Routes>
       </div>
     </div>

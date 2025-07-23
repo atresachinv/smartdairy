@@ -25,12 +25,30 @@ const RatechartMaster = () => {
       </div>
       <div className="ratechart-master-views w100 h90 d-flex center">
         <Routes>
-          <Route path="previous/list" element={<PreviousRatechart />} />
-          <Route path="add/new-type" element={<AddtypeRatechart />} />
-          <Route path="save" element={<SaveRatecharts />} />
-          <Route path="update" element={<Updateratecharts />} />
-          <Route path="apply" element={<Applyratecharts />} />
-          <Route path="*" element={<PreviousRatechart />} />
+          <Route
+            path="previous/list"
+            element={<PreviousRatechart setIsSelected={setIsSelected} />}
+          />
+          <Route
+            path="add/new-type"
+            element={<AddtypeRatechart setIsSelected={setIsSelected} />}
+          />
+          <Route
+            path="save"
+            element={<SaveRatecharts setIsSelected={setIsSelected} />}
+          />
+          <Route
+            path="update"
+            element={<Updateratecharts setIsSelected={setIsSelected} />}
+          />
+          <Route
+            path="apply"
+            element={<Applyratecharts setIsSelected={setIsSelected} />}
+          />
+          <Route
+            path="*"
+            element={<PreviousRatechart setIsSelected={setIsSelected} />}
+          />
         </Routes>
       </div>
     </div>

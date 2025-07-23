@@ -1,6 +1,7 @@
 import { useTranslation } from "react-i18next";
 import { BsHouseFill } from "react-icons/bs";
 import { TbMilk } from "react-icons/tb";
+import { LuArrowDownUp } from "react-icons/lu";
 import { NavLink } from "react-router-dom";
 
 const Dashnavlinks = ({ isselected, setIsSelected }) => {
@@ -10,11 +11,19 @@ const Dashnavlinks = ({ isselected, setIsSelected }) => {
       name: `${t("मिल्क डॅशबोर्ड")}`,
       icon: <TbMilk className="icon" />,
       path: "milk-dashboard",
+      index: 0,
     },
     {
       name: `${t("इन्व्हेंटरी डॅशबोर्ड")}`,
       icon: <BsHouseFill className="icon" />,
       path: "invertory-dashboard",
+      index: 1,
+    },
+    {
+      name: `${t("घट / वाढ")}`,
+      icon: <LuArrowDownUp className="icon" />,
+      path: "loss-gain",
+      index: 2,
     },
   ];
   return (

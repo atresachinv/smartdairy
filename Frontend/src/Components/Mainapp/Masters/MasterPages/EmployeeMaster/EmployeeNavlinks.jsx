@@ -7,13 +7,13 @@ const EmployeeNavlinks = ({ isselected, setIsSelected }) => {
     {
       name: "सेवक यादी",
       icon: <IoList className="icon" />,
-      index: 1,
+      index: 0,
       path: "list",
     },
     {
       name: "सेवक नोंदवा",
       icon: <IoPersonAdd className="icon" />,
-      index: 0,
+      index: 1,
       path: "add-new",
     },
   ];

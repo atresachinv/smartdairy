@@ -10,7 +10,7 @@ import { MdDeleteOutline } from "react-icons/md";
 import { listSubLedger } from "../../../../../App/Features/Mainapp/Masters/ledgerSlice";
 import Swal from "sweetalert2";
 
-const DeductionHead = () => {
+const DeductionHead = ({ setIsSelected }) => {
   const dispatch = useDispatch();
   const [isEdit, setIsEdit] = useState(false);
   const [formData, setFormData] = useState({
@@ -28,11 +28,10 @@ const DeductionHead = () => {
   const deductionData = useSelector((state) => state.deduction.deductionData);
   const sledgerlist = useSelector((state) => state.ledger.sledgerlist);
 
-  // const sledgerlist = [
-  //   { id: 1, name: "sLedger1" },
-  //   { id: 2, name: "sLedger2" },
-  //   { id: 3, name: "sLedger3" },
-  // ];
+  // set active tab --------------------------------->
+  useEffect(() => {
+    setIsSelected(0);
+  }, []);
 
   const centerSetting = useSelector(
     (state) => state.dairySetting.centerSetting

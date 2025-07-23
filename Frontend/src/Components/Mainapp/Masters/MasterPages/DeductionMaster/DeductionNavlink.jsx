@@ -16,7 +16,7 @@ const DeductionNavlink = ({ isselected, setIsSelected }) => {
     {
       name: `${t("Deduction Details")}`,
       icon: <SiElasticstack className="icon" />,
-      index: 0,
+      index: 1,
       path: "deduction/details",
       role: ["super_admin", "admin"],
     },
@@ -28,9 +28,9 @@ const DeductionNavlink = ({ isselected, setIsSelected }) => {
         <li
           key={index}
           className={`home-nav-item d-flex a-center ${
-            isselected === button.path ? "selected" : ""
+            isselected === button.index ? "selected" : ""
           }`}
-          onClick={() => setIsSelected(button.path)}
+          onClick={() => setIsSelected(button.index)}
         >
           <NavLink to={button.path} className="sub-navlinks f-label-text">
             <span>{button.icon}</span>

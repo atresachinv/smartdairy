@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import * as XLSX from "xlsx";
 import { toast } from "react-toastify";
 import { FaFileExcel } from "react-icons/fa";
+import { MdKeyboardArrowLeft, MdNavigateNext } from "react-icons/md";
 import {
   createCustomer,
   getMaxCustNo,
@@ -10,13 +11,13 @@ import {
   updateCustomer,
   uploadCustomerExcel,
 } from "../../../../../App/Features/Mainapp/Masters/custMasterSlice";
-import "../../../../../Styles/Mainapp/Masters/CustomerMaster.css";
 import { listRateCharts } from "../../../../../App/Features/Mainapp/Masters/rateChartSlice";
 import { useTranslation } from "react-i18next";
 import { getBankList } from "../../../../../App/Features/Mainapp/Masters/bankSlice";
 import { useParams, useSearchParams } from "react-router-dom";
+import "../../../../../Styles/Mainapp/Masters/CustomerMaster.css";
 
-const CreateCustomer = () => {
+const CreateCustomer = ({ setIsSelected }) => {
   const dispatch = useDispatch();
   const { cust_code } = useParams();
   const [searchParams] = useSearchParams();
@@ -39,6 +40,7 @@ const CreateCustomer = () => {
   const fileInputRef = useRef(null); // for excel file input
   const [excelData, setExcelData] = useState(null); // selected excel file data
   const [selectedBank, setSelectedBank] = useState("");
+  const [currentIndex, setCurrentIndex] = useState(cust_code || null); // track customer
 
   const [formData, setFormData] = useState({
     cid: "",
@@ -76,7 +78,12 @@ const CreateCustomer = () => {
     h_dairyrebet: 0,
     h_transportation: 0,
   });
-  // console.log("first,", cust_code, isedit);
+
+  // set active tab --------------------------------->
+  useEffect(() => {
+    setIsSelected(1);
+  }, []);
+
   useState(() => {
     dispatch(listRateCharts());
     dispatch(getBankList());
@@ -304,26 +311,59 @@ const CreateCustomer = () => {
   }, [dispatch]);
 
   // Effect to search for customer when code changes ---------------------------------->
-  useEffect(() => {
-    const handler = setTimeout(() => {
-      if (formData.cust_no.length >= 1) {
-        // Adjust length as necessary
-        findCustomerByCode(formData.cust_no);
-      }
-    }, 500);
-    return () => clearTimeout(handler);
-  }, [formData.cust_no, isEditing]);
+  // const findCustomerByCode = (code) => {
+  //   if (isEditing) {
+  //     const customer = customerList.find(
+  //       (customer) => customer.srno.toString() === code
+  //     );
+
+  //     if (customer) {
+  //       setFormData((prev) => ({
+  //         ...prev,
+  //         cid: customer.cid,
+  //         marathi_name: customer.engName,
+  //         cust_name: customer.cname,
+  //         mobile: customer.Phone,
+  //         aadhaar_no: customer.cust_addhar,
+  //         pincode: customer.cust_pincode,
+  //         caste: customer.caste,
+  //         bankIFSC: customer.cust_ifsc,
+  //         gender: customer.gender,
+  //         city: customer.City,
+  //         tehsil: customer.tal,
+  //         district: customer.dist,
+  //         milktype: customer.milktype,
+  //         rctype: customer.rcName,
+  //         farmerid: customer.cust_farmerid,
+  //         bankNo: customer.BankNo,
+  //         bankName: customer.cust_bankname,
+  //         bank_ac: customer.cust_accno,
+  //         h_deposit: customer.h_deposit,
+  //         h_deduction: customer.h_deduction,
+  //         h_allrebet: customer.h_allrebet,
+  //         h_sanghrebet: customer.h_sanghrebet,
+  //         h_dairyrebet: customer.h_dairyrebet,
+  //         h_transportation: customer.h_transportation,
+  //       }));
+  //     } else {
+  //       toast.error("Customer not found.");
+  //     }
+  //   }
+  // };
 
   const findCustomerByCode = (code) => {
     if (isEditing) {
-      const customer = customerList.find(
+      const index = customerList.findIndex(
         (customer) => customer.srno.toString() === code
       );
 
-      if (customer) {
+      if (index !== -1) {
+        const customer = customerList[index];
+        setCurrentIndex(index); // ✅ Track index
         setFormData((prev) => ({
           ...prev,
           cid: customer.cid,
+          cust_no: customer.srno,
           marathi_name: customer.engName,
           cust_name: customer.cname,
           mobile: customer.Phone,
@@ -351,6 +391,30 @@ const CreateCustomer = () => {
       } else {
         toast.error("Customer not found.");
       }
+    }
+  };
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      if (formData.cust_no.length >= 1) {
+        // Adjust length as necessary
+        findCustomerByCode(currentIndex);
+      }
+    }, 500);
+    return () => clearTimeout(handler);
+  }, [formData.cust_no, isEditing]);
+
+  const handlePrev = () => {
+    if (currentIndex > 0) {
+      const prevCustomer = customerList[currentIndex - 1];
+      findCustomerByCode(prevCustomer.srno.toString());
+    }
+  };
+
+  const handleNext = () => {
+    if (currentIndex < customerList.length - 1) {
+      const nextCustomer = customerList[currentIndex + 1];
+      findCustomerByCode(nextCustomer.srno.toString());
     }
   };
 
@@ -390,15 +454,16 @@ const CreateCustomer = () => {
     if (!formData.bankName || !formData.bankIFSC) {
       return toast.error("Select Bank Again!");
     }
-    
+
     try {
       if (isEditing) {
         // Update existing customer in DB
         const result = await dispatch(updateCustomer(formData)).unwrap();
         if (result.status === 200) {
-          dispatch(listCustomer());
-          resetForm();
-          setIsEditing(false);
+          await dispatch(listCustomer()).unwrap();
+          // resetForm();
+          // setIsEditing(false);
+          handleNext();
           toast.success("Customer updated successfully.");
         } else {
           toast.error(result.message);
@@ -408,7 +473,7 @@ const CreateCustomer = () => {
         const result = await dispatch(createCustomer(formData)).unwrap();
         if (result.status === 200) {
           dispatch(listCustomer());
-          dispatch(getMaxCustNo());
+          await dispatch(getMaxCustNo()).unwrap();
           resetForm();
           toast.success("Customer created successfully.");
         } else {
@@ -515,7 +580,7 @@ const CreateCustomer = () => {
       <div className="customer-details-container w60 h1 d-flex-col">
         <div className="tilte-container w100 d-flex a-center sb p10">
           <span className="heading ">
-            {isEditing ? `${t("m-custupdate")}` : `${t("m-custadd")}`}
+            {isEditing ? `${t("m-custupdate")}` : `${t("m-custadd")}`} :
           </span>
           <div className="toggle-inputs-div w30 h40 d-flex a-center sa">
             <span className="info-text w70 px10">
@@ -965,27 +1030,27 @@ const CreateCustomer = () => {
         <div className="data-show-hide--setting-container w100 h60 d-flex-col">
           <span className="sub-heading px10">{t("m-h-s-settings")} :</span>
           <div className="show-hide-content-div w100 h20 d-flex sa">
-            <div className="details-div w50 d-flex a-center ">
+            <div className="details-div w50 d-flex a-center sb">
               <input
                 className="data w10"
                 type="checkbox"
                 name="h_deposit"
                 onChange={handleInputChange}
               />
-              <span className="label-text w90">{t("m-off-deposit")}</span>
+              <span className="label-text w70">{t("m-off-deposit")}</span>
             </div>
-            <div className="details-div w50 d-flex a-center ">
+            <div className="details-div w50 d-flex a-center sb">
               <input
                 className="data w10"
                 type="checkbox"
                 name="h_deduction"
                 onChange={handleInputChange}
               />
-              <span className="label-text w90">{t("m-off-deduction")}</span>
+              <span className="label-text w70">{t("m-off-deduction")}</span>
             </div>
           </div>
           <div className="show-hide-content-div w100 h20 d-flex sa">
-            <div className="details-div w50 d-flex a-center ">
+            <div className="details-div w50 d-flex a-center sb">
               <input
                 className="data w10"
                 type="checkbox"
@@ -993,29 +1058,29 @@ const CreateCustomer = () => {
                 id=""
                 onChange={handleInputChange}
               />
-              <span className="label-text w90">{t("m-off-allrebet")}</span>
+              <span className="label-text w70">{t("m-off-allrebet")}</span>
             </div>
-            <div className="details-div w50 d-flex a-center ">
+            <div className="details-div w50 d-flex a-center sb">
               <input
                 className="data w10"
                 type="checkbox"
                 name="h_sanghrebet"
                 onChange={handleInputChange}
               />
-              <span className="label-text w90">{t("m-off-sanghrebet")}</span>
+              <span className="label-text w70">{t("m-off-sanghrebet")}</span>
             </div>
           </div>
           <div className="show-hide-content-div w100 h20 d-flex sa">
-            <div className="details-div w50 d-flex a-center ">
+            <div className="details-div w50 d-flex a-center sb">
               <input
                 className="data w10"
                 type="checkbox"
                 name="h_dairyrebet"
                 onChange={handleInputChange}
               />
-              <span className="label-text w90">{t("m-off-dairyrebet")}</span>
+              <span className="label-text w70">{t("m-off-dairyrebet")}</span>
             </div>
-            <div className="details-div w50 d-flex a-center ">
+            <div className="details-div w50 d-flex a-center sb">
               <input
                 className="data w10"
                 type="checkbox"
@@ -1023,21 +1088,40 @@ const CreateCustomer = () => {
                 id=""
                 onChange={handleInputChange}
               />
-              <span className="label-text w90">
+              <span className="label-text w70">
                 {t("m-off-transportation")}
               </span>
             </div>
           </div>
         </div>
 
-        <div className="button-container w100 h10 d-flex j-end">
-          {/* <button
-            className="w-btn mx10"
-            type="submit"
-            onClick={handleEditClick}
-          >
-            {isEditing ? `${t("m-create")}` : `${t("m-edit")}`}
-          </button> */}
+        <div
+          className={`create-customer-button-container w100 h10 d-flex ${
+            isEditing === true ? "sb" : "j-end"
+          }`}
+        >
+          {isEditing ? (
+            <div className="prev-next-btns w60 h1 d-flex a-center sb">
+              <button
+                type="button"
+                className="btn"
+                onClick={handlePrev}
+                disabled={currentIndex <= 0}
+              >
+                <MdKeyboardArrowLeft className="f-label-text" /> मागील
+              </button>
+              <button
+                type="button"
+                className="btn"
+                onClick={handleNext}
+                disabled={currentIndex >= customerList.length - 1}
+              >
+                पुढील <MdNavigateNext className="f-label-text" />
+              </button>
+            </div>
+          ) : (
+            ""
+          )}
           {isEditing ? (
             <button
               className="w-btn"
@@ -1060,6 +1144,7 @@ const CreateCustomer = () => {
             </button>
           )}
         </div>
+
         <div className="select-excel-button-container w100 h30 d-flex-col sa">
           <div className="excel-format-container w100 h50 d-flex a-center sb">
             <label htmlFor="d-excel" className="label-text">
@@ -1074,7 +1159,7 @@ const CreateCustomer = () => {
               {t("m-download")}
             </button>
           </div>
-          <div className="excel-format-container w100 h50 d-flex a-center sb">
+          <div className="customer-excel-upload-container w100 h50 d-flex a-center sb">
             {!fileName ? (
               <>
                 <label htmlFor="selectExcel" className="label-text">
@@ -1095,13 +1180,16 @@ const CreateCustomer = () => {
                   className="file-icon"
                   style={{ color: "green", fontSize: "20px" }}
                 />
-                <span className="file-name px10">{fileName}</span>
+                <span className="file-name px10">
+                  {fileName.slice(0, 30)}...
+                </span>
                 <span onClick={handleClear} className="btn">
                   X
                 </span>
               </div>
             )}
             <input
+              id="file-input"
               ref={fileInputRef}
               type="file"
               accept=".xlsx, .xls"
@@ -1109,7 +1197,8 @@ const CreateCustomer = () => {
               onChange={handleExcelChange}
             />
             <button
-              className="w-btn "
+              id="file-input"
+              className="w-btn"
               type="submit"
               onClick={handleExcelUpload}
               disabled={excelstatus === "loading"}

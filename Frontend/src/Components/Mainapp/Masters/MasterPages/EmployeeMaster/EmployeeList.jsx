@@ -11,7 +11,7 @@ import { useTranslation } from "react-i18next";
 import { centersLists } from "../../../../../App/Features/Dairy/Center/centerSlice";
 import { toast } from "react-toastify";
 
-const EmployeeList = () => {
+const EmployeeList = ({ setIsSelected }) => {
   const { t } = useTranslation(["master", "milkcollection", "common"]);
   const dispatch = useDispatch();
   const Emplist = useSelector((state) => state.emp.emplist || []);
@@ -19,6 +19,11 @@ const EmployeeList = () => {
   const [filteredEmpList, setFilteredEmpList] = useState([]);
   const [selectedCenter, setSelectedCenter] = useState("");
   const centerList = useSelector((state) => state.center.centersList || []);
+
+  // set active tab --------------------------------->
+  useEffect(() => {
+    setIsSelected(0);
+  }, []);
 
   useEffect(() => {
     dispatch(centersLists());
@@ -94,26 +99,26 @@ const EmployeeList = () => {
         </div>
         <div className="emp-data-list-container w100 h90 d-flex-col bg">
           <div className="emp-data-heading-div w100 py10 d-flex a-center sb br-top bg7">
-            <span className="f-label-text w10  t-center">क्र.</span>
-            <span className="f-label-text w30  t-center">सेवकाचे नाव</span>
-            <span className="f-label-text w20  t-center">हुद्दा</span>
-            <span className="f-label-text w15  t-center">मोबाईल</span>
-            <span className="f-label-text w15  t-center">पगार</span>
-            <span className="f-label-text w10  t-center">Action</span>
+            <span className="f-label-text w10 t-center">क्र.</span>
+            <span className="f-label-text w30 t-center">सेवकाचे नाव</span>
+            <span className="f-label-text w20 t-center">हुद्दा</span>
+            <span className="f-label-text w15 t-center">मोबाईल</span>
+            <span className="f-label-text w15 t-center">पगार</span>
+            <span className="f-label-text w10 t-center">Action</span>
           </div>
           <div className="emp-data-list-div w100 h90 mh90 d-flex-col hidescrollbar">
             {filteredEmpList.map((emp, i) => (
               <div
                 key={i + 3}
-                className={`emp-data-div w100 py10 d-flex a-center t-center sb`}
+                className={`emp-data-div w100 py10 d-flex a-center sb`}
                 style={{ backgroundColor: i % 2 === 0 ? "#faefe3" : "#fff" }}
               >
-                <span className="text w10">{emp.emp_id}</span>
-                <span className="text w30">{emp.emp_name}</span>
-                <span className="text w20">{emp.designation}</span>
-                <span className="text w15 t-end">{emp.emp_mobile}</span>
-                <span className="text w15">{emp.salary}</span>
-                <span type="button" className="icon w10" disabled>
+                <span className="info-text w10 t-center">{emp.emp_id}</span>
+                <span className="info-text w30">{emp.emp_name}</span>
+                <span className="info-text w20">{emp.designation}</span>
+                <span className="info-text w15">{emp.emp_mobile}</span>
+                <span className="info-text w15 t-end">{emp.salary}</span>
+                <span type="button" className="icon w10 t-center" disabled>
                   <MdDeleteForever
                     className="req"
                     onClick={() =>

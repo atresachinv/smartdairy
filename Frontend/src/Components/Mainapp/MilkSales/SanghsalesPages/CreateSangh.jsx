@@ -5,13 +5,13 @@ import Spinner from "../../../Home/Spinner/Spinner";
 import { FaEdit } from "react-icons/fa";
 import { MdDeleteForever } from "react-icons/md";
 import Swal from "sweetalert2";
-import "../../../../Styles/Mainapp/MilkSales/MilkSales.css";
 import {
   addSangha,
   updateSangha,
   fetchSanghaList,
   deleteSangha,
 } from "../../../../App/Features/Mainapp/Sangha/sanghaSlice";
+import "../../../../Styles/Mainapp/MilkSales/MilkSales.css";
 const CreateSangh = () => {
   const dispatch = useDispatch();
   const toDate = useSelector((state) => state.date.toDate);
@@ -40,7 +40,9 @@ const CreateSangh = () => {
   });
 
   useEffect(() => {
-    dispatch(fetchSanghaList());
+    if (sanghaList.length === 0) {
+      dispatch(fetchSanghaList());
+    }
   }, []);
 
   useEffect(() => {
@@ -106,12 +108,13 @@ const CreateSangh = () => {
   };
 
   const resetForm = () => {
-    setFormData({
+    setFormData((prevdata) => ({
+      ...prevdata,
       date: toDate,
-      scode: "",
+      scode: code,
       marathi_name: "",
       eng_name: "",
-    });
+    }));
     setErrors({});
     setIsEditing(false);
   };
@@ -190,6 +193,7 @@ const CreateSangh = () => {
           marathi_name: "",
           eng_name: "",
         }));
+        dispatch(fetchSanghaList());
         toast.success(result.message);
       } else {
         toast.error(result.message);
@@ -212,6 +216,7 @@ const CreateSangh = () => {
           marathi_name: "",
           eng_name: "",
         }));
+        dispatch(fetchSanghaList());
         toast.success(result.message);
       } else {
         toast.error(result.message);
@@ -268,13 +273,13 @@ const CreateSangh = () => {
         }`}
       >
         <span className="heading p10">
-          {isEditing ? "Update Sangha Details" : "Create Sangha"}
+          {isEditing ? "संघ माहितीत बदल करा" : "नवीन संघ तयार करा"}
         </span>
 
         <div className="sangha-details-form-inner-container w100 h90 d-flex a-center se">
           <div className="details-div w10 d-flex-col px10">
             <label htmlFor="ecode" className="info-text w100">
-              Code<span className="req">*</span>
+              कोड<span className="req">*</span>
             </label>
             <input
               required
@@ -288,7 +293,7 @@ const CreateSangh = () => {
           </div>
           <div className="sangha-details-div w40 d-flex-col a-center px10">
             <label htmlFor="mname" className="info-text w100">
-              Marathi Name<span className="req">*</span>{" "}
+              मराठी नाव<span className="req">*</span>
             </label>
             <input
               required
@@ -304,7 +309,7 @@ const CreateSangh = () => {
           </div>
           <div className="sangha-details-div w40 d-flex-col a-center px10">
             <label htmlFor="engname" className="info-text w100">
-              English Name<span className="req">*</span>
+              इंग्लिश नाव<span className="req">*</span>
             </label>
             <input
               required
@@ -317,7 +322,9 @@ const CreateSangh = () => {
             />
           </div>
           <div className="button-container w25 h1 d-flex a-center j-end p10">
-
+            <button type="reset" className="btn mx10" onClick={resetForm}>
+              रद्द करा
+            </button>
             <button
               type="submit"
               className="btn mx10"
@@ -327,27 +334,27 @@ const CreateSangh = () => {
             >
               {isEditing
                 ? updateStatus === "loading"
-                  ? "Updating..."
-                  : "Update Details"
+                  ? "बदल करत आहोत..."
+                  : "बदल करा"
                 : createStatus === "loading"
-                ? " Creating..."
-                : "Create Sangha"}
+                ? "सेव्ह करत आहोत..."
+                : "सेव्ह करा"}
             </button>
           </div>
         </div>
       </form>
       <div
         onSubmit={handleCreateSangha}
-        className={`sangha-list-container w100 h70 d-flex-col se`}
+        className={`sangha-list-container w100 h70 d-flex-col se bg`}
       >
-        <span className="heading p10">Sangha List :</span>
+        <span className="heading p10">संघ यादी :</span>
 
-        <div className="sangha-list-inner-container w100 h90 d-flex-col a-center bg">
-          <div className="sangha-heading-container w100 p10 d-flex sb sticky-top bg7 br6">
-            <span className="f-label-text t-center w10">Code</span>
-            <span className="f-label-text t-center w40">English Name</span>
-            <span className="f-label-text t-center w40">Marathi Name</span>
-            <span className="f-label-text t-center w40">Action</span>
+        <div className="sangha-list-inner-container w100 h90 mh90 hidescrollbar d-flex-col a-center">
+          <div className="sangha-data-container w100 p10 d-flex a-center t-center sb sticky-top bg7">
+            <span className="f-label-text w10">कोड</span>
+            <span className="f-label-text w40">इंग्लिश नाव</span>
+            <span className="f-label-text w40">मराठी नाव</span>
+            <span className="f-label-text w40">Action</span>
           </div>
 
           {listStatus === "loading" ? (
@@ -356,7 +363,7 @@ const CreateSangh = () => {
             sanghaList.map((sangha, index) => (
               <div
                 key={index}
-                className="sangha-details-headings w100 p10 d-flex a-center sa"
+                className="sangha-data-container w100 p10 d-flex a-center sa"
                 style={{
                   backgroundColor: index % 2 === 0 ? "#faefe3" : "#fff",
                 }}
@@ -372,7 +379,8 @@ const CreateSangh = () => {
                     onClick={() => handleEditSangha(sangha)}
                   />
                   <MdDeleteForever
-                    type="button" className="req"
+                    type="button"
+                    className="req"
                     onClick={() => handleDeleteSangha(sangha.id)}
                   />
                 </span>

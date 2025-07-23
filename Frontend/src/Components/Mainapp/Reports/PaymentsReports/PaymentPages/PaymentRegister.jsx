@@ -199,9 +199,20 @@ const PaymentRegister = ({ showbtn, setCurrentPage }) => {
 
   return (
     <div className="payment-register-container w100 h1 d-flex-col">
-      <span className="heading">Payment Register :</span>
-
-      <div className=" filter-container d-flex-col  w100 h30 sa bg">
+      <div className="title-back-btn-container w100 h10 d-flex a-center sb">
+        <span className="heading px10">पेमेंट रजिस्टर :</span>
+        {showbtn ? (
+          <button
+            className="btn-danger mx10"
+            onClick={() => setCurrentPage("main")}
+          >
+            बाहेर पडा
+          </button>
+        ) : (
+          ""
+        )}
+      </div>
+      <div className="filter-container w100 h30 d-flex-col sa bg">
         <div className="from-too-date-button-container w100 h30 d-flex a-center">
           <div className="date-from-toocontainer w80 h50 d-flex sa a-center ">
             <div className="from-date-payment-regssiter w50 a-center  d-flex">
@@ -279,7 +290,7 @@ const PaymentRegister = ({ showbtn, setCurrentPage }) => {
         </div>
       </div>
 
-      <div className="payment-table-div h70" style={{ overflowX: "auto" }}>
+      <div className="payment-table-div h60" style={{ overflowX: "auto" }}>
         <table ref={tableRef} className="table">
           <thead>
             <tr>

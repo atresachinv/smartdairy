@@ -13,7 +13,7 @@ import { toast } from "react-toastify";
 import "../../../../../Styles/Mainapp/Masters/MilkRateMaster.css";
 import { useTranslation } from "react-i18next";
 
-const PreviousRatechart = () => {
+const PreviousRatechart = ({ setIsSelected }) => {
   const { t } = useTranslation("ratechart");
   const dispatch = useDispatch();
   const { status, progress } = useSelector((state) => state.ratechart);
@@ -27,6 +27,11 @@ const PreviousRatechart = () => {
   const [rate, setRate] = useState([]);
 
   const [fileName, setFileName] = useState("");
+
+  // set active tab --------------------------------->
+  useEffect(() => {
+    setIsSelected(0);
+  }, []);
 
   useEffect(() => {
     dispatch(fetchMaxRcCode());
@@ -119,12 +124,10 @@ const PreviousRatechart = () => {
     }
   };
 
-
-
   return (
     <div className="previous-rate-chart-outer-container w100 h1 d-flex sb p10">
       <div className="previous-ratechart-container w40 h1 d-flex-col bg-light-green br9">
-        <span className="heading mt-10">{t("rc-prev-rc")} : </span>
+        <span className="heading m10">{t("rc-prev-rc")} : </span>
         <span className="tip-text">
           ( दरपत्रक निवडण्यासाठी खाली दिलेल्या योग्य दरपत्रकावर क्लिक करा )
         </span>{" "}
@@ -146,7 +149,7 @@ const PreviousRatechart = () => {
                   style={{
                     backgroundColor:
                       selectedRateChart === ratechart
-                        ? "#d1e7dd"
+                        ? "#ffc46bff"
                         : index % 2 === 0
                         ? "#faefe3"
                         : "#fff",

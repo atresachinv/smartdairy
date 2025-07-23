@@ -30,7 +30,7 @@ ChartJS.register(
   Legend
 );
 
-const Inventory = () => {
+const Inventory = ({ setIsSelected }) => {
   const [regularSalesResponse, setRegularSalesResponse] = useState([]);
   const [returnSalesResponse, setReturnSalesResponse] = useState([]);
   const [regularPurchaseResponse, setRegularPurchaseResponse] = useState([]);
@@ -51,6 +51,11 @@ const Inventory = () => {
   const centerId = useSelector((state) => state.dairy.dairyData.center_id);
   const centerList = useSelector((state) => state.center.centersList || []);
   const [filter, setFilter] = useState("");
+
+  useEffect(() => {
+    setIsSelected(1);
+  }, []);
+
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     return date.toLocaleDateString("en-GB", {

@@ -95,6 +95,7 @@
   }
   .animal-info-details-code .animal-details {
     width: 15%;
+    margin-bottom: 10px;
   }
   .animal-info-details-code .animal-details-aname {
     width: 75%;
@@ -118,8 +119,8 @@
     justify-content: space-between;
   }
   .animal-info-btns .w-btn {
-    width: 40%;
-    margin: 10px;
+    width: 48%;
+    margin: 10px 0;
   }
   .animal-master-container .animal-details-info-container {
     overflow-x: auto;

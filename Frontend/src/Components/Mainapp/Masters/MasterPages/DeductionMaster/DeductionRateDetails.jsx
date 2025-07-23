@@ -13,7 +13,7 @@ import { FaRegEdit } from "react-icons/fa";
 import { MdDeleteOutline } from "react-icons/md";
 import Swal from "sweetalert2";
 
-const DeductionRateDetails = () => {
+const DeductionRateDetails = ({ setIsSelected }) => {
   const [formData, setFormData] = useState({
     id: "",
     DDId: "",
@@ -26,8 +26,6 @@ const DeductionRateDetails = () => {
     FixedVariable: 0,
     LP: 0,
   });
-
-  // console.log("formdata", formData);
 
   const dispatch = useDispatch();
   const deductionData = useSelector((state) => state.deduction.deductionData);
@@ -44,6 +42,12 @@ const DeductionRateDetails = () => {
   );
   const [settings, setSettings] = useState({});
   const autoCenter = settings?.autoCenter;
+
+  // set active tab --------------------------------->
+  useEffect(() => {
+    setIsSelected(1);
+  }, []);
+
   //set setting
   useEffect(() => {
     if (centerSetting?.length > 0) {
@@ -60,6 +64,7 @@ const DeductionRateDetails = () => {
     GLCode: item.GLCode,
     marathi_dname: item.DeductionName,
   }));
+  
   const options1 = deductionData.map((item) => ({
     DeductionId: item.DeductionId,
     value: item.DeductionId,
@@ -153,7 +158,7 @@ const DeductionRateDetails = () => {
         DDId: res.data.maxDDId,
       }));
     } catch (error) {
-      // console.log(error);
+      console.log(error);
       // toast.error("Error to server");
     }
   };
@@ -199,8 +204,6 @@ const DeductionRateDetails = () => {
     const foundItem = sledgerlist.find(
       (item) => Number(item.lno) === Number(ddid)
     );
-    // console.log("pra:", ddid);
-    // console.log(foundItem);
     return foundItem?.marathi_name || foundItem?.ledger_name || "Not Found";
   };
 
@@ -237,7 +240,6 @@ const DeductionRateDetails = () => {
       toast.error("Not identify id");
       return;
     }
-    // console.log("handle delete");
     const result = await Swal.fire({
       title: "Confirm Deletion?",
       text: "Are you sure you want to Delete this?",

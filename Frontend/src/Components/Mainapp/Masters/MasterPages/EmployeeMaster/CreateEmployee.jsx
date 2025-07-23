@@ -11,7 +11,7 @@ import "../../../../../Styles/Mainapp/Masters/EmpMaster.css";
 import { useTranslation } from "react-i18next";
 import { checkuserName } from "../../../../../App/Features/Users/authSlice";
 
-const CreateEmployee = () => {
+const CreateEmployee = ({ setIsSelected }) => {
   const { t } = useTranslation(["master", "common"]);
   const dispatch = useDispatch();
   const toDate = useSelector((state) => state.date.toDate);
@@ -54,7 +54,35 @@ const CreateEmployee = () => {
     bank_ac: "",
     bankIFSC: "",
     password: "",
+    confirm_pass: "",
   });
+
+  const handleInputChange = (e) => {
+    const { name, type, checked, value } = e.target;
+
+    if (type === "checkbox") {
+      setFormData((prevData) => ({
+        ...prevData,
+        [name]: checked ? 1 : 0, // For checkboxes, set 1 for true, 0 for false
+      }));
+    } else {
+      setFormData((prevData) => ({
+        ...prevData,
+        [name]: value,
+      }));
+      const fieldError = validateField(name, value);
+      setErrors((prevErrors) => {
+        const updatedErrors = { ...prevErrors, ...fieldError };
+        if (!value) delete updatedErrors[name]; // Clear error if field is empty
+        return updatedErrors;
+      });
+    }
+  };
+
+  // set active tab --------------------------------->
+  useEffect(() => {
+    setIsSelected(1);
+  }, []);
 
   const validateField = (name, value) => {
     let error = {};
@@ -222,28 +250,6 @@ const CreateEmployee = () => {
     setIsEditing(false);
   };
 
-  const handleInputChange = (e) => {
-    const { name, type, checked, value } = e.target;
-
-    if (type === "checkbox") {
-      setFormData((prevData) => ({
-        ...prevData,
-        [name]: checked ? 1 : 0, // For checkboxes, set 1 for true, 0 for false
-      }));
-    } else {
-      setFormData((prevData) => ({
-        ...prevData,
-        [name]: value,
-      }));
-      const fieldError = validateField(name, value);
-      setErrors((prevErrors) => {
-        const updatedErrors = { ...prevErrors, ...fieldError };
-        if (!value) delete updatedErrors[name]; // Clear error if field is empty
-        return updatedErrors;
-      });
-    }
-  };
-
   // handle enter press move cursor to next refrence Input -------------------------------->
   const handleKeyDown = (e, nextRef) => {
     if (e.key === "Enter" && nextRef.current) {
@@ -306,6 +312,29 @@ const CreateEmployee = () => {
     check();
   }, [formData.mobile]);
 
+  // -------------------------------------------------------------------------------------->
+  // handle form reset -------------------------------------------------------------------->
+
+  const handleReset = () => {
+    setFormData((prevData) => ({
+      ...prevData,
+      marathi_name: "",
+      emp_name: "",
+      mobile: "",
+      designation: "",
+      salary: "",
+      city: "",
+      tehsil: "",
+      district: "",
+      pincode: "",
+      bankName: "",
+      bank_ac: "",
+      bankIFSC: "",
+      password: "",
+      confirm_pass: "",
+    }));
+  };
+
   //--------------------------------------------------------------------------------------->
   //  handle employee create and update --------------------------------------------------->
 
@@ -322,6 +351,7 @@ const CreateEmployee = () => {
       const response = await dispatch(updateEmp(formData)).unwrap();
 
       if (response?.status === 200) {
+        handleReset();
         toast.success("Employee Updated Successfully!");
       } else {
         toast.error("Failed to update employee!");
@@ -329,6 +359,7 @@ const CreateEmployee = () => {
     } else {
       const response = await dispatch(createEmp(formData)).unwrap();
       if (response?.status === 200) {
+        handleReset();
         toast.success("Employee Created Successfully!");
       } else {
         toast.error("Failed to create employee!");

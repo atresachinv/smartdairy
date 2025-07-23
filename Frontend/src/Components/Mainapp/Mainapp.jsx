@@ -103,6 +103,8 @@ import PreviousRatechart from "./Masters/MasterPages/RatechartMaster/PreviousRat
 import MilkBuySale from "./Reports/MilkBuySale/MilkBuySale";
 import UpdateSaleRate from "./Inventory/InventroyPages/Stocks/SellRate/UpdateSaleRate";
 import StartingStock from "./Inventory/InventroyPages/Stocks/StartingStock/StartingStock";
+import Dashboard from "./Dashboard/Dashboard";
+import LossGainInfo from "./Dashboard/DashboardTabs/LossGainInfo";
 
 const Mainapp = () => {
   const dispatch = useDispatch();
@@ -206,7 +208,11 @@ const Mainapp = () => {
           <Routes>
             {/* dashboard route */}
             {userRoutes.includes("dashboard") && (
-              <Route path="dashboard/*" element={<Maindashboard />} />
+              <Route path="dashboard/*" element={<Maindashboard />}>
+                <Route path="milk-dashboard" element={<Dashboard />} />
+                <Route path="invertory-dashboard" element={<Inventory />} />
+                <Route path="loss-gain" element={<LossGainInfo />} />
+              </Route>
             )}
             {/* <Route path="dashboard/*" element={<Dashboard />} /> */}
             {/* milk purchase routes */}

@@ -17,11 +17,13 @@ import { useParams } from "react-router-dom";
 import { listCustomer } from "../../../../../App/Features/Mainapp/Masters/custMasterSlice";
 import { saveMessage } from "../../../../../App/Features/Mainapp/Dairyinfo/smsSlice";
 import CollSettings from "./CollSettings";
+import { selectPaymasters } from "../../../../../App/Features/Payments/paymentSelectors";
+import { getPayMasters } from "../../../../../App/Features/Payments/paymentSlice";
 
 const MilkColleform = ({ times }) => {
+  const { t } = useTranslation(["milkcollection", "common", "master"]);
   const dispatch = useDispatch();
   const { time } = useParams();
-  const { t } = useTranslation(["milkcollection", "common", "master"]);
   const dairyname = useSelector(
     (state) =>
       state.dairy.dairyData.marathiName || state.dairy.dairyData.center_name
@@ -53,6 +55,7 @@ const MilkColleform = ({ times }) => {
   const prevdata = useSelector(
     (state) => state.milkCollection.prevMilkData || [] //prev milk data fat, snf ,degree
   );
+  const payMasters = useSelector(selectPaymasters); // is payment lock
 
   const [settings, setSettings] = useState({}); //center settings
   const [customerList, setCustomerList] = useState([]);
@@ -64,6 +67,7 @@ const MilkColleform = ({ times }) => {
   const [isModalOpen, setModalOpen] = useState(false);
   const [slotCount, setSlotCount] = useState(0); //To rerive local stored milk entries
   const [userRole, setUserRole] = useState(null);
+  const [isLocked, setIsLocked] = useState(false); // is payment master lock
 
   const codeInputRef = useRef(null);
   const litersRef = useRef(null);
@@ -121,14 +125,55 @@ const MilkColleform = ({ times }) => {
       prevShiftDate.current = { date: values.date, shift: values.shift };
     }
   }, [centerSetting, values.date, values.shift]);
-  
+
+  // ----------------------------------------------------------------------->
+  // check if payment is lock or not ------------------------------------->
+  useEffect(() => {
+    if (!payMasters || payMasters.length === 0) {
+      dispatch(getPayMasters());
+    }
+  }, [dispatch, payMasters]);
+
+  // check date is between locked payment masters and update isLocked to true ---------------------->
+  useEffect(() => {
+    if (values.date) {
+      const currentDate = new Date(values.date);
+
+      const foundLocked = payMasters.some((master) => {
+        const fromDate = new Date(master.FromDate);
+        const toDate = new Date(master.ToDate);
+
+        return (
+          currentDate >= fromDate &&
+          currentDate <= toDate &&
+          master.islock === 1
+        );
+      });
+
+      setIsLocked(foundLocked);
+    } else {
+      setIsLocked(false);
+    }
+  }, [values.date, payMasters]);
+
+  // taost error message when date between locked master ----------------------------------------->
+  useEffect(() => {
+    if (isLocked && values.date !== tDate) {
+      toast.error("Payment is locked for this date, cannot save entry!");
+      setValues((prevData) => ({ ...prevData, date: tDate }));
+    }
+  }, [isLocked]);
 
   // liter to kg convert and save ---------------------------------------------------------------->
 
   useEffect(() => {
-    if (centerSetting.length > 0 && centerSetting[0].KgLitres) {
-      const unit = centerSetting[0].KgLitres;
-
+    if (centerSetting.length > 0) {
+      let unit;
+      if (centerSetting[0].KgLitres === 0 || centerSetting[0].KgLitres === null) {
+        unit = 0.97;
+      } else {
+        unit = centerSetting[0].KgLitres;
+      }
       if (collunit === 0 && values.liters > 0 && unit !== 0) {
         const kgValue = (values.liters * unit).toFixed(2);
         setValues((prevData) => ({ ...prevData, kg: kgValue }));
@@ -137,7 +182,7 @@ const MilkColleform = ({ times }) => {
         setValues((prevData) => ({ ...prevData, liters: literValue }));
       }
     }
-  }, [values.liters, values.kg, centerSetting]);
+  }, [collunit, values.liters, values.kg, centerSetting]);
 
   // dynamic shift time set in time And allow is updated from state ---------------------------->
   useEffect(() => {
@@ -892,7 +937,7 @@ const MilkColleform = ({ times }) => {
         ? MilkEntries
         : prevMilkData;
     });
-  }, [milkColl, time]); 
+  }, [milkColl, time]);
 
   useEffect(() => {
     const storedCustList = localStorage.getItem("rcustlist");
@@ -1145,7 +1190,7 @@ const MilkColleform = ({ times }) => {
                 step="any"
                 onChange={handleInputChange}
                 value={values.fat}
-                disabled={!values.liters || !values.code}
+                disabled={!values.code}
                 onKeyDown={(e) => handleKeyDown(e, snfRef)}
                 ref={fatRef}
               />
@@ -1164,7 +1209,7 @@ const MilkColleform = ({ times }) => {
                 step="any"
                 onChange={handleInputChange}
                 value={values.snf}
-                disabled={!values.fat || !values.liters || !values.code}
+                disabled={!values.fat || !values.code}
                 onKeyDown={(e) => handleKeyDown(e, submitbtn)}
                 ref={snfRef}
               />
@@ -1232,7 +1277,7 @@ const MilkColleform = ({ times }) => {
             className="w-btn label-text mx10"
             type="submit"
             ref={submitbtn}
-            disabled={loading}
+            disabled={loading || isLocked}
           >
             {loading ? "saving..." : `${t("m-btn-save")}`}
           </button>

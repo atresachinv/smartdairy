@@ -76,13 +76,14 @@ export const saveMilkCollection = createAsyncThunk(
   }
 );
 
-// Async Thunk to Save Milk Collection
+// dairy milk loss gain report --------------------------------------->
+
 export const dairydailyLossGain = createAsyncThunk(
   "milkCollection/dairydailyLossGain",
-  async ({ fromDate, toDate }, { rejectWithValue }) => {
+  async ({ fromDate, toDate, centerid }, { rejectWithValue }) => {
     try {
       const response = await axiosInstance.get("/dairy/daily/loss-gain", {
-        params: { fromDate, toDate },
+        params: { fromDate, toDate, centerid },
       });
       return response.data.dairyLossGain;
     } catch (error) {
@@ -93,6 +94,8 @@ export const dairydailyLossGain = createAsyncThunk(
     }
   }
 );
+
+
 
 // Creating the Slice
 const milkCollectionSlice = createSlice({

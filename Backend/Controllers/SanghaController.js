@@ -81,7 +81,7 @@ exports.createSanghaMColl = (req, res) => {
           INSERT INTO sanghmilkentry (
             dairy_id, center_id, sanghid, tankerno, shift, colldate, tocolldate, liter, kamiprat_ltr,
             otherCharges, chilling, nash_ltr, fat, snf, rate, amt, createdOn, createdBy
-          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         `;
 
           connection.query(

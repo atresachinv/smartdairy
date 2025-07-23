@@ -12,7 +12,9 @@ const initialState = {
   trnDeductions: [],
   paymasters: [],
   paySummary: [], // payment summary data
+  payBillDetails: [], // payment data to print bills
   psstatus: "idle",
+  paybillStatus: "idle",
   status: "idle",
   lockPaytstatus: "idle",
   delOnestatus: "idle",
@@ -531,6 +533,7 @@ export const fetchPaymentDetails = createAsyncThunk(
     }
   }
 );
+
 //Fetch selected milk payment ------------------------------------------------------------>
 
 export const getPayMasters = createAsyncThunk(
@@ -593,6 +596,26 @@ export const getPaymentSummary = createAsyncThunk(
     } catch (error) {
       const errorMessage =
         error.response?.data?.message || "Failed to get payment summary!.";
+      return rejectWithValue(errorMessage);
+    }
+  }
+);
+
+// fetch payment data to print bills ------------------------>
+export const getPaymentBillData = createAsyncThunk(
+  "payment/getPaymentBillData",
+  async (
+    { fromDate, toDate, fromCode, toCode, centerId },
+    { rejectWithValue }
+  ) => {
+    try {
+      const response = await axiosInstance.get("/fetch/payment/bill-data", {
+        params: { fromDate, toDate, fromCode, toCode, centerId },
+      });
+      return response.data.payBillDetails;
+    } catch (error) {
+      const errorMessage =
+        error.response?.data?.message || "Failed to get payment bill data!.";
       return rejectWithValue(errorMessage);
     }
   }
@@ -917,6 +940,18 @@ const paymentSlice = createSlice({
       })
       .addCase(getPaymentSummary.rejected, (state, action) => {
         state.psstatus = "failed";
+        state.error = action.payload;
+      }) // fetch payment bill data to print bills ------------------------->
+      .addCase(getPaymentBillData.pending, (state) => {
+        state.paybillStatus = "loading";
+        state.error = null;
+      })
+      .addCase(getPaymentBillData.fulfilled, (state, action) => {
+        state.paybillStatus = "succeeded";
+        state.payBillDetails = action.payload;
+      })
+      .addCase(getPaymentBillData.rejected, (state, action) => {
+        state.paybillStatus = "failed";
         state.error = action.payload;
       });
   },

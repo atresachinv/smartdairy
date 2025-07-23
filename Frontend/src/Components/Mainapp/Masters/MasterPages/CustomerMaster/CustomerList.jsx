@@ -6,11 +6,11 @@ import { useNavigate } from "react-router-dom";
 import { MdEdit } from "react-icons/md";
 import Spinner from "../../../../Home/Spinner/Spinner";
 import { useTranslation } from "react-i18next";
-import "../../../../../Styles/Mainapp/Masters/CustomerMaster.css";
 import { listCustomer } from "../../../../../App/Features/Mainapp/Masters/custMasterSlice";
 import { centersLists } from "../../../../../App/Features/Dairy/Center/centerSlice";
+import "../../../../../Styles/Mainapp/Masters/CustomerMaster.css";
 
-const CustomerList = () => {
+const CustomerList = ({ setIsSelected }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { t } = useTranslation(["master", "milkcollection", "common"]);
@@ -18,9 +18,7 @@ const CustomerList = () => {
     (state) => state.customers.customerlist || []
   );
   const status = useSelector((state) => state.customers.cliststatus);
-  const centerList = useSelector(
-    (state) => state.center.centersList || []
-  );
+  const centerList = useSelector((state) => state.center.centersList || []);
   const center_id = useSelector(
     (state) =>
       state.dairy.dairyData.center_id || state.dairy.dairyData.center_id
@@ -28,10 +26,18 @@ const CustomerList = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredData, setFilteredData] = useState([]);
 
+  // set active tab --------------------------------->
   useEffect(() => {
-    dispatch(listCustomer());
-    dispatch(centersLists());
-  }, [dispatch]);
+    setIsSelected(0);
+  }, []);
+
+  useEffect(() => {
+    if (customerlist.length === 0 && centerList.length === 0) {
+      dispatch(listCustomer());
+      dispatch(centersLists());
+    }
+  }, [customerlist, centerList]);
+
   useEffect(() => {
     setFilteredData(customerlist);
   }, [customerlist]);
@@ -160,7 +166,7 @@ const CustomerList = () => {
       ) : (
         <div className="customer-list-container-div w100 h1 d-flex-col p10">
           <div className="download-print-pdf-excel-container w100 h10 d-flex a-center  sb">
-            <span className="heading p10">{t("m-custlist")}</span>
+            <span className="heading p10">{t("m-custlist")} :</span>
             <input
               type="text"
               className="data w30"
@@ -197,16 +203,16 @@ const CustomerList = () => {
           <div className="customer-list-table w100 h1 d-flex-col bg">
             <div className="customer-heading-title-scroller w100 h1 mh100  d-flex-col">
               <div className="customer-data-headings-div p10 d-flex center t-center hidescrollbar sb">
-                <span className="f-info-text w5">{t("Edit")}</span>
-                <span className="f-info-text w5">{t("master:m-ccode")}</span>
-                <span className="f-info-text w25">{t("master:m-cname")}</span>
-                <span className="f-info-text w10">{t("master:m-mobile")}</span>
-                <span className="f-info-text w15">{t("master:m-addhar")}</span>
-                <span className="f-info-text w15">{t("master:m-accno")}</span>
-                <span className="f-info-text w15">{t("master:m-ifsc")}</span>
-                <span className="f-info-text w15">{t("master:m-rtype")}</span>
-                <span className="f-info-text w10">{t("master:m-mtype")}</span>
-                <span className="f-info-text w5">{t("Id")}</span>
+                <span className="f-label-text w5">{t("Edit")}</span>
+                <span className="f-label-text w5">{t("master:m-ccode")}</span>
+                <span className="f-label-text w35">{t("master:m-cname")}</span>
+                <span className="f-label-text w20">{t("master:m-mobile")}</span>
+                <span className="f-label-text w20">{t("master:m-addhar")}</span>
+                <span className="f-label-text w15">{t("master:m-accno")}</span>
+                <span className="f-label-text w15">{t("master:m-ifsc")}</span>
+                <span className="f-label-text w15">{t("master:m-rtype")}</span>
+                <span className="f-label-text w10">{t("master:m-mtype")}</span>
+                <span className="f-label-text w5">{t("Id")}</span>
               </div>
               {status === "loading" ? (
                 <Spinner />
@@ -214,32 +220,32 @@ const CustomerList = () => {
                 filteredData.map((customer, index) => (
                   <div
                     key={index}
-                    className={`customer-data-values-div w100 p10 d-flex center t-center hidescrollbar sa`}
+                    className={`customer-data-values-div w100 p10 d-flex a-center hidescrollbar sa`}
                     style={{
                       backgroundColor: index % 2 === 0 ? "#faefe3" : "#fff",
                     }}
                   >
                     <span
-                      className="text w5"
-                      onClick={() => handleEdit(customer.srno)} 
+                      className="info-text w5"
+                      onClick={() => handleEdit(customer.srno)}
                     >
                       <MdEdit className="color-icon" />
                     </span>
-                    <span className="text w5">{customer.srno}</span>
-                    <span className="text w25 t-start">{customer.cname}</span>
-                    <span className="text w10">
+                    <span className="info-text w5">{customer.srno}</span>
+                    <span className="info-text w35 t-start">{customer.cname}</span>
+                    <span className="info-text w20 t-start">
                       {customer.Phone || customer.mobile}
                     </span>
-                    <span className="text w15">{customer.cust_addhar}</span>
-                    <span className="text w15  t-end">
+                    <span className="info-text w20">{customer.cust_addhar}</span>
+                    <span className="info-text w15 t-end">
                       {customer.cust_accno}
                     </span>
-                    <span className="text w15  ">{customer.cust_ifsc}</span>
-                    <span className="text w15">{customer.rcName}</span>
-                    <span className="text w10 t-start">
+                    <span className="info-text w15 t-end">{customer.cust_ifsc}</span>
+                    <span className="info-text w15 t-center">{customer.rcName}</span>
+                    <span className="info-text w10 t-center">
                       {customer.milktype === 0 ? "Cow" : "Buffalo"}
                     </span>
-                    <span className="text w5">{customer.fax}</span>
+                    <span className="info-text w5">{customer.fax}</span>
                   </div>
                 ))
               ) : (

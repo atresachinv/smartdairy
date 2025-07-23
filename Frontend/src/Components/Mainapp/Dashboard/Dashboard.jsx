@@ -15,8 +15,8 @@ import {
 } from "recharts";
 import { BsDatabaseAdd, BsPersonFill } from "react-icons/bs";
 import { TfiStatsUp } from "react-icons/tfi";
-import { BsCalendar3 } from "react-icons/bs";
 import { TbMilkFilled } from "react-icons/tb";
+import { FaIndianRupeeSign } from "react-icons/fa6";
 import { useDispatch, useSelector } from "react-redux";
 import { useTranslation } from "react-i18next";
 import { getAllMilkCollReport } from "../../../App/Features/Mainapp/Milk/MilkCollectionSlice";
@@ -34,7 +34,7 @@ import { listEmployee } from "../../../App/Features/Mainapp/Masters/empMasterSli
 import { getMasterDates } from "../../../App/Features/Customers/Date/masterSlice";
 import { toast } from "react-toastify";
 
-const Dashboard = () => {
+const Dashboard = ({ setIsSelected }) => {
   const { t } = useTranslation("common");
   const dispatch = useDispatch();
   const date = useSelector((state) => state.date.toDate);
@@ -81,6 +81,7 @@ const Dashboard = () => {
 
   // Generate master dates based on the initial date
   useEffect(() => {
+    setIsSelected(0);
     dispatch(generateMaster(date));
     dispatch(listCustomer());
     dispatch(listEmployee());
@@ -172,44 +173,6 @@ const Dashboard = () => {
       dispatch(getCenterCustCount({ fromDate, toDate }));
     }
   }, []);
-
-  // useEffect(() => {
-  //   if (selectedDate) {
-  //     // If a date is selected from manualMaster, use it
-  //     dispatch(
-  //       getAllMilkCollReport({
-  //         fromDate: selectedDate.start,
-  //         toDate: selectedDate.end,
-  //       })
-  //     );
-  //     if (center_id === 0) {
-  //       dispatch(
-  //         getCenterMilkData({
-  //           fromDate: selectedDate.start,
-  //           toDate: selectedDate.end,
-  //         })
-  //       );
-  //       dispatch(centersLists());
-  //       dispatch(getCenterCustCount());
-  //     }
-  //   } else if (fDate && tDate) {
-  //     // If no date is selected, use fDate and tDate from Redux store
-  //     dispatch(
-  //       getAllMilkCollReport({
-  //         fromDate: fDate,
-  //         toDate: tDate,
-  //       })
-  //     );
-  //     if (center_id === 0) {
-  //       dispatch(
-  //         getCenterMilkData({
-  //           fromDate: fDate,
-  //           toDate: tDate,
-  //         })
-  //       );
-  //     }
-  //   }
-  // }, [dispatch, selectedDate, fDate, tDate]);
 
   const handleSelectChange = (e) => {
     const selectedIndex = e.target.value;
@@ -383,81 +346,6 @@ const Dashboard = () => {
         <div className="Milk-sale-details-container w100 hidescrollbar">
           <form className="selection-container w100 h10 d-flex a-center j-start px10">
             <span className="w15 label-text">{t("c-select-period")} :</span>
-            {/* <div className="select-data-text w60 h10 d-flex a-center px10">
-              <div className="custmize-report-div w65 h1 data d-flex a-center sb">
-                <span className="cl-icon w10 d-flex center">
-                  <BsCalendar3 />
-                </span>
-                <select
-                  className="custom-select label-text w90 h1 d-flex"
-                  onChange={handleSelectChange}
-                >
-                  <option className="text w100 d-flex" value={""}>
-                    --{t("c-select-master")}--
-                  </option>
-                  {manualMaster.map((dates, index) => (
-                    <option
-                      className="label-text w100 d-flex sa"
-                      key={index}
-                      value={index}
-                    >
-                      {new Date(dates.start).toLocaleDateString("en-GB", {
-                        day: "2-digit",
-                        month: "2-digit",
-                        year: "numeric",
-                      })}{" "}
-                      - {t("c-to")} -{" "}
-                      {new Date(dates.end).toLocaleDateString("en-GB", {
-                        day: "2-digit",
-                        month: "2-digit",
-                        year: "numeric",
-                      })}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
-            <span className="w40 t-center">
-              {selectedDate !== null ? (
-                <h2 className="heading px10">
-                  <span className="heading">
-                    {new Date(selectedDate.start).toLocaleDateString("en-GB", {
-                      day: "2-digit",
-                      month: "short",
-                      year: "numeric",
-                    })}
-                  </span>{" "}
-                  <span className="heading"> To </span>
-                  <span className="heading">
-                    {new Date(selectedDate.end).toLocaleDateString("en-GB", {
-                      day: "2-digit",
-                      month: "short",
-                      year: "numeric",
-                    })}
-                  </span>
-                </h2>
-              ) : fDate && tDate ? (
-                <h2 className="heading px10">
-                  <span className="heading">
-                    {new Date(fDate).toLocaleDateString("en-GB", {
-                      day: "2-digit",
-                      month: "short",
-                      year: "numeric",
-                    })}
-                  </span>
-                  <span> To : </span>
-                  <span className="heading">
-                    {new Date(tDate).toLocaleDateString("en-GB", {
-                      day: "2-digit",
-                      month: "short",
-                      year: "numeric",
-                    })}
-                  </span>
-                </h2>
-              ) : (
-                <span></span>
-              )}
-            </span> */}
             <div className="dates-container w25 h1 d-flex a-center sa">
               <label htmlFor="fromDate" className="w25 label-text">
                 पासुन
@@ -510,7 +398,7 @@ const Dashboard = () => {
             <div className="card h1 sb">
               <BsDatabaseAdd className="card-icon" />
               <div className="card-inner">
-                <h3 className="card-title">{t("nv-milk-coll")}</h3>
+                <h3 className="card-title">{t("c-liters")}</h3>
                 <Link smooth to="#centerdata" className="hashlink label-text">
                   {totalLitres.toFixed(1)}
                   <span>{t("c-ltr")}</span>
@@ -521,7 +409,7 @@ const Dashboard = () => {
             <div className="card h1 sb">
               <TbMilkFilled className="card-icon" />
               <div className="card-inner">
-                <h3 className="card-title">{t("Avg Fat")}</h3>
+                <h3 className="card-title">{t("c-fat")}</h3>
                 <Link smooth to="#centerdata" className="hashlink label-text">
                   {avgFat.toFixed(2) || 0}
                 </Link>
@@ -530,7 +418,7 @@ const Dashboard = () => {
             <div className="card h1 sb">
               <TbMilkFilled className="card-icon" />
               <div className="card-inner">
-                <h3 className="card-title">{t("Avg Snf")}</h3>
+                <h3 className="card-title">{t("c-snf")}</h3>
                 <Link smooth to="#centerdata" className="hashlink label-text">
                   {avgSNF.toFixed(2) || 0}
                 </Link>
@@ -539,14 +427,14 @@ const Dashboard = () => {
             <div className="card h1 sb">
               <TbMilkFilled className="card-icon" />
               <div className="card-inner">
-                <h3 className="card-title">{t("Avg Rate")}</h3>
+                <h3 className="card-title">{t("c-rate")}</h3>
                 <Link smooth to="#centerdata" className="hashlink label-text">
                   {avgRate.toFixed(2) || 0}
                 </Link>
               </div>
             </div>
             <div className="card h1 sb">
-              <TfiStatsUp className="card-icon" />
+              <FaIndianRupeeSign className="card-icon" />
               <div className="card-inner">
                 <h3 className="card-title">{t("c-purch-amt")}</h3>
                 <Link smooth to="#centerdata" className="hashlink label-text">

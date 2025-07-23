@@ -23,11 +23,19 @@ const DeductionMaster = () => {
         />
       </div>
       <div className="apphome-nav-views w100 h90 d-flex center p10">
-        {/* <AppNavviews index={isselected} /> */}
         <Routes>
-          <Route path="deduction/head" element={<DeductionHead />} />
-          <Route path="*" element={<DeductionHead />} />
-          <Route path="deduction/details" element={<DeductionRateDetails />} />
+          <Route
+            path="deduction/head"
+            element={<DeductionHead setIsSelected={setIsselected} />}
+          />
+          <Route
+            path="deduction/details"
+            element={<DeductionRateDetails setIsSelected={setIsselected} />}
+          />
+          <Route
+            path="*"
+            element={<DeductionHead setIsSelected={setIsselected} />}
+          />
         </Routes>
       </div>
     </div>

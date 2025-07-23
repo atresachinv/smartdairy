@@ -2573,7 +2573,7 @@ exports.deleteAllMilkPay = async (req, res) => {
 };
 
 // ----------------------------------------------------------------------------------->
-// Fetch Payment Summary ------------------------------------------------------------------->
+// Fetch Payment Summary ------------------------------------------------------------->
 // ----------------------------------------------------------------------------------->
 
 exports.fetchPaySummary = async (req, res) => {
@@ -2640,5 +2640,63 @@ exports.fetchPaySummary = async (req, res) => {
       console.error("Error processing request: ", error);
       return res.status(500).json({ message: "Internal server error" });
     }
+  });
+};
+
+// ----------------------------------------------------------------------------------->
+// fetch Selected Payment to print bills --------------------------------------------->
+// ----------------------------------------------------------------------------------->
+
+exports.fetchSelectedPayData = async (req, res) => {
+  const { fromDate, toDate, fromCode, toCode, centerId } = req.query;
+  const { dairy_id } = req.user;
+  if (!dairy_id) {
+    return res
+      .status(401)
+      .json({ status:401, message: "Unauthorized User!" });
+  }
+
+  pool.getConnection((err, connection) => {
+    if (err) {
+      console.error("Error getting MySQL connection: ", err.message);
+      return res
+        .status(500)
+        .json({ status: 500, message: "Database connection error" });
+    }
+
+    const fetchPaymentquery = `
+      SELECT
+        BillNo, BillDate, FromDate, ToDate, Code, GLCode, Amt, DeductionId, dname, MAMT, BAMT,
+        tliters, pamt, damt, namt, tmor, teve, tcommor, tcomeve, tcom, tcomribetmor,
+        tcomribeteve, tcomribet, allComm, transport
+        FROM custbilldetails
+        WHERE companyid = ? AND center_id = ? AND FromDate = ? AND ToDate = ? AND Code BETWEEN ? AND ?
+        ORDER BY Code ASC, DeductionId ASC
+      `;
+
+    connection.query(
+      fetchPaymentquery,
+      [dairy_id, centerId, fromDate, toDate, fromCode, toCode],
+      (err, results) => {
+        connection.release();
+
+        if (err) {
+          console.error("Error executing query: ", err.message);
+          return res
+            .status(500)
+            .json({ status: 500, message: "Error executing query" });
+        }
+
+        if (results.length === 0) {
+          return res.status(200).json({
+            status: 204,
+            payBillDetails: [],
+            message: "No record found!",
+          });
+        }
+
+        res.status(200).json({ status: 200, payBillDetails: results });
+      }
+    );
   });
 };

@@ -1,5 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
-import axios from "axios";
+import { useEffect, useMemo, useRef, useState } from "react";
 import autoTable from "jspdf-autotable";
 import jsPDF from "jspdf";
 import * as XLSX from "xlsx";
@@ -24,8 +23,8 @@ const BankReportMaster = () => {
   const [showIFSC, setShowIFSC] = useState(false);
   const [amtCustFilter, setAmtCustFilter] = useState(false);
   const [loading, setLoading] = useState(false);
-   const toDates = useRef(null);
-      const fromDate = useRef(null);
+  const toDates = useRef(null);
+  const fromDate = useRef(null);
 
   const dairyname = useSelector(
     (state) =>
@@ -50,7 +49,6 @@ const BankReportMaster = () => {
     );
     setFilteredBankDetails(filtered);
   };
-  console.log(customerlist);
 
   // Handle Bank Name change
   const handleBankChange = (e) => {
@@ -71,16 +69,12 @@ const BankReportMaster = () => {
     setFilteredBankDetails(filtered);
   };
 
-  // console.log("payment", payDetails);
-  // console.log(customerlist, bankList);
-  // console.log("dates", fromdate, todate);
   //fetchpayment data
   const handlepayment = () => {
-    dispatch(fetchPaymentDetails({ fromdate, todate }));
+    dispatch(fetchPaymentDetails({ fromdate, todate, center_id: 0 }));
     dispatch(listCustomer());
     dispatch(getBankList());
   };
-
 
   useEffect(() => {
     if (!payDetails?.length || !customerlist?.length || !bankList?.length)
@@ -366,7 +360,6 @@ const BankReportMaster = () => {
 
     XLSX.writeFile(workbook, excelFileName);
   };
-  
 
   //.... AddCB BAnk Excel
   const exportADCCBToExcel = () => {
@@ -431,7 +424,6 @@ const BankReportMaster = () => {
 
     XLSX.writeFile(workbook, excelFileName);
   };
-  
 
   //....  UNIONBANK BAnk Excel
   const exportUNIONBANKExcel = () => {
@@ -489,7 +481,7 @@ const BankReportMaster = () => {
 
     XLSX.writeFile(workbook, excelFileName);
   };
-  
+
   //.... SBI Bank
 
   const exportSBIBANKExcel = () => {
@@ -554,7 +546,7 @@ const BankReportMaster = () => {
 
     XLSX.writeFile(workbook, excelFileName);
   };
-  
+
   //.......... Canara Bank
   const exportCANARABANKExcel = () => {
     if (loading) {
@@ -669,7 +661,7 @@ const BankReportMaster = () => {
 
     XLSX.writeFile(workbook, excelFileName);
   };
-  
+
   const exportIDBIBANKExcel = () => {
     if (loading) {
       alert("Data is still loading. Please wait.");
@@ -755,7 +747,6 @@ const BankReportMaster = () => {
 
     XLSX.writeFile(workbook, excelFileName);
   };
-  
 
   const exportBadodaraToExcel = () => {
     if (loading) {
@@ -834,7 +825,7 @@ const BankReportMaster = () => {
 
     XLSX.writeFile(workbook, excelFileName);
   };
-  
+
   const exportAXISToExcel = () => {
     if (loading) {
       alert("Data is still loading. Please wait.");
@@ -1126,8 +1117,8 @@ const BankReportMaster = () => {
                 onChange={handleBankChange}
               >
                 <option value="">-- Select Bank --</option>
-                {bankList.map((bank) => (
-                  <option key={bank.code} value={bank.name}>
+                {bankList.map((bank, index) => (
+                  <option key={index} value={bank.name}>
                     {bank.name}
                   </option>
                 ))}
@@ -1145,7 +1136,7 @@ const BankReportMaster = () => {
                 English Excel
               </button>
             </div>
-            
+
             <div className="report-old-bank d-flex w30 h90 a-center">
               <button className="btn" onClick={exportToExcelMarathi}>
                 Marathi Excel
@@ -1161,8 +1152,8 @@ const BankReportMaster = () => {
             <table className="bank-details-table">
               <thead>
                 <tr>
+                  <th>Cust Code</th>
                   <th>Code</th>
-                  <th>Cust_Code</th>
                   <th>Bank Name</th>
                   {showIFSC && <th>Bank IFSC</th>}
                   <th>Bank ACC No</th>
@@ -1177,8 +1168,8 @@ const BankReportMaster = () => {
                       backgroundColor: index % 2 === 0 ? "#faefe3" : "#fff",
                     }}
                   >
-                    <td>{bank.bankcode}</td>
                     <td>{bank.srno}</td>
+                    <td>{bank.bankcode}</td>
                     <td>{bank.bankname}</td>
                     {showIFSC && <td>{bank.bankIFSC}</td>}
                     <td>{bank.accno || "N/A"}</td>

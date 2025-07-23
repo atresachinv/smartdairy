@@ -4,6 +4,7 @@ import { dairydailyLossGain } from "../../../../App/Features/Mainapp/Dairyinfo/m
 import "../../../../Styles/Mainapp/Reports/LossGainReport/LossGainReport.css";
 
 const Lossgainreport = () => {
+  const dispatch = useDispatch();
   const today = new Date().toISOString().split("T")[0];
   const [fromDate, setFromDate] = useState(today);
   const [toDate, setToDate] = useState(today);
@@ -14,7 +15,7 @@ const Lossgainreport = () => {
   const dairyinfo = useSelector((state) => state.dairy.dairyData);
   const [selectedCenterId, setSelectedCenterId] = useState("");
   const [showTable, setShowTable] = useState(false);
-  const dispatch = useDispatch();
+
   const tDate = useSelector((state) => state.date.toDate);
   const dairyColl = useSelector((state) => state.custinfo.dairyColl); // sangha Sales
   const dairyname = dairyinfo.SocietyName || dairyinfo.center_name;
@@ -29,7 +30,9 @@ const Lossgainreport = () => {
     }
 
     try {
-      const result = await dispatch(dairydailyLossGain({ fromDate, toDate }));
+      const result = await dispatch(
+        dairydailyLossGain({ fromDate, toDate, centerid: selectedCenterId })
+      );
       const fullData = result.payload || [];
 
       const filteredByCenter = selectedCenterId

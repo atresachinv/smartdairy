@@ -7,6 +7,7 @@ const initialState = {
   allMilkColl: [],
   allMilkCollector: [],
   mobileColl: [],
+  payMCollPrint: [], // milk coll to print pay bill
   mobileCollection: [], //update mobile milk collection
   completedColle: [], //completed milk collection
   PrevLiters: [], //Previous liters
@@ -14,6 +15,7 @@ const initialState = {
   todaysMilk: [],
   regularCustomers: [], // regular customer for milk collection
   status: "idle",
+  pbillstatus: "idle",
   getRegstatus: "idle",
   milkstatus: "idle",
   allmilkstatus: "idle",
@@ -288,6 +290,25 @@ export const getRegCustomers = createAsyncThunk(
   }
 );
 
+// Print payment bill data ---------------------------------------------->
+// dairy milk Collection report (fillter) ------------------------------->
+export const getPayBillCollection = createAsyncThunk(
+  "milkCollection/getPayBillCollection",
+  async ({ fromDate, toDate, fromCode, toCode, centerId }, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.get("/payment-bill/milk-coll", {
+        params: { fromDate, toDate, fromCode, toCode, centerId },
+      });
+      return response.data.paymilkcollection;
+    } catch (error) {
+      const errorMessage = error.response
+        ? error.response.data
+        : "Failed to fetch milk collection.";
+      return rejectWithValue(errorMessage);
+    }
+  }
+);
+
 const milkCollectionSlice = createSlice({
   name: "milkCollection",
   initialState,
@@ -462,6 +483,18 @@ const milkCollectionSlice = createSlice({
       })
       .addCase(getRegCustomers.rejected, (state, action) => {
         state.getRegstatus = "failed";
+        state.error = action.payload;
+      }) // payment milk collection to print --------------------------------->
+      .addCase(getPayBillCollection.pending, (state) => {
+        state.pbillstatus = "loading";
+        state.error = null;
+      })
+      .addCase(getPayBillCollection.fulfilled, (state, action) => {
+        state.pbillstatus = "succeeded";
+        state.payMCollPrint = action.payload;
+      })
+      .addCase(getPayBillCollection.rejected, (state, action) => {
+        state.pbillstatus = "failed";
         state.error = action.payload;
       });
   },

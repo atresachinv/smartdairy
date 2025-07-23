@@ -1187,7 +1187,7 @@ exports.fetchPrevFSD = async (req, res) => {
     return `${year}-${month}-${day}`;
   };
 
-  const {dairy_id, center_id} = req.user;
+  const { dairy_id, center_id } = req.user;
   if (!dairy_id) {
     return res.status(400).json({ message: "Missing required fields" });
   }
@@ -1202,8 +1202,6 @@ exports.fetchPrevFSD = async (req, res) => {
     }
 
     try {
-      
-
       // Prepare the SQL query
       const prevliterReport = `
         SELECT rno, fat, snf, Digree
@@ -1228,13 +1226,10 @@ exports.fetchPrevFSD = async (req, res) => {
             return res.status(200).json({ PrevmilkData: [] });
           }
 
-          res
-            .status(200)
-            .json({
-              PrevmilkData: result,
-              message:
-                "Previous date fat, snf, degree data fetch successfully!",
-            });
+          res.status(200).json({
+            PrevmilkData: result,
+            message: "Previous date fat, snf, degree data fetch successfully!",
+          });
         }
       );
     } catch (error) {
@@ -2427,14 +2422,13 @@ exports.uploadMilkCollection = async (req, res) => {
   });
 };
 
-
 // ----------------------------------------------------------------------------------------------->
 // dairy / tanker milk loss gain report ---------------------------------------------------------->
 // ----------------------------------------------------------------------------------------------->
 
 exports.dairyMilkLossGain = (req, res) => {
-  const { dairy_id, center_id } = req.user;
-  const { fromDate, toDate } = req.query;
+  const { dairy_id } = req.user;
+  const { fromDate, toDate, centerid } = req.query;
 
   if (!dairy_id) {
     return res.status(401).json({ status: 401, message: "Unauthorized User!" });
@@ -2458,7 +2452,7 @@ exports.dairyMilkLossGain = (req, res) => {
 
     connection.query(
       sanghQuery,
-      [dairy_id, center_id, fromDate, toDate],
+      [dairy_id, centerid, fromDate, toDate],
       (err, sanghData) => {
         if (err) {
           connection.release();
@@ -2497,7 +2491,7 @@ exports.dairyMilkLossGain = (req, res) => {
           const { query, params } = buildDairyAggQuery(
             shift,
             colldate,
-            center_id,
+            centerid,
             dairy_table,
             fromDate,
             toDate
@@ -2561,7 +2555,7 @@ exports.dairyMilkLossGain = (req, res) => {
 function buildDairyAggQuery(
   shift,
   colldate,
-  center_id,
+  centerid,
   table,
   fromDate,
   toDate
@@ -2582,11 +2576,11 @@ function buildDairyAggQuery(
     case 0:
     case 1:
       query = `${aggSelect} FROM ${table} WHERE ME = ? AND center_id = ? AND ReceiptDate = ?`;
-      params = [shift, center_id, colldate];
+      params = [shift, centerid, colldate];
       break;
     case 2:
       query = `${aggSelect} FROM ${table} WHERE ME IN (0,1) AND center_id = ? AND ReceiptDate = ?`;
-      params = [center_id, colldate];
+      params = [centerid, colldate];
       break;
     case 3:
       const prevDate = moment(colldate)
@@ -2599,11 +2593,11 @@ function buildDairyAggQuery(
           (ME = 0 AND ReceiptDate = ?)
         )
       `;
-      params = [center_id, prevDate, colldate];
+      params = [centerid, prevDate, colldate];
       break;
     case 4:
       query = `${aggSelect} FROM ${table} WHERE ME IN (0,1) AND center_id = ? AND ReceiptDate BETWEEN ? AND ?`;
-      params = [center_id, fromDate, toDate];
+      params = [centerid, fromDate, toDate];
       break;
     default:
       return { query: null, params: [] };
@@ -3766,6 +3760,63 @@ exports.finallyApplyRateChart = async (req, res) => {
       return res
         .status(500)
         .json({ status: 500, message: "Server error", error: error.message });
+    }
+  });
+};
+
+// ------------------------------------------------------------------------------------------------------------------>
+// fetch milk collection for print bills ---------------------------------------------------------------------------->
+// ------------------------------------------------------------------------------------------------------------------>
+
+exports.fetchBillMilkColl = async (req, res) => {
+  const { fromDate, toDate, fromCode, toCode, centerId } = req.query;
+  const { dairy_id } = req.user;
+  if (!dairy_id) {
+    return res
+      .status(400)
+      .json({ message: "Dairy ID not found in the request!" });
+  }
+
+  const dairy_table = `dailymilkentry_${dairy_id}`;
+  pool.getConnection((err, connection) => {
+    if (err) {
+      console.error("Error getting MySQL connection: ", err.message);
+      return res.status(500).json({ message: "Database connection error" });
+    }
+
+    try {
+      const milkCollectionQuery = `
+        SELECT id, ReceiptDate, ME, Litres, fat, snf, rate, Amt, cname, rno
+        FROM ${dairy_table}
+        WHERE center_id = ? AND ReceiptDate BETWEEN ? AND ? AND rno BETWEEN ? AND ? AND isDeleted = 0
+        ORDER BY rno ASC , ReceiptDate ASC
+        `;
+
+      connection.query(
+        milkCollectionQuery,
+        [centerId, fromDate, toDate, fromCode, toCode],
+        (err, results) => {
+          connection.release();
+
+          if (err) {
+            console.error("Error executing query: ", err.message);
+            return res.status(500).json({ message: "Error executing query" });
+          }
+
+          if (results.length === 0) {
+            return res.status(200).json({
+              paymilkcollection: [],
+              message: "No record found!",
+            });
+          }
+
+          res.status(200).json({ paymilkcollection: results });
+        }
+      );
+    } catch (err) {
+      connection.release();
+      console.error("Unexpected error: ", err.message);
+      res.status(500).json({ message: "Unexpected server error" });
     }
   });
 };

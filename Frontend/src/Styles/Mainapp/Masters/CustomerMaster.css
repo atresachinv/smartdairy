@@ -3,14 +3,14 @@
   overflow-x: auto;
 }
 .customer-data-headings-div {
-  min-width: 1200px;
+  min-width: 1300px;
   position: sticky;
   top: 0;
   background-color: #17acc0;
   padding: 5px 0;
 }
 .customer-data-values-div {
-  min-width: 1200px;
+  min-width: 1300px;
 }
 
 .toggle-button {
@@ -69,7 +69,6 @@
     padding: 5px 10px;
     font-size: 8px;
   }
-  
 }
 
 @media screen and (max-width: 426px) {
@@ -78,6 +77,16 @@
     overflow-y: scroll;
     flex-direction: column;
   }
+
+  .customer-list-container-div {
+    min-height: auto;
+  }
+  .customer-list-container-div .download-print-pdf-excel-container {
+    min-height: fit-content;
+    flex-direction: column;
+    max-block-size: 10px;
+  }
+
   .cust-details-setting-div .customer-details-container,
   .cust-details-setting-div .cust-data-settings {
     width: 100%;
@@ -110,6 +119,56 @@
   .cust-data-settings .sub-heading {
     margin-bottom: 5px;
     padding: 0;
+  }
+
+  .cust-data-settings .data-show-hide--setting-container {
+    min-height: fit-content;
+  }
+  .data-show-hide--setting-container .show-hide-content-div {
+    margin-bottom: 10px;
+  }
+  .data-show-hide--setting-container .show-hide-content-div .details-div {
+    display: flex;
+    justify-content: space-between;
+  }
+  .cust-data-settings .create-customer-button-container {
+    min-height: fit-content;
+    flex-direction: column;
+    margin-bottom: 10px;
+  }
+  .create-customer-button-container .prev-next-btns {
+    width: 100%;
+    margin-bottom: 10px;
+  }
+  .create-customer-button-container .prev-next-btns button {
+    width: 48%;
+  }
+  .cust-data-settings .create-customer-button-container .w-btn {
+    width: 100%;
+  }
+  .select-excel-button-container .w-btn {
+    width: 45%;
+  }
+  .select-excel-button-container .customer-excel-upload-container {
+    width: 100%;
+    min-height: fit-content;
+    flex-direction: column;
+  }
+  .select-excel-button-container
+    .customer-excel-upload-container
+    .selected-file {
+    margin-bottom: 10px;
+  }
+
+  .select-excel-button-container
+    .customer-excel-upload-container
+    .choose-excel-btn {
+    width: 50%;
+    margin: 10px 0;
+  }
+  .select-excel-button-container .customer-excel-upload-container button {
+    width: 100%;
+    margin-bottom: 10px;
   }
 
   .toggle-button {

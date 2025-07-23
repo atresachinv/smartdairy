@@ -476,6 +476,7 @@ exports.createPurchases = async (req, res) => {
     }
   });
 };
+
 // -------------------------------------------------------------------------------------->
 // Get All purchase items controller ---------------------------------------------------->
 // -------------------------------------------------------------------------------------->
@@ -864,5 +865,57 @@ exports.getAllProductSaleRate = async (req, res) => {
       console.error("Error processing request: ", error);
       return res.status(500).json({ message: "Internal server error" });
     }
+  });
+};
+
+// -------------------------------------------------------------------------------------->
+// Purchase reports --------------------------------------------------------------------->
+// -------------------------------------------------------------------------------------->
+
+exports.getPurchaseReport = async (req, res) => {
+  const { ItemGroupCode } = req.query;
+  const { dairy_id, center_id } = req.user;
+
+  let query = `
+    SELECT * 
+    FROM PurchaseMaster 
+    WHERE dairy_id = ? AND purchasedate BETWEEN ? AND ?`;
+
+  const queryParams = [dairy_id, startDate, endDate];
+
+  if (center_id > 0) {
+    query += ` AND center_id = ?`;
+    queryParams.push(center_id);
+  }
+
+  pool.getConnection((err, connection) => {
+    if (err) {
+      console.error("Error getting MySQL connection: ", err);
+      return res.status(500).json({ message: "Database connection error" });
+    }
+
+    // Fetch purchase data
+    connection.query(query, queryParams, (err, result) => {
+      connection.release();
+
+      if (err) {
+        console.error("Error executing query: ", err);
+        return res
+          .status(500)
+          .json({ message: "Error fetching purchase data", error: err });
+      }
+
+      if (result.length === 0) {
+        res.status(204).json({
+          status: 204,
+          message: "Data not found!",
+        });
+      }
+
+      res.status(200).json({
+        status: 200,
+        purData: result,
+      });
+    });
   });
 };
